@@ -14,7 +14,9 @@ defineProps({
 </script>
 <template>
   <div class="mx-auto w-full max-w-3xl p-4">
-    <div v-if="!user">Please check your emails to confirm your signup</div>
+    <div v-if="!user" class="text-3xl my-8 text-center">
+      Please check your emails to confirm your signup.
+    </div>
     <div v-else>
       <p>
         <span class="text-6xl font-bold tracking-tighter text-white shadow-text"

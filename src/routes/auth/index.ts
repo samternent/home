@@ -10,6 +10,11 @@ export const authRoutes = [
     component: () => import("./RouteAuthLogin.vue"),
   },
   {
+    path: "/auth/profile",
+    props: true,
+    component: () => import("./RouteAuthProfile.vue"),
+  },
+  {
     path: "/auth/profile/:username",
     props: true,
     component: () => import("./RouteAuthProfile.vue"),
