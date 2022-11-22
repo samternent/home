@@ -40,7 +40,7 @@ api.interceptors.response.use(
 
 <template>
   <div class="text-white min-h-screen flex flex-col">
-    <div class="sticky top-0 z-30 shadow border-b border-[#2d2d2d] w-full">
+    <div class="sticky bg-[#1c1c1c] top-0 z-30 shadow w-full">
       <div
         class="max-w-6xl flex justify-between mx-auto items-center w-full h-12"
       >
