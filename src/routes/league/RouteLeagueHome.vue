@@ -45,23 +45,38 @@ watch(
 </script>
 <template>
   <div class="md:px-2 lg:px-4 flex-1 max-w-3xl mx-auto pt-0 w-full mb-16 z-10">
-    <div class="pt-8 pb-12 px-2">
-      <h1
-        class="text-5xl text-white font-bold tracking-tighter shadow-text"
-        v-if="competition"
-      >
-        {{ competition.name }}.
-      </h1>
-      <h1 v-else class="text-2xl font-thin mb-2">
-        <div class="bg-[#3c3c3c] animate-pulse m-2 rounded flex-1 h-8 w-64" />
-      </h1>
-      <p class="text-sm md:text-base text-[#cdcdcd]">
-        <span class="font-bold"
-          ><span class="text-indigo-400">Football</span> Social.
-        </span>
-        Talk <span class="text-pink-400">Football</span>, with
-        <span class="text-yellow-400">Football</span> people.
-      </p>
+    <div
+      class="pt-8 pb-12 px-2 flex justify-between items-center flex-col md:flex-row"
+    >
+      <div>
+        <h1
+          class="text-5xl text-white font-bold tracking-tighter shadow-text"
+          v-if="competition"
+        >
+          {{ competition.name }}.
+        </h1>
+        <h1 v-else class="text-2xl font-thin mb-2">
+          <div class="bg-[#3c3c3c] animate-pulse m-2 rounded flex-1 h-8 w-64" />
+        </h1>
+        <p class="text-sm md:text-base text-[#cdcdcd]">
+          <span class="font-bold"
+            ><span class="text-indigo-400">Football</span> Social.
+          </span>
+          Talk <span class="text-pink-400">Football</span>, with
+          <span class="text-yellow-400">Football</span> people.
+        </p>
+      </div>
+      <a
+        href="https://www.producthunt.com/posts/footballsocial-app?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-footballsocial&#0045;app"
+        target="_blank"
+        ><img
+          src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=368400&theme=dark"
+          alt="FootballSocial&#0046;app - Talk&#0032;Football&#0044;&#0032;with&#0032;Football&#0032;people&#0046; | Product Hunt"
+          style="width: 250px; height: 54px"
+          width="250"
+          height="54"
+          class="mt-8"
+      /></a>
     </div>
 
     <ul class="flex my-4">
