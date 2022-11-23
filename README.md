@@ -13,7 +13,7 @@ Now with the FIFA World Cup firmly underway I’d thought it the appropriate tim
 
 ## Technical
 
-On the backend it’s made up from the free tier on [football-data.org](https://www.football-data.org/) , with a node proxy & redis free tier caching layer to limit requests. The server and frontend are served from a non-dedicated DigitalOcean linux droplet through NGINX and pm2m. 
+On the backend it’s made up from the free tier on [football-data.org](https://www.football-data.org/) , with a node proxy & redis free tier caching layer to limit requests. The server and frontend are served from a non-dedicated DigitalOcean linux droplet through NGINX and pm2. 
 
 It’s leveraging a free tier Supabase instance for login and discussion threads and the frontend is built on VueJS, Vite & tailwind with a flutter of open-source offerings used throughout and is all deployed to through Github actions and ssh.
 
