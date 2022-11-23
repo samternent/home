@@ -55,11 +55,7 @@ api.interceptors.response.use(
             class="h-8 w-8"
           />
         </RouterLink>
-        <img
-          alt="Football Social"
-          src="./assets/OneLoveBawb.png"
-          class="h-8 w-8"
-        />
+
         <div class="flex items-center text-white">
           <RouterLink
             aria-label="Signup"
