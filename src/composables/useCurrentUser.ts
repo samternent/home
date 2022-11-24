@@ -40,16 +40,20 @@ export function provideCurrentUser() {
     if (error) {
       return { error };
     }
-    getSession();
+    await getSession();
     return true;
   }
 
   async function loginWithGoogle() {
     return authLoginWithGoogle();
+    await getSession();
+    return true;
   }
 
   async function signupWithGoogle(username: string) {
     return authSignupWithGoogle(username);
+    await getSession();
+    return true;
   }
 
   async function signUp(
