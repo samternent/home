@@ -56,11 +56,19 @@ export function provideCurrentUser() {
     return true;
   }
 
+  async function updateUsername(username: string) {
+    const { data } = await supabaseClient
+      .from("profiles")
+      .upsert({ id: session.value.user.id, username }, { onConflict: "id" })
+      .select();
+
+    profile.value = data ? data[0] : null;
+  }
+
   async function signUp(
     email: string,
     password: string,
-    confirmPassword: string,
-    username: string
+    confirmPassword: string
   ) {
     if (password !== confirmPassword) {
       return {
@@ -83,14 +91,7 @@ export function provideCurrentUser() {
         },
       };
     }
-    if (!username.trim().length) {
-      return {
-        error: {
-          message: "Username must be provided",
-        },
-      };
-    }
-    const { error } = await authSignUp(email, password, username);
+    const { error } = await authSignUp(email, password);
     if (error) {
       return { error };
     }
@@ -111,6 +112,7 @@ export function provideCurrentUser() {
     signOut,
     loginWithGoogle,
     signupWithGoogle,
+    updateUsername,
   };
 
   provide(currentUserSymbol, currentUser);

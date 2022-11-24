@@ -4,6 +4,7 @@ import api from "./utils/api";
 import { useToast } from "vue-toastification";
 
 import { provideCurrentUser } from "./composables/useCurrentUser";
+import SetUsername from "./components/SetUsername.vue";
 
 const toast = useToast();
 
@@ -88,7 +89,10 @@ api.interceptors.response.use(
     </div>
 
     <div class="flex-1 flex flex-col">
-      <RouterView />
+      <template v-if="user && user.email && (!profile || !profile.username)">
+        <SetUsername />
+      </template>
+      <RouterView v-else />
     </div>
   </div>
 </template>

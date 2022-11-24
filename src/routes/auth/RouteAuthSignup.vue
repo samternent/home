@@ -10,32 +10,26 @@ const router = useRouter();
 const email = shallowRef("");
 const password = shallowRef("");
 const passwordConfirm = shallowRef("");
-const username = shallowRef("");
 const errorMessage = shallowRef(null);
 
 async function signup() {
   errorMessage.value = null;
-  if (!username.value) {
-    errorMessage.value = "Please choose a username.";
-    return;
-  }
   if (!email.value) {
     errorMessage.value = "Please enter you email address.";
     return;
   }
-  if (!password.value.length < 8) {
+  if (password.value.length < 8) {
     errorMessage.value = "Password must be at least 8 characters.";
     return;
   }
-  if (!password.value !== passwordConfirm.value) {
+  if (password.value !== passwordConfirm.value) {
     errorMessage.value = "Passwords must match.";
     return;
   }
   const { error } = await signUp(
     email.value,
     password.value,
-    passwordConfirm.value,
-    username.value
+    passwordConfirm.value
   );
   if (error) {
     errorMessage.value = error.message;
@@ -47,10 +41,6 @@ async function signup() {
 
 async function googleLogin() {
   errorMessage.value = null;
-  if (!username.value) {
-    errorMessage.value = "Please choose a username";
-    return;
-  }
   const { error } = await signupWithGoogle(username.value);
   if (error) {
     errorMessage.value = error.message;
@@ -75,14 +65,6 @@ async function googleLogin() {
         >
           {{ errorMessage }}
         </div>
-
-        <input
-          type="text"
-          v-model="username"
-          class="bg-[#1d1d1d] w-full rounded p-4 border-2 border-[#343434] my-2"
-          name="pick_username"
-          placeholder="Pick Username"
-        />
 
         <div class="text-right my-4">
           <SignInWithGoogle @click="googleLogin"
