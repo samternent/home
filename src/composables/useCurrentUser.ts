@@ -12,6 +12,8 @@ export function provideCurrentUser() {
     signUp: authSignUp,
     signIn: authSignIn,
     signOut: authSignOut,
+    loginWithGoogle: authLoginWithGoogle,
+    signupWithGoogle: authSignupWithGoogle,
   } = useAuth();
 
   async function getSession() {
@@ -40,6 +42,14 @@ export function provideCurrentUser() {
     }
     getSession();
     return true;
+  }
+
+  async function loginWithGoogle() {
+    return authLoginWithGoogle();
+  }
+
+  async function signupWithGoogle(username: string) {
+    return authSignupWithGoogle(username);
   }
 
   async function signUp(
@@ -95,6 +105,8 @@ export function provideCurrentUser() {
     signIn,
     signUp,
     signOut,
+    loginWithGoogle,
+    signupWithGoogle,
   };
 
   provide(currentUserSymbol, currentUser);

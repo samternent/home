@@ -11,7 +11,7 @@
     "start": "NODE_ENV=production pm2 startOrReload ecosystem.config.cjs"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^1.35.6",
+    "@supabase/supabase-js": "^2.1.1",
     "@tailwindcss/line-clamp": "^0.4.2",
     "@tailwindcss/typography": "^0.5.7",
     "@tiptap/core": "2.0.0-beta.199",

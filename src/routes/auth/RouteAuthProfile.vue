@@ -5,12 +5,18 @@ import { supabaseClient } from "../../service/supabase";
 import { useCurrentUser } from "../../composables/useCurrentUser";
 
 const { user, profile, signOut } = useCurrentUser();
+const router = useRouter();
 defineProps({
   username: {
     type: String,
     required: true,
   },
 });
+
+async function signOutAndLeave() {
+  await signOut();
+  router.push("/");
+}
 </script>
 <template>
   <div class="mx-auto w-full max-w-3xl p-4">
@@ -24,7 +30,9 @@ defineProps({
         >
       </p>
       <p class="my-16">
-        <button @click="signOut" class="px-4 py-2 bg-red-800">Sign Out</button>
+        <button @click="signOutAndLeave" class="px-4 py-2 bg-red-800">
+          Sign Out
+        </button>
       </p>
     </div>
   </div>

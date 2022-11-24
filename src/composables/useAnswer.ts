@@ -19,10 +19,16 @@ export function useAnswer(discussion_id: string) {
     answers.value = [payload.new, ...answers.value];
   };
 
-  const subscription = supabaseClient
-    .from(`answer:discussion_id=eq.${discussion_id}`)
-    .on("*", handleInsert)
+  const answerListener = supabaseClient
+    .channel(`public:answer:discussion_id=eq.${discussion_id}`)
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "answer" },
+      (payload) => handleInsert(payload)
+    )
     .subscribe();
+
+  onBeforeUnmount(() => supabaseClient.removeChannel(answerListener));
 
   async function fetchAnswers() {
     if (count.value && limit.value * page.value >= count.value) {
@@ -50,18 +56,17 @@ export function useAnswer(discussion_id: string) {
     fetchAnswers();
   }
 
-  onBeforeUnmount(() => {
-    supabaseClient.removeSubscription(subscription);
-  });
-
   const addNewAnswer = async (username: string, body: string) => {
-    const { data, error, count } = await supabaseClient.from("answer").insert([
-      {
-        username,
-        discussion_id,
-        body,
-      },
-    ]);
+    const { data, error, count } = await supabaseClient
+      .from("answer")
+      .insert([
+        {
+          username,
+          discussion_id,
+          body,
+        },
+      ])
+      .select();
     return { data, error };
   };
 

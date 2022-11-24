@@ -1,5 +1,5 @@
 <script setup>
-import { toRefs, watch, watchEffect, shallowRef } from "vue";
+import { toRefs, watch, watchEffect, shallowRef, onBeforeUnmount } from "vue";
 import { useIntersectionObserver } from "@vueuse/core";
 import { supabaseClient } from "../service/supabase";
 import { useComment } from "../composables/useComment";
@@ -24,16 +24,17 @@ const props = defineProps({
 
 const { competitionCode } = toRefs(props);
 
-// update row on vite update... not ideal, but it works
-supabaseClient
-  .from("vote")
-  .on("UPDATE", (payload) => {
-    fetchCommentsForCompetition(competitionCode.value);
-  })
-  .on("INSERT", (payload) => {
-    fetchCommentsForCompetition(competitionCode.value);
-  })
+// update row on vote update... not ideal, but it works
+const voteListener = supabaseClient
+  .channel("public:vote")
+  .on(
+    "postgres_changes",
+    { event: "*", schema: "public", table: "vote" },
+    (payload) => fetchCommentsForCompetition(competitionCode.value)
+  )
   .subscribe();
+
+onBeforeUnmount(() => supabaseClient.removeChannel(voteListener));
 
 watch(
   competitionCode,

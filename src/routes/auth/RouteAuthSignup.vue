@@ -2,8 +2,9 @@
 import { shallowRef } from "vue";
 import { useRouter } from "vue-router";
 import { useCurrentUser } from "../../composables/useCurrentUser";
+import SignInWithGoogle from "../../components/SignInWithGoogle.vue";
 
-const { signUp } = useCurrentUser();
+const { signUp, signupWithGoogle, refresh } = useCurrentUser();
 const router = useRouter();
 
 const email = shallowRef("");
@@ -14,6 +15,22 @@ const errorMessage = shallowRef(null);
 
 async function signup() {
   errorMessage.value = null;
+  if (!username.value) {
+    errorMessage.value = "Please choose a username.";
+    return;
+  }
+  if (!email.value) {
+    errorMessage.value = "Please enter you email address.";
+    return;
+  }
+  if (!password.value.length < 8) {
+    errorMessage.value = "Password must be at least 8 characters.";
+    return;
+  }
+  if (!password.value !== passwordConfirm.value) {
+    errorMessage.value = "Passwords must match.";
+    return;
+  }
   const { error } = await signUp(
     email.value,
     password.value,
@@ -24,7 +41,21 @@ async function signup() {
     errorMessage.value = error.message;
     return;
   }
-  router.push("/auth/profile");
+  await refresh();
+  router.push("/leagues/WC");
+}
+
+async function googleLogin() {
+  errorMessage.value = null;
+  if (!username.value) {
+    errorMessage.value = "Please choose a username";
+    return;
+  }
+  const { error } = await signupWithGoogle(username.value);
+  if (error) {
+    errorMessage.value = error.message;
+    return;
+  }
 }
 </script>
 <template>
@@ -43,6 +74,20 @@ async function signup() {
           class="text-white bg-red-900 py-2 px-4 rounded"
         >
           {{ errorMessage }}
+        </div>
+
+        <input
+          type="text"
+          v-model="username"
+          class="bg-[#1d1d1d] w-full rounded p-4 border-2 border-[#343434] my-2"
+          name="pick_username"
+          placeholder="Pick Username"
+        />
+
+        <div class="text-right my-4">
+          <SignInWithGoogle @click="googleLogin"
+            >Login with Google</SignInWithGoogle
+          >
         </div>
 
         <input
@@ -68,14 +113,6 @@ async function signup() {
           placeholder="Confirm Password"
         />
 
-        <input
-          type="text"
-          v-model="username"
-          class="bg-[#1d1d1d] w-full rounded p-4 border-2 border-[#343434] my-2"
-          name="pick_username"
-          placeholder="Pick Username"
-        />
-
         <div class="mx-2 my-4 flex justify-end">
           <button
             type="submit"
@@ -97,7 +134,6 @@ async function signup() {
           </RouterLink>
         </div>
       </div>
-
       <div class="text-grey-dark mt-6">
         Already have an account?
         <RouterLink to="/auth/login" class="league-link"> Log in </RouterLink>.

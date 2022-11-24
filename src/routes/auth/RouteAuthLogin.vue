@@ -2,8 +2,9 @@
 import { shallowRef } from "vue";
 import { useRouter } from "vue-router";
 import { useCurrentUser } from "../../composables/useCurrentUser";
+import SignInWithGoogle from "../../components/SignInWithGoogle.vue";
 
-const { signIn } = useCurrentUser();
+const { signIn, loginWithGoogle } = useCurrentUser();
 const router = useRouter();
 
 const email = shallowRef(null);
@@ -18,6 +19,15 @@ async function login() {
     return;
   }
   router.push("/");
+}
+
+async function googleLogin() {
+  errorMessage.value = null;
+  const { error } = await loginWithGoogle();
+  if (error) {
+    errorMessage.value = error.message;
+    return;
+  }
 }
 </script>
 <template>
@@ -36,6 +46,11 @@ async function login() {
           class="text-white bg-red-900 py-2 px-4 rounded"
         >
           {{ errorMessage }}
+        </div>
+        <div class="text-center my-6">
+          <SignInWithGoogle @click="googleLogin"
+            >Login with Google</SignInWithGoogle
+          >
         </div>
         <input
           v-model="email"
