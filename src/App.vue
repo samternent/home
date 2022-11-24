@@ -89,7 +89,7 @@ api.interceptors.response.use(
     </div>
 
     <div class="flex-1 flex flex-col">
-      <template v-if="user && user.email && (!profile || !profile.username)">
+      <template v-if="user && profile && !profile.username)">
         <SetUsername />
       </template>
       <RouterView v-else />
