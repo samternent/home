@@ -2,11 +2,15 @@
 import { shallowRef } from "vue";
 import { useCurrentUser } from "../composables/useCurrentUser";
 
-const { updateUsername } = useCurrentUser();
+const { updateUsername, signOut } = useCurrentUser();
 const username = shallowRef();
 
 function setUsername() {
   updateUsername(username.value);
+}
+async function signOutAndLeave() {
+  await signOut();
+  router.push("/");
 }
 </script>
 <template>
@@ -27,5 +31,10 @@ function setUsername() {
         Update username
       </button>
     </div>
+    <p class="my-16">
+      <button @click="signOutAndLeave" class="px-4 py-2 bg-red-800">
+        Sign Out
+      </button>
+    </p>
   </div>
 </template>
