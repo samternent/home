@@ -41,7 +41,7 @@ async function signup() {
 
 async function googleLogin() {
   errorMessage.value = null;
-  const { error } = await signupWithGoogle(username.value);
+  const { error } = await signupWithGoogle();
   if (error) {
     errorMessage.value = error.message;
     return;
