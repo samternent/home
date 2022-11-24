@@ -7,6 +7,7 @@ const currentUserSymbol = Symbol("useCurrentUser");
 export function provideCurrentUser() {
   const session = shallowRef();
   const profile = shallowRef();
+  const ready = shallowRef(false);
   const {
     getSession: getAuthSession,
     signUp: authSignUp,
@@ -25,6 +26,7 @@ export function provideCurrentUser() {
         .eq("id", session.value.user.id);
       profile.value = data ? data[0] : null;
     }
+    ready.value = true;
   }
 
   async function signIn(email: string, password: string) {
@@ -113,6 +115,7 @@ export function provideCurrentUser() {
     loginWithGoogle,
     signupWithGoogle,
     updateUsername,
+    ready,
   };
 
   provide(currentUserSymbol, currentUser);

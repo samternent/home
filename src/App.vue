@@ -8,7 +8,7 @@ import SetUsername from "./components/SetUsername.vue";
 
 const toast = useToast();
 
-const { user, profile } = provideCurrentUser();
+const { user, profile, ready } = provideCurrentUser();
 
 api.interceptors.response.use(
   (response) => {
@@ -88,8 +88,8 @@ api.interceptors.response.use(
       </div>
     </div>
 
-    <div class="flex-1 flex flex-col">
-      <template v-if="user && profile && !profile.username)">
+    <div class="flex-1 flex flex-col" v-if="ready">
+      <template v-if="user && !profile?.username">
         <SetUsername />
       </template>
       <RouterView v-else />
