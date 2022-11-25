@@ -46,13 +46,32 @@ export function useComment() {
     page.value += 1;
   }
   async function reset() {
+    comments.value = [];
+    count.value = null;
     page.value = 0;
   }
 
-  async function fetchCommentsForCompetition(competition: string) {
+  async function fetchCommentsForCompetition(
+    competition: string,
+    sortBy: string
+  ) {
     if (count.value && limit.value * page.value >= count.value) {
       return;
     }
+
+    const sortOrder = {
+      popular: {
+        name: "reply_count",
+        params: { ascending: false },
+      },
+      recent: {
+        name: "created_at",
+        params: { ascending: false },
+      },
+    };
+
+    const { name: sortName, params: sortParams } =
+      sortOrder[sortBy] || sortOrder.popular;
     loading.value = true;
     supabaseClient
       .from("discussion")
@@ -60,7 +79,7 @@ export function useComment() {
         count: "exact",
       })
       .or(`competition.eq.${competition}`)
-      .order("reply_count", { ascending: false })
+      .order(sortName, sortParams)
       .limit(limit.value)
       .range(
         limit.value * page.value,

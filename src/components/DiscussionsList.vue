@@ -1,6 +1,6 @@
 <script setup>
 import { toRefs, watch, watchEffect, shallowRef, onBeforeUnmount } from "vue";
-import { useIntersectionObserver } from "@vueuse/core";
+import { useIntersectionObserver, useLocalStorage } from "@vueuse/core";
 import { supabaseClient } from "../service/supabase";
 import { useComment } from "../composables/useComment";
 import DiscussionCard from "./DiscussionCard.vue";
@@ -24,23 +24,27 @@ const props = defineProps({
 
 const { competitionCode } = toRefs(props);
 
+const sortOptions = ["popular", "recent"];
+const sortBy = useLocalStorage("discussionSortBy", "recent");
+
 // update row on vote update... not ideal, but it works
 const voteListener = supabaseClient
   .channel("public:vote")
   .on(
     "postgres_changes",
     { event: "*", schema: "public", table: "vote" },
-    (payload) => fetchCommentsForCompetition(competitionCode.value)
+    (payload) =>
+      fetchCommentsForCompetition(competitionCode.value, sortBy.value)
   )
   .subscribe();
 
 onBeforeUnmount(() => supabaseClient.removeChannel(voteListener));
 
 watch(
-  competitionCode,
+  [competitionCode, sortBy],
   () => {
     reset();
-    fetchCommentsForCompetition(competitionCode.value);
+    fetchCommentsForCompetition(competitionCode.value, sortBy.value);
   },
   { immediate: true }
 );
@@ -61,7 +65,7 @@ useIntersectionObserver(
 watch(loadMoreVisible, (_shouldLoadMore) => {
   if (_shouldLoadMore) {
     loadMore();
-    fetchCommentsForCompetition(competitionCode.value);
+    fetchCommentsForCompetition(competitionCode.value, sortBy.value);
   }
 });
 </script>
@@ -80,7 +84,14 @@ watch(loadMoreVisible, (_shouldLoadMore) => {
       </RouterLink>
     </div>
 
-    <div class="text-white text-right text-sm">Sort by: Popular</div>
+    <div class="text-white text-right text-sm">
+      Sort by:
+      <select v-model="sortBy" class="capitalize p-1 rounded">
+        <option v-for="opt in sortOptions" :key="opt" :value="opt">
+          {{ opt }}
+        </option>
+      </select>
+    </div>
     <Transition>
       <div v-if="loading && !comments.length" class="py-4 w-full">
         <div
