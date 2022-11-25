@@ -111,7 +111,8 @@ export function useComment() {
           fixture,
           competition,
         },
-      ]);
+      ])
+      .select();
     if (data?.length) {
       // This is proper dodgy
       for (let i = 0; i < data.length; i++) {
