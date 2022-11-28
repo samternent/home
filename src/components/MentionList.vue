@@ -1,9 +1,11 @@
 <template>
-  <div class="items">
+  <div
+    class="flex flex-col overflow-hidden text-left rounded border border-[#3e3e3e] w-36"
+  >
     <template v-if="items.length">
       <button
-        class="item"
-        :class="{ 'is-selected': index === selectedIndex }"
+        class="bg-[#1d1d1d] block px-3 py-1 text-left w-full"
+        :class="{ 'bg-[#3e3e3e]': index === selectedIndex }"
         v-for="(item, index) in items"
         :key="index"
         @click="selectItem(index)"
@@ -84,30 +86,3 @@ export default {
   },
 };
 </script>
-
-<style>
-.items {
-  padding: 0.2rem;
-  position: relative;
-  border-radius: 0.5rem;
-  background: #fff;
-  color: rgba(0, 0, 0, 0.8);
-  overflow: hidden;
-  font-size: 0.9rem;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05), 0px 10px 20px rgba(0, 0, 0, 0.1);
-}
-
-.item {
-  display: block;
-  margin: 0;
-  width: 100%;
-  text-align: left;
-  background: transparent;
-  border-radius: 0.4rem;
-  border: 1px solid transparent;
-  padding: 0.2rem 0.4rem;
-}
-.item.is-selected {
-  border-color: #000;
-}
-</style>

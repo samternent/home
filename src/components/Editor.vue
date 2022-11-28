@@ -7,7 +7,7 @@ import Paragraph from "@tiptap/extension-paragraph";
 import Bold from "@tiptap/extension-bold";
 import Text from "@tiptap/extension-text";
 import HardBreak from "@tiptap/extension-hard-break";
-import suggestion from "../utils/suggestion";
+import { useMentions } from "../composables/useMentions";
 import { EmojiSearch } from "../utils/tiptap/emoji";
 
 const props = defineProps({
@@ -19,6 +19,8 @@ const props = defineProps({
 
 const emit = defineEmits(["update:modelValue", "submit"]);
 const { modelValue: text } = toRefs(props);
+
+const suggestion = useMentions();
 
 const editor = useEditor({
   content: text.value,
@@ -41,7 +43,6 @@ const editor = useEditor({
             return true;
           },
           "Shift-Enter"() {
-            console.log(editor.value.commands);
             editor.value.commands.setHardBreak();
           },
         };
@@ -58,31 +59,6 @@ const editor = useEditor({
     Text,
     HardBreak,
     Bold,
-    EmojiSearch.configure({
-      mentionClass: "emoji",
-      suggestion: {
-        char: ":",
-        items: (q) => {
-          if (!q) {
-            this.destroySuggestionPopup();
-            return [];
-          }
-          return this.emojiIndex.search(q);
-        },
-        render: () => ({
-          onStart: (args) => {
-            this.suggestionType = "emoji";
-            this.onStartSuggestions(args);
-          },
-          // onUpdate: this.onUpdateSuggestions,
-          onExit: async () => {
-            await this.$nextTick();
-            this.resetMentions();
-          },
-          // onKeyDown: this.onKeyDownHandler,
-        }),
-      },
-    }),
   ],
 });
 
