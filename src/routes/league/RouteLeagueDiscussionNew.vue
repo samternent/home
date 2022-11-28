@@ -73,6 +73,11 @@ async function addComment() {
     showLoginSignupModal.value = true;
     return;
   }
+
+  if (!title.value) {
+    alert("Title cannot be empty");
+    return;
+  }
   const { data } = await addNewComment(
     profile.value.username,
     title.value,
