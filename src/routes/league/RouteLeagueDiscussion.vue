@@ -66,6 +66,9 @@ async function addAnswer() {
     showLoginSignupModal.value = true;
     return;
   }
+  if (!replyBody.value) {
+    return;
+  }
 
   const { data } = await addNewAnswer(profile.value.username, replyBody.value);
   if (data.length) {

@@ -10,7 +10,7 @@
         :key="index"
         @click="selectItem(index)"
       >
-        {{ item }}
+        @{{ item }}
       </button>
     </template>
     <div class="item" v-else>No result</div>
@@ -56,6 +56,11 @@ export default {
       }
 
       if (event.key === "Enter") {
+        this.enterHandler();
+        return true;
+      }
+
+      if (event.key === "Tab") {
         this.enterHandler();
         return true;
       }
