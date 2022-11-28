@@ -86,7 +86,7 @@ watch(loadMoreVisible, (_shouldLoadMore) => {
 
     <div class="text-white text-right text-sm">
       Sort by:
-      <select v-model="sortBy" class="capitalize p-1 rounded">
+      <select v-model="sortBy" class="capitalize p-1 rounded bg-inherit">
         <option v-for="opt in sortOptions" :key="opt" :value="opt">
           {{ opt }}
         </option>
