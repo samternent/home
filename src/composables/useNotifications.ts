@@ -40,15 +40,13 @@ export function useNotifications() {
     loading.value = true;
     supabaseClient
       .from("notifications")
-      .select("*")
-      // .eq("notifier", profile.value?.username)
+      .select("*, discussion(id, competition)")
       .order("created_at", { ascending: false })
       .limit(limit.value)
       .range(limit.value * page.value, limit.value * page.value + limit.value)
       .then((data) => {
         loading.value = false;
         count.value = data.count;
-        console.log(data);
         if (!data.error && data.data) {
           notifications.value = [...notifications.value, ...data.data];
         }

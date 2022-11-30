@@ -34,15 +34,14 @@ const showNotifications = shallowRef(false);
       class="absolute right-4 flex flex-col overflow-hidden text-left rounded border border-[#3e3e3e] w-64"
     >
       <template v-if="notifications.length">
-        <button
+        <RouterLink
           class="bg-[#1d1d1d] block px-3 py-4 text-left w-full border-b"
           :class="{ 'bg-[#3e3e3e]': index === selectedIndex }"
           v-for="(item, index) in notifications"
           :key="index"
-          @click="selectItem(index)"
-        >
-          @{{ item.actor }} mentioned you in a comment.
-        </button>
+          :to="`/leagues/${item.discussion.competition}/discussions/${item.entity_id}#${item.specifier_id}`"
+          >@{{ item.actor }} mentioned you in a comment.
+        </RouterLink>
       </template>
       <div class="item" v-else>No result</div>
     </div>

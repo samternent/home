@@ -1,5 +1,6 @@
 <script setup>
 import { shallowRef, computed, watch, nextTick } from "vue";
+import { useRoute } from "vue-router";
 import { useIntersectionObserver } from "@vueuse/core";
 import { DateTime } from "luxon";
 import { supabaseClient } from "../../service/supabase";
@@ -13,6 +14,7 @@ import DiscussionCard from "../../components/DiscussionCard.vue";
 import LoginSignupModal from "../../components/LoginSignupModal.vue";
 import Editor from "../../components/Editor.vue";
 import { competitions } from "../../utils/competitions";
+import { routeLocationKey } from "vue-router";
 
 const props = defineProps({
   discussionId: {
@@ -21,12 +23,15 @@ const props = defineProps({
   },
 });
 
+const route = useRoute();
+
 const { comments: comment, fetchCommentById } = useComment();
 const {
   answers: answers,
   loadMore,
   addNewAnswer,
   loading,
+  loaded,
 } = useAnswer(props.discussionId);
 
 const showLoginSignupModal = shallowRef(false);
@@ -104,6 +109,23 @@ watch(loadMoreVisible, (_shouldLoadMore) => {
     loadMore();
   }
 });
+
+watch(
+  loaded,
+  async (_loaded) => {
+    if (_loaded && route.hash) {
+      await nextTick();
+      document
+        .querySelector(`[data-id="${route.hash.split("#")[1]}"]`)
+        .scrollIntoView({
+          behavior: "smooth",
+          block: "end",
+          inline: "nearest",
+        });
+    }
+  },
+  { immediate: true }
+);
 </script>
 <template>
   <div
@@ -174,9 +196,13 @@ watch(loadMoreVisible, (_shouldLoadMore) => {
       ref="replyList"
     >
       <div
-        class="flex items-start mb-4 text-sm"
+        class="flex items-start mb-4 text-sm p-2 rounded"
         v-for="answer in answers"
         :key="answer.id"
+        :data-id="answer.id"
+        :class="{
+          'bg-[#252525]': $route.hash === `#${answer.id}`,
+        }"
       >
         <div
           class="h-8 w-8 flex items-center justify-center uppercase text-2xl font-medium rounded-lg bg-indigo-700 shadow-lg mr-4"

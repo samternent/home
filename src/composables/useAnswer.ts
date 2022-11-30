@@ -12,6 +12,7 @@ export function useAnswer(discussion_id: string) {
   const answers = shallowRef<ANSWER[]>([]);
   const limit = shallowRef(15);
   const loading = shallowRef(false);
+  const loaded = shallowRef(false);
   const page = shallowRef(-1);
   const count = shallowRef<any>(null);
 
@@ -48,6 +49,7 @@ export function useAnswer(discussion_id: string) {
         if (!data.error && data.data) {
           answers.value = [...answers.value, ...data.data];
         }
+        loaded.value = true;
       });
   }
 
@@ -83,5 +85,6 @@ export function useAnswer(discussion_id: string) {
     addNewAnswer,
     fetchAnswers,
     loadMore,
+    loaded,
   };
 }
