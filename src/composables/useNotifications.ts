@@ -43,7 +43,7 @@ export function useNotifications() {
       .select("*, discussion(id, competition)")
       .order("created_at", { ascending: false })
       .limit(limit.value)
-      .range(limit.value * page.value, limit.value * page.value + limit.value)
+      // .range(limit.value * page.value, limit.value * page.value + limit.value)
       .then((data) => {
         loading.value = false;
         count.value = data.count;

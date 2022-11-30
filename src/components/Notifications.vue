@@ -31,11 +31,11 @@ const showNotifications = shallowRef(false);
 
     <div
       v-if="showNotifications"
-      class="absolute right-4 flex flex-col overflow-hidden text-left rounded border border-[#3e3e3e] w-64"
+      class="absolute right-0 top-8 flex flex-col overflow-hidden text-left rounded border border-[#3e3e3e] w-64"
     >
       <template v-if="notifications.length">
         <RouterLink
-          class="bg-[#1d1d1d] block px-3 py-4 text-left w-full border-b"
+          class="bg-[#1d1d1d] block px-3 py-3 text-left w-full border-b text-sm border-[#242424]"
           :class="{ 'bg-[#3e3e3e]': index === selectedIndex }"
           v-for="(item, index) in notifications"
           :key="index"
@@ -43,7 +43,8 @@ const showNotifications = shallowRef(false);
             path: `/leagues/${item.discussion.competition}/discussions/${item.entity_id}`,
             hash: `#${item.specifier_id}`,
           }"
-          >@{{ item.actor }} mentioned you in a comment.
+          ><span class="mention">@{{ item.actor }}</span> mentioned you in a
+          comment.
         </RouterLink>
       </template>
       <div class="item" v-else>No result</div>

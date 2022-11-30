@@ -58,23 +58,7 @@ export function useAnswer(discussion_id: string) {
       return;
     }
     loading.value = true;
-    supabaseClient
-      .from("answer")
-      .select("username, profiles!answer_mentions_fkey(username)", {
-        count: "exact",
-      })
-      .eq("discussion_id", discussion_id)
-      .order("created_at", { ascending: false })
-      .limit(limit.value)
-      .range(limit.value * page.value, limit.value * page.value + limit.value)
-      .then((data) => {
-        loading.value = false;
-        count.value = data.count;
-        if (!data.error && data.data) {
-          console.log(data.data);
-        }
-        loaded.value = true;
-      });
+    const data = await supabaseClient.rpc("get_users_list", { discussion_id });
   }
 
   async function loadMore() {
@@ -108,6 +92,7 @@ export function useAnswer(discussion_id: string) {
     answers,
     addNewAnswer,
     fetchAnswers,
+    fetchUsers,
     loadMore,
     loaded,
   };

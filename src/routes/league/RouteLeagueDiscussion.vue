@@ -31,8 +31,11 @@ const {
   loadMore,
   addNewAnswer,
   loading,
+  fetchUsers,
   loaded,
 } = useAnswer(props.discussionId);
+
+const users = fetchUsers();
 
 const showLoginSignupModal = shallowRef(false);
 const replyList = shallowRef(null);
@@ -228,6 +231,9 @@ watch(
         :class="{ spinner: loading }"
         class="mx-auto my-2"
       />
+      <ul>
+        <li v-for="user in users" :key="user.id">{{ user }}</li>
+      </ul>
     </div>
     <div v-else class="flex-1 flex flex-col justify-center items-center">
       <img
