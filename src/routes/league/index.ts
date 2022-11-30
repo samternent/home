@@ -1,8 +1,14 @@
+import { RouteLocation } from "vue-router";
+
 export const leagueRoutes = [
   {
     path: "/leagues/:competitionCode",
     props: true,
     component: () => import("./RouteLeague.vue"),
+    after(to: RouteLocation) {
+      console.log(to);
+      window.localStorage.setItem("lastLeaguePath", to.path);
+    },
     children: [
       {
         path: "",

@@ -1,6 +1,7 @@
 <script setup>
 import { computed, toRefs, watch, shallowRef } from "vue";
-import { useTitle } from "@vueuse/core";
+import { onBeforeRouteUpdate } from "vue-router";
+import { useTitle, useLocalStorage } from "@vueuse/core";
 
 import { provideCompetitionLoader } from "../../api/football-data/useCompetitionLoader";
 
@@ -46,6 +47,10 @@ watch(
   },
   { immediate: true }
 );
+const lastLeaguePath = useLocalStorage("lastLeaguePath");
+onBeforeRouteUpdate((to) => {
+  lastLeaguePath.value = to.path;
+});
 </script>
 <template>
   <RouterView :competitionCode="competitionCode" />

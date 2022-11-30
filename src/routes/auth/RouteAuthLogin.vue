@@ -1,6 +1,7 @@
 <script setup>
 import { shallowRef } from "vue";
 import { useRouter } from "vue-router";
+import { useLocalStorage } from "@vueuse/core";
 import { useCurrentUser } from "../../composables/useCurrentUser";
 import SignInWithGoogle from "../../components/SignInWithGoogle.vue";
 
@@ -18,7 +19,8 @@ async function login() {
     errorMessage.value = error.message;
     return;
   }
-  router.push("/");
+  const to = useLocalStorage("lastLeaguePath", "/");
+  router.push(to.value);
 }
 
 async function googleLogin() {

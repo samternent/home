@@ -206,7 +206,7 @@ watch(loadMoreVisible, (_shouldLoadMore) => {
     <div v-else class="flex-1 flex flex-col justify-center items-center">
       <img
         alt=""
-        class="grayscale h-96 opacity-50 transition-all my-8"
+        class="grayscale h-60 opacity-50 transition-all my-8"
         src="../../assets/solo.svg"
       />
       <p class="text-2xl p-4 font-thin text-center">
