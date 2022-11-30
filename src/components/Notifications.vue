@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted, shallowRef } from "vue";
+import { onClickOutside } from "@vueuse/core";
 import { useNotifications } from "../composables/useNotifications";
 
 const { notifications, fetchNotifications } = useNotifications();
@@ -7,9 +8,13 @@ const { notifications, fetchNotifications } = useNotifications();
 onMounted(fetchNotifications);
 
 const showNotifications = shallowRef(false);
+const dropdownRef = shallowRef(null);
+onClickOutside(dropdownRef, (event) => {
+  showNotifications.value = false;
+});
 </script>
 <template>
-  <div class="relative">
+  <div class="relative" ref="dropdownRef">
     <button @click="showNotifications = !showNotifications" class="flex">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -39,6 +44,7 @@ const showNotifications = shallowRef(false);
           :class="{ 'bg-[#3e3e3e]': index === selectedIndex }"
           v-for="(item, index) in notifications"
           :key="index"
+          @click="showNotifications = false"
           :to="{
             path: `/leagues/${item.discussion.competition}/discussions/${item.entity_id}`,
             hash: `#${item.specifier_id}`,

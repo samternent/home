@@ -31,11 +31,9 @@ const {
   loadMore,
   addNewAnswer,
   loading,
-  fetchUsers,
   loaded,
+  users,
 } = useAnswer(props.discussionId);
-
-const users = fetchUsers();
 
 const showLoginSignupModal = shallowRef(false);
 const replyList = shallowRef(null);
@@ -118,22 +116,22 @@ watch(
   async (_loaded) => {
     if (_loaded && route.hash) {
       await nextTick();
-      document
-        .querySelector(`[data-id="${route.hash.split("#")[1]}"]`)
-        .scrollIntoView({
-          behavior: "smooth",
-          block: "end",
-          inline: "nearest",
-        });
+      const el = document.querySelector(
+        `[data-id="${route.hash.split("#")[1]}"]`
+      );
+      if (!el) return;
+      el.scrollIntoView({
+        behavior: "smooth",
+        block: "end",
+        inline: "nearest",
+      });
     }
   },
   { immediate: true }
 );
 </script>
 <template>
-  <div
-    class="flex-1 flex flex-col overflow-hidden h-[calc(100vh_-_3rem)] max-h-[calc(100vh_-_3rem)] w-full max-w-6xl mx-auto"
-  >
+  <div class="flex-1 flex flex-col overflow-hidden w-full max-w-7xl mx-auto">
     <!-- Top bar -->
     <div class="border-b border-[#323232] mx-2">
       <RouterLink
@@ -193,95 +191,120 @@ watch(
       </div>
     </div>
     <!-- Chat messages -->
-    <div
-      v-if="user"
-      class="px-2 md:px-6 py-4 overflow-y-auto my-2 flex flex-col flex-1 flex-col-reverse"
-      ref="replyList"
-    >
+    <div class="flex-1 flex">
       <div
-        class="flex items-start mb-4 text-sm rounded"
-        v-for="answer in answers"
-        :key="answer.id"
-        :data-id="answer.id"
+        class="flex-1 flex flex-col overflow-hidden h-[calc(100vh_-_11rem)] max-h-[calc(100vh_-_11rem)] w-full mx-auto"
         :class="{
-          'bg-[#252525] p-2': $route.hash === `#${answer.id}`,
+          'h-[calc(100vh_-_16.5rem)] max-h-[calc(100vh_-_16.5rem)]':
+            comment.fixture,
         }"
       >
         <div
-          class="h-8 w-8 flex items-center justify-center uppercase text-2xl font-medium rounded-lg bg-indigo-700 shadow-lg mr-4"
+          v-if="user"
+          class="px-2 md:px-6 py-4 overflow-y-auto my-2 flex flex-col flex-1 flex-col-reverse"
+          ref="replyList"
         >
-          {{ answer?.username?.[0] }}
-        </div>
-        <div class="flex-1 overflow-hidden">
-          <div>
-            <span
-              class="font-medium text-base text-indigo-300 mr-2 text-white"
-              >{{ answer?.username }}</span
+          <div
+            class="flex items-start mb-4 text-sm rounded"
+            v-for="answer in answers"
+            :key="answer.id"
+            :data-id="answer.id"
+            :class="{
+              'bg-[#252525] p-2': $route.hash === `#${answer.id}`,
+            }"
+          >
+            <div
+              class="h-8 w-8 flex items-center justify-center uppercase text-2xl font-medium rounded-lg bg-indigo-700 shadow-lg mr-4"
             >
-            <span class="text-[#a3a3a3] text-xs">{{
-              formatTimeStamp(answer.created_at)
-            }}</span>
+              {{ answer?.username?.[0] }}
+            </div>
+            <div class="flex-1 overflow-hidden">
+              <div>
+                <span
+                  class="font-medium text-base text-indigo-300 mr-2 text-white"
+                  >{{ answer?.username }}</span
+                >
+                <span class="text-[#a3a3a3] text-xs">{{
+                  formatTimeStamp(answer.created_at)
+                }}</span>
+              </div>
+              <p
+                class="text-white text-base leading-normal"
+                v-html="answer.body"
+              />
+            </div>
           </div>
-          <p class="text-white text-base leading-normal" v-html="answer.body" />
+
+          <div
+            ref="loadMoreEl"
+            :class="{ spinner: loading }"
+            class="mx-auto my-2"
+          />
+        </div>
+        <div v-else class="flex-1 flex flex-col justify-center items-center">
+          <img
+            alt=""
+            class="grayscale h-60 opacity-50 transition-all my-8"
+            src="../../assets/solo.svg"
+          />
+          <p class="text-2xl p-4 font-thin text-center">
+            <RouterLink to="/auth/signup" class="league-link font-medium"
+              >Sign up</RouterLink
+            >
+            or
+            <RouterLink to="/auth/login" class="league-link font-medium"
+              >Login</RouterLink
+            >
+            to join the conversation.
+          </p>
+        </div>
+        <div class="pb-6 px-4 flex-none">
+          <div
+            class="flex rounded-lg border-2 border-[#343434] overflow-hidden"
+            v-if="user"
+          >
+            <Editor
+              type="text"
+              v-model="replyBody"
+              @submit="addAnswer"
+              class="border-[#343434] text-light w-full px-4 bg-[#1d1d1d]"
+              placeholder="Reply"
+            />
+            <span class="text-3xl text-grey border-l-2 border-[#343434] p-2">
+              <button
+                aria-label="Add reply"
+                @click="addAnswer"
+                class="transition-all text-white px-4 py-2 rounded no-underline hover:no-underline hover:text-white"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  class="w-6 h-6 text-[#4c4c4c]"
+                >
+                  <path
+                    d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"
+                  />
+                </svg>
+              </button>
+            </span>
+          </div>
         </div>
       </div>
-
-      <div
-        ref="loadMoreEl"
-        :class="{ spinner: loading }"
-        class="mx-auto my-2"
-      />
-      <ul>
-        <li v-for="user in users" :key="user.id">{{ user }}</li>
-      </ul>
-    </div>
-    <div v-else class="flex-1 flex flex-col justify-center items-center">
-      <img
-        alt=""
-        class="grayscale h-60 opacity-50 transition-all my-8"
-        src="../../assets/solo.svg"
-      />
-      <p class="text-2xl p-4 font-thin text-center">
-        <RouterLink to="/auth/signup" class="league-link font-medium"
-          >Sign up</RouterLink
-        >
-        or
-        <RouterLink to="/auth/login" class="league-link font-medium"
-          >Login</RouterLink
-        >
-        to join the conversation.
-      </p>
-    </div>
-    <div class="pb-6 px-4 flex-none">
-      <div
-        class="flex rounded-lg border-2 border-[#343434] overflow-hidden"
-        v-if="user"
-      >
-        <Editor
-          type="text"
-          v-model="replyBody"
-          @submit="addAnswer"
-          class="border-[#343434] text-light w-full px-4 bg-[#1d1d1d]"
-          placeholder="Reply"
-        />
-        <span class="text-3xl text-grey border-l-2 border-[#343434] p-2">
-          <button
-            aria-label="Add reply"
-            @click="addAnswer"
-            class="transition-all text-white px-4 py-2 rounded no-underline hover:no-underline hover:text-white"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              class="w-6 h-6 text-[#4c4c4c]"
+      <div class="flex w-64 flex-col" v-if="user">
+        <div class="p-2 rounded-lg pb-8">
+          <p class="text-xl p-3">People</p>
+          <ul>
+            <li
+              class="py-1 my-1 rounded px-2 mention text-sm"
+              v-for="user in users"
+              :key="user.id"
+              @click="() => (replyBody += `@${user.username}`)"
             >
-              <path
-                d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"
-              />
-            </svg>
-          </button>
-        </span>
+              @{{ user.username }}
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>

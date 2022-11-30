@@ -36,7 +36,6 @@ export function useNotifications() {
     if (count.value && limit.value * page.value >= count.value) {
       return;
     }
-    console.log(profile.value.username);
     loading.value = true;
     supabaseClient
       .from("notifications")

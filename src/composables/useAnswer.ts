@@ -10,6 +10,7 @@ export type ANSWER = {
 
 export function useAnswer(discussion_id: string) {
   const answers = shallowRef<ANSWER[]>([]);
+  const users = shallowRef<[]>([]);
   const limit = shallowRef(15);
   const loading = shallowRef(false);
   const loaded = shallowRef(false);
@@ -36,7 +37,7 @@ export function useAnswer(discussion_id: string) {
       return;
     }
     loading.value = true;
-    supabaseClient
+    await supabaseClient
       .from("answer")
       .select("*, profiles!answer_mentions_fkey(username)", { count: "exact" })
       .eq("discussion_id", discussion_id)
@@ -51,14 +52,17 @@ export function useAnswer(discussion_id: string) {
         }
         loaded.value = true;
       });
+    users.value = await fetchUsers();
   }
 
   async function fetchUsers() {
     if (count.value && limit.value * page.value >= count.value) {
       return;
     }
-    loading.value = true;
-    const data = await supabaseClient.rpc("get_users_list", { discussion_id });
+    const { data } = await supabaseClient.rpc("get_discussion_users", {
+      discussion_id,
+    });
+    return data;
   }
 
   async function loadMore() {
@@ -90,9 +94,9 @@ export function useAnswer(discussion_id: string) {
   return {
     loading,
     answers,
+    users,
     addNewAnswer,
     fetchAnswers,
-    fetchUsers,
     loadMore,
     loaded,
   };
