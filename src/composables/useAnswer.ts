@@ -37,7 +37,7 @@ export function useAnswer(discussion_id: string) {
     loading.value = true;
     supabaseClient
       .from("answer")
-      .select("*, profiles (*)", { count: "exact" })
+      .select("*, profiles!answer_mentions_fkey(username)", { count: "exact" })
       .eq("discussion_id", discussion_id)
       .order("created_at", { ascending: false })
       .limit(limit.value)
@@ -57,11 +57,18 @@ export function useAnswer(discussion_id: string) {
   }
 
   const addNewAnswer = async (username: string, body: string) => {
+    var parser = new DOMParser();
+    var htmlDoc = parser.parseFromString(body, "text/html");
+    const mentions = Array.from(
+      htmlDoc.querySelectorAll<HTMLElement>('[data-type="mention"]')
+    ).map((node) => node.dataset?.id);
+
     const { data, error, count } = await supabaseClient
       .from("answer")
       .insert([
         {
           username,
+          mentions: mentions[0],
           discussion_id,
           body,
         },

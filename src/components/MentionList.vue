@@ -64,6 +64,10 @@ export default {
         this.enterHandler();
         return true;
       }
+      if (event.key === "Space") {
+        this.enterHandler();
+        return true;
+      }
 
       return false;
     },

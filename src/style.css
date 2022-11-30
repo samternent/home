@@ -107,3 +107,7 @@ abbr {
     var(--title-shadow-yellow-color) 2px 2px,
     var(--title-shadow-yellow-color) 3px 3px;
 }
+
+.mention {
+  color: var(--title-box-color);
+}
