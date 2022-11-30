@@ -298,10 +298,10 @@ watch(
             <li
               class="py-1 my-1 rounded px-2 mention text-sm"
               v-for="user in users"
-              :key="user.id"
-              @click="() => (replyBody += `@${user.username}`)"
+              :key="user"
+              @click="() => (replyBody += `@${user}`)"
             >
-              @{{ user.username }}
+              @{{ user }}
             </li>
           </ul>
         </div>

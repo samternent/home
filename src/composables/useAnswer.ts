@@ -62,7 +62,17 @@ export function useAnswer(discussion_id: string) {
     const { data } = await supabaseClient.rpc("get_discussion_users", {
       discussion_id,
     });
-    return data;
+    const { data: data1 } = await supabaseClient.rpc(
+      "get_mentioned_discussion_users",
+      {
+        discussion_id,
+      }
+    );
+    return Array.from(
+      new Set(
+        [...data, ...data1].map(({ username }) => username).filter((val) => val)
+      )
+    );
   }
 
   async function loadMore() {
