@@ -199,12 +199,12 @@ watch(
       ref="replyList"
     >
       <div
-        class="flex items-start mb-4 text-sm p-2 rounded"
+        class="flex items-start mb-4 text-sm rounded"
         v-for="answer in answers"
         :key="answer.id"
         :data-id="answer.id"
         :class="{
-          'bg-[#252525]': $route.hash === `#${answer.id}`,
+          'bg-[#252525] p-2': $route.hash === `#${answer.id}`,
         }"
       >
         <div
