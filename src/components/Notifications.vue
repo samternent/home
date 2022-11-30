@@ -39,7 +39,10 @@ const showNotifications = shallowRef(false);
           :class="{ 'bg-[#3e3e3e]': index === selectedIndex }"
           v-for="(item, index) in notifications"
           :key="index"
-          :to="`/leagues/${item.discussion.competition}/discussions/${item.entity_id}#${item.specifier_id}`"
+          :to="{
+            path: `/leagues/${item.discussion.competition}/discussions/${item.entity_id}`,
+            hash: `#${item.specifier_id}`,
+          }"
           >@{{ item.actor }} mentioned you in a comment.
         </RouterLink>
       </template>

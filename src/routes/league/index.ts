@@ -6,7 +6,6 @@ export const leagueRoutes = [
     props: true,
     component: () => import("./RouteLeague.vue"),
     after(to: RouteLocation) {
-      console.log(to);
       window.localStorage.setItem("lastLeaguePath", to.path);
     },
     children: [

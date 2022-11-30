@@ -53,5 +53,5 @@ onBeforeRouteUpdate((to) => {
 });
 </script>
 <template>
-  <RouterView :competitionCode="competitionCode" />
+  <RouterView :competitionCode="competitionCode" :key="competitionCode" />
 </template>
