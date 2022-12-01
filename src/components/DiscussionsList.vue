@@ -115,7 +115,6 @@ watch(loadMoreVisible, (_shouldLoadMore) => {
             :discussion_entity="comment.discussion_entity"
             :showTeams="true"
             display="sm"
-            :hot="i < 5"
             class="shadow hover:shadow-lg md:rounded-lg"
           />
         </RouterLink>

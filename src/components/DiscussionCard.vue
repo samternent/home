@@ -1,7 +1,8 @@
 <script setup>
-import { shallowRef, computed } from "vue";
+import { shallowRef, computed, onMounted } from "vue";
 import { DateTime } from "luxon";
 import { useVote } from "../composables/useVote";
+import { supabaseClient } from "../service/supabase";
 import { useCurrentUser } from "../composables/useCurrentUser";
 
 const props = defineProps({
@@ -19,10 +20,6 @@ const props = defineProps({
   },
   display: {
     type: String,
-    default: false,
-  },
-  hot: {
-    type: Boolean,
     default: false,
   },
 });
@@ -63,6 +60,16 @@ const votes = computed(() =>
 const userVote = computed(() =>
   props.discussion.vote?.find(({ user_id }) => user_id === user.value?.id)
 );
+
+const commentCount = shallowRef(0);
+const isHot = computed(() => commentCount.value > 2);
+onMounted(async () => {
+  const { count } = await supabaseClient
+    .from("answer")
+    .select("*", { count: "exact" })
+    .eq("discussion_id", props.discussion.id);
+  commentCount.value = count;
+});
 </script>
 <template>
   <div
@@ -77,25 +84,12 @@ const userVote = computed(() =>
           viewBox="0 0 24 24"
           fill="currentColor"
           class="w-6 h-6 text-orange-400"
-          v-if="hot"
+          v-if="isHot"
         >
           <path
             fill-rule="evenodd"
             d="M12.963 2.286a.75.75 0 00-1.071-.136 9.742 9.742 0 00-3.539 6.177A7.547 7.547 0 016.648 6.61a.75.75 0 00-1.152-.082A9 9 0 1015.68 4.534a7.46 7.46 0 01-2.717-2.248zM15.75 14.25a3.75 3.75 0 11-7.313-1.172c.628.465 1.35.81 2.133 1a5.99 5.99 0 011.925-3.545 3.75 3.75 0 013.255 3.717z"
             clip-rule="evenodd"
-          />
-        </svg>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          class="w-6 h-6 text-[#4d4d4d]"
-        >
-          <path
-            d="M4.913 2.658c2.075-.27 4.19-.408 6.337-.408 2.147 0 4.262.139 6.337.408 1.922.25 3.291 1.861 3.405 3.727a4.403 4.403 0 00-1.032-.211 50.89 50.89 0 00-8.42 0c-2.358.196-4.04 2.19-4.04 4.434v4.286a4.47 4.47 0 002.433 3.984L7.28 21.53A.75.75 0 016 21v-4.03a48.527 48.527 0 01-1.087-.128C2.905 16.58 1.5 14.833 1.5 12.862V6.638c0-1.97 1.405-3.718 3.413-3.979z"
-          />
-          <path
-            d="M15.75 7.5c-1.376 0-2.739.057-4.086.169C10.124 7.797 9 9.103 9 10.609v4.285c0 1.507 1.128 2.814 2.67 2.94 1.243.102 2.5.157 3.768.165l2.782 2.781a.75.75 0 001.28-.53v-2.39l.33-.026c1.542-.125 2.67-1.433 2.67-2.94v-4.286c0-1.505-1.125-2.811-2.664-2.94A49.392 49.392 0 0015.75 7.5z"
           />
         </svg>
       </div>
@@ -112,6 +106,9 @@ const userVote = computed(() =>
             discussion.profile?.username
           }}</span>
           <span class="truncate">{{ formatTime(discussion.created_at) }}</span>
+          <span class="text-[#cecece] text-sm font-light ml-8"
+            >{{ commentCount }} replies</span
+          >
         </div>
       </div>
       <div class="flex relative shrink-0" v-if="showTeams">
