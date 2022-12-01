@@ -3,7 +3,7 @@ import { shallowRef } from "vue";
 import { useLocalStorage } from "@vueuse/core";
 import FixturesList from "./FixturesList.vue";
 
-defineProps({
+const props = defineProps({
   competitionCode: {
     type: String,
     required: true,
@@ -22,7 +22,10 @@ const tabs = shallowRef([
   "Final",
 ]);
 
-const activeStage = useLocalStorage("activeGroupSelection", "Groups");
+const activeStage = useLocalStorage(
+  `activeGroupSelection/${props.competitionCode}`,
+  "Groups"
+);
 </script>
 <template>
   <div>
