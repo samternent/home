@@ -5,5 +5,5 @@ import { useCompetitionLoader } from "../../api/football-data/useCompetitionLoad
 const { items: competition, hasItems: hasCompetition } = useCompetitionLoader();
 </script>
 <template>
-  <LeagueTable class="w-full" :competitionCode="competition?.code" />
+  <LeagueTable v-if="competition" :competitionCode="competition?.code" />
 </template>

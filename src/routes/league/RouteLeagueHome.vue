@@ -43,7 +43,7 @@ watch(
 );
 </script>
 <template>
-  <div class="md:px-2 lg:px-4 flex-1 max-w-3xl mx-auto pt-0 w-full mb-16 z-10">
+  <div class="md:px-2 lg:px-4 flex-1 max-w-3xl mx-auto pt-0 w-full z-10">
     <div
       class="pt-8 pb-12 px-2 flex justify-between items-center flex-col md:flex-row"
     >
@@ -96,12 +96,12 @@ watch(
       </li>
     </ul>
     <RouterView />
-  </div>
-  <div class="flex justify-center mt-8 mx-16 items-end transition-all">
-    <img
-      alt=""
-      class="h-96 opacity-80 transition-all"
-      src="../../assets/game-day.svg"
-    />
+    <div class="flex justify-center mt-8 mt-16 mx-16 items-end transition-all">
+      <img
+        alt=""
+        class="h-96 opacity-80 transition-all"
+        src="../../assets/game-day.svg"
+      />
+    </div>
   </div>
 </template>

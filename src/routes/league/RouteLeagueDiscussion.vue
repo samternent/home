@@ -11,15 +11,13 @@ import { useAnswer } from "../../composables/useAnswer";
 import useFixtureLoader from "../../api/football-data/useCompetitionFixtureLoader";
 import Fixture from "../../components/Fixture.vue";
 import DiscussionCard from "../../components/DiscussionCard.vue";
-import LoginSignupModal from "../../components/LoginSignupModal.vue";
 import Editor from "../../components/Editor.vue";
 import { competitions } from "../../utils/competitions";
-import { routeLocationKey } from "vue-router";
 
 const props = defineProps({
   discussionId: {
     type: String,
-    required: true,
+    default: null,
   },
 });
 
@@ -304,10 +302,6 @@ watch(
       </div>
     </div>
   </div>
-  <LoginSignupModal
-    v-if="showLoginSignupModal"
-    @close="showLoginSignupModal = false"
-  />
 </template>
 <style scoped>
 .spinner {

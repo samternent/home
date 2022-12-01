@@ -33,6 +33,7 @@
     "redis": "^4.3.0",
     "tippy.js": "^6.3.7",
     "uuid": "^8.3.2",
+    "vite-plugin-md": "^0.20.4",
     "vue": "^3.2.37",
     "vue-router": "^4.1.4",
     "vue-toastification": "2.0.0-rc.5"
