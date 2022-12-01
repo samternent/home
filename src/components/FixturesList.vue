@@ -10,11 +10,11 @@ const props = defineProps({
   },
   currentGameweek: {
     type: Number,
-    required: true,
+    default: null,
   },
-  currentStage: {
+  stage: {
     type: String,
-    required: true,
+    default: null,
   },
   size: {
     type: String,
@@ -22,7 +22,7 @@ const props = defineProps({
   },
 });
 
-const { competitionCode, currentGameweek, currentStage } = toRefs(props);
+const { competitionCode, currentGameweek, stage } = toRefs(props);
 const overrideGameweek = shallowRef();
 const gameweek = computed(
   () => overrideGameweek.value || currentGameweek.value
@@ -32,7 +32,7 @@ const {
   items: fixtures,
   loading: fixturesLoading,
   loaded: fixturesLoaded,
-} = useFixturesLoader(competitionCode, currentStage, gameweek);
+} = useFixturesLoader(competitionCode, stage, gameweek);
 
 const hasFixtures = computed(
   () => !fixturesLoading.value && fixturesLoaded.value
@@ -48,6 +48,7 @@ function setGameweek(_gameweek) {
 <template>
   <div>
     <div
+      v-if="currentGameweek"
       class="flex items-center justify-center w-full bg-indigo-900 h-10 text-sm md:text-base font-medium mb-2"
     >
       <button

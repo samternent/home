@@ -11,13 +11,23 @@ export default function useFixturesLoader(competitionCode, stage, matchday) {
 
   async function fetchFixtures(
     _competitionCode = null,
-    _stage = "GROUP_STAGE",
+    _stage = null,
     _matchday = null
   ) {
-    if (!_competitionCode || !_matchday) return;
+    if (!_competitionCode) return;
     loading.value = true;
+    const params = {};
+    if (_matchday) {
+      params.matchday = _matchday;
+    }
+    if (_stage) {
+      params.stage = _stage;
+    }
+    const queryString = Object.keys(params)
+      .map((key) => key + "=" + params[key])
+      .join("&");
     const { data } = await api.get(
-      `football-data/competitions/${_competitionCode}/matches?matchday=${_matchday}`
+      `football-data/competitions/${_competitionCode}/matches?${queryString}`
     );
     items.value = normalizeData(data);
     loaded.value = true;

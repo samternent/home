@@ -41,7 +41,7 @@ const comment = shallowRef("");
 </script>
 <template>
   <div
-    class="flex flex-col relative py-0 bg-[#1e1e1e] hover:bg-[#232323] transition-all font-light items-center w-full border-x-[#343434] border-transparent border-x-4"
+    class="flex flex-col relative py-0 bg-[#1e1e1e] hover:bg-[#232323] transition-all font-light items-center w-full border-x-[transparent] border-transparent border-x-4"
     :class="{
       'bg-yellow-100 hover:bg-yellow-200': selected,
       'border-l-4 border-l-green-900':
@@ -81,10 +81,11 @@ const comment = shallowRef("");
         <img
           v-if="!hideCrests"
           :alt="fixture.homeTeam.name"
-          :src="fixture.homeTeam.crest"
+          :src="fixture.homeTeam.crest || '/public/blank.png'"
           class="w-10 h-10 sm:w-14 sm:h-14 mr-2 lg:mr-4"
         />
         <RouterLink
+          v-if="fixture.homeTeam.id"
           @click.stop
           class="league-link text-[#e3e3e3] font-medium text-right truncate"
           :to="`/leagues/${fixture.competition.code}/teams/${fixture.homeTeam.id}`"
@@ -92,6 +93,12 @@ const comment = shallowRef("");
           <span class="hidden md:inline">{{ fixture.homeTeam.name }}</span
           ><span class="md:hidden">{{ fixture.homeTeam.shortName }}</span>
         </RouterLink>
+        <div
+          v-else
+          class="league-link text-[#e3e3e3] font-medium text-right truncate"
+        >
+          TBD
+        </div>
       </div>
       <span
         class="mx-6 font-thin text-4xl text-[#6a6a6a]"
@@ -111,10 +118,11 @@ const comment = shallowRef("");
         }}</span>
       </div>
       <div
-        class="flex-1 flex items-center truncate"
+        class="flex-1 flex items-center truncate my-1"
         :class="{ 'justify-between': !hideCrests, 'justify-start': hideCrests }"
       >
         <RouterLink
+          v-if="fixture.awayTeam.id"
           @click.stop
           class="league-link text-[#e3e3e3] font-medium text-right truncate"
           :to="`/leagues/${fixture.competition.code}/teams/${fixture.awayTeam.id}`"
@@ -126,10 +134,16 @@ const comment = shallowRef("");
             fixture.awayTeam.shortName
           }}</span>
         </RouterLink>
+        <div
+          v-else
+          class="league-link text-[#e3e3e3] font-medium text-right truncate"
+        >
+          TBD
+        </div>
         <img
           v-if="!hideCrests"
           :alt="fixture.awayTeam.name"
-          :src="fixture.awayTeam.crest"
+          :src="fixture.awayTeam.crest || '/public/blank.png'"
           class="w-10 h-10 sm:w-14 sm:h-14 ml-2 lg:ml-4"
         />
       </div>
