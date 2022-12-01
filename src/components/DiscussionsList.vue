@@ -93,11 +93,11 @@ watch(loadMoreVisible, (_shouldLoadMore) => {
       </select>
     </div>
     <Transition>
-      <div v-if="loading && !comments.length" class="py-4 w-full">
+      <div v-if="loading && !comments.length" class="py-2 w-full">
         <div
-          v-for="i in 3"
+          v-for="i in 5"
           :key="i"
-          class="bg-[#3c3c3c] animate-pulse m-2 my-4 rounded flex-1 h-32 w-full"
+          class="bg-[#1e1e1e] animate-pulse m-2 my-4 rounded flex-1 h-24 w-full"
         />
       </div>
       <div

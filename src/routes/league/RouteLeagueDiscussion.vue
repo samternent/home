@@ -131,7 +131,9 @@ watch(
 );
 </script>
 <template>
-  <div class="flex-1 flex flex-col overflow-hidden w-full max-w-7xl mx-auto">
+  <div
+    class="flex-1 flex flex-col overflow-hidden w-full max-w-7xl mx-auto h-[calc(100vh_-_3rem)] max-h-[calc(100vh_-_3rem)]"
+  >
     <!-- Top bar -->
     <div class="border-b border-[#323232] mx-2">
       <RouterLink
@@ -155,7 +157,7 @@ watch(
         {{ competition?.name }}</RouterLink
       >
     </div>
-    <Fixture :fixture="fixture" v-if="fixture" class="border-b" size="sm" />
+    <Fixture :fixture="fixture" v-if="fixture" size="sm" />
     <div v-else-if="fixtureLoading" class="w-full rounded overflow-hidden">
       <div class="bg-[#343434] animate-pulse m-2 rounded flex-1 h-12" />
     </div>
@@ -191,14 +193,8 @@ watch(
       </div>
     </div>
     <!-- Chat messages -->
-    <div class="flex-1 flex">
-      <div
-        class="flex-1 flex flex-col overflow-hidden h-[calc(100vh_-_14rem)] max-h-[calc(100vh_-_14rem)] sm:h-[calc(100vh_-_11rem)] sm:max-h-[calc(100vh_-_11rem)] w-full mx-auto"
-        :class="{
-          'h-[calc(100vh_-_18.1rem)] max-h-[calc(100vh_-_18.1rem)] sm:h-[calc(100vh_-_16.5rem)] sm:max-h-[calc(100vh_-_16.5rem)]':
-            comment.fixture,
-        }"
-      >
+    <div class="flex-1 flex overflow-auto">
+      <div class="flex-1 flex flex-col w-full mx-auto">
         <div
           v-if="user"
           class="px-2 md:px-6 py-4 overflow-y-auto my-2 flex flex-col flex-1 flex-col-reverse"

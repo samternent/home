@@ -95,11 +95,11 @@ function setGameweek(_gameweek) {
             />
           </div>
         </div>
-        <div v-else class="w-full pr-4">
+        <div v-else class="w-full pr-4 pt-1">
           <div
             v-for="i in 10"
             :key="i"
-            class="bg-[#3c3c3c] animate-pulse m-2 rounded flex-1 h-24 w-full"
+            class="bg-[#1e1e1e] animate-pulse m-2 my-4 rounded flex-1 h-20 w-full"
           />
         </div>
       </Transition>

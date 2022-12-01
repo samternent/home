@@ -81,7 +81,7 @@ const comment = shallowRef("");
         <img
           v-if="!hideCrests"
           :alt="fixture.homeTeam.name"
-          :src="fixture.homeTeam.crest || '/public/blank.png'"
+          :src="fixture.homeTeam.crest || '/blank.png'"
           class="w-10 h-10 sm:w-14 sm:h-14 mr-2 lg:mr-4"
         />
         <RouterLink
@@ -143,7 +143,7 @@ const comment = shallowRef("");
         <img
           v-if="!hideCrests"
           :alt="fixture.awayTeam.name"
-          :src="fixture.awayTeam.crest || '/public/blank.png'"
+          :src="fixture.awayTeam.crest || '/blank.png'"
           class="w-10 h-10 sm:w-14 sm:h-14 ml-2 lg:ml-4"
         />
       </div>
