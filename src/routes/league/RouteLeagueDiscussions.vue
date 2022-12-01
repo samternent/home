@@ -1,7 +1,8 @@
 <script setup>
 import { inject } from "vue";
 import DiscussionsList from "../../components/DiscussionsList.vue";
-const competition = inject("competition");
+import { useCompetitionLoader } from "../../api/football-data/useCompetitionLoader";
+const { items: competition, hasItems: hasCompetition } = useCompetitionLoader();
 </script>
 <template>
   <DiscussionsList

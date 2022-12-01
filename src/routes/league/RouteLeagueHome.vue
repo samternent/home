@@ -24,7 +24,6 @@ const title = useTitle();
 
 const { items: competition, hasItems: hasCompetition } = useCompetitionLoader();
 
-provide("competition", competition);
 const crestMap = {
   DED: "ED",
 };

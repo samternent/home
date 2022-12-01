@@ -145,17 +145,17 @@ const comment = shallowRef("");
     </div>
   </div>
   <div
-    v-if="user && selected"
+    v-if="selected"
     class="relative bg-gray-100 flex flex-col min-h-52 shadow-inner p-2"
   >
-    <!-- <div class="text-lg p-2 flex w-full justify-end">
+    <div class="text-lg p-2 flex w-full justify-end">
       <span class="mx-1">👍 <span class="text-xs text-gray-400">0</span></span>
       <span class="mx-1">❤️ <span class="text-xs text-gray-400">0</span></span>
       <span class="mx-1">😂 <span class="text-xs text-gray-400">0</span></span>
       <span class="mx-1">😯 <span class="text-xs text-gray-400">0</span></span>
       <span class="mx-1">😢 <span class="text-xs text-gray-400">0</span></span>
       <span class="mx-1">😡 <span class="text-xs text-gray-400">0</span></span>
-    </div> -->
+    </div>
     <div
       v-for="comment in comments"
       :key="comment.id"
