@@ -193,9 +193,9 @@ watch(
     <!-- Chat messages -->
     <div class="flex-1 flex">
       <div
-        class="flex-1 flex flex-col overflow-hidden h-[calc(100vh_-_11rem)] max-h-[calc(100vh_-_11rem)] w-full mx-auto"
+        class="flex-1 flex flex-col overflow-hidden h-[calc(100vh_-_14rem)] max-h-[calc(100vh_-_14rem)] sm:h-[calc(100vh_-_11rem)] sm:max-h-[calc(100vh_-_11rem)] w-full mx-auto"
         :class="{
-          'h-[calc(100vh_-_16.5rem)] max-h-[calc(100vh_-_16.5rem)]':
+          'h-[calc(100vh_-_18.1rem)] max-h-[calc(100vh_-_18.1rem)] sm:h-[calc(100vh_-_16.5rem)] sm:max-h-[calc(100vh_-_16.5rem)]':
             comment.fixture,
         }"
       >
@@ -291,7 +291,7 @@ watch(
           </div>
         </div>
       </div>
-      <div class="flex w-64 flex-col" v-if="user">
+      <div class="hidden lg:flex w-64 flex-col" v-if="user">
         <div class="p-2 rounded-lg pb-8">
           <p class="text-xl p-3">People</p>
           <ul>
