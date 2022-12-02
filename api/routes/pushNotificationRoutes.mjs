@@ -25,7 +25,7 @@ export default function pushNotificationRoutes(router) {
 
   router.post("/register", function (req, res) {
     // A real world application would store the subscription info.
-    console.log(req);
+    // console.log(req);
     res.sendStatus(201);
   });
 
