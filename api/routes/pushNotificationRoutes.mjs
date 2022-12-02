@@ -23,12 +23,6 @@ export default function pushNotificationRoutes(router) {
     return res.send(process.env.VAPID_PUBLIC_KEY);
   });
 
-  router.post("/register", function (req, res) {
-    // A real world application would store the subscription info.
-    console.log(req);
-    res.sendStatus(201);
-  });
-
   router.post("/sendNotification", function (req, res) {
     const subscription = req.body.subscription;
     const payload = req.body.payload;
