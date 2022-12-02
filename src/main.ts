@@ -61,15 +61,12 @@ if ("serviceWorker" in navigator) {
       .then(async (subscription) => {
         const { data, error, count } = await supabaseClient
           .from("subscription")
-          .upsert(
-            [
-              {
-                username: "sam",
-                endpoint: subscription.endpoint,
-              },
-            ],
-            { onConflict: "endpoint" }
-          )
+          .insert([
+            {
+              username: "sam",
+              endpoint: subscription.endpoint,
+            },
+          ])
           .select();
       });
   });
