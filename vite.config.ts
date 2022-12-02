@@ -10,7 +10,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: `http://localhost:4003`,
+        target: `http://localhost:4002`,
         changeOrigin: true,
       },
     },
@@ -18,10 +18,6 @@ export default defineConfig({
       key: "./localhost.key",
       cert: "./localhost.crt",
     },
-    // host: domain,
-    // hmr: {
-    //   host: domain,
-    // },
   },
   plugins: [
     vue({
