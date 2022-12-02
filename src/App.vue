@@ -127,13 +127,13 @@ async function requestNotifcationPermissions() {
 
     <div class="flex-1 flex flex-col" v-if="ready">
       <div
-        v-if="!notificationsDeclined && !notificationsEnabled"
-        class="px-2 py-2 bg-indigo-600 rounded my-2 mx-auto flex"
+        v-if="user && !notificationsDeclined && !notificationsEnabled"
+        class="max-w-7xl px-4 py-2 rounded my-2 mx-auto flex items-center w-full justify-end"
       >
         Don't miss a beat.
         <button
           @click="requestNotifcationPermissions"
-          class="mx-2 flex px-2 text-md font-medium rounded ml-8 text-gray-900 bg-yellow-500 items-center"
+          class="bg-pink-600 flex ml-4 transition-all text-sm shadow-block-yellow text-white px-3 py-1 rounded no-underline hover:no-underline hover:text-white hover:bg-pink-500"
         >
           Enable Notifications
           <svg
