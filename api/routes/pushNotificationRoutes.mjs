@@ -11,7 +11,7 @@ export default function pushNotificationRoutes(router) {
   }
   // Set the keys used for encrypting the push messages.
   webPush.setVapidDetails(
-    "http://localhost:5173/",
+    "https://footballsocial.app/",
     process.env.VAPID_PUBLIC_KEY,
     process.env.VAPID_PRIVATE_KEY
   );
