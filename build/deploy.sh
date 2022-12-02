@@ -19,7 +19,7 @@ git pull origin main
 
 # start/restart node server
 pnpm i
-pnpm start
+pnpm start -- --port=4002
 
 # check certification
 echo 1 | sudo certbot certonly -d footballsocial.app -d www.footballsocial.app
