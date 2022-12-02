@@ -68,7 +68,7 @@ if ("serviceWorker" in navigator) {
                 endpoint: subscription.endpoint,
               },
             ],
-            { onConflict: "username" }
+            { onConflict: "endpoint" }
           )
           .select();
       });
