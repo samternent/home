@@ -59,6 +59,14 @@ api.interceptors.response.use(
 
         <div class="flex items-center text-white" :key="profile?.id || 'empty'">
           <RouterLink
+            aria-label="Login"
+            v-if="!user"
+            to="/auth/login"
+            class="h-8 flex items-center mx-2 px-4 text-md font-medium uppercase"
+          >
+            Login
+          </RouterLink>
+          <RouterLink
             aria-label="Signup"
             v-if="!user"
             to="/auth/signup"
@@ -66,6 +74,7 @@ api.interceptors.response.use(
           >
             Join
           </RouterLink>
+
           <div v-else-if="!profile"></div>
           <div v-else class="flex">
             <Notifications />

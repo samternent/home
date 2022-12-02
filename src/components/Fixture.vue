@@ -45,13 +45,13 @@ const comment = shallowRef("");
     :class="{
       'bg-yellow-100 hover:bg-yellow-200': selected,
       'border-l-4 border-l-green-900':
-        fixture.score.winner?.includes('HOME_TEAM'),
+        fixture.score?.winner?.includes('HOME_TEAM'),
       'border-r-4 border-r-green-900':
-        fixture.score.winner?.includes('AWAY_TEAM'),
+        fixture.score?.winner?.includes('AWAY_TEAM'),
       'border-l-4 border-l-red-900':
-        fixture.score.winner?.includes('AWAY_TEAM'),
+        fixture.score?.winner?.includes('AWAY_TEAM'),
       'border-r-4 border-r-red-900':
-        fixture.score.winner?.includes('HOME_TEAM'),
+        fixture.score?.winner?.includes('HOME_TEAM'),
       'text-2xl': size === 'lg',
       'text-base ': size === 'md',
     }"
@@ -102,7 +102,7 @@ const comment = shallowRef("");
       </div>
       <span
         class="mx-6 font-thin text-4xl text-[#6a6a6a]"
-        v-if="!fixture.score.winner"
+        v-if="!fixture.score?.winner"
         >v</span
       >
       <div

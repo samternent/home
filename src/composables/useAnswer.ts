@@ -10,7 +10,7 @@ export type ANSWER = {
 
 export function useAnswer(discussion_id: string) {
   const answers = shallowRef<ANSWER[]>([]);
-  const users = shallowRef<[]>([]);
+  const users = shallowRef<String[]>([]);
   const limit = shallowRef(15);
   const loading = shallowRef(false);
   const loaded = shallowRef(false);
@@ -26,7 +26,10 @@ export function useAnswer(discussion_id: string) {
     .on(
       "postgres_changes",
       { event: "*", schema: "public", table: "answer" },
-      (payload) => handleInsert(payload)
+      async (payload) => {
+        handleInsert(payload);
+        users.value = await fetchUsers();
+      }
     )
     .subscribe();
 
@@ -55,9 +58,9 @@ export function useAnswer(discussion_id: string) {
     users.value = await fetchUsers();
   }
 
-  async function fetchUsers() {
+  async function fetchUsers(): Promise<String[]> {
     if (count.value && limit.value * page.value >= count.value) {
-      return;
+      return [];
     }
     const { data } = await supabaseClient.rpc("get_discussion_users", {
       discussion_id,

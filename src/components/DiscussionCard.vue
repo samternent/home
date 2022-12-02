@@ -106,7 +106,7 @@ onMounted(async () => {
             discussion.profile?.username
           }}</span>
           <span class="truncate">{{ formatTime(discussion.created_at) }}</span>
-          <span class="text-[#cecece] text-sm font-light ml-8"
+          <span v-if="user" class="text-[#cecece] text-sm font-light ml-8"
             >{{ commentCount }} replies</span
           >
         </div>
