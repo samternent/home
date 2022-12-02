@@ -3,6 +3,8 @@ import vue from "@vitejs/plugin-vue";
 import { VitePWA } from "vite-plugin-pwa";
 import Markdown from "vite-plugin-md";
 
+const domain = "footballsocial.localhost";
+
 // https://vitejs.dev/config/
 export default defineConfig({
   server: {
@@ -12,6 +14,14 @@ export default defineConfig({
         changeOrigin: true,
       },
     },
+    https: {
+      key: "./localhost.key",
+      cert: "./localhost.crt",
+    },
+    // host: domain,
+    // hmr: {
+    //   host: domain,
+    // },
   },
   plugins: [
     vue({
@@ -24,5 +34,6 @@ export default defineConfig({
       },
     }),
     Markdown(),
+    // basicSsl(),
   ],
 });

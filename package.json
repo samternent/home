@@ -24,6 +24,7 @@
     "@tiptap/starter-kit": "2.0.0-beta.199",
     "@tiptap/suggestion": "2.0.0-beta.199",
     "@tiptap/vue-3": "2.0.0-beta.199",
+    "@vitejs/plugin-basic-ssl": "^0.1.2",
     "@vueuse/core": "^9.1.1",
     "axios": "^0.27.2",
     "cors": "^2.8.5",
@@ -36,7 +37,8 @@
     "vite-plugin-md": "^0.20.4",
     "vue": "^3.2.37",
     "vue-router": "^4.1.4",
-    "vue-toastification": "2.0.0-rc.5"
+    "vue-toastification": "2.0.0-rc.5",
+    "web-push": "^3.5.0"
   },
   "devDependencies": {
     "@types/uuid": "^8.3.4",

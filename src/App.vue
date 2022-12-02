@@ -1,10 +1,13 @@
 <script setup>
+import { useLocalStorage } from "@vueuse/core";
+import { shallowRef } from "vue";
 import api from "./utils/api";
 import { useToast } from "vue-toastification";
 
 import { provideCurrentUser } from "./composables/useCurrentUser";
 import SetUsername from "./components/SetUsername.vue";
 import Notifications from "./components/Notifications.vue";
+import { onMounted } from "vue";
 
 const toast = useToast();
 
@@ -37,6 +40,28 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+const notificationsEnabled = shallowRef(false);
+const notificationsDeclined = useLocalStorage("notifciationsDeclined", false);
+onMounted(async () => {
+  if (Notification.permission === "granted") {
+    notificationsEnabled.value = true;
+  }
+});
+async function requestNotifcationPermissions() {
+  const result = await Notification.requestPermission();
+  if (result === "granted") {
+    notificationsEnabled.value = true;
+    const notifTitle = "You have enabled notifcations";
+    const notifBody = `Talk Football, with Football people.`;
+    const notifImg = `/android-chrome-512x512.png`;
+    const options = {
+      body: notifBody,
+      icon: notifImg,
+    };
+    new Notification(notifTitle, options);
+  }
+}
 </script>
 
 <template>
@@ -101,6 +126,30 @@ api.interceptors.response.use(
     </div>
 
     <div class="flex-1 flex flex-col" v-if="ready">
+      <div
+        v-if="!notificationsDeclined && !notificationsEnabled"
+        class="px-2 py-2 bg-indigo-600 rounded my-2 mx-auto flex"
+      >
+        Don't miss a beat.
+        <button
+          @click="requestNotifcationPermissions"
+          class="mx-2 flex px-2 text-md font-medium rounded ml-8 text-gray-900 bg-yellow-500 items-center"
+        >
+          Enable Notifications
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            class="w-5 h-5 ml-2"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M5.25 9a6.75 6.75 0 0113.5 0v.75c0 2.123.8 4.057 2.118 5.52a.75.75 0 01-.297 1.206c-1.544.57-3.16.99-4.831 1.243a3.75 3.75 0 11-7.48 0 24.585 24.585 0 01-4.831-1.244.75.75 0 01-.298-1.205A8.217 8.217 0 005.25 9.75V9zm4.502 8.9a2.25 2.25 0 104.496 0 25.057 25.057 0 01-4.496 0z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </button>
+      </div>
       <template v-if="user && !profile?.username">
         <SetUsername />
       </template>
