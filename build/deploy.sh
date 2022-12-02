@@ -22,7 +22,7 @@ pnpm i
 pnpm start -- --port=4002
 
 # check certification
-echo 1 | sudo certbot certonly -d footballsocial.app -d www.footballsocial.app
+echo 1 1 | sudo certbot certonly -d footballsocial.app -d www.footballsocial.app
 
 # restart nginx
 sudo systemctl restart nginx
