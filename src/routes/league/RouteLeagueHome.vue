@@ -71,16 +71,6 @@ watch(
           src="../../assets/OneLoveBawb.png"
           class="h-10 w-10 m-4 block mr-8 md:mr-4"
         />
-        <a
-          href="https://www.producthunt.com/posts/footballsocial-app?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-footballsocial&#0045;app"
-          target="_blank"
-          ><img
-            src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=368400&theme=dark"
-            alt="FootballSocial&#0046;app - Talk&#0032;Football&#0044;&#0032;with&#0032;Football&#0032;people&#0046; | Product Hunt"
-            style="width: 250px; height: 54px"
-            width="250"
-            height="54"
-        /></a>
       </div>
     </div>
 
