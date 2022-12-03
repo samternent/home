@@ -15,8 +15,8 @@ export default defineConfig({
       },
     },
     https: {
-      key: "./localhost.key",
-      cert: "./localhost.crt",
+      key: "./footballsocial.localhost+2-key.pem",
+      cert: "./footballsocial.localhost+2.pem",
     },
   },
   plugins: [
@@ -30,6 +30,5 @@ export default defineConfig({
       },
     }),
     Markdown(),
-    // basicSsl(),
   ],
 });

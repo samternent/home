@@ -1,4 +1,5 @@
 import webPush from "web-push";
+import { supabaseClient } from "../supabase.mjs";
 
 export default function pushNotificationRoutes(router) {
   if (!process.env.VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY) {
@@ -23,23 +24,25 @@ export default function pushNotificationRoutes(router) {
     return res.send(process.env.VAPID_PUBLIC_KEY);
   });
 
-  router.post("/sendNotification", function (req, res) {
-    const subscription = req.body.subscription;
-    const payload = req.body.payload;
-    const options = {
-      TTL: req.body.ttl,
-    };
+  router.post("/sendNotification", async function (req, res) {
+    console.log(req.body);
+    const { data } = await supabaseClient
+      .from("subscription")
+      .select("*")
+      .eq("username", "sam");
 
-    setTimeout(function () {
-      webPush
-        .sendNotification(subscription, payload, options)
-        .then(function () {
-          res.sendStatus(201);
-        })
-        .catch(function (error) {
-          console.log(error);
-          res.sendStatus(500);
-        });
-    }, req.body.delay * 1000);
+    for (let i = 0; i < data.length; i++) {
+      try {
+        await webPush.sendNotification(
+          JSON.parse(data[i].subscription),
+          JSON.stringify(req.body),
+          { TTL: 34 }
+        );
+        res.sendStatus(201);
+      } catch (e) {
+        console.log(e);
+        res.sendStatus(500);
+      }
+    }
   });
 }
