@@ -5,7 +5,7 @@ import { VitePWA } from "vite-plugin-pwa";
 import Markdown from "vite-plugin-md";
 
 const domain = "footballsocial.localhost";
-
+console.log(resolve("../../"));
 // https://vitejs.dev/config/
 export default defineConfig({
   envDir: resolve("../../"),
