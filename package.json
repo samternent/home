@@ -1,16 +1,9 @@
 {
-  "name": "encrypt",
+  "name": "@concords/mono",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "pnpm --filter \"@concords/footballsocial\" build",
-    "dev": "pnpm --filter \"@concords/footballsocial\" dev",
-    "dev:api": "pnpm --filter \"@concords/footballsocial\" dev:api"
-  },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {}
+  "author": "sam ternent",
+  "license": "ISC"
 }
