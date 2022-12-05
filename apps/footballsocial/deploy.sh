@@ -8,10 +8,11 @@ cd footballsocial
 # Copy build assets for nginx
 sudo cp -r dist/* /var/www/footballsocial.app/html
 
+ls
 # Copy nginx config to server
 sudo rm -rf  /etc/nginx/sites-enabled/footballsocial.app
 sudo rm -rf  /etc/nginx/sites-available/footballsocial.app
-sudo cp -r nginx.conf.d /etc/nginx/sites-available/footballsocial.app
+sudo cp -r ./apps/footballsocial/nginx.conf.d /etc/nginx/sites-available/footballsocial.app
 sudo ln -s /etc/nginx/sites-available/footballsocial.app /etc/nginx/sites-enabled/
 
 # pull for latest server code
@@ -19,7 +20,7 @@ git pull origin main
 
 # start/restart node server
 pnpm i
-pnpm start -- --port=4002
+pnpm --filter @concords/footballsocial start -- --port=4002
 
 # check certification
 echo 1 1 | sudo certbot certonly -d footballsocial.app -d www.footballsocial.app
