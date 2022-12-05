@@ -44,23 +44,43 @@ api.interceptors.response.use(
 const notificationsEnabled = shallowRef(false);
 const notificationsDeclined = useLocalStorage("notifciationsDeclined", false);
 onMounted(async () => {
-  if (Notification.permission === "granted") {
-    notificationsEnabled.value = true;
-  }
+  // if (Notification.permission === "granted") {
+  //   notificationsEnabled.value = true;
+  // }
 });
 async function requestNotifcationPermissions() {
-  const result = await Notification.requestPermission();
-  if (result === "granted") {
-    notificationsEnabled.value = true;
-    const notifTitle = "You have enabled notifcations";
-    const notifBody = `Talk Football, with Football people.`;
-    const notifImg = `/android-chrome-512x512.png`;
-    const options = {
-      body: notifBody,
-      icon: notifImg,
-    };
-    new Notification(notifTitle, options);
-  }
+  // const result = await Notification.requestPermission();
+  // if (result === "denied") {
+  //   notificationsDeclined.value = true;
+  //   toast.error(
+  //     "Unablke to enable push notifcations, please check your browser settings.",
+  //     {
+  //       position: "bottom-right",
+  //       timeout: 5000,
+  //       closeOnClick: true,
+  //       pauseOnFocusLoss: false,
+  //       pauseOnHover: true,
+  //       draggable: true,
+  //       draggablePercent: 0.6,
+  //       showCloseButtonOnHover: true,
+  //       hideProgressBar: true,
+  //       closeButton: "button",
+  //       icon: true,
+  //       rtl: false,
+  //     }
+  //   );
+  // }
+  // if (result === "granted") {
+  //   notificationsEnabled.value = true;
+  //   const notifTitle = "You have enabled notifcations";
+  //   const notifBody = `Talk Football, with Football people.`;
+  //   const notifImg = `/android-chrome-512x512.png`;
+  //   const options = {
+  //     body: notifBody,
+  //     icon: notifImg,
+  //   };
+  //   new Notification(notifTitle, options);
+  // }
 }
 </script>
 
@@ -126,7 +146,7 @@ async function requestNotifcationPermissions() {
     </div>
 
     <div class="flex-1 flex flex-col" v-if="ready">
-      <div
+      <!-- <div
         v-if="user && !notificationsDeclined && !notificationsEnabled"
         class="max-w-7xl px-4 py-2 rounded my-2 mx-auto flex items-center w-full justify-end"
       >
@@ -149,7 +169,7 @@ async function requestNotifcationPermissions() {
             />
           </svg>
         </button>
-      </div>
+      </div> -->
       <template v-if="user && !profile?.username">
         <SetUsername />
       </template>

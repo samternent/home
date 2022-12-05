@@ -36,9 +36,9 @@ self.addEventListener("push", function (event) {
   const payload = event.data ? event.data.text() : "no payload";
 
   // Keep the service worker alive until the notification is created.
-  event.waitUntil(
-    self.registration.showNotification("FootballSocial", {
-      body: payload,
-    })
-  );
+  // event.waitUntil(
+  //   self.registration.showNotification("FootballSocial", {
+  //     body: payload,
+  //   })
+  // );
 });
