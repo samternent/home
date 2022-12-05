@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
-dotenv.config();
+dotenv.config({ path: "../../.env" });
 
 const supabaseOptions = {
   auth: {

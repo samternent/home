@@ -3,7 +3,6 @@ import { createClient } from "redis";
 import dotenv from "dotenv";
 import axios from "axios";
 import pushNotificationRoutes from "./pushNotificationRoutes.mjs";
-dotenv.config();
 
 const redisPassword = process.env.REDIS_PASSWORD;
 const redisUrl = process.env.REDIS_ENDPOINT_URI;
