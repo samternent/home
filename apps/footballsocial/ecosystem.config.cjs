@@ -1,9 +1,11 @@
+const { resolve } = require("path");
+
 module.exports = {
-	apps: [
-		{
-			name: 'footballsocial',
-			script: 'api/main.mjs',
-			watch: 'api',
-		},
-	],
+  apps: [
+    {
+      name: "footballsocial",
+      script: resolve("api/main.mjs"),
+      watch: "api",
+    },
+  ],
 };
