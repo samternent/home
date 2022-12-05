@@ -1,98 +1,102 @@
 lockfileVersion: 5.4
 
-specifiers:
-  '@supabase/supabase-js': ^2.1.1
-  '@tailwindcss/line-clamp': ^0.4.2
-  '@tailwindcss/typography': ^0.5.7
-  '@tiptap/core': 2.0.0-beta.199
-  '@tiptap/extension-bold': 2.0.0-beta.199
-  '@tiptap/extension-document': 2.0.0-beta.199
-  '@tiptap/extension-hard-break': 2.0.0-beta.199
-  '@tiptap/extension-mention': 2.0.0-beta.199
-  '@tiptap/extension-paragraph': 2.0.0-beta.199
-  '@tiptap/extension-text': 2.0.0-beta.199
-  '@tiptap/starter-kit': 2.0.0-beta.199
-  '@tiptap/suggestion': 2.0.0-beta.199
-  '@tiptap/vue-3': 2.0.0-beta.199
-  '@types/uuid': ^8.3.4
-  '@vercel/node': ^2.5.10
-  '@vitejs/plugin-basic-ssl': ^0.1.2
-  '@vitejs/plugin-vue': ^3.0.3
-  '@vueuse/core': ^9.1.1
-  autoprefixer: ^10.4.8
-  axios: ^0.27.2
-  body-parser: ^1.20.0
-  cors: ^2.8.5
-  dotenv: ^16.0.2
-  express: ^4.18.1
-  http-proxy-middleware: ^2.0.6
-  invert-color: ^2.0.0
-  luxon: ^3.0.3
-  nodemon: ^2.0.20
-  pm2: ^5.2.0
-  postcss: ^8.4.16
-  redis: ^4.3.0
-  tailwindcss: ^3.1.8
-  tippy.js: ^6.3.7
-  typescript: ^4.6.4
-  uuid: ^8.3.2
-  vercel: ^28.1.4
-  vite: ^3.0.7
-  vite-plugin-md: ^0.20.4
-  vite-plugin-pwa: ^0.12.7
-  vue: ^3.2.37
-  vue-router: ^4.1.4
-  vue-toastification: 2.0.0-rc.5
-  vue-tsc: ^0.39.5
-  web-push: ^3.5.0
+importers:
 
-dependencies:
-  '@supabase/supabase-js': 2.1.1
-  '@tailwindcss/line-clamp': 0.4.2_tailwindcss@3.1.8
-  '@tailwindcss/typography': 0.5.7_tailwindcss@3.1.8
-  '@tiptap/core': 2.0.0-beta.199
-  '@tiptap/extension-bold': 2.0.0-beta.199_4focsuckzeocqotdxlryrtksam
-  '@tiptap/extension-document': 2.0.0-beta.199_4focsuckzeocqotdxlryrtksam
-  '@tiptap/extension-hard-break': 2.0.0-beta.199_4focsuckzeocqotdxlryrtksam
-  '@tiptap/extension-mention': 2.0.0-beta.199_zdzvhsz2xryci6upnrloxod5mi
-  '@tiptap/extension-paragraph': 2.0.0-beta.199_4focsuckzeocqotdxlryrtksam
-  '@tiptap/extension-text': 2.0.0-beta.199_4focsuckzeocqotdxlryrtksam
-  '@tiptap/starter-kit': 2.0.0-beta.199
-  '@tiptap/suggestion': 2.0.0-beta.199_4focsuckzeocqotdxlryrtksam
-  '@tiptap/vue-3': 2.0.0-beta.199_vpdwymrpys76gt27ohb46bvmoq
-  '@vitejs/plugin-basic-ssl': 0.1.2_vite@3.0.9
-  '@vueuse/core': 9.1.1_vue@3.2.37
-  axios: 0.27.2
-  cors: 2.8.5
-  http-proxy-middleware: 2.0.6
-  invert-color: 2.0.0
-  luxon: 3.0.3
-  redis: 4.3.0
-  tippy.js: 6.3.7
-  uuid: 8.3.2
-  vite-plugin-md: 0.20.4
-  vue: 3.2.37
-  vue-router: 4.1.4_vue@3.2.37
-  vue-toastification: 2.0.0-rc.5_vue@3.2.37
-  web-push: 3.5.0
+  .:
+    specifiers: {}
 
-devDependencies:
-  '@types/uuid': 8.3.4
-  '@vercel/node': 2.5.10
-  '@vitejs/plugin-vue': 3.0.3_vite@3.0.9+vue@3.2.37
-  autoprefixer: 10.4.8_postcss@8.4.16
-  body-parser: 1.20.0
-  dotenv: 16.0.2
-  express: 4.18.1
-  nodemon: 2.0.20
-  pm2: 5.2.0
-  postcss: 8.4.16
-  tailwindcss: 3.1.8
-  typescript: 4.7.4
-  vercel: 28.1.4
-  vite: 3.0.9
-  vite-plugin-pwa: 0.12.7_vite@3.0.9
-  vue-tsc: 0.39.5_typescript@4.7.4
+  apps/footballsocial:
+    specifiers:
+      '@supabase/supabase-js': ^2.1.1
+      '@tailwindcss/line-clamp': ^0.4.2
+      '@tailwindcss/typography': ^0.5.7
+      '@tiptap/core': 2.0.0-beta.199
+      '@tiptap/extension-bold': 2.0.0-beta.199
+      '@tiptap/extension-document': 2.0.0-beta.199
+      '@tiptap/extension-hard-break': 2.0.0-beta.199
+      '@tiptap/extension-mention': 2.0.0-beta.199
+      '@tiptap/extension-paragraph': 2.0.0-beta.199
+      '@tiptap/extension-text': 2.0.0-beta.199
+      '@tiptap/starter-kit': 2.0.0-beta.199
+      '@tiptap/suggestion': 2.0.0-beta.199
+      '@tiptap/vue-3': 2.0.0-beta.199
+      '@types/uuid': ^8.3.4
+      '@vercel/node': ^2.5.10
+      '@vitejs/plugin-basic-ssl': ^0.1.2
+      '@vitejs/plugin-vue': ^3.0.3
+      '@vueuse/core': ^9.1.1
+      autoprefixer: ^10.4.8
+      axios: ^0.27.2
+      body-parser: ^1.20.0
+      cors: ^2.8.5
+      dotenv: ^16.0.2
+      express: ^4.18.1
+      http-proxy-middleware: ^2.0.6
+      invert-color: ^2.0.0
+      luxon: ^3.0.3
+      nodemon: ^2.0.20
+      pm2: ^5.2.0
+      postcss: ^8.4.16
+      redis: ^4.3.0
+      tailwindcss: ^3.1.8
+      tippy.js: ^6.3.7
+      typescript: ^4.6.4
+      uuid: ^8.3.2
+      vercel: ^28.1.4
+      vite: ^3.0.7
+      vite-plugin-md: ^0.20.4
+      vite-plugin-pwa: ^0.12.7
+      vue: ^3.2.37
+      vue-router: ^4.1.4
+      vue-toastification: 2.0.0-rc.5
+      vue-tsc: ^0.39.5
+      web-push: ^3.5.0
+    dependencies:
+      '@supabase/supabase-js': 2.1.1
+      '@tailwindcss/line-clamp': 0.4.2_tailwindcss@3.1.8
+      '@tailwindcss/typography': 0.5.7_tailwindcss@3.1.8
+      '@tiptap/core': 2.0.0-beta.199
+      '@tiptap/extension-bold': 2.0.0-beta.199_4focsuckzeocqotdxlryrtksam
+      '@tiptap/extension-document': 2.0.0-beta.199_4focsuckzeocqotdxlryrtksam
+      '@tiptap/extension-hard-break': 2.0.0-beta.199_4focsuckzeocqotdxlryrtksam
+      '@tiptap/extension-mention': 2.0.0-beta.199_zdzvhsz2xryci6upnrloxod5mi
+      '@tiptap/extension-paragraph': 2.0.0-beta.199_4focsuckzeocqotdxlryrtksam
+      '@tiptap/extension-text': 2.0.0-beta.199_4focsuckzeocqotdxlryrtksam
+      '@tiptap/starter-kit': 2.0.0-beta.199
+      '@tiptap/suggestion': 2.0.0-beta.199_4focsuckzeocqotdxlryrtksam
+      '@tiptap/vue-3': 2.0.0-beta.199_vpdwymrpys76gt27ohb46bvmoq
+      '@vitejs/plugin-basic-ssl': 0.1.2_vite@3.0.9
+      '@vueuse/core': 9.1.1_vue@3.2.37
+      axios: 0.27.2
+      cors: 2.8.5
+      http-proxy-middleware: 2.0.6
+      invert-color: 2.0.0
+      luxon: 3.0.3
+      redis: 4.3.0
+      tippy.js: 6.3.7
+      uuid: 8.3.2
+      vite-plugin-md: 0.20.4
+      vue: 3.2.37
+      vue-router: 4.1.4_vue@3.2.37
+      vue-toastification: 2.0.0-rc.5_vue@3.2.37
+      web-push: 3.5.0
+    devDependencies:
+      '@types/uuid': 8.3.4
+      '@vercel/node': 2.5.10
+      '@vitejs/plugin-vue': 3.0.3_vite@3.0.9+vue@3.2.37
+      autoprefixer: 10.4.8_postcss@8.4.16
+      body-parser: 1.20.0
+      dotenv: 16.0.2
+      express: 4.18.1
+      nodemon: 2.0.20
+      pm2: 5.2.0
+      postcss: 8.4.16
+      tailwindcss: 3.1.8
+      typescript: 4.7.4
+      vercel: 28.1.4
+      vite: 3.0.9
+      vite-plugin-pwa: 0.12.7_vite@3.0.9
+      vue-tsc: 0.39.5_typescript@4.7.4
 
 packages:
 
@@ -396,20 +400,12 @@ packages:
       js-tokens: 4.0.0
     dev: true
 
-  /@babel/parser/7.18.13:
-    resolution: {integrity: sha512-dgXcIfMuQ0kgzLB2b9tRZs7TTFFaGM2AbtA4fJgUUYukzGH4jwsS7hzQHEGs67jdehpm22vkgKwvbU+aEflgwg==}
-    engines: {node: '>=6.0.0'}
-    hasBin: true
-    dependencies:
-      '@babel/types': 7.18.13
-
   /@babel/parser/7.19.0:
     resolution: {integrity: sha512-74bEXKX2h+8rrfQUfsBfuZZHzsEs6Eql4pqy/T4Nn6Y9wNPggQOqD6z6pn5Bl8ZfysKouFZT/UXEH94ummEeQw==}
     engines: {node: '>=6.0.0'}
     hasBin: true
     dependencies:
       '@babel/types': 7.19.0
-    dev: true
 
   /@babel/plugin-bugfix-safari-id-destructuring-collision-in-function-expression/7.18.6_@babel+core@7.19.0:
     resolution: {integrity: sha512-Dgxsyg54Fx1d4Nge8UnvTrED63vrwOdPmyvPzlNN/boaliRP54pm3pGzZD1SJUwrBA+Cs/xdG8kXX6Mn/RfISQ==}
@@ -1252,14 +1248,6 @@ packages:
       - supports-color
     dev: true
 
-  /@babel/types/7.18.13:
-    resolution: {integrity: sha512-ePqfTihzW0W6XAU+aMw2ykilisStJfDnsejDCXRchCcMJ4O0+8DhPXf2YUbZ6wjBlsEmZwLK/sPweWtu8hcJYQ==}
-    engines: {node: '>=6.9.0'}
-    dependencies:
-      '@babel/helper-string-parser': 7.18.10
-      '@babel/helper-validator-identifier': 7.18.6
-      to-fast-properties: 2.0.0
-
   /@babel/types/7.19.0:
     resolution: {integrity: sha512-YuGopBq3ke25BVSiS6fgF49Ul9gH1x70Bcr6bqRLjWCkcX8Hre1/5+z+IiWOIerRMSSEfGZVB9z9kyq7wVs9YA==}
     engines: {node: '>=6.9.0'}
@@ -1267,7 +1255,6 @@ packages:
       '@babel/helper-string-parser': 7.18.10
       '@babel/helper-validator-identifier': 7.18.6
       to-fast-properties: 2.0.0
-    dev: true
 
   /@edge-runtime/format/1.1.0-beta.31:
     resolution: {integrity: sha512-tUZy+LMls1TivqVb7dbC0C0IMNjwP55co6vSkTgXCl9xFos3v43bCwAzivMaJ3NR8ZuihvK1gEj8CmvoqvOt0g==}
@@ -2174,7 +2161,7 @@ packages:
   /@vue/compiler-core/3.2.37:
     resolution: {integrity: sha512-81KhEjo7YAOh0vQJoSmAD68wLfYqJvoiD4ulyedzF+OEk/bk6/hx3fTNVfuzugIIaTrOx4PGx6pAiBRe5e9Zmg==}
     dependencies:
-      '@babel/parser': 7.18.13
+      '@babel/parser': 7.19.0
       '@vue/shared': 3.2.37
       estree-walker: 2.0.2
       source-map: 0.6.1
@@ -2188,7 +2175,7 @@ packages:
   /@vue/compiler-sfc/3.2.37:
     resolution: {integrity: sha512-+7i/2+9LYlpqDv+KTtWhOZH+pa8/HnX/905MdVmAcI/mPQOBwkHHIzrsEsucyOIZQYMkXUiTkmZq5am/NyXKkg==}
     dependencies:
-      '@babel/parser': 7.18.13
+      '@babel/parser': 7.19.0
       '@vue/compiler-core': 3.2.37
       '@vue/compiler-dom': 3.2.37
       '@vue/compiler-ssr': 3.2.37
@@ -2212,7 +2199,7 @@ packages:
   /@vue/reactivity-transform/3.2.37:
     resolution: {integrity: sha512-IWopkKEb+8qpu/1eMKVeXrK0NLw9HicGviJzhJDEyfxTR9e1WtpnnbYkJWurX6WwoFP0sz10xQg8yL8lgskAZg==}
     dependencies:
-      '@babel/parser': 7.18.13
+      '@babel/parser': 7.19.0
       '@vue/compiler-core': 3.2.37
       '@vue/shared': 3.2.37
       estree-walker: 2.0.2
@@ -5775,6 +5762,7 @@ packages:
 
   /rollup-plugin-terser/7.0.2_rollup@2.77.3:
     resolution: {integrity: sha512-w3iIaU4OxcF52UUXiZNsNeuXIMDvFrr+ZXK6bFZ0Q60qyVfq4uLptoS4bbq3paG3x216eQllFZX7zt6TIImguQ==}
+    deprecated: This package has been deprecated and is no longer maintained. Please use @rollup/plugin-terser
     peerDependencies:
       rollup: ^2.0.0
     dependencies:
@@ -5997,6 +5985,7 @@ packages:
 
   /sourcemap-codec/1.4.8:
     resolution: {integrity: sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA==}
+    deprecated: Please use @jridgewell/sourcemap-codec instead
 
   /sprintf-js/1.0.3:
     resolution: {integrity: sha512-D9cPgkvLlV3t3IzL0D0YLvGA9Ahk4PcvVwUbN0dSGr1aP0Nrt4AEnTUbuGvquEC0mA64Gqt1fzirlRs5ibXx8g==}
