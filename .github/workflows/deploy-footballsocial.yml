@@ -71,7 +71,7 @@ jobs:
           SSH_HOST: ${{ secrets.DEPLOYMENT_HOST }}
 
       - name: Copy build assets
-        run: scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -r dist/* $SSH_USER@$SSH_HOST:footballsocial/dist
+        run: scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -r apps/footballsocial/dist/* $SSH_USER@$SSH_HOST:footballsocial/dist
         env:
           SSH_USER: ${{ secrets.DEPLOYMENT_USER }}
           SSH_HOST: ${{ secrets.DEPLOYMENT_HOST }}
