@@ -1,0 +1,40 @@
+{
+  "name": "@concords/ledger",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/ledger.umd.js",
+  "module": "dist/ledger.es.js",
+  "scripts": {
+    "dev": "vite build --watch",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "context": "browser",
+  "targets": {
+    "default": {
+      "context": "browser"
+    }
+  },
+  "alias": {
+    "process": false
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "browserslist": "last 2 versions",
+  "dependencies": {
+    "@concords/encrypt": "workspace:*",
+    "@concords/identity": "workspace:*",
+    "@concords/proof-of-work": "workspace:*",
+    "@concords/utils": "workspace:*",
+    "@swc/helpers": "^0.4.3",
+    "lokijs": "^1.5.12",
+    "regenerator-runtime": "^0.13.9"
+  },
+  "devDependencies": {
+    "@parcel/core": "^2.7.0",
+    "@parcel/resolver-default": "^2.7.0",
+    "parcel": "^2.7.0",
+    "vite": "^2.9.9"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "name": "@concords/encrypt",
+  "version": "1.0.0",
+  "description": "",
+  "source": "src/index.ts",
+  "main": "dist/main.js",
+  "module": "dist/module.js",
+  "scripts": {
+    "dev": "parcel watch",
+    "build": "parcel build"
+  },
+  "context": "browser",
+  "targets": {
+    "default": {
+      "context": "browser"
+    }
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "browserslist": "last 2 versions",
+  "dependencies": {
+    "@kanru/rage-wasm": "^0.2.2",
+    "@swc/helpers": "^0.4.3",
+    "regenerator-runtime": "^0.13.9"
+  },
+  "devDependencies": {
+    "parcel": "^2.0.0"
+  }
+}

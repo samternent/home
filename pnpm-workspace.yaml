@@ -1,3 +1,9 @@
 packages:
+  - "packages/encrypt"
+  - "packages/identity"
+  - "packages/utils"
+  - "packages/proof-of-work"
+  - "packages/ledger"
 apps:
-  - "footballsocial"
+  - "apps/footballsocial"
+  - "apps/papp"

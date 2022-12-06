@@ -1,0 +1,6 @@
+@use '../../node_modules/inter-ui/variable' with (
+  $inter-font-display: swap,
+  $inter-font-path: 'inter-ui/Inter (web)'
+);
+
+@include variable.all;

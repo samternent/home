@@ -5,5 +5,8 @@
   "main": "index.js",
   "keywords": [],
   "author": "sam ternent",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "turbo": "^1.6.3"
+  }
 }
