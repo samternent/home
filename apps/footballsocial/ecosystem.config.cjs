@@ -5,7 +5,7 @@ module.exports = {
     {
       name: "footballsocial",
       script: resolve("api/main.mjs"),
-      watch: "api",
+      watch: resolve("api"),
     },
   ],
 };
