@@ -4,6 +4,5 @@ packages:
   - "packages/utils"
   - "packages/proof-of-work"
   - "packages/ledger"
-apps:
   - "apps/footballsocial"
   - "apps/papp"
