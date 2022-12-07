@@ -6,4 +6,6 @@ packages:
   - "packages/ledger"
   - "apps/footballsocial"
   - "apps/teamconcords"
+  - "apps/concords"
+  - "apps/ternent"
   - "apps/papp"

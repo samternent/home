@@ -55,7 +55,7 @@ jobs:
         run: pnpm install
 
       - name: Build dist
-        run: pnpm --filter @concords/footballsocial --filter @concords/teamconcords build
+        run: pnpm --filter @concords/footballsocial --filter @concords/teamconcords --filter @concords/concords --filter @concords/ternent build
 
       - name: Configure SSH
         run: |
@@ -83,6 +83,18 @@ jobs:
 
       - name: Copy concords build assets
         run: scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -r apps/teamconcords/dist/* $SSH_USER@$SSH_HOST:dist/teamconcords
+        env:
+          SSH_USER: ${{ secrets.DEPLOYMENT_USER }}
+          SSH_HOST: ${{ secrets.DEPLOYMENT_HOST }}
+
+      - name: Copy concords build assets
+        run: scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -r apps/concords/dist/* $SSH_USER@$SSH_HOST:dist/concords
+        env:
+          SSH_USER: ${{ secrets.DEPLOYMENT_USER }}
+          SSH_HOST: ${{ secrets.DEPLOYMENT_HOST }}
+
+      - name: Copy concords build assets
+        run: scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -r apps/ternent/dist/* $SSH_USER@$SSH_HOST:dist/ternent
         env:
           SSH_USER: ${{ secrets.DEPLOYMENT_USER }}
           SSH_HOST: ${{ secrets.DEPLOYMENT_HOST }}
