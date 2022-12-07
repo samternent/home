@@ -19,24 +19,11 @@ server {
     location /api/ {
         proxy_pass http://localhost:4004;
     }
-
-    listen 443 ssl http2;
-    ssl_certificate /etc/letsencrypt/live/www.concords.app/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/www.concords.app/privkey.pem;
-    include /etc/letsencrypt/options-ssl-nginx.conf;
-    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 }
 server {
     #listen 80 is default
     server_name www.concords.app;
     return 301 $scheme://concords.app$request_uri;
-
-
-    listen 443 ssl http2;
-    ssl_certificate /etc/letsencrypt/live/www.concords.app/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/www.concords.app/privkey.pem;
-    include /etc/letsencrypt/options-ssl-nginx.conf;
-    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 }
 server {
     if ($host = concords.app) {
