@@ -1,0 +1,48 @@
+{
+  "name": "@concords/vue",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/vue.umd.js",
+  "module": "dist/vue.es.js",
+  "scripts": {
+    "dev": "vite build --watch",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "context": "browser",
+  "targets": {
+    "default": {
+      "context": "browser"
+    }
+  },
+  "alias": {
+    "process": false
+  },
+  "dependencies": {
+    "@concords/encrypt": "workspace:*",
+    "@concords/identity": "workspace:*",
+    "@concords/ledger": "workspace:*",
+    "@concords/proof-of-work": "workspace:*",
+    "@inrupt/solid-client": "^1.23.3",
+    "@inrupt/solid-client-authn-browser": "^1.12.2",
+    "@inrupt/vocab-common-rdf": "^1.0.5",
+    "@mdi/font": "5.9.55",
+    "@vueuse/core": "^9.4.0",
+    "autoprefixer": "^10.4.7",
+    "postcss": "^8.4.14",
+    "roboto-fontface": "*",
+    "sass": "^1.56.0",
+    "tailwindcss": "^3.1.4",
+    "unplugin-auto-import": "^0.11.4",
+    "unplugin-vue-components": "^0.22.9",
+    "vue": "^3.2.38",
+    "vue-router": "^4.0.16",
+    "vuetify": "^3.0.0",
+    "webfontloader": "^1.0.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^3.0.3",
+    "vite": "^3.1.8",
+    "vite-plugin-vuetify": "^1.0.0-alpha.12"
+  }
+}
