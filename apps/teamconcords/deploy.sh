@@ -3,23 +3,21 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
-cd footballsocial/apps/teamconcords
-
 # Copy build assets for nginx
-sudo cp -r dist/* /var/www/teamconcords.com/html
+sudo cp -r dist/teamconcords/* /var/www/teamconcords.com/html
 
-ls
+cd footballsocial
+# pull for latest server code
+git pull origin main
+pnpm i
+
 # Copy nginx config to server
 sudo rm -rf  /etc/nginx/sites-enabled/teamconcords.com
 sudo rm -rf  /etc/nginx/sites-available/teamconcords.com
-sudo cp -r nginx.conf.d /etc/nginx/sites-available/teamconcords.com
+sudo cp -r apps/teamconcords/nginx.conf.d /etc/nginx/sites-available/teamconcords.com
 sudo ln -s /etc/nginx/sites-available/teamconcords.com /etc/nginx/sites-enabled/
 
-# pull for latest server code
-git pull origin main
-
 # start/restart node server
-pnpm i
 pnpm --filter @concords/teamconcords start -- --port=4003
 
 # check certification

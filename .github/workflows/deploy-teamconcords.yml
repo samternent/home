@@ -76,7 +76,7 @@ jobs:
           SSH_HOST: ${{ secrets.DEPLOYMENT_HOST }}
 
       - name: Copy build assets
-        run: scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -r apps/teamconcords/dist/* $SSH_USER@$SSH_HOST:/var/www/teamconcords.com/html
+        run: scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -r apps/teamconcords/dist/* $SSH_USER@$SSH_HOST:dist/teamconcords/
         env:
           SSH_USER: ${{ secrets.DEPLOYMENT_USER }}
           SSH_HOST: ${{ secrets.DEPLOYMENT_HOST }}
