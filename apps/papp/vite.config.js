@@ -11,10 +11,18 @@ export default defineConfig({
   plugins: [vue(), vuetify()],
   define: {
     "process.env": {},
-    global: {},
-    Buffer: require("buffer"),
+    // global: {},
+    // Buffer: require("buffer"),
   },
-
+  esbuild: {
+    target: "es2020",
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      target: "es2020",
+      supported: { bigint: true },
+    },
+  },
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),

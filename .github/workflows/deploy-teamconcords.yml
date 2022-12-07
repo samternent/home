@@ -1,4 +1,4 @@
-name: Release Football Social
+name: Release Team Concords
 
 on:
   push:
@@ -55,7 +55,7 @@ jobs:
         run: pnpm install
 
       - name: Build dist
-        run: pnpm --filter @concords/footballsocial build
+        run: pnpm --filter @concords/teamconcords build
 
       - name: Configure SSH
         run: |
@@ -76,10 +76,10 @@ jobs:
           SSH_HOST: ${{ secrets.DEPLOYMENT_HOST }}
 
       - name: Copy build assets
-        run: scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -r apps/footballsocial/dist/* $SSH_USER@$SSH_HOST:/var/www/footballsocial.app/html
+        run: scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -r apps/teamconcords/dist/* $SSH_USER@$SSH_HOST:/var/www/teamconcords.com/html
         env:
           SSH_USER: ${{ secrets.DEPLOYMENT_USER }}
           SSH_HOST: ${{ secrets.DEPLOYMENT_HOST }}
 
-      - name: Deploy footballsocial.app
-        run: cat apps/footballsocial/deploy.sh | ssh staging -T
+      - name: Deploy teamconcords.com
+        run: cat apps/teamconcords/deploy.sh | ssh staging -T

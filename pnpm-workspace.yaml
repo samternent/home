@@ -5,4 +5,5 @@ packages:
   - "packages/proof-of-work"
   - "packages/ledger"
   - "apps/footballsocial"
+  - "apps/teamconcords"
   - "apps/papp"

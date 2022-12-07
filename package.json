@@ -8,5 +8,8 @@
   "license": "ISC",
   "devDependencies": {
     "turbo": "^1.6.3"
+  },
+  "dependencies": {
+    "shelljs": "^0.8.5"
   }
 }
