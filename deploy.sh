@@ -37,10 +37,10 @@ pnpm --filter @concords/concords start -- --port=4004
 pnpm --filter @concords/ternent start -- --port=4005
 
 # check certification
-echo 1 1 | sudo certbot -d footballsocial.app -d www.footballsocial.app
-echo 1 1 | sudo certbot -d teamconcords.com -d www.teamconcords.com
-echo 1 1 | sudo certbot -d concords.app -d www.concords.app
-echo 1 1 | sudo certbot -d ternent.dev -d www.ternent.dev
+echo 1 | sudo certbot -d footballsocial.app -d www.footballsocial.app
+echo 1 | sudo certbot -d teamconcords.com -d www.teamconcords.com
+echo 1 | sudo certbot -d concords.app -d www.concords.app
+echo 1 | sudo certbot -d ternent.dev -d www.ternent.dev
 
 # restart nginx
 sudo systemctl restart nginx
