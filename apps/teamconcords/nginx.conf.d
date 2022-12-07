@@ -21,8 +21,8 @@ server {
     }
 
     listen 443 ssl http2;
-    ssl_certificate /etc/letsencrypt/live/www.teamconcords.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/www.teamconcords.com/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/teamconcords.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/teamconcords.com/privkey.pem;
     include /etc/letsencrypt/options-ssl-nginx.conf;
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 }
@@ -33,8 +33,8 @@ server {
 
 
     listen 443 ssl http2;
-    ssl_certificate /etc/letsencrypt/live/www.teamconcords.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/www.teamconcords.com/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/teamconcords.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/teamconcords.com/privkey.pem;
     include /etc/letsencrypt/options-ssl-nginx.conf;
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 }
