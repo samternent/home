@@ -3,6 +3,12 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
+# Copy build assets for nginx
+sudo cp -r dist/footballsocial/* /var/www/footballsocial.app/html
+sudo cp -r dist/teamconcords/* /var/www/teamconcords.com/html
+sudo cp -r dist/concords/* /var/www/concords.app/html
+sudo cp -r dist/ternent/* /var/www/ternent.dev/html
+
 # TODO: Rename repo in git and reeflect here
 cd footballsocial
 
@@ -10,30 +16,22 @@ cd footballsocial
 git pull origin main
 pnpm i
 
-echo "start node servers"
-# start/restart node server
-NODE_ENV=production pm2 startOrReload ecosystem.config.cjs
-
-cd ~
-
-ls
-
-echo "build nginx configs"
 # Copy nginx config to server
 sudo rm -rf  /etc/nginx/sites-enabled/*
 sudo rm -rf  /etc/nginx/sites-available/*
 
-# Copy build assets for nginx
-OLDIFS=$IFS; IFS=',';
-for app in footballsocial,app teamconcords,com concords,app ternent,dev;
-do
-  set -- $app;
-  sudo cp -r dist/$1/* /var/www/$1.$2/html
-  sudo cp -r footballsocial/apps/$1/nginx.conf.d /etc/nginx/sites-available/$1.$2
-  sudo ln -s /etc/nginx/sites-available/$1.$2 /etc/nginx/sites-enabled/
-done
-IFS=$OLDIFS
+sudo cp -r apps/footballsocial/nginx.conf.d /etc/nginx/sites-available/footballsocial.app
+sudo cp -r apps/teamconcords/nginx.conf.d /etc/nginx/sites-available/teamconcords.com
+sudo cp -r apps/concords/nginx.conf.d /etc/nginx/sites-available/concords.app
+sudo cp -r apps/ternent/nginx.conf.d /etc/nginx/sites-available/ternent.dev
 
-echo "restart NGINX"
+sudo ln -s /etc/nginx/sites-available/footballsocial.app /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/teamconcords.com /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/concords.app /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/ternent.dev /etc/nginx/sites-enabled/
+
+# start/restart node server
+NODE_ENV=production pm2 startOrReload ecosystem.config.cjs
+
 # restart nginx
 sudo systemctl restart nginx
