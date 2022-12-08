@@ -17,7 +17,7 @@ server {
     }
 
     location /api/ {
-        proxy_pass http://localhost:4004;
+        proxy_pass http://localhost:4003;
     }
 }
 server {

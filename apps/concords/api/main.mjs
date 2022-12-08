@@ -8,8 +8,8 @@ const app = express();
 app.use(bodyParser.json());
 
 // Set port
-const port = process.env.port;
-app.set("port", process.env.port);
+const port = "4003";
+app.set("port", port);
 
 app.use("/api/", routes);
 

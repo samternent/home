@@ -7,8 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "dev:api": "nodemon api/main.mjs",
-    "start": "NODE_ENV=production pm2 startOrReload ecosystem.config.cjs"
+    "dev:api": "nodemon api/main.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.1.1",
