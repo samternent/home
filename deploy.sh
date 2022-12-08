@@ -24,6 +24,8 @@ OLDIFS=$IFS; IFS=',';
 for app in footballsocial,app teamconcords,com concords,app ternent,dev;
 do
   set -- $app;
+  echo $1.$2
+  ls dist/$1
   sudo cp -r dist/$1/* /var/www/$1.$2/html
   sudo cp -r footballsocial/apps/$1/nginx.conf.d /etc/nginx/sites-available/$1.$2
   sudo ln -s /etc/nginx/sites-available/$1.$2 /etc/nginx/sites-enabled/
