@@ -1,0 +1,50 @@
+<script lang="ts" setup>
+import { shallowRef } from "vue";
+</script>
+<template>
+  <div class="w-full flex-1 mx-auto max-w-4xl px-2">
+    <h1
+      class="text-5xl md:text-6xl text-white font-bold tracking-tighter shadow-text mt-12 md:mt-16"
+    >
+      TEAM CONCORDS LIMITED.
+    </h1>
+    <p class="text-2xl md:text-2xl text-[#cdcdcd]">
+      <span class="font-thin"
+        >An <span class="text-pink-400">independent</span> software company.
+      </span>
+      With an interest in <span class="text-yellow-400">cryptography</span> .
+    </p>
+  </div>
+  <footer
+    class="p-4 bg-[#242424] text-white md:flex md:items-center md:justify-between md:p-6"
+  >
+    <span class="text-sm sm:text-center text-gray-200">
+      <a href="https://www.teamconcords.com/" class="league-link"
+        >Team Concords Limited</a
+      >
+      © 2022.
+    </span>
+    <ul class="flex flex-wrap items-center mt-3 text-sm text-gray-400 sm:mt-0">
+      <li>
+        <RouterLink to="/company/about" class="mr-4 hover:underline md:mr-6"
+          >About</RouterLink
+        >
+      </li>
+      <li>
+        <RouterLink to="/legal/privacy" class="mr-4 hover:underline md:mr-6"
+          >Privacy Policy</RouterLink
+        >
+      </li>
+      <li>
+        <RouterLink to="/legal/terms" class="mr-4 hover:underline md:mr-6"
+          >Terms of Use</RouterLink
+        >
+      </li>
+      <li>
+        <RouterLink to="/company/contact" class="mr-4 hover:underline md:mr-6"
+          >Contact</RouterLink
+        >
+      </li>
+    </ul>
+  </footer>
+</template>
