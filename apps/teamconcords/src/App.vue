@@ -6,7 +6,7 @@ const { user, profile, ready } = provideCurrentUser();
 </script>
 
 <template>
-  <div class="text-white min-h-screen h-screen flex flex-col">
+  <div class="text-white absolute inset-0 flex flex-col">
     <div class="flex-1 flex flex-col" v-if="ready">
       <!-- <div
         v-if="user && !notificationsDeclined && !notificationsEnabled"
