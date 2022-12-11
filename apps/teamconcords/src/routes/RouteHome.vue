@@ -12,29 +12,45 @@ import { shallowRef } from "vue";
     </h1>
     <div class="text-2xl md:text-2xl text-[#adadad] pt-4">
       <p class="font-thin">
-        An
-        <span class="text-pink-400 font-medium">independent</span>
-        software company.
+        An <span class="text-pink-500 font-medium">independent</span> software
+        company.
       </p>
     </div>
-    <div class="text-2xl md:text-2xl text-[#cecece] pt-4">
-      <h3 class="mt-4">What we do</h3>
+    <div class="text-xl md:text-2xl text-[#cecece] pt-4">
       <ul class="font-thin">
+        <h3 class="mt-4 font-medium">Football Social</h3>
         <li>
           <a
             href="http://footballsocial.app"
             target="_blank"
-            class="league-link"
+            class="league-link text-lg font-light"
             >http://footballsocial.app</a
           >
+          <p class="text-base mt-2">
+            This is our sandbox development application. Used to build out
+            platform features in a real-world, but non-mission-critial
+            workspace.
+            <br />
+            <br />
+            Plus, we love football and it's a pretty fun app to maintain.
+          </p>
         </li>
+        <h3 class="mt-4 font-medium">Concords</h3>
         <li>
-          <a href="http://concords.app" target="_blank" class="league-link"
+          <a
+            href="http://concords.app"
+            target="_blank"
+            class="league-link text-lg font-light"
             >http://concords.app</a
           >
+          <p class="text-base mt-2">
+            The core platform, currently in development.<br /><br />
+            Focuses on cryptography. ECDSA identity, age encryption, blockchain
+            structured data, Solid storage.
+          </p>
         </li>
       </ul>
-      <h3 class="mt-4">Contact</h3>
+      <h3 class="mt-8">Contact</h3>
       <ul class="font-thin">
         <li>
           <a
