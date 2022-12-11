@@ -17,6 +17,35 @@ import { shallowRef } from "vue";
         software company.
       </p>
     </div>
+    <div class="text-2xl md:text-2xl text-[#cecece] pt-4">
+      <h3 class="mt-4">What we do</h3>
+      <ul class="font-thin">
+        <li>
+          <a
+            href="http://footballsocial.app"
+            target="_blank"
+            class="league-link"
+            >http://footballsocial.app</a
+          >
+        </li>
+        <li>
+          <a href="http://concords.app" target="_blank" class="league-link"
+            >http://concords.app</a
+          >
+        </li>
+      </ul>
+      <h3 class="mt-4">Contact</h3>
+      <ul class="font-thin">
+        <li>
+          <a
+            href="mailto:hello@teamconcords.com"
+            target="_blank"
+            class="league-link"
+            >hello@teamconcords.com</a
+          >
+        </li>
+      </ul>
+    </div>
   </div>
   <footer
     class="p-4 text-white md:flex md:items-center md:justify-between md:p-6"
