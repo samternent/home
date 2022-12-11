@@ -2,21 +2,24 @@
 import { shallowRef } from "vue";
 </script>
 <template>
-  <div class="w-full flex-1 mx-auto max-w-4xl px-2">
+  <div
+    class="w-full flex-1 mx-auto max-w-6xl px-2 flex justify-center flex-col"
+  >
     <h1
-      class="text-5xl md:text-6xl text-white font-bold tracking-tighter shadow-text mt-12 md:mt-16"
+      class="text-3xl md:text-5xl text-[#d3d3d3] font-light tracking-tighter mt-12 md:mt-16"
     >
       TEAM CONCORDS LIMITED.
     </h1>
-    <p class="text-2xl md:text-2xl text-[#cdcdcd]">
-      <span class="font-thin"
-        >An <span class="text-pink-400">independent</span> software company.
-      </span>
-      With an interest in <span class="text-yellow-400">cryptography</span> .
-    </p>
+    <div class="text-2xl md:text-2xl text-[#adadad] pt-4">
+      <p class="font-thin">
+        An
+        <span class="text-pink-400 font-medium">independent</span>
+        software company.
+      </p>
+    </div>
   </div>
   <footer
-    class="p-4 bg-[#242424] text-white md:flex md:items-center md:justify-between md:p-6"
+    class="p-4 text-white md:flex md:items-center md:justify-between md:p-6"
   >
     <span class="text-sm sm:text-center text-gray-200">
       <a href="https://www.teamconcords.com/" class="league-link"
@@ -25,7 +28,7 @@ import { shallowRef } from "vue";
       © 2022.
     </span>
     <ul class="flex flex-wrap items-center mt-3 text-sm text-gray-400 sm:mt-0">
-      <li>
+      <!-- <li>
         <RouterLink to="/company/about" class="mr-4 hover:underline md:mr-6"
           >About</RouterLink
         >
@@ -44,7 +47,7 @@ import { shallowRef } from "vue";
         <RouterLink to="/company/contact" class="mr-4 hover:underline md:mr-6"
           >Contact</RouterLink
         >
-      </li>
+      </li> -->
     </ul>
   </footer>
 </template>
