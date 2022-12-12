@@ -2,12 +2,13 @@
   "name": "@concords/encrypt",
   "version": "1.0.0",
   "description": "",
-  "source": "src/index.ts",
-  "main": "dist/main.js",
-  "module": "dist/module.js",
+  "main": "dist/encrypt.umd.js",
+  "module": "dist/encrypt.es.js",
+  "typings": "dist/index.d.ts",
   "scripts": {
-    "dev": "parcel watch",
-    "build": "parcel build"
+    "dev": "vite build --watch",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "context": "browser",
   "targets": {
@@ -20,11 +21,12 @@
   "license": "ISC",
   "browserslist": "last 2 versions",
   "dependencies": {
-    "@kanru/rage-wasm": "^0.2.2",
+    "@kanru/rage-wasm": "^0.3.0",
     "@swc/helpers": "^0.4.3",
     "regenerator-runtime": "^0.13.9"
   },
   "devDependencies": {
-    "parcel": "^2.0.0"
+    "vite": "^2.9.9",
+    "vite-plugin-dts": "^1.7.1"
   }
 }

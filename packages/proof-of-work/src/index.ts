@@ -1,5 +1,7 @@
 import { hashData } from "@concords/utils";
 
+interface Block {}
+
 async function proofOfWork(block, difficulty) {
   let nonce = 0;
   const findHash = async (block) => {
