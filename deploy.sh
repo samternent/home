@@ -22,8 +22,8 @@ sudo rm -rf  /etc/nginx/sites-enabled/*
 sudo rm -rf  /etc/nginx/sites-available/*
 
 # Copy build assets for nginx
-OLDIFS=$IFS; IFS=',';
-for app in footballsocial,app teamconcords,com concords,app ternent,dev;
+OLDIFS=$IFS; IFS='.';
+for app in footballsocial.app teamconcords.com concords.app ternent.dev;
 do
   set -- $app;
   sudo cp -r dist/$1/* /var/www/$1.$2/html

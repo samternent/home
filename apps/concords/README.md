@@ -1,1 +1,1 @@
-Concords App
+Team Concords
