@@ -14,6 +14,21 @@ import { shallowRef } from "vue";
       <span class="text-pink-500 font-medium">Concord: </span>
       <span class="text-yellow-500">noun.</span>
       <p>agreement or harmony between people or groups.</p>
+      <p class="mt-4 text-xl">
+        <span class="text-xl font-medium text-yellow-500">Secure by design</span
+        >. <strong>ECDSA Identity & Age Encryption</strong> protected document
+        data files.
+      </p>
+      <ul class="text-lg my-8 px-4">
+        <li class="pl-2">Granular permissions with Age encryption.</li>
+        <li class="pl-2">Tamper-proof data structure.</li>
+        <li class="pl-2">ECDSA signed transations.</li>
+        <li class="pl-2">Works completely offline.</li>
+        <li class="pl-2">Git inspired commit based workflow.</li>
+        <li class="pl-2">
+          Storage agnostic. Supports raw and encrypted JSON download/upload.
+        </li>
+      </ul>
     </div>
   </div>
   <footer
@@ -49,3 +64,14 @@ import { shallowRef } from "vue";
     </ul>
   </footer>
 </template>
+<style>
+@counter-style repeating-emoji {
+  system: cyclic;
+  symbols: "🔒" "🔐" "🔏" "⚡" "🤓" "💾";
+  suffix: " ";
+}
+
+ul {
+  list-style-type: repeating-emoji;
+}
+</style>
