@@ -1,22 +1,23 @@
 <script lang="ts" setup>
-import { onMounted, shallowRef, watchEffect } from "vue";
+import { onMounted, ShallowRef, shallowRef, watchEffect } from "vue";
 import {
-  generate as createIdentity,
-  exportPublicKey,
-  exportSigningKey,
+  createIdentity,
+  exportPublicKeyAsPem,
+  exportPrivateKeyAsPem,
 } from "@concords/identity";
 
-const keys = shallowRef(null);
+const keys: ShallowRef<CryptoKeyPair | null> = shallowRef(null);
+
 onMounted(async () => {
   keys.value = await createIdentity();
 });
-const publicKey = shallowRef();
-const privateKey = shallowRef();
+const publicKey: ShallowRef<string | null> = shallowRef(null);
+const privateKey: ShallowRef<string | null> = shallowRef(null);
 
 watchEffect(async () => {
   if (keys.value) {
-    publicKey.value = await exportPublicKey(keys.value?.publicKey);
-    privateKey.value = await exportSigningKey(keys.value?.privateKey);
+    publicKey.value = await exportPublicKeyAsPem(keys.value?.publicKey);
+    privateKey.value = await exportPrivateKeyAsPem(keys.value?.privateKey);
   }
 });
 </script>
@@ -49,8 +50,8 @@ watchEffect(async () => {
           Storage agnostic. Supports raw and encrypted JSON download/upload.
         </li>
       </ul>
-      <div class="break-all">{{ publicKey }}</div>
-      <div class="break-all">{{ privateKey }}</div>
+      <!-- <pre class="text-sm">{{ publicKey }}</pre>
+      <pre class="text-sm">{{ privateKey }}</pre> -->
     </div>
   </div>
   <footer
