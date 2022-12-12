@@ -1,11 +1,31 @@
 <script lang="ts" setup>
-import { shallowRef } from "vue";
+import { onMounted, shallowRef, watchEffect } from "vue";
+import {
+  generate as createIdentity,
+  exportPublicKey,
+  exportSigningKey,
+} from "@concords/identity";
+
+const keys = shallowRef(null);
+onMounted(async () => {
+  keys.value = await createIdentity();
+});
+const publicKey = shallowRef();
+const privateKey = shallowRef();
+
+watchEffect(async () => {
+  if (keys.value) {
+    publicKey.value = await exportPublicKey(keys.value?.publicKey);
+    privateKey.value = await exportSigningKey(keys.value?.privateKey);
+  }
+});
 </script>
 <template>
   <div
     class="w-full flex-1 mx-auto max-w-6xl px-2 flex justify-center flex-col"
   >
     <h1
+      v-if="keys"
       class="text-3xl md:text-5xl text-[#d3d3d3] font-light tracking-tighter mt-12 md:mt-16"
     >
       <!-- concords.app -->
@@ -29,6 +49,8 @@ import { shallowRef } from "vue";
           Storage agnostic. Supports raw and encrypted JSON download/upload.
         </li>
       </ul>
+      <div class="break-all">{{ publicKey }}</div>
+      <div class="break-all">{{ privateKey }}</div>
     </div>
   </div>
   <footer

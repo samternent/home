@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite-ssg build",
     "preview": "vite preview",
     "dev:api": "nodemon api/main.mjs"
   },
@@ -25,6 +25,7 @@
     "@tiptap/vue-3": "2.0.0-beta.199",
     "@vitejs/plugin-basic-ssl": "^0.1.2",
     "@vueuse/core": "^9.1.1",
+    "@vueuse/head": "^1.0.22",
     "axios": "^0.27.2",
     "cors": "^2.8.5",
     "http-proxy-middleware": "^2.0.6",
@@ -34,8 +35,9 @@
     "tippy.js": "^6.3.7",
     "uuid": "^8.3.2",
     "vite-plugin-md": "^0.20.4",
+    "vite-ssg": "^0.22.1",
     "vue": "^3.2.37",
-    "vue-router": "^4.1.4",
+    "vue-router": "^4.1.6",
     "vue-toastification": "2.0.0-rc.5",
     "web-push": "^3.5.0"
   },

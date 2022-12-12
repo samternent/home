@@ -2,12 +2,12 @@
   "name": "@concords/identity",
   "version": "1.0.0",
   "description": "",
-  "source": "src/index.ts",
-  "main": "dist/main.js",
-  "module": "dist/module.js",
+  "main": "dist/identity.umd.js",
+  "module": "dist/identity.es.js",
   "scripts": {
-    "dev": "parcel watch",
-    "build": "parcel build"
+    "dev": "vite build --watch",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "context": "browser",
   "targets": {
@@ -25,6 +25,7 @@
     "regenerator-runtime": "^0.13.9"
   },
   "devDependencies": {
-    "parcel": "^2.0.0"
+    "vite": "^2.9.9",
+    "vite-plugin-dts": "^1.7.1"
   }
 }
