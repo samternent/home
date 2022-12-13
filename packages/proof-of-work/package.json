@@ -21,6 +21,7 @@
   "license": "ISC",
   "browserslist": "last 2 versions",
   "dependencies": {
+    "@concords/utils": "workspace:*",
     "@swc/helpers": "^0.4.3",
     "regenerator-runtime": "^0.13.9"
   },

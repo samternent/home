@@ -1,12 +1,12 @@
 import { removeLines, base64ToArrayBuffer } from "@concords/utils";
 
-interface Points {
+interface IPoints {
   x: string;
   y: string;
 }
 
 export function importPrivateKey(
-  points: Points,
+  points: IPoints,
   secret: string
 ): Promise<CryptoKey> {
   return crypto.subtle.importKey(

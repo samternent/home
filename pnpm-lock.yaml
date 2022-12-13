@@ -406,6 +406,7 @@ importers:
       '@concords/proof-of-work': workspace:*
       '@concords/utils': workspace:*
       '@swc/helpers': ^0.4.3
+      '@types/lokijs': ^1.5.7
       lokijs: ^1.5.12
       regenerator-runtime: ^0.13.9
       vite: ^2.9.9
@@ -418,15 +419,18 @@ importers:
       lokijs: 1.5.12
       regenerator-runtime: 0.13.9
     devDependencies:
+      '@types/lokijs': 1.5.7
       vite: 2.9.15
 
   packages/proof-of-work:
     specifiers:
+      '@concords/utils': workspace:*
       '@swc/helpers': ^0.4.3
       regenerator-runtime: ^0.13.9
       vite: ^2.9.9
       vite-plugin-dts: ^1.7.1
     dependencies:
+      '@concords/utils': link:../utils
       '@swc/helpers': 0.4.14
       regenerator-runtime: 0.13.9
     devDependencies:
@@ -2678,6 +2682,10 @@ packages:
   /@types/lodash/4.14.191:
     resolution: {integrity: sha512-BdZ5BCCvho3EIXw6wUCXHe7rS53AIDPLE+JzwgT+OsJk53oBfbSmZZ7CX4VaRoN78N+TJpFi9QPlfIVNmJYWxQ==}
     dev: false
+
+  /@types/lokijs/1.5.7:
+    resolution: {integrity: sha512-WEFQLgO3u2Wa7yFybqkTZYumqF1GcHvUwx8Tv2SUHy2qpnIainMMoLmEUGdjhPNp/v5pyC9e91fSMC3mkxBIDw==}
+    dev: true
 
   /@types/n3/1.10.4:
     resolution: {integrity: sha512-FfRTwcbXcScVHuAjIASveRWL6Fi6fPALl1Ge8tMESYLqU7R42LJvtdBpUi+f9YK0oQPqIN+zFFgMDFJfLMx0bg==}

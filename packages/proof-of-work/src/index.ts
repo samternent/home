@@ -1,11 +1,37 @@
 import { hashData } from "@concords/utils";
 
-interface Block {}
+interface IProof {
+  proof: string;
+  nonce: number;
+}
 
-async function proofOfWork(block, difficulty) {
+interface IRecord {
+  id: string;
+  timestamp: number;
+  signature: string;
+  identity: { x: string; y: string };
+  data?: Object;
+}
+
+interface IBlock {
+  records: Array<IRecord>;
+  timestamp: number;
+  last_hash: string;
+  hash?: string;
+  nonce?: number;
+}
+
+interface ILedger {
+  chain: Array<IBlock>;
+  pending_records: Array<IRecord>;
+  difficulty: number;
+  id: string;
+}
+
+async function proofOfWork(block: IBlock, difficulty: number): Promise<IProof> {
   let nonce = 0;
-  const findHash = async (block) => {
-    let hash = await hashData(block);
+  const findHash = async (block: IBlock) => {
+    let hash: string = await hashData(block);
     if (hash.substring(0, difficulty) !== Array(difficulty + 1).join("0")) {
       nonce = nonce + 1;
       hash = await findHash({
@@ -20,7 +46,11 @@ async function proofOfWork(block, difficulty) {
   return { proof: hash, nonce };
 }
 
-export async function isValidProof(block, hash, difficulty) {
+export async function isValidProof(
+  block: IBlock,
+  hash: string,
+  difficulty: number
+): Promise<boolean> {
   const blockHash = await hashData(block);
   return (
     hash.substring(0, difficulty) === Array(difficulty + 1).join("0") &&
@@ -28,15 +58,15 @@ export async function isValidProof(block, hash, difficulty) {
   );
 }
 
-export function addRecord(record, ledger) {
+export function addRecord(record: IRecord, ledger: ILedger): ILedger {
   return {
     ...ledger,
     pending_records: Array.from(new Set([...ledger.pending_records, record])),
   };
 }
 
-export async function mine(ledger, extra) {
-  if (!ledger.pending_records.length) {
+export async function mine(ledger: ILedger, extra: Object): Promise<ILedger> {
+  if (!ledger.pending_records?.length) {
     return ledger;
   }
   const lastBlock = ledger.chain[ledger.chain.length - 1];
@@ -51,7 +81,7 @@ export async function mine(ledger, extra) {
   };
 }
 
-function isChainValid(chain) {
+function isChainValid(chain: Array<IBlock>): boolean {
   for (let i = 1; i < chain.length; i++) {
     const currentBlock = chain[i];
     const previousBlock = chain[i - 1];
@@ -63,7 +93,7 @@ function isChainValid(chain) {
   return true;
 }
 
-async function addBlock(ledger, block, proof) {
+function addBlock(ledger: ILedger, block: IBlock, proof: string): ILedger {
   const lastBlock = ledger.chain[ledger.chain.length - 1];
 
   if (lastBlock.hash !== block.last_hash) {
@@ -87,7 +117,11 @@ async function addBlock(ledger, block, proof) {
   };
 }
 
-function createBlock(records = [], last_hash = "0", extra = {}) {
+function createBlock(
+  records: Array<IRecord> = [],
+  last_hash: string = "0",
+  extra: Object = {}
+): IBlock {
   return {
     records,
     timestamp: Date.now(),
@@ -96,23 +130,25 @@ function createBlock(records = [], last_hash = "0", extra = {}) {
   };
 }
 
-async function createGenesisBlock(record) {
+async function createGenesisBlock(record: IRecord): Promise<IBlock> {
   const timestamp = Date.now();
   const hash = await hashData({ ...record, timestamp });
-  const block = createBlock([
-    {
-      ...record,
-      timestamp,
-      id: hash,
-    },
-  ]);
+  const block = createBlock(
+    [
+      {
+        ...record,
+        timestamp,
+      },
+    ],
+    "0"
+  );
   return {
     ...block,
     hash,
   };
 }
 
-export function consensus(ledgers) {
+export function consensus(ledgers: Array<ILedger>): ILedger {
   let longest = ledgers[0];
 
   ledgers.forEach((ledger) => {
@@ -127,13 +163,16 @@ export function consensus(ledgers) {
   return longest;
 }
 
-export async function createLedger(record, difficulty) {
+export async function createLedger(
+  record: IRecord,
+  difficulty: number
+): Promise<ILedger> {
   const genesisBlock = await createGenesisBlock(record);
 
   return {
     difficulty,
     pending_records: [],
     chain: [genesisBlock],
-    id: genesisBlock.hash,
+    id: genesisBlock.hash || "0",
   };
 }
