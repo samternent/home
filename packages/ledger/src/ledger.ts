@@ -1,10 +1,9 @@
 import { hashData } from "@concords/utils";
 import { addRecord, createLedger, mine } from "@concords/proof-of-work";
 import { sign, exportPublicKeyAsPem } from "@concords/identity";
-import { encrypt } from "@concords/encrypt";
 
-function generateId() {
-  const uint32 = window.crypto.getRandomValues(new Uint32Array(1))[0];
+function generateId(): string {
+  const uint32 = crypto.getRandomValues(new Uint32Array(1))[0];
   return uint32.toString(16);
 }
 
