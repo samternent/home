@@ -58,7 +58,7 @@ watchEffect(async () => {
     class="p-4 text-white md:flex md:items-center md:justify-between md:p-6"
   >
     <span class="text-sm sm:text-center text-gray-200">
-      <a href="https://www.concords.app/" class="league-link"
+      <a href="https://www.teamconcords.com" class="league-link"
         >Team Concords Limited</a
       >
       © 2022.
