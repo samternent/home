@@ -23,22 +23,18 @@ watchEffect(async () => {
 </script>
 <template>
   <div
-    class="w-full flex-1 mx-auto max-w-6xl px-2 flex justify-center flex-col"
+    class="w-full flex-1 mx-auto max-w-6xl px-8 flex justify-center flex-col"
   >
-    <h1
-      v-if="keys"
-      class="text-3xl md:text-5xl text-[#d3d3d3] font-light tracking-tighter mt-12 md:mt-16"
-    >
-      <!-- concords.app -->
-    </h1>
-    <div class="text-2xl md:text-4xl text-[#adadad] pt-4 font-thin">
-      <span class="text-pink-500 font-medium">Concord: </span>
-      <span class="text-yellow-500">noun.</span>
-      <p>agreement or harmony between people or groups.</p>
+    <div class="text-3xl text-white pt-4 font-light">
+      <span class="font-medium text-5xl">concord: </span>
+      <span class="text-5xl font-thin">noun.</span>
+      <p class="text-white font-thin">
+        <em>agreement or harmony between people or groups.</em>
+      </p>
       <p class="mt-4 text-xl">
-        <span class="text-xl font-medium text-yellow-500">Secure by design</span
-        >. <strong>ECDSA Identity & Age Encryption</strong> protected document
-        data files.
+        <span class="text-2xl font-medium">Secure by design</span>.
+        <strong>ECDSA Identity & Age Encryption</strong> protected document data
+        files.
       </p>
       <ul class="text-lg my-8 px-4">
         <li class="pl-2">Granular permissions with Age encryption.</li>
@@ -57,13 +53,13 @@ watchEffect(async () => {
   <footer
     class="p-4 text-white md:flex md:items-center md:justify-between md:p-6"
   >
-    <span class="text-sm sm:text-center text-gray-200">
+    <span class="text-sm sm:text-center text-white">
       <a href="https://www.teamconcords.com" class="league-link"
         >Team Concords Limited</a
       >
       © 2022.
     </span>
-    <ul class="flex flex-wrap items-center mt-3 text-sm text-gray-400 sm:mt-0">
+    <ul class="flex flex-wrap items-center mt-3 text-sm text-white sm:mt-0">
       <!-- <li>
         <RouterLink to="/company/about" class="mr-4 hover:underline md:mr-6"
           >About</RouterLink
