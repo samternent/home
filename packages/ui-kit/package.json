@@ -2,8 +2,8 @@
   "name": "@concords/vue",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/vue.umd.js",
-  "module": "dist/vue.es.js",
+  "main": "dist/ui-kit.umd.js",
+  "module": "dist/ui-kit.es.js",
   "scripts": {
     "dev": "vite build --watch",
     "build": "vite build",
