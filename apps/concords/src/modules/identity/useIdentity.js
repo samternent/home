@@ -1,7 +1,7 @@
 import { provide, inject, shallowRef } from "vue";
 import { useLocalStorage } from "@vueuse/core";
 import {
-  generate,
+  createIdentity,
   exportPrivateKeyAsPem,
   exportPublicKeyAsPem,
   importPrivateKeyFromPem,
@@ -21,7 +21,7 @@ function Identity() {
   async function init() {
     let keys = {};
     if (!publicKeyPEM.value || !privateKeyPEM.value) {
-      keys = await generate();
+      keys = await createIdentity();
       publicKeyPEM.value = await exportPublicKeyAsPem(keys.publicKey);
       privateKeyPEM.value = await exportPrivateKeyAsPem(keys.privateKey);
     } else {

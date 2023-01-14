@@ -111,3 +111,20 @@ abbr {
 .mention {
   color: var(--title-box-color);
 }
+
+.animate {
+  animation-duration: 0.5s;
+  animation-name: animate-fade;
+  animation-fill-mode: backwards;
+}
+
+@keyframes animate-fade {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

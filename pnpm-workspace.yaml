@@ -4,7 +4,6 @@ packages:
   - "packages/utils"
   - "packages/proof-of-work"
   - "packages/ledger"
-  - "packages/vue"
   - "apps/footballsocial"
   - "apps/teamconcords"
   - "apps/concords"

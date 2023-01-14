@@ -1,25 +1,5 @@
 <script lang="ts" setup>
 import { onMounted, ShallowRef, shallowRef, watchEffect } from "vue";
-import {
-  createIdentity,
-  exportPublicKeyAsPem,
-  exportPrivateKeyAsPem,
-} from "@concords/identity";
-
-const keys: ShallowRef<CryptoKeyPair | null> = shallowRef(null);
-
-onMounted(async () => {
-  keys.value = await createIdentity();
-});
-const publicKey: ShallowRef<string | null> = shallowRef(null);
-const privateKey: ShallowRef<string | null> = shallowRef(null);
-
-watchEffect(async () => {
-  if (keys.value) {
-    publicKey.value = await exportPublicKeyAsPem(keys.value?.publicKey);
-    privateKey.value = await exportPrivateKeyAsPem(keys.value?.privateKey);
-  }
-});
 </script>
 <template>
   <div
@@ -35,7 +15,7 @@ watchEffect(async () => {
       <p class="mt-4 text-xl">
         <span class="text-2xl font-medium">Secure by design</span>. An
         <strong>anonymous</strong>
-        web app, using ECDSA Identity & Age Encryption for protected document
+        ledger app, using ECDSA Identity & Age Encryption for protected document
         data files.
       </p>
       <div class="mt-12 mb-8 flex text-2xl items-center w-full">
@@ -43,7 +23,7 @@ watchEffect(async () => {
           to="/l/create"
           class="px-4 py-2 text-lg bg-green-600 hover:bg-green-700 transition-all rounded-full flex items-center font-medium"
         >
-          Get started...
+          Create
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -60,6 +40,7 @@ watchEffect(async () => {
           </svg>
         </RouterLink>
       </div>
+      <!-- <div class="mt-12 mb-8 flex text-2xl items-center w-full">or</div> -->
 
       <!-- <ul class="text-lg my-8 px-6 py-4 rounded-xl">
         <li class="pl-2">Granular permissions with Age encryption.</li>
@@ -71,8 +52,6 @@ watchEffect(async () => {
           Storage agnostic. Supports raw and encrypted JSON download/upload.
         </li>
       </ul> -->
-      <!-- <pre class="text-sm">{{ publicKey }}</pre>
-      <pre class="text-sm">{{ privateKey }}</pre> -->
     </div>
   </div>
   <footer
@@ -85,7 +64,7 @@ watchEffect(async () => {
       © 2022.
     </span>
     <ul class="flex flex-wrap items-center mt-3 text-sm text-white sm:mt-0">
-      <!-- <li>
+      <li>
         <RouterLink to="/company/about" class="mr-4 hover:underline md:mr-6"
           >About</RouterLink
         >
@@ -104,12 +83,12 @@ watchEffect(async () => {
         <RouterLink to="/company/contact" class="mr-4 hover:underline md:mr-6"
           >Contact</RouterLink
         >
-      </li> -->
+      </li>
     </ul>
   </footer>
 </template>
-<style>
-@counter-style repeating-emoji {
+<style scoped>
+/* @counter-style repeating-emoji {
   system: cyclic;
   symbols: "🔒" "🔐" "🔏" "⚡" "🤓" "💾";
   suffix: " ";
@@ -117,22 +96,5 @@ watchEffect(async () => {
 
 ul {
   list-style-type: repeating-emoji;
-}
-
-.animate {
-  animation-duration: 0.5s;
-  animation-name: animate-fade;
-  animation-fill-mode: backwards;
-}
-
-@keyframes animate-fade {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+} */
 </style>

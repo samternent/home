@@ -2,12 +2,8 @@ import { shallowRef, provide, inject, onMounted } from "vue";
 import { useLocalStorage } from "@vueuse/core";
 import { createLedger, useLokiPlugin } from "@concords/ledger";
 
-import { useIdentity } from "@/modules/identity";
-import {
-  useEncryption,
-  encrypt,
-  generateEncryptionKeys,
-} from "@/modules/encryption";
+import { useIdentity } from "../identity";
+import { useEncryption, encrypt, generateEncryptionKeys } from "../encryption";
 
 const useLedgerSymbol = Symbol("useLedger");
 
@@ -59,7 +55,7 @@ function Ledger(tables = ["users", "permissions"]) {
 
   onMounted(init);
 
-  async function createPermission(title) {
+  async function createPermission(title: String) {
     const [encryptionSecret, encryptionPublic] = await generateEncryptionKeys();
     return ledgerApi.add(
       {
@@ -72,7 +68,7 @@ function Ledger(tables = ["users", "permissions"]) {
       "permissions"
     );
   }
-  async function addEncrypted(data) {
+  async function addEncrypted(data: Object) {
     const myKey = publicKeyIdentityPEM.value;
     const permission = getCollection("permissions").findOne({
       "data.user": myKey,
@@ -89,11 +85,11 @@ function Ledger(tables = ["users", "permissions"]) {
           JSON.stringify({ ...data, id: generateId() })
         ),
       },
-      "todos"
+      "items"
     );
   }
-  async function addItem() {
-    return ledgerApi.add({ ...data, id: generateId() }, "todos");
+  async function addItem(data: Object, collection: String = "items") {
+    return ledgerApi.add({ ...data, id: generateId() }, collection);
   }
 
   return {

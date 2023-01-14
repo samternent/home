@@ -29,4 +29,9 @@ export default defineConfig({
     }),
     Markdown(),
   ],
+  resolve: {
+    alias: {
+      "@": resolve(__dirname, "src"),
+    },
+  },
 });
