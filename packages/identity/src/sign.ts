@@ -1,6 +1,6 @@
 import { b64encode } from "@concords/utils";
 
-export async function sign(signingKey: CryptoKey, data: string) {
+export async function sign(signingKey: CryptoKey, data: any) {
   const dataBuffer = new TextEncoder().encode(JSON.stringify(data));
   const signatureBuffer = await crypto.subtle.sign(
     {

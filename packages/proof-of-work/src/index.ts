@@ -1,19 +1,23 @@
 import { hashData } from "@concords/utils";
 
-interface IProof {
+export interface IProof {
   proof: string;
   nonce: number;
 }
 
-interface IRecord {
+export interface IRecord {
   id: string;
   timestamp: number;
-  signature: string;
-  identity: { x: string; y: string };
-  data?: Object;
+  signature?: string;
+  identity: string;
+  data?: {
+    [key: string]: any;
+  };
+  encrypted?: string;
+  collection?: string;
 }
 
-interface IBlock {
+export interface IBlock {
   records: Array<IRecord>;
   timestamp: number;
   last_hash: string;
@@ -21,7 +25,7 @@ interface IBlock {
   nonce?: number;
 }
 
-interface ILedger {
+export interface ILedger {
   chain: Array<IBlock>;
   pending_records: Array<IRecord>;
   difficulty: number;

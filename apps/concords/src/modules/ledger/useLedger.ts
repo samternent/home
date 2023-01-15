@@ -1,6 +1,12 @@
 import { shallowRef, provide, inject, onMounted } from "vue";
 import { useLocalStorage } from "@vueuse/core";
 import { createLedger, useLokiPlugin } from "@concords/ledger";
+import {
+  stripIdentityKey,
+  formatIdentityKey,
+  stripEncryptionFile,
+  formatEncryptionFile,
+} from "@concords/utils";
 
 import { useIdentity } from "../identity";
 import { useEncryption, encrypt, generateEncryptionKeys } from "../encryption";
@@ -59,19 +65,21 @@ function Ledger(tables = ["users", "permissions"]) {
     const [encryptionSecret, encryptionPublic] = await generateEncryptionKeys();
     return ledgerApi.add(
       {
-        user: publicKeyIdentityPEM.value,
+        user: stripIdentityKey(publicKeyIdentityPEM.value),
         title,
         public: encryptionPublic,
-        secret: await encrypt(publicKeyEncryption.value, encryptionSecret),
+        secret: stripEncryptionFile(
+          await encrypt(publicKeyEncryption.value, encryptionSecret)
+        ),
         id: generateId(),
       },
       "permissions"
     );
   }
-  async function addEncrypted(data: Object) {
+  async function addEncrypted(data: Object, collection: String = "items") {
     const myKey = publicKeyIdentityPEM.value;
     const permission = getCollection("permissions").findOne({
-      "data.user": myKey,
+      "data.user": stripIdentityKey(myKey),
     });
     if (!permission) {
       console.log("No permission");
@@ -80,12 +88,14 @@ function Ledger(tables = ["users", "permissions"]) {
     return ledgerApi.add(
       {
         permission: permission.id,
-        encrypted: await encrypt(
-          permission.data.public,
-          JSON.stringify({ ...data, id: generateId() })
+        encrypted: stripEncryptionFile(
+          await encrypt(
+            permission.data.public,
+            JSON.stringify({ ...data, id: generateId() })
+          )
         ),
       },
-      "items"
+      collection
     );
   }
   async function addItem(data: Object, collection: String = "items") {
@@ -94,7 +104,6 @@ function Ledger(tables = ["users", "permissions"]) {
 
   return {
     ledger,
-    db,
     createPermission,
     addEncrypted,
     addItem,

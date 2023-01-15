@@ -1,11 +1,15 @@
 import loki from "lokijs";
 import { decrypt } from "@concords/encrypt";
+import { formatEncryptionFile } from "@concords/utils";
+import type { ILedger, IRecord } from "@concords/proof-of-work";
 
-export default (name = "ledger", myKey) => {
-  let collection;
-  const collections = {};
+export default (name = "ledger", myKey: string) => {
+  let collection: Collection<any>;
+  const collections: {
+    [key: string]: Collection<any>;
+  } = {};
 
-  function createCollection({ ledger }) {
+  function createCollection({ ledger }: { ledger: ILedger }) {
     collection = db.addCollection(ledger.id, { disableMeta: true });
     collections.users = db.addCollection("users", {
       disableMeta: true,
@@ -16,12 +20,12 @@ export default (name = "ledger", myKey) => {
 
   return {
     db,
-    getCollection: (col) => collections[col] || collection,
+    getCollection: (col: string) => collections[col] || collection,
     plugin: {
       onLoad: createCollection,
-      async onAdd(record) {
+      async onAdd(record: IRecord) {
         if (!record.data && !record.encrypted) return;
-        if (record.data.permission) {
+        if (record.data?.permission) {
           const permission = collections.permissions.findOne({
             id: record.data.permission,
           })?.data;
@@ -30,9 +34,15 @@ export default (name = "ledger", myKey) => {
             console.error(`'${record.data.permission}' permission not found`);
           } else {
             try {
-              const decrypted = await decrypt(myKey, permission.secret);
+              const decrypted = await decrypt(
+                myKey,
+                formatEncryptionFile(permission.secret)
+              );
               record.data = JSON.parse(
-                await decrypt(decrypted, record.data.encrypted)
+                await decrypt(
+                  decrypted,
+                  formatEncryptionFile(record.data.encrypted)
+                )
               );
             } catch (e) {
               console.error(e);
@@ -56,7 +66,7 @@ export default (name = "ledger", myKey) => {
           ? collection
           : collections[record.collection];
 
-        const item = col.findOne({ "data.id": record.data.id });
+        const item = col.findOne({ "data.id": record.data?.id });
 
         if (item) {
           col.update({ ...item, ...record });

@@ -12,6 +12,26 @@ export function removeLines(str: string): string {
   return str.replace("\n", "");
 }
 
+export function stripIdentityKey(key: string) {
+  return key
+    .replace("-----BEGIN PUBLIC KEY-----\n", "")
+    .replace("\n-----END PUBLIC KEY-----", "");
+}
+
+export function formatIdentityKey(key: string) {
+  return `-----BEGIN PUBLIC KEY-----\n${key}\n-----END PUBLIC KEY-----`;
+}
+
+export function stripEncryptionFile(file: string) {
+  return file
+    .replace("-----BEGIN AGE ENCRYPTED FILE-----\n", "")
+    .replace("\n-----END AGE ENCRYPTED FILE-----\n", "");
+}
+
+export function formatEncryptionFile(file: string) {
+  return `-----BEGIN AGE ENCRYPTED FILE-----\n${file}\n-----END AGE ENCRYPTED FILE-----\n`;
+}
+
 export function arrayBufferToBase64(arrayBuffer: ArrayBuffer): string {
   const byteArray = new Uint8Array(arrayBuffer);
   let byteString = "";

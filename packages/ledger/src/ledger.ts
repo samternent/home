@@ -1,55 +1,72 @@
 import { hashData } from "@concords/utils";
-import { addRecord, createLedger, mine } from "@concords/proof-of-work";
+import {
+  addRecord,
+  createLedger,
+  IRecord,
+  mine,
+} from "@concords/proof-of-work";
 import { sign, exportPublicKeyAsPem } from "@concords/identity";
+import type { ILedger } from "@concords/proof-of-work";
+import {
+  stripIdentityKey,
+  formatIdentityKey,
+  stripEncryptionFile,
+  formatEncryptionFile,
+} from "@concords/utils";
 
 function generateId(): string {
   const uint32 = crypto.getRandomValues(new Uint32Array(1))[0];
   return uint32.toString(16);
 }
 
-const availableHooks = [
-  "onAuth",
-  "onLoad",
-  "onReady",
-  "onCreate",
-  "onUpdate",
-  "onUnload",
-  "onBeforeReplay",
-  "onReplay",
-  "onCommit",
-  "onAdd",
-  "onDestroy",
-];
+interface ILedgerConfig {
+  plugins: Array<Function>;
+  ledger: ILedger | null;
+  secret?: string;
+  identity?: string;
+}
+
+interface IHooks {
+  [key: string]: Array<Function>;
+}
 
 export default function useLedger(
-  config = {
+  config: ILedgerConfig = {
     plugins: [],
     ledger: null,
   }
 ) {
-  const state = {
+  const state: {
+    ledger: ILedger | null;
+    signingKey: CryptoKey | null;
+    publicKey: CryptoKey | null;
+  } = {
     ledger: null,
     signingKey: null,
     publicKey: null,
   };
 
-  const hooks = availableHooks.reduce(
-    (acc, curr) => ({
-      ...acc,
-      [curr]: [],
-    }),
-    {}
-  );
+  const hooks: IHooks = {
+    onAuth: [],
+    onLoad: [],
+    onReady: [],
+    onCreate: [],
+    onUpdate: [],
+    onUnload: [],
+    onBeforeReplay: [],
+    onReplay: [],
+    onCommit: [],
+    onAdd: [],
+    onDestroy: [],
+  };
 
   config.plugins.forEach((plugin) => {
-    availableHooks.forEach((hook) => {
-      if (plugin[hook]) {
-        hooks[hook] = [...hooks[hook], plugin[hook]];
-      }
+    Object.entries(plugin).forEach(([key, val]) => {
+      hooks[key].push(val);
     });
   });
 
-  async function runHooks(type, props = {}) {
+  async function runHooks(type: string, props = {}) {
     let i = 0;
     let len = hooks[type].length;
     for (; i < len; i++) {
@@ -57,7 +74,7 @@ export default function useLedger(
     }
   }
 
-  async function auth(signKey, verifyKey) {
+  async function auth(signKey: CryptoKey, verifyKey: CryptoKey) {
     state.signingKey = signKey;
     state.publicKey = verifyKey;
 
@@ -65,14 +82,16 @@ export default function useLedger(
   }
 
   async function create(genesisRecord = {}, difficulty = 1) {
+    if (!state.publicKey || !state.signingKey) return;
+
     const timestamp = Date.now();
     const id = await hashData(`${timestamp}`);
 
-    const record = {
+    const record: IRecord = {
       ...genesisRecord,
       id,
       timestamp,
-      identity: await exportPublicKeyAsPem(state.publicKey),
+      identity: stripIdentityKey(await exportPublicKeyAsPem(state.publicKey)),
     };
 
     const signature = await sign(state.signingKey, JSON.stringify(record));
@@ -90,7 +109,7 @@ export default function useLedger(
     return state.ledger;
   }
 
-  async function load(ledger, shouldReplay = true) {
+  async function load(ledger: ILedger, shouldReplay = true) {
     state.ledger = ledger;
     await runHooks("onLoad", state);
     if (shouldReplay) {
@@ -101,8 +120,17 @@ export default function useLedger(
     return ledger;
   }
 
-  const add = async (data, collection, { silent = false } = {}) => {
+  async function add(
+    data: Object,
+    collection: string,
+    { silent = false } = {}
+  ): Promise<IRecord | void> {
     if (!state.signingKey) {
+      console.warn("Cannot add record: signingKey not verified");
+      return;
+    }
+
+    if (!state.publicKey) {
       console.warn("Cannot add record: signingKey not verified");
       return;
     }
@@ -114,10 +142,11 @@ export default function useLedger(
 
     const timestamp = Date.now();
 
-    const record = {
+    const record: IRecord = {
+      id: "",
       data,
       timestamp,
-      identity: await exportPublicKeyAsPem(state.publicKey),
+      identity: stripIdentityKey(await exportPublicKeyAsPem(state.publicKey)),
     };
 
     if (collection) {
@@ -138,17 +167,18 @@ export default function useLedger(
     }
 
     return signedRecord;
-  };
+  }
 
-  async function replay(from, to) {
+  async function replay(from?: string, to?: string) {
     if (!state.ledger) {
       console.warn("Cannot replay: ledger not loaded");
       return;
     }
 
     const { chain, pending_records } = state.ledger;
+
     const records = [
-      ...chain.reduce((acc, block) => [...acc, ...block.records], []),
+      ...chain.map((block) => block.records).flat(),
       ...pending_records.map((r) => ({ ...r })),
     ].sort((a, b) => a.timestamp - b.timestamp);
 
@@ -175,25 +205,22 @@ export default function useLedger(
     await runHooks("onDestroy", state);
   }
 
-  async function commit(message) {
+  async function commit(message: string) {
+    if (!state.ledger) return;
     state.ledger = await mine(state.ledger, { message });
     await runHooks("onCommit", state);
     await runHooks("onUpdate", state);
     return state.ledger;
   }
 
-  if (config.secret && config.identity) {
-    auth(config);
-    if (config.ledger) {
-      load(config.ledger);
-    }
-  }
-
   async function squashRecords() {
-    const lookup = {};
+    if (!state.ledger) return;
+    const lookup: {
+      [key: string]: any;
+    } = {};
     for (let i = 0; i < state.ledger.pending_records.length; i++) {
-      const record = state.ledger.pending_records[i];
-
+      const record: IRecord = state.ledger.pending_records[i];
+      if (!record.collection || !record.data) return;
       lookup[`${record.data.id}_${record.collection}`] = {
         data: {
           ...(lookup[`${record.data.id}_${record.collection}`]?.data || {}),
@@ -205,26 +232,29 @@ export default function useLedger(
 
     state.ledger.pending_records = [];
 
-    const squashedRecords = Object.values(lookup).map((record) => {
-      return new Promise(async (resolve, reject) => {
-        try {
-          resolve(
-            await add(
+    const squashedRecords: Array<Promise<IRecord>> = Object.values(lookup).map(
+      (record) => {
+        return new Promise(async (resolve, reject) => {
+          try {
+            const _record = await add(
               {
                 id: generateId(),
                 ...record.data,
               },
               record.collection,
               { silent: true }
-            )
-          );
-        } catch (e) {
-          reject(e);
-        }
-      });
-    });
+            );
+            if (_record) {
+              resolve(_record);
+            }
+          } catch (e) {
+            reject(e);
+          }
+        });
+      }
+    );
 
-    const pending_records = await Promise.all(squashedRecords);
+    const pending_records: Array<IRecord> = await Promise.all(squashedRecords);
     state.ledger.pending_records = pending_records;
     await runHooks("onUpdate", state);
   }

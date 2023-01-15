@@ -4,22 +4,16 @@ export const ledgerRoutes = [
     component: () => import("./RouteLedger.vue"),
     children: [
       {
-        path: "create",
-        component: () => import("./RouteLedgerCreate.vue"),
-        children: [
-          {
-            path: "",
-            component: () => import("./RouteLedgerCreateHome.vue"),
-          },
-          {
-            path: "list",
-            component: () => import("./RouteLedgerCreateList.vue"),
-          },
-          {
-            path: "board",
-            component: () => import("./RouteLedgerCreateBoard.vue"),
-          },
-        ],
+        path: "",
+        component: () => import("./RouteLedgerHome.vue"),
+      },
+      {
+        path: "permissions",
+        component: () => import("./RouteLedgerPermissions.vue"),
+      },
+      {
+        path: "people",
+        component: () => import("./RouteLedgerPeople.vue"),
       },
     ],
   },
