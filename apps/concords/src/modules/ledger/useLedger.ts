@@ -1,15 +1,12 @@
 import { shallowRef, provide, inject, onMounted } from "vue";
 import { useLocalStorage } from "@vueuse/core";
 import { createLedger, useLokiPlugin } from "@concords/ledger";
-import {
-  stripIdentityKey,
-  formatIdentityKey,
-  stripEncryptionFile,
-  formatEncryptionFile,
-} from "@concords/utils";
+import { stripIdentityKey, stripEncryptionFile } from "@concords/utils";
 
 import { useIdentity } from "../identity";
 import { useEncryption, encrypt, generateEncryptionKeys } from "../encryption";
+
+import type { ILedger } from "@concords/proof-of-work";
 
 const useLedgerSymbol = Symbol("useLedger");
 
@@ -19,8 +16,8 @@ function generateId() {
 }
 
 function Ledger(tables = ["users", "permissions"]) {
-  const ledgerStorage = useLocalStorage("concords/ledger", null);
-  const ledger = shallowRef(null);
+  const ledgerStorage = useLocalStorage<string>("concords/ledger", "");
+  const ledger = shallowRef<ILedger | null>(null);
 
   const {
     privateKey: privateKeyIdentity,
@@ -40,11 +37,11 @@ function Ledger(tables = ["users", "permissions"]) {
     plugins: [
       lokiPlugin,
       {
-        onReady({ ledger: _ledger }) {
+        onReady({ ledger: _ledger }: { ledger: ILedger }) {
           ledgerStorage.value = JSON.stringify(_ledger);
           ledger.value = _ledger;
         },
-        onUpdate({ ledger: _ledger }) {
+        onUpdate({ ledger: _ledger }: { ledger: ILedger }) {
           ledgerStorage.value = JSON.stringify(_ledger);
           ledger.value = _ledger;
         },
@@ -53,6 +50,7 @@ function Ledger(tables = ["users", "permissions"]) {
   });
 
   async function init() {
+    if (!privateKeyIdentity.value || !publicKeyIdentity.value) return;
     await ledgerApi.auth(privateKeyIdentity.value, publicKeyIdentity.value);
     ledgerStorage.value
       ? await ledgerApi.load(JSON.parse(ledgerStorage.value))
@@ -76,7 +74,7 @@ function Ledger(tables = ["users", "permissions"]) {
       "permissions"
     );
   }
-  async function addEncrypted(data: Object, collection: String = "items") {
+  async function addEncrypted(data: Object, collection: string = "items") {
     const myKey = publicKeyIdentityPEM.value;
     const permission = getCollection("permissions").findOne({
       "data.user": stripIdentityKey(myKey),
@@ -98,7 +96,7 @@ function Ledger(tables = ["users", "permissions"]) {
       collection
     );
   }
-  async function addItem(data: Object, collection: String = "items") {
+  async function addItem(data: Object, collection: string = "items") {
     return ledgerApi.add({ ...data, id: generateId() }, collection);
   }
 

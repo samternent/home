@@ -16,6 +16,7 @@ importers:
       '@concords/encrypt': workspace:*
       '@concords/identity': workspace:*
       '@concords/ledger': workspace:*
+      '@concords/proof-of-work': workspace:*
       '@concords/utils': workspace:*
       '@supabase/supabase-js': ^2.1.1
       '@tailwindcss/line-clamp': ^0.4.2
@@ -65,6 +66,7 @@ importers:
       '@concords/encrypt': link:../../packages/encrypt
       '@concords/identity': link:../../packages/identity
       '@concords/ledger': link:../../packages/ledger
+      '@concords/proof-of-work': link:../../packages/proof-of-work
       '@concords/utils': link:../../packages/utils
       '@supabase/supabase-js': 2.1.1
       '@tailwindcss/line-clamp': 0.4.2_tailwindcss@3.2.4

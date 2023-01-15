@@ -3,13 +3,13 @@ import { decrypt } from "@concords/encrypt";
 import { formatEncryptionFile } from "@concords/utils";
 import type { ILedger, IRecord } from "@concords/proof-of-work";
 
-export default (name = "ledger", myKey: string) => {
+export default function useLokiPlugin(name = "ledger", myKey: string) {
   let collection: Collection<any>;
   const collections: {
     [key: string]: Collection<any>;
   } = {};
 
-  function createCollection({ ledger }: { ledger: ILedger }) {
+  function createCollection({ ledger }: { ledger: ILedger }): void {
     collection = db.addCollection(ledger.id, { disableMeta: true });
     collections.users = db.addCollection("users", {
       disableMeta: true,
@@ -76,4 +76,4 @@ export default (name = "ledger", myKey: string) => {
       },
     },
   };
-};
+}

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { shallowRef, watch } from "vue";
 import { useLedger } from "@/modules/ledger";
-import type { IRecord } from "@concords/proof-of-wrok";
+import type { IRecord } from "@concords/proof-of-work";
 
 interface dynamicObject {
   [key: string]: string | number;

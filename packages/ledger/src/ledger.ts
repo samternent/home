@@ -7,12 +7,7 @@ import {
 } from "@concords/proof-of-work";
 import { sign, exportPublicKeyAsPem } from "@concords/identity";
 import type { ILedger } from "@concords/proof-of-work";
-import {
-  stripIdentityKey,
-  formatIdentityKey,
-  stripEncryptionFile,
-  formatEncryptionFile,
-} from "@concords/utils";
+import { stripIdentityKey } from "@concords/utils";
 
 function generateId(): string {
   const uint32 = crypto.getRandomValues(new Uint32Array(1))[0];
@@ -20,8 +15,8 @@ function generateId(): string {
 }
 
 interface ILedgerConfig {
-  plugins: Array<Function>;
-  ledger: ILedger | null;
+  plugins: Array<Object>;
+  ledger?: ILedger | null;
   secret?: string;
   identity?: string;
 }

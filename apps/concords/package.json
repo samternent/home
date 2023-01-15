@@ -13,6 +13,7 @@
     "@concords/encrypt": "workspace:*",
     "@concords/identity": "workspace:*",
     "@concords/ledger": "workspace:*",
+    "@concords/proof-of-work": "workspace:*",
     "@concords/utils": "workspace:*",
     "@supabase/supabase-js": "^2.1.1",
     "@tailwindcss/line-clamp": "^0.4.2",
