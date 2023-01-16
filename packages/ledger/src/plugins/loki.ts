@@ -1,9 +1,13 @@
 import loki from "lokijs";
 import { decrypt } from "@concords/encrypt";
-import { formatEncryptionFile } from "@concords/utils";
+import { formatEncryptionFile, stripIdentityKey } from "@concords/utils";
 import type { ILedger, IRecord } from "@concords/proof-of-work";
 
-export default function useLokiPlugin(name = "ledger", myKey: string) {
+export default function useLokiPlugin(
+  name = "ledger",
+  myPublicIdentity: string,
+  myPrivateEncryption: string
+) {
   let collection: Collection<any>;
   const collections: {
     [key: string]: Collection<any>;
@@ -26,8 +30,10 @@ export default function useLokiPlugin(name = "ledger", myKey: string) {
       async onAdd(record: IRecord) {
         if (!record.data && !record.encrypted) return;
         if (record.data?.permission) {
+          // Something wrong with how we add identities
           const permission = collections.permissions.findOne({
-            id: record.data.permission,
+            "data.title": record.data.permission,
+            "data.identity": stripIdentityKey(myPublicIdentity),
           })?.data;
 
           if (!permission) {
@@ -35,7 +41,7 @@ export default function useLokiPlugin(name = "ledger", myKey: string) {
           } else {
             try {
               const decrypted = await decrypt(
-                myKey,
+                myPrivateEncryption,
                 formatEncryptionFile(permission.secret)
               );
               record.data = JSON.parse(

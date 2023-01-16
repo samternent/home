@@ -7,6 +7,7 @@ import {
   importPrivateKeyFromPem,
   importPublicKeyFromPem,
 } from "@concords/identity";
+import { stripIdentityKey } from "@concords/utils";
 
 const useIdentitySymbol = Symbol("useIdentity");
 
@@ -22,7 +23,9 @@ function Identity() {
     let keys = {};
     if (!publicKeyPEM.value || !privateKeyPEM.value) {
       keys = await createIdentity();
-      publicKeyPEM.value = await exportPublicKeyAsPem(keys.publicKey);
+      publicKeyPEM.value = stripIdentityKey(
+        await exportPublicKeyAsPem(keys.publicKey)
+      );
       privateKeyPEM.value = await exportPrivateKeyAsPem(keys.privateKey);
     } else {
       keys.publicKey = await importPublicKeyFromPem(publicKeyPEM.value);

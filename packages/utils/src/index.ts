@@ -32,6 +32,11 @@ export function formatEncryptionFile(file: string) {
   return `-----BEGIN AGE ENCRYPTED FILE-----\n${file}\n-----END AGE ENCRYPTED FILE-----\n`;
 }
 
+export function generateId() {
+  const uint32 = window.crypto.getRandomValues(new Uint32Array(1))[0];
+  return uint32.toString(16);
+}
+
 export function arrayBufferToBase64(arrayBuffer: ArrayBuffer): string {
   const byteArray = new Uint8Array(arrayBuffer);
   let byteString = "";

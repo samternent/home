@@ -7,12 +7,7 @@ import {
 } from "@concords/proof-of-work";
 import { sign, exportPublicKeyAsPem } from "@concords/identity";
 import type { ILedger } from "@concords/proof-of-work";
-import { stripIdentityKey } from "@concords/utils";
-
-function generateId(): string {
-  const uint32 = crypto.getRandomValues(new Uint32Array(1))[0];
-  return uint32.toString(16);
-}
+import { stripIdentityKey, generateId } from "@concords/utils";
 
 interface ILedgerConfig {
   plugins: Array<Object>;
@@ -76,17 +71,17 @@ export default function useLedger(
     await runHooks("onAuth");
   }
 
-  async function create(genesisRecord = {}, difficulty = 1) {
+  async function create(data = {}, difficulty = 1) {
     if (!state.publicKey || !state.signingKey) return;
 
     const timestamp = Date.now();
     const id = await hashData(`${timestamp}`);
-
     const record: IRecord = {
-      ...genesisRecord,
       id,
       timestamp,
       identity: stripIdentityKey(await exportPublicKeyAsPem(state.publicKey)),
+      collection: "users",
+      data,
     };
 
     const signature = await sign(state.signingKey, JSON.stringify(record));
