@@ -1,8 +1,7 @@
 <script setup>
 import { provideIdentity } from "./useIdentity";
-
-provideIdentity();
+const { ready } = provideIdentity();
 </script>
 <template>
-  <slot />
+  <slot v-if="ready" />
 </template>

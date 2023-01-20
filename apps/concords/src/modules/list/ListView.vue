@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 import { shallowRef, watch } from "vue";
 import { useLedger } from "@/modules/ledger";
-import type { IRecord } from "@concords/proof-of-wrok";
+import { PermissionPicker } from "@/modules/permissions";
+import type { IRecord } from "@concords/proof-of-work";
 
 interface dynamicObject {
   [key: string]: string | number;
@@ -14,6 +15,8 @@ const newItem = shallowRef<dynamicObject>({});
 
 const type = shallowRef<string>("");
 const name = shallowRef<string>("");
+
+const permission = shallowRef();
 
 watch(
   ledger,
@@ -30,7 +33,7 @@ function updateItem(e: Event, name: string) {
 }
 
 async function addListItem() {
-  await addItem({ ...newItem.value }, "items", "boyo");
+  await addItem({ ...newItem.value }, "items", permission.value);
   newItem.value = {};
 }
 async function addItemType() {
@@ -59,6 +62,7 @@ async function addItemType() {
         :value="newItem[itemType.data.name]"
         class="mr-1"
       />
+      <PermissionPicker v-model="permission" />
       <button @click="addListItem">Add</button>
     </div>
     <hr />

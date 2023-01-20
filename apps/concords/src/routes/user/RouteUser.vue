@@ -13,6 +13,8 @@ const userJSON = computed(() => ({
 </script>
 <template>
   <div>
-    <textarea :value="JSON.stringify(userJSON)" />
+    <pre class="no-resize h-32 w-full">{{
+      JSON.stringify(userJSON, null, 2)
+    }}</pre>
   </div>
 </template>

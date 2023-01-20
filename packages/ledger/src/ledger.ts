@@ -167,10 +167,22 @@ export default function useLedger(
 
     const { chain, pending_records } = state.ledger;
 
+    // we want to sort this out
+    //  get users forst
+    // then permissions
+    // then everything else in order.
     const records = [
       ...chain.map((block) => block.records).flat(),
       ...pending_records.map((r) => ({ ...r })),
-    ].sort((a, b) => a.timestamp - b.timestamp);
+    ].sort((a, b) => {
+      if (a.collection === "users") {
+        return -1;
+      }
+      if (a.collection === "permissions") {
+        return -1;
+      }
+      return a.timestamp - b.timestamp;
+    });
 
     let i = from ? records.findIndex(({ id }) => id === from) : 0;
 

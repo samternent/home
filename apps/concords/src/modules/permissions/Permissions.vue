@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { shallowRef, watch } from "vue";
+import { shallowRef, watch, computed } from "vue";
 import { useLedger } from "@/modules/ledger";
 import { PeoplePicker } from "@/modules/people";
 import type { IRecord } from "@concords/proof-of-work";
@@ -31,9 +31,13 @@ function addUserToPermission(title: string) {
   if (!user.value) return;
   const { identity, encryption } = user.value;
   if (!identity || !encryption) return;
-  console.log(identity);
+  console.log(title);
   addUserPermission(title, identity, encryption);
 }
+
+const permissionTypes = computed(() => [
+  ...new Set(permissions.value?.map(({ data }) => data?.title) || []),
+]);
 </script>
 
 <template>
@@ -42,11 +46,10 @@ function addUserToPermission(title: string) {
       <input v-model="title" placeholder="Permission Name" />
       <button @click="addPermission">Add Permission</button>
     </div>
-    <div v-for="item in permissions" :key="item.id">
-      <!-- {{ item.data }} -->
-      {{ item.data?.title }}
+    <div v-for="item in permissionTypes" :key="item.id">
+      {{ item }}
       <PeoplePicker v-model="user" />
-      <button class="border" @click="addUserToPermission(item.data?.title)">
+      <button class="border" @click="addUserToPermission(item)">
         Add To Permission
       </button>
     </div>

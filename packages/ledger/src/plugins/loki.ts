@@ -30,7 +30,6 @@ export default function useLokiPlugin(
       async onAdd(record: IRecord) {
         if (!record.data && !record.encrypted) return;
         if (record.data?.permission) {
-          // Something wrong with how we add identities
           const permission = collections.permissions.findOne({
             "data.title": record.data.permission,
             "data.identity": stripIdentityKey(myPublicIdentity),
@@ -63,10 +62,10 @@ export default function useLokiPlugin(
           });
         }
 
-        const user = collections.users.findOne({ identity: record.identity });
-        if (!user) {
-          collections.users.insert({ identity: record.identity });
-        }
+        // const user = collections.users.findOne({ identity: record.identity });
+        // if (!user) {
+        //   collections.users.insert({ identity: record.identity });
+        // }
 
         const col = !record.collection
           ? collection
