@@ -15,6 +15,8 @@
     "@concords/ledger": "workspace:*",
     "@concords/proof-of-work": "workspace:*",
     "@concords/utils": "workspace:*",
+    "@formkit/themes": "1.0.0-beta.13",
+    "@formkit/vue": "1.0.0-beta.13",
     "@supabase/supabase-js": "^2.1.1",
     "@tailwindcss/line-clamp": "^0.4.2",
     "@tailwindcss/typography": "^0.5.7",

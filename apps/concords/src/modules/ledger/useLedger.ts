@@ -1,4 +1,4 @@
-import { shallowRef, provide, inject, onMounted } from "vue";
+import { shallowRef, provide, inject } from "vue";
 import { useLocalStorage } from "@vueuse/core";
 import { createLedger, useLokiPlugin } from "@concords/ledger";
 import {
@@ -16,19 +16,26 @@ import {
 import { useEncryption } from "../encryption";
 import { useIdentity } from "../identity";
 
+import type { Ref } from "vue";
 import type { ILedger } from "@concords/proof-of-work";
+import type { ILedgerAPI } from "@concords/ledger";
 
 const useLedgerSymbol = Symbol("useLedger");
 
-function Ledger() {
+interface IUseLedger {
+  ledger: Ref<ILedger | null>;
+  createPermission: Function;
+  addUserPermission: Function;
+  addItem: Function;
+  getCollection: Function;
+  api: ILedgerAPI;
+}
+
+function Ledger(): IUseLedger {
   const ledgerStorage = useLocalStorage<string>("concords/ledger", "");
   const ledger = shallowRef<ILedger | null>(null);
 
-  const {
-    privateKey: privateKeyIdentity,
-    publicKey: publicKeyIdentity,
-    publicKeyPEM: publicKeyIdentityPEM,
-  } = useIdentity();
+  const { publicKeyPEM: publicKeyIdentityPEM } = useIdentity();
   const { privateKey: privateKeyEncryption, publicKey: publicKeyEncryption } =
     useEncryption();
 
@@ -53,20 +60,6 @@ function Ledger() {
       },
     ],
   });
-
-  async function init() {
-    if (!privateKeyIdentity.value || !publicKeyIdentity.value) return;
-    await ledgerApi.auth(privateKeyIdentity.value, publicKeyIdentity.value);
-    ledgerStorage.value
-      ? await ledgerApi.load(JSON.parse(ledgerStorage.value))
-      : await ledgerApi.create({
-          identity: stripIdentityKey(publicKeyIdentityPEM.value),
-          encryption: publicKeyEncryption.value,
-          id: generateId(),
-        });
-  }
-
-  onMounted(init);
 
   async function createPermission(title: String) {
     const [encryptionSecret, encryptionPublic] = await generateEncryptionKeys();
@@ -153,6 +146,7 @@ function Ledger() {
 
   return {
     ledger,
+    api: ledgerApi,
     createPermission,
     addUserPermission,
     addItem,
@@ -163,7 +157,7 @@ function Ledger() {
 /**
  * @type {Ledger}
  */
-export function provideLedger() {
+export function provideLedger(): ILedgerAPI {
   const ledger = Ledger();
   provide(useLedgerSymbol, ledger);
   return ledger;

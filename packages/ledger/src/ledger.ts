@@ -16,6 +16,17 @@ interface ILedgerConfig {
   identity?: string;
 }
 
+export interface ILedgerAPI {
+  auth: Function;
+  load: Function;
+  create: Function;
+  replay: Function;
+  commit: Function;
+  add: Function;
+  destroy: Function;
+  squashRecords: Function;
+}
+
 interface IHooks {
   [key: string]: Array<Function>;
 }
@@ -25,7 +36,7 @@ export default function useLedger(
     plugins: [],
     ledger: null,
   }
-) {
+): ILedgerAPI {
   const state: {
     ledger: ILedger | null;
     signingKey: CryptoKey | null;

@@ -30,7 +30,7 @@ function updateSelected() {
 <template>
   <select @change="updateSelected" v-model="selected">
     <option v-for="item in people" :key="item.id" :value="item.data?.id">
-      {{ item.data?.id }}
+      {{ item.data?.username }}
     </option>
   </select>
 </template>

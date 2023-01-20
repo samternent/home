@@ -5,7 +5,19 @@ export const ledgerRoutes = [
     children: [
       {
         path: "",
-        component: () => import("./RouteLedgerHome.vue"),
+        redirect: "/l/form",
+      },
+      {
+        path: "form",
+        component: () => import("./RouteLedgerForm.vue"),
+      },
+      {
+        path: "builder",
+        component: () => import("./RouteLedgerBuilder.vue"),
+      },
+      {
+        path: "data",
+        component: () => import("./RouteLedgerData.vue"),
       },
       {
         path: "permissions",

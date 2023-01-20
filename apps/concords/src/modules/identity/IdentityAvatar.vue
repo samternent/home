@@ -1,4 +1,6 @@
 <script setup>
+import Glyphy from "./Glyphy.vue";
+
 defineProps({
   identity: {
     type: String,
@@ -7,5 +9,5 @@ defineProps({
 });
 </script>
 <template>
-  <img :src="`https://robohash.org/${identity}.png?size=100x100&set=set3`" />
+  <Glyphy v-if="identity" :identity="identity" class="w-12" :gridLen="16" />
 </template>

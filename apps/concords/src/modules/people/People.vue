@@ -11,7 +11,6 @@ watch(
   ledger,
   () => {
     people.value = getCollection("users")?.data;
-    console.log(people.value);
   },
   { immediate: true }
 );
@@ -32,6 +31,7 @@ async function addPerson() {
   <div>
     <div v-for="item in people" :key="item.data?.id">
       <IdentityAvatar :identity="item.data?.identity" />
+      {{ item.data?.username }}
     </div>
     <div>
       <textarea v-model="user" placeholder="Identity" />
