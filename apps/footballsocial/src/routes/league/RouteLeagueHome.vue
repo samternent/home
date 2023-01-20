@@ -86,10 +86,10 @@ watch(
       </li>
     </ul>
     <RouterView />
-    <div class="flex justify-center mt-8 mt-16 mx-16 items-end transition-all">
+    <div class="flex justify-center mt-16 mx-16 items-end transition-all">
       <img
         alt=""
-        class="h-96 opacity-80 transition-all"
+        class="h-96 w-96 opacity-80 transition-all w-"
         src="../../assets/game-day.svg"
       />
     </div>

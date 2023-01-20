@@ -30,7 +30,7 @@ function updateItem(e: Event, name: string) {
 }
 
 async function addListItem() {
-  await addItem({ ...newItem.value }, "items", "test");
+  await addItem({ ...newItem.value }, "items", "boyo");
   newItem.value = {};
 }
 async function addItemType() {
