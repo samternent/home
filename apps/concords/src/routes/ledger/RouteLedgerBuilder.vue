@@ -2,6 +2,7 @@
 import { shallowRef, watch } from "vue";
 import { useLedger } from "@/modules/ledger";
 import type { IRecord } from "@concords/proof-of-work";
+import inputTypes from "@/utils/inputTypes";
 
 const { ledger, getCollection, addItem } = useLedger();
 const itemTypes = shallowRef<Array<IRecord>>([]);
@@ -34,19 +35,26 @@ async function addItemType() {
 <template>
   <div>
     <div>
-      <FormKit
+      <div
         v-for="itemType in itemTypes"
-        :placeholder="itemType.data.name"
-        :type="itemType.data.type"
         :key="itemType.id"
         disabled
         class="mr-1"
-      />
+      >
+        {{ itemType.data?.name }}
+        {{ itemType.data?.type }}
+      </div>
     </div>
     <hr />
     <div @keyup.enter="addItemType" class="flex">
       <input v-model="name" placeholder="Name" class="mr-1" />
-      <input v-model="type" placeholder="Type" class="mr-1" />
+      <FormKit
+        type="select"
+        v-model="type"
+        placeholder="Type"
+        :options="inputTypes"
+        class="mr-1"
+      />
       <button @click="addItemType">Add Type</button>
     </div>
   </div>

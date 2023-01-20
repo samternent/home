@@ -9,5 +9,5 @@ defineProps({
 });
 </script>
 <template>
-  <Glyphy v-if="identity" :identity="identity" class="w-12" :gridLen="16" />
+  <Glyphy v-if="identity" :identity="identity" class="w-8" :gridLen="9" />
 </template>

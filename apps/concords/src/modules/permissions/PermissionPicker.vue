@@ -21,12 +21,16 @@ watch(
   { immediate: true }
 );
 
-function updateSelected() {
-  const permission = permissions.value.find(
-    ({ data }) => data?.title === selected.value
-  );
-  emit("update:modelValue", permission?.data?.title);
-}
+watch(
+  selected,
+  (_selected) => {
+    const permission = permissions.value.find(
+      ({ data }) => data?.title === _selected
+    );
+    emit("update:modelValue", permission?.data?.title);
+  },
+  { immediate: true }
+);
 
 const permissionTypes = computed(() => [
   ...new Set(permissions.value?.map(({ data }) => data?.title) || []),
@@ -34,9 +38,12 @@ const permissionTypes = computed(() => [
 </script>
 
 <template>
-  <select @change="updateSelected" v-model="selected">
-    <option v-for="item in permissionTypes" :key="item" :value="item">
-      {{ item }}
-    </option>
-  </select>
+  <FormKit
+    type="select"
+    label="Add a permission"
+    name="permission"
+    placeholder="Select a permission"
+    v-model="selected"
+    :options="permissionTypes"
+  />
 </template>

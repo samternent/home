@@ -3,11 +3,13 @@ import { shallowRef, watch } from "vue";
 import { useLedger } from "@/modules/ledger";
 import { PermissionPicker } from "@/modules/permissions";
 import type { IRecord } from "@concords/proof-of-work";
+import { useToast } from "vue-toastification";
 
 interface dynamicObject {
   [key: string]: string | number;
 }
 const { ledger, getCollection, addItem } = useLedger();
+const toast = useToast();
 const itemTypes = shallowRef<Array<IRecord>>([]);
 
 const newItem = shallowRef<dynamicObject>({});
@@ -30,6 +32,20 @@ function updateItem(e: Event, name: string) {
 async function addListItem() {
   await addItem({ ...newItem.value }, "items", permission.value);
   newItem.value = {};
+  toast.success("Item added", {
+    position: "bottom-right",
+    timeout: 5000,
+    closeOnClick: true,
+    pauseOnFocusLoss: false,
+    pauseOnHover: true,
+    draggable: true,
+    draggablePercent: 0.6,
+    showCloseButtonOnHover: true,
+    hideProgressBar: true,
+    closeButton: "button",
+    icon: true,
+    rtl: false,
+  });
 }
 </script>
 
