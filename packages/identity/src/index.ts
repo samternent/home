@@ -1,5 +1,7 @@
 export * from "./createIdentity";
 
+export * from "./derivePublicFromPrivate";
+
 export * from "./importPrivateKey";
 export * from "./exportPrivateKey";
 

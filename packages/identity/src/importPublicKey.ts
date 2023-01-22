@@ -1,8 +1,8 @@
 import { removeLines, base64ToArrayBuffer } from "@concords/utils";
 
 interface IPoints {
-  x: string;
-  y: string;
+  x: string | undefined;
+  y: string | undefined;
 }
 
 export function importPublicKey(points: IPoints): Promise<CryptoKey> {
