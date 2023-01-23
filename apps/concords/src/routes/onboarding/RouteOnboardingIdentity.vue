@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { IdentityAvatar, useIdentity } from "@/modules/identity";
-import { derivePublicFromPrivatePEM } from "@concords/identity";
 import { onMounted } from "vue";
 const { publicKeyPEM, privateKeyPEM } = useIdentity();
 
