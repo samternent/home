@@ -11,8 +11,10 @@ onMounted(async () => {});
     class="w-full flex-1 mx-auto max-w-6xl px-8 flex justify-center flex-col animate"
   >
     <h1 class="text-6xl">Identity</h1>
-    <p class="my-4 p-2 bg-slate-800 rounded text-sm">{{ publicKeyPEM }}</p>
-    <p>
+    <p class="my-4 p-2 bg-slate-800 rounded text-sm break-word">
+      {{ publicKeyPEM }}
+    </p>
+    <!-- <p>
       Now, nobody expects you to remember or recognise that obscure line of
       text, so we've made you an avatar. These avatars are reproducable and
       preditable, derived from your identity key.
@@ -20,8 +22,8 @@ onMounted(async () => {});
     <p>
       This avatr is unqique to you, the colors, curves and patterns will remain
       identical per identity.
-    </p>
-    <div class="flex items-start">
+    </p> -->
+    <div class="flex items-start animate">
       <IdentityAvatar :identity="publicKeyPEM" size="sm" class="mr-4" />
       <IdentityAvatar :identity="publicKeyPEM" size="md" class="mr-4" />
       <IdentityAvatar :identity="publicKeyPEM" size="lg" />
