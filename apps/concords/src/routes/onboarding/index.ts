@@ -1,10 +1,10 @@
 export const onboardingRoutes = [
   {
-    path: "/onboarding",
+    path: "/welcome",
     component: () => import("./RouteOnboarding.vue"),
     children: [
       {
-        path: "welcome",
+        path: "",
         component: () => import("./RouteOnboardingWelcome.vue"),
       },
       {
@@ -12,36 +12,42 @@ export const onboardingRoutes = [
         component: () => import("./RouteOnboardingIdentity.vue"),
       },
       {
+        path: "encryption",
+        component: () => import("./RouteOnboardingEncryption.vue"),
+      },
+      {
         path: "ledger",
         component: () => import("./RouteOnboardingLedger.vue"),
-      },
-      {
-        path: "create",
-        component: () => import("./RouteOnboardingCreate.vue"),
-      },
-      {
-        path: "builder",
-        component: () => import("./RouteOnboardingBuilder.vue"),
-      },
-      {
-        path: "form",
-        component: () => import("./RouteOnboardingForm.vue"),
-      },
-      {
-        path: "data",
-        component: () => import("./RouteOnboardingData.vue"),
-      },
-      {
-        path: "verify",
-        component: () => import("./RouteOnboardingVerify.vue"),
-      },
-      {
-        path: "permissions",
-        component: () => import("./RouteOnboardingPermissions.vue"),
-      },
-      {
-        path: "impersonate",
-        component: () => import("./RouteOnboardingImpersonate.vue"),
+        children: [
+          {
+            path: "create",
+            component: () => import("./RouteOnboardingCreate.vue"),
+          },
+          {
+            path: "builder",
+            component: () => import("./RouteOnboardingBuilder.vue"),
+          },
+          {
+            path: "form",
+            component: () => import("./RouteOnboardingForm.vue"),
+          },
+          {
+            path: "data",
+            component: () => import("./RouteOnboardingData.vue"),
+          },
+          {
+            path: "verify",
+            component: () => import("./RouteOnboardingVerify.vue"),
+          },
+          {
+            path: "permissions",
+            component: () => import("./RouteOnboardingPermissions.vue"),
+          },
+          {
+            path: "impersonate",
+            component: () => import("./RouteOnboardingImpersonate.vue"),
+          },
+        ],
       },
       {
         path: "overview",

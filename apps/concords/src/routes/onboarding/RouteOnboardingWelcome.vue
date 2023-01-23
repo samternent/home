@@ -31,7 +31,7 @@
     </p>
     <div class="mt-12 mb-8 flex text-2xl items-center w-full">
       <RouterLink
-        to="/onboarding/identity"
+        to="/welcome/identity"
         class="px-4 py-2 text-lg bg-green-600 hover:bg-green-700 transition-all rounded-full flex items-center font-medium"
       >
         Get started

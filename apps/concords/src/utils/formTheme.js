@@ -9,7 +9,7 @@ export default {
     inner:
       "formkit-disabled:bg-gray-200 formkit-disabled:cursor-not-allowed formkit-disabled:pointer-events-none",
     input:
-      "appearance-none bg-transparent focus:outline-none focus:ring-0 focus:shadow-none",
+      "appearance-none bg-transparent focus:outline-none focus:ring-0 focus:shadow-none !text-white",
     label: "block mb-1 font-bold text-sm",
     legend: "font-bold text-sm",
     loaderIcon: "inline-flex items-center w-4 text-gray-600 animate-spin",
@@ -67,7 +67,7 @@ export default {
     inner:
       "flex items-center max-w-md ring-1 ring-gray-400 focus-within:ring-blue-500 focus-within:ring-2 [&>label:first-child]:focus-within:text-blue-500 rounded mb-1",
     input:
-      "w-full px-3 py-2 border-none text-base text-gray-700 placeholder-gray-400",
+      "w-full px-3 py-2 border-none text-base text-white placeholder-gray-200",
   },
 
   // Specific styles apply only to a given input type

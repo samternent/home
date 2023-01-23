@@ -1,8 +1,4 @@
-<script setup lang="ts">
-import { Ledger } from "@/modules/ledger";
-</script>
+<script setup lang="ts"></script>
 <template>
-  <Ledger>
-    <RouterView />
-  </Ledger>
+  <RouterView />
 </template>

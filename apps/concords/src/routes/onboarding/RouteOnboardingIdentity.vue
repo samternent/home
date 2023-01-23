@@ -36,10 +36,10 @@ onMounted(async () => {});
     </div>
     <div class="mt-12 mb-8 flex text-2xl items-center w-full">
       <RouterLink
-        to="/onboarding/ledger"
+        to="/welcome/encryption"
         class="px-4 py-2 text-lg bg-green-600 hover:bg-green-700 transition-all rounded-full flex items-center font-medium"
       >
-        Create at a ledger
+        Encryption
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
