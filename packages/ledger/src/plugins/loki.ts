@@ -25,6 +25,7 @@ export default function useLokiPlugin(
   return {
     db,
     getCollection: (col: string) => collections[col] || collection,
+    getCollections: () => collections,
     plugin: {
       onLoad: createCollection,
       async onAdd(record: IRecord) {

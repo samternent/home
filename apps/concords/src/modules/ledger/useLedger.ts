@@ -28,18 +28,22 @@ interface IUseLedger {
   addUserPermission: Function;
   addItem: Function;
   getCollection: Function;
+  getCollections: Function;
   api: ILedgerAPI;
 }
 
 function Ledger(): IUseLedger {
-  const ledgerStorage = useLocalStorage<string>("concords/ledger", "");
   const ledger = shallowRef<ILedger | null>(null);
 
   const { publicKeyPEM: publicKeyIdentityPEM } = useIdentity();
   const { privateKey: privateKeyEncryption, publicKey: publicKeyEncryption } =
     useEncryption();
 
-  const { getCollection, plugin: lokiPlugin } = useLokiPlugin(
+  const {
+    getCollection,
+    plugin: lokiPlugin,
+    getCollections,
+  } = useLokiPlugin(
     "ledger",
     stripIdentityKey(publicKeyIdentityPEM.value),
     privateKeyEncryption.value
@@ -50,11 +54,9 @@ function Ledger(): IUseLedger {
       lokiPlugin,
       {
         onReady({ ledger: _ledger }: { ledger: ILedger }) {
-          ledgerStorage.value = JSON.stringify(_ledger);
           ledger.value = _ledger;
         },
         onUpdate({ ledger: _ledger }: { ledger: ILedger }) {
-          ledgerStorage.value = JSON.stringify(_ledger);
           ledger.value = _ledger;
         },
       },
@@ -151,6 +153,7 @@ function Ledger(): IUseLedger {
     addUserPermission,
     addItem,
     getCollection,
+    getCollections,
   };
 }
 

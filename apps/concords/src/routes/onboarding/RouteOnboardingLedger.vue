@@ -1,48 +1,37 @@
 <script setup lang="ts">
-import { onMounted, shallowRef } from "vue";
+import { onMounted, watch } from "vue";
+import { useRouter } from "vue-router";
 import { useLocalStorage } from "@vueuse/core";
-import { stripIdentityKey, generateId } from "@concords/utils";
 import { provideLedger } from "@/modules/ledger";
 import { useIdentity } from "@/modules/identity";
-import { useEncryption } from "@/modules/encryption";
 
+const router = useRouter();
 const {
-  api: { auth, load, create },
+  api: { auth, load },
   ledger,
 } = provideLedger();
 
-const {
-  privateKey: privateKeyIdentity,
-  publicKey: publicKeyIdentity,
-  publicKeyPEM: publicKeyIdentityPEM,
-} = useIdentity();
+const { privateKey: privateKeyIdentity, publicKey: publicKeyIdentity } =
+  useIdentity();
 
-const { publicKey: publicKeyEncryption } = useEncryption();
+const ledgerStorage = useLocalStorage<string>("concords/welcome/ledger", "");
 
 onMounted(async () => {
   await auth(privateKeyIdentity.value, publicKeyIdentity.value);
-  const ledgerStorage = useLocalStorage<string>("concords/welcome/ledger", "");
   if (ledgerStorage.value) {
     await load(JSON.parse(ledgerStorage.value));
+    router.push({ path: "/welcome/ledger/builder" });
   }
 });
 
-const username = shallowRef<string>("");
-
-async function createLedger() {
-  await create({
-    identity: stripIdentityKey(publicKeyIdentityPEM.value),
-    encryption: publicKeyEncryption.value,
-    username: username.value,
-    id: generateId(),
-  });
-}
+watch(ledger, (_ledger: Object) => {
+  ledgerStorage.value = JSON.stringify(_ledger);
+});
 </script>
 <template>
-  <slot v-if="ledger" />
-  <div v-else>
-    choose a username (just for this ledger)
-    <FormKit type="text" placeholder="Username" v-model="username" />
-    <FormKit type="button" @click="createLedger" />
+  <div
+    class="w-full flex-1 mx-auto max-w-6xl px-8 flex justify-center flex-col animate"
+  >
+    <RouterView />
   </div>
 </template>

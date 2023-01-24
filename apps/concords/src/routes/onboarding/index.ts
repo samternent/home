@@ -20,6 +20,10 @@ export const onboardingRoutes = [
         component: () => import("./RouteOnboardingLedger.vue"),
         children: [
           {
+            path: "",
+            redirect: "/welcome/ledger/create",
+          },
+          {
             path: "create",
             component: () => import("./RouteOnboardingCreate.vue"),
           },
