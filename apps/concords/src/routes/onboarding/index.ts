@@ -1,6 +1,6 @@
 export const onboardingRoutes = [
   {
-    path: "/welcome",
+    path: "/",
     component: () => import("./RouteOnboarding.vue"),
     children: [
       {
@@ -21,7 +21,7 @@ export const onboardingRoutes = [
         children: [
           {
             path: "",
-            redirect: "/welcome/ledger/create",
+            redirect: "/ledger/create",
           },
           {
             path: "create",

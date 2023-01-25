@@ -4,12 +4,8 @@ import { onboardingRoutes } from "./onboarding";
 import { userRoutes } from "./user";
 
 export default [
-  ...ledgerRoutes,
+  // ...ledgerRoutes,
   ...legalRoutes,
   ...onboardingRoutes,
-  ...userRoutes,
-  {
-    path: "",
-    redirect: "/welcome",
-  },
+  // ...userRoutes,
 ];

@@ -21,8 +21,8 @@ onMounted(async () => {
   await auth(privateKeyIdentity.value, publicKeyIdentity.value);
   if (ledgerStorage.value) {
     await load(JSON.parse(ledgerStorage.value));
-    if (route.fullPath === "/welcome/ledger/create") {
-      router.push({ path: "/welcome/ledger/schema" });
+    if (route.fullPath === "/ledger/create") {
+      router.push({ path: "/ledger/schema" });
     }
   }
 });
