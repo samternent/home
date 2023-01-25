@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { shallowRef, watch, watchEffect } from "vue";
+import { shallowRef, watch, watchEffect, reactive } from "vue";
 import { useLedger } from "@/modules/ledger";
 import type { IRecord } from "@concords/proof-of-work";
 import { useToast } from "vue-toastification";
@@ -7,59 +7,35 @@ import { useToast } from "vue-toastification";
 interface dynamicObject {
   [key: string]: string | number;
 }
-const { ledger, getCollections, getCollection, addItem } = useLedger();
-const toast = useToast();
-const itemTypes = shallowRef<Array<IRecord>>([]);
-const items = shallowRef<Array<IRecord>>([]);
+const { ledger, createPermission, getCollection, addItem } = useLedger();
 
-const newItem = shallowRef<dynamicObject>({});
+const title = shallowRef<string>("");
 
-const forms = shallowRef();
-const activeFormName = shallowRef();
+function addPermission() {
+  createPermission(title.value);
+}
+
+const permissions = reactive<{
+  [key: string]: Array<IRecord>;
+}>({});
 
 watch(
   ledger,
   () => {
-    forms.value = Object.keys(getCollections())
-      .filter((col) => col.includes(":types"))
-      .map((col) => col.split(":types")[0]);
-    if (!activeFormName.value) {
-      activeFormName.value = forms.value[0];
+    const collection = getCollection("permissions")?.data;
+    if (!collection) return;
+    for (let i = 0; i < collection.length; i++) {
+      const permission = collection[i];
+      if (permission.data?.title) {
+        if (!permissions[permission.data.title]) {
+          permissions[permission.data.title] = [];
+        }
+        permissions[permission.data.title].push(permission.data);
+      }
     }
-    items.value = getCollection(activeFormName.value)?.data;
   },
   { immediate: true }
 );
-
-watchEffect(() => {
-  itemTypes.value = getCollection(`${activeFormName.value}:types`)?.data;
-  items.value = getCollection(activeFormName.value)?.data;
-});
-
-function updateItem(e: Event, name: string) {
-  const val = (e.target as HTMLTextAreaElement).value;
-  newItem.value = { ...newItem.value, [name]: val };
-}
-
-async function addListItem() {
-  await addItem({ ...newItem.value }, activeFormName.value);
-  newItem.value = {};
-  toast.success("Item added", {
-    position: "bottom-right",
-    timeout: 1000,
-    closeOnClick: true,
-    pauseOnFocusLoss: false,
-    pauseOnHover: true,
-    draggable: true,
-    draggablePercent: 0.6,
-    showCloseButtonOnHover: true,
-    hideProgressBar: true,
-    closeButton: "button",
-    icon: true,
-    rtl: false,
-  });
-  newItem.value = {};
-}
 </script>
 
 <template>
@@ -100,51 +76,26 @@ async function addListItem() {
       Permissions
     </h1>
   </div>
-  <div class="flex justify-end items-center">
-    <span class="text-2xl mr-4 font-thin">select a form 👉</span>
-    <FormKit type="select" v-model="activeFormName" :options="forms" />
+  <div>
+    <input v-model="title" placeholder="Permission Name" />
+    <button @click="addPermission">Add Permission</button>
   </div>
-
   <div class="flex w-full flex-1 pt-8">
-    <div @keyup.enter="addListItem" class="w-1/2">
-      <div
-        v-for="itemType in itemTypes"
-        :key="itemType.id"
-        class="my-3 uppercase"
-      >
-        <FormKit
-          :label="itemType.data.name"
-          @change="updateItem($event, itemType.data.name)"
-          :placeholder="itemType.data.name"
-          :type="itemType.data.type"
-          :value="newItem[itemType.data.name]"
-          class="mx-auto"
-        />
-      </div>
-      <div class="w-full flex justify-end max-w-md">
-        <button
-          @click="addListItem"
-          class="px-8 py-2 my-8 text-center text-lg bg-green-600 hover:bg-green-700 transition-all rounded-full flex items-center font-medium"
-        >
-          Add
-        </button>
-      </div>
-    </div>
     <div class="my-6 w-1/2">
       <table class="border-2 border-[#3c3c3c] w-full rounded-lg">
         <thead>
           <tr>
             <th
-              v-for="itemType in itemTypes"
-              :key="`header_${itemType.id}`"
+              v-for="permissionType in Object.keys(permissions)"
+              :key="`header_${permissionType}`"
               class="px-5 py-3 border-b-2 border-[#3c3c3c] text-left text-xs font-semibold uppercase tracking-wider"
             >
-              {{ itemType?.data?.name }}
+              {{ permissionType }}
             </th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="item in items" :key="item.id">
+          <!-- <tr v-for="item in items" :key="item.id">
             <td
               class="px-5 py-1 border-b border-[#3c3c3c] text-sm"
               v-for="itemType in itemTypes"
@@ -152,7 +103,7 @@ async function addListItem() {
             >
               {{ item.data[itemType.data.name] }}
             </td>
-          </tr>
+          </tr> -->
         </tbody>
       </table>
     </div>
