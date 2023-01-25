@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { onMounted, watch } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { useLocalStorage } from "@vueuse/core";
 import { provideLedger } from "@/modules/ledger";
 import { useIdentity } from "@/modules/identity";
 
 const router = useRouter();
+const route = useRoute();
 const {
   api: { auth, load },
   ledger,
@@ -20,7 +21,9 @@ onMounted(async () => {
   await auth(privateKeyIdentity.value, publicKeyIdentity.value);
   if (ledgerStorage.value) {
     await load(JSON.parse(ledgerStorage.value));
-    router.push({ path: "/welcome/ledger/builder" });
+    if (route.fullPath === "/welcome/ledger/create") {
+      router.push({ path: "/welcome/ledger/schema" });
+    }
   }
 });
 
@@ -29,9 +32,7 @@ watch(ledger, (_ledger: Object) => {
 });
 </script>
 <template>
-  <div
-    class="w-full flex-1 mx-auto max-w-6xl px-8 flex justify-center flex-col animate"
-  >
+  <div class="w-full flex-1 mx-auto max-w-6xl px-8 flex flex-col animate">
     <RouterView />
   </div>
 </template>

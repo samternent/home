@@ -1,4 +1,6 @@
 <script setup lang="ts"></script>
 <template>
-  <RouterView />
+  <div class="flex flex-col h-screen py-4">
+    <RouterView />
+  </div>
 </template>

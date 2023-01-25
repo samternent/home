@@ -6,20 +6,39 @@ const { publicKey, privateKey } = useEncryption();
 onMounted(async () => {});
 </script>
 <template>
-  <div
-    class="w-full flex-1 mx-auto max-w-6xl px-8 flex justify-center flex-col animate"
-  >
+  <div class="w-full flex-1 mx-auto max-w-6xl px-8 flex flex-col animate">
     <h1 class="text-6xl">Encryption</h1>
     <p class="my-4 p-2 bg-slate-800 rounded text-sm break-word">
       {{ publicKey }}
     </p>
 
-    <div class="mt-12 mb-8 flex text-2xl items-center w-full">
+    <div class="mt-12 mb-8 flex text-2xl justify-between items-center w-full">
+      <RouterLink
+        to="/welcome/identity"
+        class="px-4 py-2 text-lg transition-all rounded-full flex items-center font-medium"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="w-6 h-6"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M15.75 19.5L8.25 12l7.5-7.5"
+          />
+        </svg>
+
+        Identity
+      </RouterLink>
       <RouterLink
         to="/welcome/ledger"
-        class="px-4 py-2 text-lg bg-green-600 hover:bg-green-700 transition-all rounded-full flex items-center font-medium"
+        class="px-4 py-2 text-lg bg-pink-600 hover:bg-pink-700 transition-all rounded-full flex items-center font-medium"
       >
-        Create at a ledger
+        Ledger
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"

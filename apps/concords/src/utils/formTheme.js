@@ -5,17 +5,17 @@ export default {
   // Global styles apply to _all_ inputs with matching section keys
   global: {
     fieldset: "max-w-md border border-gray-400 rounded px-2 pb-1",
-    help: "text-xs text-gray-500",
+    help: "text-xs",
     inner:
       "formkit-disabled:bg-gray-200 formkit-disabled:cursor-not-allowed formkit-disabled:pointer-events-none",
     input:
       "appearance-none bg-transparent focus:outline-none focus:ring-0 focus:shadow-none !text-white",
     label: "block mb-1 font-bold text-sm",
     legend: "font-bold text-sm",
-    loaderIcon: "inline-flex items-center w-4 text-gray-600 animate-spin",
+    loaderIcon: "inline-flex items-center w-4 animate-spin",
     message: "text-red-500 mb-1 text-xs",
     messages: "list-none p-0 mt-1 mb-0",
-    outer: "mb-4 formkit-disabled:opacity-50",
+    outer: "formkit-disabled:opacity-50",
     prefixIcon:
       "w-10 flex self-stretch grow-0 shrink-0 rounded-tl rounded-bl border-r border-gray-400 bg-white bg-gradient-to-b from-transparent to-gray-200 [&>svg]:w-full [&>svg]:max-w-[1em] [&>svg]:max-h-[1em] [&>svg]:m-auto",
     suffixIcon:
@@ -31,7 +31,7 @@ export default {
     help: "mb-2 mt-1.5",
     input:
       "absolute w-0 h-0 overflow-hidden opacity-0 pointer-events-none peer",
-    label: "$reset text-sm text-gray-700 mt-1 select-none",
+    label: "$reset text-sm mt-1 select-none",
     wrapper: "flex items-center mb-1",
   },
   "family:button": {
@@ -45,7 +45,7 @@ export default {
     dropdownWrapper:
       "my-2 w-full drop-shadow-lg rounded [&::-webkit-scrollbar]:hidden",
     emptyMessageInner:
-      "flex items-center justify-center text-sm p-2 text-center w-full text-gray-500 [&>span]:mr-3 [&>span]:ml-0",
+      "flex items-center justify-center text-sm p-2 text-center w-full [&>span]:mr-3 [&>span]:ml-0",
     inner:
       "max-w-md relative flex ring-1 ring-gray-400 focus-within:ring-blue-500 focus-within:ring-2 rounded mb-1 formkit-disabled:focus-within:ring-gray-400 formkit-disabled:focus-within:ring-1 [&>span:first-child]:focus-within:text-blue-500",
     input: "w-full px-3 py-2",
@@ -55,10 +55,10 @@ export default {
       'pl-7 relative hover:bg-gray-300 data-[is-active="true"]:bg-gray-300 data-[is-active="true"]:aria-selected:bg-blue-600 aria-selected:bg-blue-600 aria-selected:text-white',
     loaderIcon: "ml-auto",
     loadMoreInner:
-      "flex items-center justify-center text-sm p-2 text-center w-full text-blue-500 formkit-loading:text-gray-500 cursor-pointer [&>span]:mr-3 [&>span]:ml-0",
+      "flex items-center justify-center text-sm p-2 text-center w-full text-blue-500 cursor-pointer [&>span]:mr-3 [&>span]:ml-0",
     option: "p-2.5",
-    optionLoading: "text-gray-500",
-    placeholder: "p-2.5 text-gray-400",
+    optionLoading: "",
+    placeholder: "p-2.5",
     selector: "flex w-full justify-between items-center [&u]",
     selectedIcon: "block absolute top-1/2 left-2 w-3 -translate-y-1/2",
     selectIcon: "flex box-content w-4 px-2 self-stretch grow-0 shrink-0",
@@ -66,8 +66,7 @@ export default {
   "family:text": {
     inner:
       "flex items-center max-w-md ring-1 ring-gray-400 focus-within:ring-blue-500 focus-within:ring-2 [&>label:first-child]:focus-within:text-blue-500 rounded mb-1",
-    input:
-      "w-full px-3 py-2 border-none text-base text-white placeholder-gray-200",
+    input: "w-full px-3 py-2 border-none text-base text-white",
   },
 
   // Specific styles apply only to a given input type
@@ -79,7 +78,7 @@ export default {
     suffixIcon: "min-w-[2.5em] pr-0 pl-0 m-auto",
   },
   file: {
-    fileItem: "flex items-center text-gray-800 mb-1 last:mb-0",
+    fileItem: "flex items-center mb-1 last:mb-0",
     fileItemIcon: "w-4 mr-2 shrink-0",
     fileList:
       'shrink grow peer px-3 py-2 formkit-multiple:data-[has-multiple="true"]:mb-6',
@@ -91,7 +90,7 @@ export default {
       "relative max-w-md cursor-pointer formkit-multiple:[&>button]:absolute",
     input:
       "cursor-pointer text-transparent absolute top-0 right-0 left-0 bottom-0 opacity-0 z-[2]",
-    noFiles: "flex w-full items-center px-3 py-2 text-gray-400",
+    noFiles: "flex w-full items-center px-3 py-2 ",
     noFilesIcon: "w-4 mr-2",
   },
   radio: {
@@ -110,16 +109,16 @@ export default {
     inner:
       "flex relative max-w-md items-center rounded mb-1 ring-1 ring-gray-400 focus-within:ring-blue-500 focus-within:ring-2 [&>span:first-child]:focus-within:text-blue-500",
     input:
-      'w-full pl-3 pr-8 py-2 border-none text-base text-gray-700 placeholder-gray-400 formkit-multiple:p-0 data-[placeholder="true"]:text-gray-400 formkit-multiple:data-[placeholder="true"]:text-inherit',
+      'w-full pl-3 pr-8 py-2 border-none text-base formkit-multiple:p-0 formkit-multiple:data-[placeholder="true"]:text-inherit',
     selectIcon:
       "flex p-[3px] shrink-0 w-5 mr-2 -ml-[1.5em] h-full pointer-events-none",
-    option: "formkit-multiple:p-3 formkit-multiple:text-sm text-gray-700",
+    option: "formkit-multiple:p-3 formkit-multiple:text-sm ",
   },
   textarea: {
     inner:
       "flex max-w-md rounded mb-1 ring-1 ring-gray-400 focus-within:ring-blue-500 [&>label:first-child]:focus-within:text-blue-500",
     input:
-      "block w-full h-32 px-3 py-3 border-none text-base text-gray-700 placeholder-gray-400 focus:shadow-outline",
+      "block w-full h-32 px-3 py-3 border-none text-base focus:shadow-outline",
   },
 
   // PRO input styles
@@ -136,7 +135,7 @@ export default {
     onItems: "text-yellow-400",
     onItemWrapper:
       "[&>*]:w-full [&>svg]:h-auto [&>svg]:max-w-none [&>svg]:max-h-none",
-    offItems: "text-gray-500",
+    offItems: "",
     offItemWrapper:
       "[&>*]:w-full [&>svg]:h-auto [&>svg]:max-w-none [&>svg]:max-h-none",
   },

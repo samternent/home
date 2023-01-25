@@ -5,7 +5,7 @@ const { publicKeyPEM } = useIdentity();
 </script>
 
 <template>
-  <header class="flex w-full justify-end p-2 items-center">
+  <!-- <header class="flex w-full justify-end p-2 items-center">
     <RouterLink to="/l/" class="mr-2">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -25,6 +25,6 @@ const { publicKeyPEM } = useIdentity();
     <RouterLink to="/u/">
       <IdentityAvatar :identity="publicKeyPEM" class="w-12" />
     </RouterLink>
-  </header>
+  </header> -->
   <RouterView />
 </template>

@@ -28,8 +28,13 @@ export const onboardingRoutes = [
             component: () => import("./RouteOnboardingCreate.vue"),
           },
           {
-            path: "builder",
-            component: () => import("./RouteOnboardingBuilder.vue"),
+            path: "schema",
+            component: () => import("./RouteOnboardingSchema.vue"),
+          },
+          {
+            path: "schema/:tableName",
+            component: () => import("./RouteOnboardingSchemaTable.vue"),
+            props: true,
           },
           {
             path: "form",

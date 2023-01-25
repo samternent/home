@@ -24,7 +24,7 @@ async function createLedger() {
     username: username.value,
     id: generateId(),
   });
-  router.push({ path: "/welcome/ledger/builder" });
+  router.push({ path: "/welcome/ledger/schema" });
 }
 </script>
 <template>
