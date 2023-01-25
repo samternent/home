@@ -27,10 +27,10 @@
           </g>
         </svg>
       </div>
-      <h1 class="text-2xl md:text-4xl lg:text-6xl font-medium shadow-text">Welcome to Concords <span class="ml-2 md:ml-3 lg:ml-4">👋</span></h1>
+      <!-- <h1 class="text-2xl md:text-4xl lg:text-6xl font-medium shadow-text">Welcome to Concords <span class="ml-2 md:ml-3 lg:ml-4">👋</span></h1> -->
     </div>
 
-      <div class="mt-12 mb-2 flex text-2xl justify-start items-center w-full">
+      <div class="mt-12 mb-2 flex text-2xl justify-between items-center w-full mx-4 px-8 rounded-xl">
         <div class="text-1xl text-white pt-4 font-light animate my-8">
           <span class="font-medium text-5xl text-pink-500">concord: </span>
           <span class="text-5xl font-thin">noun.</span>
@@ -59,15 +59,15 @@
         </svg>
       </RouterLink>
     </div>
-    <p class="mt-4 text-xl">
-      <p class="my-3 font-light">
-        Concords is an annonymous and secure web app that leans on cryptographic principals to create an anonymous, secure, immutable, verifiable and replicable data document directly in the browser.
+    <p class="mt-4 flex w-3/4">
+      <p class="my-3 text-3xl font-thin w-3/4 mx-auto">
+        Concords is an anonymous and secure web app that leans on cryptographic principals to create an anonymous, secure, immutable, verifiable and replicable data documents directly in the browser.
       </p>
-      <ul class="text-lg my-12 py-4 rounded-xl bg-[#1a1a1a] px-6 w-3/4">
+      <ul class="text-lg font-thin my-12 py-4 rounded-xl bg-[#1a1a1a] px-6 w-3/4 mx-auto">
         <li class="pl-2">Granular permissions with Age encryption.</li>
         <li class="pl-2">Tamper-proof data structure.</li>
         <li class="pl-2">ECDSA signed transations.</li>
-        <li class="pl-2">Works completely offline.</li>
+        <li class="pl-2">No datastore. Works completely offline and we never see your document.</li>
         <li class="pl-2">Git inspired commit based workflow.</li>
         <li class="pl-2">
           Storage agnostic. Supports raw and encrypted JSON download/upload.
