@@ -10,6 +10,6 @@ export default [
   ...userRoutes,
   {
     path: "",
-    component: () => import("./RouteHome.vue"),
+    redirect: "/welcome",
   },
 ];
