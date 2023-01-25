@@ -2,7 +2,7 @@
   <div
     class="w-full flex-1 mx-auto max-w-6xl px-8 flex justify-center flex-col animate"
   >
-    <h1 class="text-6xl font-medium mt-16">Welcome to Concords 👋</h1>
+    <h1 class="text-6xl font-medium mt-16 shadow-text">Welcome to Concords 👋</h1>
       <div class="mt-12 mb-8 flex text-2xl justify-start items-center w-full">
         <div class="text-1xl text-white pt-4 font-light animate my-8">
           <span class="font-medium text-5xl text-pink-500">concord: </span>
