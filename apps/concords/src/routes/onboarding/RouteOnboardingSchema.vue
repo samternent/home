@@ -63,16 +63,16 @@ watch(
     </h1>
   </div>
   <div class="mt-4">
-    <p class="my-3 text-2xl font-thin w-3/4 mx-auto mt-10">
+    <p class="my-3 text-2xl font-thin w-full max-w-5xl mx-auto mt-10">
       Well done! You've created your first Ledger. Now lets expore what we can
       do with it...
     </p>
   </div>
 
-  <p class="my-3 text-2xl font-thin w-3/4 mx-auto mt-4">
+  <p class="my-3 text-2xl font-thin w-full max-w-5xl mx-auto mt-4">
     Create your first data table
   </p>
-  <div class="my-3 text-xl font-thin w-3/4 mx-auto mt-2">
+  <div class="my-3 text-xl font-thin w-full max-w-5xl mx-auto mt-2">
     <div class="flex items-center" @keyup.enter="createTable">
       <FormKit type="text" v-model="tableName" placeholder="Table Name" />
       <button
@@ -85,9 +85,9 @@ watch(
   </div>
 
   <div
-    class="text-lg font-thin mt-8 mb-8 py-4 rounded-xl bg-[#1a1a1a] px-6 w-3/4 mx-auto"
+    class="text-lg font-thin mt-8 mb-8 py-4 rounded-xl bg-[#1a1a1a] px-6 w-full max-w-5xl mx-auto"
   >
-    <ul class="flex flex-col my-6">
+    <ul class="flex flex-col my-6" v-if="tables.length">
       <RouterLink
         as="li"
         :to="`/ledger/schema/${table}`"
@@ -113,6 +113,7 @@ watch(
         {{ table }}</RouterLink
       >
     </ul>
+    <div v-else>No tables yet</div>
   </div>
 
   <div class="mt-12 mb-8 flex text-2xl justify-between items-center w-full">
@@ -140,6 +141,7 @@ watch(
     <RouterLink
       to="/ledger/form"
       class="px-4 py-2 text-lg bg-pink-600 hover:bg-pink-700 transition-all rounded-full flex items-center font-medium"
+      v-if="tables.length"
     >
       Add some data
       <svg

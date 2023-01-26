@@ -139,6 +139,7 @@ async function addItemType() {
       Schema
     </RouterLink>
     <RouterLink
+      v-if="itemTypes.length"
       to="/ledger/form"
       class="px-4 py-2 text-lg bg-pink-600 hover:bg-pink-700 transition-all rounded-full flex items-center font-medium"
     >

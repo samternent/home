@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { IdentityAvatar, useIdentity } from "@/modules/identity";
-import { onMounted } from "vue";
 const { publicKeyPEM, privateKeyPEM } = useIdentity();
-
-onMounted(async () => {});
 </script>
 <template>
   <div class="w-full flex-1 mx-auto max-w-6xl px-8 flex flex-col animate">
@@ -46,13 +43,18 @@ onMounted(async () => {});
     </div>
 
     <div class="mt-4">
-      <p class="my-3 text-2xl font-thin w-3/4 mx-auto mt-10">
-        Now, nobody expects you to remember or recognise that obscure line of
-        text, so we've made you an avatar. These avatars are reproducable and
-        preditable, derived from your identity key.
+      <p class="my-3 text-2xl font-thin w-full max-w-5xl mx-auto mt-10">
+        Identity plays a crucial role in Concords. Every interaction with the
+        ledger is signed using your unique identity, which is an ECDSA key-pair.
+        This allows for verification of both identity and validity of
+        interactions. However, it can be difficult to identify a key-pair at a
+        glance. To solve this issue, we compute a unique Glyph for each identity
+        key, also known as an "avatar." These avatars are derived from the
+        user's identity key and are both reproducible and predictable.
       </p>
+
       <div
-        class="text-lg font-thin mt-8 mb-8 py-4 rounded-xl bg-[#1a1a1a] px-6 w-3/4 mx-auto"
+        class="text-lg font-thin mt-8 mb-8 py-4 rounded-xl bg-[#1a1a1a] px-6 w-full max-w-5xl mx-auto"
       >
         <div class="flex items-start animate">
           <IdentityAvatar :identity="publicKeyPEM" size="sm" class="mr-4" />
@@ -62,11 +64,12 @@ onMounted(async () => {});
       </div>
     </div>
 
-    <p class="my-3 text-2xl font-thin w-3/4 mx-auto mt-4">
-      Concords doesn't need a login. The key below is your username and
-      password. Keep this safe, you have the only copy.
+    <p class="my-3 text-2xl font-thin w-full max-w-5xl mx-auto mt-4">
+      As we use identity keys, Concords doesn't need a server-side login. The
+      key below is your username and password.
+      <strong>Keep this safe, you have the only copy.</strong>
     </p>
-    <div class="my-3 text-xl font-thin w-3/4 mx-auto mt-10">
+    <div class="text-xl font-thin w-full max-w-5xl mx-auto my-16">
       <pre>{{ privateKeyPEM }}</pre>
     </div>
     <div class="mt-12 mb-8 flex text-2xl justify-between items-center w-full">

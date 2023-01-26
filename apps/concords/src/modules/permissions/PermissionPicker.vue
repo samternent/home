@@ -24,7 +24,7 @@ watch(
 watch(
   selected,
   (_selected) => {
-    const permission = permissions.value.find(
+    const permission = permissions.value?.find(
       ({ data }) => data?.title === _selected
     );
     emit("update:modelValue", permission?.data?.title);
@@ -39,6 +39,7 @@ const permissionTypes = computed(() => [
 
 <template>
   <FormKit
+    v-if="permissionTypes?.length"
     type="select"
     label="Add a permission"
     name="permission"

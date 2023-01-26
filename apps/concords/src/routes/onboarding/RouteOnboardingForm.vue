@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { shallowRef, watch, watchEffect } from "vue";
 import { useLedger } from "@/modules/ledger";
+import { PermissionPicker } from "@/modules/permissions";
 import type { IRecord } from "@concords/proof-of-work";
 import { useToast } from "vue-toastification";
 
@@ -11,6 +12,8 @@ const { ledger, getCollections, getCollection, addItem } = useLedger();
 const toast = useToast();
 const itemTypes = shallowRef<Array<IRecord>>([]);
 const items = shallowRef<Array<IRecord>>([]);
+const permissions = shallowRef<Array<IRecord>>([]);
+const permission = shallowRef<string | null>();
 
 const newItem = shallowRef<dynamicObject>({});
 
@@ -34,6 +37,7 @@ watch(
 watchEffect(() => {
   itemTypes.value = getCollection(`${activeFormName.value}:types`)?.data;
   items.value = getCollection(activeFormName.value)?.data;
+  permissions.value = getCollection("permissions")?.data;
 });
 
 function updateItem(e: Event, name: string) {
@@ -42,7 +46,7 @@ function updateItem(e: Event, name: string) {
 }
 
 async function addListItem() {
-  await addItem({ ...newItem.value }, activeFormName.value);
+  await addItem({ ...newItem.value }, activeFormName.value, permission.value);
   newItem.value = {};
   toast.success("Item added", {
     position: "bottom-right",
@@ -121,6 +125,7 @@ async function addListItem() {
           class="mx-auto"
         />
       </div>
+      <PermissionPicker v-model="permission" />
       <div class="w-full flex justify-end max-w-md">
         <button
           @click="addListItem"
@@ -144,15 +149,17 @@ async function addListItem() {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="item in items" :key="item.id">
-            <td
-              class="px-5 py-1 border-b border-[#3c3c3c] text-sm"
-              v-for="itemType in itemTypes"
-              :key="`${item.id}_${itemType.id}`"
-            >
-              {{ item.data[itemType.data.name] }}
-            </td>
-          </tr>
+          <template v-for="item in items" :key="item.id">
+            <tr v-if="!item.data?.encrypted">
+              <td
+                class="px-5 py-1 border-b border-[#3c3c3c] text-sm"
+                v-for="itemType in itemTypes"
+                :key="`${item.id}_${itemType.id}`"
+              >
+                {{ item.data[itemType.data?.name] }}
+              </td>
+            </tr>
+          </template>
         </tbody>
       </table>
     </div>
@@ -180,10 +187,32 @@ async function addListItem() {
       Schema
     </RouterLink>
     <RouterLink
+      v-if="!permissions?.length"
       to="/ledger/permissions"
       class="px-4 py-2 text-lg bg-pink-600 hover:bg-pink-700 transition-all rounded-full flex items-center font-medium"
     >
       Permissions
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="1.5"
+        stroke="currentColor"
+        class="w-5 h-5 ml-2"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M8.25 4.5l7.5 7.5-7.5 7.5"
+        />
+      </svg>
+    </RouterLink>
+    <RouterLink
+      v-else
+      to="/ledger/impersonate"
+      class="px-4 py-2 text-lg bg-pink-600 hover:bg-pink-700 transition-all rounded-full flex items-center font-medium"
+    >
+      Impersonate
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"

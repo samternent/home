@@ -1,38 +1,31 @@
 <script lang="ts" setup>
-import { shallowRef, watch, watchEffect, reactive } from "vue";
+import { shallowRef, watch } from "vue";
 import { useLedger } from "@/modules/ledger";
+import { IdentityAvatar, useIdentity } from "@/modules/identity";
 import type { IRecord } from "@concords/proof-of-work";
-import { useToast } from "vue-toastification";
 
-interface dynamicObject {
-  [key: string]: string | number;
-}
 const { ledger, createPermission, getCollection, addItem } = useLedger();
+const { publicKeyPEM } = useIdentity();
 
 const title = shallowRef<string>("");
+const users = shallowRef<Array<IRecord>>([]);
+const permissions = shallowRef<Array<IRecord>>([]);
 
 function addPermission() {
   createPermission(title.value);
 }
 
-const permissions = reactive<{
-  [key: string]: Array<IRecord>;
-}>({});
+function getUserPermissions(userId: string) {
+  return permissions.value.filter(({ data }) => {
+    return data?.identity === userId;
+  });
+}
 
 watch(
   ledger,
   () => {
-    const collection = getCollection("permissions")?.data;
-    if (!collection) return;
-    for (let i = 0; i < collection.length; i++) {
-      const permission = collection[i];
-      if (permission.data?.title) {
-        if (!permissions[permission.data.title]) {
-          permissions[permission.data.title] = [];
-        }
-        permissions[permission.data.title].push(permission.data);
-      }
-    }
+    permissions.value = getCollection("permissions")?.data;
+    users.value = getCollection("users")?.data;
   },
   { immediate: true }
 );
@@ -76,36 +69,34 @@ watch(
       Permissions
     </h1>
   </div>
-  <div>
-    <input v-model="title" placeholder="Permission Name" />
-    <button @click="addPermission">Add Permission</button>
+  <div class="my-3 text-xl font-thin w-full max-w-5xl mt-10">
+    <div class="flex items-center" @keyup.enter="addPermission">
+      <FormKit type="text" v-model="title" placeholder="Permission Name" />
+      <button
+        class="px-4 py-2 mb-1 ml-2 bg-green-600 hover:bg-green-700 transition-all rounded flex font-medium"
+        @click="addPermission"
+      >
+        Add Permission
+      </button>
+    </div>
   </div>
   <div class="flex w-full flex-1 pt-8">
-    <div class="my-6 w-1/2">
-      <table class="border-2 border-[#3c3c3c] w-full rounded-lg">
-        <thead>
-          <tr>
-            <th
-              v-for="permissionType in Object.keys(permissions)"
-              :key="`header_${permissionType}`"
-              class="px-5 py-3 border-b-2 border-[#3c3c3c] text-left text-xs font-semibold uppercase tracking-wider"
-            >
-              {{ permissionType }}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- <tr v-for="item in items" :key="item.id">
-            <td
-              class="px-5 py-1 border-b border-[#3c3c3c] text-sm"
-              v-for="itemType in itemTypes"
-              :key="`${item.id}_${itemType.id}`"
-            >
-              {{ item.data[itemType.data.name] }}
-            </td>
-          </tr> -->
-        </tbody>
-      </table>
+    <div class="my-6">
+      <ul>
+        <li v-for="user in users" :key="user.id" class="flex">
+          <div class="flex flex-col">
+            <IdentityAvatar :identity="user.data?.identity" size="md" />
+            {{ user.data?.username }}
+            <span v-if="user.data?.identity === publicKeyPEM">(you)</span>
+          </div>
+          <p
+            v-for="permission in getUserPermissions(user.data?.identity)"
+            :key="permission.id"
+          >
+            {{ permission.data?.title }}
+          </p>
+        </li>
+      </ul>
     </div>
   </div>
   <div class="mt-12 mb-8 flex text-2xl justify-end items-center w-full">

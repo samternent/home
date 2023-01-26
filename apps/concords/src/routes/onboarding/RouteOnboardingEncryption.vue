@@ -46,19 +46,26 @@ onMounted(async () => {});
     </div>
 
     <div class="mt-4">
-      <p class="my-3 text-2xl font-thin w-3/4 mx-auto mt-10">Age encryption</p>
+      <p class="my-3 text-2xl font-thin max-w-5xl mx-auto mt-10">
+        Concords uses Age encryption for permissions. If you have your own key,
+        you're welcome to use it. But we suggest creating 1 key per identity to
+        keep things secure.
+      </p>
+      <p class="my-3 text-2xl font-thin w-full max-w-5xl mx-auto mt-10">
+        This part is your public key, you can share this freely.
+      </p>
       <div
-        class="text-lg font-thin mt-8 mb-8 py-4 rounded-xl bg-[#1a1a1a] px-6 w-3/4 mx-auto"
+        class="text-lg font-thin mt-8 mb-8 py-4 rounded-xl bg-[#1a1a1a] px-6 w-full max-w-5xl mx-auto"
       >
         <div class="flex items-start animate">{{ publicKey }}</div>
       </div>
     </div>
 
-    <p class="my-3 text-2xl font-thin w-3/4 mx-auto mt-4">
-      Concords doesn't need a login. The key below is your username and
-      password. Keep this safe, you have the only copy.
+    <p class="my-3 text-2xl font-thin w-full max-w-5xl mx-auto mt-4">
+      This part is the secret, keep it safe. This is the only copy and it cannot
+      be recovered.
     </p>
-    <div class="my-3 text-xl font-thin w-3/4 mx-auto mt-10">
+    <div class="my-3 text-xl font-thin w-full max-w-5xl mx-auto mt-10">
       <pre>{{ privateKey }}</pre>
     </div>
 
