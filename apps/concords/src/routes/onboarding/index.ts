@@ -45,6 +45,10 @@ export const onboardingRoutes = [
             component: () => import("./RouteOnboardingData.vue"),
           },
           {
+            path: "users",
+            component: () => import("./RouteOnboardingUsers.vue"),
+          },
+          {
             path: "verify",
             component: () => import("./RouteOnboardingVerify.vue"),
           },

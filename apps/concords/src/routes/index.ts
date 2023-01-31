@@ -7,5 +7,5 @@ export default [
   // ...ledgerRoutes,
   ...legalRoutes,
   ...onboardingRoutes,
-  // ...userRoutes,
+  ...userRoutes,
 ];
