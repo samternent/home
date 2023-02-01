@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { LayoutHeaderTitle } from "@/modules/layout";
+import { NButton } from "naive-ui";
 </script>
 <template>
   <div
@@ -15,9 +16,12 @@ import { LayoutHeaderTitle } from "@/modules/layout";
           <em>agreement or harmony between people or groups.</em>
         </p>
       </div>
-      <RouterLink
-        to="/identity"
-        class="ml-16 px-4 py-2 text-lg bg-pink-600 hover:bg-pink-700 transition-all rounded-full flex items-center font-medium"
+      <NButton
+        @click="$router.push({ path: '/identity' })"
+        strong
+        secondary
+        round
+        type="primary"
       >
         Take the tour
         <svg
@@ -34,7 +38,7 @@ import { LayoutHeaderTitle } from "@/modules/layout";
             d="M8.25 4.5l7.5 7.5-7.5 7.5"
           />
         </svg>
-      </RouterLink>
+      </NButton>
     </div>
     <div class="mt-4">
       <p class="my-3 text-3xl font-thin w-3/4 mx-auto">

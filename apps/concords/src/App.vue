@@ -1,6 +1,17 @@
 <script setup>
 import { IdentityAvatar, useIdentity } from "@/modules/identity";
+import { useLoadingBar } from "naive-ui";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
+const loadingBar = useLoadingBar();
+
+router.beforeEach(() => {
+  loadingBar.start();
+});
+router.afterEach(() => {
+  loadingBar.finish();
+});
 const { publicKeyPEM } = useIdentity();
 </script>
 
