@@ -3,7 +3,7 @@ import { provideCurrentUser } from "./composables/useCurrentUser";
 import { Identity } from "@/modules/identity";
 import { Encryption } from "@/modules/encryption";
 import App from "./App.vue";
-import { NLoadingBarProvider, NConfigProvider } from "naive-ui";
+import { NConfigProvider, darkTheme } from "naive-ui";
 
 /**
  * Use this for type hints under js file
@@ -30,17 +30,15 @@ const { user, profile, ready } = provideCurrentUser();
 </script>
 
 <template>
-  <NConfigProvider :theme-overrides="themeOverrides">
-    <NLoadingBarProvider>
-      <div class="text-white absolute inset-0 flex flex-col">
-        <div class="flex-1 flex flex-col" v-if="ready">
-          <Encryption>
-            <Identity>
-              <App v-if="ready" />
-            </Identity>
-          </Encryption>
-        </div>
+  <NConfigProvider :theme="darkTheme" :theme-overrides="themeOverrides">
+    <div class="text-white absolute inset-0 flex flex-col">
+      <div class="flex-1 flex flex-col" v-if="ready">
+        <Encryption>
+          <Identity>
+            <App v-if="ready" />
+          </Identity>
+        </Encryption>
       </div>
-    </NLoadingBarProvider>
+    </div>
   </NConfigProvider>
 </template>

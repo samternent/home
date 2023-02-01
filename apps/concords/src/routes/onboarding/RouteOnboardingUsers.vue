@@ -86,7 +86,6 @@ function isActiveUser(identity: string) {
       <p class="my-3 text-2xl font-thin max-w-5xl mx-auto mt-10">
         Here are some dummy users
       </p>
-      {{ people }}
       <div
         v-for="person in people"
         :key="person.id"
