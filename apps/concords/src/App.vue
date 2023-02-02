@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { h, shallowRef } from "vue";
+import { useLocalStorage } from "@vueuse/core";
 import {
   NSpace,
   NLayout,
@@ -10,14 +11,17 @@ import {
   NBreadcrumb,
   NBreadcrumbItem,
   NIcon,
+  NButton,
 } from "naive-ui";
 import {
   BookOutline as BookIcon,
   PersonOutline as PersonIcon,
   WineOutline as WineIcon,
+  ChevronForwardCircleOutline as ExpandIcon,
+  ChevronBackCircleOutline as CollapseIcon,
 } from "@vicons/ionicons5";
 
-const isCollapsed = shallowRef(true);
+const isCollapsed = useLocalStorage("isSidebarCollapsed", false);
 function renderIcon(icon) {
   return () => h(NIcon, null, { default: () => h(icon) });
 }
@@ -105,18 +109,33 @@ const menuOptions = [
         collapse-mode="width"
         :collapsed-width="70"
         :width="240"
+        :collapsed="isCollapsed"
         :on-update:collapsed="(val) => (isCollapsed = !val)"
-        show-trigger="arrow-circle"
         bordered
       >
+        <NButton
+          class="absolute bottom-20 -right-8 z-10"
+          @click="isCollapsed = !isCollapsed"
+          round
+          ghost
+          :bordered="false"
+          type="primary"
+          size="large"
+        >
+          <template #icon>
+            <NIcon size="30" primary color="#a1a1a1"
+              ><ExpandIcon v-if="isCollapsed" /><CollapseIcon v-else
+            /></NIcon>
+          </template>
+        </NButton>
         <RouterLink
           to="/"
           class="flex p-2 py-6 items-center justify-center w-full"
         >
           <svg
             :class="{
-              'w-12 h-12': isCollapsed,
-              'w-8 h-8': !isCollapsed,
+              'w-12 h-12': !isCollapsed,
+              'w-8 h-8': isCollapsed,
             }"
             class="fill-pink-600 transition-all"
             viewBox="0 0 48 48"
