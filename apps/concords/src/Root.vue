@@ -31,14 +31,10 @@ const { user, profile, ready } = provideCurrentUser();
 
 <template>
   <NConfigProvider :theme="darkTheme" :theme-overrides="themeOverrides">
-    <div class="text-white absolute inset-0 flex flex-col">
-      <div class="flex-1 flex flex-col" v-if="ready">
-        <Encryption>
-          <Identity>
-            <App v-if="ready" />
-          </Identity>
-        </Encryption>
-      </div>
-    </div>
+    <Encryption v-if="ready">
+      <Identity>
+        <App />
+      </Identity>
+    </Encryption>
   </NConfigProvider>
 </template>

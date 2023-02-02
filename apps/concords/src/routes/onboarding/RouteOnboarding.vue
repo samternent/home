@@ -9,7 +9,7 @@ router.beforeEach(loadingBar.start);
 router.afterEach(loadingBar.finish);
 </script>
 <template>
-  <div class="flex flex-col h-screen py-4">
+  <div class="flex flex-col py-4">
     <RouterView />
     <footer
       class="p-4 text-white md:flex md:items-center md:justify-between md:p-6 mt-8"
