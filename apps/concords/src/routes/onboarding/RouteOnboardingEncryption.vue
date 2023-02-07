@@ -7,7 +7,7 @@ const { publicKey, privateKey } = useEncryption();
 onMounted(async () => {});
 </script>
 <template>
-  <div class="w-full flex-1 mx-auto max-w-6xl px-8 flex flex-col animate">
+  <div class="w-full flex-1 mx-auto max-w-6xl px-8 flex flex-col">
     <LayoutHeaderTitle title="Encryption" />
 
     <div class="mt-4">

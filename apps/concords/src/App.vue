@@ -1,22 +1,23 @@
 <script setup lang="ts">
 import { h, shallowRef } from "vue";
+import { RouterLink } from "vue-router";
 import { useLocalStorage } from "@vueuse/core";
 import {
   NSpace,
   NLayout,
   NLayoutSider,
   NLayoutContent,
-  NLoadingBarProvider,
   NLayoutHeader,
   NBreadcrumb,
   NBreadcrumbItem,
   NIcon,
   NButton,
+  NMenu,
 } from "naive-ui";
+import type { MenuOption } from "naive-ui";
 import {
-  BookOutline as BookIcon,
-  PersonOutline as PersonIcon,
-  WineOutline as WineIcon,
+  BookmarkOutline,
+  CaretDownOutline,
   ChevronForwardCircleOutline as ExpandIcon,
   ChevronBackCircleOutline as CollapseIcon,
 } from "@vicons/ionicons5";
@@ -26,80 +27,68 @@ function renderIcon(icon) {
   return () => h(NIcon, null, { default: () => h(icon) });
 }
 
-const menuOptions = [
+const menuOptions: MenuOption[] = [
   {
-    label: "Hear the Wind Sing",
-    key: "hear-the-wind-sing",
-    icon: renderIcon(BookIcon),
+    label: "Identity",
+    key: "Identity",
+    path: "/identity",
   },
   {
-    label: "Pinball 1973",
-    key: "pinball-1973",
-    icon: renderIcon(BookIcon),
-    disabled: true,
+    label: "Encryption",
+    key: "encryption",
+    path: "/encryption",
+  },
+  {
+    label: "Ledger",
+    key: "ledger",
     children: [
       {
-        label: "Rat",
-        key: "rat",
-      },
-    ],
-  },
-  {
-    label: "A Wild Sheep Chase",
-    key: "a-wild-sheep-chase",
-    disabled: true,
-    icon: renderIcon(BookIcon),
-  },
-  {
-    label: "Dance Dance Dance",
-    key: "Dance Dance Dance",
-    icon: renderIcon(BookIcon),
-    children: [
-      {
-        type: "group",
-        label: "People",
-        key: "people",
-        children: [
-          {
-            label: "Narrator",
-            key: "narrator",
-            icon: renderIcon(PersonIcon),
-          },
-          {
-            label: "Sheep Man",
-            key: "sheep-man",
-            icon: renderIcon(PersonIcon),
-          },
-        ],
+        label: "Schema",
+        key: "schema",
+        path: "/ledger/schema",
       },
       {
-        label: "Beverage",
-        key: "beverage",
-        icon: renderIcon(WineIcon),
-        children: [
-          {
-            label: "Whisky",
-            key: "whisky",
-          },
-        ],
+        label: "Form",
+        key: "narrator",
+        path: "/ledger/form",
       },
       {
-        label: "Food",
-        key: "food",
-        children: [
-          {
-            label: "Sandwich",
-            key: "sandwich",
-          },
-        ],
+        label: "Users",
+        key: "users",
+        path: "/ledger/users",
       },
       {
-        label: "The past increases. The future recedes.",
-        key: "the-past-increases-the-future-recedes",
+        label: "Permissions",
+        key: "permissions",
+        path: "/ledger/permissions",
       },
     ],
   },
 ];
+
+function renderMenuLabel(option: MenuOption) {
+  if ("path" in option) {
+    console.log(option);
+    return h(
+      RouterLink,
+      {
+        to: { path: option.path },
+      },
+      { default: () => option.label }
+    );
+  }
+  return option.label as string;
+}
+function renderMenuIcon(option: MenuOption) {
+  // return render placeholder for indent
+  if (option.key === "sheep-man") return true;
+  // return falsy, don't render icon placeholder
+  if (option.key === "food") return null;
+  return h(NIcon, null, { default: () => h(BookmarkOutline) });
+}
+function expandIcon() {
+  return h(NIcon, null, { default: () => h(CaretDownOutline) });
+}
 </script>
 
 <template>
@@ -151,6 +140,16 @@ const menuOptions = [
             </g>
           </svg>
         </RouterLink>
+
+        <NMenu
+          :collapsed="isCollapsed"
+          :collapsed-width="64"
+          :collapsed-icon-size="22"
+          :options="menuOptions"
+          :render-label="renderMenuLabel"
+          :render-icon="renderMenuIcon"
+          :expand-icon="expandIcon"
+        />
       </NLayoutSider>
       <NLayoutContent>
         <NLayout>
@@ -162,9 +161,7 @@ const menuOptions = [
             </NBreadcrumb>
           </NLayoutHeader>
           <NLayoutContent>
-            <NLoadingBarProvider>
-              <RouterView />
-            </NLoadingBarProvider>
+            <RouterView />
           </NLayoutContent>
         </NLayout>
       </NLayoutContent>

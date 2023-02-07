@@ -4,7 +4,7 @@ import { NButton } from "naive-ui";
 </script>
 <template>
   <div
-    class="w-full flex-1 mx-auto max-w-6xl px-8 flex justify-center flex-col animate"
+    class="w-full flex-1 mx-auto max-w-6xl px-8 flex justify-center flex-col"
   >
     <div
       class="mt-12 mb-2 flex text-2xl justify-between items-center w-full mx-4 px-8 rounded-xl"

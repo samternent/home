@@ -14,6 +14,12 @@ const props = defineProps({
 });
 
 const sizeVariant = computed(() => {
+  if (props.size === "xs") {
+    return {
+      classes: "w-5",
+      grid: 9,
+    };
+  }
   if (props.size === "sm") {
     return {
       classes: "w-8",
@@ -38,7 +44,7 @@ const sizeVariant = computed(() => {
   <Glyphy
     v-if="identity"
     :identity="identity"
-    :class="sizeVariant.classes"
+    :class="`p-0 m-0 ${sizeVariant.classes}`"
     :gridLen="sizeVariant.grid"
   />
 </template>

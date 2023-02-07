@@ -90,6 +90,7 @@ async function addListItem() {
           class="mx-auto"
         />
       </div>
+
       <PermissionPicker v-model="permission" />
       <div class="w-full flex justify-end max-w-md">
         <button

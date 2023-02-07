@@ -32,7 +32,7 @@ watch(ledger, (_ledger: Object) => {
 });
 </script>
 <template>
-  <div class="w-full flex-1 mx-auto max-w-6xl px-8 flex flex-col animate">
+  <div class="w-full flex-1 mx-auto max-w-6xl px-8 flex flex-col">
     <RouterView />
   </div>
 </template>

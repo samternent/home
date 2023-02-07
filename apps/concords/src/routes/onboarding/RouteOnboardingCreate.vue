@@ -29,7 +29,7 @@ async function createLedger() {
 }
 </script>
 <template>
-  <div class="w-full flex-1 mx-auto max-w-6xl px-8 flex flex-col animate">
+  <div class="w-full flex-1 mx-auto max-w-6xl px-8 flex flex-col">
     <LayoutHeaderTitle title="Create a ledger" />
     <div class="mt-4">
       <p class="my-3 text-2xl font-thin w-3/4 mx-auto mt-10">

@@ -123,10 +123,14 @@ function Ledger(): IUseLedger {
   ) {
     // This needs some reworking to support multiple permissions
     const myKey = publicKeyIdentityPEM.value;
-    const permission = getCollection("permissions").findOne({
-      "data.identity": stripIdentityKey(myKey),
-      "data.title": permissionTitle,
-    });
+    const permission =
+      getCollection("permissions").findOne({
+        "data.identity": stripIdentityKey(myKey),
+        "data.title": permissionTitle,
+      }) ||
+      getCollection("users").findOne({
+        "data.identity": permissionTitle,
+      });
 
     if (!permission) {
       return ledgerApi.add({ ...data, id: generateId() }, collection);
@@ -137,7 +141,7 @@ function Ledger(): IUseLedger {
         permission: permissionTitle,
         encrypted: stripEncryptionFile(
           await encrypt(
-            permission.data.public,
+            permission.data.public || permission.data.encryption,
             JSON.stringify({ ...data, id: generateId() })
           )
         ),

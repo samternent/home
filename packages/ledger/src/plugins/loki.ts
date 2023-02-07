@@ -37,7 +37,18 @@ export default function useLokiPlugin(
           })?.data;
 
           if (!permission) {
-            console.error(`'${record.data.permission}' permission not found`);
+            try {
+              record.data = JSON.parse(
+                await decrypt(
+                  myPrivateEncryption,
+                  formatEncryptionFile(record.data.encrypted)
+                )
+              );
+            } catch (e) {
+              // console.error(e);
+              return;
+            }
+            // console.error(`'${record.data.permission}' permission not found`);
           } else {
             try {
               const decrypted = await decrypt(
@@ -51,7 +62,7 @@ export default function useLokiPlugin(
                 )
               );
             } catch (e) {
-              console.error(e);
+              // console.error(e);
               return;
             }
           }

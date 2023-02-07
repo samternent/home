@@ -4,7 +4,7 @@ import { IdentityAvatar, useIdentity } from "@/modules/identity";
 const { publicKeyPEM, privateKeyPEM } = useIdentity();
 </script>
 <template>
-  <div class="w-full flex-1 mx-auto max-w-6xl px-8 flex flex-col animate">
+  <div class="w-full flex-1 mx-auto max-w-6xl px-8 flex flex-col">
     <LayoutHeaderTitle title="Identity" />
 
     <div class="mt-4">

@@ -4,6 +4,7 @@ import { useLedger } from "@/modules/ledger";
 import { LayoutHeaderTitle } from "@/modules/layout";
 import type { IRecord } from "@concords/proof-of-work";
 import inputTypes from "@/utils/inputTypes";
+import { useCollection } from "@/modules/ledger";
 
 const props = defineProps({
   tableName: {
@@ -13,18 +14,11 @@ const props = defineProps({
 });
 
 const { ledger, getCollection, addItem } = useLedger();
+const { items } = useCollection(`${props.tableName}:types`);
 
 const type = shallowRef<string>("text");
 const name = shallowRef<string>("");
 const itemTypes = shallowRef<Array<IRecord>>([]);
-
-watch(
-  ledger,
-  () => {
-    itemTypes.value = getCollection(`${props.tableName}:types`)?.data;
-  },
-  { immediate: true }
-);
 
 async function addItemType() {
   await addItem(
@@ -52,7 +46,7 @@ async function addItemType() {
       </tr>
     </thead>
     <tbody>
-      <tr v-for="item in itemTypes" :key="item.id">
+      <tr v-for="item in items" :key="item.id">
         <td class="px-5 py-1 border-b border-[#3c3c3c] text-sm">
           {{ item?.data?.name }}
         </td>

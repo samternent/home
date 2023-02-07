@@ -5,7 +5,7 @@ import { onMounted, ShallowRef, shallowRef, watchEffect } from "vue";
   <div
     class="w-full flex-1 mx-auto max-w-6xl px-8 flex justify-center flex-col"
   >
-    <div class="text-3xl text-white pt-4 font-light animate">
+    <div class="text-3xl text-white pt-4 font-light">
       <span class="font-medium text-5xl">concord: </span>
       <span class="text-5xl font-thin">noun.</span>
       <p class="text-white font-thin">

@@ -13,13 +13,11 @@ const themeOverrides = {
   common: {
     primaryColor: "#DB2877",
   },
-  Button: {
-    textColor: "#FF0000",
-  },
+  Button: {},
   Select: {
     peers: {
       InternalSelection: {
-        textColor: "#FF0000",
+        padding: "10px",
       },
     },
   },
