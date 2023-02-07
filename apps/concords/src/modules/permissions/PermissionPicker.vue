@@ -138,7 +138,6 @@ function renderLabel(option) {
       :render-label="renderLabel"
       :render-tag="renderSingleSelectTag"
       @update:value="(val) => $emit('update:modelValue', val)"
-      filterable
     >
       <template #action> If you click this demo, you may need it. </template>
     </NSelect>
