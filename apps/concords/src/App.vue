@@ -68,7 +68,6 @@ const menuOptions: MenuOption[] = [
 
 function renderMenuLabel(option: MenuOption) {
   if ("path" in option) {
-    console.log(option);
     return h(
       RouterLink,
       {
