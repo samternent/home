@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
+import { useLocalStorage } from "@vueuse/core";
 import { LayoutHeaderTitle } from "@/modules/layout";
-import { IdentityAvatar, useIdentity } from "@/modules/identity";
+import {
+  IdentityAvatar,
+  useIdentity,
+  impersonateUsers,
+} from "@/modules/identity";
 import { useLedger } from "@/modules/ledger";
 import type { IRecord } from "@concords/proof-of-work";
 
@@ -16,54 +21,10 @@ watch(
   },
   { immediate: true }
 );
-
-const users = [
-  {
-    public: {
-      username: "WWhite",
-      identity:
-        "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEW8vldlC0PeO9E6YF+/2NI2+F+91G\n/Yb1FVly7SpWNquJmSe3ExmOxCv5SApZ/dxG+unjP2yLwN10VbxU0dd6fQ==",
-      encryption:
-        "age1dvny2sstyvsc5q3pdw5287j60xm8rl6dw957pq6cw0qwydthhulspd7zt9",
-    },
-    private: {
-      identity:
-        "-----BEGIN PRIVATE KEY-----\nMIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgb74c2bgZw/WRAPUS\noqx3daOPEvOelIdFFnDm6EpvjT+hRANCAARby+V2ULQ9470TpgX7/Y0jb4X73Ub9\nhvUVWXLtKlY2q4mZJ7cTGY7EK/lICln93Eb66eM/bIvA3XRVvFTR13p9\n-----END PRIVATE KEY-----",
-      encryption:
-        "AGE-SECRET-KEY-15ZTLVX6F7XVEP9A78VUPWFGHUV0RCRMCA9ZUEWPX8ZSZNLQMKACQFFLZPN",
-    },
-  },
-  {
-    public: {
-      username: "JPinkman",
-      identity:
-        "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE6y0yZlNZGnJAbFu9XxmvZaiOycOU\nTrmxGaHtzfe4ZryiepiCaOtbCpPyrUKjHMhdoln+0n8XpEPhphxi7kGisQ==",
-      encryption:
-        "age1584t6cjav4hm24cdklp3jnyhdpjv7q3unesgydczuyh57qpxc30qngckjh",
-    },
-    private: {
-      identity:
-        "-----BEGIN PRIVATE KEY-----\nMIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQg7LfsPi3SVGf1CCxF\nco8LnfGQ22DNaWjg5pwGeW3es8ahRANCAATrLTJmU1kackBsW71fGa9lqI7Jw5RO\nubEZoe3N97hmvKJ6mIJo61sKk/KtQqMcyF2iWf7SfxekQ+GmHGLuQaKx\n-----END PRIVATE KEY-----",
-      encryption:
-        "AGE-SECRET-KEY-1HZUEA6VFFXP30PSW62VAW0NRCQQ2GUVG2NMYWHWLDNE2EZNHM4GSFE3LW2",
-    },
-  },
-  {
-    public: {
-      username: "SGoodman",
-      identity:
-        "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEC63YGALYh0V5THKjnXJwJFHWPXvB\ngqoSuoagPPzbytkI/rhSdQX5n6Gp4pIBP/2Ndr45ukQm4MmWq9nu7MiFzQ==",
-      encryption:
-        "age10shysdpm7c9rjl5tn6vgdtkavxfhl36qhv9mk8aclqnwjpv3jypsgslzpd",
-    },
-    private: {
-      identity:
-        "-----BEGIN PRIVATE KEY-----\nMIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQg+cgmzeEfRAMVPun5\nlDrCdgjhwZxwBT7FaptzFQksbByhRANCAAQLrdgYAtiHRXlMcqOdcnAkUdY9e8GC\nqhK6hqA8/NvK2Qj+uFJ1BfmfoanikgE//Y12vjm6RCbgyZar2e7syIXN\n-----END PRIVATE KEY-----",
-      encryption:
-        "AGE-SECRET-KEY-10Q8533M6KTAJ0L7W4F02DPQEW3PLH5DLECLU3DUSJC5E2ANDNASSMHW9SJ",
-    },
-  },
-];
+const impersonateUserIdentity = useLocalStorage<string>(
+  "concords/impersonate",
+  null
+);
 
 async function addPerson(user: Object) {
   try {
@@ -79,6 +40,46 @@ function isActiveUser(identity: string, _people: Array<IRecord>) {
 
 function isMe(identity: string) {
   return identity === publicKeyPEM.value;
+}
+
+const publicEncryptionKey = useLocalStorage("concords/encrypt/publicKey", "");
+const privateEncryptionKey = useLocalStorage("concords/encrypt/privateKey", "");
+const publicIdentityKey = useLocalStorage("concords/identity/publicKey", "");
+const privateIdentityKey = useLocalStorage("concords/identity/privateKey", "");
+
+const publicEncryptionKeyB = useLocalStorage(
+  "concords/backup/encrypt/publicKey",
+  ""
+);
+const privateEncryptionKeyB = useLocalStorage(
+  "concords/backup/encrypt/privateKey",
+  ""
+);
+const publicIdentityKeyB = useLocalStorage(
+  "concords/backup/identity/publicKey",
+  ""
+);
+const privateIdentityKeyB = useLocalStorage(
+  "concords/backup/identity/privateKey",
+  ""
+);
+
+function impersonateUser(identity: string) {
+  const user = impersonateUsers.find(
+    (user) => user.public.identity === identity
+  );
+
+  publicEncryptionKeyB.value = publicEncryptionKey.value;
+  privateEncryptionKeyB.value = privateEncryptionKey.value;
+  publicIdentityKeyB.value = publicIdentityKey.value;
+  privateIdentityKeyB.value = privateIdentityKey.value;
+
+  publicEncryptionKey.value = user.public.encryption;
+  privateEncryptionKey.value = user.private.encryption;
+  publicIdentityKey.value = user.public.identity;
+  privateIdentityKey.value = user.private.identity;
+
+  window.location.reload();
 }
 </script>
 <template>
@@ -106,8 +107,9 @@ function isMe(identity: string) {
           >
         </div>
         <button
+          v-if="!isMe(person.data?.identity)"
           @click="impersonateUser(person.data?.identity)"
-          class="px-4 py-2 text-lg bg-green-600 hover:bg-green-700 transition-all rounded-full flex items-center font-medium"
+          class="px-4 py-2 text-lg transition-all rounded-full flex items-center font-medium"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -120,7 +122,7 @@ function isMe(identity: string) {
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
-              d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z"
+              d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"
             />
           </svg>
         </button>
@@ -129,7 +131,7 @@ function isMe(identity: string) {
         And here are some dummy users to add... (these can be impersonated for
         testing)
       </p>
-      <div v-for="user in users" :key="user.public.identity">
+      <div v-for="user in impersonateUsers" :key="user.public.identity">
         <div
           class="flex my-3 items-center bg-[#1c1c1c] p-3 rounded"
           v-if="!isActiveUser(user.public.identity, people)"

@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import { NText, NIcon, NSpace, NSelect } from "naive-ui";
+import { NText, NIcon, NSpace, NSelect, NButton } from "naive-ui";
 import { LockOpen } from "@vicons/ionicons5";
 import { IdentityAvatar } from "@/modules/identity";
 
 import { shallowRef, watch, computed, h } from "vue";
-import { useLedger } from "@/modules/ledger";
+import { useLedger, useLedgerAppShell } from "@/modules/ledger";
 import type { IRecord } from "@concords/proof-of-work";
 
 defineProps({
@@ -12,6 +12,7 @@ defineProps({
 });
 defineEmits(["update:modelValue"]);
 
+const { showPermissionsPanel } = useLedgerAppShell();
 const { ledger, getCollection } = useLedger();
 const permissions = shallowRef<Array<IRecord>>([]);
 const users = shallowRef<Array<IRecord>>([]);
@@ -139,7 +140,12 @@ function renderLabel(option) {
       :render-tag="renderSingleSelectTag"
       @update:value="(val) => $emit('update:modelValue', val)"
     >
-      <template #action> If you click this demo, you may need it. </template>
+      <template #action
+        ><div>
+          If you click this demo, you may need it.
+          <NButton @click="showPermissionsPanel = true">Add Permission</NButton>
+        </div></template
+      >
     </NSelect>
   </NSpace>
 </template>

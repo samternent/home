@@ -35,17 +35,7 @@ watch(
 
 <template>
   <LayoutHeaderTitle title="Permissions" />
-  <div class="my-3 text-xl font-thin w-full max-w-5xl mt-10">
-    <div class="flex items-center" @keyup.enter="addPermission">
-      <FormKit type="text" v-model="title" placeholder="Permission Name" />
-      <button
-        class="px-4 py-2 mb-1 ml-2 bg-green-600 hover:bg-green-700 transition-all rounded flex font-medium"
-        @click="addPermission"
-      >
-        Add Permission
-      </button>
-    </div>
-  </div>
+  <div class="my-3 text-xl font-thin w-full max-w-5xl mt-10"></div>
   <div class="flex w-full flex-1 pt-8">
     <div class="my-6">
       <ul>

@@ -57,11 +57,11 @@ const menuOptions: MenuOption[] = [
         key: "users",
         path: "/ledger/users",
       },
-      {
-        label: "Permissions",
-        key: "permissions",
-        path: "/ledger/permissions",
-      },
+      // {
+      //   label: "Permissions",
+      //   key: "permissions",
+      //   path: "/ledger/permissions",
+      // },
     ],
   },
 ];

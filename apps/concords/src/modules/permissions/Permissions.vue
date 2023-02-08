@@ -1,76 +1,68 @@
 <script lang="ts" setup>
-import { shallowRef, watch, ref } from "vue";
+import { shallowRef, watch } from "vue";
 import { useLedger } from "@/modules/ledger";
-import { PeoplePicker } from "@/modules/people";
+import { IdentityAvatar, useIdentity } from "@/modules/identity";
+import { LayoutHeaderTitle } from "@/modules/layout";
 import type { IRecord } from "@concords/proof-of-work";
-import { IdentityAvatar } from "../identity";
 
-interface IUser {
-  identity: string;
-  encryption: string;
+const { ledger, createPermission, getCollection, addItem } = useLedger();
+const { publicKeyPEM } = useIdentity();
+
+const title = shallowRef<string>("");
+const users = shallowRef<Array<IRecord>>([]);
+const permissions = shallowRef<Array<IRecord>>([]);
+
+function addPermission() {
+  createPermission(title.value);
+  title.value = "";
 }
 
-const { ledger, getCollection, createPermission, addUserPermission } =
-  useLedger();
-const permissions = ref<{
-  [key: string]: Array<IRecord>;
-}>({});
-const title = shallowRef<string>("");
-const user = shallowRef<IUser | null>(null);
+function getUserPermissions(userId: string, perms: Array<IRecord>) {
+  return perms.filter(({ data }) => {
+    return data?.identity === userId;
+  });
+}
 
 watch(
   ledger,
   () => {
-    const collection = getCollection("permissions")?.data;
-    if (!collection) return;
-    for (let i = 0; i < collection.length; i++) {
-      const permission = collection[i];
-      if (permission.data?.title) {
-        if (!permissions.value[permission.data.title]) {
-          permissions.value[permission.data.title] = [];
-        }
-        permissions.value[permission.data.title].push(permission.data);
-      }
-    }
+    permissions.value = getCollection("permissions")?.data;
+    users.value = getCollection("users")?.data;
   },
   { immediate: true }
 );
-
-function addPermission() {
-  createPermission(title.value);
-}
-
-function addUserToPermission(title: string) {
-  if (!user.value) return;
-  const { identity, encryption } = user.value;
-  if (!identity || !encryption) return;
-  addUserPermission(title, identity, encryption);
-}
 </script>
 
 <template>
-  <div>
-    <div>
-      <input v-model="title" placeholder="Permission Name" />
-      <button @click="addPermission">Add Permission</button>
-    </div>
-    <div
-      v-for="permissionType in Object.keys(permissions)"
-      :key="permissionType"
-    >
-      {{ permissionType }}
-      <div class="flex">
-        <IdentityAvatar
-          v-for="person in permissions[permissionType]"
-          :key="person.id"
-          :identity="person.identity"
-          class="mr-2"
-        />
-      </div>
-      <PeoplePicker v-model="user" />
-      <button class="border" @click="addUserToPermission(permissionType)">
-        Add To Permission
+  <div class="flex w-full flex-1 flex-col">
+    <div class="flex items-center" @keyup.enter="addPermission">
+      <FormKit type="text" v-model="title" placeholder="Permission Name" />
+      <button
+        class="px-4 py-2 mb-1 ml-2 bg-green-600 hover:bg-green-700 transition-all rounded flex font-medium"
+        @click="addPermission"
+      >
+        Add Permission
       </button>
+    </div>
+    <div class="my-6">
+      <ul>
+        <li v-for="user in users" :key="user.id" class="flex">
+          <div class="flex flex-col">
+            <IdentityAvatar :identity="user.data?.identity" size="md" />
+            {{ user.data?.username }}
+            <span v-if="user.data?.identity === publicKeyPEM">(you)</span>
+          </div>
+          <p
+            v-for="permission in getUserPermissions(
+              user.data?.identity,
+              permissions
+            )"
+            :key="permission.id"
+          >
+            {{ permission.data?.title }}
+          </p>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
