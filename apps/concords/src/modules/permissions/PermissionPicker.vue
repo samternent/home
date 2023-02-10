@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { NText, NIcon, NSpace, NSelect, NButton } from "naive-ui";
+import { NText, NIcon, NSpace, NSelect, NButton, NFormItem } from "naive-ui";
 import { LockOpen } from "@vicons/ionicons5";
 import { IdentityAvatar } from "@/modules/identity";
 
@@ -10,7 +10,7 @@ import type { IRecord } from "@concords/proof-of-work";
 defineProps({
   modelValue: String,
 });
-defineEmits(["update:modelValue"]);
+const emit = defineEmits(["update:modelValue"]);
 
 const { showPermissionsPanel } = useLedgerAppShell();
 const { ledger, getCollection } = useLedger();
@@ -131,21 +131,36 @@ function renderLabel(option) {
     ]
   );
 }
+
+function onSelect(val: Object) {
+  emit("update:modelValue", val);
+  const user = users.value.find((user) => user.data?.identity === val);
+  selected.value = user || val;
+}
 </script>
 <template>
   <NSpace vertical>
-    <NSelect
-      :options="permissionTypes"
-      :render-label="renderLabel"
-      :render-tag="renderSingleSelectTag"
-      @update:value="(val) => $emit('update:modelValue', val)"
-    >
-      <template #action
-        ><div>
-          If you click this demo, you may need it.
-          <NButton @click="showPermissionsPanel = true">Add Permission</NButton>
-        </div></template
+    <NFormItem label="Permission" class="py-2">
+      <NSelect
+        :options="permissionTypes"
+        :render-label="renderLabel"
+        :render-tag="renderSingleSelectTag"
+        @update:value="onSelect"
+        class="max-w-md text-2xl"
       >
-    </NSelect>
+        <template #action
+          ><div>
+            If you click this demo, you may need it.
+            <NButton @click="showPermissionsPanel = true"
+              >Add Permission</NButton
+            >
+          </div></template
+        >
+      </NSelect>
+    </NFormItem>
+    <div v-if="selected?.identity">
+      Will be visible to thius user only. If this is not you you on't be able to
+      see this record
+    </div>
   </NSpace>
 </template>

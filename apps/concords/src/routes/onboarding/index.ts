@@ -10,10 +10,12 @@ export const onboardingRoutes = [
       {
         path: "identity",
         component: () => import("./RouteOnboardingIdentity.vue"),
+        name: "route-identity",
       },
       {
         path: "encryption",
         component: () => import("./RouteOnboardingEncryption.vue"),
+        name: "route-encryption",
       },
       {
         path: "ledger",
@@ -30,6 +32,7 @@ export const onboardingRoutes = [
           {
             path: "schema",
             component: () => import("./RouteOnboardingSchema.vue"),
+            name: "route-ledger-schema",
           },
           {
             path: "schema/:tableName",
@@ -39,6 +42,7 @@ export const onboardingRoutes = [
           {
             path: "form",
             component: () => import("./RouteOnboardingForm.vue"),
+            name: "route-ledger-form",
           },
           {
             path: "data",
@@ -47,6 +51,7 @@ export const onboardingRoutes = [
           {
             path: "users",
             component: () => import("./RouteOnboardingUsers.vue"),
+            name: "route-ledger-users",
           },
           {
             path: "verify",
