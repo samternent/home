@@ -7,9 +7,12 @@ import {
   provideLedger,
   provideLedgerAppShell,
   LedgerUsers,
+  LedgerDataTable,
+  LedgerForm,
+  LedgerCreateTable,
 } from "@/modules/ledger";
 import { useIdentity } from "@/modules/identity";
-import { Permissions } from "@/modules/permissions";
+import { Permissions, PermissionsTable } from "@/modules/permissions";
 import { generateUsername } from "unique-username-generator";
 import { stripIdentityKey, generateId } from "@concords/utils";
 import { useEncryption } from "@/modules/encryption";
@@ -48,17 +51,18 @@ const table = shallowRef(null);
 watch(ledger, (_ledger: Object) => {
   ledgerStorage.value = JSON.stringify(_ledger);
   tables.value = [
-    { label: "Users", key: "users", value: "Users" },
-    { label: "Permissions", key: "permissions", value: "Permissions" },
+    { label: "Users", key: "users", value: "users" },
+    { label: "Permissions", key: "permissions", value: "permissions" },
     ...Object.keys(getCollections())
       .filter((col) => col.includes(":types"))
       .map((col) => ({
         label: col.split(":types")[0].toUpperCase(),
         key: col.split(":types")[0],
+        value: col.split(":types")[0],
       })),
   ];
   if (!table.value) {
-    table.value = tables.value[0]?.label;
+    table.value = tables.value[0]?.value;
   }
 });
 
@@ -101,6 +105,9 @@ const isImpersonatingUser = computed(
     publicIdentityKey.value !== publicIdentityKeyB.value
 );
 
+const showCreateTable = shallowRef(false);
+const showTableForm = shallowRef(false);
+
 function unimpersonateUser(identity: string) {
   publicEncryptionKey.value = publicEncryptionKeyB.value;
   privateEncryptionKey.value = privateEncryptionKeyB.value;
@@ -123,7 +130,7 @@ function unimpersonateUser(identity: string) {
     </NAlert>
     <div class="flex justify-end p-2">
       <NSelect class="w-40" v-model:value="table" :options="tables" />
-      <NButton class="mx-2">Add table</NButton>
+      <NButton class="mx-2" @click="showCreateTable = true">Add table</NButton>
     </div>
     <div v-if="!ledger">
       <div class="mt-4">
@@ -134,10 +141,22 @@ function unimpersonateUser(identity: string) {
         <button @click="createLedger">Create ledger</button>
       </div>
     </div>
-    <LedgerUsers v-if="table === 'Users'" />
+    <LedgerUsers v-if="table === 'users'" />
+    <PermissionsTable v-if="table === 'permissions'" />
+    <LedgerDataTable v-else :table="table" />
     <NDrawer v-model:show="showPermissionsPanel" :width="502" placement="right">
       <NDrawerContent title="Permissions">
         <Permissions />
+      </NDrawerContent>
+    </NDrawer>
+    <NDrawer v-model:show="showCreateTable" :width="502" placement="right">
+      <NDrawerContent title="Permissions">
+        <LedgerCreateTable />
+      </NDrawerContent>
+    </NDrawer>
+    <NDrawer v-model:show="showTableForm" :width="502" placement="right">
+      <NDrawerContent title="Permissions">
+        <LedgerForm />
       </NDrawerContent>
     </NDrawer>
   </div>

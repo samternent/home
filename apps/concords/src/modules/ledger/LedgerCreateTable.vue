@@ -33,7 +33,6 @@ async function addItemType() {
 }
 </script>
 <template>
-  <LayoutHeaderTitle title="Create a table" />
   <table class="border-2 rounded-xl border-[#3c3c3c] mt-10">
     <thead>
       <tr>

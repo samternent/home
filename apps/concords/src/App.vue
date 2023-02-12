@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { h, shallowRef } from "vue";
+import { shallowRef } from "vue";
 import { RouterLink } from "vue-router";
 import { useLocalStorage } from "@vueuse/core";
 import {
@@ -7,19 +7,12 @@ import {
   NLayout,
   NLayoutSider,
   NLayoutContent,
-  NLayoutHeader,
-  NBreadcrumb,
-  NBreadcrumbItem,
   NIcon,
   NButton,
-  NMenu,
   NDrawerContent,
   NDrawer,
 } from "naive-ui";
-import type { MenuOption } from "naive-ui";
 import {
-  BookmarkOutline,
-  CaretDownOutline,
   ChevronForwardCircleOutline as ExpandIcon,
   ChevronBackCircleOutline as CollapseIcon,
 } from "@vicons/ionicons5";
@@ -32,53 +25,6 @@ import {
 const isCollapsed = useLocalStorage("isSidebarCollapsed", false);
 const { publicKeyPEM } = useIdentity();
 const showIdentityPanel = shallowRef(false);
-
-const menuOptions: MenuOption[] = [
-  {
-    label: "Ledger",
-    key: "route-ledger",
-    children: [
-      {
-        label: "Schema",
-        key: "route-ledger-schema",
-        path: "/ledger/schema",
-      },
-      {
-        label: "Form",
-        key: "route-ledger-form",
-        path: "/ledger/form",
-      },
-      {
-        label: "Users",
-        key: "route-ledger-users",
-        path: "/ledger/users",
-      },
-    ],
-  },
-];
-
-function renderMenuLabel(option: MenuOption) {
-  if ("path" in option) {
-    return h(
-      RouterLink,
-      {
-        to: { path: option.path },
-      },
-      { default: () => option.label }
-    );
-  }
-  return option.label as string;
-}
-function renderMenuIcon(option: MenuOption) {
-  // return render placeholder for indent
-  if (option.key === "sheep-man") return true;
-  // return falsy, don't render icon placeholder
-  if (option.key === "food") return null;
-  return h(NIcon, null, { default: () => h(BookmarkOutline) });
-}
-function expandIcon() {
-  return h(NIcon, null, { default: () => h(CaretDownOutline) });
-}
 </script>
 
 <template>
@@ -132,17 +78,6 @@ function expandIcon() {
                 </g>
               </svg>
             </RouterLink>
-            <!-- <NMenu
-              :value="$route.name"
-              :collapsed="isCollapsed"
-              :collapsed-width="64"
-              :collapsed-icon-size="22"
-              :options="menuOptions"
-              :default-expanded-keys="['route-ledger']"
-              :render-label="renderMenuLabel"
-              :render-icon="renderMenuIcon"
-              :expand-icon="expandIcon"
-            /> -->
           </div>
           <div class="flex items-center justify-center py-8">
             <button
