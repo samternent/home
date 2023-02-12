@@ -73,48 +73,4 @@ async function addItemType() {
       <button @click="addItemType">Add Type</button>
     </div>
   </div>
-  <div class="mt-12 mb-8 flex text-2xl justify-between items-center w-full">
-    <RouterLink
-      to="/ledger/schema"
-      class="px-4 py-2 text-lg transition-all rounded-full flex items-center font-medium"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke-width="1.5"
-        stroke="currentColor"
-        class="w-6 h-6"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M15.75 19.5L8.25 12l7.5-7.5"
-        />
-      </svg>
-
-      Schema
-    </RouterLink>
-    <RouterLink
-      v-if="itemTypes?.length"
-      to="/ledger/form"
-      class="px-4 py-2 text-lg bg-pink-600 hover:bg-pink-700 transition-all rounded-full flex items-center font-medium"
-    >
-      Add some data
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke-width="1.5"
-        stroke="currentColor"
-        class="w-5 h-5 ml-2"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M8.25 4.5l7.5 7.5-7.5 7.5"
-        />
-      </svg>
-    </RouterLink>
-  </div>
 </template>

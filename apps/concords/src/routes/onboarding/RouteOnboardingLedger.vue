@@ -1,17 +1,29 @@
 <script setup lang="ts">
-import { onMounted, watch, computed } from "vue";
+import { onMounted, watch, computed, shallowRef } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { NDrawerContent, NDrawer, NAlert, NButton } from "naive-ui";
+import { NDrawerContent, NDrawer, NAlert, NButton, NSelect } from "naive-ui";
 import { useLocalStorage } from "@vueuse/core";
-import { provideLedger, provideLedgerAppShell } from "@/modules/ledger";
+import {
+  provideLedger,
+  provideLedgerAppShell,
+  LedgerUsers,
+} from "@/modules/ledger";
 import { useIdentity } from "@/modules/identity";
 import { Permissions } from "@/modules/permissions";
+import { generateUsername } from "unique-username-generator";
+import { stripIdentityKey, generateId } from "@concords/utils";
+import { useEncryption } from "@/modules/encryption";
 
 const router = useRouter();
+const { publicKey: publicKeyEncryption } = useEncryption();
+
+const { publicKeyPEM: publicKeyIdentityPEM } = useIdentity();
+
 const route = useRoute();
 const {
-  api: { auth, load },
+  api: { auth, load, create },
   ledger,
+  getCollections,
 } = provideLedger();
 const { showPermissionsPanel } = provideLedgerAppShell();
 
@@ -30,9 +42,36 @@ onMounted(async () => {
   }
 });
 
+const tables = shallowRef<Array<Object>>([]);
+const table = shallowRef(null);
+
 watch(ledger, (_ledger: Object) => {
   ledgerStorage.value = JSON.stringify(_ledger);
+  tables.value = [
+    { label: "Users", key: "users", value: "Users" },
+    { label: "Permissions", key: "permissions", value: "Permissions" },
+    ...Object.keys(getCollections())
+      .filter((col) => col.includes(":types"))
+      .map((col) => ({
+        label: col.split(":types")[0].toUpperCase(),
+        key: col.split(":types")[0],
+      })),
+  ];
+  if (!table.value) {
+    table.value = tables.value[0]?.label;
+  }
 });
+
+const username = shallowRef<string>(generateUsername());
+
+async function createLedger() {
+  await create({
+    identity: stripIdentityKey(publicKeyIdentityPEM.value),
+    encryption: publicKeyEncryption.value,
+    username: username.value,
+    id: generateId(),
+  });
+}
 
 const publicEncryptionKey = useLocalStorage("concords/encrypt/publicKey", "");
 const privateEncryptionKey = useLocalStorage("concords/encrypt/privateKey", "");
@@ -77,17 +116,27 @@ function unimpersonateUser(identity: string) {
 }
 </script>
 <template>
-  <div class="w-full flex-1 mx-auto max-w-6xl px-8 flex flex-col">
+  <div class="w-full flex-1 flex flex-col">
     <NAlert title="Info Text" type="info" v-if="isImpersonatingUser">
       Your impersonating a user
       <NButton @click="unimpersonateUser">Unimpersonate</NButton>
     </NAlert>
-    <RouterView />
+    <div class="flex justify-end p-2">
+      <NSelect class="w-40" v-model:value="table" :options="tables" />
+      <NButton class="mx-2">Add table</NButton>
+    </div>
+    <div v-if="!ledger">
+      <div class="mt-4">
+        <p class="my-3 text-2xl font-thin w-3/4 mx-auto mt-10">
+          choose a username (just for this ledger)
+        </p>
+        <FormKit type="text" placeholder="Username" v-model="username" />
+        <button @click="createLedger">Create ledger</button>
+      </div>
+    </div>
+    <LedgerUsers v-if="table === 'Users'" />
     <NDrawer v-model:show="showPermissionsPanel" :width="502" placement="right">
       <NDrawerContent title="Permissions">
-        <Permissions />
-      </NDrawerContent>
-      <NDrawerContent title="Scema">
         <Permissions />
       </NDrawerContent>
     </NDrawer>

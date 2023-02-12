@@ -52,7 +52,7 @@ function svgGlyph() {
         width: sqSize.value - borderSize.value,
         height: sqSize.value - borderSize.value,
         rx: getRadius(sq),
-        style: `fill:rgb(${getColor(sq)}); transition: all 0.4s;`,
+        style: `fill:rgb(${getColor(sq)});`,
       })
     )
   );
