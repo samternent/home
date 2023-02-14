@@ -1,4 +1,10 @@
 import { createApp } from "vue";
+
+import "vuetify/styles";
+import { createVuetify } from "vuetify";
+import * as components from "vuetify/components";
+import * as directives from "vuetify/directives";
+
 import { plugin, defaultConfig } from "@formkit/vue";
 import { generateClasses } from "@formkit/themes";
 import formTheme from "./utils/formTheme";
@@ -10,6 +16,12 @@ import "vue-toastification/dist/index.css";
 import registerSW from "./utils/registerSW";
 
 const app = createApp(Root);
+app.use(
+  createVuetify({
+    components,
+    directives,
+  })
+);
 app.use(
   plugin,
   defaultConfig({

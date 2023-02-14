@@ -2,59 +2,24 @@
 import { shallowRef } from "vue";
 import { RouterLink } from "vue-router";
 import { useLocalStorage } from "@vueuse/core";
-import {
-  NSpace,
-  NLayout,
-  NLayoutSider,
-  NLayoutContent,
-  NIcon,
-  NButton,
-  NDrawerContent,
-  NDrawer,
-} from "naive-ui";
-import {
-  ChevronForwardCircleOutline as ExpandIcon,
-  ChevronBackCircleOutline as CollapseIcon,
-} from "@vicons/ionicons5";
+
 import {
   IdentityAvatar,
   useIdentity,
   IdentityDrawer,
 } from "./modules/identity";
 
-const isCollapsed = useLocalStorage("isSidebarCollapsed", false);
+const isCollapsed = useLocalStorage("isSidebarCollapsed", true);
 const { publicKeyPEM } = useIdentity();
 const showIdentityPanel = shallowRef(false);
 </script>
 
 <template>
-  <NSpace vertical size="large">
-    <NLayout has-sider position="absolute">
-      <NLayoutSider
-        collapse-mode="width"
-        :collapsed-width="70"
-        :width="240"
-        :collapsed="isCollapsed"
-        :on-update:collapsed="(val) => (isCollapsed = !val)"
-        bordered
-      >
+  <VApp>
+    <VLayout>
+      <VNavigationDrawer :rail="true" permanent theme="dark">
         <div class="flex flex-col h-full flex-1 justify-between">
           <div>
-            <NButton
-              class="absolute bottom-24 -right-8 z-10"
-              @click="isCollapsed = !isCollapsed"
-              round
-              ghost
-              :bordered="false"
-              type="primary"
-              size="large"
-            >
-              <template #icon>
-                <NIcon size="24" primary color="#a1a1a1"
-                  ><ExpandIcon v-if="isCollapsed" /><CollapseIcon v-else
-                /></NIcon>
-              </template>
-            </NButton>
             <RouterLink
               to="/"
               class="flex p-2 py-6 items-center justify-center w-full"
@@ -89,25 +54,20 @@ const showIdentityPanel = shallowRef(false);
                 :size="isCollapsed ? 'sm' : 'md'"
               />
             </button>
-            <NDrawer
-              v-model:show="showIdentityPanel"
-              width="40vw"
-              placement="right"
-            >
-              <NDrawerContent title="Identity">
-                <IdentityDrawer />
-              </NDrawerContent>
-            </NDrawer>
           </div>
         </div>
-      </NLayoutSider>
-      <NLayoutContent>
-        <NLayout>
-          <NLayoutContent>
-            <RouterView />
-          </NLayoutContent>
-        </NLayout>
-      </NLayoutContent>
-    </NLayout>
-  </NSpace>
+      </VNavigationDrawer>
+      <VMain class="">
+        <RouterView />
+      </VMain>
+      <VNavigationDrawer
+        v-model="showIdentityPanel"
+        location="right"
+        temporary
+        width="600"
+      >
+        <IdentityDrawer />
+      </VNavigationDrawer>
+    </VLayout>
+  </VApp>
 </template>

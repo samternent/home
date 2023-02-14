@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { onMounted, watch, computed, shallowRef } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { NDrawerContent, NDrawer, NAlert, NButton, NSelect } from "naive-ui";
 import { useLocalStorage } from "@vueuse/core";
 import {
   provideLedger,
@@ -11,8 +10,12 @@ import {
   LedgerForm,
   LedgerCreateTable,
 } from "@/modules/ledger";
-import { useIdentity } from "@/modules/identity";
-import { Permissions, PermissionsTable } from "@/modules/permissions";
+import { useIdentity, IdentityAvatar } from "@/modules/identity";
+import {
+  Permissions,
+  PermissionsTable,
+  PermissionPicker,
+} from "@/modules/permissions";
 import { generateUsername } from "unique-username-generator";
 import { stripIdentityKey, generateId } from "@concords/utils";
 import { useEncryption } from "@/modules/encryption";
@@ -51,13 +54,12 @@ const table = shallowRef(null);
 watch(ledger, (_ledger: Object) => {
   ledgerStorage.value = JSON.stringify(_ledger);
   tables.value = [
-    { label: "Users", key: "users", value: "users" },
-    { label: "Permissions", key: "permissions", value: "permissions" },
+    { title: "Users", value: "users" },
+    { title: "Permissions", value: "permissions" },
     ...Object.keys(getCollections())
       .filter((col) => col.includes(":types"))
       .map((col) => ({
-        label: col.split(":types")[0].toUpperCase(),
-        key: col.split(":types")[0],
+        title: col.split(":types")[0].toUpperCase(),
         value: col.split(":types")[0],
       })),
   ];
@@ -124,13 +126,23 @@ function unimpersonateUser(identity: string) {
 </script>
 <template>
   <div class="w-full flex-1 flex flex-col">
-    <NAlert title="Info Text" type="info" v-if="isImpersonatingUser">
-      Your impersonating a user
-      <NButton @click="unimpersonateUser">Unimpersonate</NButton>
-    </NAlert>
+    <VAlert v-if="isImpersonatingUser">
+      <div class="flex items-center">
+        Impersonating
+        <IdentityAvatar
+          :identity="publicKeyIdentityPEM"
+          size="sm"
+          class="mx-2"
+        />
+        <VBtn variant="plain" @click="unimpersonateUser">Unimpersonate</VBtn>
+      </div>
+    </VAlert>
     <div class="flex justify-end p-2">
-      <NSelect class="w-40" v-model:value="table" :options="tables" />
-      <NButton class="mx-2" @click="showCreateTable = true">Add table</NButton>
+      <div class="w-64">
+        <VSelect v-model="table" :items="tables" density="compact" />
+      </div>
+      <VBtn class="mx-2" @click="showCreateTable = true">Add table</VBtn>
+      <PermissionPicker />
     </div>
     <div v-if="!ledger">
       <div class="mt-4">
@@ -144,20 +156,30 @@ function unimpersonateUser(identity: string) {
     <LedgerUsers v-if="table === 'users'" />
     <PermissionsTable v-if="table === 'permissions'" />
     <LedgerDataTable v-else :table="table" />
-    <NDrawer v-model:show="showPermissionsPanel" :width="502" placement="right">
-      <NDrawerContent title="Permissions">
-        <Permissions />
-      </NDrawerContent>
-    </NDrawer>
-    <NDrawer v-model:show="showCreateTable" :width="502" placement="right">
-      <NDrawerContent title="Permissions">
-        <LedgerCreateTable />
-      </NDrawerContent>
-    </NDrawer>
-    <NDrawer v-model:show="showTableForm" :width="502" placement="right">
-      <NDrawerContent title="Permissions">
-        <LedgerForm />
-      </NDrawerContent>
-    </NDrawer>
+
+    <VNavigationDrawer
+      v-model="showPermissionsPanel"
+      location="right"
+      temporary
+      width="502"
+    >
+      <Permissions />
+    </VNavigationDrawer>
+    <VNavigationDrawer
+      v-model="showCreateTable"
+      location="right"
+      temporary
+      width="502"
+    >
+      <LedgerCreateTable />
+    </VNavigationDrawer>
+    <VNavigationDrawer
+      v-model="showTableForm"
+      location="right"
+      temporary
+      width="502"
+    >
+      <LedgerForm />
+    </VNavigationDrawer>
   </div>
 </template>

@@ -1,7 +1,4 @@
-<script lang="ts" setup>
-import { LayoutHeaderTitle } from "@/modules/layout";
-import { NButton } from "naive-ui";
-</script>
+<script lang="ts" setup></script>
 <template>
   <div
     class="w-full flex-1 mx-auto max-w-6xl px-8 flex justify-center flex-col"
@@ -16,7 +13,7 @@ import { NButton } from "naive-ui";
           <em>agreement or harmony between people or groups.</em>
         </p>
       </div>
-      <NButton
+      <VButton
         @click="$router.push({ path: '/identity' })"
         strong
         secondary
@@ -38,7 +35,7 @@ import { NButton } from "naive-ui";
             d="M8.25 4.5l7.5 7.5-7.5 7.5"
           />
         </svg>
-      </NButton>
+      </VButton>
     </div>
     <div class="mt-4">
       <p class="my-3 text-3xl font-thin w-3/4 mx-auto">

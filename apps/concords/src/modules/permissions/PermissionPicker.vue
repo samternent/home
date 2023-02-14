@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import { NText, NIcon, NSpace, NSelect, NButton, NFormItem } from "naive-ui";
-import { LockOpen } from "@vicons/ionicons5";
 import { IdentityAvatar } from "@/modules/identity";
 
 import { shallowRef, watch, computed, h } from "vue";
@@ -28,139 +26,99 @@ watch(
   { immediate: true }
 );
 
-const permissionTypes = computed(() => {
+const items = computed(() => {
   return [
     {
       type: "group",
       label: "Permissions",
       key: "permissions",
-      children: [
-        ...new Set(
-          permissions.value?.map(({ data }) => ({
-            label: data?.title,
-            value: data?.title,
-            description: "Permission",
-          })) || []
-        ),
-      ],
+      children: [...new Set(permissions.value?.map(({ data }) => data))],
     },
     {
       type: "group",
       label: "Users",
       key: "users",
-      children: [
-        ...new Set(
-          users.value?.map(({ data }) => ({
-            label: data?.username,
-            value: data?.identity,
-            description: "User",
-          })) || []
-        ),
-      ],
+      children: [...new Set(users.value?.map(({ data }) => data))],
     },
   ];
 });
 
-function renderSingleSelectTag({ option }) {
-  return h(
-    "div",
-    {
-      style: {
-        display: "flex",
-        alignItems: "center",
-      },
-    },
-    [
-      option.description === "User" &&
-        h(IdentityAvatar, {
-          identity: option.value,
-          round: true,
-          size: "xs",
-          class: "mr-2",
-        }),
-      option.description === "Permission" &&
-        h(NIcon, {
-          component: LockOpen,
-          size: 16,
-          class: "mr-2",
-        }),
-      option.label as string,
-    ].filter(Boolean)
-  );
-}
-
-function renderLabel(option) {
-  return h(
-    "div",
-    {
-      class: "flex items-center",
-    },
-    [
-      // Replace with permission icon
-      option.description === "User" &&
-        h(IdentityAvatar, {
-          identity: option.value,
-          round: true,
-          size: "sm",
-        }),
-      option.description === "Permission" &&
-        h(NIcon, {
-          component: LockOpen,
-          size: 24,
-          color: "white",
-        }),
-      h(
-        "div",
-        {
-          style: {
-            marginLeft: "12px",
-            padding: "4px 0",
-          },
-        },
-        [
-          h("div", null, [option.label as string]),
-          h(
-            NText,
-            { depth: 3, tag: "div" },
-            {
-              default: () => option.description,
-            }
-          ),
-        ].filter(Boolean)
-      ),
-    ]
-  );
-}
-
-function onSelect(val: Object) {
-  emit("update:modelValue", val);
-  const user = users.value.find((user) => user.data?.identity === val);
-  selected.value = user || val;
+function onSelect(val) {
+  emit("update:modelValue", val?.identity);
+  selected.value = val;
 }
 </script>
 <template>
-  <NSpace vertical>
-    <NFormItem label="Permission" class="py-2">
-      <NSelect
-        :options="permissionTypes"
-        :render-label="renderLabel"
-        :render-tag="renderSingleSelectTag"
-        @update:value="onSelect"
-        class="max-w-md text-2xl"
-      >
-        <template #action
-          ><div>
-            If you click this demo, you may need it.
-            <NButton @click="showPermissionsPanel = true"
-              >Add Permission</NButton
-            >
-          </div></template
+  <div>
+    <VSelect
+      v-model="selected"
+      :items="items"
+      class="w-64"
+      density="compact"
+      placeholder="Select permission"
+      :menu-props="{
+        closeOnContentClick: true,
+      }"
+    >
+      <template v-slot:selection="{ item: { raw: item } }">
+        <div class="flex items-center">
+          <IdentityAvatar
+            :identity="item.identity"
+            size="xs"
+            class="mr-2"
+            v-if="item.username"
+          />
+          <svg
+            v-if="item.title"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-4 h-4 mr-2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M13.5 10.5V6.75a4.5 4.5 0 119 0v3.75M3.75 21.75h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H3.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"
+            />
+          </svg>
+          <span v-if="item.title">{{ item.title }}</span>
+          <span v-if="item.username">{{ item.username }}</span>
+        </div>
+      </template>
+
+      <template #item="{ item: { raw: item } }">
+        <div class="p-2 font-medium">{{ item.label }}</div>
+        <VListItem
+          @click="onSelect(child)"
+          v-for="child in item.children"
+          :key="child.id"
+          density="compact"
         >
-      </NSelect>
-    </NFormItem>
-    <div v-if="selected?.identity">
-      Will be visible to thius user only. If this is not you you on't be able to
-      see this record
-    </div>
-  </NSpace>
+          <template #prepend v-if="item.key === 'users'">
+            <IdentityAvatar :identity="child.identity" size="xs" class="mr-2" />
+          </template>
+          <template #prepend v-if="item.key === 'permissions'">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-4 h-4 mr-2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M13.5 10.5V6.75a4.5 4.5 0 119 0v3.75M3.75 21.75h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H3.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"
+              />
+            </svg>
+          </template>
+          <span v-if="item.key === 'permissions'">{{ child.title }}</span>
+          <span v-if="item.key === 'users'">{{ child.username }}</span>
+        </VListItem>
+      </template>
+    </VSelect>
+  </div>
 </template>
