@@ -15,7 +15,7 @@ const showIdentityPanel = shallowRef(false);
 </script>
 
 <template>
-  <VApp>
+  <VApp theme="dark">
     <VLayout>
       <VNavigationDrawer :rail="true" permanent theme="dark">
         <div class="flex flex-col h-full flex-1 justify-between">
