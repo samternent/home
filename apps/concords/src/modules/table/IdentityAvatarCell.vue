@@ -8,4 +8,6 @@ defineProps({
   },
 });
 </script>
-<template><IdentityAvatar :identity="item" /></template>
+<template>
+  <IdentityAvatar :identity="item" size="xs" class="mx-auto" />
+</template>

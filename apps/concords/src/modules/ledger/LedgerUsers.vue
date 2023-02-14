@@ -87,22 +87,31 @@ const columns = shallowRef([
     title: "",
     component: IdentityAvatarCell,
     key: "identity",
+    width: 60,
   },
   {
-    title: "username",
+    title: "Username",
     key: "username",
+  },
+  {
+    title: "Age Key",
+    key: "encryption",
   },
 ]);
 </script>
 <template>
-  <table class="text-left">
+  <table class="text-left table-auto">
     <thead>
-      <th v-for="(column, i) in columns" :key="`header_${i}`">
+      <th
+        v-for="(column, i) in columns"
+        :key="`header_${i}`"
+        :style="`width: ${column.width}px`"
+      >
         {{ column.title }}
       </th>
     </thead>
     <tbody>
-      <tr v-for="{ data: person } in people" :key="person.id">
+      <tr v-for="{ data: person } in people" :key="person.id" class="my-2">
         <td v-for="(column, k) in columns" :key="`header_${person.id}${k}`">
           <component
             v-if="column.component"

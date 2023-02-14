@@ -49,7 +49,7 @@ onMounted(async () => {
 });
 
 const tables = shallowRef<Array<Object>>([]);
-const table = shallowRef(null);
+const table = useLocalStorage("concords/ledger/table", null);
 
 watch(ledger, (_ledger: Object) => {
   ledgerStorage.value = JSON.stringify(_ledger);
