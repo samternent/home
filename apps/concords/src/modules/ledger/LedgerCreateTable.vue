@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { shallowRef, watchEffect, watch } from "vue";
 import { useLedger } from "@/modules/ledger";
+import { PermissionPicker } from "@/modules/permissions";
 import type { IRecord } from "@concords/proof-of-work";
 import inputTypes from "@/utils/inputTypes";
 
@@ -16,12 +17,27 @@ const tableName = shallowRef<String>(props.table);
 const type = shallowRef<string>("text");
 const name = shallowRef<string>("");
 const itemTypes = shallowRef<Array<IRecord>>([]);
+const permission = shallowRef<string | null>(null);
 
 async function addItemType() {
   await addItem(
     {
       name: name.value,
       type: type.value,
+    },
+    `${tableName.value}:types`
+  );
+
+  name.value = "";
+}
+async function addItemTypePermission() {
+  if (!permission.value) {
+    return;
+  }
+  await addItem(
+    {
+      name: "permission",
+      type: permission.value,
     },
     `${tableName.value}:types`
   );
@@ -73,6 +89,8 @@ watch(ledger, () => {
       </tr>
     </tbody>
   </table>
+  <!-- Default permission
+  <PermissionPicker v-model="permission" /> -->
   <div class="my-8 w-full flex items-grow justify-between">
     <div class="px-5 py-1 text-sm flex-1" @keyup.enter="addItemType">
       <FormKit type="text" v-model="name" placeholder="key" class="mr-1" />

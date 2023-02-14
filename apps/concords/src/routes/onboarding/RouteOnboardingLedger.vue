@@ -173,7 +173,7 @@ function unimpersonateUser(identity: string) {
       temporary
       width="502"
     >
-      <LedgerCreateTable />
+      <LedgerCreateTable :key="table" />
     </VNavigationDrawer>
     <VNavigationDrawer
       v-model="showEditTable"

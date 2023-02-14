@@ -44,7 +44,7 @@ const items = computed(() => {
 });
 
 function onSelect(val) {
-  emit("update:modelValue", val?.identity);
+  emit("update:modelValue", val?.title ? val.title : val?.identity);
   selected.value = val;
 }
 </script>
