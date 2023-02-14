@@ -56,6 +56,7 @@ function onSelect(val) {
       class="w-64"
       density="compact"
       placeholder="Select permission"
+      variant="filled"
       :menu-props="{
         closeOnContentClick: true,
       }"

@@ -108,6 +108,7 @@ const isImpersonatingUser = computed(
 );
 
 const showCreateTable = shallowRef(false);
+const showEditTable = shallowRef(false);
 const showTableForm = shallowRef(false);
 
 function unimpersonateUser(identity: string) {
@@ -138,11 +139,12 @@ function unimpersonateUser(identity: string) {
       </div>
     </VAlert>
     <div class="flex justify-end p-2">
+      <VBtn class="mx-2" @click="showCreateTable = true">Add table</VBtn>
       <div class="w-64">
         <VSelect v-model="table" :items="tables" density="compact" />
       </div>
-      <VBtn class="mx-2" @click="showCreateTable = true">Add table</VBtn>
-      <PermissionPicker />
+      <VBtn class="mx-2" @click="showEditTable = true">Edit table</VBtn>
+      <!-- <PermissionPicker /> -->
     </div>
     <div v-if="!ledger">
       <div class="mt-4">
@@ -172,6 +174,14 @@ function unimpersonateUser(identity: string) {
       width="502"
     >
       <LedgerCreateTable />
+    </VNavigationDrawer>
+    <VNavigationDrawer
+      v-model="showEditTable"
+      location="right"
+      temporary
+      width="502"
+    >
+      <LedgerCreateTable :table="table" :key="table" />
     </VNavigationDrawer>
     <VNavigationDrawer
       v-model="showTableForm"

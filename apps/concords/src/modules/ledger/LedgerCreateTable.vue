@@ -1,20 +1,17 @@
 <script lang="ts" setup>
-import { shallowRef, watch } from "vue";
+import { shallowRef, watchEffect, watch } from "vue";
 import { useLedger } from "@/modules/ledger";
-import { LayoutHeaderTitle } from "@/modules/layout";
 import type { IRecord } from "@concords/proof-of-work";
 import inputTypes from "@/utils/inputTypes";
-import { useCollection } from "@/modules/ledger";
 
 const props = defineProps({
-  tableName: {
+  table: {
     type: String,
-    required: true,
+    default: null,
   },
 });
-
 const { ledger, getCollection, addItem } = useLedger();
-const { items } = useCollection(`${props.tableName}:types`);
+const tableName = shallowRef<String>(props.table);
 
 const type = shallowRef<string>("text");
 const name = shallowRef<string>("");
@@ -26,26 +23,47 @@ async function addItemType() {
       name: name.value,
       type: type.value,
     },
-    `${props.tableName}:types`
+    `${tableName.value}:types`
   );
 
   name.value = "";
 }
+
+watchEffect(() => {
+  if (tableName.value) {
+    try {
+      itemTypes.value = getCollection(`${tableName.value}:types`)?.data;
+    } catch (err) {}
+  }
+});
+
+watch(ledger, () => {
+  itemTypes.value = getCollection(`${tableName.value}:types`)?.data;
+});
 </script>
 <template>
-  <table class="border-2 rounded-xl border-[#3c3c3c] mt-10">
+  <VTextField
+    placeholder="Table name"
+    v-model="tableName"
+    :disabled="Boolean(itemTypes?.length)"
+  />
+  <table class="border-2 rounded-xl border-[#3c3c3c] table-fixed w-full">
     <thead>
       <tr>
         <th
-          colspan="2"
           class="px-5 py-3 border-b-2 border-[#3c3c3c] text-left text-xs font-semibold uppercase tracking-wider"
         >
-          {{ tableName }}
+          name
+        </th>
+        <th
+          class="px-5 py-3 border-b-2 border-[#3c3c3c] text-left text-xs font-semibold uppercase tracking-wider"
+        >
+          type
         </th>
       </tr>
     </thead>
     <tbody>
-      <tr v-for="item in items" :key="item.id">
+      <tr v-for="item in itemTypes" :key="item.id">
         <td class="px-5 py-1 border-b border-[#3c3c3c] text-sm">
           {{ item?.data?.name }}
         </td>

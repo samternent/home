@@ -24,6 +24,7 @@ const props = defineProps({
 watch(
   ledger,
   () => {
+    itemTypes.value = getCollection(`${props.table}:types`)?.data;
     items.value = getCollection(props.table)?.data;
   },
   { immediate: true }
