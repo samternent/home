@@ -96,15 +96,16 @@ watch(ledger, () => {
       <FormKit type="text" v-model="name" placeholder="key" class="mr-1" />
     </div>
     <div class="px-5 py-1 text-sm flex-1">
-      <VSelect
+      <FormKit
+        type="select"
         v-model="type"
         placeholder="datatype"
-        :items="inputTypes"
-        density="compact"
+        :options="inputTypes"
+        class="mr-1"
       />
     </div>
-    <VBtn color="success" :disabled="!tableName" @click="addItemType"
-      >Add Type</VBtn
-    >
+    <div class="px-5 my-2 items-center flex rounded text-sm bg-green-600">
+      <button @click="addItemType">Add Type</button>
+    </div>
   </div>
 </template>

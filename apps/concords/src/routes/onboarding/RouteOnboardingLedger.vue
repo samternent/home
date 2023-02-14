@@ -108,6 +108,7 @@ const isImpersonatingUser = computed(
 );
 
 const showCreateTable = shallowRef(false);
+const showAddRow = shallowRef(false);
 const showEditTable = shallowRef(false);
 const showTableForm = shallowRef(false);
 
@@ -144,6 +145,7 @@ function unimpersonateUser(identity: string) {
         <VSelect v-model="table" :items="tables" density="compact" />
       </div>
       <VBtn class="mx-2" @click="showEditTable = true">Edit table</VBtn>
+      <VBtn class="mx-2" @click="showAddRow = true">Add data</VBtn>
       <!-- <PermissionPicker /> -->
     </div>
     <div v-if="!ledger">
@@ -155,7 +157,8 @@ function unimpersonateUser(identity: string) {
         <button @click="createLedger">Create ledger</button>
       </div>
     </div>
-    <LedgerUsers v-if="table === 'users'" />
+    <div v-if="!table"></div>
+    <LedgerUsers v-else-if="table === 'users'" />
     <PermissionsTable v-if="table === 'permissions'" />
     <LedgerDataTable v-else :table="table" />
 
@@ -174,6 +177,14 @@ function unimpersonateUser(identity: string) {
       width="502"
     >
       <LedgerCreateTable :key="table" />
+    </VNavigationDrawer>
+    <VNavigationDrawer
+      v-model="showAddRow"
+      location="right"
+      temporary
+      width="502"
+    >
+      <LedgerForm :table="table" :key="table" />
     </VNavigationDrawer>
     <VNavigationDrawer
       v-model="showEditTable"

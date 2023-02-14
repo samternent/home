@@ -8,11 +8,10 @@ import { useToast } from "vue-toastification";
 interface dynamicObject {
   [key: string]: string | number;
 }
-const { ledger, getCollections, getCollection, addItem } = useLedger();
+const { ledger, getCollection, addItem } = useLedger();
 const toast = useToast();
 const itemTypes = shallowRef<Array<IRecord>>([]);
 const items = shallowRef<Array<IRecord>>([]);
-const permissions = shallowRef<Array<IRecord>>([]);
 const permission = shallowRef<string | null>();
 
 const newItem = shallowRef<dynamicObject>({});
@@ -24,9 +23,12 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits(["submit"]);
+
 watch(
   ledger,
   () => {
+    itemTypes.value = getCollection(`${props.table}:types`)?.data;
     items.value = getCollection(props.table)?.data;
   },
   { immediate: true }
@@ -35,7 +37,6 @@ watch(
 watchEffect(() => {
   itemTypes.value = getCollection(`${props.table}:types`)?.data;
   items.value = getCollection(props.table)?.data;
-  permissions.value = getCollection("permissions")?.data;
 });
 
 function updateItem(e: Event, name: string) {
@@ -45,7 +46,6 @@ function updateItem(e: Event, name: string) {
 
 async function addListItem() {
   await addItem({ ...newItem.value }, props.table, permission.value);
-  newItem.value = {};
   toast.success("Item added", {
     position: "bottom-right",
     timeout: 1000,
@@ -61,6 +61,7 @@ async function addListItem() {
     rtl: false,
   });
   newItem.value = {};
+  emit("submit");
 }
 </script>
 
@@ -73,6 +74,7 @@ async function addListItem() {
         class="my-3 uppercase"
       >
         <FormKit
+          :key="newItem[itemType.data.name]"
           :label="itemType.data.name"
           @change="updateItem($event, itemType.data.name)"
           :placeholder="itemType.data.name"

@@ -25,15 +25,10 @@ watch(
   ledger,
   () => {
     itemTypes.value = getCollection(`${props.table}:types`)?.data;
-    items.value = getCollection(props.table)?.data;
+    items.value = [...(getCollection(props.table)?.data || [])];
   },
   { immediate: true }
 );
-
-watchEffect(() => {
-  itemTypes.value = getCollection(`${props.table}:types`)?.data;
-  items.value = getCollection(props.table)?.data;
-});
 </script>
 
 <template>
