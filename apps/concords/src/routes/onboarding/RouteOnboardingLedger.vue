@@ -149,15 +149,37 @@ function unimpersonateUser(identity: string) {
         />
       </div>
       <div>
-        <VBtn class="mx-2" variant="outlined" @click="showCreateTable = true"
-          >Add table</VBtn
-        >
-        <VBtn class="mx-2" variant="outlined" @click="showEditTable = true"
-          >Edit table</VBtn
-        >
-        <VBtn class="mx-2" color="success" @click="showAddRow = true"
-          >Add data</VBtn
-        >
+        <VBtnGroup border rounded="pill" density="comfortable">
+          <VBtn class="mx-2" @click="showAddRow = true">Add data</VBtn>
+
+          <VDivider vertical inset />
+
+          <VMenu location="bottom right">
+            <template #activator="{ props }">
+              <VBtn v-bind="props"
+                ><svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-4 h-4"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                  />
+                </svg>
+              </VBtn>
+            </template>
+
+            <VList>
+              <VListItem title="Edit Table" @click="showEditTable = true" />
+              <VListItem title="Add Table" @click="showCreateTable = true" />
+            </VList>
+          </VMenu>
+        </VBtnGroup>
       </div>
     </div>
     <div v-if="!ledger">
