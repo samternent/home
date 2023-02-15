@@ -65,6 +65,7 @@ const showIdentityPanel = shallowRef(false);
         location="right"
         temporary
         width="600"
+        :elevation="1"
       >
         <IdentityDrawer />
       </VNavigationDrawer>

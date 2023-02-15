@@ -2,14 +2,13 @@
 import { shallowRef, watch, computed } from "vue";
 import { useLedger } from "@/modules/ledger";
 import { PermissionPicker } from "@/modules/permissions";
+import { TextCell } from "@/modules/table";
 import type { IRecord } from "@concords/proof-of-work";
-import { useToast } from "vue-toastification";
 
 interface dynamicObject {
   [key: string]: string | null;
 }
-const { ledger, getCollection, addItem } = useLedger();
-const toast = useToast();
+const { ledger, getCollection } = useLedger();
 const itemTypes = shallowRef<Array<IRecord>>([]);
 const items = shallowRef<Array<IRecord>>([]);
 
@@ -32,41 +31,44 @@ watch(
 );
 
 const cellTypes: dynamicObject = {
-  text: {
-    compnent: null,
-  },
+  // text: {
+  //   compnent: null,
+  // },
 };
 const columns = computed(() => {
   return (
     itemTypes.value?.map(({ data }) => ({
       ...data,
-      ...(cellTypes[data.type] || {}),
+      ...(cellTypes[data.type] || { component: TextCell }),
     })) || []
   );
 });
 </script>
 
 <template>
-  <table class="text-left table-auto">
+  <table class="text-left table-auto w-full whitespace-nowrap">
     <thead>
       <th
         v-for="(column, i) in columns"
         :key="`header_${i}`"
         :style="`width: ${column.width}px`"
+        class="uppercase p-2 font-light"
       >
         {{ column.name }}
       </th>
     </thead>
     <tbody>
-      <tr v-for="item in items" :key="item.id" class="my-2">
+      <tr
+        v-for="item in items"
+        :key="item.id"
+        tabindex="0"
+        class="focus:outline-none h-16 border-y border-[#3c3c3c]"
+      >
         <td v-for="(column, k) in columns" :key="`header_${item.id}${k}`">
-          <!-- <component
-            v-if="column.component"
+          <component
             :is="column.component"
-            v-bind="{ item: item[column.key] }"
+            v-bind="{ item: item[column.name] }"
           ></component>
-          <span v-else>{{ item[column.key] }}</span> -->
-          <span>{{ item[column.name] }}</span>
         </td>
       </tr>
     </tbody>

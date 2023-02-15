@@ -49,13 +49,13 @@ onMounted(async () => {
 });
 
 const tables = shallowRef<Array<Object>>([]);
-const table = useLocalStorage("concords/ledger/table", null);
+const table = useLocalStorage("concords/ledger/table", "");
 
 watch(ledger, (_ledger: Object) => {
   ledgerStorage.value = JSON.stringify(_ledger);
   tables.value = [
-    { title: "Users", value: "users" },
-    { title: "Permissions", value: "permissions" },
+    { title: "USERS", value: "users" },
+    { title: "PERMISSIONS", value: "permissions" },
     ...Object.keys(getCollections())
       .filter((col) => col.includes(":types"))
       .map((col) => ({
@@ -167,6 +167,7 @@ function unimpersonateUser(identity: string) {
       location="right"
       temporary
       width="502"
+      :elevation="2"
     >
       <Permissions />
     </VNavigationDrawer>
@@ -175,14 +176,16 @@ function unimpersonateUser(identity: string) {
       location="right"
       temporary
       width="502"
+      :elevation="2"
     >
-      <LedgerCreateTable :key="table" />
+      <LedgerCreateTable @submit="(e: string) => (table = e)" />
     </VNavigationDrawer>
     <VNavigationDrawer
       v-model="showAddRow"
       location="right"
       temporary
       width="502"
+      :elevation="2"
     >
       <LedgerForm :table="table" :key="table" />
     </VNavigationDrawer>
@@ -191,6 +194,7 @@ function unimpersonateUser(identity: string) {
       location="right"
       temporary
       width="502"
+      :elevation="2"
     >
       <LedgerCreateTable :table="table" :key="table" />
     </VNavigationDrawer>
@@ -199,6 +203,7 @@ function unimpersonateUser(identity: string) {
       location="right"
       temporary
       width="502"
+      :elevation="2"
     >
       <LedgerForm />
     </VNavigationDrawer>

@@ -11,6 +11,9 @@ const props = defineProps({
     default: null,
   },
 });
+
+const emit = defineEmits(["submit"]);
+
 const { ledger, getCollection, addItem } = useLedger();
 const tableName = shallowRef<String>(props.table);
 
@@ -29,6 +32,7 @@ async function addItemType() {
   );
 
   name.value = "";
+  emit("submit", tableName);
 }
 async function addItemTypePermission() {
   if (!permission.value) {
