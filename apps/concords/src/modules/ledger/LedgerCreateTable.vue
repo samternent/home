@@ -67,27 +67,23 @@ watch(ledger, () => {
     v-model="tableName"
     :disabled="Boolean(itemTypes?.length)"
   />
-  <table class="border-2 rounded-xl border-[#3c3c3c] table-fixed w-full">
+  <table class="text-left table-auto w-full whitespace-nowrap">
     <thead>
       <tr>
-        <th
-          class="px-5 py-3 border-b-2 border-[#3c3c3c] text-left text-xs font-semibold uppercase tracking-wider"
-        >
-          name
-        </th>
-        <th
-          class="px-5 py-3 border-b-2 border-[#3c3c3c] text-left text-xs font-semibold uppercase tracking-wider"
-        >
-          type
-        </th>
+        <th class="uppercase p-2 font-light">name</th>
+        <th class="uppercase p-2 font-light">type</th>
       </tr>
     </thead>
     <tbody>
-      <tr v-for="item in itemTypes" :key="item.id">
-        <td class="px-5 py-1 border-b border-[#3c3c3c] text-sm">
+      <tr
+        v-for="item in itemTypes"
+        :key="item.id"
+        class="focus:outline-none h-16 border-y border-[#3c3c3c]"
+      >
+        <td class="p-2">
           {{ item?.data?.name }}
         </td>
-        <td class="px-5 py-1 border-b border-[#3c3c3c] text-sm">
+        <td class="p-2">
           {{ item?.data?.type }}
         </td>
       </tr>
@@ -95,20 +91,27 @@ watch(ledger, () => {
   </table>
   <!-- Default permission
   <PermissionPicker v-model="permission" /> -->
-  <div class="my-8 w-full flex items-grow justify-between">
-    <div class="px-5 py-1 text-sm flex-1" @keyup.enter="addItemType">
-      <FormKit type="text" v-model="name" placeholder="key" class="mr-1" />
-    </div>
-    <div class="px-5 py-1 text-sm flex-1">
+  <div class="my-8 w-full">
+    <div class="flex items-center justify-between px-2">
+      <VTextField
+        density="compact"
+        type="text"
+        v-model="name"
+        placeholder="Name"
+        class="mr-1"
+      />
       <VSelect
         v-model="type"
-        placeholder="datatype"
+        placeholder="Type"
         :items="inputTypes"
         density="compact"
+        class="flex-1"
       />
     </div>
-    <VBtn color="success" :disabled="!tableName" @click="addItemType"
-      >Add Type</VBtn
-    >
+    <div class="flex w-full justify-end px-2">
+      <VBtn color="success" :disabled="!tableName" @click="addItemType"
+        >Add Type</VBtn
+      >
+    </div>
   </div>
 </template>

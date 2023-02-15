@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { shallowRef, watch, computed } from "vue";
 import { useLedger } from "@/modules/ledger";
-import { PermissionPicker } from "@/modules/permissions";
 import { TextCell } from "@/modules/table";
 import type { IRecord } from "@concords/proof-of-work";
 

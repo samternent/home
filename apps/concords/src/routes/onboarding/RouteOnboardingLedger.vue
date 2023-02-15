@@ -139,14 +139,26 @@ function unimpersonateUser(identity: string) {
         <VBtn variant="plain" @click="unimpersonateUser">Unimpersonate</VBtn>
       </div>
     </VAlert>
-    <div class="flex justify-end p-2">
-      <VBtn class="mx-2" @click="showCreateTable = true">Add table</VBtn>
-      <div class="w-64">
-        <VSelect v-model="table" :items="tables" density="compact" />
+    <div class="flex justify-between p-2">
+      <div class="w-64 mr-2">
+        <VSelect
+          variant="outlined"
+          v-model="table"
+          :items="tables"
+          density="compact"
+        />
       </div>
-      <VBtn class="mx-2" @click="showEditTable = true">Edit table</VBtn>
-      <VBtn class="mx-2" @click="showAddRow = true">Add data</VBtn>
-      <!-- <PermissionPicker /> -->
+      <div>
+        <VBtn class="mx-2" variant="outlined" @click="showCreateTable = true"
+          >Add table</VBtn
+        >
+        <VBtn class="mx-2" variant="outlined" @click="showEditTable = true"
+          >Edit table</VBtn
+        >
+        <VBtn class="mx-2" color="success" @click="showAddRow = true"
+          >Add data</VBtn
+        >
+      </div>
     </div>
     <div v-if="!ledger">
       <div class="mt-4">
