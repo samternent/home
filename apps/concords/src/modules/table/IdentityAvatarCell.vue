@@ -9,5 +9,9 @@ defineProps({
 });
 </script>
 <template>
-  <IdentityAvatar :identity="item" size="xs" class="mx-auto" />
+  <VTooltip :text="item" location="bottom">
+    <template v-slot:activator="{ props }">
+      <IdentityAvatar v-bind="props" :identity="item" size="sm" class="mx-2" />
+    </template>
+  </VTooltip>
 </template>

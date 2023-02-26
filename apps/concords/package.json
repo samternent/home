@@ -38,7 +38,7 @@
     "http-proxy-middleware": "^2.0.6",
     "invert-color": "^2.0.0",
     "json-tree-view-vue3": "^0.2.2",
-    "luxon": "^3.0.3",
+    "luxon": "^3.1.1",
     "redis": "^4.3.0",
     "tippy.js": "^6.3.7",
     "unique-username-generator": "^1.1.3",

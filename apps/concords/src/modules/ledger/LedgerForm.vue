@@ -66,12 +66,12 @@ async function addListItem() {
 </script>
 
 <template>
-  <div class="flex w-full flex-1 pt-8">
-    <div @keyup.enter="addListItem" class="w-1/2">
+  <div class="flex w-full flex-1 pt-8 px-2">
+    <div @keyup.enter="addListItem">
       <div
         v-for="itemType in itemTypes"
         :key="itemType.id"
-        class="my-3 uppercase"
+        class="my-3 uppercase mx-auto w-full"
       >
         <FormKit
           :key="newItem[itemType.data.name]"
@@ -80,10 +80,10 @@ async function addListItem() {
           :placeholder="itemType.data.name"
           :type="itemType.data.type"
           :value="newItem[itemType.data.name]"
-          class="mx-auto"
+          class="mx-auto w-full"
         />
       </div>
-
+      Permission
       <PermissionPicker v-model="permission" />
       <div class="w-full flex justify-end max-w-md">
         <button

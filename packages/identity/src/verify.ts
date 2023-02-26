@@ -20,7 +20,7 @@ export async function verify(
 
 export async function verifyJson(
   signature: string,
-  data: string,
+  data: Object,
   publicKey: CryptoKey
 ) {
   return verify(signature, JSON.stringify(data), publicKey);

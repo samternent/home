@@ -56,7 +56,6 @@ function onSelect(val) {
       class="w-64"
       density="compact"
       placeholder="Select permission"
-      variant="filled"
       :menu-props="{
         closeOnContentClick: true,
       }"
@@ -90,35 +89,41 @@ function onSelect(val) {
       </template>
 
       <template #item="{ item: { raw: item } }">
-        <div class="p-2 font-medium">{{ item.label }}</div>
-        <VListItem
-          @click="onSelect(child)"
-          v-for="child in item.children"
-          :key="child.id"
-          density="compact"
-        >
-          <template #prepend v-if="item.key === 'users'">
-            <IdentityAvatar :identity="child.identity" size="xs" class="mr-2" />
-          </template>
-          <template #prepend v-if="item.key === 'permissions'">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="w-4 h-4 mr-2"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M13.5 10.5V6.75a4.5 4.5 0 119 0v3.75M3.75 21.75h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H3.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"
+        <VSheet>
+          <div class="p-2 font-medium">{{ item.label }}</div>
+          <VListItem
+            @click="onSelect(child)"
+            v-for="child in item.children"
+            :key="child.id"
+            density="compact"
+          >
+            <template #prepend v-if="item.key === 'users'">
+              <IdentityAvatar
+                :identity="child.identity"
+                size="xs"
+                class="mr-2"
               />
-            </svg>
-          </template>
-          <span v-if="item.key === 'permissions'">{{ child.title }}</span>
-          <span v-if="item.key === 'users'">{{ child.username }}</span>
-        </VListItem>
+            </template>
+            <template #prepend v-if="item.key === 'permissions'">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-4 h-4 mr-2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M13.5 10.5V6.75a4.5 4.5 0 119 0v3.75M3.75 21.75h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H3.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"
+                />
+              </svg>
+            </template>
+            <span v-if="item.key === 'permissions'">{{ child.title }}</span>
+            <span v-if="item.key === 'users'">{{ child.username }}</span>
+          </VListItem>
+        </VSheet>
       </template>
     </VSelect>
   </div>

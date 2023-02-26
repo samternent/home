@@ -125,6 +125,10 @@ function unimpersonateUser(identity: string) {
 
   window.location.reload();
 }
+
+const canEditTable = computed(
+  () => !["users", "permissions"].includes(table.value)
+);
 </script>
 <template>
   <div class="w-full flex-1 flex flex-col">
@@ -139,8 +143,10 @@ function unimpersonateUser(identity: string) {
         <VBtn variant="plain" @click="unimpersonateUser">Unimpersonate</VBtn>
       </div>
     </VAlert>
-    <div class="flex justify-between p-2">
-      <div class="w-64 mr-2">
+    <div
+      class="flex flex-col md:flex-row items-end md:items-start md:justify-between p-2"
+    >
+      <div class="w-full md:w-auto sm:mx-auto md:mx-0">
         <VSelect
           variant="outlined"
           v-model="table"
@@ -175,8 +181,12 @@ function unimpersonateUser(identity: string) {
             </template>
 
             <VList>
-              <VListItem title="Edit Table" @click="showEditTable = true" />
-              <VListItem title="Add Table" @click="showCreateTable = true" />
+              <VListItem
+                v-if="canEditTable"
+                title="Edit Table"
+                @click="showEditTable = true"
+              />
+              <VListItem title="Create Table" @click="showCreateTable = true" />
             </VList>
           </VMenu>
         </VBtnGroup>
@@ -191,9 +201,9 @@ function unimpersonateUser(identity: string) {
         <button @click="createLedger">Create ledger</button>
       </div>
     </div>
-    <div v-if="!table"></div>
+    <div v-if="!table">Loading</div>
     <LedgerUsers v-else-if="table === 'users'" />
-    <PermissionsTable v-if="table === 'permissions'" />
+    <PermissionsTable v-else-if="table === 'permissions'" />
     <LedgerDataTable v-else :table="table" />
 
     <VNavigationDrawer
