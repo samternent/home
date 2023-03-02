@@ -47,11 +47,11 @@ const showIdentityPanel = shallowRef(false);
           <div class="flex items-center justify-center py-8">
             <button
               @click="showIdentityPanel = true"
-              class="flex p-1 m-2 rounded items-center justify-center w-full bg-opacity-5 bg-zinc-50"
+              class="flex p-2 m-2 rounded items-center justify-center w-full"
             >
               <IdentityAvatar
                 :identity="publicKeyPEM"
-                :size="isCollapsed ? 'xs' : 'sm'"
+                :size="isCollapsed ? 'sm' : 'md'"
               />
             </button>
           </div>
