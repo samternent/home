@@ -148,7 +148,7 @@ const canEditTable = computed(
     >
       <div class="w-full md:w-auto sm:mx-auto md:mx-0">
         <VSelect
-          variant="outlined"
+          variant="underlined"
           v-model="table"
           :items="tables"
           density="compact"

@@ -15,10 +15,10 @@ const showIdentityPanel = shallowRef(false);
 </script>
 
 <template>
-  <VApp theme="dark">
+  <VApp theme="light">
     <VLayout>
-      <VNavigationDrawer :rail="true" permanent theme="dark">
-        <div class="flex flex-col h-full flex-1 justify-between">
+      <VNavigationDrawer :rail="true" permanent theme="primary">
+        <div class="flex flex-col h-full flex-1 justify-between bg-indigo-900">
           <div>
             <RouterLink
               to="/"
@@ -29,7 +29,7 @@ const showIdentityPanel = shallowRef(false);
                   'w-12 h-12': !isCollapsed,
                   'w-8 h-8': isCollapsed,
                 }"
-                class="fill-pink-600"
+                class="fill-yellow-400"
                 viewBox="0 0 48 48"
               >
                 <g>
@@ -47,11 +47,11 @@ const showIdentityPanel = shallowRef(false);
           <div class="flex items-center justify-center py-8">
             <button
               @click="showIdentityPanel = true"
-              class="flex p-2 py-6 items-center justify-center w-full"
+              class="flex p-1 m-2 rounded items-center justify-center w-full bg-opacity-5 bg-zinc-50"
             >
               <IdentityAvatar
                 :identity="publicKeyPEM"
-                :size="isCollapsed ? 'sm' : 'md'"
+                :size="isCollapsed ? 'xs' : 'sm'"
               />
             </button>
           </div>
