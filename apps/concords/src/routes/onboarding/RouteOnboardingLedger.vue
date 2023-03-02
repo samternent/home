@@ -131,7 +131,7 @@ const canEditTable = computed(
 );
 </script>
 <template>
-  <div class="w-full flex-1 flex flex-col">
+  <div class="w-full flex-1 flex flex-col max-h-screen h-screen">
     <VAlert v-if="isImpersonatingUser">
       <div class="flex items-center">
         Impersonating
@@ -156,7 +156,7 @@ const canEditTable = computed(
       </div>
       <div>
         <VBtnGroup border rounded="pill" density="comfortable">
-          <VBtn class="mx-2" @click="showAddRow = true">Add data</VBtn>
+          <VBtn @click="showAddRow = true">Add data</VBtn>
 
           <VDivider vertical inset />
 

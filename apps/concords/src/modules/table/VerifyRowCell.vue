@@ -4,7 +4,7 @@ import { importPublicKeyFromPem, verifyJson } from "@concords/identity";
 
 const props = defineProps({
   data: {
-    type: String,
+    type: Object,
     required: true,
   },
   signature: {
@@ -39,7 +39,12 @@ watchEffect(async () => {
     signature?.value,
     {
       id: id.value,
-      data: data.value,
+      data: data.value?.encrypted
+        ? {
+            permission: data.value?.permission,
+            encrypted: data.value?.encrypted,
+          }
+        : data.value,
       timestamp: timestamp.value,
       identity: identity.value,
       collection: collection.value,

@@ -7,5 +7,5 @@ defineProps({
 });
 </script>
 <template>
-  <div class="p-2 min-w-32 truncate">{{ item }}</div>
+  <div class="px-2 w-64 truncate">{{ item }}</div>
 </template>

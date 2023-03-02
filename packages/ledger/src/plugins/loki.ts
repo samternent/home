@@ -31,38 +31,43 @@ export default function useLokiPlugin(
       async onAdd(record: IRecord) {
         if (!record.data && !record.encrypted) return;
         if (record.data?.permission) {
-          const permission = collections.permissions.findOne({
+          const permission = collections.permissions?.findOne({
             "data.title": record.data.permission,
             "data.identity": stripIdentityKey(myPublicIdentity),
           })?.data;
 
           if (!permission) {
             try {
-              record.data = JSON.parse(
-                await decrypt(
-                  myPrivateEncryption,
-                  formatEncryptionFile(record.data.encrypted)
-                )
-              );
+              record.data = {
+                ...record.data,
+                ...JSON.parse(
+                  await decrypt(
+                    myPrivateEncryption,
+                    formatEncryptionFile(record.data.encrypted)
+                  )
+                ),
+              };
             } catch (e) {
-              // console.error(e);
+              console.error(e);
               return;
             }
-            // console.error(`'${record.data.permission}' permission not found`);
           } else {
             try {
               const decrypted = await decrypt(
                 myPrivateEncryption,
                 formatEncryptionFile(permission.secret)
               );
-              record.data = JSON.parse(
-                await decrypt(
-                  decrypted,
-                  formatEncryptionFile(record.data.encrypted)
-                )
-              );
+              record.data = {
+                ...record.data,
+                ...JSON.parse(
+                  await decrypt(
+                    decrypted,
+                    formatEncryptionFile(record.data.encrypted)
+                  )
+                ),
+              };
             } catch (e) {
-              // console.error(e);
+              console.error(e);
               return;
             }
           }

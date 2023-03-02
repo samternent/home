@@ -62,40 +62,62 @@ function getVerifyProps(props: Object): Object {
 <template>
   <div class="max-w-screen overflow-x-auto">
     <table class="text-left table-auto w-full whitespace-nowrap">
-      <thead>
+      <thead class="sticky top-0 bg-zinc-900">
         <th
           v-for="(column, i) in columns"
           :key="`header_${i}`"
           :style="`width: ${column.width}px`"
-          class="uppercase p-2 font-light"
+          class="uppercase p-2 font-light border-x z-10 border-zinc-800"
         >
           {{ column.name }}
         </th>
-        <td class="uppercase p-2 font-light">Updated</td>
-        <td class="uppercase p-2 font-light">User</td>
-        <td class="uppercase p-2 font-light">Signature</td>
+        <td class="uppercase p-2 font-light border-x z-10 border-zinc-800">
+          Updated
+        </td>
+        <td class="uppercase p-2 font-light border-x z-10 border-zinc-800">
+          User
+        </td>
+        <td class="uppercase p-2 font-light border-x z-10 border-zinc-800"></td>
+        <td class="uppercase p-2 font-light border-x z-10 border-zinc-800"></td>
       </thead>
-      <tbody>
-        <tr
-          v-for="item in items"
-          :key="item.id"
-          tabindex="0"
-          class="focus:outline-none h-16 border-y border-[#3c3c3c]"
-        >
-          <td v-for="(column, k) in columns" :key="`header_${item.id}${k}`">
+      <tbody class="text-sm">
+        <tr v-for="item in items" :key="item.id" tabindex="0" class="h-12">
+          <td
+            v-for="(column, k) in columns"
+            :key="`header_${item.id}${k}`"
+            class="border border-zinc-900"
+          >
             <component
               :is="column.component"
               v-bind="{ item: item?.data[column.name] }"
             ></component>
           </td>
-          <td>
+          <td class="border border-zinc-900">
             <TextCell :item="formatTime(item?.timestamp)" />
           </td>
-          <td>
+          <td class="border border-zinc-900">
             <IdentityAvatarCell :item="item.identity" />
           </td>
-          <td>
+          <td class="border border-zinc-900">
             <VerifyRowCell v-bind="{ ...getVerifyProps(item) }" />
+          </td>
+          <td class="border border-zinc-900">
+            <VBtn icon variant="plain" size="small" class="mx-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-6 h-6"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z"
+                />
+              </svg>
+            </VBtn>
           </td>
         </tr>
       </tbody>
