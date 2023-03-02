@@ -60,25 +60,21 @@ function getVerifyProps(props: Object): Object {
 </script>
 
 <template>
-  <div class="max-w-screen overflow-x-auto">
+  <div class="max-w-screen overflow-x-auto flex-1">
     <table class="text-left table-auto w-full whitespace-nowrap">
-      <thead class="sticky top-0 bg-white">
+      <thead class="sticky top-0 bg-white font-medium">
         <th
           v-for="(column, i) in columns"
           :key="`header_${i}`"
           :style="`width: ${column.width}px`"
-          class="uppercase p-2 font-light border-x z-10 border-zinc-300"
+          class="uppercase p-2 border-x z-10 font-medium border-zinc-300"
         >
           {{ column.name }}
         </th>
-        <td class="uppercase p-2 font-light border-x z-10 border-zinc-300">
-          Updated
-        </td>
-        <td class="uppercase p-2 font-light border-x z-10 border-zinc-300">
-          User
-        </td>
-        <td class="uppercase p-2 font-light border-x z-10 border-zinc-300"></td>
-        <td class="uppercase p-2 font-light border-x z-10 border-zinc-300"></td>
+        <td class="uppercase p-2 border-x z-10 border-zinc-300">Updated</td>
+        <td class="uppercase p-2 border-x z-10 border-zinc-300">User</td>
+        <td class="uppercase p-2 border-x z-10 border-zinc-300"></td>
+        <td class="uppercase p-2 border-x z-10 border-zinc-300"></td>
       </thead>
       <tbody class="text-sm">
         <tr v-for="item in items" :key="item.id" tabindex="0" class="h-12">
