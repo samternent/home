@@ -60,44 +60,61 @@ function getVerifyProps(props: Object): Object {
 </script>
 
 <template>
-  <div class="max-w-screen overflow-x-auto flex-1">
-    <table class="text-left table-auto w-full whitespace-nowrap">
+  <div class="max-w-screen overflow-x-auto flex-1 bg-zinc-50">
+    <table class="text-left table-auto w-full whitespace-nowrap text-black">
       <thead class="sticky top-0 bg-white font-medium">
         <th
           v-for="(column, i) in columns"
           :key="`header_${i}`"
           :style="`width: ${column.width}px`"
-          class="uppercase p-2 border-x z-10 font-medium border-zinc-300"
+          class="uppercase p-2 border-r z-10 font-medium bg-indigo-700 text-zinc-50 border-indigo-800"
         >
           {{ column.name }}
         </th>
-        <td class="uppercase p-2 border-x z-10 border-zinc-300">Updated</td>
-        <td class="uppercase p-2 border-x z-10 border-zinc-300">User</td>
-        <td class="uppercase p-2 border-x z-10 border-zinc-300"></td>
-        <td class="uppercase p-2 border-x z-10 border-zinc-300"></td>
+        <td
+          class="uppercase p-2 border-r z-10 font-medium bg-indigo-700 text-zinc-50 border-indigo-800"
+        >
+          Updated
+        </td>
+        <td
+          class="uppercase p-2 border-r z-10 font-medium bg-indigo-700 text-zinc-50 border-indigo-800"
+        >
+          User
+        </td>
+        <td
+          class="uppercase p-2 z-10 font-medium bg-indigo-700 text-zinc-50 border-indigo-800"
+        ></td>
+        <td
+          class="uppercase p-2 z-10 font-medium bg-indigo-700 text-zinc-50 border-indigo-800"
+        ></td>
       </thead>
       <tbody class="text-sm">
-        <tr v-for="item in items" :key="item.id" tabindex="0" class="h-12">
+        <tr
+          v-for="item in items"
+          :key="item.id"
+          tabindex="0"
+          class="h-12 border-zinc-200 border-t-2"
+        >
           <td
             v-for="(column, k) in columns"
             :key="`header_${item.id}${k}`"
-            class="border border-zinc-200"
+            class="border-r border-zinc-200"
           >
             <component
               :is="column.component"
               v-bind="{ item: item?.data[column.name] }"
             ></component>
           </td>
-          <td class="border border-zinc-200">
+          <td class="border-r border-zinc-200">
             <TextCell :item="formatTime(item?.timestamp)" />
           </td>
-          <td class="border border-zinc-200">
+          <td class="border-r border-zinc-200">
             <IdentityAvatarCell :item="item.identity" />
           </td>
-          <td class="border border-zinc-200">
+          <td class="border-r border-zinc-200">
             <VerifyRowCell v-bind="{ ...getVerifyProps(item) }" />
           </td>
-          <td class="border border-zinc-200">
+          <td class="border-zinc-200">
             <VBtn icon variant="plain" size="small" class="mx-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"

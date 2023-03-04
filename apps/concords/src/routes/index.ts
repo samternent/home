@@ -1,11 +1,17 @@
-import { ledgerRoutes } from "./ledger";
 import { legalRoutes } from "./legal";
-import { onboardingRoutes } from "./onboarding";
 import { userRoutes } from "./user";
 
 export default [
-  // ...ledgerRoutes,
   ...legalRoutes,
-  ...onboardingRoutes,
   ...userRoutes,
+  {
+    path: "",
+    component: () => import("./RouteHome.vue"),
+    meta: {
+      hasTopPanel: true,
+      hasBottomPanel: true,
+      hasLeftPanel: false,
+      hasRightPanel: false,
+    },
+  },
 ];

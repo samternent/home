@@ -1,100 +1,289 @@
-<script lang="ts" setup>
-import { onMounted, ShallowRef, shallowRef, watchEffect } from "vue";
-</script>
-<template>
-  <div
-    class="w-full flex-1 mx-auto max-w-6xl px-8 flex justify-center flex-col"
-  >
-    <div class="text-3xl text-white pt-4 font-light">
-      <span class="font-medium text-5xl">concord: </span>
-      <span class="text-5xl font-thin">noun.</span>
-      <p class="text-white font-thin">
-        <em>agreement or harmony between people or groups.</em>
-      </p>
-      <!-- <p class="mt-4 text-2xl">Concords is a A different kind of web app.</p> -->
-      <p class="mt-4 text-xl">
-        <span class="text-2xl font-medium">Secure by design</span>. An
-        <strong>anonymous</strong>
-        ledger app, using ECDSA Identity & Age Encryption for protected document
-        data files.
-      </p>
-      <div class="mt-12 mb-8 flex text-2xl items-center w-full">
-        <RouterLink
-          to="/l/create"
-          class="px-4 py-2 text-lg bg-green-600 hover:bg-green-700 transition-all rounded-full flex items-center font-medium"
-        >
-          Create
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="w-5 h-5 ml-2"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M8.25 4.5l7.5 7.5-7.5 7.5"
-            />
-          </svg>
-        </RouterLink>
-      </div>
-      <!-- <div class="mt-12 mb-8 flex text-2xl items-center w-full">or</div> -->
+<script setup lang="ts">
+import { onMounted, watch, computed, shallowRef } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import { useLocalStorage } from "@vueuse/core";
+import {
+  provideLedger,
+  provideLedgerAppShell,
+  LedgerUsers,
+  LedgerDataTable,
+  LedgerForm,
+  LedgerCreateTable,
+} from "@/modules/ledger";
+import { useIdentity, IdentityAvatar } from "@/modules/identity";
+import {
+  Permissions,
+  PermissionsTable,
+  PermissionPicker,
+} from "@/modules/permissions";
+import { generateUsername } from "unique-username-generator";
+import { stripIdentityKey, generateId } from "@concords/utils";
+import { useEncryption } from "@/modules/encryption";
 
-      <!-- <ul class="text-lg my-8 px-6 py-4 rounded-xl">
-        <li class="pl-2">Granular permissions with Age encryption.</li>
-        <li class="pl-2">Tamper-proof data structure.</li>
-        <li class="pl-2">ECDSA signed transations.</li>
-        <li class="pl-2">Works completely offline.</li>
-        <li class="pl-2">Git inspired commit based workflow.</li>
-        <li class="pl-2">
-          Storage agnostic. Supports raw and encrypted JSON download/upload.
-        </li>
-      </ul> -->
-    </div>
-  </div>
-  <footer
-    class="p-4 text-white md:flex md:items-center md:justify-between md:p-6"
-  >
-    <span class="text-sm sm:text-center text-white">
-      <a href="https://www.teamconcords.com" class="league-link"
-        >Team Concords Limited</a
-      >
-      © 2022.
-    </span>
-    <ul class="flex flex-wrap items-center mt-3 text-sm text-white sm:mt-0">
-      <li>
-        <RouterLink to="/company/about" class="mr-4 hover:underline md:mr-6"
-          >About</RouterLink
-        >
-      </li>
-      <li>
-        <RouterLink to="/legal/privacy" class="mr-4 hover:underline md:mr-6"
-          >Privacy Policy</RouterLink
-        >
-      </li>
-      <li>
-        <RouterLink to="/legal/terms" class="mr-4 hover:underline md:mr-6"
-          >Terms of Use</RouterLink
-        >
-      </li>
-      <li>
-        <RouterLink to="/company/contact" class="mr-4 hover:underline md:mr-6"
-          >Contact</RouterLink
-        >
-      </li>
-    </ul>
-  </footer>
-</template>
-<style scoped>
-/* @counter-style repeating-emoji {
-  system: cyclic;
-  symbols: "🔒" "🔐" "🔏" "⚡" "🤓" "💾";
-  suffix: " ";
+const router = useRouter();
+const { publicKey: publicKeyEncryption } = useEncryption();
+
+const { publicKeyPEM: publicKeyIdentityPEM } = useIdentity();
+
+const route = useRoute();
+const {
+  api: { auth, load, create },
+  ledger,
+  getCollections,
+} = provideLedger();
+const { showPermissionsPanel } = provideLedgerAppShell();
+
+const { privateKey: privateKeyIdentity, publicKey: publicKeyIdentity } =
+  useIdentity();
+
+const ledgerStorage = useLocalStorage<string>("concords/welcome/ledger", "");
+
+onMounted(async () => {
+  await auth(privateKeyIdentity.value, publicKeyIdentity.value);
+  if (ledgerStorage.value) {
+    await load(JSON.parse(ledgerStorage.value));
+    if (route.fullPath === "/ledger/create") {
+      router.push({ path: "/ledger/schema" });
+    }
+  }
+});
+
+const tables = shallowRef<Array<Object>>([]);
+const table = useLocalStorage("concords/ledger/table", "");
+
+watch(ledger, (_ledger: Object) => {
+  ledgerStorage.value = JSON.stringify(_ledger);
+  tables.value = [
+    { title: "USERS", value: "users" },
+    { title: "PERMISSIONS", value: "permissions" },
+    ...Object.keys(getCollections())
+      .filter((col) => col.includes(":types"))
+      .map((col) => ({
+        title: col.split(":types")[0].toUpperCase(),
+        value: col.split(":types")[0],
+      })),
+  ];
+  if (!table.value) {
+    table.value = tables.value[0]?.value;
+  }
+});
+
+const username = shallowRef<string>(generateUsername());
+
+async function createLedger() {
+  await create({
+    identity: stripIdentityKey(publicKeyIdentityPEM.value),
+    encryption: publicKeyEncryption.value,
+    username: username.value,
+    id: generateId(),
+  });
 }
 
-ul {
-  list-style-type: repeating-emoji;
-} */
-</style>
+const publicEncryptionKey = useLocalStorage("concords/encrypt/publicKey", "");
+const privateEncryptionKey = useLocalStorage("concords/encrypt/privateKey", "");
+const publicIdentityKey = useLocalStorage("concords/identity/publicKey", "");
+const privateIdentityKey = useLocalStorage("concords/identity/privateKey", "");
+
+const publicEncryptionKeyB = useLocalStorage(
+  "concords/backup/encrypt/publicKey",
+  ""
+);
+const privateEncryptionKeyB = useLocalStorage(
+  "concords/backup/encrypt/privateKey",
+  ""
+);
+const publicIdentityKeyB = useLocalStorage(
+  "concords/backup/identity/publicKey",
+  ""
+);
+const privateIdentityKeyB = useLocalStorage(
+  "concords/backup/identity/privateKey",
+  ""
+);
+
+const isImpersonatingUser = computed(
+  () =>
+    publicIdentityKeyB.value &&
+    publicIdentityKey.value !== publicIdentityKeyB.value
+);
+
+const showCreateTable = shallowRef(false);
+const showAddRow = shallowRef(false);
+const showEditTable = shallowRef(false);
+const showTableForm = shallowRef(false);
+
+function unimpersonateUser(identity: string) {
+  publicEncryptionKey.value = publicEncryptionKeyB.value;
+  privateEncryptionKey.value = privateEncryptionKeyB.value;
+  publicIdentityKey.value = publicIdentityKeyB.value;
+  privateIdentityKey.value = privateIdentityKeyB.value;
+
+  publicEncryptionKeyB.value = null;
+  privateEncryptionKeyB.value = null;
+  publicIdentityKeyB.value = null;
+  privateIdentityKeyB.value = null;
+
+  window.location.reload();
+}
+
+const canEditTable = computed(
+  () => !["users", "permissions"].includes(table.value)
+);
+</script>
+<template>
+  <div class="w-full flex-1 flex flex-col">
+    <Teleport to="#TopFixedPanel">
+      <div class="flex justify-between items-center w-full">
+        <div class="mx-4 font-medium flex-1">
+          <span class="text-xl"
+            >ledger<span class="text-indigo-600">.</span></span
+          >
+          <!-- <span class="font-light ml-6"
+            >Storage Agnostic, Tamper-Proof & Encrypted Ledger.</span
+          > -->
+        </div>
+        <div>SEARCH</div>
+      </div>
+    </Teleport>
+    <VAlert v-if="isImpersonatingUser">
+      <div class="flex items-center">
+        Impersonating
+        <IdentityAvatar
+          :identity="publicKeyIdentityPEM"
+          size="sm"
+          class="mx-2"
+        />
+        <VBtn variant="plain" @click="unimpersonateUser">Unimpersonate</VBtn>
+      </div>
+    </VAlert>
+    <Teleport to="#BottomPanelBanner"> kdsjldkasjlkdsa </Teleport>
+    <Teleport to="#BottomPanelContent"> BDSAODASHDAS </Teleport>
+    <div
+      class="flex flex-col md:flex-row items-end md:items-start md:justify-between p-2"
+    >
+      <div class="w-full md:w-auto sm:mx-auto md:mx-0">
+        <VSelect
+          variant="underlined"
+          v-model="table"
+          :items="tables"
+          density="compact"
+        >
+          <template #append>
+            <div class="flex items-center">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-5 h-5 text-zinc-500"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                />
+              </svg>
+            </div>
+          </template>
+        </VSelect>
+      </div>
+      <div>
+        <VBtnGroup border rounded="pill" density="comfortable">
+          <VBtn @click="showAddRow = true">Add data</VBtn>
+
+          <VDivider vertical inset />
+
+          <VMenu location="bottom right">
+            <template #activator="{ props }">
+              <VBtn v-bind="props"
+                ><svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-4 h-4"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                  />
+                </svg>
+              </VBtn>
+            </template>
+
+            <VList>
+              <VListItem
+                v-if="canEditTable"
+                title="Edit Table"
+                @click="showEditTable = true"
+              />
+              <VListItem title="Create Table" @click="showCreateTable = true" />
+            </VList>
+          </VMenu>
+        </VBtnGroup>
+      </div>
+    </div>
+    <div v-if="!ledger">
+      <div class="mt-4">
+        <p class="my-3 text-2xl font-thin w-3/4 mx-auto mt-10">
+          choose a username (just for this ledger)
+        </p>
+        <FormKit type="text" placeholder="Username" v-model="username" />
+        <button @click="createLedger">Create ledger</button>
+      </div>
+    </div>
+    <div v-if="!table">Loading</div>
+    <LedgerUsers v-else-if="table === 'users'" />
+    <PermissionsTable v-else-if="table === 'permissions'" />
+    <LedgerDataTable v-else :table="table" />
+
+    <!-- <VNavigationDrawer
+      v-model="showPermissionsPanel"
+      location="right"
+      temporary
+      width="502"
+      :elevation="2"
+    >
+      <Permissions />
+    </VNavigationDrawer>
+    <VNavigationDrawer
+      v-model="showCreateTable"
+      location="right"
+      temporary
+      width="502"
+      :elevation="2"
+    >
+      <LedgerCreateTable @submit="(e: string) => (table = e)" />
+    </VNavigationDrawer>
+    <VNavigationDrawer
+      v-model="showAddRow"
+      location="right"
+      temporary
+      width="502"
+      :elevation="2"
+    >
+      <LedgerForm :table="table" :key="table" />
+    </VNavigationDrawer>
+    <VNavigationDrawer
+      v-model="showEditTable"
+      location="right"
+      temporary
+      width="502"
+      :elevation="2"
+    >
+      <LedgerCreateTable :table="table" :key="table" />
+    </VNavigationDrawer>
+    <VNavigationDrawer
+      v-model="showTableForm"
+      location="right"
+      temporary
+      width="502"
+      :elevation="2"
+    >
+      <LedgerForm />
+    </VNavigationDrawer> -->
+  </div>
+</template>

@@ -6,7 +6,7 @@
   --title-box-color: rgba(219, 39, 119, 1);
   --title-shadow-color: rgba(67, 67, 67, 0.9);
   --title-shadow-yellow-color: rgba(234, 179, 8, 1);
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 /* Change Autocomplete styles in Chrome*/
@@ -28,7 +28,7 @@ select:-webkit-autofill:focus {
 
 html,
 body {
-  font-family: "IBM Plex Sans", sans-serif;
+  font-family: "Work Sans", sans-serif;
   background-color: transparent;
 }
 abbr {

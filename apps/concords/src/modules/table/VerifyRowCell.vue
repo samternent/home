@@ -57,7 +57,7 @@ watchEffect(async () => {
 <template>
   <VTooltip :text="signature" location="bottom" v-if="ready">
     <template v-slot:activator="{ props }">
-      <div v-bind="props" class="mx-2">
+      <div v-bind="props" class="mx-auto px-2">
         <svg
           v-if="isVerified"
           xmlns="http://www.w3.org/2000/svg"
