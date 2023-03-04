@@ -20,6 +20,8 @@ import { generateUsername } from "unique-username-generator";
 import { stripIdentityKey, generateId } from "@concords/utils";
 import { useEncryption } from "@/modules/encryption";
 
+import { AppShellControlPanelMini } from "@/modules/appShell";
+
 const router = useRouter();
 const { publicKey: publicKeyEncryption } = useEncryption();
 
@@ -134,15 +136,81 @@ const canEditTable = computed(
   <div class="w-full flex-1 flex flex-col">
     <Teleport to="#TopFixedPanel">
       <div class="flex justify-between items-center w-full">
-        <div class="mx-4 font-medium flex-1">
+        <!-- <div class="mx-4 font-medium flex items-center">
           <span class="text-xl"
             >ledger<span class="text-indigo-600">.</span></span
           >
-          <!-- <span class="font-light ml-6"
+          <span class="font-light ml-6"
             >Storage Agnostic, Tamper-Proof & Encrypted Ledger.</span
-          > -->
+          >
+        </div> -->
+        <div class="md:mx-2">
+          <VSelect
+            variant="underlined"
+            v-model="table"
+            :items="tables"
+            density="compact"
+            theme="dark"
+          >
+          </VSelect>
         </div>
-        <div>SEARCH</div>
+        <div class="flex items-center">
+          <!-- <v-text-field
+            theme="dark"
+            class="w-64 mr-6"
+            density="compact"
+            variant="solo"
+            label="Search ledger"
+            append-inner-icon="mdi-magnify"
+            single-line
+            hide-details
+          ></v-text-field> -->
+
+          <VBtnGroup
+            border
+            rounded="pill"
+            density="comfortable"
+            theme="dark"
+            class="mx-2"
+          >
+            <VBtn @click="showAddRow = true">Add data</VBtn>
+
+            <VDivider vertical inset />
+
+            <VMenu location="bottom right">
+              <template #activator="{ props }">
+                <VBtn v-bind="props"
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-4 h-4"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                    />
+                  </svg>
+                </VBtn>
+              </template>
+
+              <VList>
+                <VListItem
+                  v-if="canEditTable"
+                  title="Edit Table"
+                  @click="showEditTable = true"
+                />
+                <VListItem
+                  title="Create Table"
+                  @click="showCreateTable = true"
+                />
+              </VList>
+            </VMenu>
+          </VBtnGroup>
+        </div>
       </div>
     </Teleport>
     <VAlert v-if="isImpersonatingUser">
@@ -156,76 +224,10 @@ const canEditTable = computed(
         <VBtn variant="plain" @click="unimpersonateUser">Unimpersonate</VBtn>
       </div>
     </VAlert>
-    <Teleport to="#BottomPanelBanner"> kdsjldkasjlkdsa </Teleport>
+    <Teleport to="#BottomPanelBanner">
+      <AppShellControlPanelMini />
+    </Teleport>
     <Teleport to="#BottomPanelContent"> BDSAODASHDAS </Teleport>
-    <div
-      class="flex flex-col md:flex-row items-end md:items-start md:justify-between p-2"
-    >
-      <div class="w-full md:w-auto sm:mx-auto md:mx-0">
-        <VSelect
-          variant="underlined"
-          v-model="table"
-          :items="tables"
-          density="compact"
-        >
-          <template #append>
-            <div class="flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-5 h-5 text-zinc-500"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-                />
-              </svg>
-            </div>
-          </template>
-        </VSelect>
-      </div>
-      <div>
-        <VBtnGroup border rounded="pill" density="comfortable">
-          <VBtn @click="showAddRow = true">Add data</VBtn>
-
-          <VDivider vertical inset />
-
-          <VMenu location="bottom right">
-            <template #activator="{ props }">
-              <VBtn v-bind="props"
-                ><svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                  class="w-4 h-4"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-                  />
-                </svg>
-              </VBtn>
-            </template>
-
-            <VList>
-              <VListItem
-                v-if="canEditTable"
-                title="Edit Table"
-                @click="showEditTable = true"
-              />
-              <VListItem title="Create Table" @click="showCreateTable = true" />
-            </VList>
-          </VMenu>
-        </VBtnGroup>
-      </div>
-    </div>
     <div v-if="!ledger">
       <div class="mt-4">
         <p class="my-3 text-2xl font-thin w-3/4 mx-auto mt-10">
@@ -235,10 +237,91 @@ const canEditTable = computed(
         <button @click="createLedger">Create ledger</button>
       </div>
     </div>
-    <div v-if="!table">Loading</div>
-    <LedgerUsers v-else-if="table === 'users'" />
-    <PermissionsTable v-else-if="table === 'permissions'" />
-    <LedgerDataTable v-else :table="table" />
+    <div class="flex flex-1">
+      <div v-if="!table">Loading</div>
+      <LedgerUsers v-else-if="table === 'users'" />
+      <PermissionsTable v-else-if="table === 'permissions'" />
+      <LedgerDataTable v-else :table="table" />
+    </div>
+
+    <transition name="slide">
+      <div
+        class="z-50 fixed top-14 right-0 h-screen left-16 md:left-auto md:w-1/2 xl:w-1/4 px-2 bg-zinc-800 border-l border-zinc-600"
+        v-if="showCreateTable"
+      >
+        <div class="flex justify-end w-full p-2">
+          <button @click="showCreateTable = false">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-6 h-6"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </button>
+        </div>
+        <LedgerCreateTable @submit="(e: string) => (table = e)" />
+      </div>
+    </transition>
+    <transition name="slide">
+      <div
+        class="z-50 fixed top-14 right-0 h-screen left-16 md:left-auto md:w-1/2 xl:w-1/4 px-2 bg-zinc-800 border-l border-zinc-600"
+        v-if="showAddRow"
+      >
+        <div class="flex justify-end w-full p-2">
+          <button @click="showAddRow = false">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-6 h-6"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </button>
+        </div>
+        <LedgerForm :table="table" :key="table" />
+      </div>
+    </transition>
+    <transition name="slide">
+      <div
+        class="z-50 fixed top-14 right-0 h-screen left-16 md:left-auto md:w-1/2 xl:w-1/4 px-2 bg-zinc-800 border-l border-zinc-600"
+        v-if="showEditTable"
+      >
+        <div class="flex justify-end w-full p-2">
+          <button @click="showEditTable = false">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-6 h-6"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </button>
+        </div>
+        <LedgerCreateTable :table="table" :key="table" />
+      </div>
+    </transition>
 
     <!-- <VNavigationDrawer
       v-model="showPermissionsPanel"
@@ -287,3 +370,20 @@ const canEditTable = computed(
     </VNavigationDrawer> -->
   </div>
 </template>
+
+<style scoped>
+.slide-enter-active {
+  animation: slide-in 0.3s;
+}
+.slide-leave-active {
+  animation: slide-in 0.3s reverse;
+}
+@keyframes slide-in {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+</style>

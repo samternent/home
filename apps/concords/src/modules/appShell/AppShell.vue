@@ -1,14 +1,44 @@
 <script setup lang="ts">
+import { shallowRef, watchEffect } from "vue";
+import { useMouse, useThrottleFn } from "@vueuse/core";
 import { provideAppShell } from "./useAppShell";
 
-const { isBottomPanelExpanded, isLeftPanelExpanded, isRightPanelExpanded } =
-  provideAppShell();
+const {
+  isBottomPanelExpanded,
+  isLeftPanelExpanded,
+  isRightPanelExpanded,
+  bottomPanelHeight,
+} = provideAppShell();
+
+const { y } = useMouse();
+const isDragging = shallowRef(false);
+
+function handleDragStart() {
+  isDragging.value = true;
+}
+function handleDragEnd() {
+  isDragging.value = false;
+}
+
+const updateHeight = useThrottleFn((height) => {
+  bottomPanelHeight.value = height;
+});
+
+watchEffect(() => {
+  if (isDragging.value) {
+    if (window.innerHeight - y.value > 220) {
+      updateHeight(window.innerHeight - y.value);
+    }
+  }
+});
+
+window.addEventListener("mouseup", handleDragEnd);
 </script>
 <template>
   <div id="AppShell" class="flex h-sceen w-screen">
     <!-- Fixed responsive sidenav -->
     <section id="SideNav" class="flex">
-      <nav class="w-16 bg-base-300 h-full z-50 shadow border-r border-zinc-600">
+      <nav class="w-16 bg-base-300 h-full z-40 shadow border-r border-zinc-600">
         <slot name="side-nav" />
       </nav>
     </section>
@@ -18,11 +48,14 @@ const { isBottomPanelExpanded, isLeftPanelExpanded, isRightPanelExpanded } =
       <section
         id="TopFixedPanel"
         v-if="$route.meta.hasTopPanel"
-        class="h-14 items-center flex w-full z-40 bg-zinc-800 text-white"
+        class="h-14 items-center flex w-full z-50 bg-zinc-800 text-white"
       ></section>
 
       <!-- Main Content area -->
-      <main class="flex-1 overflow-auto flex bg-zinc-900 text-white">
+      <main
+        class="flex-1 flex bg-zinc-900 text-white"
+        :class="{ 'pointer-events-none': isDragging }"
+      >
         <!-- Left Fixed Panel -->
         <div
           class="relative flex transition-all bg-zinc-900"
@@ -103,10 +136,18 @@ const { isBottomPanelExpanded, isLeftPanelExpanded, isRightPanelExpanded } =
       <!-- Bottom expandable panel -->
       <section
         id="BottomPanel"
-        class="flex flex-col transition-all z-40"
-        :class="isBottomPanelExpanded ? 'h-64' : 'h-8'"
+        class="flex flex-col transition-all z-50"
+        :class="isBottomPanelExpanded ? `` : 'h-8'"
+        :style="`height: ${
+          isBottomPanelExpanded ? `${bottomPanelHeight}px` : '2rem'
+        }`"
         v-if="$route.meta.hasBottomPanel"
       >
+        <div
+          @click="isBottomPanelExpanded = true"
+          @mousedown="handleDragStart"
+          class="w-full h-2 hover:h-2 hover:bg-blue-600 bg-blue-200 transition-colors"
+        />
         <!-- Panel Control + Indicator -->
         <div class="flex justify-between py-1 px-2 h-8 bg-blue-400">
           <div class="flex-1" id="BottomPanelBanner" />
