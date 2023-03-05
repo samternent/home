@@ -142,6 +142,7 @@ window.addEventListener("mousemove", (e) => {
         v-if="$route.meta.hasBottomPanel"
       >
         <div
+          v-if="isBottomPanelExpanded"
           @click="isBottomPanelExpanded = true"
           @mousedown="handleDragStart"
           class="w-full h-1 hover:h-1 hover:bg-blue-700 bg-blue-400 transition-colors cursor-row-resize"
