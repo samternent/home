@@ -32,8 +32,8 @@ window.addEventListener("mousemove", (e) => {
     :class="{ 'pointer-events-none': isDragging }"
   >
     <!-- Fixed responsive sidenav -->
-    <section id="SideNav" class="flex">
-      <nav class="w-16 bg-base-300 h-full z-40 border-r-2 border-zinc-700">
+    <section id="SideNav" class="hidden md:flex">
+      <nav class="w-16 bg-zinc-800 h-full z-40 border-r-2 border-zinc-800">
         <slot name="side-nav" />
       </nav>
     </section>

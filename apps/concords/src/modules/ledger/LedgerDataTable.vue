@@ -60,7 +60,9 @@ function getVerifyProps(props: Object): Object {
 </script>
 
 <template>
-  <div class="max-w-[calc(100vw-66px)] overflow-auto flex-1 bg-zinc-900">
+  <div
+    class="max-w-[100vw] md:max-w-[calc(100vw-66px)] overflow-auto flex-1 bg-zinc-900"
+  >
     <table class="text-left table-auto w-full whitespace-nowrap text-white">
       <thead class="sticky top-0 bg-zinc-900 font-medium">
         <th

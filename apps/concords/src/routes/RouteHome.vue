@@ -20,7 +20,10 @@ import { generateUsername } from "unique-username-generator";
 import { stripIdentityKey, generateId } from "@concords/utils";
 import { useEncryption } from "@/modules/encryption";
 
-import { AppShellControlPanelMini } from "@/modules/appShell";
+import {
+  AppShellControlPanelMini,
+  AppShellControlPanel,
+} from "@/modules/appShell";
 
 const router = useRouter();
 const { publicKey: publicKeyEncryption } = useEncryption();
@@ -223,39 +226,7 @@ const canEditTable = computed(
       <AppShellControlPanelMini />
     </Teleport>
     <Teleport to="#BottomPanelContent">
-      <div class="flex w-full">
-        <div class="w-1/2 p-2">
-          <pre
-            class="text-green-600 font-medium tracking-wider whitespace-pre-wrap"
-          >
-// concords.app is in development.
-
-// it's a merkle-tree based tamper-proof ledger.
-// with granular permissions using age encryption.
-// and identity verification using ECDSA keys and WebCryptoAPI.
-      </pre
-          >
-        </div>
-        <div class="w-1/2 p-2">
-          <div class="font-medium flex items-center">
-            <span class="text-2xl font-sans mb-2"
-              >concords<span class="text-indigo-600 font-6xl">•</span>app</span
-            >
-            <!-- <span class="font-light ml-6"
-              >Storage Agnostic, Tamper-Proof & Encrypted Ledger.</span
-            > -->
-          </div>
-          <a
-            class="text-pink-500 underline hover:text-pink-600"
-            href="https://teamconcords.com/"
-            target="_blank"
-            >Team Concords Limited.</a
-          >
-          <p class="my-4">
-            We don't use cookies or track identifiable information.
-          </p>
-        </div>
-      </div>
+      <AppShellControlPanel />
     </Teleport>
     <div v-if="!ledger">
       <div class="mt-4">
