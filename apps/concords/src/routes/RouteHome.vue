@@ -225,7 +225,9 @@ const canEditTable = computed(
     <Teleport to="#BottomPanelContent">
       <div class="flex w-full">
         <div class="w-1/2 p-2">
-          <pre class="text-green-600 font-medium tracking-wider">
+          <pre
+            class="text-green-600 font-medium tracking-wider whitespace-pre-wrap"
+          >
 // concords.app is in development.
 
 // it's a merkle-tree based tamper-proof ledger.
