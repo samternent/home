@@ -145,12 +145,13 @@ window.addEventListener("mousemove", (e) => {
           @click="isBottomPanelExpanded = true"
           @mousedown="handleDragStart"
           :class="{
-            'hover:bg-blue-700 cursor-row-resize': isBottomPanelExpanded,
+            'hover:bg-blue-600 cursor-row-resize': isBottomPanelExpanded,
+            '!bg-zinc-300': isDragging,
           }"
-          class="w-full h-1 bg-blue-400 transition-colors"
+          class="w-full h-1 bg-zinc-600 transition-colors"
         />
         <!-- Panel Control + Indicator -->
-        <div class="flex justify-between py-1 px-2 h-8 bg-blue-500 text-white">
+        <div class="flex justify-between py-1 px-2 h-10 bg-zinc-700 text-white">
           <div class="flex-1" id="BottomPanelBanner" />
 
           <div class="flex items-center justify-center">
