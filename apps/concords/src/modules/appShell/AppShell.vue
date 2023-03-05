@@ -88,7 +88,7 @@ window.addEventListener("mousemove", (e) => {
           />
         </div>
 
-        <div class="border-r border-l border-zinc-600 flex flex-1">
+        <div class="flex flex-1">
           <slot />
         </div>
 
@@ -142,10 +142,12 @@ window.addEventListener("mousemove", (e) => {
         v-if="$route.meta.hasBottomPanel"
       >
         <div
-          v-if="isBottomPanelExpanded"
           @click="isBottomPanelExpanded = true"
           @mousedown="handleDragStart"
-          class="w-full h-1 hover:h-1 hover:bg-blue-700 bg-blue-400 transition-colors cursor-row-resize"
+          :class="{
+            'hover:bg-blue-700 cursor-row-resize': isBottomPanelExpanded,
+          }"
+          class="w-full h-1 bg-blue-400 transition-colors"
         />
         <!-- Panel Control + Indicator -->
         <div class="flex justify-between py-1 px-2 h-8 bg-blue-500 text-white">
@@ -195,7 +197,7 @@ window.addEventListener("mousemove", (e) => {
 
         <div
           id="BottomPanelContent"
-          class="flex-1 flex overflow-auto bg-zinc-900 text-white border-gray-600"
+          class="flex-1 flex overflow-auto bg-zinc-900 text-zinc-50 font-mono"
         />
       </section>
     </section>

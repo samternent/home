@@ -136,14 +136,6 @@ const canEditTable = computed(
   <div class="w-full flex-1 flex flex-col">
     <Teleport to="#TopFixedPanel">
       <div class="flex justify-between items-center w-full">
-        <!-- <div class="mx-4 font-medium flex items-center">
-          <span class="text-xl"
-            >ledger<span class="text-indigo-600">.</span></span
-          >
-          <span class="font-light ml-6"
-            >Storage Agnostic, Tamper-Proof & Encrypted Ledger.</span
-          >
-        </div> -->
         <div class="md:mx-2">
           <VSelect
             variant="solo"
@@ -230,7 +222,39 @@ const canEditTable = computed(
     <Teleport to="#BottomPanelBanner">
       <AppShellControlPanelMini />
     </Teleport>
-    <Teleport to="#BottomPanelContent"> BDSAODASHDAS </Teleport>
+    <Teleport to="#BottomPanelContent">
+      <div class="flex w-full">
+        <div class="w-1/2 p-2">
+          <pre class="text-green-600 font-medium tracking-wider">
+// concords.app is in development.
+
+// it's a merkle-tree based tamper-proof ledger.
+// with granular permissions using age encryption.
+// and identity verification using ECDSA keys and WebCryptoAPI.
+      </pre
+          >
+        </div>
+        <div class="w-1/2 p-2">
+          <div class="font-medium flex items-center">
+            <span class="text-2xl font-sans mb-2"
+              >concords<span class="text-indigo-600 font-6xl">•</span>app</span
+            >
+            <!-- <span class="font-light ml-6"
+              >Storage Agnostic, Tamper-Proof & Encrypted Ledger.</span
+            > -->
+          </div>
+          <a
+            class="text-pink-500 underline hover:text-pink-600"
+            href="https://teamconcords.com/"
+            target="_blank"
+            >Team Concords Limited.</a
+          >
+          <p class="my-4">
+            We don't use cookies or track identifiable information.
+          </p>
+        </div>
+      </div>
+    </Teleport>
     <div v-if="!ledger">
       <div class="mt-4">
         <p class="my-3 text-2xl font-thin w-3/4 mx-auto mt-10">

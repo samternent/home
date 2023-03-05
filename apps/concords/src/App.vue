@@ -43,10 +43,7 @@ const showIdentityPanel = shallowRef(false);
             @click="showIdentityPanel = true"
             class="flex p-2 m-2 rounded items-center justify-center w-full"
           >
-            <IdentityAvatar
-              :identity="publicKeyPEM"
-              :size="isCollapsed ? 'sm' : 'md'"
-            />
+            <IdentityAvatar :identity="publicKeyPEM" size="md" />
           </button>
         </div>
       </div>
