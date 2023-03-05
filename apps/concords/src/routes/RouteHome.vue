@@ -146,16 +146,19 @@ const canEditTable = computed(
         </div> -->
         <div class="md:mx-2">
           <VSelect
-            variant="underlined"
+            variant="solo"
             v-model="table"
             :items="tables"
             density="compact"
             theme="dark"
+            rounded
+            :hide-details="true"
+            menu-icon="<div>hi</div>"
           >
           </VSelect>
         </div>
         <div class="flex items-center">
-          <!-- <v-text-field
+          <v-text-field
             theme="dark"
             class="w-64 mr-6"
             density="compact"
@@ -164,7 +167,7 @@ const canEditTable = computed(
             append-inner-icon="mdi-magnify"
             single-line
             hide-details
-          ></v-text-field> -->
+          ></v-text-field>
 
           <VBtnGroup
             border
@@ -237,7 +240,7 @@ const canEditTable = computed(
         <button @click="createLedger">Create ledger</button>
       </div>
     </div>
-    <div class="flex flex-1">
+    <div class="flex flex-1 overflow-auto">
       <div v-if="!table">Loading</div>
       <LedgerUsers v-else-if="table === 'users'" />
       <PermissionsTable v-else-if="table === 'permissions'" />
@@ -246,7 +249,7 @@ const canEditTable = computed(
 
     <transition name="slide">
       <div
-        class="z-50 fixed top-14 right-0 h-screen left-16 md:left-auto md:w-1/2 xl:w-1/4 px-2 bg-zinc-800 border-l border-zinc-600"
+        class="z-50 fixed top-14 right-0 h-screen left-16 md:left-auto md:w-[550px] px-2 bg-zinc-800 border-l border-zinc-600"
         v-if="showCreateTable"
       >
         <div class="flex justify-end w-full p-2">
@@ -272,7 +275,7 @@ const canEditTable = computed(
     </transition>
     <transition name="slide">
       <div
-        class="z-50 fixed top-14 right-0 h-screen left-16 md:left-auto md:w-1/2 xl:w-1/4 px-2 bg-zinc-800 border-l border-zinc-600"
+        class="z-50 fixed top-14 right-0 h-screen left-16 md:left-auto md:w-[550px] px-2 bg-zinc-800 border-l border-zinc-600"
         v-if="showAddRow"
       >
         <div class="flex justify-end w-full p-2">
@@ -298,7 +301,7 @@ const canEditTable = computed(
     </transition>
     <transition name="slide">
       <div
-        class="z-50 fixed top-14 right-0 h-screen left-16 md:left-auto md:w-1/2 xl:w-1/4 px-2 bg-zinc-800 border-l border-zinc-600"
+        class="z-50 fixed top-14 right-0 h-screen left-16 md:left-auto md:w-[550px] px-2 bg-zinc-800 border-l border-zinc-600"
         v-if="showEditTable"
       >
         <div class="flex justify-end w-full p-2">

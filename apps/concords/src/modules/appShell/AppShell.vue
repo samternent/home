@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { shallowRef, watchEffect } from "vue";
-import { useMouse, useThrottleFn } from "@vueuse/core";
+import { shallowRef } from "vue";
 import { provideAppShell } from "./useAppShell";
 
 const {
@@ -10,7 +9,6 @@ const {
   bottomPanelHeight,
 } = provideAppShell();
 
-const { y } = useMouse();
 const isDragging = shallowRef(false);
 
 function handleDragStart() {
@@ -20,30 +18,23 @@ function handleDragEnd() {
   isDragging.value = false;
 }
 
-const updateHeight = useThrottleFn((height) => {
-  bottomPanelHeight.value = height;
-});
-
-watchEffect(() => {
-  if (isDragging.value) {
-    if (window.innerHeight - y.value > 220) {
-      updateHeight(window.innerHeight - y.value);
-    }
+window.addEventListener("mouseup", handleDragEnd);
+window.addEventListener("mousemove", (e) => {
+  if (isDragging.value && window.innerHeight - e.pageY > 100) {
+    bottomPanelHeight.value = window.innerHeight - e.pageY;
   }
 });
-
-window.addEventListener("mouseup", handleDragEnd);
 </script>
 <template>
   <div id="AppShell" class="flex h-sceen w-screen">
     <!-- Fixed responsive sidenav -->
     <section id="SideNav" class="flex">
-      <nav class="w-16 bg-base-300 h-full z-40 shadow border-r border-zinc-600">
+      <nav class="w-16 bg-base-300 h-full z-40 border-r-2 border-zinc-700">
         <slot name="side-nav" />
       </nav>
     </section>
 
-    <section id="MainContent" class="flex flex-col h-screen flex-1">
+    <section id="MainContent" class="flex flex-col h-screen flex-1 w-full">
       <!-- Top fixed panel -->
       <section
         id="TopFixedPanel"
@@ -53,7 +44,7 @@ window.addEventListener("mouseup", handleDragEnd);
 
       <!-- Main Content area -->
       <main
-        class="flex-1 flex bg-zinc-900 text-white"
+        class="flex-1 flex bg-zinc-900 text-white h-0"
         :class="{ 'pointer-events-none': isDragging }"
       >
         <!-- Left Fixed Panel -->
@@ -136,8 +127,11 @@ window.addEventListener("mouseup", handleDragEnd);
       <!-- Bottom expandable panel -->
       <section
         id="BottomPanel"
-        class="flex flex-col transition-all z-50"
-        :class="isBottomPanelExpanded ? `` : 'h-8'"
+        class="flex flex-col z-40"
+        :class="{
+          'h-8': !isBottomPanelExpanded,
+          'transition-all': !isDragging,
+        }"
         :style="`height: ${
           isBottomPanelExpanded ? `${bottomPanelHeight}px` : '2rem'
         }`"
@@ -146,10 +140,10 @@ window.addEventListener("mouseup", handleDragEnd);
         <div
           @click="isBottomPanelExpanded = true"
           @mousedown="handleDragStart"
-          class="w-full h-2 hover:h-2 hover:bg-blue-600 bg-blue-200 transition-colors"
+          class="w-full h-1 hover:h-1 hover:bg-blue-700 bg-blue-400 transition-colors cursor-row-resize"
         />
         <!-- Panel Control + Indicator -->
-        <div class="flex justify-between py-1 px-2 h-8 bg-blue-400">
+        <div class="flex justify-between py-1 px-2 h-8 bg-blue-500 text-white">
           <div class="flex-1" id="BottomPanelBanner" />
 
           <div class="flex items-center justify-center">

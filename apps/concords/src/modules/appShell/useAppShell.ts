@@ -11,9 +11,9 @@ interface IAppShell {
 }
 
 export function provideAppShell(): IAppShell {
-  const isBottomPanelExpanded = useLocalStorage("isBottomPanelExpanded", true);
-  const isLeftPanelExpanded = useLocalStorage("isLeftPanelExpanded", true);
-  const isRightPanelExpanded = useLocalStorage("isRightPanelExpanded", true);
+  const isBottomPanelExpanded = useLocalStorage("isBottomPanelExpanded", false);
+  const isLeftPanelExpanded = useLocalStorage("isLeftPanelExpanded", false);
+  const isRightPanelExpanded = useLocalStorage("isRightPanelExpanded", false);
   const bottomPanelHeight = useLocalStorage("bottomPanelHeight", 320);
 
   function setViewHeight() {
