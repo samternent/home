@@ -26,7 +26,11 @@ window.addEventListener("mousemove", (e) => {
 });
 </script>
 <template>
-  <div id="AppShell" class="flex h-sceen w-screen">
+  <div
+    id="AppShell"
+    class="flex h-sceen w-screen"
+    :class="{ 'pointer-events-none': isDragging }"
+  >
     <!-- Fixed responsive sidenav -->
     <section id="SideNav" class="flex">
       <nav class="w-16 bg-base-300 h-full z-40 border-r-2 border-zinc-700">
