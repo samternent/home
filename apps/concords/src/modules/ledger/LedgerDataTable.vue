@@ -20,6 +20,8 @@ const props = defineProps({
   },
 });
 
+defineEmits(["edit"]);
+
 watch(
   [ledger, () => props.table],
   () => {
@@ -80,16 +82,28 @@ function getVerifyProps(props: Object): Object {
           Updated
         </td>
         <td
-          class="uppercase p-2 border-r-2 z-10 font-medium bg-indigo-700 text-zinc-50 border-indigo-800"
+          class="uppercase p-2 z-10 font-medium bg-indigo-700 text-zinc-50"
+          colspan="3"
         >
-          User
+          <div class="flex justify-end w-full">
+            <button @click="$emit('edit')">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-4 h-4"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125"
+                />
+              </svg>
+            </button>
+          </div>
         </td>
-        <td
-          class="uppercase p-2 z-10 font-medium bg-indigo-700 text-zinc-50 border-indigo-800"
-        ></td>
-        <td
-          class="uppercase p-2 z-10 font-medium bg-indigo-700 text-zinc-50 border-indigo-800"
-        ></td>
       </thead>
       <tbody class="text-lg">
         <tr

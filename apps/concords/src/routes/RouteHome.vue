@@ -183,17 +183,6 @@ const canEditTable = computed(
             single-line
             hide-details
           ></v-text-field>
-
-          <VBtn
-            v-if="canEditTable"
-            @click="showEditTable = true"
-            border
-            rounded="pill"
-            density="comfortable"
-            theme="dark"
-            class="mx-2"
-            >Edit Table</VBtn
-          >
         </div>
       </div>
     </Teleport>
@@ -227,7 +216,7 @@ const canEditTable = computed(
       <div v-if="!table">Loading</div>
       <LedgerUsers v-else-if="table === 'users'" />
       <PermissionsTable v-else-if="table === 'permissions'" />
-      <LedgerDataTable v-else :table="table" />
+      <LedgerDataTable v-else :table="table" @edit="showEditTable = true" />
     </div>
 
     <transition name="slide">
