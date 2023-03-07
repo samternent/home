@@ -139,7 +139,7 @@ const canEditTable = computed(
   <div class="w-full flex-1 flex flex-col">
     <Teleport to="#TopFixedPanel">
       <div class="flex justify-between items-center w-full">
-        <div class="md:mx-2">
+        <div class="md:mx-2 flex">
           <VSelect
             variant="solo"
             v-model="table"
@@ -151,6 +151,26 @@ const canEditTable = computed(
             menu-icon="<div>hi</div>"
           >
           </VSelect>
+          <button
+            @click="showCreateTable = true"
+            variant="outlined"
+            class="ml-2"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-6 h-6"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </button>
         </div>
         <div class="flex items-center">
           <v-text-field
@@ -164,50 +184,16 @@ const canEditTable = computed(
             hide-details
           ></v-text-field>
 
-          <VBtnGroup
+          <VBtn
+            v-if="canEditTable"
+            @click="showEditTable = true"
             border
             rounded="pill"
             density="comfortable"
             theme="dark"
             class="mx-2"
+            >Edit Table</VBtn
           >
-            <VBtn @click="showAddRow = true">Add data</VBtn>
-
-            <VDivider vertical inset />
-
-            <VMenu location="bottom right">
-              <template #activator="{ props }">
-                <VBtn v-bind="props"
-                  ><svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    class="w-4 h-4"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-                    />
-                  </svg>
-                </VBtn>
-              </template>
-
-              <VList>
-                <VListItem
-                  v-if="canEditTable"
-                  title="Edit Table"
-                  @click="showEditTable = true"
-                />
-                <VListItem
-                  title="Create Table"
-                  @click="showCreateTable = true"
-                />
-              </VList>
-            </VMenu>
-          </VBtnGroup>
         </div>
       </div>
     </Teleport>
@@ -268,32 +254,6 @@ const canEditTable = computed(
           </button>
         </div>
         <LedgerCreateTable @submit="(e: string) => (table = e)" />
-      </div>
-    </transition>
-    <transition name="slide">
-      <div
-        class="z-50 fixed top-14 right-0 h-screen left-16 md:left-auto md:w-[550px] px-2 bg-zinc-800 border-l border-zinc-600"
-        v-if="showAddRow"
-      >
-        <div class="flex justify-end w-full p-2">
-          <button @click="showAddRow = false">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="w-6 h-6"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </button>
-        </div>
-        <LedgerForm :table="table" :key="table" />
       </div>
     </transition>
     <transition name="slide">

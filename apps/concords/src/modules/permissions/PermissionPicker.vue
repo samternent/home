@@ -54,7 +54,11 @@ function onSelect(val) {
       v-model="selected"
       :items="items"
       class="w-64"
-      density="compact"
+      density="comfortable"
+      variant="outlined"
+      theme="dark"
+      rounded
+      :hide-details="true"
       placeholder="Select permission"
       :menu-props="{
         closeOnContentClick: true,

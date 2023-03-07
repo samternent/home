@@ -66,16 +66,15 @@ async function addListItem() {
 </script>
 
 <template>
-  <div class="flex w-full flex-1 pt-8 px-2">
-    <div @keyup.enter="addListItem">
-      <div
-        v-for="itemType in itemTypes"
-        :key="itemType.id"
-        class="my-3 uppercase mx-auto w-full"
-      >
-        <FormKit
+  <tr @keyup.enter="addListItem" class="sticky bottom-0 bg-zinc-900">
+    <td
+      v-for="itemType in itemTypes"
+      :key="itemType.id"
+      class="uppercase mx-auto w-full p-1"
+    >
+      <div class="bg-zinc-800 p-2">
+        <input
           :key="newItem[itemType.data.name]"
-          :label="itemType.data.name"
           @change="updateItem($event, itemType.data.name)"
           :placeholder="itemType.data.name"
           :type="itemType.data.type"
@@ -83,16 +82,20 @@ async function addListItem() {
           class="mx-auto w-full"
         />
       </div>
-      Permission
-      <PermissionPicker v-model="permission" />
-      <div class="w-full flex justify-end max-w-md">
-        <button
-          @click="addListItem"
-          class="px-8 py-2 my-8 text-center text-lg bg-green-600 hover:bg-green-700 transition-all rounded-full flex items-center font-medium"
-        >
-          Add
-        </button>
+    </td>
+    <td>
+      <div class="p-2">
+        <PermissionPicker v-model="permission" />
       </div>
-    </div>
-  </div>
+    </td>
+
+    <td colspan="3" class="p-2">
+      <button
+        @click="addListItem"
+        class="bg-green-500 hover:bg-green-600 py-2 px-6 block w-full rounded text-sm"
+      >
+        Add
+      </button>
+    </td>
+  </tr>
 </template>

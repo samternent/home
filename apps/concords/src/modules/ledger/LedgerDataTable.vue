@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 import { shallowRef, watch, computed } from "vue";
 import { DateTime } from "luxon";
-import { useLedger } from "@/modules/ledger";
+import { useLedger } from "./useLedger";
+import LedgerForm from "./LedgerForm.vue";
 import { TextCell, VerifyRowCell, IdentityAvatarCell } from "@/modules/table";
 import type { IRecord } from "@concords/proof-of-work";
 
@@ -116,7 +117,7 @@ function getVerifyProps(props: Object): Object {
           <td class="border-r-2 border-zinc-800">
             <VerifyRowCell v-bind="{ ...getVerifyProps(item) }" />
           </td>
-          <td class="border-zinc-800">
+          <td class="border-zinc-800 sticky right-0">
             <VBtn icon variant="plain" size="small" class="mx-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -135,6 +136,7 @@ function getVerifyProps(props: Object): Object {
             </VBtn>
           </td>
         </tr>
+        <LedgerForm :table="table" :key="table" />
       </tbody>
     </table>
   </div>

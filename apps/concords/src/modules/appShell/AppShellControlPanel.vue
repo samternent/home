@@ -18,8 +18,8 @@
       <p class="my-4 flex-1">
         We don't use cookies or track identifiable information.
       </p>
-      <div class="flex items-center justify-end">
-        <div class="p-2 bg-zinc-700 rounded-tl-lg">
+      <div class="flex items-center justify-end opacity-50">
+        <div class="p-2 rounded-tl-lg">
           <svg class="w-10 h-10 fill-yellow-500" viewBox="0 0 48 48">
             <g>
               <path
@@ -32,7 +32,7 @@
             </g>
           </svg>
         </div>
-        <div class="py-1 bg-zinc-800 pl-2 pr-4 rounded-br-lg">
+        <div class="py-1 pl-2 pr-4 rounded-br-lg">
           <div class="font-medium flex items-center text-xs">
             <span class="text-xl font-sans -mb-1 mr-2"
               >concords<span class="text-indigo-600 font-6xl">•</span>app</span
