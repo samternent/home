@@ -1,24 +1,21 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import AppShellControlPanelLog from "./panels/AppShellControlPanelLog.vue";
+</script>
+
 <template>
   <div class="flex w-full flex-col lg:flex-row">
     <div
-      class="lg:w-1/2 p-2 border-b-2 lg:border-b-0 lg:border-r-2 border-zinc-800"
+      class="lg:w-1/2 p-2 border-b-2 lg:border-b-0 lg:border-r-2 border-zinc-800 flex-1 overflow-auto"
     >
-      <pre
-        class="text-green-600 font-medium tracking-wider whitespace-pre-wrap"
-      >
-// concords.app is in development.
-
-// it's a merkle-tree based tamper-proof ledger.
-// with granular permissions using age encryption.
-// and identity verification using ECDSA keys and WebCryptoAPI.
-      </pre>
+      <AppShellControlPanelLog />
     </div>
-    <div class="lg:w-1/2 p-2 flex flex-col flex-1">
+    <div class="lg:w-1/2 p-2 flex flex-col flex-1 overflow-auto">
       <p class="my-4 flex-1">
         We don't use cookies or track identifiable information.
       </p>
-      <div class="flex items-center justify-end opacity-50">
+      <div
+        class="flex items-center justify-end opacity-50 hover:opacity-80 transition-opacity cursor-default"
+      >
         <div class="p-2 rounded-tl-lg">
           <svg class="w-10 h-10 fill-yellow-500" viewBox="0 0 48 48">
             <g>
