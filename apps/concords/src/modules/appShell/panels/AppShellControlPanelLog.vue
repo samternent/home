@@ -15,15 +15,18 @@ const records = computed(() => {
 
 </pre
     >
-    <ul>
-      <li v-for="record in records" :key="record.id" class="break-all">
-        <div>{{ record.collection }}</div>
-        <table class="w-full table-auto">
-          <thead>
+    <ul class="flex flex-col">
+      <li v-for="record in records" :key="record.id" class="my-2 rounded">
+        <div class="font-bold text-zinc-400">
+          {{ record.collection }}
+        </div>
+        <pre class="overflow-x-auto">{{ record.data }}</pre>
+        <!-- <table class="table-fixed w-full overflow-x-scroll">
+          <thead class="bg-indigo-800">
             <th
               v-for="header in Object.keys(record.data)"
               :key="header"
-              class="w-64"
+              class="p-2"
             >
               {{ header }}
             </th>
@@ -31,13 +34,13 @@ const records = computed(() => {
           <tbody>
             <tr>
               <td v-for="header in Object.keys(record.data)" :key="header">
-                <span class="truncate max-w-64 break-all">{{
-                  record.data[header]
-                }}</span>
+                <div class="truncate break-all p-2">
+                  {{ record.data[header] }}
+                </div>
               </td>
             </tr>
           </tbody>
-        </table>
+        </table> -->
       </li>
     </ul>
   </div>

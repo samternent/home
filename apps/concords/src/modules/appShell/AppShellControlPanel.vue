@@ -1,18 +1,17 @@
 <script setup lang="ts">
 import AppShellControlPanelLog from "./panels/AppShellControlPanelLog.vue";
+import AppShellControlPanelCommit from "./panels/AppShellControlPanelCommit.vue";
 </script>
 
 <template>
   <div class="flex w-full flex-col lg:flex-row">
     <div
-      class="lg:w-1/2 p-2 border-b-2 lg:border-b-0 lg:border-r-2 border-zinc-800 flex-1 overflow-auto"
+      class="p-2 border-b-2 lg:border-b-0 lg:border-r-2 border-zinc-800 flex-1 overflow-auto max-w-1/2"
     >
       <AppShellControlPanelLog />
     </div>
-    <div class="lg:w-1/2 p-2 flex flex-col flex-1 overflow-auto">
-      <p class="my-4 flex-1">
-        We don't use cookies or track identifiable information.
-      </p>
+    <div class="p-2 flex flex-col flex-1 overflow-auto">
+      <AppShellControlPanelCommit />
       <div
         class="flex items-center justify-end opacity-50 hover:opacity-80 transition-opacity cursor-default"
       >

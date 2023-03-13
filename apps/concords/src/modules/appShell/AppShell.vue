@@ -38,7 +38,10 @@ window.addEventListener("mousemove", (e) => {
       </nav>
     </section>
 
-    <section id="MainContent" class="flex flex-col h-screen flex-1 w-full">
+    <section
+      id="MainContent"
+      class="flex flex-col h-screen flex-1 w-full max-w-[100vw] md:max-w-[calc(100vw-64px)]"
+    >
       <!-- Top fixed panel -->
       <section
         id="TopFixedPanel"
