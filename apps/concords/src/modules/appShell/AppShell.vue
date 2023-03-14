@@ -19,11 +19,13 @@ function handleDragEnd() {
 }
 
 function handleMouseMove(e: MouseEvent) {
+  e.preventDefault();
   if (isDragging.value && window.innerHeight - e.pageY > 100 && e.pageY > 54) {
     bottomPanelHeight.value = window.innerHeight - e.pageY;
   }
 }
 function handleTouchMove(e: TouchEvent) {
+  e.preventDefault();
   if (
     isDragging.value &&
     window.innerHeight - e.changedTouches[0].pageY > 100 &&
