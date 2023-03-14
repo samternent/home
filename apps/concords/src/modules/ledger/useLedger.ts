@@ -1,5 +1,4 @@
-import { shallowRef, provide, inject } from "vue";
-import { useLocalStorage } from "@vueuse/core";
+import { shallowRef, provide, inject, watchEffect } from "vue";
 import { createLedger, useLokiPlugin } from "@concords/ledger";
 import {
   stripIdentityKey,
@@ -149,6 +148,12 @@ function Ledger(): IUseLedger {
       collection
     );
   }
+
+  watchEffect(async () => {
+    if (ledger.value?.pending_records > 1) {
+      await ledgerApi.squashRecords();
+    }
+  });
 
   return {
     ledger,

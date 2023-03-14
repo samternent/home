@@ -7,8 +7,6 @@ const { ledger, api } = useLedger();
 const commitMessage = shallowRef("");
 
 async function squashCommit() {
-  console.log(api);
-  await api.squashRecords();
   await api.commit(commitMessage.value);
   commitMessage.value = "";
 }
@@ -19,7 +17,7 @@ const records = computed(() => {
 </script>
 <template>
   <div class="flex-1 flex flex-col overflow-y-auto p-2">
-    Commit changes
+    Commit {{ records.length }} change(s)
     <input
       v-model="commitMessage"
       class="p-4 mt-2 border rounded"
