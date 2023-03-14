@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { shallowRef, watch, computed } from "vue";
+import { useSorted, useLocalStorage } from "@vueuse/core";
 import { DateTime } from "luxon";
 import { useLedger } from "./useLedger";
 import LedgerForm from "./LedgerForm.vue";
@@ -113,6 +114,42 @@ function getVerifyProps(props: Object): Object {
     "identity",
   ].reduce((obj, key) => ({ ...obj, [key]: props[key] }), {});
 }
+
+const sortBy = useLocalStorage("ledgerTableSortBy", "timestamp");
+const sortOrder = useLocalStorage("ledgerTableSortOrder", "asc");
+const sortedItems = computed(
+  () =>
+    useSorted(items.value, (a, b) => {
+      if (sortBy.value === "timestamp") {
+        if (sortOrder.value === "asc") {
+          return a.timestamp - b.timestamp;
+        }
+        if (sortOrder.value === "desc") {
+          return b.timestamp - a.timestamp;
+        }
+      }
+      if (sortBy.value === "identity") {
+        if (sortOrder.value === "asc") {
+          return ("" + a.identity).localeCompare(b.identity);
+        }
+        if (sortOrder.value === "desc") {
+          return ("" + b.identity).localeCompare(a.identity);
+        }
+      }
+      if (sortBy.value.startsWith("data.")) {
+        if (sortOrder.value === "asc") {
+          return ("" + a.data[sortBy.value.split("data.")[1]]).localeCompare(
+            b.data[sortBy.value.split("data.")[1]]
+          );
+        }
+        if (sortOrder.value === "desc") {
+          return ("" + b.data[sortBy.value.split("data.")[1]]).localeCompare(
+            a.data[sortBy.value.split("data.")[1]]
+          );
+        }
+      }
+    }).value
+);
 </script>
 
 <template>
@@ -125,42 +162,108 @@ function getVerifyProps(props: Object): Object {
           v-for="(column, i) in columns"
           :key="`header_${i}`"
           :style="`width: ${column.width}px`"
+          @click="sortBy = `data.${column.name}`"
           class="uppercase p-2 border-r-2 z-10 font-medium bg-indigo-700 text-zinc-50 border-indigo-800"
         >
-          {{ column.name }}
+          <div class="flex justify-between items-center">
+            {{ column.name }}
+            <svg
+              v-if="sortBy === `data.${column.name}`"
+              @click="sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-4 h-4"
+              :class="{
+                'rotate-180': sortOrder === 'desc',
+              }"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3"
+              />
+            </svg>
+          </div>
         </th>
         <td
           class="uppercase p-2 border-r-2 z-10 font-medium bg-indigo-700 text-zinc-50 border-indigo-800"
+          @click="sortBy = 'timestamp'"
         >
-          Updated
+          <div class="flex justify-between items-center">
+            Updated
+            <svg
+              v-if="sortBy === 'timestamp'"
+              @click="sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-4 h-4"
+              :class="{
+                'rotate-180': sortOrder === 'desc',
+              }"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3"
+              />
+            </svg>
+          </div>
         </td>
         <td
           class="uppercase p-2 z-20 font-medium bg-indigo-700 text-zinc-50"
           :colspan="canEdit ? 3 : 2"
+          @click="sortBy = 'identity'"
         >
-          <div class="flex justify-end w-full">
-            <button @click="$emit('edit')" v-if="canEdit">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-4 h-4"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125"
-                />
-              </svg>
-            </button>
+          <div class="flex justify-between items-center">
+            <svg
+              v-if="sortBy === 'identity'"
+              @click="sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-4 h-4"
+              :class="{
+                'rotate-180': sortOrder === 'desc',
+              }"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3"
+              />
+            </svg>
+            <div class="flex justify-end w-full">
+              <button @click="$emit('edit')" v-if="canEdit">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-4 h-4"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
         </td>
       </thead>
       <tbody class="text-lg">
         <tr
-          v-for="item in items"
+          v-for="item in sortedItems"
           :key="item.id"
           tabindex="0"
           class="h-12 border-zinc-800 border-b-2"

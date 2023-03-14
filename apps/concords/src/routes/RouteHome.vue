@@ -134,6 +134,12 @@ function unimpersonateUser(identity: string) {
 const canEditTable = computed(
   () => !["users", "permissions"].includes(table.value)
 );
+
+const size = computed(
+  () => new TextEncoder().encode(JSON.stringify(ledger.value)).length
+);
+const sizeInKb = computed(() => size.value / 1024);
+const sizeInMb = computed(() => sizeInKb.value / 1024);
 </script>
 <template>
   <div class="w-full flex-1 flex flex-col">
@@ -171,6 +177,9 @@ const canEditTable = computed(
               />
             </svg>
           </button>
+        </div>
+        <div class="px-4 text-sm text-zinc-400">
+          {{ Math.floor(sizeInKb) }} KB
         </div>
         <!-- <div class="flex items-center">
           <v-text-field

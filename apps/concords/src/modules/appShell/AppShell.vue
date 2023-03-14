@@ -158,11 +158,11 @@ onBeforeUnmount(() => {
         id="BottomPanel"
         class="flex flex-col z-40"
         :class="{
-          'h-8': !isBottomPanelExpanded,
+          'h-16': !isBottomPanelExpanded,
           'transition-all': !isDragging,
         }"
         :style="`height: ${
-          isBottomPanelExpanded ? `${bottomPanelHeight}px` : '2rem'
+          isBottomPanelExpanded ? `${bottomPanelHeight}px` : '2.5rem'
         }`"
         v-if="$route.meta.hasBottomPanel"
       >
@@ -189,7 +189,7 @@ onBeforeUnmount(() => {
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                class="h-4 w-4 transition-transform duration-300 transform-gpu"
+                class="h-5 w-5 transition-transform duration-300 transform-gpu"
                 :class="isBottomPanelExpanded ? 'rotate-0' : 'rotate-180'"
                 fill="none"
                 viewBox="0 0 24 24"

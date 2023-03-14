@@ -3,6 +3,7 @@ import { useLocalStorage } from "@vueuse/core";
 import AppShellControlPanelLog from "./panels/AppShellControlPanelLog.vue";
 import AppShellControlPanelHistory from "./panels/AppShellControlPanelHistory.vue";
 import AppShellControlPanelCommit from "./panels/AppShellControlPanelCommit.vue";
+import AppShellControlPanelSave from "./panels/AppShellControlPanelSave.vue";
 
 const activeLHSView = useLocalStorage("controlPanel/lhs", "log");
 const activeRHSView = useLocalStorage("controlPanel/rhs", "commit");
@@ -11,7 +12,7 @@ const activeRHSView = useLocalStorage("controlPanel/rhs", "commit");
 <template>
   <div class="flex w-full flex-col lg:flex-row">
     <div
-      class="border-b-2 lg:border-b-0 lg:border-r-2 border-zinc-800 flex-1 overflow-auto max-w-1/2"
+      class="border-b-2 lg:border-b-0 lg:border-r-2 border-zinc-700 flex-1 overflow-auto max-w-1/2"
     >
       <VTabs
         v-model="activeLHSView"
@@ -35,6 +36,7 @@ const activeRHSView = useLocalStorage("controlPanel/rhs", "commit");
         <VTab value="save">Save</VTab>
       </VTabs>
       <AppShellControlPanelCommit v-if="activeRHSView === 'commit'" />
+      <AppShellControlPanelSave v-if="activeRHSView === 'save'" />
       <!-- <div
         class="flex items-center justify-end opacity-50 hover:opacity-80 transition-opacity cursor-default"
       >
