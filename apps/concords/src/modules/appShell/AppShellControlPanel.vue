@@ -12,7 +12,7 @@ import AppShellControlPanelCommit from "./panels/AppShellControlPanelCommit.vue"
     </div>
     <div class="p-2 flex flex-col flex-1 overflow-auto">
       <AppShellControlPanelCommit />
-      <div
+      <!-- <div
         class="flex items-center justify-end opacity-50 hover:opacity-80 transition-opacity cursor-default"
       >
         <div class="p-2 rounded-tl-lg">
@@ -33,9 +33,6 @@ import AppShellControlPanelCommit from "./panels/AppShellControlPanelCommit.vue"
             <span class="text-xl font-sans -mb-1 mr-2"
               >concords<span class="text-indigo-600 font-6xl">•</span>app</span
             >
-            <!-- <span class="font-light ml-6"
-              >Storage Agnostic, Tamper-Proof & Encrypted Ledger.</span
-            > -->
           </div>
           <a
             class="text-pink-500 hover:underline hover:text-pink-600 text-xs font-sans"
@@ -44,7 +41,7 @@ import AppShellControlPanelCommit from "./panels/AppShellControlPanelCommit.vue"
             >Team Concords Limited.</a
           >
         </div>
-      </div>
+      </div> -->
       <!-- <a
         class="text-pink-500 underline hover:text-pink-600 text-sm"
         href="https://teamconcords.com/"

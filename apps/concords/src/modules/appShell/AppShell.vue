@@ -148,8 +148,8 @@ window.addEventListener("mousemove", (e) => {
           @click="isBottomPanelExpanded = true"
           @mousedown="handleDragStart"
           :class="{
-            'hover:bg-blue-600 cursor-row-resize': isBottomPanelExpanded,
-            '!bg-zinc-300': isDragging,
+            'hover:bg-blue-400 cursor-row-resize': isBottomPanelExpanded,
+            '!bg-blue-500': isDragging,
           }"
           class="w-full h-1 bg-zinc-600 transition-colors"
         />
