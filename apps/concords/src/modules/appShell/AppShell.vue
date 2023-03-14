@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { shallowRef } from "vue";
+import { shallowRef, onMounted, onBeforeUnmount } from "vue";
 import { provideAppShell } from "./useAppShell";
 
 const {
@@ -18,11 +18,31 @@ function handleDragEnd() {
   isDragging.value = false;
 }
 
-window.addEventListener("mouseup", handleDragEnd);
-window.addEventListener("mousemove", (e) => {
+function handleMouseMove(e: MouseEvent) {
   if (isDragging.value && window.innerHeight - e.pageY > 100 && e.pageY > 54) {
     bottomPanelHeight.value = window.innerHeight - e.pageY;
   }
+}
+function handleTouchMove(e: TouchEvent) {
+  if (
+    isDragging.value &&
+    window.innerHeight - e.changedTouches[0].pageY > 100 &&
+    e.changedTouches[0].pageY > 54
+  ) {
+    bottomPanelHeight.value = window.innerHeight - e.changedTouches[0].pageY;
+  }
+}
+onMounted(() => {
+  window.addEventListener("mouseup", handleDragEnd);
+  window.addEventListener("mousemove", handleMouseMove);
+  window.addEventListener("touchend", handleDragEnd);
+  window.addEventListener("touchmove", handleTouchMove);
+});
+onBeforeUnmount(() => {
+  window.removeEventListener("mouseup", handleDragEnd);
+  window.removeEventListener("mousemove", handleMouseMove);
+  window.removeEventListener("touchend", handleDragEnd);
+  window.removeEventListener("touchmove", handleTouchMove);
 });
 </script>
 <template>
@@ -147,6 +167,7 @@ window.addEventListener("mousemove", (e) => {
         <div
           @click="isBottomPanelExpanded = true"
           @mousedown="handleDragStart"
+          @touchstart="handleDragStart"
           :class="{
             'hover:bg-blue-400 cursor-row-resize': isBottomPanelExpanded,
             '!bg-blue-500': isDragging,
@@ -158,22 +179,6 @@ window.addEventListener("mousemove", (e) => {
           <div class="flex-1" id="BottomPanelBanner" />
 
           <div class="flex items-center justify-center">
-            <router-link to="/info" class="mr-2" alt="Info">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            </router-link>
             <button
               aria-label="Toggle Bottom Panel"
               :aria-pressed="isBottomPanelExpanded"

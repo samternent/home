@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { shallowRef, watch, watchEffect } from "vue";
+import { shallowRef, watch, watchEffect, computed } from "vue";
 import { useLedger } from "@/modules/ledger";
 import { PermissionPicker } from "@/modules/permissions";
 import type { IRecord } from "@concords/proof-of-work";
@@ -28,21 +28,129 @@ const emit = defineEmits(["submit"]);
 watch(
   ledger,
   () => {
-    itemTypes.value = getCollection(`${props.table}:types`)?.data;
-    items.value = getCollection(props.table)?.data;
+    if (props.table === "users") {
+      itemTypes.value = [
+        {
+          data: {
+            name: "username",
+            type: "text",
+          },
+        },
+        {
+          data: {
+            name: "encryption",
+            type: "text",
+          },
+        },
+        {
+          data: {
+            name: "identity",
+            type: "text",
+          },
+        },
+      ];
+      items.value = [...(getCollection(props.table)?.data || [])];
+    } else if (props.table === "permissions") {
+      itemTypes.value = [
+        {
+          data: {
+            name: "title",
+            type: "text",
+          },
+        },
+        // {
+        //   data: {
+        //     name: "public",
+        //     type: "text",
+        //   },
+        // },
+        {
+          data: {
+            name: "identity",
+            type: "text",
+          },
+        },
+        // {
+        //   data: {
+        //     name: "secret",
+        //     type: "text",
+        //   },
+        // },
+      ];
+      items.value = [...(getCollection(props.table)?.data || [])];
+    } else {
+      itemTypes.value = getCollection(`${props.table}:types`)?.data;
+      items.value = [...(getCollection(props.table)?.data || [])];
+    }
   },
   { immediate: true }
 );
 
 watchEffect(() => {
-  itemTypes.value = getCollection(`${props.table}:types`)?.data;
-  items.value = getCollection(props.table)?.data;
+  if (props.table === "users") {
+    itemTypes.value = [
+      {
+        data: {
+          name: "username",
+          type: "text",
+        },
+      },
+      {
+        data: {
+          name: "encryption",
+          type: "text",
+        },
+      },
+      {
+        data: {
+          name: "identity",
+          type: "text",
+        },
+      },
+    ];
+    items.value = [...(getCollection(props.table)?.data || [])];
+  } else if (props.table === "permissions") {
+    itemTypes.value = [
+      {
+        data: {
+          name: "title",
+          type: "text",
+        },
+      },
+      // {
+      //   data: {
+      //     name: "public",
+      //     type: "text",
+      //   },
+      // },
+      {
+        data: {
+          name: "identity",
+          type: "text",
+        },
+      },
+      // {
+      //   data: {
+      //     name: "secret",
+      //     type: "text",
+      //   },
+      // },
+    ];
+    items.value = [...(getCollection(props.table)?.data || [])];
+  } else {
+    itemTypes.value = getCollection(`${props.table}:types`)?.data;
+    items.value = [...(getCollection(props.table)?.data || [])];
+  }
 });
 
 function updateItem(e: Event, name: string) {
   const val = (e.target as HTMLTextAreaElement).value;
   newItem.value = { ...newItem.value, [name]: val };
 }
+
+const allowPermission = computed(
+  () => !["users", "permissions"].includes(props.table)
+);
 
 async function addListItem() {
   await addItem({ ...newItem.value }, props.table, permission.value);
@@ -84,7 +192,7 @@ async function addListItem() {
       </div>
     </td>
     <td>
-      <div class="p-2">
+      <div class="p-2" v-if="allowPermission">
         <PermissionPicker v-model="permission" />
       </div>
     </td>

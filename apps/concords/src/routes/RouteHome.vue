@@ -214,9 +214,9 @@ const canEditTable = computed(
     </div>
     <div class="flex flex-1 overflow-auto">
       <div v-if="!table">Loading</div>
-      <LedgerUsers v-else-if="table === 'users'" />
-      <PermissionsTable v-else-if="table === 'permissions'" />
-      <LedgerDataTable v-else :table="table" @edit="showEditTable = true" />
+      <!-- <LedgerUsers v-else-if="table === 'users'" />
+      <PermissionsTable v-else-if="table === 'permissions'" /> -->
+      <LedgerDataTable :table="table" @edit="showEditTable = true" />
     </div>
 
     <transition name="slide">

@@ -22,11 +22,64 @@ const props = defineProps({
 
 defineEmits(["edit"]);
 
+const canEdit = computed(() => !["users", "permissions"].includes(props.table));
 watch(
   [ledger, () => props.table],
   () => {
-    itemTypes.value = getCollection(`${props.table}:types`)?.data;
-    items.value = [...(getCollection(props.table)?.data || [])];
+    if (props.table === "users") {
+      itemTypes.value = [
+        {
+          data: {
+            name: "username",
+            type: "text",
+          },
+        },
+        {
+          data: {
+            name: "encryption",
+            type: "text",
+          },
+        },
+        {
+          data: {
+            name: "identity",
+            type: "text",
+          },
+        },
+      ];
+      items.value = [...(getCollection(props.table)?.data || [])];
+    } else if (props.table === "permissions") {
+      itemTypes.value = [
+        {
+          data: {
+            name: "title",
+            type: "text",
+          },
+        },
+        {
+          data: {
+            name: "public",
+            type: "text",
+          },
+        },
+        {
+          data: {
+            name: "identity",
+            type: "text",
+          },
+        },
+        {
+          data: {
+            name: "secret",
+            type: "text",
+          },
+        },
+      ];
+      items.value = [...(getCollection(props.table)?.data || [])];
+    } else {
+      itemTypes.value = getCollection(`${props.table}:types`)?.data;
+      items.value = [...(getCollection(props.table)?.data || [])];
+    }
   },
   { immediate: true }
 );
@@ -82,11 +135,11 @@ function getVerifyProps(props: Object): Object {
           Updated
         </td>
         <td
-          class="uppercase p-2 z-10 font-medium bg-indigo-700 text-zinc-50"
-          colspan="3"
+          class="uppercase p-2 z-20 font-medium bg-indigo-700 text-zinc-50"
+          :colspan="canEdit ? 3 : 2"
         >
           <div class="flex justify-end w-full">
-            <button @click="$emit('edit')">
+            <button @click="$emit('edit')" v-if="canEdit">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -131,23 +184,23 @@ function getVerifyProps(props: Object): Object {
           <td class="border-r-2 border-zinc-800 px-2">
             <VerifyRowCell v-bind="{ ...getVerifyProps(item) }" />
           </td>
-          <td class="border-zinc-800 sticky right-0">
-            <VBtn icon variant="plain" size="small" class="mx-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-6 h-6"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z"
-                />
-              </svg>
-            </VBtn>
+          <td class="px-2 text-zinc-700" v-if="canEdit">
+            <!-- <VBtn icon variant="plain" size="small" class="mx-2"> -->
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-6 h-6"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z"
+              />
+            </svg>
+            <!-- </VBtn> -->
           </td>
         </tr>
         <LedgerForm :table="table" :key="table" />

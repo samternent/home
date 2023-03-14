@@ -16,35 +16,29 @@ function formatTime(time: number) {
 }
 </script>
 <template>
-  <div>
-    <pre class="text-green-600 font-medium tracking-wider">
-// concords.app is in development.
-
-</pre
-    >
-    <ul class="flex flex-col">
-      <li v-for="record in records" :key="record.id" class="my-2 rounded">
-        <div class="flex w-full justify-start items-center">
-          <VTooltip :text="record.identity" location="bottom">
-            <template v-slot:activator="{ props }">
-              <IdentityAvatar
-                v-bind="props"
-                :identity="record.identity"
-                size="xs"
-                class="mr-2"
-              />
-            </template>
-          </VTooltip>
-          <VerifyRowCell v-bind="{ ...record }" />
-          <div class="pl-4 text-xs">
-            {{ formatTime(record.timestamp) }}
-          </div>
+  <ul class="flex flex-col" v-if="records.length">
+    <li v-for="record in records" :key="record.id" class="my-2 rounded">
+      <div class="flex w-full justify-start items-center">
+        <VTooltip :text="record.identity" location="bottom">
+          <template v-slot:activator="{ props }">
+            <IdentityAvatar
+              v-bind="props"
+              :identity="record.identity"
+              size="xs"
+              class="mr-2"
+            />
+          </template>
+        </VTooltip>
+        <VerifyRowCell v-bind="{ ...record }" />
+        <div class="pl-4 text-xs">
+          {{ formatTime(record.timestamp) }}
         </div>
-        <div class="font-bold text-zinc-400 my-2">
-          Collection: {{ record.collection }}
-        </div>
-        <pre class="overflow-x-auto">{{ record.data }}</pre>
-        <!-- <table class="table-fixed w-full overflow-x-scroll">
+      </div>
+      <div class="font-bold text-zinc-400 my-2">
+        Collection: {{ record.collection }}
+      </div>
+      <pre class="overflow-x-auto">{{ record.data }}</pre>
+      <!-- <table class="table-fixed w-full overflow-x-scroll">
           <thead class="bg-indigo-800">
             <th
               v-for="header in Object.keys(record.data)"
@@ -64,7 +58,7 @@ function formatTime(time: number) {
             </tr>
           </tbody>
         </table> -->
-      </li>
-    </ul>
-  </div>
+    </li>
+  </ul>
+  <div v-else class="p-4 text-zinc-400">No pending records</div>
 </template>
