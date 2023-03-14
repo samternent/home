@@ -20,7 +20,7 @@ const records = computed(() => {
   <div>
     <ul class="flex flex-col">
       <li
-        v-for="block in ledger?.chain.reverse()"
+        v-for="block in [...(ledger?.chain || [])].reverse()"
         :key="block.id"
         class="my-2 rounded"
       >
@@ -40,7 +40,7 @@ const records = computed(() => {
             <VExpansionPanelText>
               <ul class="flex flex-col">
                 <li
-                  v-for="record in block.records.reverse()"
+                  v-for="record in [...(block.records || [])].reverse()"
                   :key="record.id"
                   class="my-2 rounded"
                 >

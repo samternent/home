@@ -8,7 +8,7 @@ import { DateTime } from "luxon";
 const { ledger } = useLedger();
 
 const records = computed(() => {
-  return ledger.value?.pending_records.reverse();
+  return [...(ledger.value?.pending_records || [])].reverse();
 });
 function formatTime(time: number) {
   const date = DateTime.fromMillis(time);
