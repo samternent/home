@@ -11,10 +11,12 @@ const {
 
 const isDragging = shallowRef(false);
 
-function handleDragStart() {
+function handleDragStart(e) {
+  e.preventDefault();
   isDragging.value = true;
 }
-function handleDragEnd() {
+function handleDragEnd(e) {
+  e.preventDefault();
   isDragging.value = false;
 }
 
