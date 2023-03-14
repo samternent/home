@@ -5,14 +5,19 @@ import AppShellControlPanelHistory from "./panels/AppShellControlPanelHistory.vu
 import AppShellControlPanelCommit from "./panels/AppShellControlPanelCommit.vue";
 
 const activeLHSView = useLocalStorage("controlPanel/lhs", "log");
+const activeRHSView = useLocalStorage("controlPanel/rhs", "commit");
 </script>
 
 <template>
   <div class="flex w-full flex-col lg:flex-row">
     <div
-      class="p-2 border-b-2 lg:border-b-0 lg:border-r-2 border-zinc-800 flex-1 overflow-auto max-w-1/2"
+      class="border-b-2 lg:border-b-0 lg:border-r-2 border-zinc-800 flex-1 overflow-auto max-w-1/2"
     >
-      <VTabs v-model="activeLHSView" theme="dark">
+      <VTabs
+        v-model="activeLHSView"
+        theme="dark"
+        class="sticky top-0 bg-zinc-800 z-20"
+      >
         <VTab value="log">Log</VTab>
         <VTab value="history">History</VTab>
       </VTabs>
@@ -20,8 +25,16 @@ const activeLHSView = useLocalStorage("controlPanel/lhs", "log");
       <AppShellControlPanelLog v-if="activeLHSView === 'log'" />
       <AppShellControlPanelHistory v-if="activeLHSView === 'history'" />
     </div>
-    <div class="p-2 flex flex-col flex-1 overflow-auto">
-      <AppShellControlPanelCommit />
+    <div class="flex flex-col flex-1 overflow-auto">
+      <VTabs
+        v-model="activeRHSView"
+        theme="dark"
+        class="sticky top-0 bg-zinc-800 z-20"
+      >
+        <VTab value="commit">Commit</VTab>
+        <VTab value="save">Save</VTab>
+      </VTabs>
+      <AppShellControlPanelCommit v-if="activeRHSView === 'commit'" />
       <!-- <div
         class="flex items-center justify-end opacity-50 hover:opacity-80 transition-opacity cursor-default"
       >

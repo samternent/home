@@ -16,11 +16,11 @@ const records = computed(() => {
 });
 </script>
 <template>
-  <div class="flex-1 flex flex-col overflow-y-auto p-2">
-    Commit {{ records.length }} change(s)
-    <input
+  <div class="flex-1 flex flex-col overflow-y-auto p-4">
+    <div class="mb-4">Commit {{ records.length }} change(s)</div>
+    <VTextField
       v-model="commitMessage"
-      class="p-4 mt-2 border rounded"
+      class="mt-2 rounded"
       placeholder="Commit message..."
     />
     <div class="flex justify-end mt-4">

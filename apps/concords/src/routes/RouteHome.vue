@@ -172,7 +172,7 @@ const canEditTable = computed(
             </svg>
           </button>
         </div>
-        <div class="flex items-center">
+        <!-- <div class="flex items-center">
           <v-text-field
             theme="dark"
             class="w-64 mr-6"
@@ -183,7 +183,7 @@ const canEditTable = computed(
             single-line
             hide-details
           ></v-text-field>
-        </div>
+        </div> -->
       </div>
     </Teleport>
     <VAlert v-if="isImpersonatingUser">

@@ -20,7 +20,7 @@ function handleDragEnd() {
 
 window.addEventListener("mouseup", handleDragEnd);
 window.addEventListener("mousemove", (e) => {
-  if (isDragging.value && window.innerHeight - e.pageY > 100 && e.pageY > 120) {
+  if (isDragging.value && window.innerHeight - e.pageY > 100 && e.pageY > 54) {
     bottomPanelHeight.value = window.innerHeight - e.pageY;
   }
 });
