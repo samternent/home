@@ -1,5 +1,5 @@
 import { onMounted, provide, inject } from "vue";
-import { RemovableRef, useLocalStorage } from "@vueuse/core";
+import { RemovableRef, useLocalStorage, useWindowSize } from "@vueuse/core";
 
 const useAppShellSymbol = Symbol("useAppShell");
 
@@ -11,10 +11,15 @@ interface IAppShell {
 }
 
 export function provideAppShell(): IAppShell {
+  const { width, height } = useWindowSize();
+
   const isBottomPanelExpanded = useLocalStorage("isBottomPanelExpanded", false);
   const isLeftPanelExpanded = useLocalStorage("isLeftPanelExpanded", false);
   const isRightPanelExpanded = useLocalStorage("isRightPanelExpanded", false);
-  const bottomPanelHeight = useLocalStorage("bottomPanelHeight", 320);
+  const bottomPanelHeight = useLocalStorage(
+    "bottomPanelHeight",
+    width.value < 500 ? 620 : 320
+  );
 
   function setViewHeight() {
     let vh = window.innerHeight * 0.01;
