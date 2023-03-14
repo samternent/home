@@ -21,6 +21,9 @@ app.use(
     components,
     directives,
     blueprint: md2,
+    theme: {
+      defaultTheme: "dark",
+    },
   })
 );
 app.use(

@@ -128,7 +128,7 @@ function getVerifyProps(props: Object): Object {
           <td class="border-r-2 border-zinc-800">
             <IdentityAvatarCell :item="item.identity" />
           </td>
-          <td class="border-r-2 border-zinc-800">
+          <td class="border-r-2 border-zinc-800 px-2">
             <VerifyRowCell v-bind="{ ...getVerifyProps(item) }" />
           </td>
           <td class="border-zinc-800 sticky right-0">

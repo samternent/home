@@ -1,6 +1,10 @@
 <script setup lang="ts">
+import { useLocalStorage } from "@vueuse/core";
 import AppShellControlPanelLog from "./panels/AppShellControlPanelLog.vue";
+import AppShellControlPanelHistory from "./panels/AppShellControlPanelHistory.vue";
 import AppShellControlPanelCommit from "./panels/AppShellControlPanelCommit.vue";
+
+const activeLHSView = useLocalStorage("controlPanel/lhs", "log");
 </script>
 
 <template>
@@ -8,7 +12,13 @@ import AppShellControlPanelCommit from "./panels/AppShellControlPanelCommit.vue"
     <div
       class="p-2 border-b-2 lg:border-b-0 lg:border-r-2 border-zinc-800 flex-1 overflow-auto max-w-1/2"
     >
-      <AppShellControlPanelLog />
+      <VTabs v-model="activeLHSView" theme="dark">
+        <VTab value="log">Log</VTab>
+        <VTab value="history">History</VTab>
+      </VTabs>
+
+      <AppShellControlPanelLog v-if="activeLHSView === 'log'" />
+      <AppShellControlPanelHistory v-if="activeLHSView === 'history'" />
     </div>
     <div class="p-2 flex flex-col flex-1 overflow-auto">
       <AppShellControlPanelCommit />
