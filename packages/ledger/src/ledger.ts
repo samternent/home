@@ -25,6 +25,7 @@ export interface ILedgerAPI {
   add: Function;
   destroy: Function;
   squashRecords: Function;
+  removePendingRecord: Function;
 }
 
 interface IHooks {
@@ -226,6 +227,19 @@ export default function useLedger(
     return state.ledger;
   }
 
+  async function removePendingRecord(record: IRecord) {
+    if (!state.ledger) return;
+    const index = state.ledger.pending_records.findIndex(
+      (rec: IRecord) => rec.id === record.id
+    );
+
+    state.ledger.pending_records.splice(index, 1);
+    await runHooks("onUpdate", state);
+    // dirty, dirty but effective
+    window.location.reload();
+    return state.ledger;
+  }
+
   async function squashRecords() {
     if (!state.ledger) return;
     const lookup: {
@@ -281,5 +295,6 @@ export default function useLedger(
     add,
     destroy,
     squashRecords,
+    removePendingRecord,
   };
 }

@@ -4,7 +4,6 @@ import { useLedger } from "@/modules/ledger";
 import { PermissionPicker } from "@/modules/permissions";
 import type { IRecord } from "@concords/proof-of-work";
 import { useToast } from "vue-toastification";
-import { useFileSystemAccess } from "@vueuse/core";
 
 interface dynamicObject {
   [key: string]: string | number;

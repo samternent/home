@@ -5,7 +5,7 @@ import { VerifyRowCell } from "@/modules/table";
 import { IdentityAvatar } from "@/modules/identity";
 import { DateTime } from "luxon";
 
-const { ledger } = useLedger();
+const { ledger, api } = useLedger();
 
 const records = computed(() => {
   return [...(ledger.value?.pending_records || [])].reverse();
@@ -18,6 +18,7 @@ function formatTime(time: number) {
 <template>
   <ul class="flex flex-col" v-if="records.length">
     <li v-for="record in records" :key="record.id" class="my-2 rounded">
+      <VBtn @click="api.removePendingRecord(record)">Delete</VBtn>
       <div class="flex w-full justify-start items-center">
         <VTooltip :text="record.identity" location="bottom">
           <template v-slot:activator="{ props }">
