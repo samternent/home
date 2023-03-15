@@ -26,9 +26,12 @@ const linkedTypes = shallowRef<null | Array<IRecord>>(null);
 const permission = shallowRef<string | null>(null);
 
 async function addItemType() {
+  const _name = type.value.includes(":types")
+    ? type.value.replace(":types", `:${name.value}`)
+    : name.value;
   await addItem(
     {
-      name: name.value,
+      name: _name,
       type: type.value,
     },
     `${tableName.value}:types`

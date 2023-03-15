@@ -18,7 +18,6 @@ function formatTime(time: number) {
 <template>
   <ul class="flex flex-col" v-if="records.length">
     <li v-for="record in records" :key="record.id" class="my-2 rounded">
-      <VBtn @click="api.removePendingRecord(record)">Delete</VBtn>
       <div class="flex w-full justify-start items-center">
         <VTooltip :text="record.identity" location="bottom">
           <template v-slot:activator="{ props }">
@@ -34,6 +33,31 @@ function formatTime(time: number) {
         <div class="pl-4 text-xs">
           {{ formatTime(record.timestamp) }}
         </div>
+        <VTooltip text="Delete record" location="bottom">
+          <template v-slot:activator="{ props }">
+            <VBtn
+              v-bind="props"
+              class="ma-2"
+              variant="text"
+              color="red-lighten-2"
+              @click="api.removePendingRecord(record)"
+              ><svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-6 h-6"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </VBtn>
+          </template>
+        </VTooltip>
       </div>
       <div class="font-bold text-zinc-400 my-2">
         Collection: {{ record.collection }}

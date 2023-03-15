@@ -48,7 +48,6 @@ export default function useLokiPlugin(
                 ),
               };
             } catch (e) {
-              console.error(e);
               return;
             }
           } else {
@@ -67,7 +66,6 @@ export default function useLokiPlugin(
                 ),
               };
             } catch (e) {
-              console.error(e);
               return;
             }
           }

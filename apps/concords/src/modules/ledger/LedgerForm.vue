@@ -58,24 +58,12 @@ watch(
             type: "text",
           },
         },
-        // {
-        //   data: {
-        //     name: "public",
-        //     type: "text",
-        //   },
-        // },
         {
           data: {
             name: "identity",
             type: "text",
           },
         },
-        // {
-        //   data: {
-        //     name: "secret",
-        //     type: "text",
-        //   },
-        // },
       ];
       items.value = [...(getCollection(props.table)?.data || [])];
     } else {
@@ -117,24 +105,12 @@ watchEffect(() => {
           type: "text",
         },
       },
-      // {
-      //   data: {
-      //     name: "public",
-      //     type: "text",
-      //   },
-      // },
       {
         data: {
           name: "identity",
           type: "text",
         },
       },
-      // {
-      //   data: {
-      //     name: "secret",
-      //     type: "text",
-      //   },
-      // },
     ];
     items.value = [...(getCollection(props.table)?.data || [])];
   } else {
@@ -173,7 +149,7 @@ async function addListItem() {
 }
 
 function getItems(type: string, name: string) {
-  const table = type.split(":type")[0];
+  const table = type.split(":types")[0];
 
   if (!table) {
     return [];
@@ -187,8 +163,8 @@ function getItems(type: string, name: string) {
 }
 
 function getValue(type: string, name: string, id: string) {
-  return getCollection(type.split(":type")[0])?.findOne({ "data.id": id })
-    ?.data[name];
+  return getCollection(type.split(":types")[0])?.findOne({ "data.id": id })
+    ?.data[name.split(":")[1]];
 }
 </script>
 
@@ -231,7 +207,7 @@ function getValue(type: string, name: string, id: string) {
                 density="compact"
                 @click="updateItem($event, itemType.data?.name, item)"
               >
-                {{ item[itemType.data?.name] }}
+                {{ item[itemType.data?.name.split(":")[1]] }}
               </VListItem></VSheet
             >
           </template>
@@ -248,6 +224,7 @@ function getValue(type: string, name: string, id: string) {
         />
       </div>
     </td>
+    <td></td>
     <td>
       <div class="p-2" v-if="allowPermission">
         <PermissionPicker v-model="permission" />

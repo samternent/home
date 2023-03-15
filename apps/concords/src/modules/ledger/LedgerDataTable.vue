@@ -155,7 +155,7 @@ const sortedItems = computed(
 
 function getValue(type: string, name: string, id: string) {
   return getCollection(type.split(":type")[0])?.findOne({ "data.id": id })
-    ?.data[name];
+    ?.data[name.split(":")[1]];
 }
 </script>
 
@@ -307,7 +307,7 @@ function getValue(type: string, name: string, id: string) {
             :key="`header_${item.id}${k}`"
             class="border-r-2 border-zinc-800"
           >
-            <div v-if="column.type.includes(':type')">
+            <div v-if="column.type.includes(':types')">
               {{ getValue(column.type, column.name, item.data[column.name]) }}
             </div>
             <component
@@ -353,7 +353,8 @@ function getValue(type: string, name: string, id: string) {
             <!-- </VBtn> -->
           </td>
         </tr>
-        <LedgerForm :table="table" :key="table" />
+        <div v-if="table === 'permissions'"></div>
+        <LedgerForm v-else :table="table" :key="table" />
       </tbody>
     </table>
   </div>

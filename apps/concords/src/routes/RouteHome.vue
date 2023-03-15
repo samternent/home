@@ -138,7 +138,7 @@ const canEditTable = computed(
 <template>
   <div class="w-full flex-1 flex flex-col">
     <Teleport to="#TopFixedPanel">
-      <div class="flex justify-between items-center w-full">
+      <div class="flex justify-between items-center w-full" v-if="ledger">
         <div class="md:mx-2 flex">
           <VSelect
             variant="solo"
@@ -204,120 +204,76 @@ const canEditTable = computed(
     <Teleport to="#BottomPanelContent">
       <AppShellControlPanel />
     </Teleport>
-    <div v-if="!ledger">
-      <div class="mt-4">
-        <p class="my-3 text-2xl font-thin w-3/4 mx-auto mt-10">
-          choose a username (just for this ledger)
-        </p>
-        <FormKit type="text" placeholder="Username" v-model="username" />
-        <button @click="createLedger">Create ledger</button>
-      </div>
+    <div
+      v-if="!ledger"
+      class="flex flex-col justify-center items-center flex-1"
+    >
+      <p class="my-3 text-2xl font-light mx-auto">
+        choose a username
+        <span class="block text-sm text-center">(just for this ledger)</span>
+      </p>
+      <FormKit type="text" placeholder="Username" v-model="username" />
+      <VBtn @click="createLedger" class="mt-8">Create ledger</VBtn>
     </div>
-    <div class="flex flex-1 overflow-auto">
+    <div v-else class="flex flex-1 overflow-auto">
       <div v-if="!table">Loading</div>
       <!-- <LedgerUsers v-else-if="table === 'users'" />
       <PermissionsTable v-else-if="table === 'permissions'" /> -->
       <LedgerDataTable :table="table" @edit="showEditTable = true" />
+
+      <transition name="slide">
+        <div
+          class="z-50 fixed top-14 right-0 h-screen left-16 md:left-auto md:w-[550px] px-2 bg-zinc-800 border-l border-zinc-600"
+          v-if="showCreateTable"
+        >
+          <div class="flex justify-end w-full p-2">
+            <button @click="showCreateTable = false">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-6 h-6"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </button>
+          </div>
+          <LedgerCreateTable @submit="(e: string) => (table = e)" />
+        </div>
+      </transition>
+      <transition name="slide">
+        <div
+          class="z-50 fixed top-14 right-0 h-screen left-16 md:left-auto md:w-[550px] px-2 bg-zinc-800 border-l border-zinc-600"
+          v-if="showEditTable"
+        >
+          <div class="flex justify-end w-full p-2">
+            <button @click="showEditTable = false">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-6 h-6"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </button>
+          </div>
+          <LedgerCreateTable :table="table" :key="table" />
+        </div>
+      </transition>
     </div>
-
-    <transition name="slide">
-      <div
-        class="z-50 fixed top-14 right-0 h-screen left-16 md:left-auto md:w-[550px] px-2 bg-zinc-800 border-l border-zinc-600"
-        v-if="showCreateTable"
-      >
-        <div class="flex justify-end w-full p-2">
-          <button @click="showCreateTable = false">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="w-6 h-6"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </button>
-        </div>
-        <LedgerCreateTable @submit="(e: string) => (table = e)" />
-      </div>
-    </transition>
-    <transition name="slide">
-      <div
-        class="z-50 fixed top-14 right-0 h-screen left-16 md:left-auto md:w-[550px] px-2 bg-zinc-800 border-l border-zinc-600"
-        v-if="showEditTable"
-      >
-        <div class="flex justify-end w-full p-2">
-          <button @click="showEditTable = false">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="w-6 h-6"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </button>
-        </div>
-        <LedgerCreateTable :table="table" :key="table" />
-      </div>
-    </transition>
-
-    <!-- <VNavigationDrawer
-      v-model="showPermissionsPanel"
-      location="right"
-      temporary
-      width="502"
-      :elevation="2"
-    >
-      <Permissions />
-    </VNavigationDrawer>
-    <VNavigationDrawer
-      v-model="showCreateTable"
-      location="right"
-      temporary
-      width="502"
-      :elevation="2"
-    >
-      <LedgerCreateTable @submit="(e: string) => (table = e)" />
-    </VNavigationDrawer>
-    <VNavigationDrawer
-      v-model="showAddRow"
-      location="right"
-      temporary
-      width="502"
-      :elevation="2"
-    >
-      <LedgerForm :table="table" :key="table" />
-    </VNavigationDrawer>
-    <VNavigationDrawer
-      v-model="showEditTable"
-      location="right"
-      temporary
-      width="502"
-      :elevation="2"
-    >
-      <LedgerCreateTable :table="table" :key="table" />
-    </VNavigationDrawer>
-    <VNavigationDrawer
-      v-model="showTableForm"
-      location="right"
-      temporary
-      width="502"
-      :elevation="2"
-    >
-      <LedgerForm />
-    </VNavigationDrawer> -->
   </div>
 </template>
 
