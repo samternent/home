@@ -5,12 +5,14 @@ import { DateTime } from "luxon";
 import { useLedger } from "./useLedger";
 import LedgerForm from "./LedgerForm.vue";
 import { TextCell, VerifyRowCell, IdentityAvatarCell } from "@/modules/table";
+import { useIdentity } from "@/modules/identity";
 import type { IRecord } from "@concords/proof-of-work";
 
 interface dynamicObject {
   [key: string]: string | null;
 }
 const { ledger, getCollection } = useLedger();
+const { publicKeyPEM } = useIdentity();
 const itemTypes = shallowRef<Array<IRecord>>([]);
 const items = shallowRef<Array<IRecord>>([]);
 
@@ -188,7 +190,7 @@ const sortedItems = computed(
             </svg>
           </div>
         </th>
-        <td
+        <th
           class="uppercase p-2 border-r-2 z-10 font-medium bg-indigo-700 text-zinc-50 border-indigo-800"
           @click="sortBy = 'timestamp'"
         >
@@ -214,8 +216,35 @@ const sortedItems = computed(
               />
             </svg>
           </div>
-        </td>
-        <td
+        </th>
+        <th
+          class="uppercase p-2 border-r-2 z-10 font-medium bg-indigo-700 text-zinc-50 border-indigo-800"
+          @click="sortBy = 'permission'"
+        >
+          <div class="flex justify-between items-center">
+            Permission
+            <svg
+              v-if="sortBy === 'permission'"
+              @click="sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-4 h-4"
+              :class="{
+                'rotate-180': sortOrder === 'desc',
+              }"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3"
+              />
+            </svg>
+          </div>
+        </th>
+        <th
           class="uppercase p-2 z-20 font-medium bg-indigo-700 text-zinc-50"
           :colspan="canEdit ? 3 : 2"
           @click="sortBy = 'identity'"
@@ -259,7 +288,7 @@ const sortedItems = computed(
               </button>
             </div>
           </div>
-        </td>
+        </th>
       </thead>
       <tbody class="text-lg">
         <tr
@@ -275,11 +304,20 @@ const sortedItems = computed(
           >
             <component
               :is="column.component"
-              v-bind="{ item: item?.data[column.name] }"
+              v-bind="{ item: item.data[column.name] }"
             ></component>
           </td>
           <td class="border-r-2 border-zinc-800">
             <TextCell :item="formatTime(item?.timestamp)" />
+          </td>
+          <td class="border-r-2 border-zinc-800">
+            <div class="w-64 truncate p-2">
+              {{
+                item.data?.permission === publicKeyPEM
+                  ? "YOUR EYES ONLY"
+                  : item.data?.permission
+              }}
+            </div>
           </td>
           <td class="border-r-2 border-zinc-800">
             <IdentityAvatarCell :item="item.identity" />

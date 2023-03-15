@@ -55,7 +55,7 @@ onBeforeUnmount(() => {
   >
     <!-- Fixed responsive sidenav -->
     <section id="SideNav" class="hidden md:flex">
-      <nav class="w-16 bg-zinc-800 h-full z-40 border-r-2 border-zinc-800">
+      <nav class="w-16 bg-zinc-800 h-full z-40 border-r-2 border-zinc-600">
         <slot name="side-nav" />
       </nav>
     </section>
