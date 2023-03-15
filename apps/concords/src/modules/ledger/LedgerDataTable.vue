@@ -179,7 +179,7 @@ const sortedItems = computed(
               stroke="currentColor"
               class="w-4 h-4"
               :class="{
-                'rotate-180': sortOrder === 'desc',
+                'rotate-180': sortOrder === 'asc',
               }"
             >
               <path
@@ -206,7 +206,7 @@ const sortedItems = computed(
               stroke="currentColor"
               class="w-4 h-4"
               :class="{
-                'rotate-180': sortOrder === 'desc',
+                'rotate-180': sortOrder === 'asc',
               }"
             >
               <path
@@ -219,12 +219,12 @@ const sortedItems = computed(
         </th>
         <th
           class="uppercase p-2 border-r-2 z-10 font-medium bg-indigo-700 text-zinc-50 border-indigo-800"
-          @click="sortBy = 'permission'"
+          @click="sortBy = 'data.permission'"
         >
           <div class="flex justify-between items-center">
             Permission
             <svg
-              v-if="sortBy === 'permission'"
+              v-if="sortBy === 'data.permission'"
               @click="sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -233,7 +233,7 @@ const sortedItems = computed(
               stroke="currentColor"
               class="w-4 h-4"
               :class="{
-                'rotate-180': sortOrder === 'desc',
+                'rotate-180': sortOrder === 'asc',
               }"
             >
               <path
@@ -260,7 +260,7 @@ const sortedItems = computed(
               stroke="currentColor"
               class="w-4 h-4"
               :class="{
-                'rotate-180': sortOrder === 'desc',
+                'rotate-180': sortOrder === 'asc',
               }"
             >
               <path

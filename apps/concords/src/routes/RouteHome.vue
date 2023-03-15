@@ -179,7 +179,11 @@ const sizeInMb = computed(() => sizeInKb.value / 1024);
           </button>
         </div>
         <div class="px-4 text-sm text-zinc-400">
-          {{ Math.floor(sizeInKb) }} KB
+          {{
+            sizeInMb > 1
+              ? `${Math.round((sizeInMb + Number.EPSILON) * 100) / 100} MB`
+              : `${Math.floor(sizeInKb)} KB`
+          }}
         </div>
         <!-- <div class="flex items-center">
           <v-text-field
