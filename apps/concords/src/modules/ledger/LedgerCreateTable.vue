@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { shallowRef, watchEffect, watch } from "vue";
+import { shallowRef, watchEffect, watch, computed } from "vue";
 import { useLedger } from "@/modules/ledger";
 import { PermissionPicker } from "@/modules/permissions";
 import type { IRecord } from "@concords/proof-of-work";
@@ -14,12 +14,15 @@ const props = defineProps({
 
 const emit = defineEmits(["submit"]);
 
-const { ledger, getCollection, addItem } = useLedger();
+const { ledger, getCollection, addItem, getCollections } = useLedger();
 const tableName = shallowRef<String>(props.table);
 
 const type = shallowRef<string>("text");
+const collectionType = shallowRef<string>();
 const name = shallowRef<string>("");
+const collections = shallowRef<Array<string>>([]);
 const itemTypes = shallowRef<Array<IRecord>>([]);
+const linkedTypes = shallowRef<null | Array<IRecord>>(null);
 const permission = shallowRef<string | null>(null);
 
 async function addItemType() {
@@ -53,12 +56,35 @@ watchEffect(() => {
   if (tableName.value) {
     try {
       itemTypes.value = getCollection(`${tableName.value}:types`)?.data;
+      collections.value = getCollections();
     } catch (err) {}
+  }
+
+  if (type.value.includes(":type")) {
+    linkedTypes.value = getCollection(type.value)?.data.map(
+      ({ data }) => data.name
+    );
+  } else {
+    linkedTypes.value = null;
   }
 });
 
-watch(ledger, () => {
-  itemTypes.value = getCollection(`${tableName.value}:types`)?.data;
+watch(
+  ledger,
+  () => {
+    itemTypes.value = getCollection(`${tableName.value}:types`)?.data;
+    collections.value = getCollections();
+    linkedTypes.value = getCollection(type.value)?.data.map(
+      ({ data }) => data.name
+    );
+  },
+  { immediate: true }
+);
+
+const linkedCollections = computed(() => {
+  return Object.keys(collections.value).filter((collection) => {
+    return collection.includes(":types");
+  });
 });
 </script>
 <template>
@@ -93,19 +119,28 @@ watch(ledger, () => {
   <PermissionPicker v-model="permission" /> -->
   <div class="my-8 w-full">
     <div class="flex items-center justify-between px-2">
+      <VSelect
+        v-model="type"
+        placeholder="Type"
+        :items="[...linkedCollections, ...inputTypes]"
+        density="compact"
+        class="flex-1"
+      />
+      <VSelect
+        v-if="linkedTypes"
+        v-model="name"
+        placeholder="Link table"
+        :items="linkedTypes"
+        density="compact"
+        class="flex-1"
+      />
       <VTextField
+        v-else
         density="compact"
         type="text"
         v-model="name"
         placeholder="Name"
         class="mr-1"
-      />
-      <VSelect
-        v-model="type"
-        placeholder="Type"
-        :items="inputTypes"
-        density="compact"
-        class="flex-1"
       />
     </div>
     <div class="flex w-full justify-end px-2">

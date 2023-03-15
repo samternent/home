@@ -152,6 +152,11 @@ const sortedItems = computed(
       }
     }).value
 );
+
+function getValue(type: string, name: string, id: string) {
+  return getCollection(type.split(":type")[0])?.findOne({ "data.id": id })
+    ?.data[name];
+}
 </script>
 
 <template>
@@ -302,7 +307,11 @@ const sortedItems = computed(
             :key="`header_${item.id}${k}`"
             class="border-r-2 border-zinc-800"
           >
+            <div v-if="column.type.includes(':type')">
+              {{ getValue(column.type, column.name, item.data[column.name]) }}
+            </div>
             <component
+              v-else
               :is="column.component"
               v-bind="{ item: item.data[column.name] }"
             ></component>
