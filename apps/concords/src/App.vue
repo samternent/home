@@ -2,6 +2,7 @@
 import { shallowRef } from "vue";
 import { RouterLink } from "vue-router";
 import { useLocalStorage } from "@vueuse/core";
+// import solidLogo from "@/assets/solid_logo.png";
 
 import {
   IdentityAvatar,
@@ -38,6 +39,7 @@ const showIdentityPanel = shallowRef(false);
             </svg>
           </RouterLink>
         </div>
+        <!-- <img :src="solidLogo" class="mx-3" /> -->
         <div class="flex items-center justify-center py-8">
           <button
             @click="showIdentityPanel = true"
