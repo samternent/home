@@ -7,3 +7,6 @@ export { default as LedgerUsers } from "./LedgerUsers.vue";
 export { default as LedgerCreateTable } from "./LedgerCreateTable.vue";
 export { default as LedgerPeoplePicker } from "./LedgerPeoplePicker.vue";
 export { default as LedgerDataTable } from "./LedgerDataTable.vue";
+export { default as LedgerHeader } from "./LedgerHeader.vue";
+export { default as LedgerCreateLedger } from "./LedgerCreateLedger.vue";
+export { default as LedgerCreateTableDrawer } from "./drawers/LedgerCreateTableDrawer.vue";

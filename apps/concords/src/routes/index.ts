@@ -1,9 +1,7 @@
 import { legalRoutes } from "./legal";
-import { userRoutes } from "./user";
 
 export default [
   ...legalRoutes,
-  ...userRoutes,
   {
     path: "",
     component: () => import("./RouteHome.vue"),

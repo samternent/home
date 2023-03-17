@@ -1,8 +1,8 @@
 <script setup>
-import { provideCurrentUser } from "./composables/useCurrentUser";
+import { provideCurrentUser } from "@/api/useCurrentUser";
 import { Identity } from "@/modules/identity";
 import { Encryption } from "@/modules/encryption";
-import App from "./App.vue";
+import App from "@/App.vue";
 
 const { ready } = provideCurrentUser();
 </script>
