@@ -40,7 +40,7 @@ const table = useLocalStorage("concords/ledger/table", "");
 
 const showEditTable = shallowRef(false);
 
-watch(ledger, (_ledger: Object) => {
+watch(ledger, async (_ledger: Object) => {
   ledgerStorage.value = JSON.stringify(_ledger);
   tables.value = [
     { title: "USERS", value: "users" },

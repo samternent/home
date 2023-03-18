@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { shallowRef } from "vue";
+import { shallowRef, onMounted } from "vue";
 import { RouterLink } from "vue-router";
 import { useLocalStorage } from "@vueuse/core";
 // import solidLogo from "@/assets/solid_logo.png";
