@@ -250,6 +250,7 @@ importers:
       uuid: ^8.3.2
       vercel: ^28.1.4
       vite: ^3.0.7
+      vite-plugin-md: ^0.20.4
       vite-plugin-pwa: ^0.12.7
       vue: ^3.2.37
       vue-router: ^4.1.4
@@ -269,6 +270,7 @@ importers:
       luxon: 3.1.1
       redis: 4.5.1
       uuid: 8.3.2
+      vite-plugin-md: 0.20.4
       vue: 3.2.45
       vue-router: 4.1.6_vue@3.2.45
       vue-toastification: 2.0.0-rc.5_vue@3.2.45
