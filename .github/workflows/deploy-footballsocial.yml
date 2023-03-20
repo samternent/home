@@ -103,7 +103,7 @@ jobs:
           SSH_HOST: ${{ secrets.DEPLOYMENT_HOST }}
 
       - name: Copy gzip build assets
-        run: scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -r apps/ternent/dist/* $SSH_USER@$SSH_HOST:dist/gzip
+        run: scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -r apps/gzip/dist/* $SSH_USER@$SSH_HOST:dist/gzip
         env:
           SSH_USER: ${{ secrets.DEPLOYMENT_USER }}
           SSH_HOST: ${{ secrets.DEPLOYMENT_HOST }}
