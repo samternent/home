@@ -1,6 +1,8 @@
 server {
     root /var/www/concords.app/html;
 
+    access_log  /var/log/nginx/gzip.access.log
+
     index index.html index.htm index.nginx-debian.html;
 
     gzip on;
