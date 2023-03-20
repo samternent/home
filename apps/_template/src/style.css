@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --title-box-color: rgba(219, 39, 119, 1);
+  --title-shadow-color: rgba(67, 67, 67, 0.9);
+  --title-shadow-yellow-color: rgba(234, 179, 8, 1);
+  color-scheme: light;
+}
+
+/* Change Autocomplete styles in Chrome*/
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  border: 2px solid rgb(43, 43, 43);
+  -webkit-text-fill-color: rgb(255, 255, 255);
+  -webkit-box-shadow: 0 0 0px 1000px #232323 inset;
+  transition: background-color 5000s ease-in-out 0s;
+  font-size: 1em;
+}
+
+html,
+body {
+  font-family: "Work Sans", sans-serif;
+  background-color: transparent;
+}
+abbr {
+  text-decoration: none;
+}
+
+.league-link {
+  background: linear-gradient(
+      to right,
+      rgba(219, 39, 119, 1),
+      rgba(219, 39, 119, 1)
+    ),
+    linear-gradient(
+      to right,
+      rgba(219, 39, 119, 1),
+      rgba(219, 39, 119, 1),
+      rgba(253, 224, 71, 1)
+    );
+  background-size: 100% 2px, 0 2px;
+  background-position: 100% 100%, 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 400ms;
+}
+
+.league-link:hover {
+  background-size: 0 2px, 100% 2px;
+}
+
+.bg-gradient {
+  background: linear-gradient(
+    to right,
+    rgba(219, 39, 119, 1),
+    rgba(253, 224, 71, 1),
+    rgba(253, 224, 71, 1),
+    rgba(253, 224, 71, 1),
+    rgba(253, 224, 71, 1),
+    rgba(253, 224, 71, 1),
+    rgba(255, 255, 255, 1)
+  );
+  background-size: 100%;
+  background-position: 100% 100%;
+  background-repeat: no-repeat;
+  transition: background-size 400ms;
+}
+
+.shadow-block {
+  box-shadow: var(--title-shadow-color) 1px 1px,
+    var(--title-shadow-color) 2px 2px, var(--title-shadow-color) 3px 3px,
+    var(--title-shadow-color) 4px 4px, var(--title-shadow-color) 5px 5px;
+}
+.shadow-text {
+  text-shadow: var(--title-shadow-color) 1px 1px,
+    var(--title-shadow-color) 2px 2px, var(--title-shadow-color) 3px 3px,
+    var(--title-shadow-color) 4px 4px, var(--title-shadow-color) 5px 5px,
+    var(--title-shadow-color) 6px 6px, var(--title-shadow-color) 7px 7px;
+}
+
+.shadow-block:hover {
+  box-shadow: var(--title-shadow-color) 1px 1px,
+    var(--title-shadow-color) 2px 2px, var(--title-shadow-color) 3px 3px;
+}
+.shadow-block-yellow {
+  box-shadow: var(--title-shadow-yellow-color) 1px 1px,
+    var(--title-shadow-yellow-color) 2px 2px,
+    var(--title-shadow-yellow-color) 3px 3px,
+    var(--title-shadow-yellow-color) 4px 4px,
+    var(--title-shadow-yellow-color) 5px 5px;
+}
+.shadow-block-yellow-sm {
+  box-shadow: var(--title-shadow-yellow-color) 1px 1px,
+    var(--title-shadow-yellow-color) 2px 2px,
+    var(--title-shadow-yellow-color) 3px 3px;
+}
+.shadow-block-yellow:hover {
+  box-shadow: var(--title-shadow-yellow-color) 1px 1px,
+    var(--title-shadow-yellow-color) 2px 2px,
+    var(--title-shadow-yellow-color) 3px 3px;
+}
+
+.mention {
+  color: var(--title-box-color);
+}
+
+.animate {
+  animation-duration: 0.5s;
+  animation-name: animate-fade;
+  animation-fill-mode: backwards;
+}
+
+@keyframes animate-fade {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

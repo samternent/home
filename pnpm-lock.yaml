@@ -223,6 +223,75 @@ importers:
       vite-plugin-pwa: 0.12.8_vite@3.2.5
       vue-tsc: 0.39.5_typescript@4.9.3
 
+  apps/gzip:
+    specifiers:
+      '@concords/utils': workspace:*
+      '@supabase/supabase-js': ^2.1.1
+      '@tailwindcss/line-clamp': ^0.4.2
+      '@tailwindcss/typography': ^0.5.7
+      '@types/uuid': ^8.3.4
+      '@vercel/node': ^2.5.10
+      '@vitejs/plugin-basic-ssl': ^0.1.2
+      '@vitejs/plugin-vue': ^3.0.3
+      '@vueuse/core': ^9.1.1
+      autoprefixer: ^10.4.8
+      body-parser: ^1.20.0
+      cors: ^2.8.5
+      dotenv: ^16.0.2
+      express: ^4.18.1
+      http-proxy-middleware: ^2.0.6
+      luxon: ^3.1.1
+      nodemon: ^2.0.20
+      pm2: ^5.2.0
+      postcss: ^8.4.16
+      redis: ^4.3.0
+      tailwindcss: ^3.1.8
+      typescript: ^4.6.4
+      uuid: ^8.3.2
+      vercel: ^28.1.4
+      vite: ^3.0.7
+      vite-plugin-pwa: ^0.12.7
+      vue: ^3.2.37
+      vue-router: ^4.1.4
+      vue-toastification: 2.0.0-rc.5
+      vue-tsc: ^0.39.5
+      vuetify: ^3.1.4
+      web-push: ^3.5.0
+    dependencies:
+      '@concords/utils': link:../../packages/utils
+      '@supabase/supabase-js': 2.1.1
+      '@tailwindcss/line-clamp': 0.4.2_tailwindcss@3.2.4
+      '@tailwindcss/typography': 0.5.8_tailwindcss@3.2.4
+      '@vitejs/plugin-basic-ssl': 0.1.2_vite@3.2.5
+      '@vueuse/core': 9.6.0_vue@3.2.45
+      cors: 2.8.5
+      http-proxy-middleware: 2.0.6
+      luxon: 3.1.1
+      redis: 4.5.1
+      uuid: 8.3.2
+      vue: 3.2.45
+      vue-router: 4.1.6_vue@3.2.45
+      vue-toastification: 2.0.0-rc.5_vue@3.2.45
+      vuetify: 3.1.4_vue@3.2.45
+      web-push: 3.5.0
+    devDependencies:
+      '@types/uuid': 8.3.4
+      '@vercel/node': 2.7.1
+      '@vitejs/plugin-vue': 3.2.0_vite@3.2.5+vue@3.2.45
+      autoprefixer: 10.4.13_postcss@8.4.19
+      body-parser: 1.20.1
+      dotenv: 16.0.3
+      express: 4.18.2
+      nodemon: 2.0.20
+      pm2: 5.2.2
+      postcss: 8.4.19
+      tailwindcss: 3.2.4
+      typescript: 4.9.3
+      vercel: 28.7.2
+      vite: 3.2.5
+      vite-plugin-pwa: 0.12.8_vite@3.2.5
+      vue-tsc: 0.39.5_typescript@4.9.3
+
   apps/teamconcords:
     specifiers:
       '@supabase/supabase-js': ^2.1.1
