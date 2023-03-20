@@ -4,7 +4,9 @@ import { AppShell } from "@/modules/appShell";
 
 <template>
   <AppShell>
-    <h1 class="mx-2 text-lg font-bold">gzip.app</h1>
+    <h1 class="text-center w-full text-6xl font-light text-green-300 my-4">
+      gzip
+    </h1>
     <RouterView />
   </AppShell>
 </template>
