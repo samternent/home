@@ -22,5 +22,10 @@ module.exports = {
       script: resolve("apps/ternent/api/main.mjs"),
       watch: resolve("apps/ternent/api"),
     },
+    {
+      name: "gzip",
+      script: resolve("apps/gzip/api/main.mjs"),
+      watch: resolve("apps/gzip/api"),
+    },
   ],
 };
