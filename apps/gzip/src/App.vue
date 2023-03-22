@@ -4,20 +4,17 @@ import { AppShell } from "@/modules/appShell";
 
 <template>
   <AppShell>
-    <div class="flex-1 justify-center items-center max-w-screen-xl mx-auto">
-      <div
-        class="border-l-8 pl-2 pb-1 border-green-200 text-6xl font-light text-green-300 mt-8 tracking-tighter flex items-end"
-      >
-        <h1>gzip</h1>
-        <span class="tracking-tightest font-medium text-2xl text-zinc-300"
-          >.app</span
+    <div class="flex flex-col flex-1 justify-center max-w-screen-xl mx-auto">
+      <header>
+        <div
+          class="pl-3 pb-1 border-green-200 text-4xl font-light text-green-300 mt-8 tracking-tighter flex items-end"
         >
-      </div>
-      <p
-        class="rounded-r border-l-8 pl-2 bg-green-300 border-zinc-100 inline-block text-lg font-medium px-4 mb-4 text-zinc-900 tracking-tightest"
-      >
-        no frills, gzip compression.
-      </p>
+          <h1>gzip</h1>
+          <span class="tracking-tightest font-medium text-xl text-green-50"
+            >.app</span
+          >
+        </div>
+      </header>
       <RouterView />
     </div>
   </AppShell>
