@@ -2,8 +2,8 @@
 import { shallowRef, watch, computed } from "vue";
 import { useLocalStorage } from "@vueuse/core";
 
-const props = defineProps(["modelValue"]);
-const emit = defineEmits(["update:modelValue"]);
+const props = defineProps(["modelValue", "filename"]);
+const emit = defineEmits(["update:modelValue", "update:filename"]);
 
 const activeCompressView = useLocalStorage("activeCompressView", "file");
 
@@ -24,6 +24,7 @@ function readFileAsync(file): Promise<ArrayBuffer> {
 }
 
 watch(files, async (_files) => {
+  if (!_files.length) return;
   const fileBuffer = await readFileAsync(_files[0]);
   const stream = new Blob([fileBuffer], { type: _files[0].type }).stream();
 
@@ -33,6 +34,7 @@ watch(files, async (_files) => {
   const compressedFiles = await new Response(compressedReadableStream).blob();
 
   emit("update:modelValue", compressedFiles);
+  emit("update:filename", _files[0].name);
 });
 
 const textInput = shallowRef("");
@@ -49,6 +51,7 @@ watch(textInput, async (_textInput) => {
 
 watch(activeCompressView, () => {
   emit("update:modelValue", null);
+  emit("update:filename", null);
   textInput.value = "";
   files.value = [];
 });

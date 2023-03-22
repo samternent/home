@@ -2,15 +2,15 @@
 import { shallowRef, watch, computed } from "vue";
 import { useLocalStorage } from "@vueuse/core";
 
-const props = defineProps(["modelValue"]);
-const emit = defineEmits(["update:modelValue"]);
+const props = defineProps(["modelValue", "filename"]);
+const emit = defineEmits(["update:modelValue", "update:filename"]);
 
 // emit("update:modelValue", compressedFiles);
 async function openFile() {
   // Create a programmatic download link
   const elem = window.document.createElement("a");
   elem.href = window.URL.createObjectURL(props.modelValue);
-  elem.download = `name.gzip`;
+  elem.download = `${props.filename}.gz`;
   window.document.body.appendChild(elem);
   elem.click();
   window.document.body.removeChild(elem);
@@ -20,10 +20,27 @@ const sizeInKb = computed(() =>
   props.modelValue?.size ? props.modelValue.size / 1024 : 0
 );
 const sizeInMb = computed(() => sizeInKb.value / 1024);
+
+const filename = computed({
+  get() {
+    return props.filename;
+  },
+  set(value) {
+    emit("update:filename", value);
+  },
+});
 </script>
 <template>
-  <div class="flex justify-between flex-col">
-    <div class="flex justify-center h-36">
+  <div class="flex justify-between flex-col px-4">
+    <div class="flex flex-col items-center mb-8">
+      <div v-if="filename" class="text-xl mb-8">{{ filename }}</div>
+      <v-text-field
+        v-else
+        density="compact"
+        v-model="filename"
+        class="w-full"
+        placeholder="filename.extension"
+      />
       <VBtn
         :disabled="!props.modelValue"
         variant="tonal"
