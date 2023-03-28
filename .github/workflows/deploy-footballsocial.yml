@@ -29,11 +29,15 @@ jobs:
         id: nvmrc
         run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
 
-      - name: Use node.js
-        uses: actions/setup-node@v2
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 7.30.1
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
-          registry-url: https://registry.npmjs.org
+          cache: "pnpm"
 
       - name: Cache pnpm modules
         uses: actions/cache@v2
