@@ -2,7 +2,7 @@ import { ILedger } from "@concords/proof-of-work";
 import { b64encode, b64decode } from "@concords/utils";
 
 export async function compress(ledger: ILedger) {
-  const stream = new Blob([ledger], {
+  const stream = new Blob([JSON.stringify(ledger)], {
     type: "text/plain",
   }).stream();
 
@@ -12,9 +12,8 @@ export async function compress(ledger: ILedger) {
 
   const resp = await new Response(compressedReadableStream);
   const blob = await resp.blob();
+
   const buffer = await blob.arrayBuffer();
-  console.log(blob.size);
-  console.log(buffer.byteLength);
   return { blob, buffer };
 }
 
