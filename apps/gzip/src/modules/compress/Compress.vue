@@ -63,7 +63,7 @@ const size = computed(() => {
     case "text":
       return new TextEncoder().encode(textInput.value).length;
     case "url":
-      return new TextEncoder().encode(urlFile.value).length;
+      return new TextEncoder().encode(JSON.stringify(urlFile.value)).length;
     default:
       return 0;
   }
