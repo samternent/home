@@ -84,7 +84,13 @@ async function fetchUrl() {
         Authorization: `Basic ${btoa(`${username.value}:${password.value}`)}`,
       }),
     });
-    urlFile.value = await urlStream.clone().text();
+
+    const contentType = urlStream.headers.get("Content-Type");
+    if (contentType?.includes("application/json")) {
+      urlFile.value = await urlStream.clone().json();
+    } else {
+      urlFile.value = await urlStream.clone().text();
+    }
     const compressedReadableStream = urlStream.body?.pipeThrough(
       new CompressionStream("gzip")
     );
@@ -114,6 +120,7 @@ async function fetchUrl() {
         <VTextField
           v-model="url"
           color="primary"
+          name="url"
           placeholder="https://gzip.app/api/sample.json"
           prepend-icon=""
           variant="outlined"
@@ -127,6 +134,7 @@ async function fetchUrl() {
             v-model="username"
             color="primary"
             placeholder="username"
+            type="password"
             prepend-icon=""
             variant="outlined"
             :show-size="1024"
@@ -137,6 +145,7 @@ async function fetchUrl() {
             v-model="password"
             color="primary"
             placeholder="password"
+            type="password"
             prepend-icon=""
             variant="outlined"
             :show-size="1024"
@@ -145,7 +154,9 @@ async function fetchUrl() {
           />
         </div>
         <VBtn @click="fetchUrl" color="primary" variant="outlined">get</VBtn>
-        <pre class="overflow-auto h-96 w-full">{{ urlFile }}</pre>
+        <pre class="overflow-auto h-96 w-full"><code>{{
+          urlFile
+        }}</code></pre>
       </div>
       <div
         class="flex flex-1 justify-center items-center"
