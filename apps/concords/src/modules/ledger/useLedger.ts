@@ -132,7 +132,10 @@ function Ledger(): IUseLedger {
       });
 
     if (!permission) {
-      return ledgerApi.add({ ...data, id: generateId() }, collection);
+      return ledgerApi.add(
+        { ...data, id: data?.id || generateId() },
+        collection
+      );
     }
 
     return ledgerApi.add(

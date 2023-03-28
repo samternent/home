@@ -157,6 +157,8 @@ function getValue(type: string, name: string, id: string) {
   return getCollection(type.split(":type")[0])?.findOne({ "data.id": id })
     ?.data[name.split(":")[1]];
 }
+
+const editItem = shallowRef(null);
 </script>
 
 <template>
@@ -296,63 +298,73 @@ function getValue(type: string, name: string, id: string) {
         </th>
       </thead>
       <tbody class="text-lg">
-        <tr
-          v-for="item in sortedItems"
-          :key="item.id"
-          tabindex="0"
-          class="h-12 border-zinc-800 border-b-2"
-        >
-          <td
-            v-for="(column, k) in columns"
-            :key="`header_${item.id}${k}`"
-            class="border-r-2 border-zinc-800"
-          >
-            <div v-if="column.type.includes(':types')">
-              {{ getValue(column.type, column.name, item.data[column.name]) }}
-            </div>
-            <component
-              v-else
-              :is="column.component"
-              v-bind="{ item: item.data[column.name] }"
-            ></component>
-          </td>
-          <td class="border-r-2 border-zinc-800">
-            <TextCell :item="formatTime(item?.timestamp)" />
-          </td>
-          <td class="border-r-2 border-zinc-800">
-            <div class="w-64 truncate p-2">
-              {{
-                item.data?.permission === publicKeyPEM
-                  ? "YOUR EYES ONLY"
-                  : item.data?.permission
-              }}
-            </div>
-          </td>
-          <td class="border-r-2 border-zinc-800">
-            <IdentityAvatarCell :item="item.identity" />
-          </td>
-          <td class="border-r-2 border-zinc-800 px-2">
-            <VerifyRowCell v-bind="{ ...getVerifyProps(item) }" />
-          </td>
-          <td class="px-2 text-zinc-700" v-if="canEdit">
-            <!-- <VBtn icon variant="plain" size="small" class="mx-2"> -->
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="w-6 h-6"
+        <template v-for="item in sortedItems" :key="item.id">
+          <LedgerForm
+            v-if="editItem === item.id"
+            :table="table"
+            :key="table"
+            :item="item"
+          />
+          <tr v-else tabindex="0" class="h-12 border-zinc-800 border-b-2">
+            <td
+              v-for="(column, k) in columns"
+              :key="`header_${item.id}${k}`"
+              class="border-r-2 border-zinc-800"
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z"
-              />
-            </svg>
-            <!-- </VBtn> -->
-          </td>
-        </tr>
+              <div v-if="column.type.includes(':types')">
+                {{ getValue(column.type, column.name, item.data[column.name]) }}
+              </div>
+              <component
+                v-else
+                :is="column.component"
+                v-bind="{ item: item.data[column.name] }"
+              ></component>
+            </td>
+            <td class="border-r-2 border-zinc-800">
+              <TextCell :item="formatTime(item?.timestamp)" />
+            </td>
+            <td class="border-r-2 border-zinc-800">
+              <div class="w-64 truncate p-2">
+                {{
+                  item.data?.permission === publicKeyPEM
+                    ? "YOUR EYES ONLY"
+                    : item.data?.permission
+                }}
+              </div>
+            </td>
+            <td class="border-r-2 border-zinc-800">
+              <IdentityAvatarCell :item="item.identity" />
+            </td>
+            <td class="border-r-2 border-zinc-800 px-2">
+              <VerifyRowCell v-bind="{ ...getVerifyProps(item) }" />
+            </td>
+            <td class="px-2 text-zinc-700" v-if="canEdit">
+              <VBtn
+                icon
+                variant="plain"
+                size="small"
+                class="mx-2"
+                @click="editItem = item.id"
+              >
+                E
+                <!-- <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-6 h-6"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z"
+                />
+              </svg> -->
+              </VBtn>
+            </td>
+          </tr>
+        </template>
         <div v-if="table === 'permissions'"></div>
         <LedgerForm v-else :table="table" :key="table" />
       </tbody>

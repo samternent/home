@@ -12,7 +12,6 @@ const compressedSize = shallowRef(0);
 watch(ledger, async (_ledger: ILedger) => {
   size.value = new TextEncoder().encode(JSON.stringify(_ledger)).length;
   const { buffer } = await compress(_ledger);
-  console.log(b64encode(buffer));
   compressedSize.value = b64encode(buffer).length;
 });
 const sizeInKb = computed(() => size.value / 1024);

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { shallowRef, watch, watchEffect, computed } from "vue";
+import { shallowRef, watch, watchEffect, computed, toRef } from "vue";
 import { useLedger } from "@/modules/ledger";
 import { PermissionPicker } from "@/modules/permissions";
 import type { IRecord } from "@concords/proof-of-work";
@@ -14,14 +14,18 @@ const itemTypes = shallowRef<Array<IRecord>>([]);
 const items = shallowRef<Array<IRecord>>([]);
 const permission = shallowRef<string | null>();
 
-const newItem = shallowRef<dynamicObject>({});
-
 const props = defineProps({
   table: {
     type: String,
     required: true,
   },
+  item: {
+    type: Object,
+    default: {},
+  },
 });
+
+const newItem = shallowRef(props.item?.data || {});
 
 const emit = defineEmits(["submit"]);
 
@@ -125,7 +129,7 @@ function updateItem(e: Event, name: string, item) {
 }
 
 const allowPermission = computed(
-  () => !["users", "permissions"].includes(props.table)
+  () => !["users", "permissions"].includes(props.table) && !props.item
 );
 
 async function addListItem() {
@@ -236,7 +240,7 @@ function getValue(type: string, name: string, id: string) {
         @click="addListItem"
         class="bg-green-500 hover:bg-green-600 py-2 px-6 block w-full rounded text-sm"
       >
-        Add
+        {{ item ? "Add" : "Update" }}
       </button>
     </td>
   </tr>
