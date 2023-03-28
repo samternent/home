@@ -24,15 +24,6 @@ function readFileAsync(file): Promise<ArrayBuffer> {
 }
 
 watch(files, async (_files) => {
-  if (!_files.length) return;
-  const fileBuffer = await readFileAsync(_files[0]);
-  const stream = new Blob([fileBuffer], { type: _files[0].type }).stream();
-
-  const compressedReadableStream = stream.pipeThrough(
-    new CompressionStream("gzip")
-  );
-  const compressedFiles = await new Response(compressedReadableStream).blob();
-
   emit("update:modelValue", compressedFiles);
   emit("update:filename", _files[0].name);
 });
@@ -62,90 +53,46 @@ const size = computed(() => {
       return files.value[0]?.size || 0;
     case "text":
       return new TextEncoder().encode(textInput.value).length;
-    case "url":
-      return new TextEncoder().encode(urlFile.value).length;
     default:
       return 0;
   }
 });
 const sizeInKb = computed(() => size.value / 1024);
 const sizeInMb = computed(() => sizeInKb.value / 1024);
-
-const url = shallowRef("");
-const username = shallowRef("");
-const password = shallowRef("");
-
-const urlFile = shallowRef();
-async function fetchUrl() {
-  try {
-    const urlStream = await fetch(`${url.value}`, {
-      mode: username.value || password.value ? "cors" : "no-cors",
-      headers: new Headers({
-        Authorization: `Basic ${btoa(`${username.value}:${password.value}`)}`,
-      }),
-    });
-    urlFile.value = await urlStream.clone().text();
-    const compressedReadableStream = urlStream.body?.pipeThrough(
-      new CompressionStream("gzip")
-    );
-    const compressedFile = await new Response(compressedReadableStream).blob();
-
-    emit("update:modelValue", compressedFile);
-    emit("update:filename", url.value);
-  } catch (e) {
-    throw e;
-  }
-}
 </script>
 <template>
   <div class="flex flex-col">
     <VTabs v-model="activeCompressView" class="sticky top-0 bg-zinc-800 z-20">
       <VTab value="url">URL</VTab>
-      <!-- <VTab value="json">JSON</VTab> -->
+      <VTab value="json">JSON</VTab>
       <VTab value="file">File</VTab>
       <VTab value="text">Text</VTab>
     </VTabs>
 
     <div class="flex flex-1 justify-between flex-col">
       <div
-        class="flex flex-1 flex-col w-full"
+        class="flex flex-1 justify-center items-center"
         v-if="activeCompressView === 'url'"
       >
-        <VTextField
-          v-model="url"
+        <v-text-field
+          v-model="files"
           color="primary"
           placeholder="https://gzip.app/api/sample.json"
           prepend-icon=""
           variant="outlined"
           :show-size="1024"
           clearable
-          class="w-full"
         />
-        <span>Basic Auth</span>
-        <div class="flex w-full">
-          <VTextField
-            v-model="username"
-            color="primary"
-            placeholder="username"
-            prepend-icon=""
-            variant="outlined"
-            :show-size="1024"
-            clearable
-            class="w-full"
-          />
-          <VTextField
-            v-model="password"
-            color="primary"
-            placeholder="password"
-            prepend-icon=""
-            variant="outlined"
-            :show-size="1024"
-            clearable
-            class="w-full"
-          />
-        </div>
-        <VBtn @click="fetchUrl" color="primary" variant="outlined">get</VBtn>
-        <pre class="overflow-auto h-96 w-full">{{ urlFile }}</pre>
+        <VBtn
+          v-model="files"
+          color="primary"
+          placeholder="https://gzip.app/api/sample.json"
+          prepend-icon=""
+          variant="outlined"
+          :show-size="1024"
+          clearable
+          >get</VBtn
+        >
       </div>
       <div
         class="flex flex-1 justify-center items-center"
