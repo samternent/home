@@ -324,10 +324,14 @@ const editItem = shallowRef(null);
               <TextCell :item="formatTime(item?.timestamp)" />
             </td>
             <td class="border-r-2 border-zinc-800">
-              <div class="w-64 truncate p-2">
+              <div class="w-64 truncate p-2 flex">
+                <IdentityAvatarCell
+                  v-if="item.data?.permission?.startsWith('MFkw')"
+                  :item="item.data?.permission"
+                />
                 {{
                   item.data?.permission === publicKeyPEM
-                    ? "YOUR EYES ONLY"
+                    ? "(you)"
                     : item.data?.permission
                 }}
               </div>

@@ -1,5 +1,6 @@
 <script setup>
-import { provideSolid } from "./";
+import { provideSolid } from "./useSolid";
+
 provideSolid();
 </script>
 <template>

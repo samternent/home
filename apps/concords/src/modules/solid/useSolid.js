@@ -16,7 +16,6 @@ import {
   getStringNoLocale,
 } from "@inrupt/solid-client";
 import { FOAF } from "@inrupt/vocab-common-rdf";
-import { useRouter } from "vue-router";
 
 const client_id = "6f195e5b-2627-4520-a996-34b79bc0b06f";
 const client_secret = "c5b8f172-683a-455b-8a00-b2651ecf24d3";
@@ -31,6 +30,7 @@ const providers = [
 const useSolidSymbol = Symbol("useSolid");
 
 function Solid() {
+  console.log("hiiii");
   const hasSolidSession = shallowRef(false);
   const webId = shallowRef(null);
   const profile = shallowRef({});
@@ -40,8 +40,6 @@ function Solid() {
     wallets: [],
   });
 
-  const router = useRouter();
-
   const activeWorkspace = ref(0);
   const workspace = computed(() => {
     return profile.value.workspace && profile.value.workspace.length
@@ -50,10 +48,9 @@ function Solid() {
   });
   function solidLogin() {
     login({
-      redirectUrl: `${window.location.origin}/auth`,
-      // redirectUrl: "http://localhost:3000/auth",
+      redirectUrl: `${window.location.origin}`,
       oidcIssuer: oidcIssuer.value,
-      clientName: "ledger.concords.app",
+      clientName: "concords.app",
     });
   }
 
@@ -107,11 +104,8 @@ function Solid() {
     });
     const session = getDefaultSession();
     hasSolidSession.value = session.info.isLoggedIn;
-    console.log(hasSolidSession.value);
     if (hasSolidSession.value) {
       webId.value = session.info.webId;
-
-      console.log(webId.value);
 
       const myDataset = await getSolidDataset(webId.value.split("#")[0], {
         fetch: fetch,
@@ -159,9 +153,6 @@ function Solid() {
   }
 
   handleSessionLogin();
-  onSessionRestore((url) => {
-    router.replace(new URL(url).pathname);
-  });
 
   return {
     login: solidLogin,
@@ -191,6 +182,7 @@ function Solid() {
 export function provideSolid() {
   const solid = Solid();
   provide(useSolidSymbol, solid);
+  console.log(solid);
   return solid;
 }
 

@@ -2,7 +2,7 @@
 import { shallowRef, onMounted } from "vue";
 import { RouterLink } from "vue-router";
 import { useLocalStorage } from "@vueuse/core";
-// import solidLogo from "@/assets/solid_logo.png";
+import solidLogo from "@/assets/solid_logo.png";
 
 import {
   IdentityAvatar,
@@ -10,11 +10,14 @@ import {
   IdentityDrawer,
 } from "./modules/identity";
 
+import { SolidDrawer } from "@/modules/solid";
+
 import { AppShell } from "@/modules/appShell";
 
 const isCollapsed = useLocalStorage("isSidebarCollapsed", true);
 const { publicKeyPEM } = useIdentity();
 const showIdentityPanel = shallowRef(false);
+const showSolidPanel = shallowRef(false);
 </script>
 
 <template>
@@ -39,7 +42,9 @@ const showIdentityPanel = shallowRef(false);
             </svg>
           </RouterLink>
         </div>
-        <!-- <img :src="solidLogo" class="mx-3" /> -->
+        <VBtn @click="showSolidPanel = true" variant="plain"
+          ><img :src="solidLogo" class="mx-3"
+        /></VBtn>
         <div class="flex items-center justify-center py-8">
           <button
             @click="showIdentityPanel = true"
@@ -75,7 +80,33 @@ const showIdentityPanel = shallowRef(false);
             </svg>
           </button>
         </div>
-        <IdentityDrawer />
+        <IdentityDrawer v-if="showIdentityPanel" />
+      </div>
+    </transition>
+    <transition name="slide">
+      <div
+        class="z-50 fixed top-0 right-0 h-screen left-16 md:left-auto md:w-[550px] p-2 bg-zinc-800 border-l border-zinc-600"
+        v-if="showSolidPanel"
+      >
+        <div class="flex justify-end w-full p-2">
+          <button @click="showSolidPanel = false">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-6 h-6"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </button>
+        </div>
+        <SolidDrawer v-if="showSolidPanel" />
       </div>
     </transition>
   </AppShell>
