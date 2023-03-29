@@ -30,7 +30,6 @@ const providers = [
 const useSolidSymbol = Symbol("useSolid");
 
 function Solid() {
-  console.log("hiiii");
   const hasSolidSession = shallowRef(false);
   const webId = shallowRef(null);
   const profile = shallowRef({});
@@ -59,8 +58,6 @@ function Solid() {
       const file = await getFile(`${workspace.value}concords/${name}/${id}`, {
         fetch: fetch,
       });
-
-      console.log(file);
 
       return new Promise((res, rej) => {
         async function onLoadFileHandler(e) {
@@ -119,7 +116,7 @@ function Solid() {
           myProfile.predicates["http://www.w3.org/ns/pim/space#storage"]
             .namedNodes,
       };
-      console.log(`${workspace.value}/concords`);
+
       try {
         const walletData = await getSolidDataset(
           `${workspace.value}/concords`,
@@ -182,7 +179,6 @@ function Solid() {
 export function provideSolid() {
   const solid = Solid();
   provide(useSolidSymbol, solid);
-  console.log(solid);
   return solid;
 }
 

@@ -42,10 +42,10 @@ const showSolidPanel = shallowRef(false);
             </svg>
           </RouterLink>
         </div>
-        <VBtn @click="showSolidPanel = true" variant="plain"
-          ><img :src="solidLogo" class="mx-3"
-        /></VBtn>
-        <div class="flex items-center justify-center py-8">
+        <div class="flex flex-col items-center justify-center py-8">
+          <VBtn @click="showSolidPanel = true" variant="plain"
+            ><img :src="solidLogo" class="mx-3"
+          /></VBtn>
           <button
             @click="showIdentityPanel = true"
             class="flex p-2 m-2 rounded items-center justify-center w-full"
@@ -59,7 +59,7 @@ const showSolidPanel = shallowRef(false);
 
     <transition name="slide">
       <div
-        class="z-50 fixed top-14 right-0 h-screen left-16 md:left-auto md:w-[550px] px-2 bg-zinc-800 border-l border-zinc-600"
+        class="z-50 fixed top-0 right-0 h-screen left-16 md:left-auto md:w-[550px] px-2 bg-zinc-800 border-l border-zinc-600"
         v-if="showIdentityPanel"
       >
         <div class="flex justify-end w-full p-2">
