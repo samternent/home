@@ -9,11 +9,15 @@ const { ledger } = useLedger();
 
 const size = shallowRef(0);
 const compressedSize = shallowRef(0);
-watch(ledger, async (_ledger: ILedger) => {
-  size.value = new TextEncoder().encode(JSON.stringify(_ledger)).length;
-  const { buffer } = await compress(_ledger);
-  compressedSize.value = b64encode(buffer).length;
-});
+watch(
+  ledger,
+  async (_ledger: ILedger) => {
+    size.value = new TextEncoder().encode(JSON.stringify(_ledger)).length;
+    const { buffer } = await compress(_ledger);
+    compressedSize.value = b64encode(buffer).length;
+  },
+  { immediate: true }
+);
 const sizeInKb = computed(() => size.value / 1024);
 const sizeInMb = computed(() => sizeInKb.value / 1024);
 
@@ -29,13 +33,17 @@ const compressedSizeInMb = computed(() => compressedSizeInKb.value / 1024);
     </div>
     <div class="px-4 text-sm text-zinc-100">
       {{
-        sizeInMb > 1
+        sizeInKb < 1
+          ? `${size}B`
+          : sizeInMb > 1
           ? `${Math.round((sizeInMb + Number.EPSILON) * 100) / 100}MB`
           : `${Math.floor(sizeInKb)}KB`
       }}
       /
       {{
-        compressedSizeInMb > 1
+        compressedSizeInKb < 1
+          ? `${compressedSize}B`
+          : compressedSizeInMb > 1
           ? `${Math.round((compressedSizeInMb + Number.EPSILON) * 100) / 100}MB`
           : `${Math.floor(compressedSizeInKb)}KB`
       }}

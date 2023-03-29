@@ -1,48 +1,31 @@
 <script setup lang="ts">
-import { onMounted, shallowRef } from "vue";
+import { onMounted, watch } from "vue";
 import { useLocalStorage } from "@vueuse/core";
-import { stripIdentityKey, generateId } from "@concords/utils";
-import { provideLedger } from "./";
-import { useIdentity } from "../identity";
-import { useEncryption } from "../encryption";
+import { provideLedger, provideLedgerAppShell } from "@/modules/ledger";
+import { useIdentity } from "@/modules/identity";
 
+provideLedgerAppShell();
 const {
-  api: { auth, load, create },
+  api: { auth, load },
   ledger,
+  getCollections,
 } = provideLedger();
 
-const {
-  privateKey: privateKeyIdentity,
-  publicKey: publicKeyIdentity,
-  publicKeyPEM: publicKeyIdentityPEM,
-} = useIdentity();
+const { privateKey: privateKeyIdentity, publicKey: publicKeyIdentity } =
+  useIdentity();
 
-const { publicKey: publicKeyEncryption } = useEncryption();
+const ledgerStorage = useLocalStorage<string>("concords/welcome/ledger", "");
 
+watch(ledger, (_ledger) => {
+  ledgerStorage.value = JSON.stringify(_ledger);
+});
 onMounted(async () => {
   await auth(privateKeyIdentity.value, publicKeyIdentity.value);
-  const ledgerStorage = useLocalStorage<string>("concords/ledger", "");
   if (ledgerStorage.value) {
     await load(JSON.parse(ledgerStorage.value));
   }
 });
-
-const username = shallowRef<string>("");
-
-async function createLedger() {
-  await create({
-    identity: stripIdentityKey(publicKeyIdentityPEM.value),
-    encryption: publicKeyEncryption.value,
-    username: username.value,
-    id: generateId(),
-  });
-}
 </script>
 <template>
-  <slot v-if="ledger" />
-  <div v-else>
-    choose a username (just for this ledger)
-    <FormKit type="text" placeholder="Username" v-model="username" />
-    <FormKit type="button" @click="createLedger" />
-  </div>
+  <slot />
 </template>

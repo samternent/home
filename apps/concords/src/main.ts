@@ -16,13 +16,33 @@ import "vue-toastification/dist/index.css";
 import registerSW from "./utils/registerSW";
 
 const app = createApp(Root);
+
+const myCustomDarkTheme = {
+  dark: true,
+  colors: {
+    background: "#18191A",
+    surface: "#242526",
+    primary: "#E5DADA",
+    "primary-darken-1": "#149442",
+    secondary: "#F38D68",
+    "secondary-darken-1": "#018786",
+    error: "#B00020",
+    info: "#2196F3",
+    success: "#4CAF50",
+    warning: "#FB8C00",
+  },
+};
+
 app.use(
   createVuetify({
     components,
     directives,
     blueprint: md2,
     theme: {
-      defaultTheme: "dark",
+      defaultTheme: "myCustomDarkTheme",
+      themes: {
+        myCustomDarkTheme,
+      },
     },
   })
 );

@@ -172,7 +172,7 @@ const editItem = shallowRef(null);
           :key="`header_${i}`"
           :style="`width: ${column.width}px`"
           @click="sortBy = `data.${column.name}`"
-          class="uppercase p-2 border-r-2 z-10 font-medium bg-indigo-700 text-zinc-50 border-indigo-800"
+          class="uppercase p-2 border-r-2 z-10 font-medium bg-zinc-700 text-zinc-50 border-zinc-800"
         >
           <div class="flex justify-between items-center">
             {{ column.name }}
@@ -198,7 +198,7 @@ const editItem = shallowRef(null);
           </div>
         </th>
         <th
-          class="uppercase p-2 border-r-2 z-10 font-medium bg-indigo-700 text-zinc-50 border-indigo-800"
+          class="uppercase p-2 border-r-2 z-10 font-medium bg-zinc-700 text-zinc-50 border-zinc-800"
           @click="sortBy = 'timestamp'"
         >
           <div class="flex justify-between items-center">
@@ -225,7 +225,7 @@ const editItem = shallowRef(null);
           </div>
         </th>
         <th
-          class="uppercase p-2 border-r-2 z-10 font-medium bg-indigo-700 text-zinc-50 border-indigo-800"
+          class="uppercase p-2 border-r-2 z-10 font-medium bg-zinc-700 text-zinc-50 border-zinc-800"
           @click="sortBy = 'data.permission'"
         >
           <div class="flex justify-between items-center">
@@ -252,7 +252,7 @@ const editItem = shallowRef(null);
           </div>
         </th>
         <th
-          class="uppercase p-2 z-20 font-medium bg-indigo-700 text-zinc-50"
+          class="uppercase p-2 z-20 font-medium bg-zinc-700 text-zinc-50"
           :colspan="canEdit ? 3 : 2"
           @click="sortBy = 'identity'"
         >
@@ -297,7 +297,7 @@ const editItem = shallowRef(null);
           </div>
         </th>
       </thead>
-      <tbody class="text-lg">
+      <tbody class="">
         <template v-for="item in sortedItems" :key="item.id">
           <LedgerForm
             v-if="editItem === item.id"

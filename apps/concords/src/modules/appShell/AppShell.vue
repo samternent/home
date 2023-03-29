@@ -208,7 +208,7 @@ onBeforeUnmount(() => {
 
         <div
           id="BottomPanelContent"
-          class="flex-1 flex overflow-auto bg-zinc-900 text-zinc-50 font-mono"
+          class="flex-1 flex overflow-auto bg-zinc-900 text-zinc-50 font-thin text-sm font-mono"
         />
       </section>
     </section>

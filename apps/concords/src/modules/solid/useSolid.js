@@ -96,7 +96,6 @@ function Solid() {
 
   async function handleSessionLogin() {
     await handleIncomingRedirect({
-      // url: "http://localhost:3000/auth",
       restorePreviousSession: true,
     });
     const session = getDefaultSession();
@@ -116,29 +115,6 @@ function Solid() {
           myProfile.predicates["http://www.w3.org/ns/pim/space#storage"]
             .namedNodes,
       };
-
-      try {
-        const walletData = await getSolidDataset(
-          `${workspace.value}/concords`,
-          {
-            fetch: fetch,
-          }
-        );
-
-        store["wallets"] = Object.keys(walletData.graphs.default)
-          .filter((key) => /[^\\]*\.(\w+)$/.test(key))
-          .map((str) =>
-            str.split("\\").pop().split("/").pop().split(".").shift()
-          );
-      } catch (e) {
-        console.error(e);
-      }
-
-      try {
-        await solidFetch("wallet", "wallet");
-      } catch (e) {
-        // solidWrite(`${identity.x}_${_identity.y}`, _secret);
-      }
     }
   }
 
