@@ -163,7 +163,7 @@ const editItem = shallowRef(null);
 
 <template>
   <div
-    class="max-w-[100vw] md:max-w-[calc(100vw-66px)] overflow-auto flex-1 bg-zinc-900"
+    class="max-w-[100vw] md:max-w-[calc(100vw-66px)] overflow-auto flex-1 bg-zinc-900 m-4 rounded"
   >
     <table class="text-left table-auto w-full whitespace-nowrap text-white">
       <thead class="sticky top-0 bg-zinc-900 font-medium">
@@ -306,11 +306,11 @@ const editItem = shallowRef(null);
             :item="item"
             @close="editItem = null"
           />
-          <tr v-else tabindex="0" class="h-12 border-zinc-800 border-b-2">
+          <tr v-else tabindex="0" class="h-12 border-zinc-900 border-b-2">
             <td
               v-for="(column, k) in columns"
               :key="`header_${item.id}${k}`"
-              class="border-r-2 border-zinc-800"
+              class="border-r-2 border-zinc-900"
             >
               <div v-if="column.type.includes(':types')">
                 {{ getValue(column.type, column.name, item.data[column.name]) }}
@@ -321,10 +321,10 @@ const editItem = shallowRef(null);
                 v-bind="{ item: item.data[column.name] }"
               ></component>
             </td>
-            <td class="border-r-2 border-zinc-800">
+            <td class="border-r-2 border-zinc-900">
               <TextCell :item="formatTime(item?.timestamp)" />
             </td>
-            <td class="border-r-2 border-zinc-800">
+            <td class="border-r-2 border-zinc-900">
               <div class="w-64 truncate p-2 flex">
                 <IdentityAvatarCell
                   v-if="item.data?.permission?.startsWith('MFkw')"
@@ -337,10 +337,10 @@ const editItem = shallowRef(null);
                 }}
               </div>
             </td>
-            <td class="border-r-2 border-zinc-800">
+            <td class="border-r-2 border-zinc-900">
               <IdentityAvatarCell :item="item.identity" />
             </td>
-            <td class="border-r-2 border-zinc-800 px-2">
+            <td class="border-r-2 border-zinc-900 px-2">
               <VerifyRowCell v-bind="{ ...getVerifyProps(item) }" />
             </td>
             <td class="px-2 text-zinc-700" v-if="canEdit">

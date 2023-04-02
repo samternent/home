@@ -16,7 +16,7 @@ function formatTime(time: number) {
 }
 </script>
 <template>
-  <ul class="flex flex-col" v-if="records.length">
+  <ul class="flex flex-col p-2" v-if="records.length">
     <li v-for="record in records" :key="record.id" class="my-2 rounded">
       <div class="flex w-full justify-start items-center">
         <VTooltip :text="record.identity" location="bottom">

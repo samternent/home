@@ -18,13 +18,13 @@ const records = computed(() => {
 </script>
 <template>
   <div>
-    <ul class="flex flex-col">
+    <ul class="flex flex-col p-2">
       <li
         v-for="block in [...(ledger?.chain || [])].reverse()"
         :key="block.id"
         class="my-2 rounded"
       >
-        <div class="font-medium text-zinc-500">
+        <div class="font-medium text-zinc-500 mb-2">
           <div v-if="block.last_hash && block.last_hash != '0'">
             previous hash: {{ block.last_hash }}
           </div>
@@ -42,7 +42,6 @@ const records = computed(() => {
                 <li
                   v-for="record in [...(block.records || [])].reverse()"
                   :key="record.id"
-                  class="my-2 rounded"
                 >
                   <div class="flex w-full justify-start items-center">
                     <VTooltip :text="record.identity" location="bottom">
