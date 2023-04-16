@@ -4,8 +4,12 @@ import api from "../../utils/api";
 function normalizeData(data) {
   return data.matches;
 }
+function normalizeMeta(data) {
+  return data.resultSet;
+}
 export default function useFixturesLoader(competitionCode, stage, matchday) {
-  const items = shallowRef();
+  const items = shallowRef([]);
+  const meta = shallowRef({});
   const loading = shallowRef(false);
   const loaded = shallowRef(false);
 
@@ -30,6 +34,7 @@ export default function useFixturesLoader(competitionCode, stage, matchday) {
       `football-data/competitions/${_competitionCode}/matches?${queryString}`
     );
     items.value = normalizeData(data);
+    meta.value = normalizeMeta(data);
     loaded.value = true;
     loading.value = false;
   }
@@ -41,5 +46,5 @@ export default function useFixturesLoader(competitionCode, stage, matchday) {
     },
     { immediate: true }
   );
-  return { items, loading, loaded };
+  return { items, loading, loaded, meta };
 }

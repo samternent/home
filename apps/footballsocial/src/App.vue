@@ -187,16 +187,16 @@ async function requestNotifcationPermissions() {
         <a href="https://www.teamconcords.com/" class="league-link"
           >Team Concords Limited</a
         >
-        © 2022.
+        © 2023.
       </span>
       <ul
         class="flex flex-wrap items-center mt-3 text-sm text-gray-400 sm:mt-0"
       >
-        <li>
+        <!-- <li>
           <RouterLink to="/company/about" class="mr-4 hover:underline md:mr-6"
             >About</RouterLink
           >
-        </li>
+        </li> -->
         <li>
           <RouterLink to="/legal/privacy" class="mr-4 hover:underline md:mr-6"
             >Privacy Policy</RouterLink
@@ -207,11 +207,11 @@ async function requestNotifcationPermissions() {
             >Terms of Use</RouterLink
           >
         </li>
-        <li>
+        <!-- <li>
           <RouterLink to="/company/contact" class="mr-4 hover:underline md:mr-6"
             >Contact</RouterLink
           >
-        </li>
+        </li> -->
       </ul>
     </footer>
   </div>

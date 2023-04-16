@@ -19,6 +19,10 @@ const props = defineProps({
     type: Object,
     default: () => {},
   },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const emit = defineEmits(["click", "update:prediction"]);
@@ -101,6 +105,7 @@ watch(
         </div>
       </div>
       <input
+        :disabled="disabled"
         v-model="homeScore"
         type="number"
         min="0"
@@ -110,6 +115,7 @@ watch(
       <span class="mx-6 font-thin text-4xl text-[#6a6a6a]">v</span>
       <input
         v-model="awayScore"
+        :disabled="disabled"
         type="number"
         min="0"
         max="9"

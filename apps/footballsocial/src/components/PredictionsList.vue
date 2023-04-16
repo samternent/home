@@ -1,6 +1,11 @@
 <script setup>
-import { toRefs, computed, shallowRef, reactive } from "vue";
+import { toRefs, computed, shallowRef, reactive, unref, onMounted } from "vue";
 import useFixturesLoader from "../api/football-data/useCompetitionFixturesLoader";
+import {
+  addPrediction,
+  getPredictions,
+} from "../composables/usePredictionService";
+import { useCurrentUser } from "../composables/useCurrentUser";
 import Predictor from "./Predictor.vue";
 
 const props = defineProps({
@@ -30,6 +35,7 @@ const gameweek = computed(
 
 const {
   items: fixtures,
+  meta,
   loading: fixturesLoading,
   loaded: fixturesLoaded,
 } = useFixturesLoader(competitionCode, stage, gameweek);
@@ -45,7 +51,46 @@ function setGameweek(_gameweek) {
   overrideGameweek.value = _gameweek;
 }
 
+const hasGameweekStarted = computed(() => {
+  console.log(meta.value.played);
+  meta.value.played > 0;
+});
+
 const predictions = reactive({});
+const predictionsLoaded = shallowRef(false);
+const lockedPredictions = shallowRef([]);
+onMounted(async () => {
+  // if (!profile.value?.username) {
+  //   return;
+  // }
+  const { data } = await getPredictions(
+    profile.value?.username,
+    unref(competitionCode),
+    unref(gameweek)
+  );
+
+  data.forEach((prediction) => {
+    lockedPredictions.value.push(prediction.fixtureId);
+
+    predictions[prediction.fixtureId] = {
+      homeScore: prediction.homeScore,
+      awayScore: prediction.awayScore,
+    };
+  });
+
+  predictionsLoaded.value = true;
+});
+
+const { profile } = useCurrentUser();
+
+function savePredictions() {
+  addPrediction(
+    profile.value.username,
+    unref(predictions),
+    unref(competitionCode),
+    unref(gameweek)
+  );
+}
 </script>
 <template>
   <div>
@@ -89,13 +134,18 @@ const predictions = reactive({});
         </svg>
       </button>
     </div>
-    <div class="w-full">
+    <div class="w-full" v-if="predictionsLoaded">
+      <div v-if="lockedPredictions.length">Your predictions are in!</div>
+      <button v-if="meta.played === 0" @click="savePredictions">
+        Save Predictions
+      </button>
       <Transition>
         <div v-if="hasFixtures">
           <div v-for="fixture in fixtures" :key="fixture.id" class="py-3">
             <Predictor
               :fixture="fixture"
               :size="size"
+              :disabled="meta.played > 0"
               v-model:prediction="predictions[fixture.id]"
               @click="(fixture) => $emit('selected', fixture)"
             />
