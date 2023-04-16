@@ -31,11 +31,11 @@ export const leagueRoutes = [
             path: "fixtures",
             component: () => import("./RouteLeagueFixtures.vue"),
           },
-          {
-            path: "predictions",
-            component: () => import("./RouteLeaguePredictions.vue"),
-          },
         ],
+      },
+      {
+        path: "/leagues/:competitionCode/predictions/:username?",
+        component: () => import("./RouteLeaguePredictions.vue"),
       },
       {
         path: "teams/:teamId",

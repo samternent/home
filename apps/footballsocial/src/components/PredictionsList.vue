@@ -25,6 +25,10 @@ const props = defineProps({
     type: String,
     default: "md",
   },
+  username: {
+    type: String,
+    default: null,
+  },
 });
 
 const { competitionCode, currentGameweek, stage } = toRefs(props);
@@ -43,28 +47,13 @@ const {
 const hasFixtures = computed(
   () => !fixturesLoading.value && fixturesLoaded.value
 );
-const fixturesResults = computed(
-  () => fixtures.value?.FINISHED.reverse() || []
-);
-
-function setGameweek(_gameweek) {
-  overrideGameweek.value = _gameweek;
-}
-
-const hasGameweekStarted = computed(() => {
-  console.log(meta.value.played);
-  meta.value.played > 0;
-});
-
 const predictions = reactive({});
+const serverPredictions = shallowRef(null);
 const predictionsLoaded = shallowRef(false);
 const lockedPredictions = shallowRef([]);
 onMounted(async () => {
-  // if (!profile.value?.username) {
-  //   return;
-  // }
   const { data } = await getPredictions(
-    profile.value?.username,
+    props.username || profile.value?.username,
     unref(competitionCode),
     unref(gameweek)
   );
@@ -76,6 +65,8 @@ onMounted(async () => {
       homeScore: prediction.homeScore,
       awayScore: prediction.awayScore,
     };
+
+    serverPredictions.value = JSON.stringify(unref(predictions));
   });
 
   predictionsLoaded.value = true;
@@ -91,61 +82,36 @@ function savePredictions() {
     unref(gameweek)
   );
 }
+
+const isDirty = computed(
+  () => serverPredictions.value !== JSON.stringify(unref(predictions))
+);
 </script>
 <template>
   <div>
-    <div
-      v-if="currentGameweek"
-      class="flex items-center justify-center w-full bg-indigo-900 h-10 text-sm md:text-base font-medium mb-2"
-    >
-      <button
-        @click="setGameweek(gameweek - 1)"
-        :disabled="gameweek <= 1"
-        :aria-label="`Gameweek ${gameweek - 1}`"
-        class="disabled:opacity-20"
-      >
-        <svg
-          class="w-4 h-4 md:w-5 md:h-5 fill-white"
-          stroke="currentColor"
-          viewBox="0 0 1024 1024"
-          version="1.1"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path d="M640 0l-512 512 512 512 192-192-320-320 320-320-192-192z" />
-        </svg>
-      </button>
-      <h2 class="px-2 mx-6 font-bold uppercase text-center text-white">
-        Gameweek {{ gameweek }}
-      </h2>
-      <button
-        :disabled="Number(gameweek) >= Number(currentGameweek)"
-        @click="setGameweek(gameweek + 1)"
-        :aria-label="`Gameweek ${gameweek + 1}`"
-        class="disabled:opacity-20"
-      >
-        <svg
-          class="w-4 h-4 md:w-5 md:h-5 fill-white"
-          stroke="currentColor"
-          viewBox="0 0 1024 1024"
-          version="1.1"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path d="M320 0l-192 192 320 320-320 320 192 192 512-512-512-512z" />
-        </svg>
-      </button>
-    </div>
     <div class="w-full" v-if="predictionsLoaded">
-      <div v-if="lockedPredictions.length">Your predictions are in!</div>
-      <button v-if="meta.played === 0" @click="savePredictions">
+      <div
+        v-if="lockedPredictions.length"
+        class="text-3xl text-center my-6 font-bold"
+      >
+        {{ username ? `${username}s` : "Your" }} predictions are in!
+      </div>
+      <button
+        :disabled="!isDirty"
+        v-if="meta.played === 0 && profile"
+        @click="savePredictions"
+        class="bg-green-600 disabled:opacity-20 rounded p-2 my-2"
+      >
         Save Predictions
       </button>
       <Transition>
         <div v-if="hasFixtures">
-          <div v-for="fixture in fixtures" :key="fixture.id" class="py-3">
+          <div v-for="(fixture, i) in fixtures" :key="fixture.id" class="py-3">
             <Predictor
               :fixture="fixture"
               :size="size"
               :disabled="meta.played > 0"
+              :showDate="fixture.utcDate !== fixtures[i - 1]?.utcDate"
               v-model:prediction="predictions[fixture.id]"
               @click="(fixture) => $emit('selected', fixture)"
             />

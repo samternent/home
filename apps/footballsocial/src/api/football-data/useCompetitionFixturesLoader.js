@@ -5,7 +5,10 @@ function normalizeData(data) {
   return data.matches;
 }
 function normalizeMeta(data) {
-  return data.resultSet;
+  return {
+    ...data.resultSet,
+    competition: data.competition,
+  };
 }
 export default function useFixturesLoader(competitionCode, stage, matchday) {
   const items = shallowRef([]);
