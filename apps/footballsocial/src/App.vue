@@ -175,5 +175,44 @@ async function requestNotifcationPermissions() {
       </template>
       <RouterView v-else />
     </div>
+    <footer
+      class="p-4 bg-[#242424] text-white md:flex md:items-center md:justify-between md:p-6"
+    >
+      <span class="text-sm sm:text-center text-gray-200"
+        ><a href="https://www.footballsocial.app/" class="league-link"
+          >FootballSocial</a
+        >
+        by
+
+        <a href="https://www.teamconcords.com/" class="league-link"
+          >Team Concords Limited</a
+        >
+        © 2022.
+      </span>
+      <ul
+        class="flex flex-wrap items-center mt-3 text-sm text-gray-400 sm:mt-0"
+      >
+        <li>
+          <RouterLink to="/company/about" class="mr-4 hover:underline md:mr-6"
+            >About</RouterLink
+          >
+        </li>
+        <li>
+          <RouterLink to="/legal/privacy" class="mr-4 hover:underline md:mr-6"
+            >Privacy Policy</RouterLink
+          >
+        </li>
+        <li>
+          <RouterLink to="/legal/terms" class="mr-4 hover:underline md:mr-6"
+            >Terms of Use</RouterLink
+          >
+        </li>
+        <li>
+          <RouterLink to="/company/contact" class="mr-4 hover:underline md:mr-6"
+            >Contact</RouterLink
+          >
+        </li>
+      </ul>
+    </footer>
   </div>
 </template>

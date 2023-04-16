@@ -31,6 +31,10 @@ export const leagueRoutes = [
             path: "fixtures",
             component: () => import("./RouteLeagueFixtures.vue"),
           },
+          {
+            path: "predictions",
+            component: () => import("./RouteLeaguePredictions.vue"),
+          },
         ],
       },
       {
