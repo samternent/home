@@ -119,7 +119,8 @@ const isDirty = computed(
               :size="size"
               :disabled="
                 meta.played > 1 ||
-                (username && profile && profile.username !== username)
+                (username && profile?.username !== username) ||
+                false
               "
               :showDate="fixture.utcDate !== fixtures[i - 1]?.utcDate"
               v-model:prediction="predictions[fixture.id]"
