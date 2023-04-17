@@ -20,12 +20,11 @@ import { competitions } from "../utils/competitions";
       <li
         v-for="competition in competitions"
         :key="competition.code"
-        class="my-2 text-3xl md:text-4xl"
+        class="my-2 text-3xl md:text-3xl"
       >
-        -
         <RouterLink
           :to="`/leagues/${competition.code}`"
-          class="ml-4 text-white font-bold tracking-tighter league-link"
+          class="text-white font-bold tracking-tighter league-link"
         >
           {{ competition.name }}.</RouterLink
         >

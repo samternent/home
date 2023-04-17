@@ -30,7 +30,7 @@ const crestMap = {
 const crest = computed(
   () => crestMap[competitionCode.value] || competitionCode.value
 );
-const tabs = shallowRef(["discussions", "table", "fixtures", "predictions"]);
+const tabs = shallowRef(["discussions", "table", "fixtures"]);
 
 watch(
   competition,
@@ -73,7 +73,15 @@ watch(
         />
       </div>
     </div>
-
+    <div class="bg-zinc-800 border border-zinc-700 p-4 mb-6 rounded">
+      New: Enter your Gameweek 34 predictions.
+      <RouterLink
+        :to="`/leagues/${competitionCode}/predictions`"
+        class="px-4 py-3 uppercase hover:bg-indigo-900 text-white border-b-4 border-transparent"
+      >
+        Enter Now
+      </RouterLink>
+    </div>
     <ul class="flex my-4">
       <li v-for="t in tabs" :key="`${t}`">
         <RouterLink
