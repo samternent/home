@@ -73,13 +73,20 @@ watch(
         />
       </div>
     </div>
-    <div class="bg-zinc-800 border border-zinc-700 p-4 mb-6 rounded">
-      New: Enter your Gameweek 34 predictions.
+    <div
+      v-if="competition?.type === 'LEAGUE'"
+      class="bg-indigo-800 bg-opacity-20 border border-indigo-900 p-4 mb-10 rounded items-center flex justify-between"
+    >
+      <div class="text-lg font-light">
+        <span class="text-xl font-medium text-pink-600 mr-2">NEW</span>Enter
+        your Gameweek
+        {{ competition?.currentSeason?.currentMatchday + 1 }} predictions.
+      </div>
       <RouterLink
         :to="`/leagues/${competitionCode}/predictions`"
-        class="px-4 py-3 uppercase hover:bg-indigo-900 text-white border-b-4 border-transparent"
+        class="px-4 py-2 uppercase bg-pink-600 hover:bg-pink-700 text-white font-light"
       >
-        Enter Now
+        Enter Now!
       </RouterLink>
     </div>
     <ul class="flex my-4">
