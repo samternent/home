@@ -1,13 +1,10 @@
 <script setup>
-import { useLocalStorage } from "@vueuse/core";
-import { shallowRef } from "vue";
 import api from "./utils/api";
 import { useToast } from "vue-toastification";
 
 import { provideCurrentUser } from "./composables/useCurrentUser";
 import SetUsername from "./components/SetUsername.vue";
 import Notifications from "./components/Notifications.vue";
-import { onMounted } from "vue";
 
 const toast = useToast();
 
@@ -40,48 +37,6 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-const notificationsEnabled = shallowRef(false);
-const notificationsDeclined = useLocalStorage("notifciationsDeclined", false);
-onMounted(async () => {
-  // if (Notification.permission === "granted") {
-  //   notificationsEnabled.value = true;
-  // }
-});
-async function requestNotifcationPermissions() {
-  // const result = await Notification.requestPermission();
-  // if (result === "denied") {
-  //   notificationsDeclined.value = true;
-  //   toast.error(
-  //     "Unablke to enable push notifcations, please check your browser settings.",
-  //     {
-  //       position: "bottom-right",
-  //       timeout: 5000,
-  //       closeOnClick: true,
-  //       pauseOnFocusLoss: false,
-  //       pauseOnHover: true,
-  //       draggable: true,
-  //       draggablePercent: 0.6,
-  //       showCloseButtonOnHover: true,
-  //       hideProgressBar: true,
-  //       closeButton: "button",
-  //       icon: true,
-  //       rtl: false,
-  //     }
-  //   );
-  // }
-  // if (result === "granted") {
-  //   notificationsEnabled.value = true;
-  //   const notifTitle = "You have enabled notifcations";
-  //   const notifBody = `Talk Football, with Football people.`;
-  //   const notifImg = `/android-chrome-512x512.png`;
-  //   const options = {
-  //     body: notifBody,
-  //     icon: notifImg,
-  //   };
-  //   new Notification(notifTitle, options);
-  // }
-}
 </script>
 
 <template>
@@ -90,17 +45,23 @@ async function requestNotifcationPermissions() {
       <div
         class="max-w-7xl flex justify-between mx-auto items-center w-full h-12"
       >
-        <RouterLink
-          to="/"
-          alt="Home"
-          class="mr-4 text-lg no-underline hover:text-white hover:no-underline text-white mx-1 rounded h-10 flex items-center justify-center text-center px-2 py-1"
-        >
-          <img
-            alt="Football Social"
-            src="./assets/logo-small.png"
-            class="h-8 w-8"
-          />
-        </RouterLink>
+        <div class="flex flex-1">
+          <RouterLink
+            to="/"
+            alt="Home"
+            class="mr-4 text-lg no-underline hover:text-white hover:no-underline text-white mx-1 rounded h-10 flex items-center justify-center text-center px-2 py-1"
+          >
+            <img
+              alt="Football Social"
+              src="./assets/logo-small.png"
+              class="h-8 w-8"
+            />
+          </RouterLink>
+          <section
+            id="HeaderControls"
+            class="flex-1 flex items-center"
+          ></section>
+        </div>
 
         <div class="flex items-center text-white" :key="profile?.id || 'empty'">
           <RouterLink

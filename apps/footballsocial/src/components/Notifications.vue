@@ -36,7 +36,7 @@ onClickOutside(dropdownRef, (event) => {
 
     <div
       v-if="showNotifications"
-      class="absolute right-0 top-8 flex flex-col overflow-hidden text-left rounded border border-[#3e3e3e] w-64"
+      class="absolute bg-zinc-900 right-0 top-8 flex flex-col overflow-hidden text-left rounded border border-zinc-700 w-64"
     >
       <template v-if="notifications.length">
         <RouterLink
@@ -52,7 +52,7 @@ onClickOutside(dropdownRef, (event) => {
           comment.
         </RouterLink>
       </template>
-      <div class="item" v-else>No result</div>
+      <div class="item p-4" v-else>No result</div>
     </div>
   </div>
 </template>

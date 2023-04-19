@@ -94,26 +94,14 @@ const isDirty = computed(
 <template>
   <div>
     <div class="w-full" v-if="predictionsLoaded">
-      <div class="text-center my-6 flex flex-col">
+      <div class="text-center my-0 flex flex-col">
         <span class="text-2xl font-thin my-4" v-if="lockedPredictions.length"
-          >{{ username ? `${username}s` : "Your" }} predictions are in!</span
+          >{{ username ? `${username}s` : "Your" }} predictions are in! 🎉</span
         >
-        <button
-          :disabled="!isDirty"
-          v-if="
-            meta.played === 0 &&
-            profile &&
-            (!username || profile.username === username)
-          "
-          @click="savePredictions"
-          class="bg-green-600 disabled:opacity-20 rounded p-2 my-2"
-        >
-          Save Predictions
-        </button>
       </div>
       <Transition>
         <div v-if="hasFixtures">
-          <div v-for="(fixture, i) in fixtures" :key="fixture.id" class="py-3">
+          <div v-for="(fixture, i) in fixtures" :key="fixture.id" class="">
             <Predictor
               :fixture="fixture"
               :size="size"
@@ -149,6 +137,9 @@ const isDirty = computed(
         >
           Save Predictions
         </button>
+        <span class="text-2xl font-thin my-4" v-if="lockedPredictions.length"
+          >{{ username ? `${username}s` : "Your" }} predictions are in! 🎉</span
+        >
       </div>
     </div>
   </div>

@@ -1,16 +1,16 @@
 export const competitions = [
-  {
-    code: "WC",
-    name: "FIFA World Cup",
-  },
+  // {
+  //   code: "WC",
+  //   name: "FIFA World Cup",
+  // },
   {
     code: "PL",
     name: "Premier League",
   },
-  {
-    code: "CL",
-    name: "UEFA Champions League",
-  },
+  // {
+  //   code: "CL",
+  //   name: "UEFA Champions League",
+  // },
   {
     code: "ELC",
     name: "Championship",

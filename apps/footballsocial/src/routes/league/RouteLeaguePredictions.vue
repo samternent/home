@@ -1,57 +1,41 @@
 <script setup>
 import { computed } from "vue";
-import PredictionsList from "../../components/PredictionsList.vue";
-import CupFixtures from "../../components/CupFixtures.vue";
 import { useCompetitionLoader } from "../../api/football-data/useCompetitionLoader";
 
-defineProps({
+const props = defineProps({
+  competitionCode: {
+    type: String,
+    required: true,
+  },
   username: {
     type: String,
     default: null,
   },
 });
-const { items: competition, hasItems: hasCompetition } = useCompetitionLoader();
-const isCup = computed(() => competition.value.type === "CUP");
+const { items: competition } = useCompetitionLoader();
+const tabs = computed(() => [
+  {
+    title: `Gameweek ${competition.value?.currentSeason?.currentMatchday + 1}`,
+    to: "play",
+  },
+  { title: "Results", to: "results" },
+  { title: "Table", to: "table" },
+]);
 </script>
 <template>
-  <div class="py-2 mx-auto mb-24">
-    <div class="my-8">
-      <h1
-        class="text-6xl text-white font-bold tracking-tighter shadow-text text-center"
-        v-if="competition"
-      >
-        {{ competition.name }}.
-      </h1>
-      <h2
-        class="text-3xl text-white font-light tracking-tighter shadow-text text-center"
-        v-if="competition"
-      >
-        gameweek
-        {{ competition?.currentSeason?.currentMatchday + 1 }} predictor.
-      </h2>
-    </div>
-    <CupFixtures
-      v-if="competition && isCup"
-      :competitionCode="competition?.code"
-      :currentGameweek="competition?.currentSeason?.currentMatchday"
-      @selected="
-        (fixture) =>
-          $router.push(
-            `/leagues/${competition?.code}/discussions/new?fixture=${fixture?.id}`
-          )
-      "
-    />
-    <PredictionsList
-      v-if="competition && !isCup"
-      :username="username"
-      :competitionCode="competition?.code"
-      :currentGameweek="competition?.currentSeason?.currentMatchday + 1"
-      @selected="
-        (fixture) =>
-          $router.push(
-            `/leagues/${competition?.code}/discussions/new?fixture=${fixture?.id}`
-          )
-      "
-    />
+  <div class="py-2 mx-auto">
+    <ul class="flex my-4">
+      <li v-for="t in tabs" :key="`${t}`">
+        <RouterLink
+          :to="`/leagues/${competition?.code}/predictions/${t.to}`"
+          class="px-4 py-2 text-sm uppercase hover:bg-zinc-800 hover:border-indigo-800 text-white border-b-4 border-transparent"
+          active-class="!border-indigo-800 bg-zinc-800 "
+        >
+          {{ t.title }}
+        </RouterLink>
+      </li>
+    </ul>
+
+    <RouterView />
   </div>
 </template>

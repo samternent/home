@@ -71,13 +71,15 @@ watch(
         fixture.score?.winner?.includes('AWAY_TEAM'),
       'border-r-4 border-r-red-900':
         fixture.score?.winner?.includes('HOME_TEAM'),
-      'text-2xl': size === 'lg',
+      'text-xl': size === 'lg',
       'text-base ': size === 'md',
     }"
   >
-    <span v-if="showDate" class="w-full py-4 font-medium">{{ kickOff }}</span>
+    <span v-if="showDate" class="w-full font-thin bg-zinc-900 p-2 my-2">{{
+      kickOff
+    }}</span>
     <div
-      class="flex flex-1 w-full px-2 justify-between items-center truncate text-sm sm:text-base bg-[#1e1e1e] hover:bg-[#232323] p-4 rounded"
+      class="flex flex-1 w-full px-2 justify-between items-center truncate text-sm sm:text-base bg-[#1e1e1e] hover:bg-[#232323] p-2 rounded"
     >
       <div
         class="flex-1 flex items-center truncate my-1 lg:text-xl md:font-light"
@@ -126,15 +128,6 @@ watch(
           class="w-10 h-10 sm:w-14 sm:h-14 ml-2 lg:ml-4"
         />
       </div>
-    </div>
-    <div
-      class="text-xs hidden text-[#aeaeae] font-medium md:inline"
-      v-if="size !== 'sm' && fixture.referees.length"
-    >
-      Referee:
-      <span v-for="(referee, i) in fixture.referees" :key="referee.id">
-        {{ referee.name }}<span v-if="i < fixture.referees.length - 1">, </span>
-      </span>
     </div>
   </div>
 </template>

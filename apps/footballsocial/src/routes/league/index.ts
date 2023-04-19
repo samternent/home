@@ -31,11 +31,31 @@ export const leagueRoutes = [
             path: "fixtures",
             component: () => import("./RouteLeagueFixtures.vue"),
           },
+          {
+            path: "predictions/:username?",
+            component: () => import("./RouteLeaguePredictions.vue"),
+            children: [
+              {
+                path: "",
+                redirect(to: any) {
+                  return `/leagues/${to.params.competitionCode}/predictions/play`;
+                },
+              },
+              {
+                path: "play",
+                component: () => import("./RouteLeaguePredictionsHome.vue"),
+              },
+              {
+                path: "results",
+                component: () => import("./RouteLeaguePredictionsResults.vue"),
+              },
+              {
+                path: "table",
+                component: () => import("./RouteLeaguePredictionsTable.vue"),
+              },
+            ],
+          },
         ],
-      },
-      {
-        path: "/leagues/:competitionCode/predictions/:username?",
-        component: () => import("./RouteLeaguePredictions.vue"),
       },
       {
         path: "teams/:teamId",
