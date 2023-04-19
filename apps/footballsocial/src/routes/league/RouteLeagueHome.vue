@@ -45,7 +45,7 @@ watch(
 <template>
   <div class="md:px-2 lg:px-4 flex-1 max-w-3xl mx-auto pt-0 w-full z-10">
     <div
-      class="pt-8 pb-12 px-2 flex justify-between items-center flex-col md:flex-row"
+      class="pt-8 md:pb-6 px-2 flex justify-between items-center flex-col md:flex-row"
     >
       <div>
         <h1
@@ -65,7 +65,7 @@ watch(
           <span class="text-yellow-400">Football</span> people.
         </p>
       </div>
-      <div class="flex items-center justify-between mt-8 md:mt-0">
+      <div class="flex items-center justify-between mt-2 md:mt-0">
         <img
           alt="Football Social"
           src="../../assets/OneLoveBawb.png"
@@ -75,7 +75,7 @@ watch(
     </div>
     <div
       v-if="competition?.type === 'LEAGUE'"
-      class="bg-indigo-800 bg-opacity-20 border border-indigo-900 p-4 mb-10 rounded items-center flex justify-between"
+      class="bg-indigo-800 bg-opacity-20 border border-indigo-900 p-4 mb-10 rounded items-center flex flex-col md:flex-row justify-between"
     >
       <div class="text-lg font-light">
         <span class="text-xl font-medium text-pink-600 mr-2">NEW</span>Enter
@@ -84,7 +84,7 @@ watch(
       </div>
       <RouterLink
         :to="`/leagues/${competitionCode}/predictions`"
-        class="px-4 py-2 uppercase bg-pink-600 hover:bg-pink-700 text-white font-light"
+        class="mx-auto mt-4 md:m-0 px-4 py-2 uppercase bg-pink-600 hover:bg-pink-700 text-white font-light"
       >
         Enter Now!
       </RouterLink>
