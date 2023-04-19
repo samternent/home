@@ -31,7 +31,6 @@ const {
   loaded: competitionLoaded,
 } = provideCompetitionLoader(competitionCode);
 
-const lastLeaguePath = useLocalStorage("lastLeaguePath", "fixtures");
 const lastLeague = useLocalStorage("lastLeague", "PL");
 
 watch(
@@ -43,9 +42,6 @@ watch(
   { immediate: true }
 );
 
-onBeforeRouteUpdate((to) => {
-  lastLeaguePath.value = to.path;
-});
 function gotoCompetition(e) {
   router.push({ path: `/leagues/${e.target.value}` });
 }

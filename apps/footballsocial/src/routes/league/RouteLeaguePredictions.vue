@@ -23,7 +23,7 @@ const tabs = computed(() => [
 ]);
 </script>
 <template>
-  <div class="py-2 mx-auto">
+  <div class="mx-auto">
     <ul class="flex my-4">
       <li v-for="t in tabs" :key="`${t}`">
         <RouterLink

@@ -32,7 +32,7 @@ const crestMap = {
 const crest = computed(
   () => crestMap[competitionCode.value] || competitionCode.value
 );
-const tabs = shallowRef(["discussions", "table", "fixtures", "predictions"]);
+const tabs = shallowRef(["predictions", "table", "fixtures", "discussions"]);
 
 watch(
   competition,
@@ -47,7 +47,7 @@ watch(
 <template>
   <div
     v-if="competition?.type === 'LEAGUE'"
-    class="bg-indigo-800 bg-opacity-20 border border-indigo-900 p-4 my-10 md:mt-2 rounded items-center flex flex-col md:flex-row justify-between"
+    class="bg-indigo-800 bg-opacity-20 border border-indigo-900 p-4 my-4 md:mt-2 rounded items-center flex flex-col md:flex-row justify-between"
   >
     <div class="text-lg font-light">
       <span class="text-xl font-medium text-pink-600 mr-2">NEW</span>Enter your
@@ -55,13 +55,13 @@ watch(
       {{ competition?.currentSeason?.currentMatchday + 1 }} predictions.
     </div>
     <RouterLink
-      :to="`/leagues/${competitionCode}/predictions`"
+      :to="`/leagues/${competitionCode}/predictions/play`"
       class="mx-auto mt-4 md:m-0 px-4 py-2 uppercase bg-pink-600 hover:bg-pink-700 text-white font-light"
     >
       Enter Now!
     </RouterLink>
   </div>
-  <ul class="flex my-4">
+  <ul class="flex max-w-[100vw] overflow-x-auto h-auto py-4 overflow-y-hidden">
     <li v-for="t in tabs" :key="`${t}`">
       <RouterLink
         :to="`/leagues/${competitionCode}/${t}`"

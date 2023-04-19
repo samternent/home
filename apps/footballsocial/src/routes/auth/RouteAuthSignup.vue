@@ -37,8 +37,7 @@ async function signup() {
     return;
   }
   await refresh();
-  const to = useLocalStorage("lastLeaguePath", "/leagues/WC");
-  router.push(to.value);
+  router.push("/");
 }
 
 async function googleLogin() {

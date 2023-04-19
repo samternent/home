@@ -19,8 +19,7 @@ async function login() {
     errorMessage.value = error.message;
     return;
   }
-  const to = useLocalStorage("lastLeaguePath", "/");
-  router.push(to.value);
+  router.push("/");
 }
 
 async function googleLogin() {
