@@ -65,17 +65,10 @@ watch(
           <span class="text-yellow-400">Football</span> people.
         </p>
       </div>
-      <div class="flex items-center justify-between mt-2 md:mt-0">
-        <img
-          alt="Football Social"
-          src="../../assets/OneLoveBawb.png"
-          class="h-10 w-10 m-4 block mr-8 md:mr-4"
-        />
-      </div>
     </div>
     <div
       v-if="competition?.type === 'LEAGUE'"
-      class="bg-indigo-800 bg-opacity-20 border border-indigo-900 p-4 mb-10 rounded items-center flex flex-col md:flex-row justify-between"
+      class="bg-indigo-800 bg-opacity-20 border border-indigo-900 p-4 my-10 md:mt-2 rounded items-center flex flex-col md:flex-row justify-between"
     >
       <div class="text-lg font-light">
         <span class="text-xl font-medium text-pink-600 mr-2">NEW</span>Enter
