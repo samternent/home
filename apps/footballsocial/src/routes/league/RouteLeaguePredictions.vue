@@ -28,8 +28,8 @@ const tabs = computed(() => [
       <li v-for="t in tabs" :key="`${t}`">
         <RouterLink
           :to="`/leagues/${competition?.code}/predictions/${t.to}`"
-          class="px-4 py-2 text-sm uppercase hover:bg-zinc-800 hover:border-indigo-800 text-white border-b-4 border-transparent"
-          active-class="!border-indigo-800 bg-zinc-800 "
+          class="px-4 py-2 text-sm uppercase hover:dark:bg-zinc800 hover:border-indigo-800 dark:text-white border-b-4 border-transparent"
+          active-class="!border-indigo-800 dark:bg-zinc800 "
         >
           {{ t.title }}
         </RouterLink>

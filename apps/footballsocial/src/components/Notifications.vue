@@ -36,11 +36,11 @@ onClickOutside(dropdownRef, (event) => {
 
     <div
       v-if="showNotifications"
-      class="absolute bg-zinc-900 right-0 top-8 flex flex-col overflow-hidden text-left rounded border border-zinc-700 w-64"
+      class="absolute dark:bg-zinc900 right-0 top-8 flex flex-col overflow-hidden text-left rounded border border-zinc-700 w-64"
     >
       <template v-if="notifications.length">
         <RouterLink
-          class="bg-[#1d1d1d] block px-3 py-3 text-left w-full border-b text-sm border-[#242424]"
+          class="dark:bg-[#1d1d1d] block px-3 py-3 text-left w-full border-b text-sm border-[#242424]"
           v-for="(item, index) in notifications"
           :key="index"
           @click="showNotifications = false"

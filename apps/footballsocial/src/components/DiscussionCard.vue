@@ -73,7 +73,7 @@ onMounted(async () => {
 </script>
 <template>
   <div
-    class="w-full z-0 shadow my-1 p-4 flex bg-[#1e1e1e] border border-x-0 md:border-x border-[#2e2e2e] shadow text-white flex-col"
+    class="w-full z-0 shadow my-1 p-4 flex dark:bg-[#1e1e1e] border border-x-0 md:border-x border-[#2e2e2e] shadow dark:text-white flex-col"
   >
     <div class="flex">
       <div
@@ -114,7 +114,7 @@ onMounted(async () => {
       <div class="flex relative shrink-0" v-if="showTeams">
         <div v-for="team in teams" :key="team.team.id">
           <RouterLink
-            class="shadow-block bg-[#242424] rounded-lg"
+            class="shadow-block dark:bg-[#242424] rounded-lg"
             :to="`/leagues/${discussion.competition}/teams/${team?.team?.id}`"
           >
             <img
@@ -130,13 +130,13 @@ onMounted(async () => {
           @click.prevent
           @mouseenter="showTeamsTooltip = true"
           @mouseleave="showTeamsTooltip = false"
-          class="flex relative cursor-default items-center text-xs text-center justify-center absolute top-0 shadow-block-yellow-sm -right-1 rounded-lg bg-pink-600 text-white font-medium w-6 h-6"
+          class="flex relative cursor-default items-center text-xs text-center justify-center absolute top-0 shadow-block-yellow-sm -right-1 rounded-lg bg-pink-600 dark:text-white font-medium w-6 h-6"
         >
           +{{ moreTeams }}
           <Transition>
             <div
               v-if="showTeamsTooltip"
-              class="absolute top-full flex flex-col text-base z-20 w-64 px-4 py-2 text-left my-2 right-0 bg-[#2d2d2d] bg-opacity-90 text-white rounded"
+              class="absolute top-full flex flex-col text-base z-20 w-64 px-4 py-2 text-left my-2 right-0 dark:bg-[#2d2d2d] bg-opacity-90 dark:text-white rounded"
             >
               <span
                 v-for="team in discussion_entity"

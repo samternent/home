@@ -78,13 +78,13 @@ watch(loadMoreVisible, (_shouldLoadMore) => {
     <div class="mx-2 mt-4 mb-8 flex justify-end">
       <RouterLink
         :to="`/leagues/${competitionCode}/discussions/new`"
-        class="bg-pink-600 transition-all shadow-block-yellow text-white px-4 py-2 rounded no-underline hover:no-underline hover:text-white hover:bg-pink-500"
+        class="bg-pink-600 transition-all shadow-block-yellow dark:text-white px-4 py-2 rounded no-underline hover:no-underline hover:dark:text-white hover:bg-pink-500"
       >
         Start a discussion
       </RouterLink>
     </div>
 
-    <div class="text-white text-right text-sm">
+    <div class="dark:text-white text-right text-sm">
       Sort by:
       <select v-model="sortBy" class="capitalize p-1 rounded bg-inherit">
         <option v-for="opt in sortOptions" :key="opt" :value="opt">
@@ -97,7 +97,7 @@ watch(loadMoreVisible, (_shouldLoadMore) => {
         <div
           v-for="i in 5"
           :key="i"
-          class="bg-[#1e1e1e] animate-pulse m-2 my-4 rounded flex-1 h-24 w-full"
+          class="dark:bg-[#1e1e1e] animate-pulse m-2 my-4 rounded flex-1 h-24 w-full"
         />
       </div>
       <div

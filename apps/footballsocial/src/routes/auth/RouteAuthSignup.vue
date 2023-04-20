@@ -56,13 +56,13 @@ async function googleLogin() {
     >
       <div class="px-6 py-8 w-full">
         <h1
-          class="text-4xl sm:text-5xl text-white font-bold tracking-tighter shadow-text my-8"
+          class="text-4xl sm:text-5xl dark:text-white font-bold tracking-tighter shadow-text my-8"
         >
           Sign up
         </h1>
         <div
           v-if="errorMessage"
-          class="text-white bg-red-900 py-2 px-4 rounded"
+          class="dark:text-white bg-red-900 py-2 px-4 rounded"
         >
           {{ errorMessage }}
         </div>
@@ -76,7 +76,7 @@ async function googleLogin() {
         <input
           type="email"
           v-model="email"
-          class="bg-[#1d1d1d] w-full rounded p-4 border-2 border-[#343434] my-2"
+          class="dark:bg-[#1d1d1d] w-full rounded p-4 border-2 border-[#343434] my-2"
           name="email"
           placeholder="Email"
         />
@@ -84,14 +84,14 @@ async function googleLogin() {
         <input
           type="password"
           v-model="password"
-          class="bg-[#1d1d1d] w-full rounded p-4 border-2 border-[#343434] my-2"
+          class="dark:bg-[#1d1d1d] w-full rounded p-4 border-2 border-[#343434] my-2"
           name="password"
           placeholder="Password"
         />
         <input
           type="password"
           v-model="passwordConfirm"
-          class="bg-[#1d1d1d] w-full rounded p-4 border-2 border-[#343434] my-2"
+          class="dark:bg-[#1d1d1d] w-full rounded p-4 border-2 border-[#343434] my-2"
           name="confirm_password"
           placeholder="Confirm Password"
         />
@@ -100,7 +100,7 @@ async function googleLogin() {
           <button
             type="submit"
             @click="signup"
-            class="bg-pink-600 transition-all shadow-block-yellow text-white px-4 py-2 rounded no-underline hover:no-underline hover:text-white hover:bg-pink-500"
+            class="bg-pink-600 transition-all shadow-block-yellow dark:text-white px-4 py-2 rounded no-underline hover:no-underline hover:dark:text-white hover:bg-pink-500"
           >
             Create Account
           </button>

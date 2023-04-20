@@ -18,7 +18,7 @@ async function signOutAndLeave() {
     <input
       type="text"
       v-model="username"
-      class="bg-[#1d1d1d] w-full rounded p-4 border-2 border-[#343434] my-2"
+      class="dark:bg-[#1d1d1d] w-full rounded p-4 border-2 border-[#343434] my-2"
       name="pick_username"
       placeholder="Pick Username"
     />
@@ -26,7 +26,7 @@ async function signOutAndLeave() {
       <button
         type="submit"
         @click="setUsername"
-        class="bg-pink-600 transition-all shadow-block-yellow text-white px-4 py-2 rounded no-underline hover:no-underline hover:text-white hover:bg-pink-500"
+        class="bg-pink-600 transition-all shadow-block-yellow dark:text-white px-4 py-2 rounded no-underline hover:no-underline hover:dark:text-white hover:bg-pink-500"
       >
         Update username
       </button>

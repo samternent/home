@@ -41,7 +41,7 @@ const comment = shallowRef("");
 </script>
 <template>
   <div
-    class="flex flex-col relative py-0 bg-[#1e1e1e] hover:bg-[#232323] transition-all font-light items-center w-full border-x-[transparent] border-transparent border-x-4"
+    class="flex flex-col relative py-0 dark:bg-[#1e1e1e] hover:dark:bg-[#232323] transition-all font-light items-center w-full border-x-[transparent] border-transparent border-x-4"
     :class="{
       'bg-yellow-100 hover:bg-yellow-200': selected,
       'border-l-4 border-l-green-900':
@@ -59,16 +59,16 @@ const comment = shallowRef("");
   >
     <span
       v-if="fixture.status === 'IN_PLAY'"
-      class="absolute left-0 text-xs px-4 m-1 bg-green-600 rounded-full text-white"
+      class="absolute left-0 text-xs px-4 m-1 bg-green-600 rounded-full dark:text-white"
       >In play</span
     >
     <span
       v-if="fixture.status === 'POSTPONED'"
-      class="absolute left-0 text-xs px-4 m-1 bg-red-800 rounded-full text-white"
+      class="absolute left-0 text-xs px-4 m-1 bg-red-800 rounded-full dark:text-white"
       >POSTPONED</span
     >
     <span
-      class="text-xs w-full px-4 py-1 text-[#d3d3d3] bg-[#232323] font-medium uppercase text-center"
+      class="text-xs w-full px-4 py-1 text-[#d3d3d3] dark:bg-[#232323] font-medium uppercase text-center"
       >{{ kickOff }}</span
     >
     <div
@@ -109,11 +109,11 @@ const comment = shallowRef("");
         class="flex items-center font-medium text-[#6a6a6a] text-2xl justify-between my-2"
         v-else
       >
-        <span class="flex-1 p-2 text-white ml-2">{{
+        <span class="flex-1 p-2 dark:text-white ml-2">{{
           fixture.score.fullTime.home
         }}</span>
         -
-        <span class="flex-1 p-2 text-white mr-2">{{
+        <span class="flex-1 p-2 dark:text-white mr-2">{{
           fixture.score.fullTime.away
         }}</span>
       </div>
@@ -192,7 +192,7 @@ const comment = shallowRef("");
       <button
         aria-label="Post"
         @click="addComment"
-        class="bg-green-500 px-4 py-1 rounded text-white"
+        class="bg-green-500 px-4 py-1 rounded dark:text-white"
       >
         Post
       </button>

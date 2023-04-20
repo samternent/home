@@ -66,7 +66,7 @@ function setGameweek(_gameweek) {
           <path d="M640 0l-512 512 512 512 192-192-320-320 320-320-192-192z" />
         </svg>
       </button>
-      <h2 class="px-2 mx-6 font-bold uppercase text-center text-white">
+      <h2 class="px-2 mx-6 font-bold uppercase text-center dark:text-white">
         Gameweek {{ gameweek }}
       </h2>
       <button
@@ -99,7 +99,7 @@ function setGameweek(_gameweek) {
           <div
             v-for="i in 10"
             :key="i"
-            class="bg-[#1e1e1e] animate-pulse m-2 my-4 rounded flex-1 h-20 w-full"
+            class="dark:bg-[#1e1e1e] animate-pulse m-2 my-4 rounded flex-1 h-20 w-full"
           />
         </div>
       </Transition>

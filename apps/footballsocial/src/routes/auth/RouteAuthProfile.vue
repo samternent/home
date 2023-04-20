@@ -25,7 +25,8 @@ async function signOutAndLeave() {
     </div>
     <div v-else>
       <p>
-        <span class="text-6xl font-bold tracking-tighter text-white shadow-text"
+        <span
+          class="text-6xl font-bold tracking-tighter dark:text-white shadow-text"
           >@{{ username }}</span
         >
       </p>

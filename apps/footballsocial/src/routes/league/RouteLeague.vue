@@ -50,7 +50,7 @@ function gotoCompetition(e) {
   <div class="md:px-2 lg:px-4 flex-1 max-w-3xl mx-auto pt-0 w-full z-10">
     <Teleport to="#HeaderControls">
       <div
-        class="text-white text-right text-sm border rounded border-zinc-700"
+        class="dark:text-white text-right text-sm border rounded border-zinc-700"
         v-if="competition"
       >
         <select
@@ -69,11 +69,11 @@ function gotoCompetition(e) {
       </div>
     </Teleport>
     <div class="flex w-full px-2 md:p-0">
-      <div class="bg-zinc-50 mx-auto p-2 my-2 mt-4 inline-block rounded-lg">
+      <div class="dark:bg-zinc50 mx-auto p-2 my-2 mt-4 inline-block rounded-lg">
         <img class="h-16" :src="competition?.emblem" />
       </div>
       <div
-        class="px-3 p-2 font-thin ml-6 bg-zinc-900 rounded-lg flex-1 mt-4 mb-2 flex flex-col justify-center"
+        class="px-3 p-2 font-thin ml-6 dark:bg-zinc900 rounded-lg flex-1 mt-4 mb-2 flex flex-col justify-center"
       >
         <p class="text-2xl py-1 font-thin">{{ competition?.name }}</p>
         <p class="flex items-center">

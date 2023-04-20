@@ -120,7 +120,7 @@ const isDirty = computed(
           <div
             v-for="i in 10"
             :key="i"
-            class="bg-[#1e1e1e] animate-pulse m-2 my-4 rounded flex-1 h-20 w-full"
+            class="dark:bg-[#1e1e1e] animate-pulse m-2 my-4 rounded flex-1 h-20 w-full"
           />
         </div>
       </Transition>
