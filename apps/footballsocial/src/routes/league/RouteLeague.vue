@@ -68,15 +68,24 @@ function gotoCompetition(e) {
         </select>
       </div>
     </Teleport>
-    <h1
-      class="text-white tracking-tighter font-bold tracking text-5xl my-8"
-      v-if="competition"
-    >
-      {{ competition.name }}.
-    </h1>
-    <h1 v-else class="font-thin mb-2">
-      <div class="bg-[#3c3c3c] animate-pulse m-2 rounded flex-1 h-6 w-64" />
-    </h1>
+    <div class="flex w-full px-2 md:p-0">
+      <div class="bg-zinc-50 mx-auto p-2 my-2 mt-4 inline-block rounded-lg">
+        <img class="h-16" :src="competition?.emblem" />
+      </div>
+      <div
+        class="px-3 p-2 font-thin ml-6 bg-zinc-900 rounded-lg flex-1 mt-4 mb-2 flex flex-col justify-center"
+      >
+        <p class="text-2xl py-1 font-thin">{{ competition?.name }}</p>
+        <p class="flex items-center">
+          <img
+            v-if="competition"
+            class="h-4 mr-2"
+            :src="competition?.area.flag"
+          />
+          <span>{{ competition?.area.name }}</span>
+        </p>
+      </div>
+    </div>
     <RouterView :competitionCode="competitionCode" :key="competitionCode" />
   </div>
 </template>
