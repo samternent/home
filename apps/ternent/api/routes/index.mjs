@@ -22,4 +22,9 @@ router.get("/cv", async function (req, res) {
   })
 });
 
+app.get("/test", function (req, res) {
+  res.sendFile(path.join(__dirname, "../test.html"));
+});
+
+
 export default router;
