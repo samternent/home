@@ -23,7 +23,7 @@ sudo rm -rf  /etc/nginx/sites-available/ternent.dev
 
 # Copy build assets for nginx
 OLDIFS=$IFS; IFS='.';
-sudo cp -r dist/ternent/* /var/hub/ternent.dev/html
+sudo cp -r dist/ternent/* /var/www/ternent.dev/html
 sudo cp -r footballsocial/apps/ternent/nginx.conf.d /etc/nginx/sites-available/ternent.dev
 sudo ln -s /etc/nginx/sites-available/ternent.dev /etc/nginx/sites-enabled/
 
