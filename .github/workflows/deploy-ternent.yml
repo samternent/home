@@ -5,8 +5,6 @@ on:
     branches:
       - main
 env:
-  PNPM_CACHE_PATH: ~/.pnpm-store
-  PNPM_CACHE_NAME: pnpm-store-cache
   VITE_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
   VITE_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
 
@@ -21,20 +19,6 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-
-      - name: Get node version
-        id: nvmrc
-        run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
-
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 8
-
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
-          cache: "pnpm"
 
       - name: Configure SSH
         run: |
