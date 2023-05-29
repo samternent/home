@@ -11,7 +11,7 @@ app.use(bodyParser.json());
 const port = "4005";
 app.set("port", port);
 
-app.use("/api/", routes);
+app.use("/", routes);
 
 // Server
 app.listen(port, () => console.log(`Server running on localhost:${port}`));
