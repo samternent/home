@@ -36,25 +36,6 @@ jobs:
           node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
           cache: "pnpm"
 
-      - name: Cache pnpm modules
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.PNPM_CACHE_PATH }}
-          key: ${{ runner.os }}-${{ env.PNPM_CACHE_NAME }}-${{ steps.nvmrc.outputs.NODE_VERSION }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ env.PNPM_CACHE_NAME }}-${{ steps.nvmrc.outputs.NODE_VERSION }}-
-      - name: Set npm token
-        run: npm config set '//registry.npmjs.org/:_authToken' "${NPM_TOKEN}"
-
-      - name: Install pnpm
-        run: npm install -g pnpm
-
-      - name: Set pnpm config
-        run: pnpm config set store-dir $PNPM_CACHE_PATH
-
-      - name: Install dependencies
-        run: pnpm install
-
       - name: Configure SSH
         run: |
           mkdir -p ~/.ssh
@@ -73,5 +54,5 @@ jobs:
           SSH_USER: ${{ secrets.DEPLOYMENT_USER }}
           SSH_HOST: ${{ secrets.DEPLOYMENT_HOST }}
 
-      - name: Deploy footballsocial.app
+      - name: Deploy hub.ternent.dev
         run: cat deploy-ternent.sh | ssh staging -T
