@@ -1,4 +1,6 @@
 import express from "express";
+import { join, dirname } from 'path';
+import { fileURLToPath } from "url";
 
 const router = express.Router();
 
@@ -22,8 +24,11 @@ router.get("/cv", async function (req, res) {
   })
 });
 
-router.get("/test", function (req, res) {
-  res.sendFile(path.join(__dirname, "../test.html"));
+router.get("*", function (req, res) {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = dirname(__filename);
+
+  res.sendFile(join(__dirname, "../views/index.html"));
 });
 
 
