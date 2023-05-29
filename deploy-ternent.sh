@@ -28,7 +28,7 @@ sudo cp -r footballsocial/apps/ternent/nginx.conf.d /etc/nginx/sites-available/t
 sudo ln -s /etc/nginx/sites-available/ternent.dev /etc/nginx/sites-enabled/
 
 # Configure SSL
-echo 1 | sudo certbot -d ternent.dev -d hub.ternent.dev
+echo 1 | sudo certbot -d hub.ternent.dev
 IFS=$OLDIFS
 
 echo "restart NGINX"

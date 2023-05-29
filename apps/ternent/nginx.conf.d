@@ -1,4 +1,7 @@
 server {
+    root /var/www/ternent.dev/html;
+    index index.html index.htm index.nginx-debian.html;
+
     gzip on;
     gzip_types application/json;
 
