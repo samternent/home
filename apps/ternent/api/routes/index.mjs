@@ -6,6 +6,7 @@ router.get("/cv", async function (req, res) {
   res.send({
     name: 'Sam Ternent',
     headline: 'Principal Software Engineer @ Teamwork.com',
+    email: 'sam.ternent@gmail.com',
     experience: [
       {
         company: 'Teamwork.com',
