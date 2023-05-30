@@ -12,8 +12,22 @@ router.get("/cv", async function (req, res) {
     experience: [
       {
         company: 'Teamwork.com',
-        from: '',
-        to: '',
+        from: '2016-08-06',
+        to: 'Now',
+        projects: [
+          {
+            name: 'Legacy migration',
+            headline: '',
+            description: 'Migrated our legacy web application from gulp & requireJS with a manual deployment, to webpack and CI deplyments through TravisCI',
+            completed: '2018',
+            technologies: ['webpack', 'knockout', 'requireJS', 'coffeescript', 'vue', 'travis']
+          },
+          {
+            name: 'Vue migration',
+            headline: '',
+            description: '',
+          }
+        ],
       },
       {
         company: 'The Beans Group',
