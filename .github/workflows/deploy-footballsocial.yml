@@ -108,6 +108,3 @@ jobs:
 
       - name: Deploy footballsocial.app
         run: cat deploy.sh | ssh staging -T
-
-      - name: Deploy hub.ternent.dev
-        run: cat deploy-ternent.sh | ssh staging -T

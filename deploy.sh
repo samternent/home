@@ -14,12 +14,12 @@ echo "start node servers"
 # start/restart node server
 NODE_ENV=production pm2 startOrReload ecosystem.config.cjs
 
-# cd ~
+cd ~
 
 # echo "build nginx configs"
 # # Copy nginx config to server
-# sudo rm -rf  /etc/nginx/sites-enabled/*
-# sudo rm -rf  /etc/nginx/sites-available/*
+sudo rm -rf  /etc/nginx/sites-enabled/*
+sudo rm -rf  /etc/nginx/sites-available/*
 
 # # Copy build assets for nginx
 OLDIFS=$IFS; IFS='.';
@@ -32,6 +32,17 @@ do
 
   # Configure SSL
   echo 1 | sudo certbot -d $1.$2 -d www.$1.$2
+done
+IFS=$OLDIFS
+
+for app in hub.ternent.dev;
+do
+  set -- $app;
+  sudo cp -r dist/$2/* /var/www/$2.$3/html
+  sudo cp -r footballsocial/apps/$2/nginx.conf.d /etc/nginx/sites-available/$2.$3
+  sudo ln -s /etc/nginx/sites-available/$2.$3 /etc/nginx/sites-enabled/
+  # Configure SSL
+  echo 1 | sudo certbot -d $2.$3 -d $1.$2.$3
 done
 IFS=$OLDIFS
 
