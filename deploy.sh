@@ -31,20 +31,23 @@ do
   sudo ln -s /etc/nginx/sites-available/$1.$2 /etc/nginx/sites-enabled/
 
   # Configure SSL
-  echo 1 | sudo certbot -d $1.$2 -d www.$1.$2
 done
 IFS=$OLDIFS
 
 for app in hub.ternent.dev;
 do
   set -- $app;
-  sudo cp -r dist/$2/* /var/www/$2.$3/html
   sudo cp -r footballsocial/apps/$2/nginx.conf.d /etc/nginx/sites-available/$2.$3
   sudo ln -s /etc/nginx/sites-available/$2.$3 /etc/nginx/sites-enabled/
   # Configure SSL
-  echo 1 | sudo certbot -d $2.$3 -d $1.$2.$3
 done
 IFS=$OLDIFS
+
+echo 1 | sudo certbot -d footballsocial.app -d www.footballsocial.app
+echo 1 | sudo certbot -d teamconcords.com -d www.teamconcords.com
+echo 1 | sudo certbot -d concords.app -d www.concords.app
+echo 1 | sudo certbot -d gzip.app -d www.gzip.app
+echo 1 | sudo certbot -d ternent.dev -d hub.ternent.dev
 
 echo "restart NGINX"
 # restart nginx
