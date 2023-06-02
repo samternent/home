@@ -16,6 +16,7 @@ app.set("port", port);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 app.use("/assets", express.static(join(__dirname, "/assets")));
+app.use("/app", express.static(join(__dirname, "/app")));
 
 app.use("/", routes);
 

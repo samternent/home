@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Whoops.</title>
+    <meta name="description" content="Our first page" />
+    <meta name="keywords" content="html tutorial template" />
+    <script type="importmap">
+      {
+        "imports": {
+          "@core/engine": "/app/module/engine/index.mjs",
+          "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+        }
+      }
+    </script>
+    <style>
+      #canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: -1;
+      }
+    </style>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@100;200;300;400;500;600;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <script type="module" src="/app/index.mjs"></script>
+  </body>
+</html>

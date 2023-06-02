@@ -42,7 +42,7 @@ router.get("*", function (req, res) {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = dirname(__filename);
 
-  res.sendFile(join(__dirname, "../views/index.html"));
+  res.sendFile(join(__dirname, "../app/index.html"));
 });
 
 
