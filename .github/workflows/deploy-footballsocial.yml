@@ -107,7 +107,7 @@ jobs:
           SSH_HOST: ${{ secrets.DEPLOYMENT_HOST }}
 
       - name: Deploy footballsocial.app
-        run: cat deploy-footballsocial.sh | ssh staging -T
+        run: cat deploy.sh | ssh staging -T
 
       - name: Deploy hub.ternent.dev
         run: cat deploy-ternent.sh | ssh staging -T
