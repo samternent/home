@@ -1,110 +1,113 @@
-# name: Release Football Social
+name: Release Football Social
 
-# on:
-#   push:
-#     branches:
-#       - main
-# env:
-#   PNPM_CACHE_PATH: ~/.pnpm-store
-#   PNPM_CACHE_NAME: pnpm-store-cache
-#   VITE_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-#   VITE_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-#   REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
-#   REDIS_ENDPOINT_URI: ${{ secrets.REDIS_ENDPOINT_URI }}
-#   FOOTBALL_DATA_API_KEY: ${{ secrets.FOOTBALL_DATA_API_KEY }}
+on:
+  push:
+    branches:
+      - main
+env:
+  PNPM_CACHE_PATH: ~/.pnpm-store
+  PNPM_CACHE_NAME: pnpm-store-cache
+  VITE_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  VITE_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+  REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
+  REDIS_ENDPOINT_URI: ${{ secrets.REDIS_ENDPOINT_URI }}
+  FOOTBALL_DATA_API_KEY: ${{ secrets.FOOTBALL_DATA_API_KEY }}
 
-# jobs:
-#   release:
-#     name: Deploy
-#     runs-on: ubuntu-latest
+jobs:
+  release:
+    name: Deploy
+    runs-on: ubuntu-latest
 
-#     steps:
-#       - name: Checkout repo
-#         uses: actions/checkout@master
-#         with:
-#           fetch-depth: 0
-#           persist-credentials: false
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@master
+        with:
+          fetch-depth: 0
+          persist-credentials: false
 
-#       - name: Get node version
-#         id: nvmrc
-#         run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
+      - name: Get node version
+        id: nvmrc
+        run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
 
-#       - uses: pnpm/action-setup@v2
-#         with:
-#           version: 8
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
 
-#       - name: Use Node.js ${{ matrix.node-version }}
-#         uses: actions/setup-node@v3
-#         with:
-#           node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
-#           cache: "pnpm"
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
+          cache: "pnpm"
 
-#       - name: Cache pnpm modules
-#         uses: actions/cache@v2
-#         with:
-#           path: ${{ env.PNPM_CACHE_PATH }}
-#           key: ${{ runner.os }}-${{ env.PNPM_CACHE_NAME }}-${{ steps.nvmrc.outputs.NODE_VERSION }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-#           restore-keys: |
-#             ${{ runner.os }}-${{ env.PNPM_CACHE_NAME }}-${{ steps.nvmrc.outputs.NODE_VERSION }}-
-#       - name: Set npm token
-#         run: npm config set '//registry.npmjs.org/:_authToken' "${NPM_TOKEN}"
+      - name: Cache pnpm modules
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.PNPM_CACHE_PATH }}
+          key: ${{ runner.os }}-${{ env.PNPM_CACHE_NAME }}-${{ steps.nvmrc.outputs.NODE_VERSION }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.PNPM_CACHE_NAME }}-${{ steps.nvmrc.outputs.NODE_VERSION }}-
+      - name: Set npm token
+        run: npm config set '//registry.npmjs.org/:_authToken' "${NPM_TOKEN}"
 
-#       - name: Install pnpm
-#         run: npm install -g pnpm
+      - name: Install pnpm
+        run: npm install -g pnpm
 
-#       - name: Set pnpm config
-#         run: pnpm config set store-dir $PNPM_CACHE_PATH
+      - name: Set pnpm config
+        run: pnpm config set store-dir $PNPM_CACHE_PATH
 
-#       - name: Install dependencies
-#         run: pnpm install
+      - name: Install dependencies
+        run: pnpm install
 
-#       - name: Build libs
-#         run: pnpm --filter @concords/utils --filter @concords/identity --filter @concords/encrypt --filter @concords/proof-of-work --filter @concords/ledger build
+      - name: Build libs
+        run: pnpm --filter @concords/utils --filter @concords/identity --filter @concords/encrypt --filter @concords/proof-of-work --filter @concords/ledger build
 
-#       - name: Build dist
-#         run: pnpm --filter @concords/footballsocial --filter @concords/teamconcords --filter @concords/concords --filter @concords/gzip build
+      - name: Build dist
+        run: pnpm --filter @concords/footballsocial --filter @concords/teamconcords --filter @concords/concords --filter @concords/gzip build
 
-#       - name: Configure SSH
-#         run: |
-#           mkdir -p ~/.ssh
-#           echo "$SSH_KEY" > ~/.ssh/id_rsa
-#           chmod 700 ~/.ssh/id_rsa
-#           cat >>~/.ssh/config <<END
-#           Host staging
-#             HostName $SSH_HOST
-#             User $SSH_USER
-#             IdentityFile ~/.ssh/id_rsa
-#             StrictHostKeyChecking no
-#           END
-#           ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts
-#         env:
-#           SSH_KEY: ${{ secrets.DEPLOYMENT_KEY }}
-#           SSH_USER: ${{ secrets.DEPLOYMENT_USER }}
-#           SSH_HOST: ${{ secrets.DEPLOYMENT_HOST }}
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_KEY" > ~/.ssh/id_rsa
+          chmod 700 ~/.ssh/id_rsa
+          cat >>~/.ssh/config <<END
+          Host staging
+            HostName $SSH_HOST
+            User $SSH_USER
+            IdentityFile ~/.ssh/id_rsa
+            StrictHostKeyChecking no
+          END
+          ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts
+        env:
+          SSH_KEY: ${{ secrets.DEPLOYMENT_KEY }}
+          SSH_USER: ${{ secrets.DEPLOYMENT_USER }}
+          SSH_HOST: ${{ secrets.DEPLOYMENT_HOST }}
 
-#       - name: Copy build assets
-#         run: scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -r apps/footballsocial/dist/* $SSH_USER@$SSH_HOST:dist/footballsocial
-#         env:
-#           SSH_USER: ${{ secrets.DEPLOYMENT_USER }}
-#           SSH_HOST: ${{ secrets.DEPLOYMENT_HOST }}
+      - name: Copy build assets
+        run: scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -r apps/footballsocial/dist/* $SSH_USER@$SSH_HOST:dist/footballsocial
+        env:
+          SSH_USER: ${{ secrets.DEPLOYMENT_USER }}
+          SSH_HOST: ${{ secrets.DEPLOYMENT_HOST }}
 
-#       - name: Copy concords build assets
-#         run: scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -r apps/teamconcords/dist/* $SSH_USER@$SSH_HOST:dist/teamconcords
-#         env:
-#           SSH_USER: ${{ secrets.DEPLOYMENT_USER }}
-#           SSH_HOST: ${{ secrets.DEPLOYMENT_HOST }}
+      - name: Copy concords build assets
+        run: scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -r apps/teamconcords/dist/* $SSH_USER@$SSH_HOST:dist/teamconcords
+        env:
+          SSH_USER: ${{ secrets.DEPLOYMENT_USER }}
+          SSH_HOST: ${{ secrets.DEPLOYMENT_HOST }}
 
-#       - name: Copy concords build assets
-#         run: scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -r apps/concords/dist/* $SSH_USER@$SSH_HOST:dist/concords
-#         env:
-#           SSH_USER: ${{ secrets.DEPLOYMENT_USER }}
-#           SSH_HOST: ${{ secrets.DEPLOYMENT_HOST }}
+      - name: Copy concords build assets
+        run: scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -r apps/concords/dist/* $SSH_USER@$SSH_HOST:dist/concords
+        env:
+          SSH_USER: ${{ secrets.DEPLOYMENT_USER }}
+          SSH_HOST: ${{ secrets.DEPLOYMENT_HOST }}
 
-#       - name: Copy gzip build assets
-#         run: scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -r apps/gzip/dist/* $SSH_USER@$SSH_HOST:dist/gzip
-#         env:
-#           SSH_USER: ${{ secrets.DEPLOYMENT_USER }}
-#           SSH_HOST: ${{ secrets.DEPLOYMENT_HOST }}
+      - name: Copy gzip build assets
+        run: scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -r apps/gzip/dist/* $SSH_USER@$SSH_HOST:dist/gzip
+        env:
+          SSH_USER: ${{ secrets.DEPLOYMENT_USER }}
+          SSH_HOST: ${{ secrets.DEPLOYMENT_HOST }}
 
-#       - name: Deploy footballsocial.app
-#         run: cat deploy.sh | ssh staging -T
+      - name: Deploy footballsocial.app
+        run: cat deploy-footballsocial.sh | ssh staging -T
+
+      - name: Deploy hub.ternent.dev
+        run: cat deploy-ternent.sh | ssh staging -T
