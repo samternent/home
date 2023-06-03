@@ -1,6 +1,12 @@
-// import { createApp } from 'vue';
-import { createEngine } from '@core/engine';
+import { createApp } from "vue";
+import { createEngine } from "@core/engine";
+import { App } from "@ui/app";
 
-createEngine();
+const {engine, character} = createEngine();
 
+const app = createApp({
+  ...App(engine, character)
+});
+app.mount("#app");
 
+// start();

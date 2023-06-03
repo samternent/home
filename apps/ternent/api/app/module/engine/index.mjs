@@ -1,44 +1,51 @@
-import { generateSprite } from '@core/sprite';
+import { generateSprite } from "@core/sprite";
+import { generateScene } from "@core/scene";
+
+const {
+  requestAnimationFrame,
+  cancelAnimationFrame,
+  addEventListener,
+  removeEventListener,
+} = window;
 
 export function createEngine() {
-  console.log("create engine");
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+
+  let colorScheme =
+    window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches ? 'dark' : 'light';
+
+  ctx.canvas.width = window.innerWidth;
+  ctx.canvas.height = window.innerHeight;
+
+  // add resize observer
+
+  let requestId = undefined;
+
   let secondsPassed;
   let oldTimeStamp;
   let fps;
-  let lastDrew = 0;
-  const message = "https://hub.ternent.dev";
 
-  let spriteNum = 0;
-  let posX = window.innerWidth / 4;
-  let posY = window.innerHeight - 20;
+  const character = generateSprite({
+    path: "assets/character.png",
+    width: 87,
+    height: 150,
+  });
+  const scene = generateScene({
+    path: `assets/game_background_${colorScheme}.png`,
+  });
 
-  const {sprite, isReady} = generateSprite("assets/character.png", 87, 150);
+  const { draw: drawScene } = scene;
+  const {
+    draw: drawCharacter,
+    start: startCharacter,
+    stop: stopCharacter,
+  } = character;
 
   function draw() {
-    ctx.fillStyle = "black";
-    ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
-
-    ctx.font = "200 18px Work Sans";
-    ctx.textAlign = "center";
-    ctx.fillStyle = Math.random() > 0.1 ? "#aaa" : "#888";
-    ctx.fillText(message, canvas.width - 110, canvas.height - 15);
-
-    if (isReady) {
-      ctx.drawImage(...sprite[spriteNum](posX, posY));
-      if (Date.now() - lastDrew > 60) {
-        if (spriteNum < sprite.length - 1) {
-          spriteNum++;
-        } else {
-          spriteNum = 0;
-        }
-        lastDrew = Date.now();
-      }
-    }
-
-    // Draw number to the screen
-    ctx.font = "200 16px Work Sans";
-    ctx.fillStyle = "white";
-    ctx.fillText(`${fps} fps`, 32, 20);
+    drawScene(ctx, fps);
+    drawCharacter(ctx);
   }
 
   function gameLoop(timeStamp) {
@@ -52,15 +59,53 @@ export function createEngine() {
     draw();
 
     // Keep requesting new frames
-    window.requestAnimationFrame(gameLoop);
+    requestId = requestAnimationFrame(gameLoop);
   }
 
-  const canvas = document.getElementById("canvas");
-  const ctx = canvas.getContext("2d");
+  function handleKeydown(e) {
+    if (e.key === "d" || e.key === "ArrowRight") {
+      startCharacter();
+    }
+  }
+  function handleKeyup(e) {
+    if (!e.key) {
+      stop();
+    }
+    if (!e.key || e.key === "d" || e.key === "ArrowRight") {
+      stopCharacter();
+    }
+  }
 
-  ctx.canvas.width = window.innerWidth;
-  ctx.canvas.height = window.innerHeight;
+  function start() {
+    if (!requestId) {
+      requestId = requestAnimationFrame(gameLoop);
+      addEventListener("keydown", handleKeydown);
+      addEventListener("keyup", handleKeyup);
+      addEventListener("blur", handleKeyup);
+    }
+  }
 
-  // Start the first frame request
-  requestAnimationFrame(gameLoop);
+  function stop() {
+    requestId = cancelAnimationFrame(requestId);
+    removeEventListener("keydown", handleKeydown);
+    removeEventListener("keyup", handleKeyup);
+    removeEventListener("blur", handleKeyup);
+  }
+
+  window
+    .matchMedia("(prefers-color-scheme: dark)")
+    .addEventListener("change", (event) => {
+      colorScheme = event.matches ? "dark" : "light";
+    });
+
+  // set the scene
+  start();
+
+  return {
+    engine: {
+      start,
+      stop,
+    },
+    character,
+  };
 }
