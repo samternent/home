@@ -79,17 +79,11 @@ export function createEngine() {
   function start() {
     if (!requestId) {
       requestId = requestAnimationFrame(gameLoop);
-      addEventListener("keydown", handleKeydown);
-      addEventListener("keyup", handleKeyup);
-      addEventListener("blur", handleKeyup);
     }
   }
 
   function stop() {
     requestId = cancelAnimationFrame(requestId);
-    removeEventListener("keydown", handleKeydown);
-    removeEventListener("keyup", handleKeyup);
-    removeEventListener("blur", handleKeyup);
   }
 
   window
@@ -100,6 +94,11 @@ export function createEngine() {
 
   // set the scene
   start();
+
+  addEventListener("keydown", handleKeydown);
+  addEventListener("keyup", handleKeyup);
+  addEventListener("blur", handleKeyup);
+  addEventListener("focus", start);
 
   return {
     engine: {

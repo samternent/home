@@ -13,7 +13,7 @@ export function generateScene({ path }) {
 
         ctx.font = "300 18px Work Sans";
         ctx.textAlign = "center";
-        ctx.fillStyle = Math.random() > 0.1 ? "#111" : "#f0c";
+        ctx.fillStyle = Math.random() > 0.1 ? "#fc0" : "#f0c";
         ctx.fillText("https://hub.ternent.dev", canvas.width - 110, canvas.height - 15);
         // Draw number to the screen
         ctx.font = "200 16px Work Sans";
