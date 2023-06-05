@@ -104,6 +104,7 @@ export function createEngine() {
     engine: {
       start,
       stop,
+      isPaused: Boolean(requestId),
     },
     character,
   };

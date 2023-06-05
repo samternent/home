@@ -8,7 +8,6 @@ export function generateScene({ path }) {
         ctx.fillStyle = "#fff";
         ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
-        console.log(myImage.width)
         ctx.drawImage(myImage, 0, 0, myImage.width, window.innerHeight);
 
         ctx.font = "300 18px Work Sans";

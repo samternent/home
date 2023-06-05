@@ -1,14 +1,13 @@
-import { h, withModifiers } from "vue";
+import { h } from "vue";
 
 export default function createApp(engine) {
-  const { start, stop } = engine;
+  const { isPaused } = engine;
   return {
     render() {
       return h(
         "div",
         [
-          h("button", { onClick: start }, "Start"),
-          h("button", { onClick: stop }, "Stop"),
+          isPaused || h("div", {}, "Paused"),
         ]
       );
     },

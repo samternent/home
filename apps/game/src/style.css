@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --title-box-color: rgba(219, 39, 119, 1);
+  --title-shadow-color: rgba(67, 67, 67, 0.9);
+  --title-shadow-yellow-color: rgba(234, 179, 8, 1);
+  color-scheme: light;
+}
