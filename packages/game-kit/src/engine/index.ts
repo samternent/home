@@ -57,8 +57,8 @@ export function createEngine(): Engine {
   // set the scene
   start();
 
-  addEventListener("blur", stop);
-  addEventListener("focus", start);
+  // addEventListener("blur", stop);
+  // addEventListener("focus", start);
 
   return {
     start,

@@ -63,7 +63,7 @@ api.interceptors.response.use(
           ></section>
         </div>
 
-        <div class="flex items-center text-white" :key="profile?.id || 'empty'">
+        <!-- <div class="flex items-center text-white" :key="profile?.id || 'empty'">
           <RouterLink
             aria-label="Login"
             v-if="!user"
@@ -101,7 +101,7 @@ api.interceptors.response.use(
                 />
               </svg>
             </RouterLink>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>
