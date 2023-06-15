@@ -27,16 +27,9 @@ export function createEngine(): Engine {
     }
   }
 
-  function gameLoop(timeStamp: EpochTimeStamp) {
-    // Calculate the number of seconds passed since the last frame
-    secondsPassed = (timeStamp - oldTimeStamp) / 1000;
-    oldTimeStamp = timeStamp;
-
-    // Calculate fps
-    fps = Math.round(1 / secondsPassed);
-
+  function gameLoop(timestamp: EpochTimeStamp) {
     for (const callback of loopCallbacks) {
-      callback();
+      callback(timestamp);
     }
 
     // Keep requesting new frames
@@ -56,9 +49,6 @@ export function createEngine(): Engine {
 
   // set the scene
   start();
-
-  // addEventListener("blur", stop);
-  // addEventListener("focus", start);
 
   return {
     start,
