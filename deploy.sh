@@ -9,20 +9,20 @@ pnpm i
 NODE_ENV=production pm2 startOrReload ecosystem.config.cjs
 
 # Copy nginx config to server
-sudo rm -rf  ~/etc/nginx/sites-enabled/*
-sudo rm -rf  ~/etc/nginx/sites-available/*
+sudo rm -rf  /etc/nginx/sites-enabled/*
+sudo rm -rf  /etc/nginx/sites-available/*
 
 # api.ternent.dev
-sudo cp -r ~/home/apps/ternent/nginx.conf.d ~/etc/nginx/sites-available/ternent.dev
-sudo ln -s ~/etc/nginx/sites-available/ternent.dev ~/etc/nginx/sites-enabled/
+sudo cp -r /home/apps/ternent/nginx.conf.d /etc/nginx/sites-available/ternent.dev
+sudo ln -s /etc/nginx/sites-available/ternent.dev ~/etc/nginx/sites-enabled/
 
 # api.footballsocial.app
-sudo cp -r ~/home/apps/footballsocial/nginx.conf.d ~/etc/nginx/sites-available/footballsocial.app
-sudo ln -s ~/etc/nginx/sites-available/footballsocial.app ~/etc/nginx/sites-enabled/
+sudo cp -r /home/apps/footballsocial/nginx.conf.d /etc/nginx/sites-available/footballsocial.app
+sudo ln -s /etc/nginx/sites-available/footballsocial.app /etc/nginx/sites-enabled/
 
 # api.concords.app
-sudo cp -r ~/home/apps/concords/nginx.conf.d ~/etc/nginx/sites-available/concords.app
-sudo ln -s ~/etc/nginx/sites-available/concords.app ~/etc/nginx/sites-enabled/
+sudo cp -r /home/apps/concords/nginx.conf.d /etc/nginx/sites-available/concords.app
+sudo ln -s /etc/nginx/sites-available/concords.app /etc/nginx/sites-enabled/
 
 echo "restart NGINX"
 # restart nginx
