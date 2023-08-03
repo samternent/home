@@ -4,6 +4,8 @@
 # [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 # npm install -g pnpm pm2
 
+whoami
+
 # TODO: Rename repo in git to "home" and reeflect here
 cd footballsocial
 
