@@ -63,7 +63,7 @@ api.interceptors.response.use(
           ></section>
         </div>
 
-        <!-- <div class="flex items-center text-white" :key="profile?.id || 'empty'">
+        <div class="flex items-center text-white" :key="profile?.id || 'empty'">
           <RouterLink
             aria-label="Login"
             v-if="!user"
@@ -102,12 +102,12 @@ api.interceptors.response.use(
               </svg>
             </RouterLink>
           </div>
-        </div> -->
+        </div>
       </div>
     </div>
 
     <div class="flex-1 flex flex-col" v-if="ready">
-      <!-- <div
+      <div
         v-if="user && !notificationsDeclined && !notificationsEnabled"
         class="max-w-7xl px-4 py-2 rounded my-2 mx-auto flex items-center w-full justify-end"
       >
@@ -130,7 +130,7 @@ api.interceptors.response.use(
             />
           </svg>
         </button>
-      </div> -->
+      </div>
       <template v-if="user && !profile?.username">
         <SetUsername />
       </template>
