@@ -79,5 +79,5 @@ jobs:
           SSH_USER: ${{ secrets.DEPLOYMENT_USER }}
           SSH_HOST: ${{ secrets.DEPLOYMENT_HOST }}
 
-      - name: Deploy footballsocial.app
+      - name: Deploy app servers
         run: cat deploy.sh | ssh staging -T

@@ -8,11 +8,6 @@ module.exports = {
       watch: resolve("apps/footballsocial/api"),
     },
     {
-      name: "teamconcords",
-      script: resolve("apps/teamconcords/api/main.mjs"),
-      watch: resolve("apps/teamconcords/api"),
-    },
-    {
       name: "concords",
       script: resolve("apps/concords/api/main.mjs"),
       watch: resolve("apps/concords/api"),
@@ -21,11 +16,6 @@ module.exports = {
       name: "ternent",
       script: resolve("apps/ternent/api/main.mjs"),
       watch: resolve("apps/ternent/api"),
-    },
-    {
-      name: "gzip",
-      script: resolve("apps/gzip/api/main.mjs"),
-      watch: resolve("apps/gzip/api"),
     },
   ],
 };
