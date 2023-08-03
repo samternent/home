@@ -23,7 +23,7 @@ sudo rm -rf  /etc/nginx/sites-available/*
 
 # # Copy build assets for nginx
 OLDIFS=$IFS; IFS='.';
-for app in footballsocial.app teamconcords.com concords.app gzip.app;
+for app in footballsocial.app # teamconcords.com concords.app gzip.app;
 do
   set -- $app;
   sudo cp -r dist/$1/* /var/www/$1.$2/html
@@ -44,9 +44,9 @@ done
 IFS=$OLDIFS
 
 echo 1 | sudo certbot -d footballsocial.app -d www.footballsocial.app
-echo 1 | sudo certbot -d teamconcords.com -d www.teamconcords.com
-echo 1 | sudo certbot -d concords.app -d www.concords.app
-echo 1 | sudo certbot -d gzip.app -d www.gzip.app
+# echo 1 | sudo certbot -d teamconcords.com -d www.teamconcords.com
+# echo 1 | sudo certbot -d concords.app -d www.concords.app
+# echo 1 | sudo certbot -d gzip.app -d www.gzip.app
 echo 1 | sudo certbot -d ternent.dev -d hub.ternent.dev
 
 echo "restart NGINX"
