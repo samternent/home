@@ -1,5 +1,5 @@
 import axios from "axios";
 
 export default axios.create({
-  baseURL: "/api",
+  baseURL: "https://api.footballsocial.app/",
 });

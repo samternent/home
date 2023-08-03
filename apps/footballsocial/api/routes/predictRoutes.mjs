@@ -18,6 +18,9 @@ export default function predictRoutes(router) {
 
     const { resultSet, matches } = data;
 
+    // if gameweek has finished, return the table.
+    // get data from supabase - big calc here
+
     if (resultSet?.played > 0) {
       return res.send("Gameweek has already started");
     }
