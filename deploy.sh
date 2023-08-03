@@ -1,8 +1,8 @@
-# #!/bin/bash
+#!/usr/bin/zsh
 # # export NVM_DIR="$HOME/.nvm"
 # [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 # [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-npm install -g pnpm pm2
+# npm install -g pnpm pm2
 
 # TODO: Rename repo in git to "home" and reeflect here
 cd footballsocial
