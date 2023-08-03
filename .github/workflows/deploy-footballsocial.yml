@@ -61,9 +61,6 @@ jobs:
       # - name: Build libs
       #   run: pnpm --filter @concords/utils --filter @concords/identity --filter @concords/encrypt --filter @concords/proof-of-work --filter @concords/ledger build
 
-      - name: Build dist
-        run: pnpm --filter @concords/footballsocial build
-
       - name: Configure SSH
         run: |
           mkdir -p ~/.ssh
@@ -81,30 +78,6 @@ jobs:
           SSH_KEY: ${{ secrets.DEPLOYMENT_KEY }}
           SSH_USER: ${{ secrets.DEPLOYMENT_USER }}
           SSH_HOST: ${{ secrets.DEPLOYMENT_HOST }}
-
-      - name: Copy build assets
-        run: scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -r apps/footballsocial/dist/* $SSH_USER@$SSH_HOST:dist/footballsocial
-        env:
-          SSH_USER: ${{ secrets.DEPLOYMENT_USER }}
-          SSH_HOST: ${{ secrets.DEPLOYMENT_HOST }}
-
-      # - name: Copy concords build assets
-      #   run: scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -r apps/teamconcords/dist/* $SSH_USER@$SSH_HOST:dist/teamconcords
-      #   env:
-      #     SSH_USER: ${{ secrets.DEPLOYMENT_USER }}
-      #     SSH_HOST: ${{ secrets.DEPLOYMENT_HOST }}
-
-      # - name: Copy concords build assets
-      #   run: scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -r apps/concords/dist/* $SSH_USER@$SSH_HOST:dist/concords
-      #   env:
-      #     SSH_USER: ${{ secrets.DEPLOYMENT_USER }}
-      #     SSH_HOST: ${{ secrets.DEPLOYMENT_HOST }}
-
-      # - name: Copy gzip build assets
-      #   run: scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -r apps/gzip/dist/* $SSH_USER@$SSH_HOST:dist/gzip
-      #   env:
-      #     SSH_USER: ${{ secrets.DEPLOYMENT_USER }}
-      #     SSH_HOST: ${{ secrets.DEPLOYMENT_HOST }}
 
       - name: Deploy footballsocial.app
         run: cat deploy.sh | ssh staging -T
