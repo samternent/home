@@ -39,11 +39,15 @@ jobs:
         uses: changesets/action@v1.4.1
         with:
           title: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish Release
         if: steps.changesets.outputs.hasChangesets == 'false'
         run: bash build/publish.sh
         shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # - uses: pnpm/action-setup@v2
       #   with:
