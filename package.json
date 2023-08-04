@@ -13,14 +13,13 @@
   "devDependencies": {
     "@changesets/changelog-github": "^0.4.8",
     "@changesets/cli": "^2.26.2",
+    "encoding": "0.1.13",
     "turbo": "^1.6.3"
   },
   "dependencies": {
     "shelljs": "^0.8.5"
   },
   "scripts": {
-    "build:footballsocial": "pnpm --filter footballsocial build",
-    "postinstall": "pnpm --filter @concords/utils --filter @concords/identity --filter @concords/encrypt --filter @concords/proof-of-work --filter @concords/ledger build",
-    "post-merge": "NODE_ENV=production pm2 startOrReload ecosystem.config.cjs"
+    "build:footballsocial": "pnpm --filter footballsocial build"
   }
 }

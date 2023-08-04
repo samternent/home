@@ -14,10 +14,13 @@ importers:
     devDependencies:
       '@changesets/changelog-github':
         specifier: ^0.4.8
-        version: 0.4.8
+        version: 0.4.8(encoding@0.1.13)
       '@changesets/cli':
         specifier: ^2.26.2
         version: 2.26.2
+      encoding:
+        specifier: 0.1.13
+        version: 0.1.13
       turbo:
         specifier: ^1.6.3
         version: 1.8.6
@@ -47,16 +50,16 @@ importers:
         version: 1.0.0-beta.13(tailwindcss@3.3.0)(vue@3.2.47)
       '@inrupt/solid-client':
         specifier: ^1.26.0
-        version: 1.26.0
+        version: 1.26.0(encoding@0.1.13)
       '@inrupt/solid-client-authn-browser':
         specifier: ^1.14.0
-        version: 1.14.0
+        version: 1.14.0(encoding@0.1.13)
       '@inrupt/vocab-common-rdf':
         specifier: ^1.0.5
         version: 1.0.5
       '@supabase/supabase-js':
         specifier: ^2.1.1
-        version: 2.12.1
+        version: 2.12.1(encoding@0.1.13)
       '@tailwindcss/line-clamp':
         specifier: ^0.4.2
         version: 0.4.2(tailwindcss@3.3.0)
@@ -125,7 +128,7 @@ importers:
         version: 4.6.5
       rxdb:
         specifier: ^14.1.9
-        version: 14.5.1(rxjs@7.8.0)
+        version: 14.5.1(encoding@0.1.13)(rxjs@7.8.0)
       rxjs:
         specifier: ^7.8.0
         version: 7.8.0
@@ -140,7 +143,7 @@ importers:
         version: 8.3.2
       vite-plugin-md:
         specifier: ^0.20.4
-        version: 0.20.6(@vitejs/plugin-vue@3.2.0)(vite@3.2.5)
+        version: 0.20.6(@vitejs/plugin-vue@3.2.0)(encoding@0.1.13)(vite@3.2.5)
       vue:
         specifier: ^3.2.37
         version: 3.2.47
@@ -162,7 +165,7 @@ importers:
         version: 8.3.4
       '@vercel/node':
         specifier: ^2.5.10
-        version: 2.10.1
+        version: 2.10.1(encoding@0.1.13)
       '@vitejs/plugin-vue':
         specifier: ^3.0.3
         version: 3.2.0(vite@3.2.5)(vue@3.2.47)
@@ -195,7 +198,7 @@ importers:
         version: 4.9.5
       vercel:
         specifier: ^28.1.4
-        version: 28.18.2(@types/node@14.18.33)
+        version: 28.18.2(@types/node@14.18.33)(encoding@0.1.13)
       vite:
         specifier: ^3.0.7
         version: 3.2.5(@types/node@14.18.33)
@@ -210,7 +213,7 @@ importers:
     dependencies:
       '@supabase/supabase-js':
         specifier: ^2.1.1
-        version: 2.12.1
+        version: 2.12.1(encoding@0.1.13)
       '@tailwindcss/line-clamp':
         specifier: ^0.4.2
         version: 0.4.2(tailwindcss@3.3.0)
@@ -282,7 +285,7 @@ importers:
         version: 8.3.2
       vite-plugin-md:
         specifier: ^0.20.4
-        version: 0.20.6(@vitejs/plugin-vue@3.2.0)(vite@3.2.5)
+        version: 0.20.6(@vitejs/plugin-vue@3.2.0)(encoding@0.1.13)(vite@3.2.5)
       vue:
         specifier: ^3.2.37
         version: 3.2.47
@@ -301,7 +304,7 @@ importers:
         version: 8.3.4
       '@vercel/node':
         specifier: ^2.5.10
-        version: 2.10.1
+        version: 2.10.1(encoding@0.1.13)
       '@vitejs/plugin-vue':
         specifier: ^3.0.3
         version: 3.2.0(vite@3.2.5)(vue@3.2.47)
@@ -334,7 +337,7 @@ importers:
         version: 4.9.5
       vercel:
         specifier: ^28.1.4
-        version: 28.18.2(@types/node@14.18.33)
+        version: 28.18.2(@types/node@14.18.33)(encoding@0.1.13)
       vite:
         specifier: ^3.0.7
         version: 3.2.5(@types/node@14.18.33)
@@ -355,7 +358,7 @@ importers:
         version: link:../../packages/utils
       '@supabase/supabase-js':
         specifier: ^2.1.1
-        version: 2.12.1
+        version: 2.12.1(encoding@0.1.13)
       '@tailwindcss/line-clamp':
         specifier: ^0.4.2
         version: 0.4.2(tailwindcss@3.3.0)
@@ -385,7 +388,7 @@ importers:
         version: 8.3.2
       vite-plugin-md:
         specifier: ^0.20.4
-        version: 0.20.6(@vitejs/plugin-vue@3.2.0)(vite@3.2.5)
+        version: 0.20.6(@vitejs/plugin-vue@3.2.0)(encoding@0.1.13)(vite@3.2.5)
       vue:
         specifier: ^3.2.37
         version: 3.2.47
@@ -407,7 +410,7 @@ importers:
         version: 8.3.4
       '@vercel/node':
         specifier: ^2.5.10
-        version: 2.10.1
+        version: 2.10.1(encoding@0.1.13)
       '@vitejs/plugin-vue':
         specifier: ^3.0.3
         version: 3.2.0(vite@3.2.5)(vue@3.2.47)
@@ -440,7 +443,7 @@ importers:
         version: 4.8.4
       vercel:
         specifier: ^28.1.4
-        version: 28.18.2(@types/node@14.18.33)
+        version: 28.18.2(@types/node@14.18.33)(encoding@0.1.13)
       vite:
         specifier: ^3.0.7
         version: 3.2.5(@types/node@14.18.33)
@@ -458,7 +461,7 @@ importers:
         version: link:../../packages/utils
       '@supabase/supabase-js':
         specifier: ^2.1.1
-        version: 2.12.1
+        version: 2.12.1(encoding@0.1.13)
       '@tailwindcss/line-clamp':
         specifier: ^0.4.2
         version: 0.4.2(tailwindcss@3.3.0)
@@ -488,7 +491,7 @@ importers:
         version: 8.3.2
       vite-plugin-md:
         specifier: ^0.20.4
-        version: 0.20.6(@vitejs/plugin-vue@3.2.0)(vite@3.2.5)
+        version: 0.20.6(@vitejs/plugin-vue@3.2.0)(encoding@0.1.13)(vite@3.2.5)
       vue:
         specifier: ^3.2.37
         version: 3.2.47
@@ -510,7 +513,7 @@ importers:
         version: 8.3.4
       '@vercel/node':
         specifier: ^2.5.10
-        version: 2.10.1
+        version: 2.10.1(encoding@0.1.13)
       '@vitejs/plugin-vue':
         specifier: ^3.0.3
         version: 3.2.0(vite@3.2.5)(vue@3.2.47)
@@ -543,7 +546,7 @@ importers:
         version: 4.9.5
       vercel:
         specifier: ^28.1.4
-        version: 28.18.2(@types/node@14.18.33)
+        version: 28.18.2(@types/node@14.18.33)(encoding@0.1.13)
       vite:
         specifier: ^3.0.7
         version: 3.2.5(@types/node@14.18.33)
@@ -558,7 +561,7 @@ importers:
     dependencies:
       '@supabase/supabase-js':
         specifier: ^2.1.1
-        version: 2.12.1
+        version: 2.12.1(encoding@0.1.13)
       '@tailwindcss/line-clamp':
         specifier: ^0.4.2
         version: 0.4.2(tailwindcss@3.3.0)
@@ -630,7 +633,7 @@ importers:
         version: 8.3.2
       vite-plugin-md:
         specifier: ^0.20.4
-        version: 0.20.6(@vitejs/plugin-vue@3.2.0)(vite@3.2.5)
+        version: 0.20.6(@vitejs/plugin-vue@3.2.0)(encoding@0.1.13)(vite@3.2.5)
       vue:
         specifier: ^3.2.37
         version: 3.2.47
@@ -649,7 +652,7 @@ importers:
         version: 8.3.4
       '@vercel/node':
         specifier: ^2.5.10
-        version: 2.10.1
+        version: 2.10.1(encoding@0.1.13)
       '@vitejs/plugin-vue':
         specifier: ^3.0.3
         version: 3.2.0(vite@3.2.5)(vue@3.2.47)
@@ -682,7 +685,7 @@ importers:
         version: 4.9.5
       vercel:
         specifier: ^28.1.4
-        version: 28.18.2(@types/node@14.18.33)
+        version: 28.18.2(@types/node@14.18.33)(encoding@0.1.13)
       vite:
         specifier: ^3.0.7
         version: 3.2.5(@types/node@14.18.33)
@@ -697,7 +700,7 @@ importers:
     dependencies:
       '@supabase/supabase-js':
         specifier: ^2.1.1
-        version: 2.12.1
+        version: 2.12.1(encoding@0.1.13)
       axios:
         specifier: ^0.27.2
         version: 0.27.2
@@ -725,7 +728,7 @@ importers:
         version: 8.3.4
       '@vercel/node':
         specifier: ^2.5.10
-        version: 2.10.1
+        version: 2.10.1(encoding@0.1.13)
       autoprefixer:
         specifier: ^10.4.8
         version: 10.4.14(postcss@8.4.21)
@@ -746,7 +749,7 @@ importers:
         version: 5.3.0
       vercel:
         specifier: ^28.1.4
-        version: 28.18.2(@types/node@14.18.33)
+        version: 28.18.2(@types/node@14.18.33)(encoding@0.1.13)
       vue-tsc:
         specifier: ^0.39.5
         version: 0.39.5(typescript@4.9.5)
@@ -2130,10 +2133,10 @@ packages:
       '@changesets/types': 5.2.1
     dev: true
 
-  /@changesets/changelog-github@0.4.8:
+  /@changesets/changelog-github@0.4.8(encoding@0.1.13):
     resolution: {integrity: sha512-jR1DHibkMAb5v/8ym77E4AMNWZKB5NPzw5a5Wtqm1JepAuIF+hrKp2u04NKM14oBZhHglkCfrla9uq8ORnK/dw==}
     dependencies:
-      '@changesets/get-github-info': 0.5.2
+      '@changesets/get-github-info': 0.5.2(encoding@0.1.13)
       '@changesets/types': 5.2.1
       dotenv: 8.6.0
     transitivePeerDependencies:
@@ -2207,11 +2210,11 @@ packages:
       semver: 7.5.4
     dev: true
 
-  /@changesets/get-github-info@0.5.2:
+  /@changesets/get-github-info@0.5.2(encoding@0.1.13):
     resolution: {integrity: sha512-JppheLu7S114aEs157fOZDjFqUDpm7eHdq5E8SSR0gUBTEK0cNSHsrSR5a66xs0z3RWuo46QvA3vawp8BxDHvg==}
     dependencies:
       dataloader: 1.4.0
-      node-fetch: 2.6.9
+      node-fetch: 2.6.9(encoding@0.1.13)
     transitivePeerDependencies:
       - encoding
     dev: true
@@ -2849,17 +2852,17 @@ packages:
       tslib: 2.5.0
     dev: false
 
-  /@firebase/auth-compat@0.3.4(@firebase/app-compat@0.2.4)(@firebase/app-types@0.9.0)(@firebase/app@0.9.4):
+  /@firebase/auth-compat@0.3.4(@firebase/app-compat@0.2.4)(@firebase/app-types@0.9.0)(@firebase/app@0.9.4)(encoding@0.1.13):
     resolution: {integrity: sha512-AVNZ4pwLV063ngPKU+8tykQ6v+fRlKfBWEp1W+JU1pEJI+GK0thOPrCn22lWyI8LYiDrh3MLIiBJCv7fsyQajw==}
     peerDependencies:
       '@firebase/app-compat': 0.x
     dependencies:
       '@firebase/app-compat': 0.2.4
-      '@firebase/auth': 0.21.4(@firebase/app@0.9.4)
+      '@firebase/auth': 0.21.4(@firebase/app@0.9.4)(encoding@0.1.13)
       '@firebase/auth-types': 0.12.0(@firebase/app-types@0.9.0)(@firebase/util@1.9.3)
       '@firebase/component': 0.6.4
       '@firebase/util': 1.9.3
-      node-fetch: 2.6.7
+      node-fetch: 2.6.7(encoding@0.1.13)
       tslib: 2.5.0
     transitivePeerDependencies:
       - '@firebase/app'
@@ -2881,7 +2884,7 @@ packages:
       '@firebase/util': 1.9.3
     dev: false
 
-  /@firebase/auth@0.21.4(@firebase/app@0.9.4):
+  /@firebase/auth@0.21.4(@firebase/app@0.9.4)(encoding@0.1.13):
     resolution: {integrity: sha512-yZrs1F8sTt8IMCJl29gaxokDZSLjO08r2bL2PNKV1Duz2vJ67ZtVcgHAidyf8BFak9uS8mepd9KlYFDfwUO60Q==}
     peerDependencies:
       '@firebase/app': 0.x
@@ -2890,7 +2893,7 @@ packages:
       '@firebase/component': 0.6.4
       '@firebase/logger': 0.4.0
       '@firebase/util': 1.9.3
-      node-fetch: 2.6.7
+      node-fetch: 2.6.7(encoding@0.1.13)
       tslib: 2.5.0
     transitivePeerDependencies:
       - encoding
@@ -2932,14 +2935,14 @@ packages:
       tslib: 2.5.0
     dev: false
 
-  /@firebase/firestore-compat@0.3.4(@firebase/app-compat@0.2.4)(@firebase/app-types@0.9.0)(@firebase/app@0.9.4):
+  /@firebase/firestore-compat@0.3.4(@firebase/app-compat@0.2.4)(@firebase/app-types@0.9.0)(@firebase/app@0.9.4)(encoding@0.1.13):
     resolution: {integrity: sha512-xUzz1V53vA1R8S5QQbQ33zqNv0bV+dZpeQKqMXt6HNWa1yiX7lUooGYRws825F+QBOadW1teav1ttXnGZAsgUw==}
     peerDependencies:
       '@firebase/app-compat': 0.x
     dependencies:
       '@firebase/app-compat': 0.2.4
       '@firebase/component': 0.6.4
-      '@firebase/firestore': 3.8.4(@firebase/app@0.9.4)
+      '@firebase/firestore': 3.8.4(@firebase/app@0.9.4)(encoding@0.1.13)
       '@firebase/firestore-types': 2.5.1(@firebase/app-types@0.9.0)(@firebase/util@1.9.3)
       '@firebase/util': 1.9.3
       tslib: 2.5.0
@@ -2959,7 +2962,7 @@ packages:
       '@firebase/util': 1.9.3
     dev: false
 
-  /@firebase/firestore@3.8.4(@firebase/app@0.9.4):
+  /@firebase/firestore@3.8.4(@firebase/app@0.9.4)(encoding@0.1.13):
     resolution: {integrity: sha512-sNLT4vGBSrx75Q2yLzCHL/1LDS7+UG8gaIohox/GpKYGxt4r8/AsUOmjN4llDqdnFSgY5ePYp2+nHArFXHyZjA==}
     engines: {node: '>=10.10.0'}
     peerDependencies:
@@ -2972,20 +2975,20 @@ packages:
       '@firebase/webchannel-wrapper': 0.9.0
       '@grpc/grpc-js': 1.7.3
       '@grpc/proto-loader': 0.6.13
-      node-fetch: 2.6.7
+      node-fetch: 2.6.7(encoding@0.1.13)
       tslib: 2.5.0
     transitivePeerDependencies:
       - encoding
     dev: false
 
-  /@firebase/functions-compat@0.3.4(@firebase/app-compat@0.2.4)(@firebase/app@0.9.4):
+  /@firebase/functions-compat@0.3.4(@firebase/app-compat@0.2.4)(@firebase/app@0.9.4)(encoding@0.1.13):
     resolution: {integrity: sha512-kxVxTGyLV1MBR3sp3mI+eQ6JBqz0G5bk310F8eX4HzDFk4xjk5xY0KdHktMH+edM2xs1BOg0vwvvsAHczIjB+w==}
     peerDependencies:
       '@firebase/app-compat': 0.x
     dependencies:
       '@firebase/app-compat': 0.2.4
       '@firebase/component': 0.6.4
-      '@firebase/functions': 0.9.4(@firebase/app@0.9.4)
+      '@firebase/functions': 0.9.4(@firebase/app@0.9.4)(encoding@0.1.13)
       '@firebase/functions-types': 0.6.0
       '@firebase/util': 1.9.3
       tslib: 2.5.0
@@ -2998,7 +3001,7 @@ packages:
     resolution: {integrity: sha512-hfEw5VJtgWXIRf92ImLkgENqpL6IWpYaXVYiRkFY1jJ9+6tIhWM7IzzwbevwIIud/jaxKVdRzD7QBWfPmkwCYw==}
     dev: false
 
-  /@firebase/functions@0.9.4(@firebase/app@0.9.4):
+  /@firebase/functions@0.9.4(@firebase/app@0.9.4)(encoding@0.1.13):
     resolution: {integrity: sha512-3H2qh6U+q+nepO5Hds+Ddl6J0pS+zisuBLqqQMRBHv9XpWfu0PnDHklNmE8rZ+ccTEXvBj6zjkPfdxt6NisvlQ==}
     peerDependencies:
       '@firebase/app': 0.x
@@ -3009,7 +3012,7 @@ packages:
       '@firebase/component': 0.6.4
       '@firebase/messaging-interop-types': 0.2.0
       '@firebase/util': 1.9.3
-      node-fetch: 2.6.7
+      node-fetch: 2.6.7(encoding@0.1.13)
       tslib: 2.5.0
     transitivePeerDependencies:
       - encoding
@@ -3155,14 +3158,14 @@ packages:
       tslib: 2.5.0
     dev: false
 
-  /@firebase/storage-compat@0.3.2(@firebase/app-compat@0.2.4)(@firebase/app-types@0.9.0)(@firebase/app@0.9.4):
+  /@firebase/storage-compat@0.3.2(@firebase/app-compat@0.2.4)(@firebase/app-types@0.9.0)(@firebase/app@0.9.4)(encoding@0.1.13):
     resolution: {integrity: sha512-wvsXlLa9DVOMQJckbDNhXKKxRNNewyUhhbXev3t8kSgoCotd1v3MmqhKKz93ePhDnhHnDs7bYHy+Qa8dRY6BXw==}
     peerDependencies:
       '@firebase/app-compat': 0.x
     dependencies:
       '@firebase/app-compat': 0.2.4
       '@firebase/component': 0.6.4
-      '@firebase/storage': 0.11.2(@firebase/app@0.9.4)
+      '@firebase/storage': 0.11.2(@firebase/app@0.9.4)(encoding@0.1.13)
       '@firebase/storage-types': 0.8.0(@firebase/app-types@0.9.0)(@firebase/util@1.9.3)
       '@firebase/util': 1.9.3
       tslib: 2.5.0
@@ -3182,7 +3185,7 @@ packages:
       '@firebase/util': 1.9.3
     dev: false
 
-  /@firebase/storage@0.11.2(@firebase/app@0.9.4):
+  /@firebase/storage@0.11.2(@firebase/app@0.9.4)(encoding@0.1.13):
     resolution: {integrity: sha512-CtvoFaBI4hGXlXbaCHf8humajkbXhs39Nbh6MbNxtwJiCqxPy9iH3D3CCfXAvP0QvAAwmJUTK3+z9a++Kc4nkA==}
     peerDependencies:
       '@firebase/app': 0.x
@@ -3190,7 +3193,7 @@ packages:
       '@firebase/app': 0.9.4
       '@firebase/component': 0.6.4
       '@firebase/util': 1.9.3
-      node-fetch: 2.6.7
+      node-fetch: 2.6.7(encoding@0.1.13)
       tslib: 2.5.0
     transitivePeerDependencies:
       - encoding
@@ -3334,11 +3337,11 @@ packages:
       yargs: 16.2.0
     dev: false
 
-  /@inrupt/oidc-client-ext@1.14.0:
+  /@inrupt/oidc-client-ext@1.14.0(encoding@0.1.13):
     resolution: {integrity: sha512-dQFRDuaFWZp8o8fx3IXkBdzUVrbDJXKIhFbOS5mEqeDYDQ7fgeOJpjwmaB6sqrFjxUehLPXUKs1TmalFsooLPA==}
     dependencies:
       '@inrupt/oidc-client': 1.11.6
-      '@inrupt/solid-client-authn-core': 1.14.0
+      '@inrupt/solid-client-authn-core': 1.14.0(encoding@0.1.13)
       jose: 4.13.1
       uuid: 9.0.0
     transitivePeerDependencies:
@@ -3355,12 +3358,12 @@ packages:
       serialize-javascript: 4.0.0
     dev: false
 
-  /@inrupt/solid-client-authn-browser@1.14.0:
+  /@inrupt/solid-client-authn-browser@1.14.0(encoding@0.1.13):
     resolution: {integrity: sha512-0dPA5L/tUKjdPMEjmvNU3lDzBWCPPQcP/rz8/PkzD+2TtxIahocTh3ohJ0cLIyH9+Gv1EQaZPKxJjpqXkZnSaA==}
     engines: {node: ^14.0.0 || ^16.0.0}
     dependencies:
-      '@inrupt/oidc-client-ext': 1.14.0
-      '@inrupt/solid-client-authn-core': 1.14.0
+      '@inrupt/oidc-client-ext': 1.14.0(encoding@0.1.13)
+      '@inrupt/solid-client-authn-core': 1.14.0(encoding@0.1.13)
       '@types/lodash.clonedeep': 4.5.7
       '@types/node': 18.15.11
       '@types/uuid': 9.0.1
@@ -3372,11 +3375,11 @@ packages:
       - encoding
     dev: false
 
-  /@inrupt/solid-client-authn-core@1.14.0:
+  /@inrupt/solid-client-authn-core@1.14.0(encoding@0.1.13):
     resolution: {integrity: sha512-/H05XiMpgRjhHECT4Pku1jHlQoRzP4H5kcgZH+dbc54mMYrglBuCHXNGgW967zcg0eiCn0NROdovy8r4vl1LWQ==}
     engines: {node: ^14.0.0 || ^16.0.0}
     dependencies:
-      cross-fetch: 3.1.5
+      cross-fetch: 3.1.5(encoding@0.1.13)
       events: 3.3.0
       jose: 4.13.1
       lodash.clonedeep: 4.5.0
@@ -3385,13 +3388,13 @@ packages:
       - encoding
     dev: false
 
-  /@inrupt/solid-client@1.26.0:
+  /@inrupt/solid-client@1.26.0(encoding@0.1.13):
     resolution: {integrity: sha512-fiu5z4GHVXgsUlGSWOtxDQBPyQEcXx41Q8JiTem/qJ5oD8OPwJL+mjymJnoMfxyW+jVa5nq4XsF8GnFrF74niQ==}
     engines: {node: ^14.17.0 || ^16.0.0}
     dependencies:
       '@rdfjs/dataset': 1.1.1
       '@types/rdfjs__dataset': 1.0.5
-      cross-fetch: 3.1.5
+      cross-fetch: 3.1.5(encoding@0.1.13)
       http-link-header: 1.1.0
       jsonld: 5.2.0
       n3: 1.16.3
@@ -3498,14 +3501,14 @@ packages:
       read-yaml-file: 1.1.0
     dev: true
 
-  /@mapbox/node-pre-gyp@1.0.10:
+  /@mapbox/node-pre-gyp@1.0.10(encoding@0.1.13):
     resolution: {integrity: sha512-4ySo4CjzStuprMwk35H5pPbkymjv1SF3jGLj6rAHp/xT/RF7TL7bd9CTm1xDY49K2qF7jmR/g7k+SkLETP6opA==}
     hasBin: true
     dependencies:
       detect-libc: 2.0.1
       https-proxy-agent: 5.0.1
       make-dir: 3.1.0
-      node-fetch: 2.6.9
+      node-fetch: 2.6.9(encoding@0.1.13)
       nopt: 5.0.0
       npmlog: 5.0.1
       rimraf: 3.0.2
@@ -3995,26 +3998,26 @@ packages:
     resolution: {integrity: sha512-+9jVqKhRSpsc591z5vX+X5Yyw+he/HCB4iQ/RYxw35CEPaY1gnsNE43nf9n9AaYjAQrTiI/mOwKUKdUs9vf7Xg==}
     dev: false
 
-  /@supabase/functions-js@2.1.0:
+  /@supabase/functions-js@2.1.0(encoding@0.1.13):
     resolution: {integrity: sha512-vRziB+AqRXRaGHjEFHwBo0kuNDTuAxI7VUeqU24Fe86ISoD8YEQm0dGdpleJEcqgDGWaO6pxT1tfj1BRY5PwMg==}
     dependencies:
-      cross-fetch: 3.1.5
+      cross-fetch: 3.1.5(encoding@0.1.13)
     transitivePeerDependencies:
       - encoding
     dev: false
 
-  /@supabase/gotrue-js@2.16.0:
+  /@supabase/gotrue-js@2.16.0(encoding@0.1.13):
     resolution: {integrity: sha512-k7curH5xxnQmUiG8AeFW7KEJST99vhFnBCidWFhuSSyLP1Ja8Ix3g4bmLUv209mhX8LmAaDMGKNQs8gG0MOKCw==}
     dependencies:
-      cross-fetch: 3.1.5
+      cross-fetch: 3.1.5(encoding@0.1.13)
     transitivePeerDependencies:
       - encoding
     dev: false
 
-  /@supabase/postgrest-js@1.4.1:
+  /@supabase/postgrest-js@1.4.1(encoding@0.1.13):
     resolution: {integrity: sha512-aruqwV/aTggkM7OVv2JinCeXmRMKHJCZpkuS1nuoa0NgLw7g3NyILSyWOKYTBJ/PxE/zXtWsBhdxFzaaNz5uxg==}
     dependencies:
-      cross-fetch: 3.1.5
+      cross-fetch: 3.1.5(encoding@0.1.13)
     transitivePeerDependencies:
       - encoding
     dev: false
@@ -4029,23 +4032,23 @@ packages:
       - supports-color
     dev: false
 
-  /@supabase/storage-js@2.3.1:
+  /@supabase/storage-js@2.3.1(encoding@0.1.13):
     resolution: {integrity: sha512-BaPIvyvjuZW1V0CnfGKUZyzpBUXnsh0XD8eqTOYd+MdiGPmIPI0vtwnT4fAoK8mipp1vpcN62EVQaqeUnWXPtQ==}
     dependencies:
-      cross-fetch: 3.1.5
+      cross-fetch: 3.1.5(encoding@0.1.13)
     transitivePeerDependencies:
       - encoding
     dev: false
 
-  /@supabase/supabase-js@2.12.1:
+  /@supabase/supabase-js@2.12.1(encoding@0.1.13):
     resolution: {integrity: sha512-sni5tYUCjLd57xuFbL8iGP/hAq2rS/Bxh3StrGjO0v78bMcS+WPh6E/WV5SstvOrxS78RKI8fASm3jk8/UjVXA==}
     dependencies:
-      '@supabase/functions-js': 2.1.0
-      '@supabase/gotrue-js': 2.16.0
-      '@supabase/postgrest-js': 1.4.1
+      '@supabase/functions-js': 2.1.0(encoding@0.1.13)
+      '@supabase/gotrue-js': 2.16.0(encoding@0.1.13)
+      '@supabase/postgrest-js': 1.4.1(encoding@0.1.13)
       '@supabase/realtime-js': 2.7.1
-      '@supabase/storage-js': 2.3.1
-      cross-fetch: 3.1.5
+      '@supabase/storage-js': 2.3.1(encoding@0.1.13)
+      cross-fetch: 3.1.5(encoding@0.1.13)
     transitivePeerDependencies:
       - encoding
       - supports-color
@@ -4831,12 +4834,12 @@ packages:
       web-vitals: 0.2.4
     dev: true
 
-  /@vercel/gatsby-plugin-vercel-builder@1.2.5:
+  /@vercel/gatsby-plugin-vercel-builder@1.2.5(encoding@0.1.13):
     resolution: {integrity: sha512-OtBZNU5H810XQl7+MR8x1ZxHjJNppcNCUXCzYgwJDqC0sJHoag6bSzTaIeRhplj3rybiOjOvZZp00D3D6E+C9A==}
     dependencies:
       '@sinclair/typebox': 0.25.24
       '@vercel/build-utils': 6.6.0
-      '@vercel/node': 2.10.1
+      '@vercel/node': 2.10.1(encoding@0.1.13)
       '@vercel/routing-utils': 2.1.11
       esbuild: 0.14.47
       etag: 1.8.1
@@ -4859,12 +4862,12 @@ packages:
     resolution: {integrity: sha512-d8P2wZalA05rtjzw0ybhA+7PorDgBVmUx3+xPbOqyyhWMFIhqqkdWt2LkCcSx/a3m6ZwmLOfYA7esW23KjIpXw==}
     dev: true
 
-  /@vercel/nft@0.22.5:
+  /@vercel/nft@0.22.5(encoding@0.1.13):
     resolution: {integrity: sha512-mug57Wd1BL7GMj9gXMgMeKUjdqO0e4u+0QLPYMFE1rwdJ+55oPy6lp3nIBCS8gOvigT62UI4QKUL2sGqcoW4Hw==}
     engines: {node: '>=14'}
     hasBin: true
     dependencies:
-      '@mapbox/node-pre-gyp': 1.0.10
+      '@mapbox/node-pre-gyp': 1.0.10(encoding@0.1.13)
       '@rollup/pluginutils': 4.2.1
       acorn: 8.8.2
       async-sema: 3.1.1
@@ -4884,7 +4887,7 @@ packages:
     resolution: {integrity: sha512-617HSGelTGR68s0kqsPV0R2UiSvcw3Zf5Yv32S5NN4AH5TZGRr5DQJ3ATr4C/HrK7CHK5B7FDVrv2JebdVpPYQ==}
     dev: true
 
-  /@vercel/node@2.10.1:
+  /@vercel/node@2.10.1(encoding@0.1.13):
     resolution: {integrity: sha512-+3rMKeo+Yn9B61jJ2g2TsMIZmEBrv5DLpQ1zQHjEj3fEg5kSqWRcf/c17Kku9Fyrel5gucAfBgnOmHxpkejqxQ==}
     dependencies:
       '@edge-runtime/vm': 2.0.0
@@ -4895,7 +4898,7 @@ packages:
       edge-runtime: 2.0.0
       esbuild: 0.14.47
       exit-hook: 2.2.1
-      node-fetch: 2.6.7
+      node-fetch: 2.6.7(encoding@0.1.13)
       ts-node: 10.9.1(@types/node@14.18.33)(typescript@4.3.4)
       typescript: 4.3.4
     transitivePeerDependencies:
@@ -4917,10 +4920,10 @@ packages:
     resolution: {integrity: sha512-sT2zhO8v64o7vW2fDcGsJEJJiWO2aPH8s3QwtuE/CX70nUD4L/7jlrKgtVrkW0ZtuO9imSH226NdDf6aErMbng==}
     dev: true
 
-  /@vercel/redwood@1.1.12:
+  /@vercel/redwood@1.1.12(encoding@0.1.13):
     resolution: {integrity: sha512-rVJwoZyNpupmpPyx9SM8o61cZfng9GwTpUo7HnqYgnNFPgGy2qD8hY0LLtfswov4bYlzFjLom9YMn26KUu2ncg==}
     dependencies:
-      '@vercel/nft': 0.22.5
+      '@vercel/nft': 0.22.5(encoding@0.1.13)
       '@vercel/routing-utils': 2.1.11
       semver: 6.1.1
     transitivePeerDependencies:
@@ -4928,12 +4931,12 @@ packages:
       - supports-color
     dev: true
 
-  /@vercel/remix-builder@1.8.2(@types/node@14.18.33):
+  /@vercel/remix-builder@1.8.2(@types/node@14.18.33)(encoding@0.1.13):
     resolution: {integrity: sha512-exlGmB2+M7cdDCxXWpQUUI9fhv+JQgmepE8XBImJz7FJWdwUyiODlVUsoNM5/pivPHfMn6UOznpPsAK1ErFreQ==}
     dependencies:
-      '@remix-run/dev': /@vercel/remix-run-dev@1.14.2(@types/node@14.18.33)
+      '@remix-run/dev': /@vercel/remix-run-dev@1.14.2(@types/node@14.18.33)(encoding@0.1.13)
       '@vercel/build-utils': 6.6.0
-      '@vercel/nft': 0.22.5
+      '@vercel/nft': 0.22.5(encoding@0.1.13)
       '@vercel/static-config': 2.0.14
       path-to-regexp: 6.2.1
       semver: 7.3.8
@@ -4954,7 +4957,7 @@ packages:
       - utf-8-validate
     dev: true
 
-  /@vercel/remix-run-dev@1.14.2(@types/node@14.18.33):
+  /@vercel/remix-run-dev@1.14.2(@types/node@14.18.33)(encoding@0.1.13):
     resolution: {integrity: sha512-lsJFO2pnQoHYe2gcvj/VY8c0lVHZFnoEfMB3w+CQU8xql2hpneK2XrbKT/mHm+HDeaaJPT+mxAf7jpbFXeZhWA==}
     engines: {node: '>=14'}
     hasBin: true
@@ -4997,7 +5000,7 @@ packages:
       lodash.debounce: 4.0.8
       lru-cache: 7.18.3
       minimatch: 3.1.2
-      node-fetch: 2.6.9
+      node-fetch: 2.6.9(encoding@0.1.13)
       ora: 5.4.1
       postcss: 8.4.21
       postcss-discard-duplicates: 5.1.0(postcss@8.4.21)
@@ -5043,11 +5046,11 @@ packages:
     resolution: {integrity: sha512-M+RpbR6FEm2WwhN/GmrLS4DUfD/K2/NgCWdrihizwc2j0OBSxWEKsuRu1hqe+EnqGXtXyEQQJ8CR2jg76vtuLA==}
     dev: true
 
-  /@vercel/static-build@1.3.20:
+  /@vercel/static-build@1.3.20(encoding@0.1.13):
     resolution: {integrity: sha512-8DqrAve/0Mo7VgM/gHsvw4InWkmg9ZxvfBzNuiQ173EujtBkRRtCPWSDihsrhenn1oMpmmolp0b/bBwXxVEKxw==}
     dependencies:
       '@vercel/gatsby-plugin-vercel-analytics': 1.0.8
-      '@vercel/gatsby-plugin-vercel-builder': 1.2.5
+      '@vercel/gatsby-plugin-vercel-builder': 1.2.5(encoding@0.1.13)
     transitivePeerDependencies:
       - '@swc/core'
       - '@swc/wasm'
@@ -5247,15 +5250,15 @@ packages:
     resolution: {integrity: sha512-BEO6al7BYqcnfX15W2cnGR+Q566ACXAT9UQykORCWW80lmkpWsnEob6zJS1ZVBKsSJC8+7vJkHwlp+lXG1UCdw==}
     dev: true
 
-  /@yankeeinlondon/builder-api@1.4.1(@vitejs/plugin-vue@3.2.0)(vite@3.2.5):
+  /@yankeeinlondon/builder-api@1.4.1(@vitejs/plugin-vue@3.2.0)(encoding@0.1.13)(vite@3.2.5):
     resolution: {integrity: sha512-qc6HyfqtuS06FvA5rK0L62Nmc1LnarVOt8/V/mTX2DBZlpTfIDpudpbE/7/kxjme9pP4PFMCk7cPSrprLEorjw==}
     dependencies:
       '@types/markdown-it': 12.2.3
-      '@yankeeinlondon/happy-wrapper': 2.10.1
+      '@yankeeinlondon/happy-wrapper': 2.10.1(encoding@0.1.13)
       fp-ts: 2.13.1
       inferred-types: 0.37.6(happy-dom@8.9.0)
       markdown-it: 13.0.1
-      vite-plugin-md: 0.22.5(@vitejs/plugin-vue@3.2.0)(vite@3.2.5)
+      vite-plugin-md: 0.22.5(@vitejs/plugin-vue@3.2.0)(encoding@0.1.13)(vite@3.2.5)
     transitivePeerDependencies:
       - '@edge-runtime/vm'
       - '@vitejs/plugin-vue'
@@ -5297,11 +5300,11 @@ packages:
       - terser
     dev: false
 
-  /@yankeeinlondon/happy-wrapper@2.10.1:
+  /@yankeeinlondon/happy-wrapper@2.10.1(encoding@0.1.13):
     resolution: {integrity: sha512-kS3HT26QSQqcZa8Me2yrb6oc/j0BTmTRR76ITRGcYlO8G1snz9wii1eCrBTx+gAo58P+e3UkxB8PTVrmjTowVA==}
     dependencies:
       fp-ts: 2.13.1
-      happy-dom: 8.9.0
+      happy-dom: 8.9.0(encoding@0.1.13)
       native-dash: 1.25.0(happy-dom@8.9.0)
     transitivePeerDependencies:
       - '@edge-runtime/vm'
@@ -6310,10 +6313,10 @@ packages:
     resolution: {integrity: sha512-/f6gpQuxDaqXu+1kwQYSckUglPaOrHdbIlBAu0YuW8/Cdb45XwXYNUBXg3r/9Mo6n540Kn/smKcZWko5x99KrQ==}
     dev: true
 
-  /cross-fetch@3.1.5:
+  /cross-fetch@3.1.5(encoding@0.1.13):
     resolution: {integrity: sha512-lvb1SBsI0Z7GDwmuid+mU3kWVBwTVUbe7S0H52yaaAdQOXq2YktTCZdlAcNKFzE6QtRz0snpw9bNiPeOIkkQvw==}
     dependencies:
-      node-fetch: 2.6.7
+      node-fetch: 2.6.7(encoding@0.1.13)
     transitivePeerDependencies:
       - encoding
     dev: false
@@ -6720,6 +6723,11 @@ packages:
     resolution: {integrity: sha512-TPJXq8JqFaVYm2CWmPvnP2Iyo4ZSM7/QKcSmuMLDObfpH5fi7RUGmd/rTDf+rut/saiDiQEeVTNgAmJEdAOx0w==}
     engines: {node: '>= 0.8'}
     dev: true
+
+  /encoding@0.1.13:
+    resolution: {integrity: sha512-ETBauow1T35Y/WZMkio9jiM0Z5xjHHmJ4XmjZOq1l/dXz3lr2sRn87nJy20RupqSh1F2m3HHPSp8ShIPQJrJ3A==}
+    dependencies:
+      iconv-lite: 0.6.3
 
   /end-of-stream@1.4.4:
     resolution: {integrity: sha512-+uw1inIHVPQoaVuHzRyXd21icM+cnt4CzD5rW+NC1wjOUSTOs+Te7FOv7AhN7vS9x/oIyhLP5PR1H+phQAHu5Q==}
@@ -7688,7 +7696,7 @@ packages:
       pkg-dir: 4.2.0
     dev: true
 
-  /firebase@9.17.2:
+  /firebase@9.17.2(encoding@0.1.13):
     resolution: {integrity: sha512-2V95/evwB3zsi6RYHCvPXfkiQrSepFQJohv3YGoQVhS0bvXuYXmkLtrCVGShxneB/5t9HE5C9q9C8XPnK4APBw==}
     dependencies:
       '@firebase/analytics': 0.9.4(@firebase/app@0.9.4)
@@ -7698,14 +7706,14 @@ packages:
       '@firebase/app-check-compat': 0.3.4(@firebase/app-compat@0.2.4)(@firebase/app@0.9.4)
       '@firebase/app-compat': 0.2.4
       '@firebase/app-types': 0.9.0
-      '@firebase/auth': 0.21.4(@firebase/app@0.9.4)
-      '@firebase/auth-compat': 0.3.4(@firebase/app-compat@0.2.4)(@firebase/app-types@0.9.0)(@firebase/app@0.9.4)
+      '@firebase/auth': 0.21.4(@firebase/app@0.9.4)(encoding@0.1.13)
+      '@firebase/auth-compat': 0.3.4(@firebase/app-compat@0.2.4)(@firebase/app-types@0.9.0)(@firebase/app@0.9.4)(encoding@0.1.13)
       '@firebase/database': 0.14.4
       '@firebase/database-compat': 0.3.4
-      '@firebase/firestore': 3.8.4(@firebase/app@0.9.4)
-      '@firebase/firestore-compat': 0.3.4(@firebase/app-compat@0.2.4)(@firebase/app-types@0.9.0)(@firebase/app@0.9.4)
-      '@firebase/functions': 0.9.4(@firebase/app@0.9.4)
-      '@firebase/functions-compat': 0.3.4(@firebase/app-compat@0.2.4)(@firebase/app@0.9.4)
+      '@firebase/firestore': 3.8.4(@firebase/app@0.9.4)(encoding@0.1.13)
+      '@firebase/firestore-compat': 0.3.4(@firebase/app-compat@0.2.4)(@firebase/app-types@0.9.0)(@firebase/app@0.9.4)(encoding@0.1.13)
+      '@firebase/functions': 0.9.4(@firebase/app@0.9.4)(encoding@0.1.13)
+      '@firebase/functions-compat': 0.3.4(@firebase/app-compat@0.2.4)(@firebase/app@0.9.4)(encoding@0.1.13)
       '@firebase/installations': 0.6.4(@firebase/app@0.9.4)
       '@firebase/installations-compat': 0.2.4(@firebase/app-compat@0.2.4)(@firebase/app-types@0.9.0)(@firebase/app@0.9.4)
       '@firebase/messaging': 0.12.4(@firebase/app@0.9.4)
@@ -7714,8 +7722,8 @@ packages:
       '@firebase/performance-compat': 0.2.4(@firebase/app-compat@0.2.4)(@firebase/app@0.9.4)
       '@firebase/remote-config': 0.4.4(@firebase/app@0.9.4)
       '@firebase/remote-config-compat': 0.2.4(@firebase/app-compat@0.2.4)(@firebase/app@0.9.4)
-      '@firebase/storage': 0.11.2(@firebase/app@0.9.4)
-      '@firebase/storage-compat': 0.3.2(@firebase/app-compat@0.2.4)(@firebase/app-types@0.9.0)(@firebase/app@0.9.4)
+      '@firebase/storage': 0.11.2(@firebase/app@0.9.4)(encoding@0.1.13)
+      '@firebase/storage-compat': 0.3.2(@firebase/app-compat@0.2.4)(@firebase/app-types@0.9.0)(@firebase/app@0.9.4)(encoding@0.1.13)
       '@firebase/util': 1.9.3
     transitivePeerDependencies:
       - encoding
@@ -8129,13 +8137,13 @@ packages:
       through2: 2.0.5
     dev: true
 
-  /happy-dom@8.9.0:
+  /happy-dom@8.9.0(encoding@0.1.13):
     resolution: {integrity: sha512-JZwJuGdR7ko8L61136YzmrLv7LgTh5b8XaEM3P709mLjyQuXJ3zHTDXvUtBBahRjGlcYW0zGjIiEWizoTUGKfA==}
     dependencies:
       css.escape: 1.5.1
       he: 1.2.0
       iconv-lite: 0.6.3
-      node-fetch: 2.6.9
+      node-fetch: 2.6.9(encoding@0.1.13)
       webidl-conversions: 7.0.0
       whatwg-encoding: 2.0.0
       whatwg-mimetype: 3.0.0
@@ -8350,7 +8358,6 @@ packages:
     engines: {node: '>=0.10.0'}
     dependencies:
       safer-buffer: 2.1.2
-    dev: false
 
   /icss-utils@5.1.0(postcss@8.4.21):
     resolution: {integrity: sha512-soFhflCVWLfRNOPU3iv5Z9VUdT44xFRbzjLsEzSr5AQmgqPMTHdU3PMT1Cf1ssx8fLNJDA1juftYl+PUcv3MqA==}
@@ -9933,7 +9940,7 @@ packages:
     dev: true
     optional: true
 
-  /node-fetch@2.6.7:
+  /node-fetch@2.6.7(encoding@0.1.13):
     resolution: {integrity: sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==}
     engines: {node: 4.x || >=6.0.0}
     peerDependencies:
@@ -9942,9 +9949,10 @@ packages:
       encoding:
         optional: true
     dependencies:
+      encoding: 0.1.13
       whatwg-url: 5.0.0
 
-  /node-fetch@2.6.9:
+  /node-fetch@2.6.9(encoding@0.1.13):
     resolution: {integrity: sha512-DJm/CJkZkRjKKj4Zi4BsKVZh3ValV5IR5s7LVZnW+6YMh0W1BfNA8XSs6DLMGYlId5F3KnA70uu2qepcR08Qqg==}
     engines: {node: 4.x || >=6.0.0}
     peerDependencies:
@@ -9953,6 +9961,7 @@ packages:
       encoding:
         optional: true
     dependencies:
+      encoding: 0.1.13
       whatwg-url: 5.0.0
 
   /node-fetch@3.0.0-beta.9:
@@ -11466,7 +11475,7 @@ packages:
     resolution: {integrity: sha512-Arc4hUN896vjkqCYrUXquBFtRZdv1PfLbTYP71efP6butxyQ0kWpiNJyAgsxscmQg1cqvHY32/UCBzXedTpU2g==}
     dev: true
 
-  /rxdb@14.5.1(rxjs@7.8.0):
+  /rxdb@14.5.1(encoding@0.1.13)(rxjs@7.8.0):
     resolution: {integrity: sha512-qgR+WNsA6hrNCFVhW6/6jl7q0ztW6hLfr2TdJKOWkbnxYwW5lue2zSJ4waj4uzBCpwbFLwPwPLU39yMKBsFQxw==}
     requiresBuild: true
     peerDependencies:
@@ -11487,7 +11496,7 @@ packages:
       custom-idle-queue: 3.0.1
       dexie: 4.0.0-alpha.4
       event-reduce-js: 3.0.0
-      firebase: 9.17.2
+      firebase: 9.17.2(encoding@0.1.13)
       get-graphql-from-jsonschema: 8.1.0
       graphql: 15.8.0
       graphql-ws: 5.12.0(graphql@15.8.0)
@@ -12820,7 +12829,7 @@ packages:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
     engines: {node: '>= 0.8'}
 
-  /vercel@28.18.2(@types/node@14.18.33):
+  /vercel@28.18.2(@types/node@14.18.33)(encoding@0.1.13):
     resolution: {integrity: sha512-NheyYhPRysewCcPt1lVUBuyOvr0QAS9EKmhQYABwiFtvoAhr5IWNPdieLDSzHpsM9/eUJE+UoSbXvetLhRA9Pg==}
     engines: {node: '>= 14'}
     hasBin: true
@@ -12830,12 +12839,12 @@ packages:
       '@vercel/go': 2.4.2
       '@vercel/hydrogen': 0.0.60
       '@vercel/next': 3.7.2
-      '@vercel/node': 2.10.1
+      '@vercel/node': 2.10.1(encoding@0.1.13)
       '@vercel/python': 3.1.56
-      '@vercel/redwood': 1.1.12
-      '@vercel/remix-builder': 1.8.2(@types/node@14.18.33)
+      '@vercel/redwood': 1.1.12(encoding@0.1.13)
+      '@vercel/remix-builder': 1.8.2(@types/node@14.18.33)(encoding@0.1.13)
       '@vercel/ruby': 1.3.73
-      '@vercel/static-build': 1.3.20
+      '@vercel/static-build': 1.3.20(encoding@0.1.13)
     transitivePeerDependencies:
       - '@remix-run/serve'
       - '@swc/core'
@@ -12921,11 +12930,11 @@ packages:
       - supports-color
     dev: true
 
-  /vite-plugin-md@0.20.6(@vitejs/plugin-vue@3.2.0)(vite@3.2.5):
+  /vite-plugin-md@0.20.6(@vitejs/plugin-vue@3.2.0)(encoding@0.1.13)(vite@3.2.5):
     resolution: {integrity: sha512-9KOL9B+Dc5zb9ihl0pVodtfkOkfnxo0MUXNyWBGitnHQYWldw92L8rahvTbnW7Z4P0qTjVU3G3amfR+35ZxtCw==}
     dependencies:
-      '@yankeeinlondon/builder-api': 1.4.1(@vitejs/plugin-vue@3.2.0)(vite@3.2.5)
-      '@yankeeinlondon/happy-wrapper': 2.10.1
+      '@yankeeinlondon/builder-api': 1.4.1(@vitejs/plugin-vue@3.2.0)(encoding@0.1.13)(vite@3.2.5)
+      '@yankeeinlondon/happy-wrapper': 2.10.1(encoding@0.1.13)
       gray-matter: 4.0.3
       markdown-it: 13.0.1
       source-map-js: 1.0.2
@@ -12946,16 +12955,16 @@ packages:
       - vite
     dev: false
 
-  /vite-plugin-md@0.22.5(@vitejs/plugin-vue@3.2.0)(vite@3.2.5):
+  /vite-plugin-md@0.22.5(@vitejs/plugin-vue@3.2.0)(encoding@0.1.13)(vite@3.2.5):
     resolution: {integrity: sha512-ex6yQfan2teBT2uMzoIlDHRhKTOsNiyvblA9eLU/+uygpg4KikJPFeyBX300LqQ3pZ9qGHz35qoGJ0oLw47eZg==}
     peerDependencies:
       '@vitejs/plugin-vue': '>=2.3.4'
       vite: ^4.0.0 || ^3.0.0
     dependencies:
       '@vitejs/plugin-vue': 3.2.0(vite@3.2.5)(vue@3.2.47)
-      '@yankeeinlondon/builder-api': 1.4.1(@vitejs/plugin-vue@3.2.0)(vite@3.2.5)
+      '@yankeeinlondon/builder-api': 1.4.1(@vitejs/plugin-vue@3.2.0)(encoding@0.1.13)(vite@3.2.5)
       '@yankeeinlondon/gray-matter': 6.1.1
-      '@yankeeinlondon/happy-wrapper': 2.10.1
+      '@yankeeinlondon/happy-wrapper': 2.10.1(encoding@0.1.13)
       markdown-it: 13.0.1
       source-map-js: 1.0.2
       vite: 3.2.5(@types/node@14.18.33)
@@ -13146,7 +13155,7 @@ packages:
       acorn-walk: 8.2.0
       chai: 4.3.7
       debug: 4.3.4
-      happy-dom: 8.9.0
+      happy-dom: 8.9.0(encoding@0.1.13)
       local-pkg: 0.4.3
       source-map: 0.6.1
       strip-literal: 1.0.1
