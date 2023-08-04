@@ -80,9 +80,9 @@ function gotoCompetition(e) {
           <img
             v-if="competition"
             class="h-4 mr-2"
-            :src="competition?.area.flag"
+            :src="competition?.area?.flag"
           />
-          <span>{{ competition?.area.name }}</span>
+          <span>{{ competition?.area?.name }}</span>
         </p>
       </div>
     </div>
