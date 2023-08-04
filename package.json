@@ -11,5 +11,8 @@
   },
   "dependencies": {
     "shelljs": "^0.8.5"
+  },
+  "scripts": {
+    "postinstall": "pnpm --filter @concords/utils --filter @concords/identity --filter @concords/encrypt --filter @concords/proof-of-work --filter @concords/ledger build"
   }
 }
