@@ -80,4 +80,4 @@ jobs:
           SSH_HOST: ${{ secrets.DEPLOYMENT_HOST }}
 
       - name: Deploy app servers
-        run: cat deploy.sh | ssh staging -T
+        run: cat deploy.sh | ssh staging
