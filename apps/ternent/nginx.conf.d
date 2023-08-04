@@ -6,7 +6,7 @@ server {
     gzip_types application/json;
 
     listen 80;
-    server_name hub.ternent.dev;
+    server_name api.ternent.dev;
 
     location / {
         proxy_pass http://localhost:4005;
