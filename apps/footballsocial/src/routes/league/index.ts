@@ -13,7 +13,7 @@ export const leagueRoutes = [
           {
             path: "",
             redirect(to: any) {
-              return `/leagues/${to.params.competitionCode}/${
+              return `/leagues/${to.params.competitionCode || "PL"}/${
                 window.localStorage.getItem("lastLeaguePath") || "predictions"
               }`;
             },
