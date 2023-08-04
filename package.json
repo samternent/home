@@ -7,6 +7,7 @@
   "author": "sam.ternent@gmail.com",
   "license": "ISC",
   "devDependencies": {
+    "@changesets/cli": "^2.26.2",
     "turbo": "^1.6.3"
   },
   "dependencies": {
