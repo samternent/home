@@ -4,9 +4,8 @@ env:
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 on:
   push:
-    # Pattern matched against refs/tags
     tags:
-      - '*' # Push events to every tag not containing /
+      - '@concords/footballsocial-*.*.*'
 jobs:
   Deploy-Production:
     runs-on: ubuntu-latest
