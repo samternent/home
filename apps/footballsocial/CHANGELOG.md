@@ -1,5 +1,11 @@
 # @concords/footballsocial
 
+## 0.0.6
+
+### Patch Changes
+
+- [`bc688fe`](https://github.com/samternent/home/commit/bc688fe84e320549494a76ad36aebdba00efecb1) Thanks [@samternent](https://github.com/samternent)! - dummy release
+
 ## 0.0.5
 
 ### Patch Changes
