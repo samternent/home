@@ -1,5 +1,11 @@
 # @concords/footballsocial
 
+## 0.0.5
+
+### Patch Changes
+
+- [`aa79648`](https://github.com/samternent/home/commit/aa7964894c36c0b94529c5f474f89bf6695bb787) Thanks [@samternent](https://github.com/samternent)! - Minor changes to redirection flow on login
+
 ## 0.0.4
 
 ### Patch Changes
