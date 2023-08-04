@@ -17,11 +17,11 @@ sudo cp -r apps/ternent/nginx.conf.d /etc/nginx/sites-available/ternent.dev
 sudo ln -s /etc/nginx/sites-available/ternent.dev /etc/nginx/sites-enabled/
 
 # api.footballsocial.app
-sudo cp -r apps/footballsocial/nginx.conf.d /etc/nginx/sites-available/footballsocial.app
+sudo cp -r home/apps/footballsocial/nginx.conf.d /etc/nginx/sites-available/footballsocial.app
 sudo ln -s /etc/nginx/sites-available/footballsocial.app /etc/nginx/sites-enabled/
 
 # api.concords.app
-sudo cp -r apps/concords/nginx.conf.d /etc/nginx/sites-available/concords.app
+sudo cp -r home/apps/concords/nginx.conf.d /etc/nginx/sites-available/concords.app
 sudo ln -s /etc/nginx/sites-available/concords.app /etc/nginx/sites-enabled/
 
 echo "restart NGINX"
