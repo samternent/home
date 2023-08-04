@@ -7,7 +7,7 @@ const { items: competition, hasItems: hasCompetition } = useCompetitionLoader();
 const isCup = computed(() => competition.value.type === "CUP");
 </script>
 <template>
-  <div class="py-2">
+  <div class="py-2 w-full">
     <CupFixtures
       v-if="competition && isCup"
       :competitionCode="competition?.code"

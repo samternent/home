@@ -46,7 +46,7 @@ function setGameweek(_gameweek) {
 }
 </script>
 <template>
-  <div>
+  <div class="flex">
     <div
       v-if="currentGameweek"
       class="flex items-center justify-center w-full bg-indigo-900 h-10 text-sm md:text-base font-medium mb-2"
