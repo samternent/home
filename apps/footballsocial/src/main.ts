@@ -16,4 +16,9 @@ app.use(Toast, {
 
 registerSW();
 
+if (localStorage.getItem('storageFlush/0') !== "flushed") {
+  localStorage.clear();
+  localStorage.setItem("storageFlush/0", 'flushed');
+}
+
 app.mount("#app");
