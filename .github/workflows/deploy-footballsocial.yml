@@ -25,9 +25,25 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: Get branch name
+        id: branch
+        run: |
+          echo "branch_name=$(echo ${GITHUB_REF#refs/heads/} | tr / -)" >> $GITHUB_ENV
+
       - name: Get node version
         id: nvmrc
         run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
+
+      - name: Create release pull request
+        id: changesets
+        uses: changesets/action@v1.4.1
+        with:
+          title: Release
+
+      - name: Publish Release
+        if: steps.changesets.outputs.hasChangesets == 'false'
+        run: bash build/publish.sh
+        shell: bash
 
       # - uses: pnpm/action-setup@v2
       #   with:
