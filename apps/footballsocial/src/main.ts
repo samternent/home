@@ -5,6 +5,9 @@ import App from "./App.vue";
 import router from "./router";
 import "vue-toastification/dist/index.css";
 import registerSW from "./utils/registerSW";
+import { version } from '../package.json';
+
+console.info(`version@${version}`);
 
 const app = createApp(App);
 app.use(router);
