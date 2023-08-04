@@ -15,7 +15,7 @@ const props = defineProps({
 const { items: competition } = useCompetitionLoader();
 const tabs = computed(() => [
   {
-    title: `Gameweek ${competition.value?.currentSeason?.currentMatchday + 1}`,
+    title: `Gameweek ${competition.value?.currentSeason?.currentMatchday}`,
     to: "play",
   },
   { title: "Results", to: "results" },

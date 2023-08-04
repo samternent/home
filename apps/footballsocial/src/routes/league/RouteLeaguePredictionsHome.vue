@@ -21,7 +21,7 @@ const isCup = computed(() => competition.value.type === "CUP");
     v-if="competition && !isCup"
     :username="username"
     :competitionCode="competition?.code"
-    :currentGameweek="competition?.currentSeason?.currentMatchday + 1"
+    :currentGameweek="competition?.currentSeason?.currentMatchday"
     @selected="
       (fixture) =>
         $router.push(

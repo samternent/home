@@ -52,7 +52,7 @@ watch(
     <div class="text-lg font-light">
       <span class="text-xl font-medium text-pink-600 mr-2">NEW</span>Enter your
       Gameweek
-      {{ competition?.currentSeason?.currentMatchday + 1 }} predictions.
+      {{ competition?.currentSeason?.currentMatchday }} predictions.
     </div>
     <RouterLink
       :to="`/leagues/${competitionCode}/predictions/play`"
