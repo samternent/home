@@ -38,6 +38,12 @@ router.get("/cv", async function (req, res) {
   })
 });
 
+router.get("/ai", async function (req, res) {
+  res.send({
+    message: 'Tryin with OpenAI',
+  })
+});
+
 router.get("*", function (req, res) {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = dirname(__filename);
