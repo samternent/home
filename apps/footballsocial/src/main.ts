@@ -7,7 +7,7 @@ import "vue-toastification/dist/index.css";
 import registerSW from "./utils/registerSW";
 import { version } from '../package.json';
 
-console.info(`version@${version}`);
+console.info(`FootballSocial.app | Version: ${version}`);
 
 const app = createApp(App);
 app.use(router);
