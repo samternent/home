@@ -1,5 +1,11 @@
 # @concords/footballsocial
 
+## 0.0.9
+
+### Patch Changes
+
+- [`2fce04f`](https://github.com/samternent/home/commit/2fce04fda534ccf68580ca7ff8cd97df2dab2721) Thanks [@samternent](https://github.com/samternent)! - Disable in play and finsihed predictions
+
 ## 0.0.8
 
 ### Patch Changes
