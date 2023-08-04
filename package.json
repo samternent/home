@@ -13,6 +13,7 @@
     "shelljs": "^0.8.5"
   },
   "scripts": {
-    "postinstall": "pnpm --filter @concords/utils --filter @concords/identity --filter @concords/encrypt --filter @concords/proof-of-work --filter @concords/ledger build"
+    "postinstall": "pnpm --filter @concords/utils --filter @concords/identity --filter @concords/encrypt --filter @concords/proof-of-work --filter @concords/ledger build",
+    "post-merge": "NODE_ENV=production pm2 startOrReload ecosystem.config.cjs"
   }
 }
