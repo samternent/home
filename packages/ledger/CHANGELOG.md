@@ -1,5 +1,11 @@
 # concords-ledger
 
+## 1.0.8
+
+### Patch Changes
+
+- [`4da712b`](https://github.com/samternent/home/commit/4da712b1ffa7d134f664886b1a99d4771d2c04c6) Thanks [@samternent](https://github.com/samternent)! - bump all packages
+
 ## 1.0.7
 
 ### Patch Changes

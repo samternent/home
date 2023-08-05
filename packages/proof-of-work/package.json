@@ -1,6 +1,6 @@
 {
   "name": "concords-proof-of-work",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "",
   "main": "dist/proof-of-work.umd.js",
   "module": "dist/proof-of-work.es.js",
