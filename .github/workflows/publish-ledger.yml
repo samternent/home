@@ -25,6 +25,9 @@ jobs:
         run: |
           echo "branch_name=$(echo ${GITHUB_REF#refs/heads/} | tr / -)" >> $GITHUB_ENV
 
+      - name: Authenticate with private NPM package
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
       - name: Get node version
         id: nvmrc
         run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
