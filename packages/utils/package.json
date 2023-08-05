@@ -1,5 +1,5 @@
 {
-  "name": "@concords/utils",
+  "name": "concords-utils",
   "version": "1.0.0",
   "description": "",
   "main": "dist/utils.umd.js",

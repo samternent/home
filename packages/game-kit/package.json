@@ -1,5 +1,5 @@
 {
-  "name": "@concords/game-kit",
+  "name": "sams-game-kit",
   "version": "1.0.0",
   "description": "",
   "main": "dist/game-kit.umd.js",

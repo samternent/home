@@ -49,7 +49,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build libs
-        run:  pnpm --filter @concords/utils --filter @concords/identity --filter @concords/encrypt --filter @concords/proof-of-work --filter concords-ledger build
+        run:  pnpm --filter concords-utils --filter concords-identity --filter concords-encrypt --filter concords-proof-of-work --filter concords-ledger build
 
       - name: Publish npm
         run: pnpm --filter concords-ledger publish --no-git-checks

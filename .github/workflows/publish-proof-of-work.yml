@@ -1,13 +1,13 @@
 name: Production Tag Deployment
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_CONCORDS_PROJECT_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
   PNPM_CACHE_PATH: ~/.pnpm-store
   PNPM_CACHE_NAME: pnpm-store-cache
 on:
   push:
     tags:
-      - 'concords-app-*.*.*'
+      - 'concords-ledger-*.*.*'
 
 jobs:
   Deploy-Production:
@@ -25,6 +25,9 @@ jobs:
         run: |
           echo "branch_name=$(echo ${GITHUB_REF#refs/heads/} | tr / -)" >> $GITHUB_ENV
 
+      - name: Authenticate with private NPM package
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
       - name: Get node version
         id: nvmrc
         run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
@@ -34,17 +37,20 @@ jobs:
         with:
           version: 8
 
-      - name: Install Vercel CLI
-        run: npm install --global vercel@latest
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          always-auth: true
+          node-version-file: '.nvmrc'
+          registry-url: https://registry.npmjs.org
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Build libs
-        run:  pnpm --filter concords-utils --filter concords-identity --filter concords-encrypt --filter concords-proof-of-work --filter concords-ledger build
+        run:  pnpm --filter concords-utils --filter concords-proof-of-work build
 
-      - name: Pull Vercel Environment Information
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Publish npm
+        run: pnpm --filter concords-proof-of-work publish --no-git-checks
 
-      - name: Build Project Artifacts
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Deploy Project Artifacts to Vercel
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
