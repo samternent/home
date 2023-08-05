@@ -7,10 +7,26 @@ FS_PACKAGE_VERSION=$(node -p "require('./apps/footballsocial/package.json').vers
 CA_PACKAGE_NAME=$(node -p "require('./apps/concords/package.json').name")
 CA_PACKAGE_VERSION=$(node -p "require('./apps/concords/package.json').version")
 
+# Packages
 CL_PACKAGE_NAME=$(node -p "require('./packages/ledger/package.json').name")
 CL_PACKAGE_VERSION=$(node -p "require('./packages/ledger/package.json').version")
 
-packageArray=("${FS_PACKAGE_NAME}-${FS_PACKAGE_VERSION}" "${CL_PACKAGE_NAME}-${CL_PACKAGE_VERSION}" "${CA_PACKAGE_NAME}-${CA_PACKAGE_VERSION}")
+CU_PACKAGE_NAME=$(node -p "require('./packages/utils/package.json').name")
+CU_PACKAGE_VERSION=$(node -p "require('./packages/utils/package.json').version")
+
+CE_PACKAGE_NAME=$(node -p "require('./packages/encrypt/package.json').name")
+CE_PACKAGE_VERSION=$(node -p "require('./packages/encrypt/package.json').version")
+
+CI_PACKAGE_NAME=$(node -p "require('./packages/identity/package.json').name")
+CI_PACKAGE_VERSION=$(node -p "require('./packages/identity/package.json').version")
+
+CPOW_PACKAGE_NAME=$(node -p "require('./packages/proof-of-work/package.json').name")
+CPOW_PACKAGE_VERSION=$(node -p "require('./packages/proof-of-work/package.json').version")
+
+GK_PACKAGE_NAME=$(node -p "require('./packages/game-kit/package.json').name")
+GK_PACKAGE_VERSION=$(node -p "require('./packages/game-kit/package.json').version")
+
+packageArray=("${FS_PACKAGE_NAME}-${FS_PACKAGE_VERSION}" "${CA_PACKAGE_NAME}-${CA_PACKAGE_VERSION}" "${CL_PACKAGE_NAME}-${CL_PACKAGE_VERSION}" "${CU_PACKAGE_NAME}-${CU_PACKAGE_VERSION}" "${CE_PACKAGE_NAME}-${CE_PACKAGE_VERSION}" "${CI_PACKAGE_NAME}-${CI_PACKAGE_VERSION}" "${CPOW_PACKAGE_NAME}-${CPOW_PACKAGE_VERSION}" "${GK_PACKAGE_NAME}-${GK_PACKAGE_VERSION}")
 
 # Accessing the passed branch name as a command line argument
 branch_name="${GITHUB_REF#refs/heads/}"
