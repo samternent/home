@@ -7,22 +7,12 @@
     <script type="importmap">
       {
         "imports": {
-          "@core/engine": "/app/module/engine/index.mjs",
-          "@core/sprite": "/app/module/sprite/index.mjs",
-          "@core/scene": "/app/module/scene/index.mjs",
           "@ui/app": "/app/ui/app/index.mjs",
           "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
         }
       }
     </script>
-    <style>
-      #canvas {
-        position: fixed;
-        top: 0;
-        left: 0;
-        z-index: -1;
-      }
-    </style>
+
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -32,8 +22,6 @@
     />
   </head>
   <body>
-    <div id="app" style="z-index: 1; position: relative;"></div>
-    <canvas id="canvas" style="z-index: 0;"></canvas>
-    <script type="module" src="/app/index.mjs"></script>
+    hello, world!
   </body>
 </html>

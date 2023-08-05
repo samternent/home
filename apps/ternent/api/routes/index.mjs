@@ -44,6 +44,13 @@ router.get("/ai", async function (req, res) {
   })
 });
 
+router.get("/home", async function (req, res) {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = dirname(__filename);
+
+  res.sendFile(join(__dirname, "../app/index.html"));
+});
+
 router.get("*", function (req, res) {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = dirname(__filename);
