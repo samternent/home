@@ -1,6 +1,6 @@
 {
   "name": "concords-identity",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "main": "dist/identity.umd.js",
   "module": "dist/identity.es.js",
