@@ -47,7 +47,7 @@ function gotoCompetition(e) {
 }
 </script>
 <template>
-  <div class="md:px-2 lg:px-4 flex-1 max-w-3xl mx-auto pt-0 w-full z-10">
+  <div class="md:px-2 lg:px-4 flex-1 max-w-3xl mx-auto pt-0 w-full z-10" v-if="competition">
     <Teleport to="#HeaderControls">
       <div
         class="text-white text-right text-sm border rounded border-zinc-700"
@@ -88,4 +88,5 @@ function gotoCompetition(e) {
     </div>
     <RouterView :competitionCode="competitionCode" :key="competitionCode" />
   </div>
+  <div v-else class="flex-1 h-screen"></div>
 </template>

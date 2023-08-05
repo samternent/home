@@ -8,5 +8,5 @@ const lastLeague = useLocalStorage("lastLeague", "PL");
 router.push({ path: `/leagues/${!lastLeague.value ? "PL" : lastLeague.value}` });
 </script>
 <template>
-  we're back
+
 </template>
