@@ -26,7 +26,8 @@ CPOW_PACKAGE_VERSION=$(node -p "require('./packages/proof-of-work/package.json')
 GK_PACKAGE_NAME=$(node -p "require('./packages/game-kit/package.json').name")
 GK_PACKAGE_VERSION=$(node -p "require('./packages/game-kit/package.json').version")
 
-packageArray=("${FS_PACKAGE_NAME}-${FS_PACKAGE_VERSION}" "${CA_PACKAGE_NAME}-${CA_PACKAGE_VERSION}" "${CL_PACKAGE_NAME}-${CL_PACKAGE_VERSION}" "${CU_PACKAGE_NAME}-${CU_PACKAGE_VERSION}" "${CE_PACKAGE_NAME}-${CE_PACKAGE_VERSION}" "${CI_PACKAGE_NAME}-${CI_PACKAGE_VERSION}" "${CPOW_PACKAGE_NAME}-${CPOW_PACKAGE_VERSION}" "${GK_PACKAGE_NAME}-${GK_PACKAGE_VERSION}")
+# packageArray=("${FS_PACKAGE_NAME}-${FS_PACKAGE_VERSION}" "${CA_PACKAGE_NAME}-${CA_PACKAGE_VERSION}" "${CL_PACKAGE_NAME}-${CL_PACKAGE_VERSION}" "${CU_PACKAGE_NAME}-${CU_PACKAGE_VERSION}" "${CE_PACKAGE_NAME}-${CE_PACKAGE_VERSION}" "${CI_PACKAGE_NAME}-${CI_PACKAGE_VERSION}" "${CPOW_PACKAGE_NAME}-${CPOW_PACKAGE_VERSION}" "${GK_PACKAGE_NAME}-${GK_PACKAGE_VERSION}")
+packageArray=("${CL_PACKAGE_NAME}@${CL_PACKAGE_VERSION}" "${CU_PACKAGE_NAME}@${CU_PACKAGE_VERSION}")
 
 # Accessing the passed branch name as a command line argument
 branch_name="${GITHUB_REF#refs/heads/}"
@@ -41,14 +42,15 @@ for str in ${packageArray[@]}; do
 
     # get the latest merged PR to main and extract changelog targeting head branch changeset-release/main
     # gh pr list -B main -s merged -H changeset-release/main --json body --jq '.[].body' -L 1
-    prDesc=$(gh pr list -B "$branch_name" -s merged -H changeset-release/"$branch_name" --json body --jq '.[].body' -L 1)
-    releaseNotes=$(echo "$prDesc" | perl -0777pe "s/(.*)# Releases\n(## ${FS_PACKAGE_NAME}.*)/\2/s")
+    prDesc=$(gh release view concords-proof-of-work-0.0.7)
+    releaseNotes=$(echo "$prDesc" | sed -e "s/.*concords-ledger@1.0.11\(.*\)ncords-proof-of.*/\1/")
+    # releaseNotes=$(echo "$prDesc" | perl -0777pe "s/## ${str}/\2/s")
     echo "> Extracted notes ${releaseNotes}"
 
     # get the merged commit SHA so we can tag this release precisely and avoid including any subsequest merges
     releaseMergeCommitSHA=$(gh pr list -B "$branch_name" -s merged -H changeset-release/"$branch_name" --json mergeCommit --jq '.[].mergeCommit.oid' -L 1)
 
-    releaseReponse=$(gh release create "${str}" -t "${str}" -n "${str}" -n "$releaseNotes" --target "${releaseMergeCommitSHA}")
+    # releaseReponse=$(gh release create "${str}" -t "${str}" -n "${str}" -n "$releaseNotes" --target "${releaseMergeCommitSHA}")
 
   fi
 done
