@@ -1,5 +1,5 @@
 {
-  "name": "@concords/concords",
+  "name": "concords-app",
   "private": true,
   "version": "0.0.1",
   "type": "module",
