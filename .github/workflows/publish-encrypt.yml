@@ -1,5 +1,6 @@
 name: Production Tag Deployment
 env:
+  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
   PNPM_CACHE_PATH: ~/.pnpm-store
@@ -26,7 +27,7 @@ jobs:
           echo "branch_name=$(echo ${GITHUB_REF#refs/heads/} | tr / -)" >> $GITHUB_ENV
 
       - name: Authenticate with private NPM package
-        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+        run: echo "//registry.npmjs.org/:_authToken=${{ env.NPM_TOKEN }}" > ~/.npmrc
 
       - name: Get node version
         id: nvmrc
@@ -52,5 +53,5 @@ jobs:
         run:  pnpm --filter concords-encrypt build
 
       - name: Publish npm
-        run: pnpm --filter concords-encrypt publish --no-git-checks
+        run: pnpm --filter concords-encrypt publish --no-git-checks --no-git-tag-version --no-push
 
