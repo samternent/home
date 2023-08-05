@@ -41,7 +41,7 @@ const comment = shallowRef("");
 </script>
 <template>
   <div
-    class="flex flex-col relative py-0 bg-[#1e1e1e] hover:bg-[#232323] transition-all font-light items-center w-full border-x-[transparent] border-transparent border-x-4"
+    class="flex flex-col relative p-2 rounded bg-zinc-100 dark:bg-[#1e1e1e] hover:dark:bg-[#232323] transition-all font-light items-center w-full border-x-[transparent] border-transparent border-x-4"
     :class="{
       'bg-yellow-100 hover:bg-yellow-200': selected,
       'border-l-4 border-l-green-900':
@@ -59,16 +59,16 @@ const comment = shallowRef("");
   >
     <span
       v-if="fixture.status === 'IN_PLAY'"
-      class="absolute left-0 text-xs px-4 m-1 bg-green-600 rounded-full text-white"
+      class="absolute left-0 text-xs px-4 m-1 bg-green-600 rounded-full dark:text-white"
       >In play</span
     >
     <span
       v-if="fixture.status === 'POSTPONED'"
-      class="absolute left-0 text-xs px-4 m-1 bg-red-800 rounded-full text-white"
+      class="absolute left-0 text-xs px-4 m-1 bg-red-800 rounded-full dark:text-white"
       >POSTPONED</span
     >
     <span
-      class="text-xs w-full px-4 py-1 text-[#d3d3d3] bg-[#232323] font-medium uppercase text-center"
+      class="text-xs w-full px-4 py-1 dark:text-[#d3d3d3] dark:bg-[#232323] font-medium uppercase text-center"
       >{{ kickOff }}</span
     >
     <div
@@ -87,7 +87,7 @@ const comment = shallowRef("");
         <RouterLink
           v-if="fixture.homeTeam.id"
           @click.stop
-          class="league-link text-[#e3e3e3] font-medium text-right truncate"
+          class="league-link dark:text-[#e3e3e3] font-medium text-right truncate"
           :to="`/leagues/${fixture.competition.code}/teams/${fixture.homeTeam.id}`"
         >
           <span class="hidden md:inline">{{ fixture.homeTeam.name }}</span
@@ -95,25 +95,25 @@ const comment = shallowRef("");
         </RouterLink>
         <div
           v-else
-          class="league-link text-[#e3e3e3] font-medium text-right truncate"
+          class="league-link dark:text-[#e3e3e3] font-medium text-right truncate"
         >
           TBD
         </div>
       </div>
       <span
-        class="mx-6 font-thin text-4xl text-[#6a6a6a]"
+        class="mx-6 font-thin text-4xl dark:text-[#6a6a6a]"
         v-if="!fixture.score?.winner"
         >v</span
       >
       <div
-        class="flex items-center font-medium text-[#6a6a6a] text-2xl justify-between my-2"
+        class="flex items-center font-medium dark:text-[#6a6a6a] text-2xl justify-between my-2"
         v-else
       >
-        <span class="flex-1 p-2 text-white ml-2">{{
+        <span class="flex-1 p-2 dark:text-white ml-2">{{
           fixture.score.fullTime.home
         }}</span>
         -
-        <span class="flex-1 p-2 text-white mr-2">{{
+        <span class="flex-1 p-2 dark:text-white mr-2">{{
           fixture.score.fullTime.away
         }}</span>
       </div>
@@ -124,7 +124,7 @@ const comment = shallowRef("");
         <RouterLink
           v-if="fixture.awayTeam.id"
           @click.stop
-          class="league-link text-[#e3e3e3] font-medium text-right truncate"
+          class="league-link dark:text-[#e3e3e3] font-medium text-right truncate"
           :to="`/leagues/${fixture.competition.code}/teams/${fixture.awayTeam.id}`"
         >
           <span class="hidden md:inline truncate">{{
@@ -136,7 +136,7 @@ const comment = shallowRef("");
         </RouterLink>
         <div
           v-else
-          class="league-link text-[#e3e3e3] font-medium text-right truncate"
+          class="league-link dark:text-[#e3e3e3] font-medium text-right truncate"
         >
           TBD
         </div>
@@ -149,7 +149,7 @@ const comment = shallowRef("");
       </div>
     </div>
     <div
-      class="text-xs hidden text-[#aeaeae] font-medium md:inline"
+      class="text-xs hidden dark:text-[#aeaeae] font-medium md:inline"
       v-if="size !== 'sm' && fixture.referees.length"
     >
       Referee:
@@ -157,46 +157,5 @@ const comment = shallowRef("");
         {{ referee.name }}<span v-if="i < fixture.referees.length - 1">, </span>
       </span>
     </div>
-  </div>
-  <div
-    v-if="selected"
-    class="relative bg-gray-100 flex flex-col min-h-52 shadow-inner p-2"
-  >
-    <div class="text-lg p-2 flex w-full justify-end">
-      <span class="mx-1">👍 <span class="text-xs text-gray-400">0</span></span>
-      <span class="mx-1">❤️ <span class="text-xs text-gray-400">0</span></span>
-      <span class="mx-1">😂 <span class="text-xs text-gray-400">0</span></span>
-      <span class="mx-1">😯 <span class="text-xs text-gray-400">0</span></span>
-      <span class="mx-1">😢 <span class="text-xs text-gray-400">0</span></span>
-      <span class="mx-1">😡 <span class="text-xs text-gray-400">0</span></span>
-    </div>
-    <div
-      v-for="comment in comments"
-      :key="comment.id"
-      class="bg-blue-50 border text-gray-700 p-2 rounded mb-1 text-xs"
-    >
-      {{ comment.comment }}
-    </div>
-    <textarea
-      v-model="comment"
-      class="bg-white rounded-lg p-2 block my-2 h-32 resize-none text-sm md:text-base font-light"
-      placeholder="Comment"
-    />
-    <div class="p-2 flex justify-between items-center">
-      <span class="text-xs text-blue-500"
-        >@{{ fixture.homeTeam.name.replace(/ /g, "") }} @{{
-          fixture.awayTeam.name.replace(/ /g, "")
-        }}
-        #match</span
-      >
-      <button
-        aria-label="Post"
-        @click="addComment"
-        class="bg-green-500 px-4 py-1 rounded text-white"
-      >
-        Post
-      </button>
-    </div>
-    <div></div>
   </div>
 </template>

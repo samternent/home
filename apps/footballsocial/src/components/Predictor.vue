@@ -75,11 +75,11 @@ watch(
       'text-base ': size === 'md',
     }"
   >
-    <span v-if="showDate" class="w-full font-thin bg-zinc-900 p-2 my-2">{{
+    <span v-if="showDate" class="w-full font-thin dark:bg-zinc900 p-2 my-2">{{
       kickOff
     }}</span>
     <div
-      class="flex flex-1 w-full px-2 justify-between items-center truncate text-sm sm:text-base bg-[#1e1e1e] hover:bg-[#232323] p-2 rounded"
+      class="flex flex-1 w-full px-2 justify-between items-center truncate text-sm sm:text-base dark:bg-[#1e1e1e] hover:dark:bg-[#232323] p-2 rounded"
     >
       <div
         class="flex-1 flex items-center truncate my-1 lg:text-xl md:font-light"

@@ -35,12 +35,12 @@ const teams = computed(
         v-for="team in teams"
         :key="team.id"
         @click="$emit('selected', team)"
-        class="flex items-center justify-between p-2 flex-col hover:bg-[#2d2d2d] z-10 rounded border-2 border-transparent hover:border-[#4e4e4e] cursor-pointer"
+        class="flex items-center justify-between p-2 flex-col hover:dark:bg-[#2d2d2d] z-10 rounded border-2 border-transparent hover:border-[#4e4e4e] cursor-pointer"
       >
         <div class="px-1 md:px-2 lg:px-4">
           <img :alt="team.name" :src="team.crest" class="w-full" />
         </div>
-        <span class="truncate text-base text-white mt-3 w-full text-center"
+        <span class="truncate text-base dark:text-white mt-3 w-full text-center"
           >{{ team.shortName }}
         </span>
       </div>

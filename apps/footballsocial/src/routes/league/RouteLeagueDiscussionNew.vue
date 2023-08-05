@@ -118,10 +118,10 @@ watch(
 );
 </script>
 <template>
-  <div class="flex w-full text-white p-2">
+  <div class="flex w-full dark:text-white p-2">
     <div class="max-w-screen-sm flex mx-auto flex-col w-full my-4 md:my-8">
       <h1
-        class="text-5xl text-white font-bold tracking-tighter shadow-text my-2"
+        class="text-5xl dark:text-white font-bold tracking-tighter shadow-text my-2"
       >
         Start a discussion
       </h1>
@@ -206,7 +206,7 @@ watch(
           <div
             v-if="!fixture"
             @click="showTeamModal = true"
-            class="cursor-pointer mr-2 text-center justify-center flex px-2 md:px-4 py-1 w-24 h-24 text-white bg-[#2e2e2e] rounded-full flex items-center text-lg font-light"
+            class="cursor-pointer mr-2 text-center justify-center flex px-2 md:px-4 py-1 w-24 h-24 dark:text-white dark:bg-[#2e2e2e] rounded-full flex items-center text-lg font-light"
           >
             <span v-if="!fixture">Team</span>
           </div>
@@ -218,7 +218,7 @@ watch(
           />
           <span
             v-if="!teams.length && !fixture"
-            class="text-base font-light text-white mr-2"
+            class="text-base font-light dark:text-white mr-2"
             >or</span
           >
           <div
@@ -227,7 +227,7 @@ watch(
             }"
             v-if="!fixture && !teams.length"
             @click="showFixtureModal = true"
-            class="cursor-pointer mr-2 text-center justify-center flex px-2 md:px-4 py-1 w-24 h-24 text-white bg-[#2e2e2e] rounded-full flex items-center text-lg font-light"
+            class="cursor-pointer mr-2 text-center justify-center flex px-2 md:px-4 py-1 w-24 h-24 dark:text-white dark:bg-[#2e2e2e] rounded-full flex items-center text-lg font-light"
           >
             Fixture
           </div>
@@ -276,13 +276,13 @@ watch(
         <input
           v-model="title"
           placeholder="Write title here"
-          class="bg-[#1d1d1d] w-full rounded p-2 border-2 border-[#343434] mt-4"
+          class="dark:bg-[#1d1d1d] w-full rounded p-2 border-2 border-[#343434] mt-4"
         />
         <div class="mx-2 mt-4 mb-8 flex justify-end">
           <button
             aria-label="Add comment"
             @click="addComment"
-            class="bg-pink-600 transition-all shadow-block-yellow text-white px-4 py-2 rounded no-underline hover:no-underline hover:text-white hover:bg-pink-500"
+            class="bg-pink-600 transition-all shadow-block-yellow dark:text-white px-4 py-2 rounded no-underline hover:no-underline hover:dark:text-white hover:bg-pink-500"
           >
             Start Discussion
           </button>

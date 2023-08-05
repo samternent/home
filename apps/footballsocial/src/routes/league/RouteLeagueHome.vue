@@ -56,7 +56,7 @@ watch(
     </div>
     <RouterLink
       :to="`/leagues/${competitionCode}/predictions/play`"
-      class="mx-auto mt-4 md:m-0 px-4 py-2 uppercase bg-pink-600 hover:bg-pink-700 text-white font-light"
+      class="mx-auto mt-4 md:m-0 px-4 py-2 uppercase bg-pink-600 hover:bg-pink-700 dark:text-white font-light"
     >
       Enter Now!
     </RouterLink>
@@ -65,7 +65,7 @@ watch(
     <li v-for="t in tabs" :key="`${t}`">
       <RouterLink
         :to="`/leagues/${competitionCode}/${t}`"
-        class="px-4 py-3 uppercase hover:bg-indigo-900 text-white border-b-4 border-transparent"
+        class="px-4 py-3 uppercase hover:bg-indigo-900 dark:text-white border-b-4 border-transparent"
         active-class="bg-indigo-900 !border-indigo-600"
       >
         {{ t }}

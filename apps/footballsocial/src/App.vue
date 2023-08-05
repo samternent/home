@@ -40,8 +40,8 @@ api.interceptors.response.use(
 </script>
 
 <template>
-  <div class="text-white absolute inset-0 flex flex-col">
-    <div class="sticky bg-[#1c1c1c] top-0 z-30 shadow w-full">
+  <div class="dark:text-white absolute inset-0 flex flex-col">
+    <div class="bg-indigo-50 sticky dark:bg-[#1c1c1c] top-0 z-30 shadow w-full">
       <div
         class="max-w-7xl flex justify-between mx-auto items-center w-full h-12"
       >
@@ -49,7 +49,7 @@ api.interceptors.response.use(
           <RouterLink
             to="/"
             alt="Home"
-            class="mr-4 text-lg no-underline hover:text-white hover:no-underline text-white mx-1 rounded h-10 flex items-center justify-center text-center px-2 py-1"
+            class="mr-4 text-lg no-underline hover:dark:text-white hover:no-underline dark:text-white mx-1 rounded h-10 flex items-center justify-center text-center px-2 py-1"
           >
             <img
               alt="Football Social"
@@ -63,7 +63,10 @@ api.interceptors.response.use(
           ></section>
         </div>
 
-        <div class="flex items-center text-white" :key="profile?.id || 'empty'">
+        <div
+          class="flex items-center dark:text-white"
+          :key="profile?.id || 'empty'"
+        >
           <RouterLink
             aria-label="Login"
             v-if="!user"
@@ -114,7 +117,7 @@ api.interceptors.response.use(
         Don't miss a beat.
         <button
           @click="requestNotifcationPermissions"
-          class="bg-pink-600 flex ml-4 transition-all text-sm shadow-block-yellow text-white px-3 py-1 rounded no-underline hover:no-underline hover:text-white hover:bg-pink-500"
+          class="bg-pink-600 flex ml-4 transition-all text-sm shadow-block-yellow dark:text-white px-3 py-1 rounded no-underline hover:no-underline hover:dark:text-white hover:bg-pink-500"
         >
           Enable Notifications
           <svg
@@ -140,9 +143,9 @@ api.interceptors.response.use(
       <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
     </div>
     <footer
-      class="p-4 bg-[#242424] text-white md:flex md:items-center md:justify-between md:p-6"
+      class="p-4 bg-indigo-100 dark:bg-[#242424] dark:text-white md:flex md:items-center md:justify-between md:p-6"
     >
-      <span class="text-sm sm:text-center text-gray-200"
+      <span class="text-sm sm:text-center dark:text-gray-200"
         ><a href="https://www.footballsocial.app/" class="league-link"
           >FootballSocial</a
         >
@@ -154,7 +157,7 @@ api.interceptors.response.use(
         © 2023.
       </span>
       <ul
-        class="flex flex-wrap items-center mt-3 text-sm text-gray-400 sm:mt-0"
+        class="flex flex-wrap items-center mt-3 text-sm dark:text-gray-400 sm:mt-0"
       >
         <!-- <li>
           <RouterLink to="/company/about" class="mr-4 hover:underline md:mr-6"

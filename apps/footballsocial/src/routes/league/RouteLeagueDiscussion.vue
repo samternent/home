@@ -157,7 +157,7 @@ watch(
     </div>
     <Fixture :fixture="fixture" v-if="fixture" size="sm" />
     <div v-else-if="fixtureLoading" class="w-full rounded overflow-hidden">
-      <div class="bg-[#343434] animate-pulse m-2 rounded flex-1 h-12" />
+      <div class="dark:bg-[#343434] animate-pulse m-2 rounded flex-1 h-12" />
     </div>
     <div class="flex flex-col sm:flex-row px-6 py-2 items-start flex-none">
       <div class="flex flex-col mb-2">
@@ -204,7 +204,7 @@ watch(
             :key="answer.id"
             :data-id="answer.id"
             :class="{
-              'bg-[#252525] p-2': $route.hash === `#${answer.id}`,
+              'dark:bg-[#252525] p-2': $route.hash === `#${answer.id}`,
             }"
           >
             <div
@@ -215,7 +215,7 @@ watch(
             <div class="flex-1 overflow-hidden">
               <div>
                 <span
-                  class="font-medium text-base text-indigo-300 mr-2 text-white"
+                  class="font-medium text-base text-indigo-300 mr-2 dark:text-white"
                   >{{ answer?.username }}</span
                 >
                 <span class="text-[#a3a3a3] text-xs">{{
@@ -223,7 +223,7 @@ watch(
                 }}</span>
               </div>
               <p
-                class="text-white text-base leading-normal"
+                class="dark:text-white text-base leading-normal"
                 v-html="answer.body"
               />
             </div>
@@ -261,14 +261,14 @@ watch(
               type="text"
               v-model="replyBody"
               @submit="addAnswer"
-              class="border-[#343434] text-light w-full px-4 bg-[#1d1d1d]"
+              class="border-[#343434] text-light w-full px-4 dark:bg-[#1d1d1d]"
               placeholder="Reply"
             />
             <span class="text-3xl text-grey border-l-2 border-[#343434] p-2">
               <button
                 aria-label="Add reply"
                 @click="addAnswer"
-                class="transition-all text-white px-4 py-2 rounded no-underline hover:no-underline hover:text-white"
+                class="transition-all dark:text-white px-4 py-2 rounded no-underline hover:no-underline hover:dark:text-white"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
