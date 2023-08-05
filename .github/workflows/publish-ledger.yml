@@ -48,7 +48,6 @@ jobs:
       - name: Build libs
         run:  pnpm --filter @concords/utils --filter @concords/identity --filter @concords/encrypt --filter @concords/proof-of-work --filter concords-ledger build
 
-
-      - name: Pull Vercel Environment Information
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Publish npm
+        run: npm publish
 
