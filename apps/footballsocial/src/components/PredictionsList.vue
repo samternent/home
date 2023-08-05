@@ -128,7 +128,6 @@ const isDirty = computed(
         <button
           :disabled="!isDirty"
           v-if="
-            meta.played === 0 &&
             profile &&
             (!username || profile.username === username)
           "
