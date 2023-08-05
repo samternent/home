@@ -26,11 +26,6 @@ jobs:
         run: |
           echo "branch_name=$(echo ${GITHUB_REF#refs/heads/} | tr / -)" >> $GITHUB_ENV
 
-      - name: Set publishing config
-        run: pnpm config set '//registry.npmjs.org/:_authToken' "${NODE_AUTH_TOKEN}"
-        env:
-          NODE_AUTH_TOKEN: ${{env.NPM_TOKEN}}
-
       - name: Get node version
         id: nvmrc
         run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
@@ -47,6 +42,11 @@ jobs:
           node-version-file: '.nvmrc'
           registry-url: https://registry.npmjs.org
           cache: 'pnpm'
+
+      - name: Set publishing config
+        run: pnpm config set '//registry.npmjs.org/:_authToken' "${NODE_AUTH_TOKEN}"
+        env:
+          NODE_AUTH_TOKEN: ${{env.NPM_TOKEN}}
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
