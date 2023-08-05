@@ -1,5 +1,5 @@
 {
-  "name": "@concords/footballsocial",
+  "name": "footballsocial",
   "private": true,
   "version": "0.0.10",
   "type": "module",
