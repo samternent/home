@@ -53,5 +53,5 @@ jobs:
         run:  pnpm --filter concords-encrypt build
 
       - name: Publish npm
-        run: pnpm --filter concords-encrypt publish --no-git-checks --no-git-tag-version --no-push
+        run: pnpm --filter concords-encrypt publish --no-git-checks
 
