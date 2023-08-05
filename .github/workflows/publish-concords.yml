@@ -37,6 +37,9 @@ jobs:
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
       - name: Build libs
         run:  pnpm --filter concords-utils --filter concords-identity --filter concords-encrypt --filter concords-proof-of-work --filter concords-ledger build
 
