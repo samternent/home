@@ -1,5 +1,17 @@
 # concords-app
 
+## 0.0.7
+
+### Patch Changes
+
+- [`097720a`](https://github.com/samternent/home/commit/097720ae92f7526d9135c2cbe7e9ccd848c6c396) Thanks [@samternent](https://github.com/samternent)! - Adds version info log
+
+- Updated dependencies [[`0163e3c`](https://github.com/samternent/home/commit/0163e3c02abf4bc0a05e026db3c7bf3c1b1e8e57)]:
+  - concords-utils@1.0.6
+  - concords-identity@0.0.7
+  - concords-ledger@1.0.11
+  - concords-proof-of-work@0.0.7
+
 ## 0.0.6
 
 ### Patch Changes
