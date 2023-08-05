@@ -1,5 +1,11 @@
 # concords-ledger
 
+## 1.0.3
+
+### Patch Changes
+
+- [`eead451`](https://github.com/samternent/home/commit/eead451300298d24455426d05b88e276bec53021) Thanks [@samternent](https://github.com/samternent)! - includes ledger package in publish script
+
 ## 1.0.2
 
 ### Patch Changes
