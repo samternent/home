@@ -14,6 +14,9 @@ import Root from "./Root.vue";
 import router from "./router";
 import "vue-toastification/dist/index.css";
 import registerSW from "./utils/registerSW";
+import { version } from '../package.json';
+
+console.info(`concords-app | version@${version}`);
 
 const app = createApp(Root);
 
