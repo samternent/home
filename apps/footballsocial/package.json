@@ -1,7 +1,7 @@
 {
-  "name": "@concords/footballsocial",
+  "name": "footballsocial",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.0.11",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -23,6 +23,7 @@
     "@tiptap/starter-kit": "2.0.0-beta.199",
     "@tiptap/suggestion": "2.0.0-beta.199",
     "@tiptap/vue-3": "2.0.0-beta.199",
+    "@vercel/og": "^0.5.10",
     "@vitejs/plugin-basic-ssl": "^0.1.2",
     "@vueuse/core": "^9.1.1",
     "axios": "^0.27.2",

@@ -106,7 +106,7 @@ const isDirty = computed(
               :fixture="fixture"
               :size="size"
               :disabled="
-                meta.played > 1 ||
+                ['IN_PLAY', 'FINISHED'].includes(fixture.status) ||
                 (username && profile?.username !== username) ||
                 false
               "
@@ -128,7 +128,6 @@ const isDirty = computed(
         <button
           :disabled="!isDirty"
           v-if="
-            meta.played === 0 &&
             profile &&
             (!username || profile.username === username)
           "

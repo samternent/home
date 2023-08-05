@@ -26,7 +26,7 @@ const tableData = computed(() => {
 });
 </script>
 <template>
-  <div v-for="standing in tableData" :key="standing?.id" class="py-2">
+  <div v-for="standing in tableData" :key="standing?.id" class="py-2 w-full">
     <TransitionGroup>
       <label
         class="p-2 px-4 block w-full dark:bg-[#2e2e2e] font-medium border-b-2 border-[#4b4b4b]"

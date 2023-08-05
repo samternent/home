@@ -94,23 +94,43 @@ watch(
         <span class="hidden md:inline">{{ fixture.homeTeam.name }}</span
         ><span class="md:hidden">{{ fixture.homeTeam.shortName }}</span>
       </div>
-      <input
-        :disabled="disabled"
-        v-model="homeScore"
-        type="number"
-        min="0"
-        max="9"
-        class="text-center text-2xl w-12 h-12 ml-4 rounded font-bold"
-      />
+      <div class="flex flex-row text-center justify-center items-center">
+        <input
+          :disabled="disabled"
+          v-model="homeScore"
+          type="number"
+          min="0"
+          max="9"
+          class="text-center text-2xl w-12 h-12 ml-4 rounded font-bold"
+        />
+        <span
+          class="text-2xl ml-4 rounded font-thin"
+          :class="{
+            'text-red-300': fixture.score?.fullTime?.home != homeScore,
+            'text-green-300': fixture.score?.fullTime?.home == homeScore,
+          }"
+          >{{ fixture.score?.fullTime?.home }}</span
+        >
+      </div>
       <span class="mx-6 font-thin text-4xl text-[#6a6a6a]">v</span>
-      <input
-        v-model="awayScore"
-        :disabled="disabled"
-        type="number"
-        min="0"
-        max="9"
-        class="text-center text-2xl w-12 h-12 mr-4 rounded font-bold"
-      />
+      <div class="flex flex-row text-center justify-center items-center">
+        <span
+          class="text-2xl mr-4 rounded font-thin"
+          :class="{
+            'text-green-300': fixture.score?.fullTime?.away == awayScore,
+            'text-red-300': fixture.score?.fullTime?.away != awayScore,
+          }"
+          >{{ fixture.score?.fullTime?.away }}</span
+        >
+        <input
+          v-model="awayScore"
+          :disabled="disabled"
+          type="number"
+          min="0"
+          max="9"
+          class="text-center text-2xl w-12 h-12 mr-4 rounded font-bold"
+        />
+      </div>
       <div
         class="flex-1 flex items-center truncate my-1 lg:text-xl md:font-lighgt"
         :class="{ 'justify-between': !hideCrests, 'justify-start': hideCrests }"

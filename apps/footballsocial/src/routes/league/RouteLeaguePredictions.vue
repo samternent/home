@@ -15,7 +15,7 @@ const props = defineProps({
 const { items: competition } = useCompetitionLoader();
 const tabs = computed(() => [
   {
-    title: `Gameweek ${competition.value?.currentSeason?.currentMatchday + 1}`,
+    title: `Gameweek ${competition.value?.currentSeason?.currentMatchday}`,
     to: "play",
   },
   { title: "Results", to: "results" },
@@ -23,7 +23,7 @@ const tabs = computed(() => [
 ]);
 </script>
 <template>
-  <div class="mx-auto">
+  <div class="w-full">
     <ul class="flex my-4">
       <li v-for="t in tabs" :key="`${t}`">
         <RouterLink

@@ -52,7 +52,7 @@ watch(
     <div class="text-lg font-light">
       <span class="text-xl font-medium text-pink-600 mr-2">NEW</span>Enter your
       Gameweek
-      {{ competition?.currentSeason?.currentMatchday + 1 }} predictions.
+      {{ competition?.currentSeason?.currentMatchday }} predictions.
     </div>
     <RouterLink
       :to="`/leagues/${competitionCode}/predictions/play`"
@@ -61,7 +61,7 @@ watch(
       Enter Now!
     </RouterLink>
   </div>
-  <ul class="flex max-w-[100vw] overflow-x-auto h-auto py-4 overflow-y-hidden">
+  <ul class="flex max-w-[100vw] overflow-x-auto h-auto py-4 overflow-y-hidden mb-4">
     <li v-for="t in tabs" :key="`${t}`">
       <RouterLink
         :to="`/leagues/${competitionCode}/${t}`"
@@ -72,12 +72,7 @@ watch(
       </RouterLink>
     </li>
   </ul>
-  <RouterView />
-  <div class="flex justify-center mt-16 mx-16 items-end transition-all">
-    <img
-      alt=""
-      class="h-96 w-96 opacity-80 transition-all w-"
-      src="../../assets/game-day.svg"
-    />
+  <div class="flex mb-16">
+    <RouterView />
   </div>
 </template>

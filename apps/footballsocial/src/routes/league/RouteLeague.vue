@@ -47,7 +47,7 @@ function gotoCompetition(e) {
 }
 </script>
 <template>
-  <div class="md:px-2 lg:px-4 flex-1 max-w-3xl mx-auto pt-0 w-full z-10">
+  <div class="md:px-2 lg:px-4 flex-1 max-w-3xl mx-auto pt-0 w-full z-10" v-if="competition">
     <Teleport to="#HeaderControls">
       <div
         class="dark:text-white text-right text-sm border rounded border-zinc-700"
@@ -80,12 +80,13 @@ function gotoCompetition(e) {
           <img
             v-if="competition"
             class="h-4 mr-2"
-            :src="competition?.area.flag"
+            :src="competition?.area?.flag"
           />
-          <span>{{ competition?.area.name }}</span>
+          <span>{{ competition?.area?.name }}</span>
         </p>
       </div>
     </div>
     <RouterView :competitionCode="competitionCode" :key="competitionCode" />
   </div>
+  <div v-else class="flex-1 h-screen"></div>
 </template>

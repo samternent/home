@@ -1,15 +1,25 @@
 {
-  "name": "@concords/mono",
+  "name": "home",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "keywords": [],
-  "author": "sam ternent",
+  "author": "sam.ternent@gmail.com",
   "license": "ISC",
+  "engines": {
+    "node": ">=18",
+    "pnpm": "^8.6.0"
+  },
   "devDependencies": {
+    "@changesets/changelog-github": "^0.4.8",
+    "@changesets/cli": "^2.26.2",
+    "encoding": "0.1.13",
     "turbo": "^1.6.3"
   },
   "dependencies": {
     "shelljs": "^0.8.5"
+  },
+  "scripts": {
+    "build:footballsocial": "pnpm --filter footballsocial build"
   }
 }
