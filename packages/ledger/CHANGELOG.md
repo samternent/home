@@ -1,5 +1,11 @@
 # concords-ledger
 
+## 1.0.4
+
+### Patch Changes
+
+- [`24e2d11`](https://github.com/samternent/home/commit/24e2d117dbb91c6650aaf84d358bfde36424daf7) Thanks [@samternent](https://github.com/samternent)! - update ledger publish script
+
 ## 1.0.3
 
 ### Patch Changes
