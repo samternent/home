@@ -1,6 +1,6 @@
 {
   "name": "concords-ledger",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "",
   "main": "dist/ledger.umd.js",
   "module": "dist/ledger.es.js",
