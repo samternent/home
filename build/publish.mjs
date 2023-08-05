@@ -24,7 +24,6 @@ for (; i < toPublish.length; i++) {
 
   const fullChangelog = shell
     .exec(`gh release view ${name}-${version}`, {
-      silent: true,
     })
     .toString();
 
