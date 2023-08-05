@@ -1,5 +1,11 @@
 # concords-utils
 
+## 1.0.6
+
+### Patch Changes
+
+- [`0163e3c`](https://github.com/samternent/home/commit/0163e3c02abf4bc0a05e026db3c7bf3c1b1e8e57) Thanks [@samternent](https://github.com/samternent)! - Update readme
+
 ## 1.0.5
 
 ### Patch Changes

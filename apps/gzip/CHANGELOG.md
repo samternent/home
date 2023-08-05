@@ -1,5 +1,12 @@
 # concords-gzip
 
+## 0.0.4
+
+### Patch Changes
+
+- Updated dependencies [[`0163e3c`](https://github.com/samternent/home/commit/0163e3c02abf4bc0a05e026db3c7bf3c1b1e8e57)]:
+  - concords-utils@1.0.6
+
 ## 0.0.3
 
 ### Patch Changes
