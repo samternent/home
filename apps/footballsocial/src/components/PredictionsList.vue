@@ -106,6 +106,7 @@ const isDirty = computed(
               :fixture="fixture"
               :size="size"
               :disabled="
+                new Date(fixture.utcDate).getTime() < new Date().getTime() ||
                 ['IN_PLAY', 'FINISHED'].includes(fixture.status) ||
                 (username && profile?.username !== username) ||
                 false
