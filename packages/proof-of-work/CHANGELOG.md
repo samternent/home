@@ -1,5 +1,11 @@
 # concords-proof-of-work
 
+## 0.0.3
+
+### Patch Changes
+
+- [`4b3b09a`](https://github.com/samternent/home/commit/4b3b09a759b54a4d861ac22d64df70e54161501b) Thanks [@samternent](https://github.com/samternent)! - Hopefully fixing actions and triggering an everything release
+
 ## 0.0.2
 
 ### Patch Changes
