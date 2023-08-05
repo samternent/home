@@ -1,6 +1,6 @@
 {
   "name": "concords-utils",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "",
   "main": "dist/utils.umd.js",
   "module": "dist/utils.es.js",
