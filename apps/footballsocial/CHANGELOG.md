@@ -1,5 +1,13 @@
 # @concords/footballsocial
 
+## 0.0.12
+
+### Patch Changes
+
+- [#12](https://github.com/samternent/home/pull/12) [`a89d662`](https://github.com/samternent/home/commit/a89d662941a5395f6d395e835c7b363db812b21d) Thanks [@samternent](https://github.com/samternent)! - Fix prediction close times
+
+- [#12](https://github.com/samternent/home/pull/12) [`9b6f62e`](https://github.com/samternent/home/commit/9b6f62e0e180fea5902cae87e4a451e7fd076763) Thanks [@samternent](https://github.com/samternent)! - Adds groundowkr for light mode
+
 ## 0.0.11
 
 ### Patch Changes
