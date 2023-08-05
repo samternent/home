@@ -5,7 +5,10 @@ set -e # exit when error
 FS_PACKAGE_NAME=`node -p "require('./apps/footballsocial/package.json').name"`
 FS_PACKAGE_VERSION=`node -p "require('./apps/footballsocial/package.json').version"`
 
-packageArray=("${FS_PACKAGE_NAME}-${FS_PACKAGE_VERSION}")
+CL_PACKAGE_NAME=`node -p "require('./packages/ledger/package.json').name"`
+CL_PACKAGE_VERSION=`node -p "require('./packages/ledger/package.json').version"`
+
+packageArray=("${FS_PACKAGE_NAME}-${FS_PACKAGE_VERSION}" "${CL_PACKAGE_NAME}-${CL_PACKAGE_VERSION}")
 
 # Accessing the passed branch name as a command line argument
 branch_name="${GITHUB_REF#refs/heads/}"
