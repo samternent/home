@@ -1,5 +1,11 @@
 # @concords/footballsocial
 
+## 0.0.11
+
+### Patch Changes
+
+- [`e70fe52`](https://github.com/samternent/home/commit/e70fe5250d5c12498a42430dcadb5bffd941372b) Thanks [@samternent](https://github.com/samternent)! - Adds loading spinner
+
 ## 0.0.10
 
 ### Patch Changes
