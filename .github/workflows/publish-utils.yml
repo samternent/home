@@ -26,8 +26,10 @@ jobs:
         run: |
           echo "branch_name=$(echo ${GITHUB_REF#refs/heads/} | tr / -)" >> $GITHUB_ENV
 
-      - name: Authenticate with private NPM package
-        run: echo "//registry.npmjs.org/:_authToken=${{ env.NPM_TOKEN }}" > ~/.npmrc
+      - name: Set publishing config
+        run: pnpm config set '//registry.npmjs.org/:_authToken' "${NODE_AUTH_TOKEN}"
+        env:
+          NODE_AUTH_TOKEN: ${{env.NPM_TOKEN}}
 
       - name: Get node version
         id: nvmrc
@@ -53,5 +55,7 @@ jobs:
         run:  pnpm --filter concords-utils build
 
       - name: Publish npm
-        run: pnpm --filter concords-ledger publish --no-git-checks
+        run: pnpm --filter concords-utils publish --no-git-checks --access public
+        env:
+          NPM_TOKEN: ${{ env.NPM_TOKEN }}
 

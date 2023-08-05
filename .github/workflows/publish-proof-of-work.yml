@@ -53,5 +53,5 @@ jobs:
         run:  pnpm --filter concords-utils --filter concords-proof-of-work build
 
       - name: Publish npm
-        run: pnpm --filter concords-proof-of-work publish --no-git-checks
+        run: pnpm --filter concords-proof-of-work publish --no-git-checks --access public
 
