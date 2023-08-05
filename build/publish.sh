@@ -28,7 +28,7 @@ do
     # get the merged commit SHA so we can tag this release precisely and avoid including any subsequest merges
     releaseMergeCommitSHA=$(gh pr list -B "$branch_name" -s merged -H changeset-release/"$branch_name" --json mergeCommit --jq '.[].mergeCommit.oid' -L 1)
 
-    releaseReponse=$(gh release create "${str}" -n "${str}" -n "$releaseNotes" --target "${releaseMergeCommitSHA}" )
+    releaseReponse=$(gh release create "${str}" -t "${str}" -n "${str}" -n "$releaseNotes" --target "${releaseMergeCommitSHA}" )
 
   fi
 done
