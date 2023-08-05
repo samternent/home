@@ -1,5 +1,11 @@
 # concords-utils
 
+## 1.0.4
+
+### Patch Changes
+
+- [`c96d01b`](https://github.com/samternent/home/commit/c96d01bd3cbce2064ba6549950a6096a30d9eaca) Thanks [@samternent](https://github.com/samternent)! - Updating utiols package
+
 ## 1.0.3
 
 ### Patch Changes
