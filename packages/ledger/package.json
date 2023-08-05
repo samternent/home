@@ -1,5 +1,5 @@
 {
-  "name": "@concords/ledger",
+  "name": "concords-ledger",
   "version": "1.0.0",
   "description": "",
   "main": "dist/ledger.umd.js",
