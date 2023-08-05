@@ -1,5 +1,11 @@
 # concords-ledger
 
+## 1.0.5
+
+### Patch Changes
+
+- [`d495098`](https://github.com/samternent/home/commit/d495098895fa725a57d8884df27f80c6213a6bfc) Thanks [@samternent](https://github.com/samternent)! - disable publish git checks
+
 ## 1.0.4
 
 ### Patch Changes
