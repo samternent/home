@@ -49,5 +49,5 @@ jobs:
         run:  pnpm --filter @concords/utils --filter @concords/identity --filter @concords/encrypt --filter @concords/proof-of-work --filter concords-ledger build
 
       - name: Publish npm
-        run: pnpm --filter concords-ledger publish
+        run: pnpm --filter concords-ledger publish --no-git-checks
 
