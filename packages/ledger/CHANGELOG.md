@@ -1,5 +1,12 @@
 # concords-ledger
 
+## 1.0.12
+
+### Patch Changes
+
+- Updated dependencies [[`fa24e69`](https://github.com/samternent/home/commit/fa24e69ff8cbc79e87ba5cfdec3c7d34f92f50c2)]:
+  - concords-identity@0.0.8
+
 ## 1.0.11
 
 ### Patch Changes
