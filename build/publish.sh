@@ -22,7 +22,7 @@ do
     # get the latest merged PR to main and extract changelog targeting head branch changeset-release/main
     # gh pr list -B main -s merged -H changeset-release/main --json body --jq '.[].body' -L 1
     prDesc=$(gh pr list -B "$branch_name" -s merged -H changeset-release/"$branch_name" --json body --jq '.[].body' -L 1)
-    releaseNotes=$(echo "$prDesc")
+    releaseNotes=$(echo "$prDesc" | perl -0777pe "s/(.*)# Releases\n(## ${FS_PACKAGE_NAME}.*)/\2/s")
     echo "> Extracted notes ${releaseNotes}"
 
     # get the merged commit SHA so we can tag this release precisely and avoid including any subsequest merges
