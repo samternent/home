@@ -22,16 +22,17 @@ for (; i < toPublish.length; i++) {
   ).default;
   console.log(`${name}@${version}`);
 
-  const fullChangelog = shell
-    .exec(`gh release view ${name}-${version}`, {
-    })
+  const branch = shell
+    .exec("git rev-parse --abbrev-ref HEAD", { silent: true })
     .toString();
 
-  console.log(fullChangelog);
+  const fullChangelog = shell
+    .exec(`gh pr list -B "${branch}" -s merged -H changeset-release/"${branch}" --json body --jq '.[].body' -L 1`)
+    .toString();
 
   const changelog = fullChangelog
-    .split(`## ${name}@${version}`)[1]
-    .split("## ")[1];
+    ?.split(`## ${name}@${version}`)[1]
+    ?.split("## ")[1];
 
   shell.exec(
     `gh release create "${name}-${version}" -t "${name}-${version}" -n "${name}-${version}" -n "${changelog}"`
