@@ -28,6 +28,8 @@ for (; i < toPublish.length; i++) {
     })
     .toString();
 
+  console.log(fullChangelog);
+
   const changelog = fullChangelog
     .split(`## ${name}@${version}`)[1]
     .split("## ")[1];
