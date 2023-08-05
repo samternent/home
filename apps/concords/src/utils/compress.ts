@@ -1,5 +1,5 @@
-import { ILedger } from "@concords/proof-of-work";
-import { b64encode, b64decode } from "@concords/utils";
+import { ILedger } from "concords-proof-of-work";
+import { b64encode, b64decode } from "concords-utils";
 
 export async function compress(ledger: ILedger) {
   const stream = new Blob([JSON.stringify(ledger)], {

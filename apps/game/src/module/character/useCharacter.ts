@@ -1,4 +1,4 @@
-import { createSprite } from "@concords/game-kit";
+import { createSprite } from "concords-game-kit";
 
 export function useCharacter({
   pose,

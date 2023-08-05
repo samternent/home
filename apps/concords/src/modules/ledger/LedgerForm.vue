@@ -2,7 +2,7 @@
 import { shallowRef, watch, watchEffect, computed, toRef } from "vue";
 import { useLedger } from "@/modules/ledger";
 import { PermissionPicker } from "@/modules/permissions";
-import type { IRecord } from "@concords/proof-of-work";
+import type { IRecord } from "concords-proof-of-work";
 import { useToast } from "vue-toastification";
 
 interface dynamicObject {

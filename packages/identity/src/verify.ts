@@ -1,4 +1,4 @@
-import { b64decode } from "@concords/utils";
+import { b64decode } from "concords-utils";
 
 export async function verify(
   signature: string,

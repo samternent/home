@@ -1,4 +1,4 @@
-import { hashData } from "@concords/utils";
+import { hashData } from "concords-utils";
 
 export interface IProof {
   proof: string;

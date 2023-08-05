@@ -1,4 +1,4 @@
-# @concords/footballsocial
+# concords-footballsocial
 
 ## 0.0.15
 

@@ -2,7 +2,7 @@
 import { shallowRef, watch } from "vue";
 import { useLedger } from "@/modules/ledger";
 import { IdentityAvatar } from "@/modules/identity";
-import type { IRecord } from "@concords/proof-of-work";
+import type { IRecord } from "concords-proof-of-work";
 
 const { ledger, getCollection, addItem } = useLedger();
 const people = shallowRef<Array<IRecord>>([]);

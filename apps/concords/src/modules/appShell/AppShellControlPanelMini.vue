@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, shallowRef, watch } from "vue";
+import { ILedger } from "concords-proof-of-work";
+import { b64encode } from "concords-utils";
 import { useLedger } from "@/modules/ledger";
 import { compress, decompress } from "@/utils/compress";
-import { ILedger } from "@concords/proof-of-work";
-import { b64encode } from "@concords/utils";
 
 const { ledger } = useLedger();
 

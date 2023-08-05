@@ -1,4 +1,4 @@
-import { removeLines, base64ToArrayBuffer } from "@concords/utils";
+import { removeLines, base64ToArrayBuffer } from "concords-utils";
 
 interface IPoints {
   x: string;

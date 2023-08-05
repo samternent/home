@@ -27,19 +27,19 @@ importers:
 
   apps/concords:
     dependencies:
-      '@concords/encrypt':
+      'concords-encrypt':
         specifier: workspace:*
         version: link:../../packages/encrypt
-      '@concords/identity':
+      'concords-identity':
         specifier: workspace:*
         version: link:../../packages/identity
-      '@concords/ledger':
+      'concords-ledger':
         specifier: workspace:*
         version: link:../../packages/ledger
-      '@concords/proof-of-work':
+      'concords-proof-of-work':
         specifier: workspace:*
         version: link:../../packages/proof-of-work
-      '@concords/utils':
+      'concords-utils':
         specifier: workspace:*
         version: link:../../packages/utils
       '@formkit/themes':
@@ -350,10 +350,10 @@ importers:
 
   apps/game:
     dependencies:
-      '@concords/game-kit':
+      'concords-game-kit':
         specifier: workspace:*
         version: link:../../packages/game-kit
-      '@concords/utils':
+      'concords-utils':
         specifier: workspace:*
         version: link:../../packages/utils
       '@supabase/supabase-js':
@@ -456,7 +456,7 @@ importers:
 
   apps/gzip:
     dependencies:
-      '@concords/utils':
+      'concords-utils':
         specifier: workspace:*
         version: link:../../packages/utils
       '@supabase/supabase-js':
@@ -791,7 +791,7 @@ importers:
 
   packages/identity:
     dependencies:
-      '@concords/utils':
+      'concords-utils':
         specifier: workspace:*
         version: link:../utils
       '@swc/helpers':
@@ -810,16 +810,16 @@ importers:
 
   packages/ledger:
     dependencies:
-      '@concords/encrypt':
+      'concords-encrypt':
         specifier: workspace:*
         version: link:../encrypt
-      '@concords/identity':
+      'concords-identity':
         specifier: workspace:*
         version: link:../identity
-      '@concords/proof-of-work':
+      'concords-proof-of-work':
         specifier: workspace:*
         version: link:../proof-of-work
-      '@concords/utils':
+      'concords-utils':
         specifier: workspace:*
         version: link:../utils
       '@swc/helpers':
@@ -841,7 +841,7 @@ importers:
 
   packages/proof-of-work:
     dependencies:
-      '@concords/utils':
+      'concords-utils':
         specifier: workspace:*
         version: link:../utils
       '@swc/helpers':

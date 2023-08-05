@@ -1,13 +1,13 @@
-import { hashData } from "@concords/utils";
+import { hashData } from "concords-utils";
 import {
   addRecord,
   createLedger,
   IRecord,
   mine,
-} from "@concords/proof-of-work";
-import { sign, exportPublicKeyAsPem } from "@concords/identity";
-import type { ILedger } from "@concords/proof-of-work";
-import { stripIdentityKey, generateId } from "@concords/utils";
+} from "concords-proof-of-work";
+import { sign, exportPublicKeyAsPem } from "concords-identity";
+import type { ILedger } from "concords-proof-of-work";
+import { stripIdentityKey, generateId } from "concords-utils";
 
 interface ILedgerConfig {
   plugins: Array<Object>;

@@ -3,7 +3,7 @@ import { IdentityAvatar } from "@/modules/identity";
 
 import { shallowRef, watch, computed, h } from "vue";
 import { useLedger, useLedgerAppShell } from "@/modules/ledger";
-import type { IRecord } from "@concords/proof-of-work";
+import type { IRecord } from "concords-proof-of-work";
 
 defineProps({
   modelValue: String,

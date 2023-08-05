@@ -1,4 +1,4 @@
-import { b64encode } from "@concords/utils";
+import { b64encode } from "concords-utils";
 
 export async function sign(signingKey: CryptoKey, data: any) {
   const dataBuffer = new TextEncoder().encode(JSON.stringify(data));

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { shallowRef } from "vue";
 import { generateUsername } from "unique-username-generator";
-import { stripIdentityKey, generateId } from "@concords/utils";
+import { stripIdentityKey, generateId } from "concords-utils";
 import { useLedger } from "@/modules/ledger";
 import { useEncryption } from "@/modules/encryption";
 import { useIdentity } from "@/modules/identity";

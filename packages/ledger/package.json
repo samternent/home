@@ -24,10 +24,10 @@
   "license": "ISC",
   "browserslist": "last 2 versions",
   "dependencies": {
-    "@concords/encrypt": "workspace:*",
-    "@concords/identity": "workspace:*",
-    "@concords/proof-of-work": "workspace:*",
-    "@concords/utils": "workspace:*",
+    "concords-encrypt": "workspace:*",
+    "concords-identity": "workspace:*",
+    "concords-proof-of-work": "workspace:*",
+    "concords-utils": "workspace:*",
     "@swc/helpers": "^0.4.3",
     "lokijs": "^1.5.12",
     "regenerator-runtime": "^0.13.9"

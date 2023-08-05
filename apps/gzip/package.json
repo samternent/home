@@ -1,5 +1,5 @@
 {
-  "name": "@concords/gzip",
+  "name": "concords-gzip",
   "private": true,
   "version": "0.0.1",
   "type": "module",
@@ -10,7 +10,7 @@
     "dev:api": "nodemon api/main.mjs"
   },
   "dependencies": {
-    "@concords/utils": "workspace:*",
+    "concords-utils": "workspace:*",
     "@supabase/supabase-js": "^2.1.1",
     "@tailwindcss/line-clamp": "^0.4.2",
     "@tailwindcss/typography": "^0.5.7",

@@ -1,7 +1,7 @@
 import loki from "lokijs";
-import { decrypt } from "@concords/encrypt";
-import { formatEncryptionFile, stripIdentityKey } from "@concords/utils";
-import type { ILedger, IRecord } from "@concords/proof-of-work";
+import { decrypt } from "concords-encrypt";
+import { formatEncryptionFile, stripIdentityKey } from "concords-utils";
+import type { ILedger, IRecord } from "concords-proof-of-work";
 
 export default function useLokiPlugin(
   name = "ledger",

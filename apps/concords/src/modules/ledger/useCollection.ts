@@ -1,6 +1,6 @@
 import { shallowRef, watch } from "vue";
 import { useLedger } from "@/modules/ledger";
-import type { IRecord } from "@concords/proof-of-work";
+import type { IRecord } from "concords-proof-of-work";
 
 export function useCollection(name: String) {
   if (!name) {

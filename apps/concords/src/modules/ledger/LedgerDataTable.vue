@@ -6,7 +6,7 @@ import { useLedger } from "./useLedger";
 import LedgerForm from "./LedgerForm.vue";
 import { TextCell, VerifyRowCell, IdentityAvatarCell } from "@/modules/table";
 import { useIdentity } from "@/modules/identity";
-import type { IRecord } from "@concords/proof-of-work";
+import type { IRecord } from "concords-proof-of-work";
 
 interface dynamicObject {
   [key: string]: string | null;

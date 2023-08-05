@@ -1,7 +1,7 @@
 import init, {
   encrypt_with_user_passphrase,
   decrypt_with_user_passphrase,
-} from "@concords/rage-wasm";
+} from "concords-rage-wasm";
 
 export const ready = init();
 

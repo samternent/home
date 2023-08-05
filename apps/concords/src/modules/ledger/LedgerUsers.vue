@@ -8,7 +8,7 @@ import {
 } from "@/modules/identity";
 import { useLedger } from "@/modules/ledger";
 import { IdentityAvatarCell } from "@/modules/table";
-import type { IRecord } from "@concords/proof-of-work";
+import type { IRecord } from "concords-proof-of-work";
 
 const { ledger, getCollection, addItem } = useLedger();
 const { publicKeyPEM } = useIdentity();

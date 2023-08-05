@@ -1,4 +1,4 @@
-import { addNewLines, arrayBufferToBase64, b64encode } from "@concords/utils";
+import { addNewLines, arrayBufferToBase64, b64encode } from "concords-utils";
 
 export async function exportPublicKey(key: CryptoKey): Promise<string> {
   const exported = await window.crypto.subtle.exportKey("spki", key);

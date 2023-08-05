@@ -1,23 +1,23 @@
 import { shallowRef, provide, inject, watchEffect } from "vue";
-import { createLedger, useLokiPlugin } from "@concords/ledger";
+import { createLedger, useLokiPlugin } from "concords-ledger";
 import {
   stripIdentityKey,
   stripEncryptionFile,
   formatEncryptionFile,
   generateId,
-} from "@concords/utils";
+} from "concords-utils";
 
 import {
   encrypt,
   decrypt,
   generate as generateEncryptionKeys,
-} from "@concords/encrypt";
+} from "concords-encrypt";
 import { useEncryption } from "../encryption";
 import { useIdentity } from "../identity";
 
 import type { Ref } from "vue";
-import type { ILedger } from "@concords/proof-of-work";
-import type { ILedgerAPI } from "@concords/ledger";
+import type { ILedger } from "concords-proof-of-work";
+import type { ILedgerAPI } from "concords-ledger";
 
 const useLedgerSymbol = Symbol("useLedger");
 
