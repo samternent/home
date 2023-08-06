@@ -60,13 +60,22 @@ watch(
 );
 
 const resultPrediction = computed(() => {
-  if (props.prediction.homeScore > props.prediction.awayScore && props.fixture.score.winner === 'HOME_TEAM') {
+  if (
+    props.prediction?.homeScore > props.prediction?.awayScore &&
+    props.fixture?.score.winner === "HOME_TEAM"
+  ) {
     return true;
   }
-  if (props.prediction.awayScore > props.prediction.homeScore && props.fixture.score.winner === 'AWAY_TEAM') {
+  if (
+    props.prediction?.awayScore > props.prediction?.homeScore &&
+    props.fixture?.score.winner === "AWAY_TEAM"
+  ) {
     return true;
   }
-  if (props.prediction.awayScore === props.prediction.homeScore && props.fixture.score.winner === 'DRAW') {
+  if (
+    props.prediction?.awayScore === props.prediction?.homeScore &&
+    props.fixture?.score.winner === "DRAW"
+  ) {
     return true;
   }
 
@@ -93,11 +102,7 @@ const resultPrediction = computed(() => {
       kickOff
     }}</span>
     <div
-      class="flex flex-1 w-full px-2 justify-between items-center truncate text-sm sm:text-base  p-2"
-      :class="{
-        'border-green-900 border-y-2': resultPrediction,
-        'dark:bg-[#1e1e1e] hover:dark:bg-[#232323]': !resultPrediction,
-      }"
+      class="flex flex-1 w-full px-2 justify-between items-center truncate text-sm sm:text-base dark:bg-[#1e1e1e] hover:dark:bg-[#232323] p-2"
     >
       <div
         class="flex-1 flex items-center truncate my-1 lg:text-xl md:font-light"
@@ -109,45 +114,50 @@ const resultPrediction = computed(() => {
           :src="fixture.homeTeam.crest || '/blank.png'"
           class="w-10 h-10 sm:w-14 sm:h-14 mr-2 lg:mr-4"
         />
-        <span class="hidden md:inline">{{ fixture.homeTeam.name }}</span
-        ><span class="md:hidden">{{ fixture.homeTeam.shortName }}</span>
+        <span class="hidden md:inline truncate">{{ fixture.homeTeam.name }}</span
+        ><span class="md:hidden truncate">{{ fixture.homeTeam.shortName }}</span>
       </div>
-      <div class="flex flex-row text-center justify-center items-center">
-        <input
-          :disabled="disabled"
-          v-model="homeScore"
-          type="number"
-          min="0"
-          max="9"
-          class="text-center text-2xl w-12 h-12 ml-4 rounded font-bold"
-        />
-        <span
-          class="text-2xl ml-4 rounded font-thin"
-          :class="{
-            'text-red-300': fixture.score?.fullTime?.home != homeScore,
-            'text-green-300': fixture.score?.fullTime?.home == homeScore,
-          }"
-          >{{ fixture.score?.fullTime?.home }}</span
-        >
-      </div>
-      <span class="mx-6 font-thin text-4xl text-[#6a6a6a]">v</span>
-      <div class="flex flex-row text-center justify-center items-center">
-        <span
-          class="text-2xl mr-4 rounded font-thin"
-          :class="{
-            'text-green-300': fixture.score?.fullTime?.away == awayScore,
-            'text-red-300': fixture.score?.fullTime?.away != awayScore,
-          }"
-          >{{ fixture.score?.fullTime?.away }}</span
-        >
-        <input
-          v-model="awayScore"
-          :disabled="disabled"
-          type="number"
-          min="0"
-          max="9"
-          class="text-center text-2xl w-12 h-12 mr-4 rounded font-bold"
-        />
+      <div class="flex flex-col">
+        <div v-if="resultPrediction" class="mx-auto px-3 text-sm rounded-full bg-green-900">correct result</div>
+        <div class="flex">
+          <div class="flex flex-row text-center justify-center items-center">
+            <input
+              :disabled="disabled"
+              v-model="homeScore"
+              type="number"
+              min="0"
+              max="9"
+              class="text-center text-2xl w-12 h-12 ml-4 rounded font-bold"
+            />
+            <span
+              class="text-2xl ml-4 rounded font-thin"
+              :class="{
+                'text-red-300': fixture.score?.fullTime?.home != homeScore,
+                'text-green-300': fixture.score?.fullTime?.home == homeScore,
+              }"
+              >{{ fixture.score?.fullTime?.home }}</span
+            >
+          </div>
+          <span class="mx-6 font-thin text-4xl text-[#6a6a6a]">v</span>
+          <div class="flex flex-row text-center justify-center items-center">
+            <span
+              class="text-2xl mr-4 rounded font-thin"
+              :class="{
+                'text-green-300': fixture.score?.fullTime?.away == awayScore,
+                'text-red-300': fixture.score?.fullTime?.away != awayScore,
+              }"
+              >{{ fixture.score?.fullTime?.away }}</span
+            >
+            <input
+              v-model="awayScore"
+              :disabled="disabled"
+              type="number"
+              min="0"
+              max="9"
+              class="text-center text-2xl w-12 h-12 mr-4 rounded font-bold"
+            />
+          </div>
+        </div>
       </div>
       <div
         class="flex-1 flex items-center truncate my-1 lg:text-xl md:font-lighgt"
