@@ -1,5 +1,15 @@
 # concords-app
 
+## 0.0.9
+
+### Patch Changes
+
+- Updated dependencies [[`cdc9b62`](https://github.com/samternent/home/commit/cdc9b62e722e06fb9da061a67566cbfed688be5c)]:
+  - concords-utils@1.0.7
+  - concords-identity@0.0.9
+  - concords-ledger@1.0.13
+  - concords-proof-of-work@0.0.8
+
 ## 0.0.8
 
 ### Patch Changes
