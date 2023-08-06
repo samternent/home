@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.0.17
+
+### Patch Changes
+
+- [`e832933`](https://github.com/samternent/home/commit/e83293381b4ce8d21c85fc63a5f07a1e0daa92ee) Thanks [@samternent](https://github.com/samternent)! - Indicate when prediction is correct
+
 ## 0.0.16
 
 ### Patch Changes
