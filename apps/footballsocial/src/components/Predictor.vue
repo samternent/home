@@ -58,6 +58,20 @@ watch(
   },
   { immediate: true }
 );
+
+const resultPrediction = computed(() => {
+  if (props.prediction.homeScore > props.prediction.awayScore && props.fixture.score.winner === 'HOME_TEAM') {
+    return true;
+  }
+  if (props.prediction.awayScore > props.prediction.homeScore && props.fixture.score.winner === 'AWAY_TEAM') {
+    return true;
+  }
+  if (props.prediction.awayScore === props.prediction.homeScore && props.fixture.score.winner === 'DRAW') {
+    return true;
+  }
+
+  return false;
+});
 </script>
 <template>
   <div
@@ -79,7 +93,11 @@ watch(
       kickOff
     }}</span>
     <div
-      class="flex flex-1 w-full px-2 justify-between items-center truncate text-sm sm:text-base dark:bg-[#1e1e1e] hover:dark:bg-[#232323] p-2 rounded"
+      class="flex flex-1 w-full px-2 justify-between items-center truncate text-sm sm:text-base  p-2"
+      :class="{
+        'border-green-900 border-y-2': resultPrediction,
+        'dark:bg-[#1e1e1e] hover:dark:bg-[#232323]': !resultPrediction,
+      }"
     >
       <div
         class="flex-1 flex items-center truncate my-1 lg:text-xl md:font-light"
