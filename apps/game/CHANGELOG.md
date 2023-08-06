@@ -1,5 +1,12 @@
 # concords-game
 
+## 0.0.5
+
+### Patch Changes
+
+- Updated dependencies [[`cdc9b62`](https://github.com/samternent/home/commit/cdc9b62e722e06fb9da061a67566cbfed688be5c)]:
+  - concords-utils@1.0.7
+
 ## 0.0.4
 
 ### Patch Changes
