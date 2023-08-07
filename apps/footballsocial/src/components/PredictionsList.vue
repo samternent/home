@@ -58,8 +58,7 @@ async function loadPredictions() {
     unref(competitionCode),
     unref(gameweek)
   );
-
-  data.forEach((prediction) => {
+  data.predictions?.forEach((prediction) => {
     lockedPredictions.value.push(prediction.fixtureId);
 
     predictions[prediction.fixtureId] = {

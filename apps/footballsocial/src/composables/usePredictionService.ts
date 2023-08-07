@@ -1,3 +1,4 @@
+import api from "../utils/api";
 import { supabaseClient } from "../service/supabase";
 
 export const addPrediction = async (
@@ -32,10 +33,5 @@ export const getPredictions = async (
   competitionCode: string,
   gameweek: Number
 ) => {
-  return supabaseClient
-    .from("predictions")
-    .select()
-    .eq("username", username)
-    .eq("competitionCode", competitionCode)
-    .eq("gameweek", gameweek);
+  return api.get(`/predict/${username}/${competitionCode}/${gameweek}`);
 };

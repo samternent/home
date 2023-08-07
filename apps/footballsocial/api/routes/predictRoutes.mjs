@@ -27,76 +27,71 @@ export default function predictRoutes(router) {
         .eq("competitionCode", competitionCode)
         .eq("gameweek", gameweek);
 
-      if (predictionData.length) {
-        let points = 0;
-        let totalHomeGoals = 0;
-        let totalAwayGoals = 0;
-        let totalCorrectResult = 0;
-        let correctScore = 0;
+      let points = 0;
+      let totalHomeGoals = 0;
+      let totalAwayGoals = 0;
+      let totalCorrectResult = 0;
+      let correctScore = 0;
 
-        matches.forEach((match) => {
-          const prediction = predictionData.find(
-            ({ fixtureId }) => match.id === fixtureId
-          );
+      matches.forEach((match) => {
+        const prediction = predictionData.find(
+          ({ fixtureId }) => match.id === fixtureId
+        );
+        if (!prediction) {
+          return;
+        }
 
-          let homeGoals = false;
-          let awayGoals = false;
-          let result = false;
+        let homeGoals = false;
+        let awayGoals = false;
+        let result = false;
 
-          if (match.score.fullTime.home === prediction.homeScore) {
-            homeGoals = true;
-          }
-          if (match.score.fullTime.away === prediction.awayScore) {
-            awayGoals = true;
-          }
-          if (
-            (match.score.fullTime.home > match.score.fullTime.away &&
-              prediction.homeScore > prediction.awayScore) ||
-            (match.score.fullTime.away > match.score.fullTime.home &&
-              prediction.awayScore > prediction.homeScore) ||
-            (match.score.fullTime.home === match.score.fullTime.away &&
-              prediction.homeScore === prediction.awayScore)
-          ) {
-            // correct result
-            result = true;
-          }
+        if (match.score.fullTime.home === prediction.homeScore) {
+          homeGoals = true;
+        }
+        if (match.score.fullTime.away === prediction.awayScore) {
+          awayGoals = true;
+        }
+        if (
+          (match.score.fullTime.home > match.score.fullTime.away &&
+            prediction.homeScore > prediction.awayScore) ||
+          (match.score.fullTime.away > match.score.fullTime.home &&
+            prediction.awayScore > prediction.homeScore) ||
+          (match.score.fullTime.home === match.score.fullTime.away &&
+            prediction.homeScore === prediction.awayScore)
+        ) {
+          // correct result
+          result = true;
+        }
 
-          if (homeGoals) {
-            totalHomeGoals += 1;
-            points += 1;
-          }
-          if (awayGoals) {
-            totalAwayGoals += 1;
-            points += 1;
-          }
-          if (result) {
-            totalCorrectResult += 1;
-            points += 2;
-          }
+        if (homeGoals) {
+          totalHomeGoals += 1;
+          points += 1;
+        }
+        if (awayGoals) {
+          totalAwayGoals += 1;
+          points += 1;
+        }
+        if (result) {
+          totalCorrectResult += 1;
+          points += 2;
+        }
 
-          if (homeGoals && awayGoals && result) {
-            points += 5;
-            correctScore += 1;
-          }
-        });
+        if (homeGoals && awayGoals && result) {
+          points += 5;
+          correctScore += 1;
+        }
+      });
 
-        return res.send(200, {
-          pedictions: predictionData,
-          results: {
-            points,
-            totalHomeGoals,
-            totalAwayGoals,
-            totalCorrectResult,
-            correctScore,
-          },
-        });
-      }
-
-      return res.send(
-        matches.map(
-          (match) => `${match.homeTeam.name} vs ${match.awayTeam.name}`
-        )
-      );
+      return res.send(200, {
+        predictions: predictionData,
+        results: {
+          points,
+          totalHomeGoals,
+          totalAwayGoals,
+          totalCorrectResult,
+          correctScore,
+        },
+      });
     }
   );
 
