@@ -69,17 +69,17 @@ function gotoCompetition(e) {
       </div>
     </Teleport>
     <div class="flex w-full px-2 md:p-0">
-      <div class="dark:bg-zinc50 mx-auto p-2 my-2 mt-4 inline-block rounded-lg">
-        <img class="h-16" :src="competition?.emblem" />
+      <div class="bg-zinc50 mx-auto p-2 my-2 mt-4 inline-block rounded-lg bg-white">
+        <img class="h-16 w-16" :src="competition?.emblem" />
       </div>
       <div
         class="px-3 p-2 font-thin ml-6 dark:bg-zinc900 rounded-lg flex-1 mt-4 mb-2 flex flex-col justify-center"
       >
-        <p class="text-2xl py-1 font-thin">{{ competition?.name }}</p>
+        <p class="text-2xl py-1 font-light">{{ competition?.name }}</p>
         <p class="flex items-center">
           <img
             v-if="competition"
-            class="h-4 mr-2"
+            class="h-3 mr-2"
             :src="competition?.area?.flag"
           />
           <span>{{ competition?.area?.name }}</span>
