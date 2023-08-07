@@ -1,6 +1,7 @@
+import path from 'path';
 import { createClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
-dotenv.config({ path: "../../.env" });
+dotenv.config({ path: ".env" });
 
 const supabaseOptions = {
   auth: {
@@ -10,9 +11,11 @@ const supabaseOptions = {
   },
 };
 
+console.log(process.env.VITE_PUBLIC_SUPABASE_URL);
+
 const supabaseClient = createClient(
-  process.env.VITE_PUBLIC_SUPABASE_TERNENT_URL || "",
-  process.env.VITE_PUBLIC_SUPABASE_TERNENT_ANON_KEY || "",
+  process.env.VITE_PUBLIC_SUPABASE_URL || "",
+  process.env.VITE_PUBLIC_SUPABASE_ANON_KEY || "",
   supabaseOptions
 );
 

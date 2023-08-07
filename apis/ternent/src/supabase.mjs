@@ -11,8 +11,8 @@ const supabaseOptions = {
 };
 
 const supabaseClient = createClient(
-  process.env.VITE_PUBLIC_SUPABASE_TERNENT_URL || "",
-  process.env.VITE_PUBLIC_SUPABASE_TERNENT_ANON_KEY || "",
+  process.env.VITE_PUBLIC_SUPABASE_URL || "",
+  process.env.VITE_PUBLIC_SUPABASE_ANON_KEY || "",
   supabaseOptions
 );
 

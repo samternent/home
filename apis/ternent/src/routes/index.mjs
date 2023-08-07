@@ -2,8 +2,6 @@ import express from "express";
 import { join, dirname } from 'path';
 import { fileURLToPath } from "url";
 
-import { supabaseClient } from "../supabase.mjs";
-
 const router = express.Router();
 
 router.get("/cv", async function (req, res) {
@@ -46,13 +44,11 @@ router.get("/ai", async function (req, res) {
   })
 });
 
-router.post("/message", async function (req, res) {
-  const { data } = await supabaseClient
-    .from("subscription")
-    .select("*")
-    .eq("username", "sam");
+router.get("/home", async function (req, res) {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = dirname(__filename);
 
-  res.send('hihi')
+  res.sendFile(join(__dirname, "../app/index.html"));
 });
 
 router.get("*", function (req, res) {
