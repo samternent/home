@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.0.19
+
+### Patch Changes
+
+- [`ebe993e`](https://github.com/samternent/home/commit/ebe993e78fed7d1be5b981f932db131396492cb9) Thanks [@samternent](https://github.com/samternent)! - Update league logo to white bg
+
 ## 0.0.18
 
 ### Patch Changes
