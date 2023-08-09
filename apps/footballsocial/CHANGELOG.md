@@ -1,5 +1,13 @@
 # concords-footballsocial
 
+## 0.1.3
+
+### Patch Changes
+
+- [`b389728`](https://github.com/samternent/home/commit/b3897286218011bf335674d3cdf8743d8dac9cdd) Thanks [@samternent](https://github.com/samternent)! - fix predictions not updating between leagues
+
+- [`a8e9431`](https://github.com/samternent/home/commit/a8e9431db8caea23b52ba0eabd38b237e48f79df) Thanks [@samternent](https://github.com/samternent)! - fix not logged in table hding
+
 ## 0.1.2
 
 ### Patch Changes
