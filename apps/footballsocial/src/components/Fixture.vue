@@ -41,9 +41,8 @@ const comment = shallowRef("");
 </script>
 <template>
   <div
-    class="flex flex-col relative p-2 rounded bg-zinc-100 dark:bg-[#1e1e1e] hover:dark:bg-[#232323] transition-all font-light items-center w-full border-x-[transparent] border-transparent border-x-4"
+    class="flex flex-col relative p-2 transition-all font-light items-center w-full border-x-[transparent] border-transparent border-x-4"
     :class="{
-      'bg-yellow-100 hover:bg-yellow-200': selected,
       'border-l-4 border-l-green-900':
         fixture.score?.winner?.includes('HOME_TEAM'),
       'border-r-4 border-r-green-900':
@@ -54,6 +53,7 @@ const comment = shallowRef("");
         fixture.score?.winner?.includes('HOME_TEAM'),
       'text-2xl': size === 'lg',
       'text-base ': size === 'md',
+      'text-sm ': size === 'sm',
     }"
     @click="$emit('click', fixture)"
   >
@@ -68,7 +68,7 @@ const comment = shallowRef("");
       >POSTPONED</span
     >
     <span
-      class="text-xs w-full px-4 py-1 dark:text-[#d3d3d3] dark:bg-[#232323] font-medium uppercase text-center"
+      class="text-xs w-full px-4 py-1 dark:text-[#d3d3d3] font-medium uppercase text-center"
       >{{ kickOff }}</span
     >
     <div

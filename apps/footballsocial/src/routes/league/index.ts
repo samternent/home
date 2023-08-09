@@ -63,20 +63,13 @@ export const leagueRoutes = [
                 },
               },
               {
-                path: "results",
-                component: () => import("./RouteLeaguePredictionsResults.vue"),
+                path: "leagues",
+                component: () => import("./RouteLeaguePredictionsLeagues.vue"),
                 beforeEnter(to: RouteLocation) {
                   window.localStorage.setItem(
                     "lastLeaguePredictPath",
-                    "results"
+                    "leagues"
                   );
-                },
-              },
-              {
-                path: "table",
-                component: () => import("./RouteLeaguePredictionsTable.vue"),
-                beforeEnter(to: RouteLocation) {
-                  window.localStorage.setItem("lastLeaguePredictPath", "table");
                 },
               },
             ],

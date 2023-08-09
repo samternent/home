@@ -130,10 +130,10 @@ watch(
 </script>
 <template>
   <div
-    class="flex-1 flex flex-col overflow-hidden w-full max-w-7xl mx-auto h-[calc(100vh_-_3rem)] max-h-[calc(100vh_-_3rem)]"
+    class="flex-1 flex flex-col overflow-hidden w-full  mx-auto h-[calc(100vh_-_15rem)] max-h-[calc(100vh_-_15rem)]"
   >
     <!-- Top bar -->
-    <div class="border-b border-[#323232] mx-2">
+    <div class="mx-2">
       <RouterLink
         :to="`/leagues/${competition?.code}/discussions`"
         class="text-gray-400 no-underline hover:no-underline flex grow-0 w-fit items-center py-3"
@@ -157,7 +157,7 @@ watch(
     </div>
     <Fixture :fixture="fixture" v-if="fixture" size="sm" />
     <div v-else-if="fixtureLoading" class="w-full rounded overflow-hidden">
-      <div class="dark:bg-[#343434] animate-pulse m-2 rounded flex-1 h-12" />
+      <div class="animate-pulse m-2 rounded flex-1 h-12" />
     </div>
     <div class="flex flex-col sm:flex-row px-6 py-2 items-start flex-none">
       <div class="flex flex-col mb-2">
@@ -285,7 +285,7 @@ watch(
           </div>
         </div>
       </div>
-      <div class="hidden lg:flex w-64 flex-col" v-if="user">
+      <!-- <div class="hidden lg:flex w-64 flex-col" v-if="user">
         <div class="p-2 rounded-lg pb-8">
           <p class="text-xl p-3">People</p>
           <ul>
@@ -299,7 +299,7 @@ watch(
             </li>
           </ul>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>

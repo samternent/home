@@ -32,7 +32,7 @@ const crestMap = {
 const crest = computed(
   () => crestMap[competitionCode.value] || competitionCode.value
 );
-const tabs = shallowRef(["predictions", "table", "fixtures", "discussions"]);
+const tabs = shallowRef(["predictions", "discussions", "table"]);
 
 watch(
   competition,
@@ -45,7 +45,7 @@ watch(
 );
 </script>
 <template>
-  <div
+  <!-- <div
     v-if="competition?.type === 'LEAGUE'"
     class="bg-indigo-800 bg-opacity-20 border border-indigo-900 p-4 my-4 md:mt-2 rounded items-center flex flex-col md:flex-row justify-between"
   >
@@ -60,19 +60,20 @@ watch(
     >
       Enter Now!
     </RouterLink>
-  </div>
-  <ul class="flex max-w-[100vw] overflow-x-auto h-auto py-4 overflow-y-hidden mb-4">
+  </div> -->
+  <ul class="flex max-w-[100vw] overflow-x-auto h-auto py-4 overflow-y-hidden my-4">
     <li v-for="t in tabs" :key="`${t}`">
       <RouterLink
         :to="`/leagues/${competitionCode}/${t}`"
-        class="px-4 py-3 uppercase hover:bg-indigo-900 dark:text-white border-b-4 border-transparent"
-        active-class="bg-indigo-900 !border-indigo-600"
+        class="mx-2 py-3 uppercase hover:border-indigo-900 dark:text-white border-b-4 border-transparent"
+        active-class="!border-indigo-600"
       >
         {{ t }}
       </RouterLink>
     </li>
   </ul>
-  <div class="flex mb-16">
+
+  <div class="flex mb-16 max-w-8xl">
     <RouterView />
   </div>
 </template>

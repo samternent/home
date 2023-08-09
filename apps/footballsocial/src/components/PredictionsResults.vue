@@ -83,12 +83,54 @@ const isDirty = computed(
 );
 </script>
 <template>
-  <div>
-    <div>points: {{  predictions.points  }}</div>
-    <div>home score: {{  predictions.totalHomeGoals  }}</div>
-    <div>away score: {{  predictions.totalAwayGoals  }}</div>
-    <div>correct results: {{  predictions.totalCorrectResult  }}</div>
-    <div>correct score: {{  predictions.correctScore  }}</div>
+  <table class="w-full text-sm md:text-base" v-if="predictions">
+    <thead class="h-10 font-light">
+      <tr class="font-thin text-center text-white">
+        <th class="w-10">&nbsp;</th>
+        <th class="text-left">
+          <abbr title="Teams in Competition">User</abbr>
+        </th>
+        <th class="w-6">
+          <abbr title="Correct Home Score">HS</abbr>
+        </th>
+        <th class="w-8">
+          <abbr title="Correct Away Score">AS</abbr>
+        </th>
+        <th class="w-8">
+          <abbr title="Correct Match Result">MR</abbr>
+        </th>
+        <th class="w-8">
+          <abbr title="Correct Match Score">MS</abbr>
+        </th>
+        <th class="w-10">
+          <abbr title="Points">PTS</abbr>
+        </th>
+      </tr>
+    </thead>
+    <tbody class="font-light">
+      <tr
+        class="border-b border-b-zinc-800 transition-all text-white"
+      >
+        <td class="text-center text-md p-2 text-white bg-[#3c3c3c ]">
+
+        </td>
+        <td class="text-left p-1">
+          {{ profile.username }}
+        </td>
+        <td class="text-center p-1">{{ predictions.totalHomeGoals }}</td>
+        <td class="text-center p-1">{{ predictions.totalAwayGoals }}</td>
+        <td class="text-center p-1">{{ predictions.totalCorrectResult }}</td>
+        <td class="text-center p-1">{{ predictions.correctScore }}</td>
+        <td class="text-center p-1">{{ predictions.points }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <div v-else class="w-full">
+    <div
+      v-for="i in 20"
+      :key="i"
+      class="bg-[#1e1e1e] animate-pulse my-2 rounded flex-1 h-12 w-full"
+    />
   </div>
 </template>
 <style scoped>

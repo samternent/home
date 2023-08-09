@@ -1,5 +1,5 @@
 <script setup>
-import { toRefs, computed, shallowRef, reactive, unref, onMounted } from "vue";
+import { toRefs, computed, shallowRef, reactive, unref, onMounted, watch } from "vue";
 import useFixturesLoader from "../api/football-data/useCompetitionFixturesLoader";
 import {
   addPrediction,
@@ -53,6 +53,7 @@ const predictionsLoaded = shallowRef(false);
 const lockedPredictions = shallowRef([]);
 
 async function loadPredictions() {
+  console.log('load predictions')
   const { data } = await getPredictions(
     props.username || profile.value?.username,
     unref(competitionCode),
@@ -89,13 +90,15 @@ async function savePredictions() {
 const isDirty = computed(
   () => serverPredictions.value !== JSON.stringify(unref(predictions))
 );
+
+watch([competitionCode, gameweek], loadPredictions)
 </script>
 <template>
   <div>
     <div class="w-full" v-if="predictionsLoaded">
       <div class="text-center my-0 flex flex-col">
-        <span class="text-2xl font-thin my-4" v-if="lockedPredictions.length"
-          >{{ username ? `${username}s` : "Your" }} predictions are in! 🎉</span
+        <span class="text-xl p-2 font-thin my-4 bg-indigo-500 rounded-full bg-opacity-30" v-if="lockedPredictions.length"
+          >{{ username ? `${username}s` : "Your" }} predictions are in!</span
         >
       </div>
       <Transition>
@@ -136,9 +139,6 @@ const isDirty = computed(
         >
           Save Predictions
         </button>
-        <span class="text-2xl font-thin my-4" v-if="lockedPredictions.length"
-          >{{ username ? `${username}s` : "Your" }} predictions are in! 🎉</span
-        >
       </div>
     </div>
   </div>
