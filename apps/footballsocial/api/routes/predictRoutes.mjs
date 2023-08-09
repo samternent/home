@@ -27,6 +27,10 @@ export default function predictRoutes(router) {
         .eq("competitionCode", competitionCode)
         .eq("gameweek", gameweek);
 
+      if (resultSet.played < 1) {
+        return res.send({ predictions: predictionData, results: null });
+      }
+
       let points = 0;
       let totalHomeGoals = 0;
       let totalAwayGoals = 0;
@@ -82,7 +86,7 @@ export default function predictRoutes(router) {
         }
       });
 
-      return res.send(200, {
+      return res.send({
         predictions: predictionData,
         results: {
           points,

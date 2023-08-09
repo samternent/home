@@ -48,9 +48,7 @@ const hasFixtures = computed(
   () => !fixturesLoading.value && fixturesLoaded.value
 );
 const predictions = shallowRef({});
-const serverPredictions = shallowRef(null);
 const predictionsLoaded = shallowRef(false);
-const lockedPredictions = shallowRef([]);
 
 async function loadPredictions() {
   const { data } = await getPredictions(
@@ -59,7 +57,7 @@ async function loadPredictions() {
     unref(gameweek)
   );
 
-  predictions.value = data.results;
+  // predictions.value = data.results;
 
   predictionsLoaded.value = true;
 }
@@ -67,20 +65,6 @@ async function loadPredictions() {
 onMounted(loadPredictions);
 
 const { profile } = useCurrentUser();
-
-async function savePredictions() {
-  await addPrediction(
-    profile.value?.username,
-    unref(predictions),
-    unref(competitionCode),
-    unref(gameweek)
-  );
-  loadPredictions();
-}
-
-const isDirty = computed(
-  () => serverPredictions.value !== JSON.stringify(unref(predictions))
-);
 </script>
 <template>
   <table class="w-full text-sm md:text-base" v-if="predictions && profile">
@@ -117,21 +101,21 @@ const isDirty = computed(
         <td class="text-left p-1">
           {{ profile.username }}
         </td>
-        <td class="text-center p-1">{{ predictions.totalHomeGoals }}</td>
-        <td class="text-center p-1">{{ predictions.totalAwayGoals }}</td>
-        <td class="text-center p-1">{{ predictions.totalCorrectResult }}</td>
-        <td class="text-center p-1">{{ predictions.correctScore }}</td>
-        <td class="text-center p-1">{{ predictions.points }}</td>
+        <td class="text-center p-1">{{ predictions.totalHomeGoals || 0 }}</td>
+        <td class="text-center p-1">{{ predictions.totalAwayGoals || 0 }}</td>
+        <td class="text-center p-1">{{ predictions.totalCorrectResult || 0 }}</td>
+        <td class="text-center p-1">{{ predictions.correctScore || 0 }}</td>
+        <td class="text-center p-1">{{ predictions.points || 0 }}</td>
       </tr>
     </tbody>
   </table>
-  <div v-else class="w-full">
+  <!-- <div v-else class="w-full">
     <div
       v-for="i in 20"
       :key="i"
       class="bg-[#1e1e1e] animate-pulse my-2 rounded flex-1 h-12 w-full"
     />
-  </div>
+  </div> -->
 </template>
 <style scoped>
 .v-enter-active,

@@ -53,8 +53,8 @@ const awayScore = shallowRef(props.prediction?.awayScore || 0);
 
 const { prediction } = toRefs(props);
 watch(prediction, (_prediction) => {
-  homeScore.value = _prediction.homeScore || 0;
-  awayScore.value = _prediction.awayScore || 0;
+  homeScore.value = _prediction?.homeScore || 0;
+  awayScore.value = _prediction?.awayScore || 0;
 })
 watch(
   [homeScore, awayScore],
