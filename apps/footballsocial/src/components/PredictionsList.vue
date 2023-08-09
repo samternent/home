@@ -3,11 +3,9 @@ import {
   toRefs,
   computed,
   shallowRef,
-  reactive,
   unref,
-  onMounted,
-  watch,
 } from "vue";
+import { watchThrottled } from '@vueuse/core'
 import useFixturesLoader from "../api/football-data/useCompetitionFixturesLoader";
 import {
   addPrediction,
@@ -53,23 +51,21 @@ const {
   loaded: fixturesLoaded,
 } = useFixturesLoader(competitionCode, stage, gameweek);
 
-const hasFixtures = computed(
-  () => !fixturesLoading.value && fixturesLoaded.value
-);
 const predictions = shallowRef({});
 const serverPredictions = shallowRef(null);
 const predictionsLoaded = shallowRef(false);
 const lockedPredictions = shallowRef([]);
 
 async function loadPredictions() {
+  lockedPredictions.value = [];
+  predictions.value = {};
+  serverPredictions.value = null;
+
   const { data } = await getPredictions(
     props.username || profile.value?.username,
     unref(competitionCode),
     unref(gameweek)
   );
-
-  lockedPredictions.value = [];
-  predictions.value = {};
 
   data.predictions?.forEach((prediction) => {
     lockedPredictions.value = [
@@ -114,25 +110,31 @@ const isDirty = computed(
   () => serverPredictions.value !== JSON.stringify(predictions.value)
 );
 
-watch(
-  competitionCode,
+
+watchThrottled(
+  [gameweek, competitionCode],
   loadPredictions,
-  { immediate: true }
-);
+  { throttle: 500, immediate: true },
+)
 
 const predictionsList = computed(() =>
-  fixtures.value.map((fixture) => ({
+  fixtures.value?.map((fixture) => ({
     ...fixture,
     prediction: predictions.value[fixture.id],
   })) || []
 );
+
+const hasPredictions = computed(() => {
+  if (!serverPredictions.value) return false;
+  return Object.keys(JSON.parse(serverPredictions.value)).length > 0;
+});
 </script>
 <template>
     <div class="w-full" v-if="predictionsLoaded">
       <div class="text-center my-0 flex flex-col">
         <span
           class="text-xl p-2 font-thin my-4 bg-indigo-500 rounded-full bg-opacity-30"
-          v-if="Object.keys(predictions).length"
+          v-if="hasPredictions"
           >{{ username ? `${username}s` : "Your" }} predictions are in!</span
         >
       </div>

@@ -11,14 +11,19 @@ const props = defineProps({
 
 const countdown = shallowRef(null);
 setInterval(() => {
-  countdown.value = DateTime.fromISO(props.kickOff).toRelative(DateTime.now());
+  const inHours = DateTime.fromISO(props.kickOff).toFormat('hh');
+
+  if (inHours > 12) {
+    countdown.value = DateTime.fromISO(props.kickOff).toRelative(DateTime.now());
+  } else {
+    countdown.value = DateTime.fromISO(props.kickOff).toRelativeCalendar(DateTime.now());
+  }
 }, 1 * 1000);
 </script>
 <template>
   <div
-    v-if="countdown"
-    class="uppercase text-center font-light bg-yellow-500 rounded text-black py-1 px-2 mx-2"
+    class="uppercase text-center font-light bg-yellow-500 rounded text-black py-1 px-2"
   >
-    gameweek starts {{ countdown }}
+    gameweek starts {{ countdown || '...' }}
   </div>
 </template>

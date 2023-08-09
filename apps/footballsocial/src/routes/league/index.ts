@@ -27,9 +27,9 @@ export const leagueRoutes = [
           },
           {
             path: "standings",
-            component: () => import("./RouteLeagueTable.vue"),
+            component: () => import("./RouteLeaguePredictionsLeagues.vue"),
             beforeEnter(to: RouteLocation) {
-              window.localStorage.setItem("lastLeaguePath", "table");
+              window.localStorage.setItem("lastLeaguePath", "standings");
             },
           },
           {
