@@ -26,7 +26,7 @@ export const leagueRoutes = [
             },
           },
           {
-            path: "table",
+            path: "standings",
             component: () => import("./RouteLeagueTable.vue"),
             beforeEnter(to: RouteLocation) {
               window.localStorage.setItem("lastLeaguePath", "table");

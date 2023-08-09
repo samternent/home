@@ -47,7 +47,7 @@ function gotoCompetition(e) {
 }
 </script>
 <template>
-  <div class="md:px-2 lg:px-4 flex-1 max-w-6xl mx-auto pt-0 w-full z-10" v-if="competition">
+  <div class="md:px-2 lg:px-4 flex-1 max-w-4xl mx-auto pt-0 w-full z-10" v-if="competition">
     <Teleport to="#HeaderControls">
       <div
         class="dark:text-white text-right text-sm border rounded border-zinc-700"

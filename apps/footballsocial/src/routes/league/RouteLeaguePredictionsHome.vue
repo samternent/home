@@ -19,7 +19,6 @@ const isCup = computed(() => competition.value.type === "CUP");
 </script>
 <template>
   <div class="flex">
-  <div class="mr-12 w-full max-w-2xl">
     <PredictionsList
     v-if="competition && !isCup"
     :username="username"
@@ -32,8 +31,7 @@ const isCup = computed(() => competition.value.type === "CUP");
         )
     "
   />
-  </div>
-  <div class="w-96 hidden lg:block">
+  <!-- <div class="w-96 hidden lg:block">
     <PredictionsResults
     v-if="competition && !isCup"
     :username="username"
@@ -46,6 +44,6 @@ const isCup = computed(() => competition.value.type === "CUP");
         )
     "
   />
-  </div>
+  </div> -->
   </div>
 </template>

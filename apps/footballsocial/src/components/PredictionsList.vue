@@ -14,6 +14,7 @@ import {
   getPredictions,
 } from "../composables/usePredictionService";
 import { useCurrentUser } from "../composables/useCurrentUser";
+import CountdownTimer from "./CountdownTimer.vue";
 import Predictor from "./Predictor.vue";
 
 const props = defineProps({
@@ -127,7 +128,6 @@ const predictionsList = computed(() =>
 );
 </script>
 <template>
-  <div>
     <div class="w-full" v-if="predictionsLoaded">
       <div class="text-center my-0 flex flex-col">
         <span
@@ -136,6 +136,7 @@ const predictionsList = computed(() =>
           >{{ username ? `${username}s` : "Your" }} predictions are in!</span
         >
       </div>
+      <CountdownTimer :kickOff="predictionsList[0]?.utcDate" />
       <div v-for="(fixture, i) in predictionsList" :key="fixture.id" class="">
         <Predictor
           :fixture="fixture"
@@ -173,7 +174,6 @@ const predictionsList = computed(() =>
         class="bg-[#1e1e1e] animate-pulse m-2 my-4 rounded flex-1 h-20 w-full"
       />
     </div>
-  </div>
 </template>
 <style scoped>
 .v-enter-active,

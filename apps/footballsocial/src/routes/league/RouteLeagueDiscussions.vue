@@ -7,7 +7,7 @@ const { items: competition, hasItems: hasCompetition } = useCompetitionLoader();
 <template>
   <DiscussionsList
     v-if="competition"
-    class="w-full max-w-2xl"
+    class="w-full"
     :competitionCode="competition?.code"
   />
 </template>

@@ -32,7 +32,7 @@ const crestMap = {
 const crest = computed(
   () => crestMap[competitionCode.value] || competitionCode.value
 );
-const tabs = shallowRef(["predictions", "discussions", "table"]);
+const tabs = shallowRef(["predictions", "standings", "discussions"]);
 
 watch(
   competition,
@@ -73,7 +73,7 @@ watch(
     </li>
   </ul>
 
-  <div class="flex mb-16 max-w-8xl">
+  <div class="flex mb-16 w-full">
     <RouterView />
   </div>
 </template>
