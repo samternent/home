@@ -1,5 +1,13 @@
 # concords-footballsocial
 
+## 0.1.5
+
+### Patch Changes
+
+- [`642be7b`](https://github.com/samternent/home/commit/642be7b5c80ec775954844b70c58ee269c061b42) Thanks [@samternent](https://github.com/samternent)! - Style improvements
+
+- [`ef296f7`](https://github.com/samternent/home/commit/ef296f78569b12151eba0ab08bd42eeceec085d3) Thanks [@samternent](https://github.com/samternent)! - Adds countime timer to gameweek and standings placeholder
+
 ## 0.1.4
 
 ### Patch Changes
