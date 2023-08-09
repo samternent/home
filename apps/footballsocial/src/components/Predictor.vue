@@ -1,5 +1,5 @@
 <script setup>
-import { shallowRef, computed, watch } from "vue";
+import { shallowRef, computed, watch, toRefs } from "vue";
 import { DateTime } from "luxon";
 
 const props = defineProps({
@@ -51,6 +51,11 @@ const kickOff = computed(() => {
 const homeScore = shallowRef(props.prediction?.homeScore || 0);
 const awayScore = shallowRef(props.prediction?.awayScore || 0);
 
+const { prediction } = toRefs(props);
+watch(prediction, (_prediction) => {
+  homeScore.value = _prediction.homeScore || 0;
+  awayScore.value = _prediction.awayScore || 0;
+})
 watch(
   [homeScore, awayScore],
   ([_homeScore, _awayScore]) => {
@@ -114,11 +119,20 @@ const resultPrediction = computed(() => {
           :src="fixture.homeTeam.crest || '/blank.png'"
           class="w-10 h-10 sm:w-14 sm:h-14 mr-2 lg:mr-4"
         />
-        <span class="hidden md:inline truncate">{{ fixture.homeTeam.name }}</span
-        ><span class="md:hidden truncate">{{ fixture.homeTeam.shortName }}</span>
+        <span class="hidden md:inline truncate">{{
+          fixture.homeTeam.name
+        }}</span
+        ><span class="md:hidden truncate">{{
+          fixture.homeTeam.shortName
+        }}</span>
       </div>
       <div class="flex flex-col">
-        <div v-if="resultPrediction" class="mx-auto px-3 text-sm rounded-full bg-green-900">correct result</div>
+        <div
+          v-if="resultPrediction"
+          class="mx-auto px-3 text-sm rounded-full bg-green-900"
+        >
+          correct result
+        </div>
         <div class="flex">
           <div class="flex flex-row text-center justify-center items-center">
             <input
