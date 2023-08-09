@@ -7,6 +7,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  gameweek: {
+    type: String,
+    default: '',
+  },
 });
 
 const countdown = shallowRef(null);
@@ -22,8 +26,8 @@ setInterval(() => {
 </script>
 <template>
   <div
-    class="uppercase text-center font-light bg-yellow-500 rounded text-black py-1 px-2"
+    class="uppercase text-center font-light bg-yellow-500 rounded text-black py-1 px-2 mx-4"
   >
-    gameweek starts {{ countdown || '...' }}
+    gameweek {{ gameweek }} starts {{ countdown || '...' }}
   </div>
 </template>

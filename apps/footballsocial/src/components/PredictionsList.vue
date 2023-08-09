@@ -130,16 +130,21 @@ const hasPredictions = computed(() => {
 });
 </script>
 <template>
-    <div class="w-full" v-if="predictionsLoaded">
+    <div class="w-full flex flex-col mx-auto" v-if="predictionsLoaded">
       <div class="text-center my-0 flex flex-col">
         <span
-          class="text-xl p-2 font-thin my-4 bg-indigo-500 rounded-full bg-opacity-30"
+          class="text-xl p-2 font-thin my-4 mx-4 bg-indigo-500 rounded-full bg-opacity-30"
           v-if="hasPredictions"
           >{{ username ? `${username}s` : "Your" }} predictions are in!</span
         >
+        <span
+          class="text-lg p-2 font-thin my-4 text-indigo-300 mx-4 bg-indigo-800 rounded-full bg-opacity-30"
+          v-else
+          >predictions not yet made.</span
+        >
       </div>
-      <CountdownTimer :kickOff="predictionsList[0]?.utcDate" />
-      <div v-for="(fixture, i) in predictionsList" :key="fixture.id" class="">
+      <CountdownTimer :gameweek="gameweek" :kickOff="predictionsList[0]?.utcDate" />
+      <div v-for="(fixture, i) in predictionsList" :key="fixture.id" class="mx-auto w-full flex-1">
         <Predictor
           :fixture="fixture"
           :size="size"
@@ -157,19 +162,19 @@ const hasPredictions = computed(() => {
           @click="(fixture) => $emit('selected', fixture)"
         />
       </div>
-      <div class="text-center mt-6 flex flex-col">
+      <div class="text-center mt-8 flex flex-col items-end">
         <button
           :disabled="!isDirty"
           v-if="profile && (!username || profile.username === username)"
           @click="savePredictions"
-          class="bg-green-600 disabled:opacity-20 rounded p-2 my-2"
+          class="bg-green-700 font-thin w-64 text-xl uppercase disabled:opacity-20 rounded p-2 my-2"
         >
-          Save Predictions
+          Save predictions
         </button>
       </div>
     </div>
 
-    <div v-else class="w-full pr-4 pt-1">
+    <div v-else class="flex flex-col h-screen w-full pr-4 pt-1">
       <div
         v-for="i in 10"
         :key="i"

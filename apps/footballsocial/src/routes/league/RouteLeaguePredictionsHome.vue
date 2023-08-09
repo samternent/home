@@ -18,7 +18,7 @@ const { items: competition, hasItems: hasCompetition } = useCompetitionLoader();
 const isCup = computed(() => competition.value.type === "CUP");
 </script>
 <template>
-  <div class="flex">
+  <div class="flex w-full">
     <PredictionsList
     v-if="competition && !isCup"
     :username="username"

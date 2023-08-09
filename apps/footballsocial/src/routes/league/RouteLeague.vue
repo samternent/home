@@ -68,7 +68,7 @@ function gotoCompetition(e) {
         </select>
       </div>
     </Teleport>
-    <div class="flex w-full px-2 md:p-0">
+    <div class="flex w-full px-2 md:p-0 md:mt-4">
       <div class="bg-zinc50 mx-auto p-2 my-2 mt-4 inline-block rounded-lg bg-white">
         <img class="h-16 w-16" :src="competition?.emblem" />
       </div>
