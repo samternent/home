@@ -70,7 +70,7 @@ const { profile } = useCurrentUser();
 
 async function savePredictions() {
   await addPrediction(
-    profile.value.username,
+    profile.value?.username,
     unref(predictions),
     unref(competitionCode),
     unref(gameweek)
@@ -83,7 +83,7 @@ const isDirty = computed(
 );
 </script>
 <template>
-  <table class="w-full text-sm md:text-base" v-if="predictions">
+  <table class="w-full text-sm md:text-base" v-if="predictions && profile">
     <thead class="h-10 font-light">
       <tr class="font-thin text-center text-white">
         <th class="w-10">&nbsp;</th>
