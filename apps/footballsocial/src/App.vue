@@ -5,6 +5,7 @@ import { useToast } from "vue-toastification";
 import { provideCurrentUser } from "./composables/useCurrentUser";
 import SetUsername from "./components/SetUsername.vue";
 import Notifications from "./components/Notifications.vue";
+import { version } from "../package.json";
 
 const toast = useToast();
 
@@ -140,7 +141,12 @@ api.interceptors.response.use(
       <RouterView v-else />
     </div>
     <div v-else class="flex-1 flex justify-center items-center">
-      <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+      <div class="lds-ring">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
     </div>
     <footer
       class="p-4 bg-indigo-100 dark:bg-[#242424] dark:text-white md:flex md:items-center md:justify-between md:p-6"
@@ -159,11 +165,14 @@ api.interceptors.response.use(
       <ul
         class="flex flex-wrap items-center mt-3 text-sm dark:text-gray-400 sm:mt-0"
       >
-        <!-- <li>
-          <RouterLink to="/company/about" class="mr-4 hover:underline md:mr-6"
-            >About</RouterLink
+        <li>
+          <a
+            :href="`https://github.com/samternent/home/releases/tag/footballsocial-${version}`"
+            target="_blank"
+            class="mr-4 hover:underline md:mr-6"
+            >v{{ version }}</a
           >
-        </li> -->
+        </li>
         <li>
           <RouterLink to="/legal/privacy" class="mr-4 hover:underline md:mr-6"
             >Privacy Policy</RouterLink
