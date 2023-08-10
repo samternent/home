@@ -48,13 +48,13 @@ const kickOff = computed(() => {
   )}`;
 });
 
-const homeScore = shallowRef(props.prediction?.homeScore || 0);
-const awayScore = shallowRef(props.prediction?.awayScore || 0);
+const homeScore = shallowRef(props.prediction?.homeScore);
+const awayScore = shallowRef(props.prediction?.awayScore);
 
 const { prediction } = toRefs(props);
 watch(prediction, (_prediction) => {
-  homeScore.value = _prediction?.homeScore || 0;
-  awayScore.value = _prediction?.awayScore || 0;
+  homeScore.value = _prediction?.homeScore;
+  awayScore.value = _prediction?.awayScore;
 });
 watch(
   [homeScore, awayScore],
@@ -138,13 +138,13 @@ const resultPrediction = computed(() => {
             <input
               :disabled="disabled"
               v-model="homeScore"
-              type="text"
-              inputmode="numeric"
-              pattern="[0-9]*"
-              class="text-center text-2xl w-12 h-12 ml-4 rounded font-bold"
+              type="number"
+              min="0"
+              max="9"
+              class="text-center text-2xl w-12 h-12 mx-4 rounded font-bold"
             />
             <span
-              class="text-2xl ml-4 rounded font-thin"
+              class="text-2xl rounded font-thin"
               :class="{
                 'text-red-300': fixture.score?.fullTime?.home != homeScore,
                 'text-green-300': fixture.score?.fullTime?.home == homeScore,
@@ -155,7 +155,7 @@ const resultPrediction = computed(() => {
           <span class="mx-6 font-thin text-4xl text-[#6a6a6a]">v</span>
           <div class="flex flex-row text-center justify-center items-center">
             <span
-              class="text-2xl mr-4 rounded font-thin"
+              class="text-2xl rounded font-thin"
               :class="{
                 'text-green-300': fixture.score?.fullTime?.away == awayScore,
                 'text-red-300': fixture.score?.fullTime?.away != awayScore,
@@ -165,10 +165,10 @@ const resultPrediction = computed(() => {
             <input
               v-model="awayScore"
               :disabled="disabled"
-              type="text"
-              inputmode="numeric"
-              pattern="[0-9]*"
-              class="text-center text-2xl w-12 h-12 mr-4 rounded font-bold"
+              type="number"
+              min="0"
+              max="9"
+              class="text-center text-2xl w-12 h-12 mx-4 rounded font-bold"
             />
           </div>
         </div>
