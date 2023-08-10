@@ -35,3 +35,9 @@ export const getPredictions = async (
 ) => {
   return api.get(`/predict/${username}/${competitionCode}/${gameweek}`);
 };
+
+export const calculatePredictionTable = async (
+  competitionCode: string,
+) => {
+  return api.get(`/predict/calculate/${competitionCode}`);
+};

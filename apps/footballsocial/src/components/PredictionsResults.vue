@@ -2,62 +2,37 @@
 import { toRefs, computed, shallowRef, reactive, unref, onMounted } from "vue";
 import useFixturesLoader from "../api/football-data/useCompetitionFixturesLoader";
 import {
-  addPrediction,
-  getPredictions,
+  calculatePredictionTable,
 } from "../composables/usePredictionService";
 import { useCurrentUser } from "../composables/useCurrentUser";
-import Predictor from "./Predictor.vue";
 
 const props = defineProps({
   competitionCode: {
     type: String,
     required: true,
   },
-  currentGameweek: {
-    type: Number,
-    default: null,
-  },
-  stage: {
-    type: String,
-    default: null,
-  },
-  size: {
-    type: String,
-    default: "md",
-  },
-  username: {
-    type: String,
-    default: null,
-  },
 });
 
-const { competitionCode, currentGameweek, stage } = toRefs(props);
-const overrideGameweek = shallowRef();
-const gameweek = computed(
-  () => overrideGameweek.value || currentGameweek.value
-);
-
-const {
-  items: fixtures,
-  meta,
-  loading: fixturesLoading,
-  loaded: fixturesLoaded,
-} = useFixturesLoader(competitionCode, stage, gameweek);
-
-const hasFixtures = computed(
-  () => !fixturesLoading.value && fixturesLoaded.value
-);
-const predictions = shallowRef({});
 const predictionsLoaded = shallowRef(false);
+const table = shallowRef([]);
 
 async function loadPredictions() {
-  const { data } = await getPredictions(
-    props.username || profile.value?.username,
-    unref(competitionCode),
-    unref(gameweek)
-  );
+  const { data } = await calculatePredictionTable(unref(props.competitionCode));
 
-  // predictions.value = data.results;
+  table.value = Object.entries(data).sort(([keyA, valA], [keyB, valB]) => {
+    if (valA.points === valB.points) {
+      if (valA.correctScore === valB.correctScore) {
+        return keyA.correctScore - keyB.correctScore;
+      }
+      if (valA.totalCorrectResult === valB.totalCorrectResult) {
+        return keyA.toLowerCase() - keyB.toLowerCase();
+      }
+      return valA.totalCorrectResult - valB.totalCorrectResult;
+    }
+    return valA.points - valB.points;
+  }).map(([key, val], i) => {
+    return { position: i + 1, username: key, ...val}
+  });
 
   predictionsLoaded.value = true;
 }
@@ -67,45 +42,50 @@ onMounted(loadPredictions);
 const { profile } = useCurrentUser();
 </script>
 <template>
-  <table class="w-full text-sm md:text-base" v-if="predictions && profile">
+  <table class="w-full text-sm md:text-base" v-if="table">
     <thead class="h-10 font-light">
       <tr class="font-thin text-center text-white">
-        <th class="w-10">&nbsp;</th>
+        <th class="w-16 font-medium">POS</th>
         <th class="text-left">
-          <abbr title="Teams in Competition">User</abbr>
-        </th>
-        <th class="w-6">
-          <abbr title="Correct Home Score">HS</abbr>
-        </th>
-        <th class="w-8">
-          <abbr title="Correct Away Score">AS</abbr>
-        </th>
-        <th class="w-8">
-          <abbr title="Correct Match Result">MR</abbr>
-        </th>
-        <th class="w-8">
-          <abbr title="Correct Match Score">MS</abbr>
+          <abbr class="font-medium" title="Teams in Competition">USERNAME</abbr>
         </th>
         <th class="w-10">
-          <abbr title="Points">PTS</abbr>
+          <abbr class="font-medium" title="Correct Home Score">HS</abbr>
+        </th>
+        <th class="w-10">
+          <abbr class="font-medium" title="Correct Away Score">AS</abbr>
+        </th>
+        <th class="w-10">
+          <abbr class="font-medium" title="Correct Match Result">MR</abbr>
+        </th>
+        <th class="w-10">
+          <abbr class="font-medium" title="Correct Match Score">MS</abbr>
+        </th>
+        <th class="w-12">
+          <abbr class="font-medium" title="Points">PTS</abbr>
         </th>
       </tr>
     </thead>
     <tbody class="font-light">
       <tr
         class="border-b border-b-zinc-800 transition-all text-white"
+        v-for="row in table"
+        :key="row.username"
+        :class="{
+          'bg-opacity-30 bg-indigo-500': row.username === profile?.username
+        }"
       >
         <td class="text-center text-md p-2 text-white bg-[#3c3c3c ]">
-
+          {{ row.position }}
         </td>
         <td class="text-left p-1">
-          {{ profile.username }}
+          {{ row.username }}
         </td>
-        <td class="text-center p-1">{{ predictions.totalHomeGoals || 0 }}</td>
-        <td class="text-center p-1">{{ predictions.totalAwayGoals || 0 }}</td>
-        <td class="text-center p-1">{{ predictions.totalCorrectResult || 0 }}</td>
-        <td class="text-center p-1">{{ predictions.correctScore || 0 }}</td>
-        <td class="text-center p-1">{{ predictions.points || 0 }}</td>
+        <td class="text-center p-1">{{ row.totalHomeGoals || 0 }}</td>
+        <td class="text-center p-1">{{ row.totalAwayGoals || 0 }}</td>
+        <td class="text-center p-1">{{ row.totalCorrectResult || 0 }}</td>
+        <td class="text-center p-1">{{ row.correctScore || 0 }}</td>
+        <td class="text-center p-1">{{ row.points || 0 }}</td>
       </tr>
     </tbody>
   </table>
