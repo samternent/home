@@ -6,14 +6,14 @@ const competitions = {
 };
 export default function predictRoutes(router) {
   router.get(
-    "/predict/calculate/:competitionCode/:gameweek",
+    "/predict/calculate/:competitionCode",
     async function (req, res) {
-      const { competitionCode, gameweek } = req.params;
+      const { competitionCode } = req.params;
 
       const { data } = await footballDataProxy(
         {
           ...req,
-          url: `/football-data/competitions/${competitionCode}/matches?matchday=${gameweek}`,
+          url: `/football-data/competitions/${competitionCode}/matches`,
         },
         res
       );
@@ -31,7 +31,7 @@ export default function predictRoutes(router) {
       for (; i < predictionData.length; i++) {
         const prediction = predictionData[i];
 
-        const match = data.matches.find((_match) => _match.id === prediction.fixtureId);
+        const match = matches.find((_match) => _match.id === prediction.fixtureId);
 
         const scores = userScores[prediction.username] || {
           points: 0,
