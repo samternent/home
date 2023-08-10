@@ -11,9 +11,13 @@ export function provideCompetitionLoader(competitionCode) {
 	async function fetchCompetitions(_competitionCode = null) {
 		if (!_competitionCode) return;
 		loading.value = true;
-		const { data } = await api.get(
-			`football-data/competitions/${_competitionCode}`
-		);
+		try {
+			const { data } = await api.get(
+				`football-data/competitions/${_competitionCode}`
+			);
+		} catch (e) {
+			alert(e)
+		}
 		items.value = data;
 		loaded.value = true;
 		loading.value = false;

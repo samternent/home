@@ -1,7 +1,6 @@
 <script setup>
 import { computed } from "vue";
 import PredictionsList from "../../components/PredictionsList.vue";
-import PredictionsResults from "../../components/PredictionsResults.vue";
 import { useCompetitionLoader } from "../../api/football-data/useCompetitionLoader";
 
 const props = defineProps({
@@ -31,19 +30,5 @@ const isCup = computed(() => competition.value.type === "CUP");
         )
     "
   />
-  <!-- <div class="w-96 hidden lg:block">
-    <PredictionsResults
-    v-if="competition && !isCup"
-    :username="username"
-    :competitionCode="competition?.code"
-    :currentGameweek="competition?.currentSeason?.currentMatchday"
-    @selected="
-      (fixture) =>
-        $router.push(
-          `/leagues/${competition?.code}/discussions/new?fixture=${fixture?.id}`
-        )
-    "
-  />
-  </div> -->
   </div>
 </template>
