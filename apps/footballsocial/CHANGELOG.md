@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.1.6
+
+### Patch Changes
+
+- [`d23dec1`](https://github.com/samternent/home/commit/d23dec148d825b39d48c4ed0126f311002fa23dc) Thanks [@samternent](https://github.com/samternent)! - fix prediction sheet widths
+
 ## 0.1.5
 
 ### Patch Changes
