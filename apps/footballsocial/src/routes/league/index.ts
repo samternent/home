@@ -41,38 +41,11 @@ export const leagueRoutes = [
           },
           {
             path: "predictions/:username?",
-            component: () => import("./RouteLeaguePredictions.vue"),
+            component: () => import("./RouteLeaguePredictionsHome.vue"),
             beforeEnter(to: RouteLocation) {
               window.localStorage.setItem("lastLeaguePath", "predictions");
             },
-            children: [
-              {
-                path: "",
-                redirect(to: any) {
-                  return `/leagues/${to.params.competitionCode}/predictions/${
-                    window.localStorage.getItem("lastLeaguePredictPath") ||
-                    "play"
-                  }`;
-                },
-              },
-              {
-                path: "play",
-                component: () => import("./RouteLeaguePredictionsHome.vue"),
-                beforeEnter(to: RouteLocation) {
-                  window.localStorage.setItem("lastLeaguePredictPath", "play");
-                },
-              },
-              {
-                path: "leagues",
-                component: () => import("./RouteLeaguePredictionsLeagues.vue"),
-                beforeEnter(to: RouteLocation) {
-                  window.localStorage.setItem(
-                    "lastLeaguePredictPath",
-                    "leagues"
-                  );
-                },
-              },
-            ],
+            props: true,
           },
         ],
       },
@@ -90,6 +63,14 @@ export const leagueRoutes = [
         path: "discussions/new",
         props: true,
         component: () => import("./RouteLeagueDiscussionNew.vue"),
+      },
+      {
+        path: "*",
+        redirect(to: any) {
+          return `/leagues/${to.params.competitionCode || "PL"}/${
+            window.localStorage.getItem("lastLeaguePath") || "predictions"
+          }`;
+        },
       },
     ],
   },
