@@ -20,6 +20,8 @@ async function signOutAndLeave() {
       v-model="username"
       class="dark:bg-[#1d1d1d] w-full rounded p-4 border-2 border-[#343434] my-2"
       name="pick_username"
+      required="true"
+      @beforeinput="e => /[^a-zA-Z0-9_]/.test(e.data) && e.preventDefault()"
       placeholder="Pick Username"
     />
     <div class="mx-2 my-4 flex justify-end">
