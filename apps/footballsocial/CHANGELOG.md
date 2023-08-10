@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.1.11
+
+### Patch Changes
+
+- [`3c8803e`](https://github.com/samternent/home/commit/3c8803e393326d59aa883acc77bc3bbc30f6d183) Thanks [@samternent](https://github.com/samternent)! - Use text input for numbers
+
 ## 0.1.10
 
 ### Patch Changes
