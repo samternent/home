@@ -152,7 +152,6 @@ const hasPredictions = computed(() => {
         :disabled="
           new Date(fixture.utcDate).getTime() < new Date().getTime() ||
           ['IN_PLAY', 'FINISHED'].includes(fixture.status) ||
-          !username ||
           !profile?.username ||
           (username && profile?.username !== username) ||
           false
