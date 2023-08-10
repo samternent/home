@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.1.7
+
+### Patch Changes
+
+- [`35fc862`](https://github.com/samternent/home/commit/35fc86253405aa4518e6757e353865852989749b) Thanks [@samternent](https://github.com/samternent)! - Adds version link to footer
+
 ## 0.1.6
 
 ### Patch Changes
