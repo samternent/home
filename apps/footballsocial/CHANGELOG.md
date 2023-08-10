@@ -1,5 +1,15 @@
 # concords-footballsocial
 
+## 0.2.0
+
+### Minor Changes
+
+- [`72ff14b`](https://github.com/samternent/home/commit/72ff14b1cd056fe086bdff3c545cc595d6232e26) Thanks [@samternent](https://github.com/samternent)! - Fix API dev issue from previous build
+
+### Patch Changes
+
+- [`844add4`](https://github.com/samternent/home/commit/844add44cf08395e6654ca2a399e56e00203fb52) Thanks [@samternent](https://github.com/samternent)! - Fix debugger throwing error
+
 ## 0.1.13
 
 ### Patch Changes
