@@ -1,5 +1,15 @@
 # concords-footballsocial
 
+## 0.1.13
+
+### Patch Changes
+
+- [`358dddd`](https://github.com/samternent/home/commit/358dddd36cadadc37df0382d837663618028d9cf) Thanks [@samternent](https://github.com/samternent)! - Enforce regex username pattern
+
+- [`1de8b7d`](https://github.com/samternent/home/commit/1de8b7db8c590d9a9b59c58af7c90ab9c6e02279) Thanks [@samternent](https://github.com/samternent)! - Fix username viewer
+
+- [`0b43e9d`](https://github.com/samternent/home/commit/0b43e9d1b01936af18e8b80a818fa519eece2a10) Thanks [@samternent](https://github.com/samternent)! - Adds Leage Table
+
 ## 0.1.12
 
 ### Patch Changes
