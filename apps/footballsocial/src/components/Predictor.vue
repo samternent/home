@@ -55,7 +55,7 @@ const { prediction } = toRefs(props);
 watch(prediction, (_prediction) => {
   homeScore.value = _prediction?.homeScore || 0;
   awayScore.value = _prediction?.awayScore || 0;
-})
+});
 watch(
   [homeScore, awayScore],
   ([_homeScore, _awayScore]) => {
@@ -138,9 +138,9 @@ const resultPrediction = computed(() => {
             <input
               :disabled="disabled"
               v-model="homeScore"
-              type="number"
-              min="0"
-              max="9"
+              type="text"
+              inputmode="numeric"
+              pattern="[0-9]*"
               class="text-center text-2xl w-12 h-12 ml-4 rounded font-bold"
             />
             <span
@@ -165,9 +165,9 @@ const resultPrediction = computed(() => {
             <input
               v-model="awayScore"
               :disabled="disabled"
-              type="number"
-              min="0"
-              max="9"
+              type="text"
+              inputmode="numeric"
+              pattern="[0-9]*"
               class="text-center text-2xl w-12 h-12 mr-4 rounded font-bold"
             />
           </div>
