@@ -1,0 +1,5 @@
+---
+"footballsocial": patch
+---
+
+Adds rules
