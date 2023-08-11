@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.2.4
+
+### Patch Changes
+
+- [`bdfdf3b`](https://github.com/samternent/home/commit/bdfdf3b6aec1d5022e7bfa4db7ef20e06d70d06f) Thanks [@samternent](https://github.com/samternent)! - Updates banner colour for predictions
+
 ## 0.2.3
 
 ### Patch Changes
