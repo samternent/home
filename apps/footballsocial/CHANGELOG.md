@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.2.7
+
+### Patch Changes
+
+- [`ec50e63`](https://github.com/samternent/home/commit/ec50e630eeccce954371185327cc2bd428cea10d) Thanks [@samternent](https://github.com/samternent)! - Adds correct score banner
+
 ## 0.2.6
 
 ### Patch Changes
