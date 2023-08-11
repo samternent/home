@@ -122,6 +122,10 @@ const hasPredictions = computed(() => {
   if (!serverPredictions.value) return false;
   return Object.keys(JSON.parse(serverPredictions.value)).length > 0;
 });
+
+const hidePredictions = computed(() => {
+  return !!(props.username && profile.value?.username !== props.username && meta.value.played < 1);
+})
 </script>
 <template>
   <div class="w-full flex flex-col mx-auto" v-if="predictionsLoaded">
@@ -156,6 +160,7 @@ const hasPredictions = computed(() => {
           (username && profile?.username !== username) ||
           false
         "
+        :hidePredictions="hidePredictions"
         :showDate="fixture.utcDate !== fixtures[i - 1]?.utcDate"
         :prediction="fixture.prediction"
         @update:prediction="

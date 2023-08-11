@@ -42,8 +42,8 @@ onMounted(loadPredictions);
 const { profile } = useCurrentUser();
 </script>
 <template>
-  <table class="w-full text-sm md:text-base" v-if="table">
-    <thead class="h-10 font-light">
+  <table class="w-full text-sm md:text-base" v-if="table.length">
+    <thead class="h-10 font-light bg-indigo-900">
       <tr class="font-thin text-center text-white">
         <th class="w-16 font-medium">POS</th>
         <th class="text-left">
@@ -72,14 +72,14 @@ const { profile } = useCurrentUser();
         v-for="row in table"
         :key="row.username"
         :class="{
-          'bg-opacity-30 bg-indigo-500': row.username === profile?.username
+          'bg-opacity-10 bg-indigo-500': row.username === profile?.username
         }"
       >
         <td class="text-center text-md p-2 text-white bg-[#3c3c3c ]">
           {{ row.position }}
         </td>
         <td class="text-left p-1">
-          {{ row.username }}
+          <RouterLink class="league-link" :to="`/leagues/${competitionCode}/predictions/${row.username}`">{{ row.username }}</RouterLink>
         </td>
         <td class="text-center p-1">{{ row.totalHomeGoals || 0 }}</td>
         <td class="text-center p-1">{{ row.totalAwayGoals || 0 }}</td>
@@ -89,13 +89,13 @@ const { profile } = useCurrentUser();
       </tr>
     </tbody>
   </table>
-  <!-- <div v-else class="w-full">
+  <div v-else class="w-full">
     <div
-      v-for="i in 20"
+      v-for="i in 10"
       :key="i"
-      class="bg-[#1e1e1e] animate-pulse my-2 rounded flex-1 h-12 w-full"
+      class="bg-[#1e1e1e] animate-pulse my-2 rounded flex-1 h-8 w-full"
     />
-  </div> -->
+  </div>
 </template>
 <style scoped>
 .v-enter-active,

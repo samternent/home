@@ -27,6 +27,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  hidePredictions: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const emit = defineEmits(["click", "update:prediction"]);
@@ -48,14 +52,18 @@ const kickOff = computed(() => {
   )}`;
 });
 
-const homeScore = shallowRef(props.prediction?.homeScore);
-const awayScore = shallowRef(props.prediction?.awayScore);
+const hasStarted = computed(() => {
+  return DateTime.fromISO(props.kickOff).toFormat('mm') < 1;
+});
+
+const homeScore = shallowRef();
+const awayScore = shallowRef();
 
 const { prediction } = toRefs(props);
 watch(prediction, (_prediction) => {
-  homeScore.value = _prediction?.homeScore;
-  awayScore.value = _prediction?.awayScore;
-});
+  homeScore.value = props.hidePredictions ? '0' : _prediction?.homeScore;
+  awayScore.value = props.hidePredictions ? '0' : _prediction?.awayScore;
+},  { immediate: true });
 watch(
   [homeScore, awayScore],
   ([_homeScore, _awayScore]) => {
@@ -141,10 +149,14 @@ const resultPrediction = computed(() => {
               type="number"
               min="0"
               max="9"
-              class="text-center text-2xl w-12 h-12 mx-4 rounded font-bold"
+              class="text-center text-2xl w-12 h-12 ml-4 rounded font-bold"
+              :class="{
+                'blur bg-transparent': hidePredictions
+              }"
             />
             <span
-              class="text-2xl rounded font-thin"
+              v-if="hasStarted"
+              class="text-2xl rounded font-thin mx-4"
               :class="{
                 'text-red-300': fixture.score?.fullTime?.home != homeScore,
                 'text-green-300': fixture.score?.fullTime?.home == homeScore,
@@ -152,10 +164,11 @@ const resultPrediction = computed(() => {
               >{{ fixture.score?.fullTime?.home }}</span
             >
           </div>
-          <span class="mx-6 font-thin text-4xl text-[#6a6a6a]">v</span>
+          <span class="mx-2 font-thin text-4xl text-[#6a6a6a]">v</span>
           <div class="flex flex-row text-center justify-center items-center">
             <span
-              class="text-2xl rounded font-thin"
+              v-if="hasStarted"
+              class="text-2xl rounded font-thin mx-4"
               :class="{
                 'text-green-300': fixture.score?.fullTime?.away == awayScore,
                 'text-red-300': fixture.score?.fullTime?.away != awayScore,
@@ -169,6 +182,9 @@ const resultPrediction = computed(() => {
               min="0"
               max="9"
               class="text-center text-2xl w-12 h-12 mx-4 rounded font-bold"
+              :class="{
+                'blur bg-transparent': hidePredictions
+              }"
             />
           </div>
         </div>
