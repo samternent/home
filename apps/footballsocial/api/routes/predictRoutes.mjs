@@ -78,7 +78,7 @@ export default function predictRoutes(router) {
           }
 
           if (homeGoals && awayGoals && result) {
-            scores.points += 5;
+            scores.points += 3;
             scores.correctScore += 1;
           }
         }
