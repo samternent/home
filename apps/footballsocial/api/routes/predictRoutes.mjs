@@ -41,7 +41,7 @@ export default function predictRoutes(router) {
           correctScore: 0,
         };
 
-        if (match.status === "FINISHED") {
+        if (["FINISHED", "IN_PLAY", "PAUSED"].includes(match.status)) {
           let homeGoals = false;
           let awayGoals = false;
           let result = false;

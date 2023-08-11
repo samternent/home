@@ -21,14 +21,14 @@ async function loadPredictions() {
     .sort(([keyA, valA], [keyB, valB]) => {
       if (valA.points === valB.points) {
         if (valA.correctScore === valB.correctScore) {
-          return keyA.correctScore - keyB.correctScore;
+          return keyB.correctScore - keyA.correctScore;
         }
         if (valA.totalCorrectResult === valB.totalCorrectResult) {
-          return keyA.toLowerCase() - keyB.toLowerCase();
+          return keyB.toLowerCase() - keyA.toLowerCase();
         }
-        return valA.totalCorrectResult - valB.totalCorrectResult;
+        return valB.totalCorrectResult - valA.totalCorrectResult;
       }
-      return valA.points - valB.points;
+      return valB.points - valA.points;
     })
     .map(([key, val], i) => {
       return { position: i + 1, username: key, ...val };
@@ -42,11 +42,14 @@ watch(() => props.competitionCode, loadPredictions, { immediate: true });
 const { profile } = useCurrentUser();
 </script>
 <template>
-  <div v-if="predictionsLoaded && !table.length" class="w-full text-center py-8 text-3xl font-thin">
+  <div
+    v-if="predictionsLoaded && !table.length"
+    class="w-full text-center py-8 text-3xl font-thin"
+  >
     This league has no predictions yet.
   </div>
   <table
-    class="w-full text-sm md:text-base"
+    class="w-full text-sm md:text-base rounded overflow-hidden shadow"
     v-else-if="predictionsLoaded && table.length"
   >
     <thead class="h-10 font-light bg-indigo-900">
@@ -55,6 +58,7 @@ const { profile } = useCurrentUser();
         <th class="text-left">
           <abbr class="font-medium" title="Teams in Competition">USERNAME</abbr>
         </th>
+
         <th class="w-10">
           <abbr class="font-medium" title="Correct Home Score">HS</abbr>
         </th>
@@ -79,12 +83,14 @@ const { profile } = useCurrentUser();
         :key="row.username"
         :class="{
           'bg-opacity-10 bg-indigo-500': row.username === profile?.username,
+          'bg-opacity-10 bg-green-500': row.position === 1,
+          'bg-opacity-10 bg-red-500': row.position === table.length,
         }"
       >
-        <td class="text-center text-md p-2 text-white bg-[#3c3c3c ]">
+        <td class="text-center text-md p-2 text-white border-r border-zinc-800">
           {{ row.position }}
         </td>
-        <td class="text-left p-1">
+        <td class="text-left py-2 px-3">
           <RouterLink
             class="league-link"
             :to="`/leagues/${competitionCode}/predictions/${row.username}`"
@@ -95,7 +101,7 @@ const { profile } = useCurrentUser();
         <td class="text-center p-1">{{ row.totalAwayGoals || 0 }}</td>
         <td class="text-center p-1">{{ row.totalCorrectResult || 0 }}</td>
         <td class="text-center p-1">{{ row.correctScore || 0 }}</td>
-        <td class="text-center p-1">{{ row.points || 0 }}</td>
+        <td class="text-center p-1 border-l border-zinc-800">{{ row.points || 0 }}</td>
       </tr>
     </tbody>
   </table>

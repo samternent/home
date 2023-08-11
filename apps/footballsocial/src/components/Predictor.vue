@@ -69,8 +69,8 @@ const { prediction } = toRefs(props);
 watch(
   prediction,
   (_prediction) => {
-    homeScore.value = props.hidePredictions ? "0" : _prediction?.homeScore;
-    awayScore.value = props.hidePredictions ? "0" : _prediction?.awayScore;
+    homeScore.value = props.hidePredictions && !hasStarted.value ? "0" : _prediction?.homeScore;
+    awayScore.value = props.hidePredictions && !hasStarted.value  ? "0" : _prediction?.awayScore;
   },
   { immediate: true }
 );
@@ -131,6 +131,11 @@ const resultPrediction = computed(() => {
         >In play</span
       >
       <span
+        v-if="fixture.status === 'PAUSED'"
+        class="absolute left-0 text-xs px-4 m-1 bg-orange-900 rounded-full dark:text-white"
+        >Half time</span
+      >
+      <span
         v-if="fixture.status === 'POSTPONED'"
         class="absolute left-0 text-xs px-4 m-1 bg-red-800 rounded-full dark:text-white"
         >POSTPONED</span
@@ -174,7 +179,7 @@ const resultPrediction = computed(() => {
               max="9"
               class="text-center text-2xl w-12 h-12 rounded ml-2 font-bold"
               :class="{
-                'blur-md bg-transparent': hidePredictions,
+                'blur-md bg-transparent': hidePredictions && !hasStarted,
               }"
             />
             <span
@@ -182,11 +187,9 @@ const resultPrediction = computed(() => {
               class="text-2xl rounded font-thin mr-2 ml-4"
               :class="{
                 'text-red-300':
-                  fixture.score?.fullTime?.home != homeScore &&
-                  !hidePredictions,
+                  fixture.score?.fullTime?.home != homeScore,
                 'text-green-300':
-                  fixture.score?.fullTime?.home == homeScore &&
-                  !hidePredictions,
+                  fixture.score?.fullTime?.home == homeScore,
               }"
               >{{ fixture.score?.fullTime?.home }}</span
             >
@@ -198,11 +201,9 @@ const resultPrediction = computed(() => {
               class="text-2xl rounded font-thin ml-2 mr-4"
               :class="{
                 'text-green-300':
-                  fixture.score?.fullTime?.away == awayScore &&
-                  !hidePredictions,
+                  fixture.score?.fullTime?.away == awayScore,
                 'text-red-300':
-                  fixture.score?.fullTime?.away != awayScore &&
-                  !hidePredictions,
+                  fixture.score?.fullTime?.away != awayScore,
               }"
               >{{ fixture.score?.fullTime?.away }}</span
             >
@@ -214,7 +215,7 @@ const resultPrediction = computed(() => {
               max="9"
               class="text-center text-2xl w-12 h-12 mr-2 rounded font-bold"
               :class="{
-                'blur-md bg-transparent': hidePredictions,
+                'blur-md bg-transparent': hidePredictions && !hasStarted,
               }"
             />
           </div>
