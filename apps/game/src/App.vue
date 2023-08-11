@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { shallowRef, computed, onMounted } from "vue";
 import { useDebounceFn, useLocalStorage } from "@vueuse/core";
-import { createEngine, createSprite } from "concords-game-kit";
+import { createEngine, createSprite } from "sams-game-kit";
 import { ScrollingBackgroundImage } from "@/module/background";
 
 import idle from "@/assets/character/idle.png";

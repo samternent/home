@@ -25,6 +25,7 @@
     "@tiptap/vue-3": "2.0.0-beta.199",
     "@vercel/og": "^0.5.10",
     "@vitejs/plugin-basic-ssl": "^0.1.2",
+    "@vueuse/components": "^10.3.0",
     "@vueuse/core": "^9.1.1",
     "axios": "^0.27.2",
     "cors": "^2.8.5",

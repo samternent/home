@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "concords-utils": "workspace:*",
-    "concords-game-kit": "workspace:*",
+    "sams-game-kit": "workspace:*",
     "@supabase/supabase-js": "^2.1.1",
     "@tailwindcss/line-clamp": "^0.4.2",
     "@tailwindcss/typography": "^0.5.7",

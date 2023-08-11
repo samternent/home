@@ -1,4 +1,5 @@
 <script setup>
+import { computed, shallowRef } from "vue";
 import api from "./utils/api";
 import { useToast } from "vue-toastification";
 import GithubSvg from "./assets/github-mark-white.svg";
@@ -6,10 +7,15 @@ import { provideCurrentUser } from "./composables/useCurrentUser";
 import SetUsername from "./components/SetUsername.vue";
 import Notifications from "./components/Notifications.vue";
 import { version } from "../package.json";
+import { useLocalStorage, onClickOutside } from "@vueuse/core";
 
 const toast = useToast();
 
 const { user, profile, ready } = provideCurrentUser();
+const hasDismissedPopup = useLocalStorage("app/hasDismissedPopup", false);
+const isLoggedOutUser = computed(() => !user.value?.profile && ready.value);
+
+const modalRef = shallowRef(null);
 
 api.interceptors.response.use(
   (response) => {
@@ -38,10 +44,43 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+onClickOutside(modalRef, (event) => hasDismissedPopup.value = true)
 </script>
 
 <template>
   <div class="dark:text-white absolute inset-0 flex flex-col">
+    <div
+      v-if="isLoggedOutUser && !hasDismissedPopup"
+      class="fixed z-[99999] bg-opacity-50 bg-zinc-800 top-0 left-0 bottom-0 right-0 flex justify-center items-center"
+    >
+      <div
+        ref="modalRef"
+        class="bg-zinc-800 p-4 rounded shadow border border-zinc-700 w-96"
+      >
+      <p class="text-2xl my-4 mb-8 font-thin text-center">Welcome to FootballSocial.</p>
+      <p class="text-lg my-4 mb-8 font-light text-center">login in or join today to enter your predictions</p>
+        <div class="flex justify-center my-4">
+          <RouterLink
+            aria-label="Login"
+            to="/auth/login"
+            @click="hasDismissedPopup = true"
+            class="flex items-center mx-2 px-4 text-md font-medium uppercase border-white border"
+          >
+            Login
+          </RouterLink>
+          <span class="">or</span>
+          <RouterLink
+            aria-label="Signup"
+            to="/auth/signup"
+            @click="hasDismissedPopup = true"
+            class="flex items-center mx-2 px-4 text-md font-medium uppercase text-gray-900 bg-yellow-500"
+          >
+            Join
+          </RouterLink>
+        </div>
+      </div>
+    </div>
     <div class="bg-indigo-50 sticky dark:bg-[#1c1c1c] top-0 z-30 shadow w-full">
       <div
         class="max-w-7xl flex justify-between mx-auto items-center w-full h-12"

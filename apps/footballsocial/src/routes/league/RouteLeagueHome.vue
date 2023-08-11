@@ -1,9 +1,6 @@
 <script setup>
-import { computed, toRefs, watch, provide, shallowRef } from "vue";
-
-import { useIntersectionObserver, useLocalStorage } from "@vueuse/core";
+import { computed, toRefs, watch, shallowRef } from "vue";
 import { useTitle } from "@vueuse/core";
-
 import { useCompetitionLoader } from "../../api/football-data/useCompetitionLoader";
 
 const props = defineProps({
@@ -61,7 +58,9 @@ watch(
       Enter Now!
     </RouterLink>
   </div> -->
-  <ul class="flex max-w-[100vw] overflow-x-auto h-auto py-4 overflow-y-hidden my-4">
+  <ul
+    class="flex max-w-[100vw] overflow-x-auto h-auto py-4 overflow-y-hidden my-4"
+  >
     <li v-for="t in tabs" :key="`${t}`">
       <RouterLink
         :to="`/leagues/${competitionCode}/${t}`"
@@ -72,7 +71,6 @@ watch(
       </RouterLink>
     </li>
   </ul>
-
   <div class="flex mb-16 w-full">
     <RouterView />
   </div>
