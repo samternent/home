@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.2.3
+
+### Patch Changes
+
+- [`6ed8c99`](https://github.com/samternent/home/commit/6ed8c99a26bed03f829644b3e34f2a3e95db4315) Thanks [@samternent](https://github.com/samternent)! - Adds login modal for FTX
+
 ## 0.2.2
 
 ### Patch Changes
