@@ -1,6 +1,6 @@
 <script setup>
 import { shallowRef, computed, watch, toRefs } from "vue";
-import { DateTime } from "luxon";
+import { DateTime, Interval } from "luxon";
 
 const props = defineProps({
   fixture: {
@@ -51,19 +51,29 @@ const kickOff = computed(() => {
     DateTime.DATETIME_MED
   )}`;
 });
-
 const hasStarted = computed(() => {
-  return DateTime.fromISO(props.kickOff).toFormat('mm') < 1;
+  const timeDiff = Interval.fromDateTimes(
+    DateTime.now(),
+    DateTime.fromISO(props.fixture.utcDate)
+  ).length();
+  if (isNaN(timeDiff)) {
+    return true;
+  }
+  return timeDiff < 1;
 });
 
 const homeScore = shallowRef();
 const awayScore = shallowRef();
 
 const { prediction } = toRefs(props);
-watch(prediction, (_prediction) => {
-  homeScore.value = props.hidePredictions ? '0' : _prediction?.homeScore;
-  awayScore.value = props.hidePredictions ? '0' : _prediction?.awayScore;
-},  { immediate: true });
+watch(
+  prediction,
+  (_prediction) => {
+    homeScore.value = props.hidePredictions ? "0" : _prediction?.homeScore;
+    awayScore.value = props.hidePredictions ? "0" : _prediction?.awayScore;
+  },
+  { immediate: true }
+);
 watch(
   [homeScore, awayScore],
   ([_homeScore, _awayScore]) => {
@@ -111,9 +121,22 @@ const resultPrediction = computed(() => {
       'text-base ': size === 'md',
     }"
   >
-    <span v-if="showDate" class="w-full font-thin dark:bg-zinc900 p-2 my-2">{{
-      kickOff
-    }}</span>
+    <div class="flex flex-col items-center justify-center">
+      <span v-if="showDate" class="w-full font-thin dark:bg-zinc900 p-2 my-2">{{
+        kickOff
+      }}</span>
+      <span
+        v-if="fixture.status === 'IN_PLAY'"
+        class="absolute left-0 text-xs px-4 m-1 bg-green-600 rounded-full dark:text-white"
+        >In play</span
+      >
+      <span
+        v-if="fixture.status === 'POSTPONED'"
+        class="absolute left-0 text-xs px-4 m-1 bg-red-800 rounded-full dark:text-white"
+        >POSTPONED</span
+      >
+    </div>
+
     <div
       class="flex flex-1 w-full px-2 justify-between items-center truncate text-sm sm:text-base dark:bg-[#1e1e1e] hover:dark:bg-[#232323] p-2"
     >
@@ -137,7 +160,7 @@ const resultPrediction = computed(() => {
       <div class="flex flex-col">
         <div
           v-if="resultPrediction"
-          class="mx-auto px-3 text-sm rounded-full bg-green-900"
+          class="mx-auto px-3 text-sm bg-green-500 bg-opacity-50 -mt-3 rounded-b"
         >
           correct result
         </div>
@@ -149,29 +172,37 @@ const resultPrediction = computed(() => {
               type="number"
               min="0"
               max="9"
-              class="text-center text-2xl w-12 h-12 mx-4 rounded font-bold"
+              class="text-center text-2xl w-12 h-12 rounded ml-2 font-bold"
               :class="{
-                'blur bg-transparent': hidePredictions
+                'blur-md bg-transparent': hidePredictions,
               }"
             />
             <span
               v-if="hasStarted"
-              class="text-2xl rounded font-thin mx-4"
+              class="text-2xl rounded font-thin mr-2 ml-4"
               :class="{
-                'text-red-300': fixture.score?.fullTime?.home != homeScore,
-                'text-green-300': fixture.score?.fullTime?.home == homeScore,
+                'text-red-300':
+                  fixture.score?.fullTime?.home != homeScore &&
+                  !hidePredictions,
+                'text-green-300':
+                  fixture.score?.fullTime?.home == homeScore &&
+                  !hidePredictions,
               }"
               >{{ fixture.score?.fullTime?.home }}</span
             >
           </div>
-          <span class="mx-2 font-thin text-4xl text-[#6a6a6a]">v</span>
+          <span class="mx-4 font-thin text-4xl text-[#6a6a6a]">v</span>
           <div class="flex flex-row text-center justify-center items-center">
             <span
               v-if="hasStarted"
-              class="text-2xl rounded font-thin mx-4"
+              class="text-2xl rounded font-thin ml-2 mr-4"
               :class="{
-                'text-green-300': fixture.score?.fullTime?.away == awayScore,
-                'text-red-300': fixture.score?.fullTime?.away != awayScore,
+                'text-green-300':
+                  fixture.score?.fullTime?.away == awayScore &&
+                  !hidePredictions,
+                'text-red-300':
+                  fixture.score?.fullTime?.away != awayScore &&
+                  !hidePredictions,
               }"
               >{{ fixture.score?.fullTime?.away }}</span
             >
@@ -181,9 +212,9 @@ const resultPrediction = computed(() => {
               type="number"
               min="0"
               max="9"
-              class="text-center text-2xl w-12 h-12 mx-4 rounded font-bold"
+              class="text-center text-2xl w-12 h-12 mr-2 rounded font-bold"
               :class="{
-                'blur bg-transparent': hidePredictions
+                'blur-md bg-transparent': hidePredictions,
               }"
             />
           </div>
