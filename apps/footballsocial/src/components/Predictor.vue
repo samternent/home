@@ -82,6 +82,14 @@ watch(
   { immediate: true }
 );
 
+const scorePrediction = computed(() => {
+  if (
+    props.prediction?.homeScore === props.fixture?.score.fullTime.home &&
+    props.prediction?.awayScore === props.fixture?.score.fullTime.away
+  ) {
+    return true;
+  }
+});
 const resultPrediction = computed(() => {
   if (
     props.prediction?.homeScore > props.prediction?.awayScore &&
@@ -164,11 +172,18 @@ const resultPrediction = computed(() => {
       </div>
       <div class="flex flex-col">
         <div
-          v-if="resultPrediction"
+          v-if="scorePrediction"
+          class="mx-auto px-3 text-sm bg-green-500 bg-opacity-50 -mt-3 rounded-b"
+        >
+          correct score
+        </div>
+        <div
+          v-else-if="resultPrediction"
           class="mx-auto px-3 text-sm bg-green-500 bg-opacity-50 -mt-3 rounded-b"
         >
           correct result
         </div>
+
         <div class="flex">
           <div class="flex flex-row text-center justify-center items-center">
             <input
