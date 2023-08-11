@@ -1,7 +1,7 @@
 <script setup>
 import api from "./utils/api";
 import { useToast } from "vue-toastification";
-
+import GithubSvg from "./assets/github-mark-white.svg";
 import { provideCurrentUser } from "./composables/useCurrentUser";
 import SetUsername from "./components/SetUsername.vue";
 import Notifications from "./components/Notifications.vue";
@@ -155,16 +155,18 @@ api.interceptors.response.use(
         ><a href="https://www.footballsocial.app/" class="league-link"
           >FootballSocial</a
         >
-        by
-
-        <a href="https://www.teamconcords.com/" class="league-link"
-          >Team Concords Limited</a
-        >
-        © 2023.
+        is hand-crafted and open-sourced, with &hearts;.
       </span>
       <ul
         class="flex flex-wrap items-center mt-3 text-sm dark:text-gray-400 sm:mt-0"
       >
+        <li class="text-sm sm:text-center dark:text-gray-200 mr-6">
+          <a
+            href="https://github.com/samternent/home/tree/main/apps/footballsocial"
+          >
+            <img :src="GithubSvg" class="h-6 w-6 mx-auto" />
+          </a>
+        </li>
         <li>
           <a
             :href="`https://github.com/samternent/home/releases/tag/footballsocial-${version}`"
