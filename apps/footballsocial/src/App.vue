@@ -13,7 +13,10 @@ const toast = useToast();
 
 const { user, profile, ready } = provideCurrentUser();
 const hasDismissedPopup = useLocalStorage("app/hasDismissedPopup", false);
-const isLoggedOutUser = computed(() => !user.value?.profile && ready.value);
+const isLoggedOutUser = computed(() => {
+  console.log(profile.value)
+  return !profile.value && ready.value
+});
 
 const modalRef = shallowRef(null);
 
