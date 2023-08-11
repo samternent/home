@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.2.1
+
+### Patch Changes
+
+- [`1bbc309`](https://github.com/samternent/home/commit/1bbc3099288a4fd4da73029ee7e4d9af2fe9a031) Thanks [@samternent](https://github.com/samternent)! - Show other peoples predictions after the gameweek has started.
+
 ## 0.2.0
 
 ### Minor Changes
