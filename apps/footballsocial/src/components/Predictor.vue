@@ -149,7 +149,7 @@ const resultPrediction = computed(() => {
               type="number"
               min="0"
               max="9"
-              class="text-center text-2xl w-12 h-12 ml-4 rounded font-bold"
+              class="text-center text-2xl w-12 h-12 mx-4 rounded font-bold"
               :class="{
                 'blur bg-transparent': hidePredictions
               }"

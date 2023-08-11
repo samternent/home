@@ -124,27 +124,32 @@ const hasPredictions = computed(() => {
 });
 
 const hidePredictions = computed(() => {
-  return !!(props.username && profile.value?.username !== props.username && meta.value.played < 1);
-})
+  return !!(
+    props.username &&
+    profile.value?.username !== props.username &&
+    meta.value.played < 1
+  );
+});
 </script>
 <template>
   <div class="w-full flex flex-col mx-auto" v-if="predictionsLoaded">
-    <div class="text-center my-0 flex flex-col">
-      <span
-        class="text-xl p-2 font-thin my-4 mx-4 bg-indigo-500 rounded-full bg-opacity-30"
-        v-if="hasPredictions"
-        >{{ username ? `${username}s` : "Your" }} predictions are in!</span
-      >
-      <span
-        class="text-lg p-2 font-thin my-4 text-indigo-300 mx-4 bg-indigo-800 rounded-full bg-opacity-30"
-        v-else
-        >predictions not yet made.</span
-      >
-    </div>
     <CountdownTimer
       :gameweek="gameweek"
       :kickOff="predictionsList[0]?.utcDate"
     />
+    <div class="text-center my-0 flex flex-col">
+      <span
+        class="text-xl p-2 font-thin mx-4 bg-indigo-500 rounded-b bg-opacity-30"
+        v-if="hasPredictions"
+        >{{ username ? `${username}s` : "Your" }} predictions are in!</span
+      >
+      <span
+        class="text-lg p-2 font-thin text-indigo-300 mx-4 bg-indigo-500 rounded-b  bg-opacity-30"
+        v-else
+        >predictions not yet made.</span
+      >
+    </div>
+
     <div
       v-for="(fixture, i) in predictionsList"
       :key="fixture.id"

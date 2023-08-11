@@ -26,8 +26,8 @@ setInterval(() => {
 </script>
 <template>
   <div
-    class="uppercase text-center font-light bg-yellow-500 rounded text-black py-1 px-2 mx-4"
+    class="uppercase text-center font-light bg-indigo-700 rounded-t text-white py-2 px-2 mx-4"
   >
-    gameweek {{ gameweek }} starts {{ countdown || '...' }}
+    gameweek {{ gameweek }} starts {{ countdown || '...' }}.
   </div>
 </template>

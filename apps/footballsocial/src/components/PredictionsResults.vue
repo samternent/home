@@ -1,10 +1,8 @@
 <script setup>
-import { toRefs, computed, shallowRef, reactive, unref, onMounted } from "vue";
-import useFixturesLoader from "../api/football-data/useCompetitionFixturesLoader";
-import {
-  calculatePredictionTable,
-} from "../composables/usePredictionService";
+import { shallowRef, unref, onMounted } from "vue";
+import { calculatePredictionTable } from "../composables/usePredictionService";
 import { useCurrentUser } from "../composables/useCurrentUser";
+import { watch } from "vue";
 
 const props = defineProps({
   competitionCode: {
@@ -19,30 +17,38 @@ const table = shallowRef([]);
 async function loadPredictions() {
   const { data } = await calculatePredictionTable(unref(props.competitionCode));
 
-  table.value = Object.entries(data).sort(([keyA, valA], [keyB, valB]) => {
-    if (valA.points === valB.points) {
-      if (valA.correctScore === valB.correctScore) {
-        return keyA.correctScore - keyB.correctScore;
+  table.value = Object.entries(data)
+    .sort(([keyA, valA], [keyB, valB]) => {
+      if (valA.points === valB.points) {
+        if (valA.correctScore === valB.correctScore) {
+          return keyA.correctScore - keyB.correctScore;
+        }
+        if (valA.totalCorrectResult === valB.totalCorrectResult) {
+          return keyA.toLowerCase() - keyB.toLowerCase();
+        }
+        return valA.totalCorrectResult - valB.totalCorrectResult;
       }
-      if (valA.totalCorrectResult === valB.totalCorrectResult) {
-        return keyA.toLowerCase() - keyB.toLowerCase();
-      }
-      return valA.totalCorrectResult - valB.totalCorrectResult;
-    }
-    return valA.points - valB.points;
-  }).map(([key, val], i) => {
-    return { position: i + 1, username: key, ...val}
-  });
+      return valA.points - valB.points;
+    })
+    .map(([key, val], i) => {
+      return { position: i + 1, username: key, ...val };
+    });
 
   predictionsLoaded.value = true;
 }
 
-onMounted(loadPredictions);
+watch(() => props.competitionCode, loadPredictions, { immediate: true });
 
 const { profile } = useCurrentUser();
 </script>
 <template>
-  <table class="w-full text-sm md:text-base" v-if="table.length">
+  <div v-if="predictionsLoaded && !table.length" class="w-full text-center py-8 text-3xl font-thin">
+    This league has no predictions yet.
+  </div>
+  <table
+    class="w-full text-sm md:text-base"
+    v-else-if="predictionsLoaded && table.length"
+  >
     <thead class="h-10 font-light bg-indigo-900">
       <tr class="font-thin text-center text-white">
         <th class="w-16 font-medium">POS</th>
@@ -72,14 +78,18 @@ const { profile } = useCurrentUser();
         v-for="row in table"
         :key="row.username"
         :class="{
-          'bg-opacity-10 bg-indigo-500': row.username === profile?.username
+          'bg-opacity-10 bg-indigo-500': row.username === profile?.username,
         }"
       >
         <td class="text-center text-md p-2 text-white bg-[#3c3c3c ]">
           {{ row.position }}
         </td>
         <td class="text-left p-1">
-          <RouterLink class="league-link" :to="`/leagues/${competitionCode}/predictions/${row.username}`">{{ row.username }}</RouterLink>
+          <RouterLink
+            class="league-link"
+            :to="`/leagues/${competitionCode}/predictions/${row.username}`"
+            >{{ row.username }}</RouterLink
+          >
         </td>
         <td class="text-center p-1">{{ row.totalHomeGoals || 0 }}</td>
         <td class="text-center p-1">{{ row.totalAwayGoals || 0 }}</td>
