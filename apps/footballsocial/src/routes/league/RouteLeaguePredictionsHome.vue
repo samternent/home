@@ -17,7 +17,6 @@ const props = defineProps({
 
 const { profile } = useCurrentUser();
 
-console.log(profile.value?.username);
 const { items: competition } = useCompetitionLoader();
 const isCup = computed(() => competition.value.type === "CUP");
 </script>

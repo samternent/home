@@ -1,6 +1,6 @@
 <script setup>
-import { shallowRef } from "vue";
-import { DateTime } from "luxon";
+import { shallowRef, computed } from "vue";
+import { DateTime, Interval } from "luxon";
 
 const props = defineProps({
   kickOff: {
@@ -23,11 +23,22 @@ setInterval(() => {
     countdown.value = DateTime.fromISO(props.kickOff).toRelativeCalendar(DateTime.now());
   }
 }, 1 * 1000);
+
+const showTimer = computed(() => {
+  const timeDiff = Interval.fromDateTimes(
+    DateTime.now(),
+    DateTime.fromISO(props.kickOff)
+  ).length();
+  if (isNaN(timeDiff)) {
+    return false;
+  }
+  return timeDiff > 1;
+})
 </script>
 <template>
   <div
     class="uppercase text-center font-light bg-indigo-700 rounded-t text-white py-2 px-2 mx-4"
   >
-    gameweek {{ gameweek }} starts {{ countdown || '...' }}.
+    gameweek {{ gameweek }} {{ showTimer ? `starts ${countdown || '...'} ` : 'has started' }}.
   </div>
 </template>
