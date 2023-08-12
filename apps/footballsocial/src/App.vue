@@ -199,10 +199,10 @@ onClickOutside(modalRef, (event) => (hasDismissedPopup.value = true));
           href="https://www.footballsocial.app/"
           class="league-link font-medium"
           >FootballSocial</a
-        >: hand-crafted and open-sourced.
+        >: hand-crafted and open-source.
       </span>
       <p class="text-sm font-thin py-1">
-        statistics powered by
+        statistics from
         <a
           href="https://www.football-data.org/"
           target="_blank"
