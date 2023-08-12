@@ -180,7 +180,7 @@ const resultPrediction = computed(() => {
           </div>
           <div
             v-if="resultPrediction"
-            class="mx-1 px-3  bg-green-700 bg-opacity-50 rounded mb-2"
+            class="mx-1 px-3  bg-green-600 bg-opacity-50 rounded mb-2"
           >
             MR +2
           </div>
