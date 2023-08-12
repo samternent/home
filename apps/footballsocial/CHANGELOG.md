@@ -1,5 +1,15 @@
 # concords-footballsocial
 
+## 0.2.10
+
+### Patch Changes
+
+- [`265b1b7`](https://github.com/samternent/home/commit/265b1b73502f070745c50c97f1a4005ce514ad9f) Thanks [@samternent](https://github.com/samternent)! - Go back from own profile in named view
+
+- [`d6b273f`](https://github.com/samternent/home/commit/d6b273f04c560c0b60475f681e0f8187599e7da0) Thanks [@samternent](https://github.com/samternent)! - A certain shade of green
+
+- [`05c77e1`](https://github.com/samternent/home/commit/05c77e19f2313c0442826688e591adef54454c73) Thanks [@samternent](https://github.com/samternent)! - Fix timer when first match has started
+
 ## 0.2.9
 
 ### Patch Changes
