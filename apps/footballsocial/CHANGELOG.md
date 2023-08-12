@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.2.9
+
+### Patch Changes
+
+- [`4ce1464`](https://github.com/samternent/home/commit/4ce14649437a258a58afd5176b91112caff202d5) Thanks [@samternent](https://github.com/samternent)! - Fix users page routing
+
 ## 0.2.8
 
 ### Patch Changes
