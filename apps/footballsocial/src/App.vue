@@ -45,7 +45,7 @@ api.interceptors.response.use(
   }
 );
 
-onClickOutside(modalRef, (event) => hasDismissedPopup.value = true)
+onClickOutside(modalRef, (event) => (hasDismissedPopup.value = true));
 </script>
 
 <template>
@@ -58,8 +58,12 @@ onClickOutside(modalRef, (event) => hasDismissedPopup.value = true)
         ref="modalRef"
         class="bg-zinc-800 p-4 rounded shadow border border-zinc-700 w-96"
       >
-      <p class="text-2xl my-4 mb-8 font-thin text-center">Welcome to FootballSocial.</p>
-      <p class="text-lg my-4 mb-8 font-light text-center">login in or join today to enter your predictions</p>
+        <p class="text-2xl my-4 mb-8 font-thin text-center">
+          Welcome to FootballSocial.
+        </p>
+        <p class="text-lg my-4 mb-8 font-light text-center">
+          login in or join today to enter your predictions
+        </p>
         <div class="flex justify-center my-4">
           <RouterLink
             aria-label="Login"
@@ -188,16 +192,26 @@ onClickOutside(modalRef, (event) => hasDismissedPopup.value = true)
       </div>
     </div>
     <footer
-      class="p-4 bg-indigo-100 dark:bg-[#242424] dark:text-white md:flex md:items-center md:justify-between md:p-6"
+      class="p-4 bg-indigo-100 dark:bg-[#242424] dark:text-white lg:flex md:items-center lg:justify-between lg:p-6"
     >
-      <span class="text-sm sm:text-center dark:text-gray-200"
-        ><a href="https://www.footballsocial.app/" class="league-link"
+      <span class="flex text-sm dark:text-gray-200 font-thin"
+        ><a
+          href="https://www.footballsocial.app/"
+          class="league-link font-medium"
           >FootballSocial</a
-        >
-        is hand-crafted and open-sourced, with &hearts;.
+        >: hand-crafted and open-sourced.
       </span>
+      <p class="text-sm font-thin py-1">
+        powered by
+        <a
+          href="https://www.football-data.org/"
+          target="_blank"
+          class="league-link font-medium"
+          >football-data.org</a
+        >.
+      </p>
       <ul
-        class="flex flex-wrap items-center mt-3 text-sm dark:text-gray-400 sm:mt-0"
+        class="flex flex-wrap items-center mt-3 text-sm dark:text-gray-400"
       >
         <li class="text-sm sm:text-center dark:text-gray-200 mr-6">
           <a
