@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.2.13
+
+### Patch Changes
+
+- [`72b2f14`](https://github.com/samternent/home/commit/72b2f14b755e16f50def9e12be58c78730494acd) Thanks [@samternent](https://github.com/samternent)! - Backlink to https://www.football-data.org/
+
 ## 0.2.12
 
 ### Patch Changes
