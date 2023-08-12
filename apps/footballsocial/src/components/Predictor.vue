@@ -85,16 +85,12 @@ watch(
 );
 
 const homeScorePrediction = computed(() => {
-  if (
-    props.prediction?.homeScore === props.fixture?.score.fullTime.home
-  ) {
+  if (props.prediction?.homeScore === props.fixture?.score.fullTime.home) {
     return true;
   }
 });
 const awayScorePrediction = computed(() => {
-  if (
-    props.prediction?.awayScore === props.fixture?.score.fullTime.away
-  ) {
+  if (props.prediction?.awayScore === props.fixture?.score.fullTime.away) {
     return true;
   }
 });
@@ -155,48 +151,48 @@ const resultPrediction = computed(() => {
         >In play</span
       >
       <span
-        v-if="fixture.status === 'PAUSED' && !fixture.score?.winner"
+        v-else-if="fixture.status === 'PAUSED' && !fixture.score?.winner"
         class="absolute left-0 text-xs px-4 m-1 bg-orange-900 rounded-full dark:text-white"
         >Half time</span
       >
       <span
-        v-if="!!fixture.score?.winner"
+        v-else-if="!!fixture.score?.winner"
         class="absolute left-0 text-xs px-4 m-1 bg-zinc-600 rounded-full dark:text-white"
         >Finished</span
       >
       <span
-        v-if="fixture.status === 'POSTPONED'"
+        v-else-if="fixture.status === 'POSTPONED'"
         class="absolute left-0 text-xs px-4 m-1 bg-red-800 rounded-full dark:text-white"
         >POSTPONED</span
       >
     </div>
 
     <div class="flex text-xs">
-          <div
-            v-if="scorePrediction"
-            class="px-3 bg-green-500 bg-opacity-50 rounded mb-2 mx-1"
-          >
-            MS +3
-          </div>
-          <div
-            v-if="resultPrediction"
-            class="mx-1 px-3  bg-green-600 bg-opacity-50 rounded mb-2"
-          >
-            MR +2
-          </div>
-          <div
-            v-if="homeScorePrediction"
-            class="mx-1 px-3  bg-green-700 bg-opacity-50 rounded mb-2"
-          >
-            HS +1
-          </div>
-          <div
-            v-if="awayScorePrediction"
-            class="mx-1 px-3 bg-green-700 bg-opacity-50 rounded mb-2"
-          >
-            AS +1
-          </div>
-        </div>
+      <div
+        v-if="scorePrediction"
+        class="px-3 bg-green-500 bg-opacity-50 rounded mb-2 mx-1"
+      >
+        MS +3
+      </div>
+      <div
+        v-if="resultPrediction"
+        class="mx-1 px-3 bg-green-600 bg-opacity-50 rounded mb-2"
+      >
+        MR +2
+      </div>
+      <div
+        v-if="homeScorePrediction"
+        class="mx-1 px-3 bg-green-700 bg-opacity-50 rounded mb-2"
+      >
+        HS +1
+      </div>
+      <div
+        v-if="awayScorePrediction"
+        class="mx-1 px-3 bg-green-700 bg-opacity-50 rounded mb-2"
+      >
+        AS +1
+      </div>
+    </div>
 
     <div
       class="flex flex-1 w-full px-2 justify-between items-center truncate text-sm sm:text-base dark:bg-[#1e1e1e] hover:dark:bg-[#232323] p-2"
@@ -219,7 +215,6 @@ const resultPrediction = computed(() => {
         }}</span>
       </div>
       <div class="flex flex-col">
-
         <div class="flex">
           <div class="flex flex-row text-center justify-center items-center">
             <input
