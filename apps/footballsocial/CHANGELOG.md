@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.2.8
+
+### Patch Changes
+
+- [`52ee755`](https://github.com/samternent/home/commit/52ee7559d9e1ce74440d1256dd23274693254a95) Thanks [@samternent](https://github.com/samternent)! - Adds points chip
+
 ## 0.2.7
 
 ### Patch Changes
