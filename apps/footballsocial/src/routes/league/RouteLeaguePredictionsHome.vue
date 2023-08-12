@@ -23,7 +23,7 @@ const isCup = computed(() => competition.value.type === "CUP");
 <template>
   <div class="flex flex-col w-full">
     <div
-      v-if="username && username !== profile.username"
+      v-if="username"
       class="text-zinc-300 mb-6"
     >
       <RouterLink
