@@ -129,20 +129,24 @@ const resultPrediction = computed(() => {
   <div
     class="flex flex-col relative transition-all font-light items-center w-full border-x-[transparent] border-transparent border-x-4"
     :class="{
-      'border-l-4 border-l-green-900':
+      'border-l-4 border-l-green-700':
         fixture.score?.winner?.includes('HOME_TEAM'),
-      'border-r-4 border-r-green-900':
+      'border-r-4 border-r-green-700':
         fixture.score?.winner?.includes('AWAY_TEAM'),
-      'border-l-4 border-l-red-900':
+      'border-l-4 border-l-red-800':
         fixture.score?.winner?.includes('AWAY_TEAM'),
-      'border-r-4 border-r-red-900':
+      'border-r-4 border-r-red-800':
         fixture.score?.winner?.includes('HOME_TEAM'),
+      'border-l-4 border-l-zinc-700':
+        fixture.score?.winner?.includes('DRAW'),
+      'border-r-4 border-r-zinc-700':
+        fixture.score?.winner?.includes('DRAW'),
       'text-xl': size === 'lg',
       'text-base ': size === 'md',
     }"
   >
-    <div class="flex flex-col items-center justify-center">
-      <span v-if="showDate" class="w-full font-thin dark:bg-zinc900 p-2 my-2">{{
+    <div class="flex flex-col items-center justify-center p-2 my-2">
+      <span v-if="showDate || hasStarted" class="w-full font-light text-zinc-300">{{
         kickOff
       }}</span>
       <span
@@ -151,7 +155,7 @@ const resultPrediction = computed(() => {
         >In play</span
       >
       <span
-        v-else-if="fixture.status === 'PAUSED' && !fixture.score?.winner"
+        v-else-if="fixture.status === 'PAUSED'"
         class="absolute left-0 text-xs px-4 m-1 bg-orange-900 rounded-full dark:text-white"
         >Half time</span
       >
@@ -231,10 +235,10 @@ const resultPrediction = computed(() => {
             />
             <span
               v-if="hasStarted"
-              class="text-2xl rounded font-thin mr-2 ml-4"
+              class="text-2xl rounded font-medium mr-2 ml-4"
               :class="{
-                'text-red-300': fixture.score?.fullTime?.home != homeScore,
-                'text-green-300': fixture.score?.fullTime?.home == homeScore,
+                'text-red-600': fixture.score?.fullTime?.home != homeScore,
+                'text-green-600': fixture.score?.fullTime?.home == homeScore,
               }"
               >{{ fixture.score?.fullTime?.home }}</span
             >
@@ -243,10 +247,10 @@ const resultPrediction = computed(() => {
           <div class="flex flex-row text-center justify-center items-center">
             <span
               v-if="hasStarted"
-              class="text-2xl rounded font-thin ml-2 mr-4"
+              class="text-2xl rounded font-medium ml-2 mr-4"
               :class="{
-                'text-green-300': fixture.score?.fullTime?.away == awayScore,
-                'text-red-300': fixture.score?.fullTime?.away != awayScore,
+                'text-green-600': fixture.score?.fullTime?.away == awayScore,
+                'text-red-600': fixture.score?.fullTime?.away != awayScore,
               }"
               >{{ fixture.score?.fullTime?.away }}</span
             >

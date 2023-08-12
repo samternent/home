@@ -57,7 +57,7 @@ const { profile } = useCurrentUser();
   </div>
   <div v-else class="flex flex-col w-full">
     <table
-    class="w-full text-sm md:text-base rounded overflow-hidden shadow"
+    class="w-full text-base md:text-base rounded overflow-hidden shadow"
   >
     <thead class="h-10 font-light bg-indigo-900">
       <tr class="font-thin text-center text-white">
