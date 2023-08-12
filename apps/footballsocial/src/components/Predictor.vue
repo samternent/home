@@ -69,8 +69,10 @@ const { prediction } = toRefs(props);
 watch(
   prediction,
   (_prediction) => {
-    homeScore.value = props.hidePredictions && !hasStarted.value ? "0" : _prediction?.homeScore;
-    awayScore.value = props.hidePredictions && !hasStarted.value  ? "0" : _prediction?.awayScore;
+    homeScore.value =
+      props.hidePredictions && !hasStarted.value ? "0" : _prediction?.homeScore;
+    awayScore.value =
+      props.hidePredictions && !hasStarted.value ? "0" : _prediction?.awayScore;
   },
   { immediate: true }
 );
@@ -82,6 +84,20 @@ watch(
   { immediate: true }
 );
 
+const homeScorePrediction = computed(() => {
+  if (
+    props.prediction?.homeScore === props.fixture?.score.fullTime.home
+  ) {
+    return true;
+  }
+});
+const awayScorePrediction = computed(() => {
+  if (
+    props.prediction?.awayScore === props.fixture?.score.fullTime.away
+  ) {
+    return true;
+  }
+});
 const scorePrediction = computed(() => {
   if (
     props.prediction?.homeScore === props.fixture?.score.fullTime.home &&
@@ -139,9 +155,14 @@ const resultPrediction = computed(() => {
         >In play</span
       >
       <span
-        v-if="fixture.status === 'PAUSED'"
+        v-if="fixture.status === 'PAUSED' && !fixture.score?.winner"
         class="absolute left-0 text-xs px-4 m-1 bg-orange-900 rounded-full dark:text-white"
         >Half time</span
+      >
+      <span
+        v-if="!!fixture.score?.winner"
+        class="absolute left-0 text-xs px-4 m-1 bg-zinc-600 rounded-full dark:text-white"
+        >Finished</span
       >
       <span
         v-if="fixture.status === 'POSTPONED'"
@@ -150,11 +171,38 @@ const resultPrediction = computed(() => {
       >
     </div>
 
+    <div class="flex text-xs">
+          <div
+            v-if="scorePrediction"
+            class="px-3 bg-green-500 bg-opacity-50 rounded mb-2 mx-1"
+          >
+            MS +3
+          </div>
+          <div
+            v-if="resultPrediction"
+            class="mx-1 px-3  bg-green-700 bg-opacity-50 rounded mb-2"
+          >
+            MR +2
+          </div>
+          <div
+            v-if="homeScorePrediction"
+            class="mx-1 px-3  bg-green-700 bg-opacity-50 rounded mb-2"
+          >
+            HS +1
+          </div>
+          <div
+            v-if="awayScorePrediction"
+            class="mx-1 px-3 bg-green-700 bg-opacity-50 rounded mb-2"
+          >
+            AS +1
+          </div>
+        </div>
+
     <div
       class="flex flex-1 w-full px-2 justify-between items-center truncate text-sm sm:text-base dark:bg-[#1e1e1e] hover:dark:bg-[#232323] p-2"
     >
       <div
-        class="flex-1 flex items-center truncate my-1 lg:text-xl md:font-light"
+        class="flex-1 flex items-end truncate my-1 lg:text-xl md:font-light pr-2"
         :class="{ 'justify-between': !hideCrests, 'justify-end': hideCrests }"
       >
         <img
@@ -171,18 +219,6 @@ const resultPrediction = computed(() => {
         }}</span>
       </div>
       <div class="flex flex-col">
-        <div
-          v-if="scorePrediction"
-          class="mx-auto px-3 text-sm bg-green-500 bg-opacity-50 -mt-3 rounded-b"
-        >
-          correct score
-        </div>
-        <div
-          v-else-if="resultPrediction"
-          class="mx-auto px-3 text-sm bg-green-500 bg-opacity-50 -mt-3 rounded-b"
-        >
-          correct result
-        </div>
 
         <div class="flex">
           <div class="flex flex-row text-center justify-center items-center">
@@ -195,16 +231,15 @@ const resultPrediction = computed(() => {
               class="text-center text-2xl w-12 h-12 rounded ml-2 font-bold"
               :class="{
                 'blur-md bg-transparent': hidePredictions && !hasStarted,
+                'text-zinc-500': disabled,
               }"
             />
             <span
               v-if="hasStarted"
               class="text-2xl rounded font-thin mr-2 ml-4"
               :class="{
-                'text-red-300':
-                  fixture.score?.fullTime?.home != homeScore,
-                'text-green-300':
-                  fixture.score?.fullTime?.home == homeScore,
+                'text-red-300': fixture.score?.fullTime?.home != homeScore,
+                'text-green-300': fixture.score?.fullTime?.home == homeScore,
               }"
               >{{ fixture.score?.fullTime?.home }}</span
             >
@@ -215,10 +250,8 @@ const resultPrediction = computed(() => {
               v-if="hasStarted"
               class="text-2xl rounded font-thin ml-2 mr-4"
               :class="{
-                'text-green-300':
-                  fixture.score?.fullTime?.away == awayScore,
-                'text-red-300':
-                  fixture.score?.fullTime?.away != awayScore,
+                'text-green-300': fixture.score?.fullTime?.away == awayScore,
+                'text-red-300': fixture.score?.fullTime?.away != awayScore,
               }"
               >{{ fixture.score?.fullTime?.away }}</span
             >
@@ -231,13 +264,14 @@ const resultPrediction = computed(() => {
               class="text-center text-2xl w-12 h-12 mr-2 rounded font-bold"
               :class="{
                 'blur-md bg-transparent': hidePredictions && !hasStarted,
+                'text-zinc-500': disabled,
               }"
             />
           </div>
         </div>
       </div>
       <div
-        class="flex-1 flex items-center truncate my-1 lg:text-xl md:font-lighgt"
+        class="flex-1 flex items-end truncate my-1 lg:text-xl md:font-light pl-2"
         :class="{ 'justify-between': !hideCrests, 'justify-start': hideCrests }"
       >
         <span class="hidden md:inline truncate">{{

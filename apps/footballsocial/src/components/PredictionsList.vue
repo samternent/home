@@ -126,8 +126,7 @@ const hasPredictions = computed(() => {
 const hidePredictions = computed(() => {
   return !!(
     props.username &&
-    profile.value?.username !== props.username &&
-    meta.value.played < 1
+    profile.value?.username !== props.username
   );
 });
 </script>
@@ -165,7 +164,7 @@ const hidePredictions = computed(() => {
           (username && profile?.username !== username) ||
           false
         "
-        :hidePredictions="hidePredictions"
+        :hidePredictions="hidePredictions && new Date(fixture.utcDate).getTime() > new Date().getTime()"
         :showDate="fixture.utcDate !== fixtures[i - 1]?.utcDate"
         :prediction="fixture.prediction"
         @update:prediction="
