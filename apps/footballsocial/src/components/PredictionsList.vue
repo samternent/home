@@ -33,7 +33,7 @@ const props = defineProps({
   },
 });
 
-const { competitionCode, currentGameweek, stage } = toRefs(props);
+const { competitionCode, currentGameweek, stage, username } = toRefs(props);
 const overrideGameweek = shallowRef();
 const gameweek = computed(
   () => overrideGameweek.value || currentGameweek.value
@@ -41,9 +41,6 @@ const gameweek = computed(
 
 const {
   items: fixtures,
-  meta,
-  loading: fixturesLoading,
-  loaded: fixturesLoaded,
 } = useFixturesLoader(competitionCode, stage, gameweek);
 
 const predictions = shallowRef({});
@@ -105,7 +102,7 @@ const isDirty = computed(
   () => serverPredictions.value !== JSON.stringify(predictions.value)
 );
 
-watchThrottled([gameweek, competitionCode], loadPredictions, {
+watchThrottled([gameweek, competitionCode, username], loadPredictions, {
   throttle: 500,
   immediate: true,
 });

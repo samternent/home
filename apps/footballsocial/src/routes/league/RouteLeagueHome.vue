@@ -1,5 +1,6 @@
 <script setup>
 import { computed, toRefs, watch, shallowRef } from "vue";
+import { useRoute } from 'vue-router';
 import { useTitle } from "@vueuse/core";
 import { useCompetitionLoader } from "../../api/football-data/useCompetitionLoader";
 
@@ -18,8 +19,9 @@ const props = defineProps({
   },
 });
 
-const { competitionCode, gameweek, season } = toRefs(props);
+const { competitionCode } = toRefs(props);
 const title = useTitle();
+const route = useRoute();
 
 const { items: competition, hasItems: hasCompetition } = useCompetitionLoader();
 
@@ -40,6 +42,11 @@ watch(
   },
   { immediate: true }
 );
+
+function isActiveLink(t) {
+  const regex = new RegExp(`/leagues/${competitionCode.value}/${t}*`, 'g');
+  return regex.test(route.path);
+}
 </script>
 <template>
   <!-- <div
@@ -65,7 +72,9 @@ watch(
       <RouterLink
         :to="`/leagues/${competitionCode}/${t}`"
         class="mx-2 py-3 uppercase hover:border-indigo-900 dark:text-white border-b-4 border-transparent"
-        active-class="!border-indigo-600"
+        :class="{
+          '!border-indigo-600': isActiveLink(t)
+        }"
       >
         {{ t }}
       </RouterLink>
