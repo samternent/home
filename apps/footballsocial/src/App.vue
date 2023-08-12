@@ -202,7 +202,7 @@ onClickOutside(modalRef, (event) => (hasDismissedPopup.value = true));
         >: hand-crafted and open-sourced.
       </span>
       <p class="text-sm font-thin py-1">
-        powered by
+        statistics powered by
         <a
           href="https://www.football-data.org/"
           target="_blank"
