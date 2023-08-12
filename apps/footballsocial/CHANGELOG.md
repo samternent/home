@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.2.11
+
+### Patch Changes
+
+- [`4b69334`](https://github.com/samternent/home/commit/4b693342a48699944f1d46c761e2096bf340b47a) Thanks [@samternent](https://github.com/samternent)! - Fix in play chip
+
 ## 0.2.10
 
 ### Patch Changes
