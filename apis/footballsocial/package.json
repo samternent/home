@@ -4,10 +4,9 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "dev:api": "nodemon api/main.mjs"
+    "build": "docker build -f ./Dockerfile ../../ -t samternent/footballsocial-api",
+    "dev:api": "nodemon api/main.mjs",
+    "start": "pm2 startOrReload ecosystem.config.cjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.1.1",
