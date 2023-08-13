@@ -1,7 +1,7 @@
 import shell from "shelljs";
 
+const apisToPublish = ["../apis/footballsocial"];
 const appsToPublish = ["../apps/footballsocial", "../apps/concords"];
-
 const packagesToPublish = [
   "../packages/ledger",
   "../packages/encrypt",
@@ -11,7 +11,7 @@ const packagesToPublish = [
   "../packages/game-kit",
 ];
 
-const toPublish = [...appsToPublish, ...packagesToPublish];
+const toPublish = [...apisToPublish, ...appsToPublish, ...packagesToPublish];
 
 let i = 0;
 for (; i < toPublish.length; i++) {
@@ -20,11 +20,6 @@ for (; i < toPublish.length; i++) {
       assert: { type: "json" },
     })
   ).default;
-  console.log(`${name}@${version}`);
-
-  const branch = shell
-    .exec("git rev-parse --abbrev-ref HEAD", { silent: true })
-    .toString();
 
   const fullChangelog = shell
     .exec(
@@ -36,7 +31,6 @@ for (; i < toPublish.length; i++) {
   const changelog = fullChangelog
     ?.split(`## ${name}@${version}`)[1]
     ?.split("## ")[1];
-
 
   if (changelog) {
     shell.exec(
