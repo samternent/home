@@ -243,7 +243,7 @@ const resultPrediction = computed(() => {
               >{{ fixture.score?.fullTime?.home }}</span
             >
           </div>
-          <span class="mx-4 font-thin text-4xl text-[#6a6a6a]">v</span>
+          <span class="mx-1 mt-3 font-thin text-lg text-zinc-700">|</span>
           <div class="flex flex-row text-center justify-center items-center">
             <span
               v-if="hasStarted"
