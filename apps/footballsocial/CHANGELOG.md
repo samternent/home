@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.2.14
+
+### Patch Changes
+
+- [`b3523f1`](https://github.com/samternent/home/commit/b3523f1c0a89c379ee62a5d9c077266086534689) Thanks [@samternent](https://github.com/samternent)! - Change predictor separator
+
 ## 0.2.13
 
 ### Patch Changes
