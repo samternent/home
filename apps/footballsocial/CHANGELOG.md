@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.2.16
+
+### Patch Changes
+
+- [#61](https://github.com/samternent/home/pull/61) [`fa09036`](https://github.com/samternent/home/commit/fa0903613567d567e73c73deec03947f0569ca06) Thanks [@samternent](https://github.com/samternent)! - Changes calcuations for league data
+
 ## 0.2.15
 
 ### Patch Changes
