@@ -5,7 +5,7 @@ const redisPassword = process.env.REDIS_PASSWORD;
 const redisUrl = process.env.REDIS_ENDPOINT_URI;
 const footballDataKey = process.env.FOOTBALL_DATA_API_KEY;
 
-const redisClient = createClient({
+export const redisClient = createClient({
   url: `redis://default:${redisPassword}@${redisUrl}`,
 });
 

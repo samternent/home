@@ -1,4 +1,4 @@
-import footballDataProxy from "../footballDataProxy.mjs";
+import footballDataProxy, { redisClient } from "../footballDataProxy.mjs";
 import { supabaseClient } from "../supabase.mjs";
 
 import { Configuration, OpenAIApi } from "openai";
@@ -14,6 +14,10 @@ export default function predictRoutes(router) {
     async function (req, res) {
       const { competitionCode, gameweek } = req.params;
 
+      const cacheResults = await redisClient.get(req.url);
+      if (cacheResults) {
+        return res.send(JSON.parse(cacheResults));
+      }
       let returnData = null;
 
       if (gameweek) {
@@ -32,7 +36,32 @@ export default function predictRoutes(router) {
         returnData = data;
       }
 
-      return res.send(returnData);
+      const table = returnData
+        .sort((a, b) => {
+          if (a.points === b.points) {
+            if (a.correctScore === b.correctScore) {
+              return b.correctScore - a.correctScore;
+            }
+            if (a.totalCorrectResult === b.totalCorrectResult) {
+              return b.toLowerCase() - a.toLowerCase();
+            }
+            return b.totalCorrectResult - a.totalCorrectResult;
+          }
+          return b.points - a.points;
+        })
+        .map((row, i) => {
+          return { position: i + 1, ...row };
+        });
+
+      res.setHeader("Cache-Control", "max-age=1, stale-while-revalidate");
+      if (table.length) {
+        await redisClient.set(req.url, JSON.stringify(table), {
+          EX: 300,
+          NX: true,
+        });
+      }
+
+      return res.send(table);
     }
   );
 

@@ -16,24 +16,7 @@ const table = shallowRef([]);
 
 async function loadPredictions() {
   const { data } = await fetchPredictionTable(unref(props.competitionCode), unref(props.gameweek));
-  console.log(data)
-  table.value = data
-    .sort((a, b) => {
-      if (a.points === b.points) {
-        if (a.correctScore === b.correctScore) {
-          return b.correctScore - a.correctScore;
-        }
-        if (a.totalCorrectResult === b.totalCorrectResult) {
-          return b.toLowerCase() - a.toLowerCase();
-        }
-        return b.totalCorrectResult - a.totalCorrectResult;
-      }
-      return b.points - a.points;
-    })
-    .map((row, i) => {
-      return { position: i + 1, ...row };
-    });
-
+  table.value = data;
   predictionsLoaded.value = true;
 }
 
