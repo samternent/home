@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.2.17
+
+### Patch Changes
+
+- [`c738256`](https://github.com/samternent/home/commit/c738256aaddf369fa0845772ea24668e4719bfae) Thanks [@samternent](https://github.com/samternent)! - Addings changesets wrong - try agaon on the right app
+
 ## 0.2.16
 
 ### Patch Changes
