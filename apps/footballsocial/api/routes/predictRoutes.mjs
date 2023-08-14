@@ -8,6 +8,19 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
+function sortTable(a, b) {
+  if (a.points === b.points) {
+    if (a.correctScore === b.correctScore) {
+      return b.correctScore - a.correctScore;
+    }
+    if (a.totalCorrectResult === b.totalCorrectResult) {
+      return b.toLowerCase() - a.toLowerCase();
+    }
+    return b.totalCorrectResult - a.totalCorrectResult;
+  }
+  return b.points - a.points;
+}
+
 export default function predictRoutes(router) {
   router.get(
     "/predict/:competitionCode/table/:gameweek?",
@@ -37,18 +50,7 @@ export default function predictRoutes(router) {
       }
 
       const table = returnData
-        .sort((a, b) => {
-          if (a.points === b.points) {
-            if (a.correctScore === b.correctScore) {
-              return b.correctScore - a.correctScore;
-            }
-            if (a.totalCorrectResult === b.totalCorrectResult) {
-              return b.toLowerCase() - a.toLowerCase();
-            }
-            return b.totalCorrectResult - a.totalCorrectResult;
-          }
-          return b.points - a.points;
-        })
+        .sort(sortTable)
         .map((row, i) => {
           return { position: i + 1, ...row };
         });
@@ -62,6 +64,82 @@ export default function predictRoutes(router) {
       }
 
       return res.send(table);
+    }
+  );
+
+  router.get(
+    "/predict/:competitionCode/roundup/:gameweek",
+    async function (req, res) {
+      const { competitionCode, gameweek } = req.params;
+
+      const { data: predictionData } = await supabaseClient
+        .from("predictions")
+        .select()
+        .eq("competitionCode", competitionCode)
+        .eq("gameweek", gameweek);
+
+      const {
+        data: { matches },
+      } = await footballDataProxy(
+        {
+          ...req,
+          url: `/football-data/competitions/${competitionCode}/matches?matchday=${gameweek}`,
+        },
+        res
+      );
+
+      // league table
+      const { data: results } = await supabaseClient
+        .from("gameweek_results")
+        .select()
+        .eq("gameweek", gameweek)
+        .eq("competitionCode", competitionCode);
+
+      const formattedData = {
+        predictionResults: matches.map((match) => {
+          return {
+            fixture: `${match.homeTeam.shortName} ${match.score.fullTime.home} -  ${match.score.fullTime.away} ${match.awayTeam.shortName}`,
+            homeScore: match.score.fullTime.home,
+            awayScore: match.score.fullTime.away,
+            predictions: predictionData
+              .filter((prediction) => {
+                return prediction.fixtureId === match.id;
+              })
+              .map((prediction) => {
+                return {
+                  username: prediction.username,
+                  homeScore: prediction.homeScore,
+                  awayScore: prediction.awayScore,
+                };
+              }),
+          };
+        }),
+        table: results.sort(sortTable).map((result, i) => {
+          return {
+            points: result.points,
+            correctScore: result.correctScore,
+            totalCorrectResult: result.correctResult,
+            totalAwayGoals: result.totalAwayGoals,
+            totalHomeGoals: result.totalHomeGoal,
+            username: result.username,
+            position: i,
+          };
+        }),
+      };
+
+      return res.send(formattedData);
+
+      // const response = await openai.createEmbedding({
+      //   model: "text-embedding-ada-002",
+      //   input: "The food was delicious and the waiter...",
+      // });
+
+      // const completion = await openai.createCompletion({
+      //   model: "text-davinci-003",
+      //   prompt: `Given this prediction data and league table in JSON: ${JSON.stringify(formattedData)}. Can you summarise this weeks league in the style of Gary Neville?`,
+      // });
+
+      // return res.send(completion.data);
     }
   );
 
@@ -189,27 +267,6 @@ export default function predictRoutes(router) {
         .eq("gameweek", gameweek);
 
       return res.send({ predictions: predictionData });
-    }
-  );
-
-  router.get(
-    "/predict/:competitionCode/roundup/:gameweek",
-    async function (req, res) {
-      const { competitionCode, gameweek } = req.params;
-
-      const { data: predictionData } = await supabaseClient
-        .from("predictions")
-        .select()
-        .eq("username", username)
-        .eq("competitionCode", competitionCode)
-        .eq("gameweek", gameweek);
-
-      const { data } = await openai.createChatCompletion({
-        model: "gpt-3.5-turbo",
-        messages: [{ role: "user", content: "Hello world" }],
-      });
-
-      return res.send(data);
     }
   );
 }
