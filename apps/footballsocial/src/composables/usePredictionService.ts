@@ -36,8 +36,22 @@ export const getPredictions = async (
   return api.get(`/predict/${username}/${competitionCode}/${gameweek}`);
 };
 
+export const fetchPredictionTable = async (
+  competitionCode: string,
+  gameweek: Number,
+) => {
+  if (gameweek) {
+    return api.get(`/predict/${competitionCode}/table/${gameweek}`);
+  }
+  return api.get(`/predict/${competitionCode}/table`);
+};
+
 export const calculatePredictionTable = async (
   competitionCode: string,
+  gameweek: Number,
 ) => {
-  return api.get(`/predict/calculate/${competitionCode}`);
+  if (gameweek) {
+    return api.post(`/predict/${competitionCode}/calculate/${gameweek}`);
+  }
+  return api.post(`/predict/${competitionCode}/calculate`);
 };

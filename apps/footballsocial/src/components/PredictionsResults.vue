@@ -1,6 +1,6 @@
 <script setup>
 import { shallowRef, unref } from "vue";
-import { calculatePredictionTable } from "../composables/usePredictionService";
+import { fetchPredictionTable } from "../composables/usePredictionService";
 import { useCurrentUser } from "../composables/useCurrentUser";
 import { watch } from "vue";
 
@@ -15,23 +15,23 @@ const predictionsLoaded = shallowRef(false);
 const table = shallowRef([]);
 
 async function loadPredictions() {
-  const { data } = await calculatePredictionTable(unref(props.competitionCode));
-
-  table.value = Object.entries(data)
-    .sort(([keyA, valA], [keyB, valB]) => {
-      if (valA.points === valB.points) {
-        if (valA.correctScore === valB.correctScore) {
-          return keyB.correctScore - keyA.correctScore;
+  const { data } = await fetchPredictionTable(unref(props.competitionCode), unref(props.gameweek));
+  console.log(data)
+  table.value = data
+    .sort((a, b) => {
+      if (a.points === b.points) {
+        if (a.correctScore === b.correctScore) {
+          return b.correctScore - a.correctScore;
         }
-        if (valA.totalCorrectResult === valB.totalCorrectResult) {
-          return keyB.toLowerCase() - keyA.toLowerCase();
+        if (a.totalCorrectResult === b.totalCorrectResult) {
+          return b.toLowerCase() - a.toLowerCase();
         }
-        return valB.totalCorrectResult - valA.totalCorrectResult;
+        return b.totalCorrectResult - a.totalCorrectResult;
       }
-      return valB.points - valA.points;
+      return b.points - a.points;
     })
-    .map(([key, val], i) => {
-      return { position: i + 1, username: key, ...val };
+    .map((row, i) => {
+      return { position: i + 1, ...row };
     });
 
   predictionsLoaded.value = true;

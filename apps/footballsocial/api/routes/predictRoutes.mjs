@@ -1,14 +1,45 @@
 import footballDataProxy from "../footballDataProxy.mjs";
 import { supabaseClient } from "../supabase.mjs";
 
-const competitions = {
-  PL: "Premier League",
-};
+import { Configuration, OpenAIApi } from "openai";
+
+const configuration = new Configuration({
+  apiKey: process.env.OPENAPI_KEY,
+});
+const openai = new OpenAIApi(configuration);
+
 export default function predictRoutes(router) {
   router.get(
-    "/predict/calculate/:competitionCode",
+    "/predict/:competitionCode/table/:gameweek?",
     async function (req, res) {
-      const { competitionCode } = req.params;
+      const { competitionCode, gameweek } = req.params;
+
+      let returnData = null;
+
+      if (gameweek) {
+        const { data } = await supabaseClient
+          .from("gameweek_results")
+          .select()
+          .eq("competitionCode", competitionCode)
+          .eq("gameweek", gameweek);
+
+        returnData = data;
+      } else {
+        const { data } = await supabaseClient
+          .from("gameweek_results")
+          .select()
+          .eq("competitionCode", competitionCode);
+        returnData = data;
+      }
+
+      return res.send(returnData);
+    }
+  );
+
+  router.post(
+    "/predict/:competitionCode/calculate/:gameweek",
+    async function (req, res) {
+      const { competitionCode, gameweek } = req.params;
 
       const { data } = await footballDataProxy(
         {
@@ -23,7 +54,8 @@ export default function predictRoutes(router) {
       const { data: predictionData } = await supabaseClient
         .from("predictions")
         .select()
-        .eq("competitionCode", competitionCode);
+        .eq("competitionCode", competitionCode)
+        .eq("gameweek", gameweek);
 
       const userScores = {};
 
@@ -31,9 +63,11 @@ export default function predictRoutes(router) {
       for (; i < predictionData.length; i++) {
         const prediction = predictionData[i];
 
-        const match = matches.find((_match) => _match.id === prediction.fixtureId);
+        const match = matches.find(
+          (_match) => _match.id === prediction.fixtureId
+        );
 
-        const scores = userScores[prediction.username] || {
+        const scores = {
           points: 0,
           totalHomeGoals: 0,
           totalAwayGoals: 0,
@@ -83,10 +117,33 @@ export default function predictRoutes(router) {
           }
         }
 
-        userScores[prediction.username] = { ...scores };
+        Object.entries(scores).forEach(([key, value]) => {
+          if (!userScores[prediction.username]) {
+            userScores[prediction.username] = { [key]: value };
+            return;
+          }
+          userScores[prediction.username][key] =
+            value + (userScores[prediction.username][key] || 0);
+        });
       }
 
-      return res.status(200).json(userScores);
+      const results = await supabaseClient
+        .from("gameweek_results")
+        .upsert(
+          Object.entries(userScores).map(([key, val]) => {
+            return {
+              id: `${key}_${gameweek}`,
+              username: key,
+              ...val,
+              competitionCode,
+              gameweek,
+            };
+          }),
+          { onConflict: "id" }
+        )
+        .select();
+
+      return res.status(200).json(results);
     }
   );
 
@@ -103,6 +160,27 @@ export default function predictRoutes(router) {
         .eq("gameweek", gameweek);
 
       return res.send({ predictions: predictionData });
+    }
+  );
+
+  router.get(
+    "/predict/:competitionCode/roundup/:gameweek",
+    async function (req, res) {
+      const { competitionCode, gameweek } = req.params;
+
+      const { data: predictionData } = await supabaseClient
+        .from("predictions")
+        .select()
+        .eq("username", username)
+        .eq("competitionCode", competitionCode)
+        .eq("gameweek", gameweek);
+
+      const { data } = await openai.createChatCompletion({
+        model: "gpt-3.5-turbo",
+        messages: [{ role: "user", content: "Hello world" }],
+      });
+
+      return res.send(data);
     }
   );
 }
