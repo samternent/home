@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.2.18
+
+### Patch Changes
+
+- [`2c44e00`](https://github.com/samternent/home/commit/2c44e00fdaf9d653656ec895b869621a96bcabe8) Thanks [@samternent](https://github.com/samternent)! - Adds latest roundup
+
 ## 0.2.17
 
 ### Patch Changes
