@@ -145,28 +145,28 @@ const resultPrediction = computed(() => {
       'text-base ': size === 'md',
     }"
   >
-    <div class="flex flex-col items-center justify-center p-2 my-2">
-      <span v-if="showDate || hasStarted" class="w-full font-light text-zinc-300">{{
+    <div class="flex flex-col items-center justify-center p-2">
+      <span v-if="showDate || hasStarted" class="w-full font-light text-sm md:text-base text-zinc-300 bg-zinc-800 py-1 md:py-2 px-6 rounded shadow">{{
         kickOff
       }}</span>
       <span
         v-if="fixture.status === 'IN_PLAY'"
-        class="absolute left-0 text-xs px-4 m-1 bg-green-600 rounded-full dark:text-white"
+        class="absolute left-2 text-xs px-4 bg-green-600 rounded-full dark:text-white"
         >In play</span
       >
       <span
         v-else-if="fixture.status === 'PAUSED'"
-        class="absolute left-0 text-xs px-4 m-1 bg-orange-900 rounded-full dark:text-white"
+        class="absolute left-2 text-xs px-4 bg-orange-900 rounded-full dark:text-white"
         >Half time</span
       >
       <span
         v-else-if="!!fixture.score?.winner"
-        class="absolute left-0 text-xs px-4 m-1 bg-zinc-600 rounded-full dark:text-white"
+        class="absolute left-2 text-xs px-4 bg-zinc-600 rounded-full dark:text-white"
         >Finished</span
       >
       <span
         v-else-if="fixture.status === 'POSTPONED'"
-        class="absolute left-0 text-xs px-4 m-1 bg-red-800 rounded-full dark:text-white"
+        class="absolute left-2 text-xs px-4 bg-red-800 rounded-full dark:text-white"
         >POSTPONED</span
       >
     </div>
@@ -174,35 +174,35 @@ const resultPrediction = computed(() => {
     <div class="flex text-xs">
       <div
         v-if="scorePrediction"
-        class="px-3 bg-green-500 bg-opacity-50 rounded mb-2 mx-1"
+        class="px-3 bg-green-500 bg-opacity-50 rounded mx-1"
       >
         MS +3
       </div>
       <div
         v-if="resultPrediction"
-        class="mx-1 px-3 bg-green-600 bg-opacity-50 rounded mb-2"
+        class="mx-1 px-3 bg-green-600 bg-opacity-50 rounded"
       >
         MR +2
       </div>
       <div
         v-if="homeScorePrediction"
-        class="mx-1 px-3 bg-green-700 bg-opacity-50 rounded mb-2"
+        class="mx-1 px-3 bg-green-700 bg-opacity-50 rounded"
       >
         HS +1
       </div>
       <div
         v-if="awayScorePrediction"
-        class="mx-1 px-3 bg-green-700 bg-opacity-50 rounded mb-2"
+        class="mx-1 px-3 bg-green-700 bg-opacity-50 rounded"
       >
         AS +1
       </div>
     </div>
 
     <div
-      class="flex flex-1 w-full px-2 justify-between items-center truncate text-sm sm:text-base dark:bg-[#1e1e1e] hover:dark:bg-[#232323] p-2"
+      class="flex flex-1 w-full px-2 justify-between items-center truncate text-sm sm:text-base p-2"
     >
       <div
-        class="flex-1 flex items-end truncate my-1 lg:text-xl md:font-light pr-2"
+        class="flex-1 flex items-center truncate my-1 lg:text-xl md:font-light pr-2"
         :class="{ 'justify-between': !hideCrests, 'justify-end': hideCrests }"
       >
         <img
@@ -270,7 +270,7 @@ const resultPrediction = computed(() => {
         </div>
       </div>
       <div
-        class="flex-1 flex items-end truncate my-1 lg:text-xl md:font-light pl-2"
+        class="flex-1 flex items-center truncate my-1 lg:text-xl md:font-light pl-2"
         :class="{ 'justify-between': !hideCrests, 'justify-start': hideCrests }"
       >
         <span class="hidden md:inline truncate">{{

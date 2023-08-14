@@ -37,7 +37,7 @@ const showTimer = computed(() => {
 </script>
 <template>
   <div
-    class="uppercase text-center font-light bg-indigo-700 rounded-t text-white py-2 px-2 mx-4"
+    class="uppercase text-center font-light bg-indigo-700 rounded-t text-white py-2 px-2"
   >
     gameweek {{ gameweek }} {{ showTimer ? `starts ${countdown || '...'} ` : 'has started' }}.
   </div>

@@ -135,12 +135,12 @@ const hidePredictions = computed(() => {
     />
     <div class="text-center my-0 flex flex-col">
       <span
-        class="text-xl p-2 font-thin mx-4 bg-indigo-500 rounded-b bg-opacity-30"
+        class="text-xl font-thin bg-indigo-500 bg-opacity-30"
         v-if="hasPredictions"
         >{{ username ? `${username}s` : "Your" }} predictions are in!</span
       >
       <span
-        class="text-lg p-2 font-thin text-indigo-300 mx-4 bg-indigo-500 rounded-b  bg-opacity-30"
+        class="text-lg font-thin text-indigo-300 bg-indigo-500 rounded-b  bg-opacity-30"
         v-else
         >predictions not yet made.</span
       >
@@ -149,7 +149,7 @@ const hidePredictions = computed(() => {
     <div
       v-for="(fixture, i) in predictionsList"
       :key="fixture.id"
-      class="mx-auto w-full flex-1"
+      class="mx-auto w-full flex-1 mb-2 bg-zinc-900  overflow-hidden"
     >
       <Predictor
         :fixture="fixture"

@@ -52,11 +52,11 @@ onClickOutside(modalRef, (event) => (hasDismissedPopup.value = true));
   <div class="dark:text-white absolute inset-0 flex flex-col">
     <div
       v-if="isLoggedOutUser && !hasDismissedPopup"
-      class="fixed z-[99999] bg-opacity-50 bg-zinc-800 top-0 left-0 bottom-0 right-0 flex justify-center items-center"
+      class="fixed z-[99999] bg-opacity-50 top-0 left-0 bottom-0 right-0 flex justify-center items-center"
     >
       <div
         ref="modalRef"
-        class="bg-zinc-800 p-4 rounded shadow border border-zinc-700 w-96"
+        class="p-4 rounded shadow border border-zinc-700 w-96"
       >
         <p class="text-2xl my-4 mb-8 font-thin text-center">
           Welcome to FootballSocial.

@@ -33,6 +33,14 @@ export const leagueRoutes = [
             },
           },
           {
+            path: "roundup",
+            props: true,
+            component: () => import("./RouteLeaguePredictionsRoundup.vue"),
+            beforeEnter(to: RouteLocation) {
+              window.localStorage.setItem("lastLeaguePath", "roundup");
+            },
+          },
+          {
             path: "fixtures",
             component: () => import("./RouteLeagueFixtures.vue"),
             beforeEnter(to: RouteLocation) {
