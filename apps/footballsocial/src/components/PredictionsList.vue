@@ -39,9 +39,7 @@ const gameweek = computed(
   () => overrideGameweek.value || currentGameweek.value
 );
 
-const {
-  items: fixtures,
-} = useFixturesLoader(competitionCode, stage, gameweek);
+const { items: fixtures } = useFixturesLoader(competitionCode, stage, gameweek);
 
 const predictions = shallowRef({});
 const serverPredictions = shallowRef(null);
@@ -121,18 +119,65 @@ const hasPredictions = computed(() => {
 });
 
 const hidePredictions = computed(() => {
-  return !!(
-    props.username &&
-    profile.value?.username !== props.username
-  );
+  return !!(props.username && profile.value?.username !== props.username);
 });
+
+function setGameweek(_gameweek) {
+  overrideGameweek.value = _gameweek;
+}
 </script>
 <template>
   <div class="w-full flex flex-col mx-auto" v-if="predictionsLoaded">
-    <CountdownTimer
-      :gameweek="gameweek"
-      :kickOff="predictionsList[0]?.utcDate"
-    />
+    <div
+      class="uppercase text-center font-light flex justify-between bg-indigo-700 rounded-t text-white py-2 px-2"
+    >
+      <button
+        @click="setGameweek(gameweek - 1)"
+        :disabled="gameweek <= 1"
+        :class="{
+          'opacity-20': gameweek <= 1,
+        }"
+        :aria-label="`Gameweek ${gameweek - 1}`"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="w-6 h-6"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M15.75 19.5L8.25 12l7.5-7.5"
+          />
+        </svg>
+      </button>
+      <CountdownTimer
+        :gameweek="gameweek"
+        :kickOff="predictionsList[0]?.utcDate"
+      />
+      <button
+        @click="setGameweek(gameweek + 1)"
+        :aria-label="`Gameweek ${gameweek + 1}`"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="w-6 h-6"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M8.25 4.5l7.5 7.5-7.5 7.5"
+          />
+        </svg>
+      </button>
+    </div>
     <div class="text-center my-0 flex flex-col">
       <span
         class="text-xl font-thin bg-indigo-500 bg-opacity-30"
@@ -140,35 +185,33 @@ const hidePredictions = computed(() => {
         >{{ username ? `${username}s` : "Your" }} predictions are in!</span
       >
       <span
-        class="text-lg font-thin text-indigo-300 bg-indigo-500 rounded-b  bg-opacity-30"
+        class="text-lg font-thin text-indigo-300 bg-indigo-500 rounded-b bg-opacity-30"
         v-else
         >predictions not yet made.</span
       >
     </div>
 
-    <div
-      v-for="(fixture, i) in predictionsList"
-      :key="fixture.id"
-      class="mx-auto w-full flex-1 mb-2 bg-zinc-900  overflow-hidden"
-    >
-      <Predictor
-        :fixture="fixture"
-        :size="size"
-        :disabled="
-          new Date(fixture.utcDate).getTime() < new Date().getTime() ||
-          ['IN_PLAY', 'FINISHED'].includes(fixture.status) ||
-          !profile?.username ||
-          (username && profile?.username !== username) ||
-          false
-        "
-        :hidePredictions="hidePredictions && new Date(fixture.utcDate).getTime() > new Date().getTime()"
-        :showDate="fixture.utcDate !== fixtures[i - 1]?.utcDate"
-        :prediction="fixture.prediction"
-        @update:prediction="
-          (prediction) => updatePrediction(prediction, fixture)
-        "
-        @click="(fixture) => $emit('selected', fixture)"
-      />
+    <div v-for="(fixture, i) in predictionsList" :key="fixture.id">
+      <div
+        v-if="fixture?.status !== 'POSTPONED'"
+        class="mx-auto w-full flex-1 mb-2 bg-zinc-900 overflow-hidden"
+      >
+        <Predictor
+          :fixture="fixture"
+          :size="size"
+
+          :hidePredictions="
+            hidePredictions &&
+            new Date(fixture.utcDate).getTime() > new Date().getTime()
+          "
+          :showDate="fixture.utcDate !== fixtures[i - 1]?.utcDate"
+          :prediction="fixture.prediction"
+          @update:prediction="
+            (prediction) => updatePrediction(prediction, fixture)
+          "
+          @click="(fixture) => $emit('selected', fixture)"
+        />
+      </div>
     </div>
     <div class="text-center mt-8 flex flex-col items-end">
       <button

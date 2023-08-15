@@ -9,18 +9,22 @@ const props = defineProps({
   },
   gameweek: {
     type: String,
-    default: '',
+    default: "",
   },
 });
 
 const countdown = shallowRef(null);
 setInterval(() => {
-  const inHours = DateTime.fromISO(props.kickOff).toFormat('hh');
+  const inHours = DateTime.fromISO(props.kickOff).toFormat("hh");
 
   if (inHours > 12) {
-    countdown.value = DateTime.fromISO(props.kickOff).toRelative(DateTime.now());
+    countdown.value = DateTime.fromISO(props.kickOff).toRelative(
+      DateTime.now()
+    );
   } else {
-    countdown.value = DateTime.fromISO(props.kickOff).toRelativeCalendar(DateTime.now());
+    countdown.value = DateTime.fromISO(props.kickOff).toRelativeCalendar(
+      DateTime.now()
+    );
   }
 }, 1 * 1000);
 
@@ -33,12 +37,9 @@ const showTimer = computed(() => {
     return false;
   }
   return timeDiff > 1;
-})
+});
 </script>
 <template>
-  <div
-    class="uppercase text-center font-light bg-indigo-700 rounded-t text-white py-2 px-2"
-  >
-    gameweek {{ gameweek }} {{ showTimer ? `starts ${countdown || '...'} ` : 'has started' }}.
-  </div>
+  gameweek {{ gameweek }}
+  {{ showTimer ? `starts ${countdown || "..."} ` : "has started" }}.
 </template>

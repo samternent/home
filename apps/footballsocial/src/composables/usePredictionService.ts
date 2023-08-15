@@ -13,7 +13,7 @@ export const addPrediction = async (
         .from("predictions")
         .upsert(
           {
-            id: `${username}_${fixtureId}`,
+            id: `${username}_${fixtureId}_${gameweek}`,
             username,
             fixtureId,
             homeScore: predictions[fixtureId].homeScore,
@@ -21,7 +21,7 @@ export const addPrediction = async (
             competitionCode,
             gameweek,
           },
-          { onConflict: "id" }
+          { onConflict: "id", ignoreDuplicates: true }
         )
         .select();
     })

@@ -48,7 +48,7 @@ export const leagueRoutes = [
             },
           },
           {
-            path: "predictions/:username?",
+            path: "predictions/:username?/:gameweek?",
             component: () => import("./RouteLeaguePredictionsHome.vue"),
             beforeEnter(to: RouteLocation) {
               window.localStorage.setItem("lastLeaguePath", "predictions");

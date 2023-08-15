@@ -13,6 +13,10 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  gameweek: {
+    type: Number,
+    default: null,
+  },
 });
 
 const { profile } = useCurrentUser();
@@ -48,11 +52,12 @@ const isCup = computed(() => competition.value.type === "CUP");
         Back
       </RouterLink>
     </div>
+    {{ gameweek }}
     <PredictionsList
       v-if="competition && !isCup"
       :username="username"
       :competitionCode="competition?.code"
-      :currentGameweek="competition?.currentSeason?.currentMatchday"
+      :currentGameweek="gameweek || competition?.currentSeason?.currentMatchday"
       @selected="
         (fixture) =>
           $router.push(
