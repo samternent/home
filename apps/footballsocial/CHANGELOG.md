@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.2.23
+
+### Patch Changes
+
+- [`8d190c8`](https://github.com/samternent/home/commit/8d190c8296fc9299089b75e32d89b63418cfe59b) Thanks [@samternent](https://github.com/samternent)! - Remove notification bell
+
 ## 0.2.22
 
 ### Patch Changes
