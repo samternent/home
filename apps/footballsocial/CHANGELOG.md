@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.2.20
+
+### Patch Changes
+
+- [`49bd67f`](https://github.com/samternent/home/commit/49bd67f31d2100dd020664caf7e7c693333e3c00) Thanks [@samternent](https://github.com/samternent)! - Adds points header
+
 ## 0.2.19
 
 ### Patch Changes
