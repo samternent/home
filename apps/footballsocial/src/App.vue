@@ -1,5 +1,5 @@
 <script setup>
-import { computed, shallowRef } from "vue";
+import { computed, shallowRef, watch } from "vue";
 import api from "./utils/api";
 import { useToast } from "vue-toastification";
 import GithubSvg from "./assets/github-mark-white.svg";
@@ -8,6 +8,7 @@ import SetUsername from "./components/SetUsername.vue";
 import Notifications from "./components/Notifications.vue";
 import { version } from "../package.json";
 import { useLocalStorage, onClickOutside } from "@vueuse/core";
+import { useRouter } from "vue-router";
 
 const toast = useToast();
 
@@ -16,6 +17,13 @@ const hasDismissedPopup = useLocalStorage("app/hasDismissedPopup", false);
 const isLoggedOutUser = computed(() => !profile.value && ready.value);
 
 const modalRef = shallowRef(null);
+
+const router = useRouter();
+router.beforeEach((to, from) => {
+  if (to.meta.auth && ready.value && !user.value) {
+    router.push('/auth/signup');
+  }
+})
 
 api.interceptors.response.use(
   (response) => {
@@ -50,41 +58,6 @@ onClickOutside(modalRef, (event) => (hasDismissedPopup.value = true));
 
 <template>
   <div class="dark:text-white absolute inset-0 flex flex-col">
-    <div
-      v-if="isLoggedOutUser && !hasDismissedPopup"
-      class="fixed z-[99999] bg-opacity-50 top-0 left-0 bottom-0 right-0 flex justify-center items-center"
-    >
-      <div
-        ref="modalRef"
-        class="p-4 rounded shadow border border-zinc-700 w-96"
-      >
-        <p class="text-2xl my-4 mb-8 font-thin text-center">
-          Welcome to FootballSocial.
-        </p>
-        <p class="text-lg my-4 mb-8 font-light text-center">
-          login in or join today to enter your predictions
-        </p>
-        <div class="flex justify-center my-4">
-          <RouterLink
-            aria-label="Login"
-            to="/auth/login"
-            @click="hasDismissedPopup = true"
-            class="flex items-center mx-2 px-4 text-md font-medium uppercase border-white border"
-          >
-            Login
-          </RouterLink>
-          <span class="">or</span>
-          <RouterLink
-            aria-label="Signup"
-            to="/auth/signup"
-            @click="hasDismissedPopup = true"
-            class="flex items-center mx-2 px-4 text-md font-medium uppercase text-gray-900 bg-yellow-500"
-          >
-            Join
-          </RouterLink>
-        </div>
-      </div>
-    </div>
     <div class="bg-indigo-50 sticky dark:bg-[#1c1c1c] top-0 z-30 shadow w-full">
       <div
         class="max-w-7xl flex justify-between mx-auto items-center w-full h-12"

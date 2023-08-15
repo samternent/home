@@ -5,6 +5,9 @@ export const leagueRoutes = [
     path: "/leagues/:competitionCode",
     props: true,
     component: () => import("./RouteLeague.vue"),
+    meta: {
+      auth: true,
+    },
     children: [
       {
         path: "",
