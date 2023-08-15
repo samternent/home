@@ -199,7 +199,13 @@ function setGameweek(_gameweek) {
         <Predictor
           :fixture="fixture"
           :size="size"
-
+          :disabled="
+            new Date(fixture.utcDate).getTime() < new Date().getTime() ||
+            ['IN_PLAY', 'FINISHED'].includes(fixture.status) ||
+            !profile?.username ||
+            (username && profile?.username !== username) ||
+            false
+          "
           :hidePredictions="
             hidePredictions &&
             new Date(fixture.utcDate).getTime() > new Date().getTime()
