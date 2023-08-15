@@ -146,7 +146,7 @@ const resultPrediction = computed(() => {
     }"
   >
     <div class="flex flex-col items-center justify-center p-2">
-      <span v-if="showDate || hasStarted" class="w-full font-light text-sm md:text-base text-zinc-300 bg-zinc-800 py-1 md:py-2 px-6 rounded shadow">{{
+      <span class="w-full font-light text-sm md:text-base text-zinc-300 bg-zinc-800 py-1 md:py-2 px-6 rounded shadow">{{
         kickOff
       }}</span>
       <span
