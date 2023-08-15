@@ -171,7 +171,7 @@ const resultPrediction = computed(() => {
       >
     </div>
 
-    <div class="flex text-xs">
+    <div class="flex text-xs" v-if="hasStarted">
       <div
         v-if="scorePrediction"
         class="px-3 bg-green-500 bg-opacity-50 rounded mx-1"
