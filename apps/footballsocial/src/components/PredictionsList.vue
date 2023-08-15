@@ -1,5 +1,6 @@
 <script setup>
 import { toRefs, computed, shallowRef, unref } from "vue";
+import { Interval, DateTime } from "luxon";
 import { watchThrottled } from "@vueuse/core";
 import useFixturesLoader from "../api/football-data/useCompetitionFixturesLoader";
 import {
@@ -125,6 +126,55 @@ const hidePredictions = computed(() => {
 function setGameweek(_gameweek) {
   overrideGameweek.value = _gameweek;
 }
+
+const gameweekPoints = computed(() => {
+  return predictionsList.value?.reduce((acc, fixture) => {
+    const timeDiff = Interval.fromDateTimes(
+      DateTime.now(),
+      DateTime.fromISO(fixture.utcDate)
+    ).length();
+
+    if ((!isNaN(timeDiff) || timeDiff < 1) || !fixture.prediction) {
+      return acc;
+    }
+
+    let points = 0;
+    if (fixture.prediction?.homeScore === fixture.score.fullTime.home) {
+      points += 1;
+    }
+
+    if (fixture.prediction?.awayScore === fixture?.score.fullTime.away) {
+      points += 1;
+    }
+
+    if (
+      fixture.prediction?.homeScore === fixture?.score.fullTime.home &&
+      fixture.prediction?.awayScore === fixture?.score.fullTime.away
+    ) {
+      points += 3;
+    }
+
+    if (
+      fixture.prediction?.homeScore > fixture.prediction?.awayScore &&
+      fixture?.score.winner === "HOME_TEAM"
+    ) {
+      points += 2;
+    }
+    if (
+      fixture.prediction?.awayScore > fixture.prediction?.homeScore &&
+      fixture?.score.winner === "AWAY_TEAM"
+    ) {
+      points += 2;
+    }
+    if (
+      fixture.prediction?.awayScore === fixture.prediction?.homeScore &&
+      fixture?.score.winner === "DRAW"
+    ) {
+      points += 2;
+    }
+    return points + acc;
+  }, 0);
+});
 </script>
 <template>
   <div class="w-full flex flex-col mx-auto" v-if="predictionsLoaded">
@@ -180,14 +230,19 @@ function setGameweek(_gameweek) {
     </div>
     <div class="text-center my-0 flex flex-col">
       <span
-        class="text-xl font-thin bg-indigo-500 bg-opacity-30"
-        v-if="hasPredictions"
+        class="text-xl font-thin bg-green-600 bg-opacity-30 py-1"
+        v-if="gameweekPoints"
+        >{{ gameweekPoints }} points</span
+      >
+      <span
+        class="text-xl font-thin bg-indigo-500 bg-opacity-30 py-1"
+        v-else-if="hasPredictions"
         >{{ username ? `${username}s` : "Your" }} predictions are in!</span
       >
       <span
-        class="text-lg font-thin text-indigo-300 bg-indigo-500 rounded-b bg-opacity-30"
+        class="text-lg font-thin py-1 text-indigo-300 bg-indigo-500 rounded-b bg-opacity-30"
         v-else
-        >predictions not yet made.</span
+        >{{ username ? `${username}s` : "Your" }} predictions are not yet made.</span
       >
     </div>
 
