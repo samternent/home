@@ -1,5 +1,13 @@
 # concords-footballsocial
 
+## 0.2.19
+
+### Patch Changes
+
+- [`2d4d9e2`](https://github.com/samternent/home/commit/2d4d9e2daef6fd5b5839087890ae9b427d4e389c) Thanks [@samternent](https://github.com/samternent)! - Adds ability to scroll predictions
+
+- [`ff7c385`](https://github.com/samternent/home/commit/ff7c385830c6d89b3de1841923dc513764bea4bd) Thanks [@samternent](https://github.com/samternent)! - Always show prediction date
+
 ## 0.2.18
 
 ### Patch Changes
