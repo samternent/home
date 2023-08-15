@@ -134,7 +134,7 @@ const gameweekPoints = computed(() => {
       DateTime.fromISO(fixture.utcDate)
     ).length();
 
-    if ((!isNaN(timeDiff) || timeDiff < 1) || !fixture.prediction) {
+    if (!isNaN(timeDiff) || timeDiff < 1 || !fixture.prediction) {
       return acc;
     }
 
@@ -179,7 +179,11 @@ const gameweekPoints = computed(() => {
 <template>
   <div class="w-full flex flex-col mx-auto" v-if="predictionsLoaded">
     <div
-      class="uppercase text-center font-light flex justify-between bg-indigo-700 rounded-t text-white py-2 px-2"
+      class="uppercase text-center font-light flex justify-between bg-indigo-900 rounded-t text-white py-2 px-2"
+      :class="{
+        'text-indigo-300 bg-indigo-500 rounded-b bg-opacity-30':
+          gameweek < currentGameweek,
+      }"
     >
       <button
         @click="setGameweek(gameweek - 1)"
@@ -206,6 +210,7 @@ const gameweekPoints = computed(() => {
       </button>
       <CountdownTimer
         :gameweek="gameweek"
+        :currentGameweek="currentGameweek"
         :kickOff="predictionsList[0]?.utcDate"
       />
       <button
@@ -230,9 +235,13 @@ const gameweekPoints = computed(() => {
     </div>
     <div class="text-center my-0 flex flex-col">
       <span
-        class="text-xl font-thin bg-green-600 bg-opacity-30 py-1"
+        class="text-xl font-thin bg-green-900 py-1"
+        :class="{
+          ' bg-green-900 bg-opacity-50': gameweek < currentGameweek,
+        }"
         v-if="gameweekPoints"
-        >{{ gameweekPoints }} points</span
+        >{{ username ? `${username} scored` : "You scored" }}
+        {{ gameweekPoints }} points</span
       >
       <span
         class="text-xl font-thin bg-indigo-500 bg-opacity-30 py-1"
@@ -242,7 +251,8 @@ const gameweekPoints = computed(() => {
       <span
         class="text-lg font-thin py-1 text-indigo-300 bg-indigo-500 rounded-b bg-opacity-30"
         v-else
-        >{{ username ? `${username}s` : "Your" }} predictions are not yet made.</span
+        >{{ username ? `${username}s` : "Your" }} predictions are not yet
+        made.</span
       >
     </div>
 
