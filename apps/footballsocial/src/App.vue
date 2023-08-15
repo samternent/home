@@ -130,7 +130,7 @@ onClickOutside(modalRef, (event) => (hasDismissedPopup.value = true));
 
           <div v-else-if="!profile"></div>
           <div v-else class="flex">
-            <Notifications />
+            <!-- <Notifications /> -->
             <RouterLink
               :to="`/auth/profile/${profile?.username}`"
               class="px-2 text-xs"
