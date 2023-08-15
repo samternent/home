@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.2.21
+
+### Patch Changes
+
+- [`2e44f08`](https://github.com/samternent/home/commit/2e44f086534d722aec94dc7ef776edffe94741d3) Thanks [@samternent](https://github.com/samternent)! - Only show points if game has started
+
 ## 0.2.20
 
 ### Patch Changes
