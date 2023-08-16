@@ -46,11 +46,13 @@ const predictions = shallowRef({});
 const serverPredictions = shallowRef(null);
 const predictionsLoaded = shallowRef(false);
 const lockedPredictions = shallowRef([]);
+const predictionsToUpdate = shallowRef({});
 
 async function loadPredictions() {
   lockedPredictions.value = [];
   predictions.value = {};
   serverPredictions.value = null;
+  predictionsToUpdate.value = {}
 
   const { data } = await getPredictions(
     props.username || profile.value?.username,
@@ -83,7 +85,7 @@ const { profile } = useCurrentUser();
 async function savePredictions() {
   await addPrediction(
     profile.value.username,
-    unref(predictions),
+    unref(predictionsToUpdate),
     unref(competitionCode),
     unref(gameweek)
   );
@@ -91,14 +93,17 @@ async function savePredictions() {
 }
 
 function updatePrediction(prediction, fixture) {
-  predictions.value = {
-    ...predictions.value,
+  predictionsToUpdate.value = {
+    ...predictionsToUpdate.value,
     [fixture.id]: prediction,
   };
 }
 
 const isDirty = computed(
-  () => serverPredictions.value !== JSON.stringify(predictions.value)
+  () => {
+    // console.log(predictionsToUpdate.value)
+    return Object.keys(predictionsToUpdate.value).length > 0;
+  }
 );
 
 watchThrottled([gameweek, competitionCode, username], loadPredictions, {

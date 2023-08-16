@@ -1,3 +1,4 @@
+import { DateTime, Interval } from 'luxon';
 import footballDataProxy, { redisClient } from "../footballDataProxy.mjs";
 import { supabaseClient } from "../supabase.mjs";
 
@@ -49,7 +50,25 @@ export default function predictRoutes(router) {
         returnData = data;
       }
 
-      const table = returnData
+      const combinedTableStructure = {};
+
+      returnData.forEach((item) => {
+        if (combinedTableStructure[item.username]) {
+          const vals = { ...combinedTableStructure[item.username] };
+          combinedTableStructure[item.username] = {
+            ...combinedTableStructure[item.username],
+            points: vals.points + item.points,
+            correctScore: vals.correctScore + item.correctScore,
+            totalCorrectResult:
+              vals.totalCorrectResult + item.totalCorrectResult,
+            totalAwayGoals: vals.totalAwayGoals + item.totalAwayGoals,
+            totalHomeGoals: vals.totalHomeGoals + item.totalHomeGoals,
+          };
+        } else {
+          combinedTableStructure[item.username] = item;
+        }
+      });
+      const table = Object.values(combinedTableStructure)
         .sort(sortTable)
         .map((row, i) => {
           return { position: i + 1, ...row };
@@ -174,6 +193,15 @@ export default function predictRoutes(router) {
           (_match) => _match.id === prediction.fixtureId
         );
 
+        const timeDiff = Interval.fromDateTimes(
+          DateTime.now(),
+          DateTime.fromISO(match.utcDate)
+        ).length();
+
+        if (!isNaN(timeDiff) || timeDiff < 1 || !prediction) {
+          continue;
+        }
+
         const scores = {
           points: 0,
           totalHomeGoals: 0,
@@ -264,7 +292,7 @@ export default function predictRoutes(router) {
         .select()
         .eq("username", username)
         .eq("competitionCode", competitionCode)
-        .eq("gameweek", gameweek);
+        .eq("gameweek", Number(gameweek));
 
       return res.send({ predictions: predictionData });
     }

@@ -7,25 +7,20 @@ export const addPrediction = async (
   competitionCode: string,
   gameweek: Number
 ) => {
-  await Promise.all(
-    Object.keys(predictions).map((fixtureId) => {
-      return supabaseClient
-        .from("predictions")
-        .upsert(
-          {
-            id: `${username}_${fixtureId}_${gameweek}`,
-            username,
-            fixtureId,
-            homeScore: predictions[fixtureId].homeScore,
-            awayScore: predictions[fixtureId].awayScore,
-            competitionCode,
-            gameweek,
-          },
-          { onConflict: "id", ignoreDuplicates: true }
-        )
-        .select();
-    })
-  );
+  return supabaseClient
+    .from("predictions")
+    .insert(
+      Object.keys(predictions).map((fixtureId) => ({
+        id: `${username}_${fixtureId}_${gameweek}`,
+        username,
+        fixtureId,
+        homeScore: predictions[fixtureId].homeScore,
+        awayScore: predictions[fixtureId].awayScore,
+        competitionCode,
+        gameweek,
+      })).filter(({ homeScore, awayScore }) => homeScore !== undefined && awayScore !== undefined)
+    )
+    .select();
 };
 
 export const getPredictions = async (
@@ -38,7 +33,7 @@ export const getPredictions = async (
 
 export const fetchPredictionTable = async (
   competitionCode: string,
-  gameweek: Number,
+  gameweek: Number
 ) => {
   if (gameweek) {
     return api.get(`/predict/${competitionCode}/table/${gameweek}`);
@@ -48,7 +43,7 @@ export const fetchPredictionTable = async (
 
 export const calculatePredictionTable = async (
   competitionCode: string,
-  gameweek: Number,
+  gameweek: Number
 ) => {
   if (gameweek) {
     return api.post(`/predict/${competitionCode}/calculate/${gameweek}`);
