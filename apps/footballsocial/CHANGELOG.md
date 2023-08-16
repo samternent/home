@@ -1,5 +1,15 @@
 # concords-footballsocial
 
+## 0.3.0
+
+### Minor Changes
+
+- [`faadb0e`](https://github.com/samternent/home/commit/faadb0e20c7a441b24df49f8a332cc9f1813a0f2) Thanks [@samternent](https://github.com/samternent)! - Style changes, adds more colour
+
+### Patch Changes
+
+- [`acc15b5`](https://github.com/samternent/home/commit/acc15b544ee0c76a5a1baad943dc6ee401ce365a) Thanks [@samternent](https://github.com/samternent)! - Update meta
+
 ## 0.2.25
 
 ### Patch Changes
