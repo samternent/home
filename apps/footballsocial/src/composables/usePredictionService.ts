@@ -9,16 +9,22 @@ export const addPrediction = async (
 ) => {
   return supabaseClient
     .from("predictions")
-    .insert(
-      Object.keys(predictions).map((fixtureId) => ({
-        id: `${username}_${fixtureId}_${gameweek}`,
-        username,
-        fixtureId,
-        homeScore: predictions[fixtureId].homeScore,
-        awayScore: predictions[fixtureId].awayScore,
-        competitionCode,
-        gameweek,
-      })).filter(({ homeScore, awayScore }) => homeScore !== undefined && awayScore !== undefined)
+    .upsert(
+      Object.keys(predictions)
+        .map((fixtureId) => ({
+          id: `${username}_${fixtureId}_${gameweek}`,
+          username,
+          fixtureId,
+          homeScore: predictions[fixtureId].homeScore,
+          awayScore: predictions[fixtureId].awayScore,
+          competitionCode,
+          gameweek,
+        }))
+        .filter(
+          ({ homeScore, awayScore }) =>
+            homeScore !== undefined && awayScore !== undefined
+        ),
+      { onConflict: "id" }
     )
     .select();
 };

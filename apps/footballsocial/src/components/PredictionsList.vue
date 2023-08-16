@@ -52,7 +52,7 @@ async function loadPredictions() {
   lockedPredictions.value = [];
   predictions.value = {};
   serverPredictions.value = null;
-  predictionsToUpdate.value = {}
+  predictionsToUpdate.value = {};
 
   const { data } = await getPredictions(
     props.username || profile.value?.username,
@@ -93,18 +93,22 @@ async function savePredictions() {
 }
 
 function updatePrediction(prediction, fixture) {
+  if (
+    prediction.homeScore === predictions.value[fixture.id].homeScore &&
+    prediction.awayScore === predictions.value[fixture.id].awayScore
+  ) {
+    // already the same as the server
+    return;
+  }
   predictionsToUpdate.value = {
     ...predictionsToUpdate.value,
     [fixture.id]: prediction,
   };
 }
 
-const isDirty = computed(
-  () => {
-    // console.log(predictionsToUpdate.value)
-    return Object.keys(predictionsToUpdate.value).length > 0;
-  }
-);
+const isDirty = computed(() => {
+  return Object.keys(predictionsToUpdate.value).length > 0;
+});
 
 watchThrottled([gameweek, competitionCode, username], loadPredictions, {
   throttle: 500,
@@ -253,9 +257,7 @@ const gameweekPoints = computed(() => {
         v-else-if="hasPredictions"
         >{{ username ? `${username}s` : "Your" }} predictions are in!</span
       >
-      <span
-        class="text-lg font-thin py-1 bg-indigo-500 bg-opacity-30"
-        v-else
+      <span class="text-lg font-thin py-1 bg-indigo-500 bg-opacity-30" v-else
         >{{ username ? `${username}s` : "Your" }} predictions are not in
         yet.</span
       >

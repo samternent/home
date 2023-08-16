@@ -72,7 +72,7 @@ const { profile } = useCurrentUser();
     </thead>
     <tbody class="font-light">
       <tr
-        class="border-b border-b-zinc-800 transition-all text-white"
+        class="border-b border-b-zinc-800 transition-all text-white hover:bg-zinc-900"
         v-for="row in table"
         :key="row.username"
         :class="{
