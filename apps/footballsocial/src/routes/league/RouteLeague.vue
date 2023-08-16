@@ -69,13 +69,13 @@ function gotoCompetition(e) {
       </div>
     </Teleport>
     <div class="flex w-full p-2 md:p-0 md:mt-4  text-white ">
-      <div class="mx-2 h-28 w-28 p-2 my-2 mt-4 inline-block rounded-lg bg-gradient-to-r from-blue-400 to-teal-500 shadow">
+      <div class="mx-2 w-24 h-24 sm:h-28 sm:w-28 p-2 my-2 mt-4 inline-block rounded-lg bg-gradient-to-r from-blue-400 to-teal-500 shadow">
         <img :src="competition?.emblem" />
       </div>
       <div
-        class="px-3 p-2 font-thin ml-6 dark:bg-zinc900 rounded-lg flex-1 mt-4 mb-2 flex flex-col justify-center"
+        class="px-3 p-2 font-thin dark:bg-zinc900 rounded-lg flex-1 mb-2 flex flex-col justify-center"
       >
-        <p class="shadow-texttext-5xl md:text-6xl font-extrabold leading-tighter tracking-tighter py-1">{{ competition?.name }}.</p>
+        <p class="text-3xl md:text-6xl font-extrabold leading-tighter tracking-tighter py-1">{{ competition?.name }}.</p>
         <p class="flex items-center">
           <img
             v-if="competition"
