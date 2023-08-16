@@ -244,12 +244,12 @@ const gameweekPoints = computed(() => {
         {{ gameweekPoints }} points</span
       >
       <span
-        class="text-xl font-thin bg-gradient-to-r from-blue-800 to-blue-900 py-1"
+        class="text-xl font-thin bg-indigo-900 bg-opacity-70 py-1"
         v-else-if="hasPredictions"
         >{{ username ? `${username}s` : "Your" }} predictions are in!</span
       >
       <span
-        class="text-lg font-thin py-1 bg-gradient-to-r from-violet-800 to-violet-900 rounded-b bg-opacity-30"
+        class="text-lg font-thin py-1 bg-indigo-500 bg-opacity-30"
         v-else
         >{{ username ? `${username}s` : "Your" }} predictions are not in
         yet.</span
