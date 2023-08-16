@@ -179,9 +179,9 @@ const gameweekPoints = computed(() => {
 <template>
   <div class="w-full flex flex-col mx-auto" v-if="predictionsLoaded">
     <div
-      class="uppercase text-center font-light flex justify-between bg-indigo-900 rounded-t text-white py-2 px-2"
+      class="uppercase text-center font-light flex justify-between bg-gradient-to-r from-indigo-800 to-indigo-900 rounded-t text-white py-2 px-2"
       :class="{
-        'text-indigo-300 bg-indigo-500 rounded-b bg-opacity-30':
+        'text-indigo-300 bg-gradient-to-r from-indigo-900 to-indigo-800 rounded-b bg-opacity-30':
           gameweek < currentGameweek,
       }"
     >
@@ -235,24 +235,24 @@ const gameweekPoints = computed(() => {
     </div>
     <div class="text-center my-0 flex flex-col">
       <span
-        class="text-xl font-thin bg-green-900 py-1"
+        class="text-xl font-thin bg-gradient-to-r from-green-900 to-green-700 py-1"
         :class="{
-          ' bg-green-900 bg-opacity-50': gameweek < currentGameweek,
+          ' bg-opacity-50': gameweek < currentGameweek,
         }"
         v-if="gameweekPoints"
         >{{ username ? `${username} scored` : "You scored" }}
         {{ gameweekPoints }} points</span
       >
       <span
-        class="text-xl font-thin bg-indigo-500 bg-opacity-30 py-1"
+        class="text-xl font-thin bg-gradient-to-r from-blue-800 to-blue-900 py-1"
         v-else-if="hasPredictions"
         >{{ username ? `${username}s` : "Your" }} predictions are in!</span
       >
       <span
-        class="text-lg font-thin py-1 text-indigo-300 bg-indigo-500 rounded-b bg-opacity-30"
+        class="text-lg font-thin py-1 bg-gradient-to-r from-violet-800 to-violet-900 rounded-b bg-opacity-30"
         v-else
-        >{{ username ? `${username}s` : "Your" }} predictions are not yet
-        made.</span
+        >{{ username ? `${username}s` : "Your" }} predictions are not in
+        yet.</span
       >
     </div>
 

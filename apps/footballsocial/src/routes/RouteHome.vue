@@ -36,23 +36,23 @@ watch(
 </script>
 <template>
   <div class="w-full max-w-6xl mx-auto h-full flex-1 flex md:flex-row flex-col p-4">
-    <div class="md:w-1/2">
+    <div class="md:w-1/2 py-6">
       <h1
-        class="text-4xl sm:text-5xl dark:text-white font-bold tracking-tighter shadow-text my-8"
+        class="text-5xl md:text-6xl font-extrabold leading-tighter tracking-tighter mb-4 aos-init aos-animate"
       >
-        Football Social
+        Football <span class="bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-pink-400">Social</span>
       </h1>
       <h2
-        class="text-2xl sm:text-3xl font-thin tracking-tighter shadow-text my-8"
+        class="text-2xl sm:text-3xl font-thin tracking-tighter my-8"
       >
         The friendly football score prediction game.
       </h2>
       <p
-        class="text-xl sm:text-2xl font-thin tracking-tighter shadow-text my-2"
+        class="text-xl sm:text-2xl font-thin tracking-tighter my-2"
       >
         Hi, I'm Sam and welcome to my weekly football prediction league.
       </p>
-      <p class="text-2xl font-thin tracking-tighter shadow-text my-4">
+      <p class="text-2xl font-thin tracking-tighter my-4">
         We currently have
         <span class="text-3xl font-medium text-pink-500">{{ players }}</span>
         active players for the
@@ -82,7 +82,7 @@ watch(
           Join
         </RouterLink>
       </div>
-      <p class="text-xl font-light tracking-tighter shadow-text my-4">
+      <p class="text-xl font-light tracking-tighter my-4">
         If you're here to look at the code, it's open-source on Github. <a
             href="https://github.com/samternent/home"
             class="block my-2 hover:text-indigo-300 transition-all"

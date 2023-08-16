@@ -46,7 +46,7 @@ const { profile } = useCurrentUser();
     <table
     class="w-full text-base md:text-base rounded overflow-hidden shadow"
   >
-    <thead class="h-10 font-light bg-indigo-900">
+    <thead class="h-10 font-light bg-gradient-to-r from-indigo-800 to-pink-900">
       <tr class="font-thin text-center text-white">
         <th class="w-16 font-medium">POS</th>
         <th class="text-left">

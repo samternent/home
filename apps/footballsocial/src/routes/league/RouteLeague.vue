@@ -68,21 +68,21 @@ function gotoCompetition(e) {
         </select>
       </div>
     </Teleport>
-    <div class="flex w-full px-2 md:p-0 md:mt-4">
-      <div class="bg-zinc50 mx-auto p-2 my-2 mt-4 inline-block rounded-lg bg-white">
-        <img class="h-16 w-16" :src="competition?.emblem" />
+    <div class="flex w-full p-2 md:p-0 md:mt-4  text-white bg-gradient-to-r from-blue-400 to-teal-500 rounded shadow">
+      <div class="mx-2 h-28 w-28 p-2 my-2 mt-4 inline-block rounded-lg">
+        <img :src="competition?.emblem" />
       </div>
       <div
         class="px-3 p-2 font-thin ml-6 dark:bg-zinc900 rounded-lg flex-1 mt-4 mb-2 flex flex-col justify-center"
       >
-        <p class="text-2xl py-1 font-light">{{ competition?.name }}</p>
+        <p class="shadow-texttext-5xl md:text-6xl font-extrabold leading-tighter tracking-tighter py-1">{{ competition?.name }}.</p>
         <p class="flex items-center">
           <img
             v-if="competition"
-            class="h-3 mr-2"
+            class="h-5 opacity-90 rounded mr-2 shadow-lg"
             :src="competition?.area?.flag"
           />
-          <span>{{ competition?.area?.name }}</span>
+          <span class="font-light tracking-tighter">{{ competition?.area?.name }}</span>
         </p>
       </div>
     </div>

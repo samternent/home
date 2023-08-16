@@ -4,7 +4,7 @@
 
 :root {
   --title-box-color: rgba(219, 39, 119, 1);
-  --title-shadow-color: rgba(27, 27, 27, 0.9);
+  --title-shadow-color: rgba(65, 65, 65, 0.9);
   --title-shadow-yellow-color: rgba(234, 179, 8, 1);
   color-scheme: dark;
 }

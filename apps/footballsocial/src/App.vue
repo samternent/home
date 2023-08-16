@@ -96,7 +96,7 @@ onClickOutside(modalRef, (event) => (hasDismissedPopup.value = true));
             aria-label="Signup"
             v-if="!user"
             to="/auth/signup"
-            class="flex items-center mx-2 px-4 py-2 text-md font-bold uppercase text-gray-900 bg-indigo-500"
+            class="flex items-center mx-2 px-4 py-2 text-md font-bold uppercase text-white bg-gradient-to-r from-indigo-500 to-indigo-600"
           >
             Join
           </RouterLink>
