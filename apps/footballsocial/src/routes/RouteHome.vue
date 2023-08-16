@@ -40,7 +40,7 @@ watch(
       <h1
         class="text-5xl md:text-6xl font-extrabold leading-tighter tracking-tighter mb-4 aos-init aos-animate"
       >
-        Football <span class="bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-pink-400">Social</span>
+        Football <span class="">Social.</span>
       </h1>
       <h2
         class="text-2xl sm:text-3xl font-thin tracking-tighter my-8"
