@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.2.25
+
+### Patch Changes
+
+- [`948df74`](https://github.com/samternent/home/commit/948df74ae7f6e6dfcecb9d2c4fee354f7287e197) Thanks [@samternent](https://github.com/samternent)! - Adds logged out landing page
+
 ## 0.2.24
 
 ### Patch Changes
