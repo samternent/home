@@ -1,5 +1,13 @@
 # concords-footballsocial
 
+## 0.3.4
+
+### Patch Changes
+
+- [`34b2c5a`](https://github.com/samternent/home/commit/34b2c5a272cecbe2a0a0de2bf09c6598da6d3774) Thanks [@samternent](https://github.com/samternent)! - Removes fixtureId left over from deebugging
+
+- [`f0da991`](https://github.com/samternent/home/commit/f0da991617094014109f70d5dec02db352240eb1) Thanks [@samternent](https://github.com/samternent)! - Always redirect to landing page
+
 ## 0.3.3
 
 ### Patch Changes
