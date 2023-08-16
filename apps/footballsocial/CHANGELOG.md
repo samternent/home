@@ -1,5 +1,13 @@
 # concords-footballsocial
 
+## 0.3.1
+
+### Patch Changes
+
+- [`eed9e82`](https://github.com/samternent/home/commit/eed9e82af31059fe54b377f35bd181687e1cb631) Thanks [@samternent](https://github.com/samternent)! - Fix mobile
+
+- [`9819724`](https://github.com/samternent/home/commit/9819724471727b59a61dff6885773021d0baa12c) Thanks [@samternent](https://github.com/samternent)! - Slightly less colour
+
 ## 0.3.0
 
 ### Minor Changes
