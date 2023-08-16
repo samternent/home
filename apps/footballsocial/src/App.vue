@@ -84,11 +84,11 @@ onClickOutside(modalRef, (event) => (hasDismissedPopup.value = true));
           class="flex items-center dark:text-white"
           :key="profile?.id || 'empty'"
         >
-          <RouterLink
+        <RouterLink
             aria-label="Login"
             v-if="!user"
             to="/auth/login"
-            class="h-8 flex items-center mx-2 px-4 text-md font-medium uppercase"
+            class="flex items-center mx-2 px-4 py-2 text-md font-light uppercase"
           >
             Login
           </RouterLink>
@@ -96,7 +96,7 @@ onClickOutside(modalRef, (event) => (hasDismissedPopup.value = true));
             aria-label="Signup"
             v-if="!user"
             to="/auth/signup"
-            class="h-8 flex items-center mx-2 px-4 text-md font-medium uppercase text-gray-900 bg-yellow-500"
+            class="flex items-center mx-2 px-4 py-2 text-md font-bold uppercase text-gray-900 bg-indigo-500"
           >
             Join
           </RouterLink>

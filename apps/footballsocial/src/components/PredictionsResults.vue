@@ -9,6 +9,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  private: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const predictionsLoaded = shallowRef(false);
@@ -83,9 +87,11 @@ const { profile } = useCurrentUser();
         <td class="text-left py-2 px-3">
           <RouterLink
             class="league-link"
+            v-if="!private"
             :to="`/leagues/${competitionCode}/predictions/${row.username}`"
             >{{ row.username }}</RouterLink
           >
+          <p v-else class="blur-md">{{  row.username  }}</p>
         </td>
         <td class="text-center p-1">{{ row.totalHomeGoals || 0 }}</td>
         <td class="text-center p-1">{{ row.totalAwayGoals || 0 }}</td>
@@ -97,18 +103,6 @@ const { profile } = useCurrentUser();
       </tr>
     </tbody>
   </table>
-  <div v-if="predictionsLoaded && table.length" class="p-4 mt-6 text-zinc-200">
-    <h3 class="text-xl font-light text-white">Rules</h3>
-    <ul class="text-sm font-light my-2">
-      <li>* 1 point for a correct home score</li>
-      <li>* 1 point for a correct away score</li>
-      <li>* 2 points for a correct result (W/L/D)</li>
-      <li>* 3 points for a correct score</li>
-    </ul>
-    <p class="text-lg font-light my-8 text-white">
-      Rules and point system are subject to change.
-    </p>
-  </div>
   </div>
 </template>
 <style scoped>
