@@ -47,13 +47,8 @@ watch(
       >
         The friendly football score prediction game.
       </h2>
-      <p
-        class="text-xl sm:text-2xl font-thin tracking-tighter my-2"
-      >
-        Hi, I'm Sam and welcome to my weekly football prediction league.
-      </p>
       <p class="text-2xl font-thin tracking-tighter my-4">
-        We currently have
+        FootballSocial currently has
         <span class="text-3xl font-medium text-pink-500">{{ players }}</span>
         active players for the
         <span class="text-2xl font-medium">Premier League</span>... Join in to
@@ -63,12 +58,12 @@ watch(
         }}</span
         >!
       </p>
-      <div class="flex text-4xl justify-senter items-end my-16">
+      <div class="flex text-2xl justify-senter items-end my-16">
         <RouterLink
           aria-label="Login"
           v-if="!user"
           to="/auth/login"
-          class="flex items-center mx-2 px-4 py-2 text-md border-2 border-indigo-600 font-light uppercase"
+          class="flex items-center mx-2 px-4 py-2 text-md border-2 border-indigo-600 font-bold uppercase"
         >
           Login
         </RouterLink>

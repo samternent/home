@@ -21,7 +21,7 @@ const modalRef = shallowRef(null);
 const router = useRouter();
 router.beforeEach((to, from) => {
   if (to.meta.auth && ready.value && !user.value) {
-    router.push('/auth/signup');
+    router.push('/');
   }
 })
 
