@@ -94,8 +94,8 @@ async function savePredictions() {
 
 function updatePrediction(prediction, fixture) {
   if (
-    prediction.homeScore === predictions.value[fixture.id].homeScore &&
-    prediction.awayScore === predictions.value[fixture.id].awayScore
+    prediction.homeScore === predictions.value[fixture.id]?.homeScore &&
+    prediction.awayScore === predictions.value[fixture.id]?.awayScore
   ) {
     // already the same as the server
     return;
