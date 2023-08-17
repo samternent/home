@@ -13,11 +13,10 @@
 - https://api.footballsocial.app
 
 <p float="left">
-  <img src="./apps/footballsocial/src/assets/screenshots/home.png" width="220" />
-  <img src="./apps/footballsocial/src/assets/screenshots/ai.png" width="220" />
-  <img src="./apps/footballsocial/src/assets/screenshots/predict.png" width="220" />
-  <img src="./apps/footballsocial/src/assets/screenshots/table.png" width="220" />
-  <img src="./apps/footballsocial/src/assets/screenshots/predictions.png" width="220" />
+  <img src="./apps/footballsocial/src/assets/screenshots/ai.png" width="200" />
+  <img src="./apps/footballsocial/src/assets/screenshots/predict.png" width="200" />
+  <img src="./apps/footballsocial/src/assets/screenshots/table.png" width="200" />
+  <img src="./apps/footballsocial/src/assets/screenshots/predictions.png" width="200" />
 </p>
 
 ### gzip.app
