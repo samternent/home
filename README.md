@@ -12,7 +12,9 @@
 - https://footballsocial.app
 - https://api.footballsocial.app
 
-![](./apps/footballsocial/src/assets/screenshots/home.png)
+home | ai | predict | table | predictions
+:-------------:|:-------------:|:-------------:|:-------------:|:-------------:
+![](./apps/footballsocial/src/assets/screenshots/home.png)| ![](./apps/footballsocial/src/assets/screenshots/ai.png) | ![](./apps/footballsocial/src/assets/screenshots/predict.png) | ![](./apps/footballsocial/src/assets/screenshots/table.png) | ![](./apps/footballsocial/src/assets/screenshots/predictions.png)
 ### gzip.app
 
 - https://gzip.app
