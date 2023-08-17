@@ -76,7 +76,7 @@ export default function predictRoutes(router) {
       res.setHeader("Cache-Control", "max-age=1, stale-while-revalidate");
       if (table.length) {
         await redisClient.set(req.url, JSON.stringify(table), {
-          EX: 300,
+          EX: 20,
           NX: true,
         });
       }
