@@ -1,5 +1,13 @@
 # concords-footballsocial
 
+## 0.3.6
+
+### Patch Changes
+
+- [`6447003`](https://github.com/samternent/home/commit/6447003611f4b09f356d0ac11866d096721ae592) Thanks [@samternent](https://github.com/samternent)! - Adds week selector for gameweek roundup
+
+- [`ddda1d0`](https://github.com/samternent/home/commit/ddda1d0153396049846ece271fbd936fbf4a8522) Thanks [@samternent](https://github.com/samternent)! - Adds gameweek 2 AI preview
+
 ## 0.3.5
 
 ### Patch Changes
