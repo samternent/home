@@ -57,6 +57,64 @@ const roundups = computed(() => ({
       ],
       signature: "— AI Neville.",
     },
+    2: {
+      title: "AI Keane's Gameweek 2 Preview",
+      items: [
+        {
+          id: 1,
+          name: "Rioghan",
+          link: "/leagues/PL/predictions/Rioghan",
+          description:
+            "Rioghan, sitting confidently atop the table with 36 points, continues to showcase his tactical prowess. 3 accurate scoreline predictions and a knack for away goals make him a force to be reckoned with.",
+          position: 1,
+        },
+        {
+          id: 2,
+          name: "JT",
+          link: "/leagues/PL/predictions/JT",
+          description:
+            "JT, closely trailing in second with 34 points, maintains his unyielding spirit. His 3 spot-on scores and astute judgment of away goals solidify his contender status.",
+          position: 2,
+        },
+        {
+          id: 3,
+          name: "BenTernent",
+          link: "/leagues/PL/predictions/BenTernent",
+          description:
+            "BenTernent secures third place, boasting 32 points. His 3 precise score predictions and insight into away goals make him a formidable player to watch.",
+          position: 3,
+        },
+        {
+          id: 4,
+          name: "KingGary",
+          link: "/leagues/PL/predictions/KingGary",
+          description:
+            "KingGary's tactical acumen earns him fourth place with 31 points. With 2 exact score predictions and a keen eye for away goals, he's a rising star in the prediction game.",
+          position: 4,
+        },
+        {
+          id: 5,
+          name: "sam",
+          link: "/leagues/PL/predictions/sam",
+          description:
+            "sam's strategic thinking places him fifth with 30 points. His 2 correct scoreline predictions and ability to read away and home goals make him a key contender.",
+          position: 5,
+        },
+        // Add more items for other users here
+      ],
+      messages: [
+        "Well, well, well, it's that time again – Premier League action at its finest! Gameweek 2 promises to bring us more drama, more magic, and undoubtedly more jaw-dropping predictions. Let's dive in!",
+        "The anticipation is palpable as Nottingham Forest takes on Sheffield United. Rioghan's uncanny foresight could set the tone for another astonishing prediction. Will he continue his streak of pinpoint accuracy?",
+        "Luton Town versus Burnley – a fixture that has fans on the edge of their seats. JT's shrewd prediction game will surely make this clash even more intriguing. Can Burnley defy expectations?",
+        "Fulham and Brentford are gearing up for a showdown that could redefine expectations. BenTernent's predictions may hold the key to deciphering this riveting contest. Will we witness an upset?",
+        "Liverpool squares off against AFC Bournemouth in a battle of the titans. KingGary's sharp instincts could shed light on the potential outcome. Can Bournemouth shock the world?",
+        // Add more messages for other fixtures here
+        "As the tension builds, remember – predictions are a blend of insight and intuition. Our prediction wizards have their crystal balls ready, and we can't wait to see how their foresight plays out on the pitch.",
+        "Buckle up, football enthusiasts! Gameweek 2 is set to deliver more surprises than a magician's hat. Stay tuned for the spectacle that awaits!",
+        "With great excitement and a touch of trepidation, we march forward into another thrilling Premier League gameweek. See you on the other side!",
+      ],
+      signature: "— AI Keane.",
+    },
   },
   ELC: {
     2: {
@@ -107,7 +165,7 @@ const gameweeks = computed(() =>
 
 const overrideGameweek = shallowRef();
 const gameweek = computed(
-  () => overrideGameweek.value || gameweeks.value.slice()
+  () => overrideGameweek.value || gameweeks.value.slice(-1)
 );
 
 const content = computed(() => {
@@ -116,16 +174,20 @@ const content = computed(() => {
   }
   return null;
 });
+
+function setGameweek(e) {
+  overrideGameweek.value = e.target.value;
+}
 </script>
 <template>
   <div>
+
     <div class="flex justify-end">
-      <select class="p-2">
+      <select class="p-2" @change="setGameweek" :value="gameweek">
         <option
           v-for="gameweek in gameweeks"
           :key="`gameweek_${competitionCode}_${gameweek}`"
           :value="gameweek"
-          @select="(val) => (overrideGameweek = val)"
         >
           Gameweek {{ gameweek }}
         </option>
