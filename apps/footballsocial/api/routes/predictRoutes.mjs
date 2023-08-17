@@ -27,10 +27,10 @@ export default function predictRoutes(router) {
     async function (req, res) {
       const { competitionCode, gameweek } = req.params;
 
-      const cacheResults = await redisClient.get(req.url);
-      if (cacheResults) {
-        return res.send(JSON.parse(cacheResults));
-      }
+      // const cacheResults = null; //await redisClient.get(req.url);
+      // if (cacheResults) {
+      //   return res.send(JSON.parse(cacheResults));
+      // }
       let returnData = null;
 
       if (gameweek) {
@@ -73,13 +73,13 @@ export default function predictRoutes(router) {
           return { position: i + 1, ...row };
         });
 
-      res.setHeader("Cache-Control", "max-age=1, stale-while-revalidate");
-      if (table.length) {
-        await redisClient.set(req.url, JSON.stringify(table), {
-          EX: 20,
-          NX: true,
-        });
-      }
+      // res.setHeader("Cache-Control", "max-age=1, stale-while-revalidate");
+      // if (table.length) {
+      //   await redisClient.set(req.url, JSON.stringify(table), {
+      //     EX: 20,
+      //     NX: true,
+      //   });
+      // }
 
       return res.send(table);
     }
