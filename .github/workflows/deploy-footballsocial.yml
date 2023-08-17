@@ -60,7 +60,7 @@ jobs:
 
       - name: Publish Release
         if: steps.changesets.outputs.hasChangesets == 'false'
-        run: node build/publish.mjs
+        run: node .build/publish.mjs
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
