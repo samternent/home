@@ -1,4 +1,3 @@
-import { DateTime, Interval } from 'luxon';
 import footballDataProxy, { redisClient } from "../footballDataProxy.mjs";
 import { supabaseClient } from "../supabase.mjs";
 
@@ -170,7 +169,7 @@ export default function predictRoutes(router) {
       const { data } = await footballDataProxy(
         {
           ...req,
-          url: `/football-data/competitions/${competitionCode}/matches`,
+          url: `/football-data/competitions/${competitionCode}/matches?matchday=${gameweek}`,
         },
         res
       );
@@ -188,17 +187,11 @@ export default function predictRoutes(router) {
       let i = 0;
       for (; i < predictionData.length; i++) {
         const prediction = predictionData[i];
+        const match = matches.find((_match) => {
+          return Number(_match.id) === Number(prediction.fixtureId);
+        });
 
-        const match = matches.find(
-          (_match) => _match.id === prediction.fixtureId
-        );
-
-        const timeDiff = Interval.fromDateTimes(
-          DateTime.now(),
-          DateTime.fromISO(match.utcDate)
-        ).length();
-
-        if (!isNaN(timeDiff) || timeDiff < 1 || !prediction) {
+        if (!match) {
           continue;
         }
 
