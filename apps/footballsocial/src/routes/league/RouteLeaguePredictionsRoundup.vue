@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from "vue";
+import { computed, shallowRef } from "vue";
 import { useCompetitionLoader } from "../../api/football-data/useCompetitionLoader";
 
 const props = defineProps({
@@ -101,36 +101,58 @@ const roundups = computed(() => ({
   },
 }));
 
+const gameweeks = computed(() =>
+  Object.keys(roundups.value[props.competitionCode])
+);
+
+const overrideGameweek = shallowRef();
+const gameweek = computed(
+  () => overrideGameweek.value || gameweeks.value.slice()
+);
+
 const content = computed(() => {
   if (roundups.value[props.competitionCode]) {
-    return roundups.value[props.competitionCode][
-      competition.value?.currentSeason?.currentMatchday
-    ];
+    return roundups.value[props.competitionCode][gameweek.value];
   }
   return null;
 });
 </script>
 <template>
-  <div class="flex flex-col w-full p-4" v-if="content">
-    <h2 class="text-4xl font-light mb-6">{{ content?.title }}</h2>
-    <ul class="space-y-4 font-base text-xl font-thin">
-      <li v-for="item in content?.items" :key="item.id">
-        <span class="font-semibold">
-          <RouterLink class="league-link font-medium" :to="item.link">{{
-            item.name
-          }}</RouterLink
-          >:
-        </span>
-        {{ item.description }}
-      </li>
-    </ul>
-    <p
-      v-for="(message, i) in content.messages"
-      :key="`message_${i}`"
-      class="font-light text-lg mt-8"
-    >
-      {{ message }}
-    </p>
-    <p class="mt-8 font-light">{{ content?.signature }}</p>
+  <div>
+    <div class="flex justify-end">
+      <select class="p-2">
+        <option
+          v-for="gameweek in gameweeks"
+          :key="`gameweek_${competitionCode}_${gameweek}`"
+          :value="gameweek"
+          @select="(val) => (overrideGameweek = val)"
+        >
+          Gameweek {{ gameweek }}
+        </option>
+      </select>
+    </div>
+    <div class="flex flex-col w-full p-4" v-if="content">
+      <h2 class="text-4xl font-light mb-6">{{ content?.title }}</h2>
+      <ul class="space-y-4 font-base text-xl font-thin">
+        <li v-for="item in content?.items" :key="item.id">
+          <span class="font-semibold">
+            <RouterLink class="league-link font-medium" :to="item.link">{{
+              item.name
+            }}</RouterLink
+            >:
+          </span>
+          {{ item.description }}
+        </li>
+      </ul>
+      <p
+        v-for="(message, i) in content.messages"
+        :key="`message_${i}`"
+        class="font-light text-lg mt-8"
+      >
+        {{ message }}
+      </p>
+      <p class="mt-8 font-light">{{ content?.signature }}</p>
+    </div>
+    <div class="flex flex-col w-full p-4" v-else>Gameweek not yet reviewed</div>
   </div>
 </template>
