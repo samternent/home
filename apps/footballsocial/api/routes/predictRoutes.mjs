@@ -260,7 +260,7 @@ export default function predictRoutes(router) {
         .upsert(
           Object.entries(userScores).map(([key, val]) => {
             return {
-              id: `${key}_${gameweek}`,
+              id: `${key}_${competitionCode}_${gameweek}`,
               username: key,
               ...val,
               competitionCode,
