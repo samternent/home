@@ -16,7 +16,7 @@ function sortTable(a, b) {
     if (a.totalCorrectResult !== b.totalCorrectResult) {
       return b.totalCorrectResult - a.totalCorrectResult;
     }
-    return b.username.toLowerCase() - a.usernametoLowerCase();
+    return b.username.toLowerCase() - a.username.toLowerCase();
   }
   return b.points - a.points;
 }
