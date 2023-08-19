@@ -10,13 +10,13 @@ const openai = new OpenAIApi(configuration);
 
 function sortTable(a, b) {
   if (a.points === b.points) {
-    if (a.correctScore === b.correctScore) {
+    if (a.correctScore !== b.correctScore) {
       return b.correctScore - a.correctScore;
     }
-    if (a.totalCorrectResult === b.totalCorrectResult) {
-      return b.toLowerCase() - a.toLowerCase();
+    if (a.totalCorrectResult !== b.totalCorrectResult) {
+      return b.totalCorrectResult - a.totalCorrectResult;
     }
-    return b.totalCorrectResult - a.totalCorrectResult;
+    return b.username.toLowerCase() - a.usernametoLowerCase();
   }
   return b.points - a.points;
 }
