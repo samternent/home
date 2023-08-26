@@ -37,6 +37,16 @@ export const getPredictions = async (
   return api.get(`/predict/${username}/${competitionCode}/${gameweek}`);
 };
 
+export const getPredictionsCount = async (
+  username: string,
+  competitionCode: string,
+  gameweek: Number
+) => {
+  return supabaseClient
+    .from("predictions")
+    .select("*", { count: "exact", head: true });
+};
+
 export const fetchPredictionTable = async (
   competitionCode: string,
   gameweek: Number

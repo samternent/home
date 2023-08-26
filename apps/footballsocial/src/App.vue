@@ -175,13 +175,13 @@ onClickOutside(modalRef, (event) => (hasDismissedPopup.value = true));
         >: hand-crafted and open-source.
       </span>
       <p class="text-sm font-thin py-1">
-        statistics from
+        Football data provided by the
         <a
           href="https://www.football-data.org/"
           target="_blank"
           class="league-link font-medium"
-          >football-data.org</a
-        >.
+          >Football-Data.org</a
+        > API.
       </p>
       <ul
         class="flex flex-wrap items-center mt-3 text-sm dark:text-gray-400"

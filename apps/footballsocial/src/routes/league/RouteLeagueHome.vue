@@ -31,7 +31,7 @@ const crestMap = {
 const crest = computed(
   () => crestMap[competitionCode.value] || competitionCode.value
 );
-const tabs = shallowRef(["predictions", "standings", "roundup"]);
+const tabs = shallowRef(["predictions", "standings"]);
 
 watch(
   competition,
@@ -49,24 +49,8 @@ function isActiveLink(t) {
 }
 </script>
 <template>
-  <!-- <div
-    v-if="competition?.type === 'LEAGUE'"
-    class="bg-indigo-800 bg-opacity-20 border border-indigo-900 p-4 my-4 md:mt-2 rounded items-center flex flex-col md:flex-row justify-between"
-  >
-    <div class="text-lg font-light">
-      <span class="text-xl font-medium text-pink-600 mr-2">NEW</span>Enter your
-      Gameweek
-      {{ competition?.currentSeason?.currentMatchday }} predictions.
-    </div>
-    <RouterLink
-      :to="`/leagues/${competitionCode}/predictions/play`"
-      class="mx-auto mt-4 md:m-0 px-4 py-2 uppercase bg-pink-600 hover:bg-pink-700 dark:text-white font-light"
-    >
-      Enter Now!
-    </RouterLink>
-  </div> -->
   <ul
-    class="flex max-w-[100vw] overflow-x-auto h-auto py-4 overflow-y-hidden my-4"
+    class="flex max-w-[100vw] overflow-x-auto h-auto py-4 overflow-y-hidden"
   >
     <li v-for="t in tabs" :key="`${t}`">
       <RouterLink
@@ -80,7 +64,14 @@ function isActiveLink(t) {
       </RouterLink>
     </li>
   </ul>
-  <div class="flex mb-16 w-full">
+  <!-- Banner -->
+  <!-- <div
+    class="bg-indigo-700 bg-opacity-10 w-full rounded-lg h-24 my-2 border-dashed border border-zinc-700 p-4"
+  >
+  <p class="text-xl font-thin">Introducing<strong> Mini-leagues</strong> </p>
+  <p class="text-xl font-thin">Choose your competition length, invite who you want... etc. etc. etc.</p>
+  </div> -->
+  <div class="flex mb-16 w-full mt-4">
     <RouterView />
   </div>
 </template>

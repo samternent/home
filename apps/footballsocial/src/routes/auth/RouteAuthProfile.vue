@@ -44,6 +44,7 @@ function calculateResults() {
         </button>
       </p>
 
+      <!-- fake admin -->
       <div v-if="username === 'sam'">
         <input v-model="competitionCode" />
         <input v-model="gameweek" />

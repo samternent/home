@@ -47,7 +47,10 @@ function gotoCompetition(e) {
 }
 </script>
 <template>
-  <div class="md:px-2 lg:px-4 flex-1 max-w-4xl mx-auto pt-0 w-full z-10" v-if="competition">
+  <div
+    class="md:px-2 lg:px-4 flex-1 max-w-4xl mx-auto pt-0 w-full z-10"
+    v-if="competition"
+  >
     <Teleport to="#HeaderControls">
       <div
         class="dark:text-white text-right text-sm border rounded border-zinc-700"
@@ -68,21 +71,32 @@ function gotoCompetition(e) {
         </select>
       </div>
     </Teleport>
-    <div class="flex w-full p-2 md:p-0 md:mt-4  text-white ">
-      <div class="mx-2 w-24 h-24 sm:h-28 sm:w-28 p-2 my-2 mt-4 inline-block rounded-lg bg-gradient-to-r from-blue-400 to-teal-500 shadow">
-        <img :src="competition?.emblem" />
-      </div>
+    <div class="flex w-full p-2 md:p-0 md:mt-4 text-white">
       <div
-        class="px-3 p-2 font-thin dark:bg-zinc900 rounded-lg flex-1 mb-2 flex flex-col justify-center"
+        class="px-3 p-2 font-thin dark:bg-zinc900 rounded-lg flex-1 flex flex-col justify-center"
       >
-        <p class="text-3xl md:text-6xl font-extrabold leading-tighter tracking-tighter py-1">{{ competition?.name }}.</p>
-        <p class="flex items-center">
+        <h1
+          class="bg-gradient-to-r from-white via-indigo-500 to-pink-500 bg-clip-text text-transparent tracking-tighter text-5xl font-black bg-300% animate-gradient"
+        >
+          Football Social<span class="text-pink-700">.</span>
+        </h1>
+        <div
+          class="text-2xl tracking-tightest font-light"
+        >
+          {{ competition?.name }}.
+        </div>
+        <p
+          class="text-xl md:text-2xl font-light leading-tighter tracking-tighter text-zinc-200"
+        ></p>
+        <p class="flex items-center py-4">
           <img
             v-if="competition"
             class="h-5 opacity-90 rounded mr-2 shadow-lg"
             :src="competition?.area?.flag"
           />
-          <span class="font-light tracking-tighter">{{ competition?.area?.name }}</span>
+          <span class="font-light tracking-tighter">{{
+            competition?.area?.name
+          }}</span>
         </p>
       </div>
     </div>

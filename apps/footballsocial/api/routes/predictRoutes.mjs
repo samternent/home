@@ -85,16 +85,24 @@ export default function predictRoutes(router) {
     }
   );
 
+  // NOT ACTIVE
   router.get(
-    "/predict/:competitionCode/roundup/:gameweek",
+    "/predict/:competitionCode/roundup/:gameweek?",
     async function (req, res) {
       const { competitionCode, gameweek } = req.params;
+      const { bypassCache } = req.query;
 
-      const { data: predictionData } = await supabaseClient
-        .from("predictions")
-        .select()
-        .eq("competitionCode", competitionCode)
-        .eq("gameweek", gameweek);
+      const cacheResults = await redisClient.get(req.url);
+      if (cacheResults && !Boolean(bypassCache)) {
+        console.log(`${req.url} served from cache.`);
+        return res.send(JSON.parse(cacheResults));
+      }
+
+      // const { data: predictionData } = await supabaseClient
+      //   .from("predictions")
+      //   .select()
+      //   .eq("competitionCode", competitionCode)
+      //   .eq("gameweek", gameweek);
 
       const {
         data: { matches },
@@ -106,58 +114,107 @@ export default function predictRoutes(router) {
         res
       );
 
-      // league table
-      const { data: results } = await supabaseClient
+      const filteredMatches = [
+        ["homeTeam", "awayTeam", "homeScore", "awayScore"].join(","),
+        ...matches.map((match) => [
+          [
+            match.homeTeam.shortName,
+            match.awayTeam.shortName,
+            match.score.fullTime.home,
+            match.score.fullTime.away,
+          ].join(","),
+        ]),
+      ];
+      const filteredPredictions = [
+        ["username", "homeScore", "awayScore"].join(","),
+        ...matches.map((prediction) => [
+          [
+            prediction.homeScore,
+            prediction.awayScore,
+            prediction.username,
+          ].join(","),
+        ]),
+      ];
+
+      const { data } = await supabaseClient
         .from("gameweek_results")
         .select()
-        .eq("gameweek", gameweek)
         .eq("competitionCode", competitionCode);
 
-      const formattedData = {
-        predictionResults: matches.map((match) => {
-          return {
-            fixture: `${match.homeTeam.shortName} ${match.score.fullTime.home} -  ${match.score.fullTime.away} ${match.awayTeam.shortName}`,
-            homeScore: match.score.fullTime.home,
-            awayScore: match.score.fullTime.away,
-            predictions: predictionData
-              .filter((prediction) => {
-                return prediction.fixtureId === match.id;
-              })
-              .map((prediction) => {
-                return {
-                  username: prediction.username,
-                  homeScore: prediction.homeScore,
-                  awayScore: prediction.awayScore,
-                };
-              }),
+      const combinedTableStructure = {};
+
+      data.forEach((item) => {
+        if (combinedTableStructure[item.username]) {
+          const vals = { ...combinedTableStructure[item.username] };
+          combinedTableStructure[item.username] = {
+            ...combinedTableStructure[item.username],
+            points: vals.points + item.points,
+            correctScore: vals.correctScore + item.correctScore,
+            totalCorrectResult:
+              vals.totalCorrectResult + item.totalCorrectResult,
+            totalAwayGoals: vals.totalAwayGoals + item.totalAwayGoals,
+            totalHomeGoals: vals.totalHomeGoals + item.totalHomeGoals,
           };
-        }),
-        table: results.sort(sortTable).map((result, i) => {
-          return {
-            points: result.points,
-            correctScore: result.correctScore,
-            totalCorrectResult: result.correctResult,
-            totalAwayGoals: result.totalAwayGoals,
-            totalHomeGoals: result.totalHomeGoal,
-            username: result.username,
-            position: i,
-          };
-        }),
-      };
+        } else {
+          combinedTableStructure[item.username] = item;
+        }
+      });
 
-      return res.send(formattedData);
+      const table = Object.values(combinedTableStructure)
+        .sort(sortTable)
+        .map((row, i) => {
+          return { position: i + 1, ...row };
+        });
 
-      // const response = await openai.createEmbedding({
-      //   model: "text-embedding-ada-002",
-      //   input: "The food was delicious and the waiter...",
-      // });
+      const response = await openai.createChatCompletion({
+        model: "gpt-3.5-turbo-16k",
+        messages: [
+          {
+            role: "system",
+            content: "these are this weeks predictions in CSV",
+          },
+          { role: "system", content: JSON.stringify(filteredPredictions) },
+          {
+            role: "system",
+            content: "these are the actual match results in CSV",
+          },
+          { role: "system", content: JSON.stringify(filteredMatches) },
+          {
+            role: "system",
+            content: "here is the current league table in JSON",
+          },
+          { role: "system", content: JSON.stringify(table) },
+          {
+            role: "user",
+            content:
+              "Can you give me an analysis of this weeks gameweek, and how it impacted the current table? Breakdown into a few anecdotes of who predictioned which games",
+          },
+          {
+            role: "system",
+            content: "All output should be in markdown form.",
+          },
+          {
+            role: "system",
+            content: "Output should be in the style of roy keane",
+          },
+        ],
+      });
 
-      // const completion = await openai.createCompletion({
-      //   model: "text-davinci-003",
-      //   prompt: `Given this prediction data and league table in JSON: ${JSON.stringify(formattedData)}. Can you summarise this weeks league in the style of Gary Neville?`,
-      // });
+      res.setHeader("Cache-Control", "max-age=1, stale-while-revalidate");
+      if (response.data.choices[0]) {
+        console.log(`${req.url} set redis cach4.`);
 
-      // return res.send(completion.data);
+        await redisClient.set(
+          req.url,
+          JSON.stringify(response.data.choices[0]),
+          {
+            NX: true,
+          }
+        );
+      }
+
+      console.log(`${req.url} used openAI.`);
+      return res.send(response.data.choices[0]);
     }
   );
 
@@ -257,6 +314,85 @@ export default function predictRoutes(router) {
 
       const results = await supabaseClient
         .from("gameweek_results")
+        .upsert(
+          Object.entries(userScores).map(([key, val]) => {
+            return {
+              id: `${key}_${competitionCode}_${gameweek}`,
+              username: key,
+              ...val,
+              competitionCode,
+              gameweek,
+            };
+          }),
+          { onConflict: "id" }
+        )
+        .select();
+
+      return res.status(200).json(results);
+    }
+  );
+
+  router.post(
+    "/predict/:competitionCode/calculate/table/:gameweek",
+    async function (req, res) {
+      const { competitionCode, gameweek } = req.params;
+
+      // const cacheResults = null; //await redisClient.get(req.url);
+      // if (cacheResults) {
+      //   return res.send(JSON.parse(cacheResults));
+      // }
+      let returnData = null;
+
+      if (gameweek) {
+        const { data } = await supabaseClient
+          .from("gameweek_results")
+          .select()
+          .eq("competitionCode", competitionCode)
+          .eq("gameweek", gameweek);
+
+        returnData = data;
+      } else {
+        const { data } = await supabaseClient
+          .from("gameweek_results")
+          .select()
+          .eq("competitionCode", competitionCode);
+        returnData = data;
+      }
+
+      const combinedTableStructure = {};
+
+      returnData.forEach((item) => {
+        if (combinedTableStructure[item.username]) {
+          const vals = { ...combinedTableStructure[item.username] };
+          combinedTableStructure[item.username] = {
+            ...combinedTableStructure[item.username],
+            points: vals.points + item.points,
+            correctScore: vals.correctScore + item.correctScore,
+            totalCorrectResult:
+              vals.totalCorrectResult + item.totalCorrectResult,
+            totalAwayGoals: vals.totalAwayGoals + item.totalAwayGoals,
+            totalHomeGoals: vals.totalHomeGoals + item.totalHomeGoals,
+          };
+        } else {
+          combinedTableStructure[item.username] = item;
+        }
+      });
+      const table = Object.values(combinedTableStructure)
+        .sort(sortTable)
+        .map((row, i) => {
+          return { position: i + 1, ...row };
+        });
+
+      // res.setHeader("Cache-Control", "max-age=1, stale-while-revalidate");
+      // if (table.length) {
+      //   await redisClient.set(req.url, JSON.stringify(table), {
+      //     EX: 20,
+      //     NX: true,
+      //   });
+      // }
+
+      const results = await supabaseClient
+        .from("gameweek_table")
         .upsert(
           Object.entries(userScores).map(([key, val]) => {
             return {

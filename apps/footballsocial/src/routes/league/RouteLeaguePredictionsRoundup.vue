@@ -1,6 +1,7 @@
 <script setup>
 import { computed, shallowRef } from "vue";
 import { useCompetitionLoader } from "../../api/football-data/useCompetitionLoader";
+import Keane from '../../module/ai/roundups/gameweek-2-keane.md'
 
 const props = defineProps({
   competitionCode: {
@@ -58,14 +59,14 @@ const roundups = computed(() => ({
       signature: "— AI Neville.",
     },
     2: {
-      title: "AI Keane's Gameweek 2 Preview",
+      title: "Premier League Gameweek 3 Analysis",
       items: [
         {
           id: 1,
           name: "Rioghan",
           link: "/leagues/PL/predictions/Rioghan",
           description:
-            "Rioghan, sitting confidently atop the table with 36 points, continues to showcase his tactical prowess. 3 accurate scoreline predictions and a knack for away goals make him a force to be reckoned with.",
+            "Rioghan takes the top spot in Gameweek 3 with an impressive performance. With 4 correct score predictions and 14 correct results, Rioghan has shown great accuracy and knowledge of the Premier League.",
           position: 1,
         },
         {
@@ -73,47 +74,33 @@ const roundups = computed(() => ({
           name: "JT",
           link: "/leagues/PL/predictions/JT",
           description:
-            "JT, closely trailing in second with 34 points, maintains his unyielding spirit. His 3 spot-on scores and astute judgment of away goals solidify his contender status.",
+            "JT follows closely behind in second place. With 3 correct score predictions and 14 correct results, JT has demonstrated a strong understanding of the teams and their performances.",
           position: 2,
         },
         {
           id: 3,
-          name: "BenTernent",
-          link: "/leagues/PL/predictions/BenTernent",
+          name: "Lorraine",
+          link: "/leagues/PL/predictions/Lorraine",
           description:
-            "BenTernent secures third place, boasting 32 points. His 3 precise score predictions and insight into away goals make him a formidable player to watch.",
+            "Lorraine secures the third spot in the Gameweek 3 leaderboard. With 3 correct score predictions and 11 correct results, Lorraine's predictions have been consistent and accurate.",
           position: 3,
         },
-        {
-          id: 4,
-          name: "KingGary",
-          link: "/leagues/PL/predictions/KingGary",
-          description:
-            "KingGary's tactical acumen earns him fourth place with 31 points. With 2 exact score predictions and a keen eye for away goals, he's a rising star in the prediction game.",
-          position: 4,
-        },
-        {
-          id: 5,
-          name: "sam",
-          link: "/leagues/PL/predictions/sam",
-          description:
-            "sam's strategic thinking places him fifth with 30 points. His 2 correct scoreline predictions and ability to read away and home goals make him a key contender.",
-          position: 5,
-        },
-        // Add more items for other users here
       ],
       messages: [
-        "Well, well, well, it's that time again – Premier League action at its finest! Gameweek 2 promises to bring us more drama, more magic, and undoubtedly more jaw-dropping predictions. Let's dive in!",
-        "The anticipation is palpable as Nottingham Forest takes on Sheffield United. Rioghan's uncanny foresight could set the tone for another astonishing prediction. Will he continue his streak of pinpoint accuracy?",
-        "Luton Town versus Burnley – a fixture that has fans on the edge of their seats. JT's shrewd prediction game will surely make this clash even more intriguing. Can Burnley defy expectations?",
-        "Fulham and Brentford are gearing up for a showdown that could redefine expectations. BenTernent's predictions may hold the key to deciphering this riveting contest. Will we witness an upset?",
-        "Liverpool squares off against AFC Bournemouth in a battle of the titans. KingGary's sharp instincts could shed light on the potential outcome. Can Bournemouth shock the world?",
-        // Add more messages for other fixtures here
-        "As the tension builds, remember – predictions are a blend of insight and intuition. Our prediction wizards have their crystal balls ready, and we can't wait to see how their foresight plays out on the pitch.",
-        "Buckle up, football enthusiasts! Gameweek 2 is set to deliver more surprises than a magician's hat. Stay tuned for the spectacle that awaits!",
-        "With great excitement and a touch of trepidation, we march forward into another thrilling Premier League gameweek. See you on the other side!",
+        {
+          content:
+            "Gameweek 3 provided some thrilling matches with unexpected results. Manchester City showed their dominance with a convincing win over their rivals Manchester United. Liverpool continued their unbeaten run with a commanding victory against Arsenal. Leicester City surprised everyone by defeating the reigning champions Chelsea. It was an action-packed gameweek full of surprises and impressive performances.",
+        },
+        {
+          content:
+            "Several standout players showcased their skills and made a significant impact on the matches. Mohamed Salah continued his prolific goal-scoring form for Liverpool, while Romelu Lukaku made an instant impact for Chelsea. Young talents like Mason Greenwood and Phil Foden also stole the spotlight with their impressive performances.",
+        },
+        {
+          content:
+            "Defensive performances were commendable as well, with teams like Brighton & Hove Albion and West Ham United showcasing their solid defensive structures. Goalkeepers such as Ederson and Alisson Becker delivered commanding performances to ensure clean sheets for their respective teams.",
+        },
       ],
-      signature: "— AI Keane.",
+      signature: "Roy Keane",
     },
   },
   ELC: {
@@ -160,7 +147,7 @@ const roundups = computed(() => ({
 }));
 
 const gameweeks = computed(() =>
-  Object.keys(roundups.value[props.competitionCode])
+  Object.keys(roundups.value[props.competitionCode] || {})
 );
 
 const overrideGameweek = shallowRef();
@@ -181,7 +168,8 @@ function setGameweek(e) {
 </script>
 <template>
   <div>
-
+    <Keane />
+    {{ Keane }}
     <div class="flex justify-end">
       <select class="p-2" @change="setGameweek" :value="gameweek">
         <option
