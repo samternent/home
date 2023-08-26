@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.4.1
+
+### Patch Changes
+
+- [`2de5447`](https://github.com/samternent/home/commit/2de5447fe5f593c2be814f60e3af6448744b479b) Thanks [@samternent](https://github.com/samternent)! - Fix header, add beta
+
 ## 0.4.0
 
 ### Minor Changes
