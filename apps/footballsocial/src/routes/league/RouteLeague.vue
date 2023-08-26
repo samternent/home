@@ -75,11 +75,14 @@ function gotoCompetition(e) {
       <div
         class="px-3 p-2 font-thin dark:bg-zinc900 rounded-lg flex-1 flex flex-col justify-center"
       >
+      <div class="flex items-start">
         <h1
-          class="bg-gradient-to-r from-white via-indigo-500 to-pink-500 bg-clip-text text-transparent tracking-tighter text-5xl font-black bg-300% animate-gradient"
+          class="inline-block bg-gradient-to-r from-white to-90% to-indigo-500 bg-clip-text text-transparent tracking-tighter text-5xl font-black bg-300% animate-gradient"
         >
           Football Social<span class="text-pink-700">.</span>
         </h1>
+        <span class="bg-indigo-800 text-pink-100 px-4 rounded-full mx-4 font-light">beta</span>
+      </div>
         <div
           class="text-2xl tracking-tightest font-light"
         >
