@@ -64,25 +64,28 @@ watch(
       </p>
       <div class="text-2xl font-thin tracking-tighter my-4 w-full" v-else>
         <div
-          class="bg-[#1e1e1e] animate-pulse my-2 rounded flex-1 h-8 w-full"
+          class="bg-[#1e1e1e] animate-pulse my-2 rounded flex-1 h-10 w-full"
         />
         <div
-          class="bg-[#1e1e1e] animate-pulse my-2 rounded flex-1 h-8 w-full"
+          class="bg-[#1e1e1e] animate-pulse my-2 rounded flex-1 h-10 w-full"
         />
       </div>
       <p
         class="text-2xl font-thin tracking-tighter my-12"
         v-if="predictionsCount"
       >
+
+      <div class="h-10">
         A total of
         <span class="text-6xl font-thin text-white"
           >{{ predictionsCount }}
         </span>
         predictions have been made.
+        </div>
       </p>
-      <div class="text-2xl font-thin tracking-tighter my-12 w-full" v-else>
+      <div class="text-2xl font-thin tracking-tighter my-8 w-full" v-else>
         <div
-          class="bg-[#1e1e1e] animate-pulse my-2 rounded flex-1 h-12 w-full"
+          class="bg-[#1e1e1e] animate-pulse rounded flex-1 h-16 w-full"
         />
       </div>
       <div class="flex text-2xl justify-senter items-end my-8">
