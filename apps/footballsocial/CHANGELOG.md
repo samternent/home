@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.4.0
+
+### Minor Changes
+
+- [`f61ee89`](https://github.com/samternent/home/commit/f61ee89f79ff1379407b4a66f0654cf998b9d6e1) Thanks [@samternent](https://github.com/samternent)! - Removes roundup and various style tweaks
+
 ## 0.3.6
 
 ### Patch Changes
