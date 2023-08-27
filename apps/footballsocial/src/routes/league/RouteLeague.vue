@@ -81,7 +81,6 @@ function gotoCompetition(e) {
         >
           Football Social<span class="text-pink-700">.</span>
         </h1>
-        <span class="bg-indigo-800 text-pink-100 px-4 rounded-full mx-4 font-light text-sm">beta</span>
       </div>
         <div
           class="text-2xl tracking-tightest font-light"
