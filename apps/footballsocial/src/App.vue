@@ -21,9 +21,9 @@ const modalRef = shallowRef(null);
 const router = useRouter();
 router.beforeEach((to, from) => {
   if (to.meta.auth && ready.value && !user.value) {
-    router.push('/');
+    router.push("/");
   }
-})
+});
 
 api.interceptors.response.use(
   (response) => {
@@ -84,7 +84,7 @@ onClickOutside(modalRef, (event) => (hasDismissedPopup.value = true));
           class="flex items-center dark:text-white"
           :key="profile?.id || 'empty'"
         >
-        <RouterLink
+          <RouterLink
             aria-label="Login"
             v-if="!user"
             to="/auth/login"
@@ -181,11 +181,10 @@ onClickOutside(modalRef, (event) => (hasDismissedPopup.value = true));
           target="_blank"
           class="league-link font-medium"
           >Football-Data.org</a
-        > API.
+        >
+        API.
       </p>
-      <ul
-        class="flex flex-wrap items-center mt-3 text-sm dark:text-gray-400"
-      >
+      <ul class="flex flex-wrap items-center mt-3 text-sm dark:text-gray-400">
         <li class="text-sm sm:text-center dark:text-gray-200 mr-6">
           <a
             href="https://github.com/samternent/home/tree/main/apps/footballsocial"
@@ -211,11 +210,14 @@ onClickOutside(modalRef, (event) => (hasDismissedPopup.value = true));
             >Terms of Use</RouterLink
           >
         </li>
-        <!-- <li>
-          <RouterLink to="/company/contact" class="mr-4 hover:underline md:mr-6"
-            >Contact</RouterLink
+        <li>
+          <a
+            href="https://sam.staging.teamwork.com/p/forms/PBLRygLcpZ6NjG0Zlaoe"
+            target="_blank"
+            class="mr-4 hover:underline md:mr-6"
+            >Feedback</a
           >
-        </li> -->
+        </li>
       </ul>
     </footer>
   </div>
