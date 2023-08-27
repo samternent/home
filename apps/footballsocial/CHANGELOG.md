@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.4.3
+
+### Patch Changes
+
+- [`09affa7`](https://github.com/samternent/home/commit/09affa7e845053879bcf462c8025b986ea64200d) Thanks [@samternent](https://github.com/samternent)! - Remove beta badge
+
 ## 0.4.2
 
 ### Patch Changes
