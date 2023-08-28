@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.5.0
+
+### Minor Changes
+
+- [#87](https://github.com/samternent/home/pull/87) [`80f143a`](https://github.com/samternent/home/commit/80f143a863cf5cb07a21e28de9fd04d009553b8e) Thanks [@samternent](https://github.com/samternent)! - Add leagues feature
+
 ## 0.4.4
 
 ### Patch Changes
