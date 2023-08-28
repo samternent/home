@@ -185,7 +185,7 @@ onClickOutside(modalRef, (event) => (hasDismissedPopup.value = true));
         API.
       </p>
       <ul class="flex flex-wrap items-center mt-3 text-sm dark:text-gray-400">
-        <li class="text-sm sm:text-center dark:text-gray-200 mr-6">
+        <li class="text-sm sm:text-center dark:text-gray-200 mr-2 md:mr-4">
           <a
             href="https://github.com/samternent/home/tree/main/apps/footballsocial"
           >
@@ -196,17 +196,17 @@ onClickOutside(modalRef, (event) => (hasDismissedPopup.value = true));
           <a
             :href="`https://github.com/samternent/home/releases/tag/footballsocial-${version}`"
             target="_blank"
-            class="mr-4 hover:underline md:mr-6"
+            class="mr-2 hover:underline md:mr-4"
             >v{{ version }}</a
           >
         </li>
         <li>
-          <RouterLink to="/legal/privacy" class="mr-4 hover:underline md:mr-6"
+          <RouterLink to="/legal/privacy" class="mr-2 hover:underline md:mr-4"
             >Privacy Policy</RouterLink
           >
         </li>
         <li>
-          <RouterLink to="/legal/terms" class="mr-4 hover:underline md:mr-6"
+          <RouterLink to="/legal/terms" class="mr-2 hover:underline md:mr-4"
             >Terms of Use</RouterLink
           >
         </li>
@@ -214,7 +214,7 @@ onClickOutside(modalRef, (event) => (hasDismissedPopup.value = true));
           <a
             href="https://sam.staging.teamwork.com/p/forms/PBLRygLcpZ6NjG0Zlaoe"
             target="_blank"
-            class="mr-4 hover:underline md:mr-6"
+            class="mr-2 hover:underline md:mr-4"
             >Feedback</a
           >
         </li>
