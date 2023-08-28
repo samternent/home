@@ -30,10 +30,48 @@ export const leagueRoutes = [
           },
           {
             path: "standings",
+            redirect(to: any) {
+              return `/leagues/${to.params.competitionCode || "PL"}/table`;
+            },
+          },
+          {
+            path: "table",
+            component: () => import("./RouteLeaguePredictionsTable.vue"),
+            beforeEnter(to: RouteLocation) {
+              window.localStorage.setItem("lastLeaguePath", "table");
+            },
+          },
+          {
+            path: "leagues",
             component: () => import("./RouteLeaguePredictionsLeagues.vue"),
             beforeEnter(to: RouteLocation) {
-              window.localStorage.setItem("lastLeaguePath", "standings");
+              window.localStorage.setItem("lastLeaguePath", "leagues");
             },
+            props: true,
+          },
+          {
+            path: "leagues/create",
+            component: () => import("./RouteLeaguePredictionsLeagueCreate.vue"),
+            beforeEnter(to: RouteLocation) {
+              window.localStorage.setItem("lastLeaguePath", "leagues");
+            },
+            props: true,
+          },
+          {
+            path: "leagues/join",
+            component: () => import("./RouteLeaguePredictionsLeagueJoin.vue"),
+            beforeEnter(to: RouteLocation) {
+              window.localStorage.setItem("lastLeaguePath", "leagues");
+            },
+            props: true,
+          },
+          {
+            path: "leagues/:id",
+            component: () => import("./RouteLeaguePredictionsLeague.vue"),
+            beforeEnter(to: RouteLocation) {
+              window.localStorage.setItem("lastLeaguePath", "leagues");
+            },
+            props: true,
           },
           {
             path: "roundup",
