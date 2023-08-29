@@ -77,13 +77,13 @@ function gotoCompetition(e) {
       >
       <div class="flex items-start">
         <h1
-          class="inline-block bg-gradient-to-r from-white to-90% to-indigo-500 bg-clip-text text-transparent tracking-tighter text-5xl font-black bg-300% animate-gradient"
+          class=" header inline-block bg-gradient-to-r from-white to-90% to-indigo-500 bg-clip-text text-transparent tracking-tighter text-6xl font-bold bg-300% animate-gradient"
         >
           Football Social<span class="text-pink-700">.</span>
         </h1>
       </div>
         <div
-          class="text-2xl tracking-tightest font-light"
+          class="text-2xl tracking-tightest font-light header"
         >
           {{ competition?.name }}.
         </div>
@@ -96,7 +96,7 @@ function gotoCompetition(e) {
             class="h-5 opacity-90 rounded mr-2 shadow-lg"
             :src="competition?.area?.flag"
           />
-          <span class="font-light tracking-tighter">{{
+          <span class="font-light tracking-tighter header">{{
             competition?.area?.name
           }}</span>
         </p>
@@ -106,3 +106,8 @@ function gotoCompetition(e) {
   </div>
   <div v-else class="flex-1 h-screen"></div>
 </template>
+<style>
+.header {
+  font-family: Poppins;
+}
+</style>

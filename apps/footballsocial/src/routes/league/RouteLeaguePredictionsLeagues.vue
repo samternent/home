@@ -57,7 +57,7 @@ fetchMyLeagues();
         <div class="bg-zinc-800 w-50">
           <p class="text-xl my-2 text-center py-2">League Code</p>
           <div
-            class="mt-2 p-6 text-4xl text-center font-black tracking-tighter bg-gradient-to-r from-indigo-500 to-70% to-pink-500 via-40%"
+            class="mt-2 p-6 text-4xl text-center font-bold tracking-tighter bg-gradient-to-r from-indigo-500 to-70% to-pink-500 via-40%"
           >
             {{ league.league_code }}
           </div>

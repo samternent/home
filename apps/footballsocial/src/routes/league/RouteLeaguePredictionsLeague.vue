@@ -232,7 +232,7 @@ const leagueLink = computed(
         </p>
         <p class="bg-zinc-800 text-xl text-center py-4">League Code</p>
         <div
-          class="p-6 text-4xl text-center font-black tracking-tighter bg-gradient-to-r from-indigo-500 to-70% to-pink-500 via-40%"
+          class="p-6 text-4xl text-center font-bold tracking-tighter bg-gradient-to-r from-indigo-500 to-70% to-pink-500 via-40%"
         >
           {{ league.league_code }}
         </div>
