@@ -1,6 +1,5 @@
 <script setup>
 import { shallowRef } from "vue";
-import { useRouter } from "vue-router";
 import { useCurrentUser } from "../../composables/useCurrentUser";
 import { supabaseClient } from "../../service/supabase";
 
@@ -23,6 +22,7 @@ async function fetchMyLeagues() {
   const { data, error } = await supabaseClient
     .from("leagues")
     .select("*")
+    .eq("competition_code", props.competitionCode)
     .in(
       "id",
       myLeagueIds.map(({ league_id }) => league_id)
@@ -80,7 +80,7 @@ fetchMyLeagues();
         </div>
       </div>
     </div>
-    <div v-if="!leagues.length" class="text-4xl font-thin text-center flex flex-col items-center justify-center my-6">
+    <div v-if="!leagues?.length" class="text-4xl font-thin text-center flex flex-col items-center justify-center my-6">
       <p>No leagues found</p>
       <p class="text-3xl">Create or join one.</p>
     </div>

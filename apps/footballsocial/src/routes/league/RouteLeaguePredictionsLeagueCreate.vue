@@ -55,6 +55,7 @@ async function createLeague() {
         league_code: crypto.randomUUID().slice(0, 5),
         gameweek_start: startGameweek.value,
         gameweek_end: endGameweek.value,
+        competition_code: props.competitionCode,
       },
     ])
     .select();
@@ -63,8 +64,6 @@ async function createLeague() {
   joinLeague(myLeague.id, profile.value.username);
   router.push(`/leagues/${props.competitionCode}/leagues/${myLeague.id}`);
 }
-
-
 </script>
 <template>
   <div class="w-full">
@@ -116,7 +115,9 @@ async function createLeague() {
           v-model="startGameweek"
           class="block flex-1 border-0 bg-transparent py-1.5 pl-1 focus:ring-0 mr-2 bg-zinc-800 rounded"
         >
-          <option v-for="gw in gameweeks" :key="`startWeek${gw}`" :value="gw">{{ gw }}</option>
+          <option v-for="gw in gameweeks" :key="`startWeek${gw}`" :value="gw">
+            {{ gw }}
+          </option>
         </select>
       </div>
       <div class="flex-1">
@@ -127,7 +128,9 @@ async function createLeague() {
           v-model="endGameweek"
           class="block flex-1 border-0 bg-transparent py-1.5 pl-1 focus:ring-0 mr-2 bg-zinc-800 rounded"
         >
-          <option v-for="gw in gameweeks" :key="`endWeek${gw}`" :value="gw">{{ gw }}</option>
+          <option v-for="gw in gameweeks" :key="`endWeek${gw}`" :value="gw">
+            {{ gw }}
+          </option>
         </select>
       </div>
     </div>
