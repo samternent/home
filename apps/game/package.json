@@ -13,7 +13,6 @@
     "concords-utils": "workspace:*",
     "sams-game-kit": "workspace:*",
     "@supabase/supabase-js": "^2.1.1",
-    "@tailwindcss/line-clamp": "^0.4.2",
     "@tailwindcss/typography": "^0.5.7",
     "@vitejs/plugin-basic-ssl": "^0.1.2",
     "@vueuse/core": "^9.1.1",
