@@ -51,7 +51,7 @@ function isActiveLink(t) {
 const dismissFeatureBanner = useLocalStorage('footballsocial/dismissFeatureBanner', false)
 </script>
 <template>
-  <ul class="flex max-w-[100vw] overflow-x-auto h-auto py-4 overflow-y-hidden">
+  <ul class="flex max-w-[100vw] overflow-x-auto h-auto pb-4 overflow-y-hidden">
     <li v-for="t in tabs" :key="`${t}`">
       <RouterLink
         :to="`/leagues/${competitionCode}/${t}`"

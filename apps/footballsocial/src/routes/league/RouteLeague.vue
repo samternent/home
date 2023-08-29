@@ -71,13 +71,13 @@ function gotoCompetition(e) {
         </select>
       </div>
     </Teleport>
-    <div class="flex w-full p-2 md:p-0 md:mt-4 text-white">
+    <div class="flex w-full p-2 text-white">
       <div
-        class="px-3 p-2 font-thin dark:bg-zinc900 rounded-lg flex-1 flex flex-col justify-center"
+        class="px-1 p-2 font-thin dark:bg-zinc900 rounded-lg flex-1 flex flex-col justify-center"
       >
       <div class="flex items-start">
         <h1
-          class=" header inline-block bg-gradient-to-r from-white to-90% to-indigo-500 bg-clip-text text-transparent tracking-tighter text-6xl font-bold bg-300% animate-gradient"
+          class=" header inline-block bg-gradient-to-r from-white to-90% to-indigo-500 bg-clip-text text-transparent tracking-tighter text-5xl md:text-6xl font-bold bg-300% animate-gradient"
         >
           Football Social<span class="text-pink-700">.</span>
         </h1>
