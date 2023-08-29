@@ -53,6 +53,8 @@ async function joinLeague() {
       username: profile.value.username,
     },
   ]);
+
+  router.push(`/leagues/${props.competitionCode}/leagues/${league.value.id}`);
 }
 
 findLeague();
