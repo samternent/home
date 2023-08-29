@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.5.6
+
+### Patch Changes
+
+- [`e7be15c`](https://github.com/samternent/home/commit/e7be15cd1a2ffd77ee7978db9c801ffce46f645a) Thanks [@samternent](https://github.com/samternent)! - Change bundle strategy
+
 ## 0.5.5
 
 ### Patch Changes
