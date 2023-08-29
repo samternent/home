@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.5.2
+
+### Patch Changes
+
+- [`9362226`](https://github.com/samternent/home/commit/93622266b80311791ca225eb20cf0e78c6ee39d9) Thanks [@samternent](https://github.com/samternent)! - Fix single gameweek league
+
 ## 0.5.1
 
 ### Patch Changes
