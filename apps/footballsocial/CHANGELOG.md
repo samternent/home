@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.5.4
+
+### Patch Changes
+
+- [`f2435a9`](https://github.com/samternent/home/commit/f2435a9f48bec4af9fd648cd3fc229c23b548b7a) Thanks [@samternent](https://github.com/samternent)! - Redirect to league when joined
+
 ## 0.5.3
 
 ### Patch Changes
