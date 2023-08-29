@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.5.8
+
+### Patch Changes
+
+- [`def65e8`](https://github.com/samternent/home/commit/def65e88936b64f15f314707a00773ac6e20a834) Thanks [@samternent](https://github.com/samternent)! - Update font
+
 ## 0.5.7
 
 ### Patch Changes
