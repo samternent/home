@@ -13,7 +13,12 @@ const props = defineProps({
 
 const gameweekDefinitions = {
   PL: 38,
+  PD: 38,
   ELC: 46,
+  BL1: 34,
+  SA: 38,
+  FL1: 38,
+  DED: 34,
 };
 const gameweeks = computed(() =>
   Array.from(
