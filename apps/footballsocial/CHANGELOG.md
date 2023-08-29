@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.5.7
+
+### Patch Changes
+
+- [`58be932`](https://github.com/samternent/home/commit/58be93283203ba264d5eb29b96cf650a88223aa3) Thanks [@samternent](https://github.com/samternent)! - Adds competition code to mini leagues
+
 ## 0.5.6
 
 ### Patch Changes
