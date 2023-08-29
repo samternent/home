@@ -58,7 +58,7 @@ export const leagueRoutes = [
             props: true,
           },
           {
-            path: "leagues/join",
+            path: "leagues/join/:leagueCode?",
             component: () => import("./RouteLeaguePredictionsLeagueJoin.vue"),
             beforeEnter(to: RouteLocation) {
               window.localStorage.setItem("lastLeaguePath", "leagues");

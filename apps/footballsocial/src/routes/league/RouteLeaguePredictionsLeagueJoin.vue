@@ -1,5 +1,5 @@
 <script setup>
-import { shallowRef } from "vue";
+import { shallowRef, toRefs } from "vue";
 import { useRouter } from "vue-router";
 import { useCurrentUser } from "../../composables/useCurrentUser";
 import { supabaseClient } from "../../service/supabase";
@@ -9,6 +9,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  leagueCode: {
+    type: String,
+    default: null,
+  },
 });
 
 const { profile } = useCurrentUser();
@@ -16,9 +20,11 @@ const router = useRouter();
 
 const league = shallowRef(null);
 const canJoinLeague = shallowRef(false);
-const leagueCode = shallowRef("");
+const { leagueCode } = toRefs(props);
 
 async function findLeague() {
+  if (!leagueCode.value) return;
+
   const { data, error } = await supabaseClient
     .from("leagues")
     .select()
@@ -28,7 +34,7 @@ async function findLeague() {
     .from("league_members")
     .select()
     .eq("league_id", data[0].id)
-    .eq("username", profile.value.username);
+    .eq("username", profile.value?.username);
 
   league.value = data[0];
   canJoinLeague.value = !membersData.length;
@@ -36,15 +42,20 @@ async function findLeague() {
 async function joinLeague() {
   if (!league.value) return;
 
+  if (!profile.value) {
+    router.push("/");
+    return;
+  }
+
   const { error } = await supabaseClient.from("league_members").insert([
     {
       league_id: league.value.id,
       username: profile.value.username,
     },
   ]);
-
-  router.push(`/leagues/${props.competitionCode}/leagues/${league.value.id}`);
 }
+
+findLeague();
 </script>
 <template>
   <div class="w-full">

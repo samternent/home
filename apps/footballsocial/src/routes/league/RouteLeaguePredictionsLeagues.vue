@@ -11,27 +11,8 @@ const props = defineProps({
   },
 });
 
-const leagueName = shallowRef("");
 const leagues = shallowRef([]);
 const { profile } = useCurrentUser();
-
-async function createLeague() {
-  const { data, error } = await supabaseClient
-    .from("leagues")
-    .insert([
-      {
-        name: leagueName.value,
-        owner: profile.value.username,
-        commissioner: profile.value.username,
-        created_by: profile.value.username,
-        league_code: crypto.randomUUID().slice(0, 5),
-      },
-    ])
-    .select();
-
-  const myLeague = data[0];
-  joinLeague(myLeague.id, profile.value.username);
-}
 
 async function fetchMyLeagues() {
   const { data: myLeagueIds, error: myLeagueError } = await supabaseClient
@@ -51,18 +32,6 @@ async function fetchMyLeagues() {
 }
 
 fetchMyLeagues();
-
-const joinLeagueId = shallowRef(null);
-
-async function joinLeague(league_id, username) {
-  const { error } = await supabaseClient.from("league_members").insert([
-    {
-      league_id,
-      username,
-    },
-  ]);
-  fetchMyLeagues();
-}
 </script>
 <template>
   <div class="w-full">
@@ -97,7 +66,10 @@ async function joinLeague(league_id, username) {
           <p class="text-xl mb-2 font-thin">
             League commissioner: @{{ league.owner }}
           </p>
-          <p class="text-xl mb-2 font-thin">
+          <p class="text-xl mb-2 font-thin" v-if="league.gameweek_start === league.gameweek_end">
+            Gameweek: {{ league.gameweek_start }}
+          </p>
+          <p class="text-xl mb-2 font-thin" v-else>
             Gameweeks: {{ league.gameweek_start }} - {{ league.gameweek_end }}
           </p>
           <RouterLink

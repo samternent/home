@@ -1,6 +1,6 @@
 <script setup>
-import { shallowRef } from "vue";
-import { useCurrentUser } from "../../composables/useCurrentUser";
+import { shallowRef, computed } from "vue";
+import { useToast } from "vue-toastification";
 import { supabaseClient } from "../../service/supabase";
 
 const props = defineProps({
@@ -30,6 +30,7 @@ function sortTable(a, b) {
 const league = shallowRef({});
 const members = shallowRef([]);
 const table = shallowRef([]);
+const toast = useToast();
 
 async function fetchLeague() {
   const { data: leagueData } = await supabaseClient
@@ -46,10 +47,13 @@ async function fetchLeague() {
 
   const { gameweek_start, gameweek_end } = league.value;
 
-  const gameweeks = Array.from(
-    { length: gameweek_end - gameweek_start },
-    (_, i) => i + gameweek_start
-  );
+  const arrayRange = (start, stop, step) =>
+    Array.from(
+      { length: (stop - start) / step + 1 },
+      (value, index) => start + index * step
+    );
+
+  const gameweeks = computed(() => arrayRange(gameweek_start, gameweek_end, 1));
 
   const { data } = await supabaseClient
     .from("gameweek_results")
@@ -59,7 +63,7 @@ async function fetchLeague() {
       "username",
       members.value.map(({ username }) => username)
     )
-    .in("gameweek", gameweeks);
+    .in("gameweek", gameweeks.value);
 
   const combinedTableStructure = {};
 
@@ -86,6 +90,36 @@ async function fetchLeague() {
 }
 
 fetchLeague();
+
+const linkEl = shallowRef();
+
+function copyLink() {
+  // Select the text field
+  linkEl.value.select();
+  linkEl.value.setSelectionRange(0, 99999); // For mobile devices
+
+  // Copy the text inside the text field
+  navigator.clipboard.writeText(linkEl.value.value);
+
+  toast.success(`${linkEl.value.value} copied to clipboard`, {
+    position: "bottom-right",
+    timeout: 5000,
+    closeOnClick: true,
+    pauseOnFocusLoss: false,
+    pauseOnHover: true,
+    draggable: true,
+    draggablePercent: 0.6,
+    showCloseButtonOnHover: true,
+    hideProgressBar: true,
+    closeButton: "button",
+    icon: true,
+    rtl: false,
+  });
+}
+const leagueLink = computed(
+  () =>
+    `${window.location.origin}/leagues/${props.competitionCode}/leagues/join/${league.value.league_code}`
+);
 </script>
 <template>
   <div class="w-full">
@@ -187,7 +221,13 @@ fetchLeague();
         <p class="text-xl mb-2 font-thin">
           League commissioner: @{{ league.owner }}
         </p>
-        <p class="text-xl mb-2 font-thin">
+        <p
+          class="text-xl mb-2 font-thin"
+          v-if="league.gameweek_start === league.gameweek_end"
+        >
+          Gameweek: {{ league.gameweek_start }}
+        </p>
+        <p class="text-xl mb-2 font-thin" v-else>
           Gameweeks: {{ league.gameweek_start }} - {{ league.gameweek_end }}
         </p>
         <p class="bg-zinc-800 text-xl text-center py-4">League Code</p>
@@ -195,6 +235,30 @@ fetchLeague();
           class="p-6 text-4xl text-center font-black tracking-tighter bg-gradient-to-r from-indigo-500 to-70% to-pink-500 via-40%"
         >
           {{ league.league_code }}
+        </div>
+        <div class="flex w-full">
+          <input
+            ref="linkEl"
+            dir="rtl"
+            class="flex-1 p-2 font-thin bg-zinc-800"
+            :value="leagueLink"
+          />
+          <button @click="copyLink" class="p-2 bg-indigo-900">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-6 h-6"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.057 1.123-.08M15.75 18H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08M15.75 18.75v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5A3.375 3.375 0 006.375 7.5H5.25m11.9-3.664A2.251 2.251 0 0015 2.25h-1.5a2.251 2.251 0 00-2.15 1.586m5.8 0c.065.21.1.433.1.664v.75h-6V4.5c0-.231.035-.454.1-.664M6.75 7.5H4.875c-.621 0-1.125.504-1.125 1.125v12c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V16.5a9 9 0 00-9-9z"
+              />
+            </svg>
+          </button>
         </div>
       </div>
     </div>
