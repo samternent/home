@@ -31,7 +31,7 @@ const crestMap = {
 const crest = computed(
   () => crestMap[competitionCode.value] || competitionCode.value
 );
-const tabs = shallowRef(["predictions", "table", "leagues"]);
+const tabs = shallowRef(["predictions", "table", "leagues", "discussions"]);
 
 watch(
   competition,

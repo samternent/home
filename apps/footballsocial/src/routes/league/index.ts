@@ -110,16 +110,16 @@ export const leagueRoutes = [
           },
         ],
       },
-      // {
-      //   path: "discussions/:discussionId",
-      //   props: true,
-      //   component: () => import("./RouteLeagueDiscussion.vue"),
-      // },
-      // {
-      //   path: "discussions/new",
-      //   props: true,
-      //   component: () => import("./RouteLeagueDiscussionNew.vue"),
-      // },
+      {
+        path: "discussions/:discussionId",
+        props: true,
+        component: () => import("./RouteLeagueDiscussion.vue"),
+      },
+      {
+        path: "discussions/new",
+        props: true,
+        component: () => import("./RouteLeagueDiscussionNew.vue"),
+      },
       {
         path: "*",
         redirect(to: any) {

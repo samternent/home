@@ -119,7 +119,7 @@ watch(
 </script>
 <template>
   <div class="flex w-full dark:text-white p-2">
-    <div class="max-w-screen-sm flex mx-auto flex-col w-full my-4 md:my-8">
+    <div class="max-w-screen-3xl flex mx-auto flex-col w-full my-2">
       <h1
         class="text-5xl dark:text-white font-bold tracking-tighter shadow-text my-2"
       >
