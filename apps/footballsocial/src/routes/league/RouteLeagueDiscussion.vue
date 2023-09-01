@@ -223,7 +223,7 @@ watch(
                 }}</span>
               </div>
               <p
-                class="dark:text-white text-base leading-normal"
+                class="dark:text-white text-base leading-normal font-light"
                 v-html="answer.body"
               />
             </div>
