@@ -44,7 +44,7 @@ watch(
   >
     <div class="md:w-1/2 py-6 px-2">
       <h1
-        class="bg-gradient-to-r from-white to-70% to-indigo-500 via-40% bg-clip-text text-transparent text-5xl font-black tracking-tighter"
+        class="bg-gradient-to-r from-white to-70% to-indigo-500 via-40% bg-clip-text text-transparent text-5xl font-bold tracking-tighter"
       >
         Football Social<span class="text-pink-700">.</span>
       </h1>
@@ -93,7 +93,7 @@ watch(
           aria-label="Login"
           v-if="!user"
           to="/auth/login"
-          class="flex items-center mx-2 px-4 py-2 text-md border-2 border-indigo-600 font-bold uppercase"
+          class="flex items-center mx-2 px-4 py-2 text-md border-2 border-indigo-600 font-medium uppercase"
         >
           Login
         </RouterLink>

@@ -13,16 +13,17 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  gameweek: {
+    type: Number,
+    default: null,
+  },
 });
 
 const predictionsLoaded = shallowRef(false);
 const table = shallowRef([]);
 
 async function loadPredictions() {
-  const { data } = await fetchPredictionTable(
-    unref(props.competitionCode),
-    unref(props.gameweek)
-  );
+  const { data } = await fetchPredictionTable(props.competitionCode, props.gameweek);
   table.value = data;
   predictionsLoaded.value = true;
 }

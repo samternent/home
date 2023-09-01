@@ -2,11 +2,11 @@
 import { shallowRef } from "vue";
 import { useCurrentUser } from "../composables/useCurrentUser";
 
-const { updateUsername, signOut } = useCurrentUser();
+const { updateProfile, signOut } = useCurrentUser();
 const username = shallowRef();
 
 function setUsername() {
-  updateUsername(username.value);
+  updateProfile({ username: username.value });
 }
 async function signOutAndLeave() {
   await signOut();

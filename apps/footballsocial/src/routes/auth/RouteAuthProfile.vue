@@ -1,11 +1,14 @@
 <script setup>
-import { shallowRef, unref } from "vue";
+import { shallowRef, unref, reactive } from "vue";
+
 import { useRouter } from "vue-router";
 import { supabaseClient } from "../../service/supabase";
 import { useCurrentUser } from "../../composables/useCurrentUser";
 import { calculatePredictionTable } from "../../composables/usePredictionService";
+import { watch } from "vue";
 
-const { user, profile, signOut } = useCurrentUser();
+const { user, profile, signOut, updateProfile } = useCurrentUser();
+
 const router = useRouter();
 defineProps({
   username: {
@@ -14,42 +17,46 @@ defineProps({
   },
 });
 
+const updatedProfile = reactive({
+  username: null,
+});
+
 async function signOutAndLeave() {
   await signOut();
   router.push("/");
 }
 
-const competitionCode = shallowRef('PL');
-const gameweek = shallowRef(1);
+async function saveProfile() {
+  await updateProfile(updatedProfile);
+}
 
-function calculateResults() {
-  calculatePredictionTable(unref(competitionCode), unref(gameweek));
-};
+watch(profile, (_profile) => {
+  router.push(`/auth/profile/${_profile.username}`);
+});
+
+// const avatarFile = event.target.files[0]
+// const { data, error } = await supabaseClient
+//   .storage
+//   .from('avatars')
+//   .upload('public/avatar1.png', avatarFile, {
+//     cacheControl: '3600',
+//     upsert: false
+//   })
 </script>
 <template>
-  <div class="mx-auto w-full max-w-3xl p-4">
+  <div class="mx-auto w-full max-w-4xl p-4">
     <div v-if="!user" class="text-3xl my-8 text-center">
       Please check your emails to confirm your signup.
     </div>
-    <div v-else>
-      <p>
-        <span
-          class="text-6xl font-bold tracking-tighter dark:text-white shadow-text"
-          >@{{ username }}</span
-        >
-      </p>
+    <div v-else class="bg-zinc-800 rounded p-2">
+      {{ profile.username }}
       <p class="my-16">
         <button @click="signOutAndLeave" class="px-4 py-2 bg-red-800">
           Sign Out
         </button>
       </p>
 
-      <!-- fake admin -->
-      <div v-if="username === 'sam'">
-        <input v-model="competitionCode" />
-        <input v-model="gameweek" />
-        <button @click="calculateResults">Calculate</button>
-      </div>
+
     </div>
   </div>
 </template>

@@ -58,10 +58,10 @@ export function provideCurrentUser() {
     return true;
   }
 
-  async function updateUsername(username: string) {
+  async function updateProfile(_profile: Object) {
     const { data } = await supabaseClient
       .from("profiles")
-      .upsert({ id: session.value.user.id, username }, { onConflict: "id" })
+      .upsert({ id: session.value.user.id, ..._profile }, { onConflict: "id" })
       .select();
 
     profile.value = data ? data[0] : null;
@@ -114,7 +114,7 @@ export function provideCurrentUser() {
     signOut,
     loginWithGoogle,
     signupWithGoogle,
-    updateUsername,
+    updateProfile,
     ready,
   };
 

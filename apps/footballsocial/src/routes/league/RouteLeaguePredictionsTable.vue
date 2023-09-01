@@ -11,22 +11,48 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  showGameweekResults: {
+    type: String,
+    default: null,
+  },
 });
 const { items: competition } = useCompetitionLoader();
 </script>
 <template>
-  <!-- <div class="flex items-center flex-col justify-center w-full">
-    <p class="text-2xl font-thin my-8">
-      This page is still under construction.
-    </p>
-    <img :src="PlayerSvg" class="h-96 w-96 mx-auto" />
-    <p class="text-lg font-thin my-8">
-      all predictions are stored and will be added to the table upon release.
-    </p>
-  </div> -->
   <div class="w-full">
+    <ul
+      class="flex max-w-[100vw] overflow-x-auto h-auto pb-2 mb-2 overflow-y-hidden"
+    >
+      <li>
+        <RouterLink
+          :to="`/leagues/${competitionCode}/table`"
+          class="mx-2 py-1 uppercase hover:border-indigo-900 dark:text-white border-b-4 border-transparent"
+          :class="{
+            '!border-indigo-600': !showGameweekResults,
+          }"
+        >
+          All time
+        </RouterLink>
+      </li>
+      <li>
+        <RouterLink
+          :to="`/leagues/${competitionCode}/table/gameweek`"
+          class="mx-2 py-1 uppercase hover:border-indigo-900 dark:text-white border-b-4 border-transparent"
+          :class="{
+            '!border-indigo-600': showGameweekResults,
+          }"
+        >
+          Gameweek {{ competition?.currentSeason.currentMatchday }}
+        </RouterLink>
+      </li>
+    </ul>
     <PredictionsResults
-      v-if="competition"
+      v-if="competition && showGameweekResults"
+      :competitionCode="competition?.code"
+      :gameweek="competition?.currentSeason.currentMatchday"
+    />
+    <PredictionsResults
+      v-else-if="competition"
       :competitionCode="competition?.code"
     />
     <div class="p-4 mt-6 text-zinc-200">
