@@ -223,6 +223,13 @@ export default function predictRoutes(router) {
     async function (req, res) {
       const { competitionCode, gameweek } = req.params;
 
+      const cacheResults = await redisClient.get(req.url);
+      if (cacheResults) {
+        return res.send(JSON.parse(cacheResults));
+      }
+
+      console.log(`calculating results for ${competitionCode} gameweek ${gameweek}.`);
+
       const { data } = await footballDataProxy(
         {
           ...req,
@@ -327,6 +334,12 @@ export default function predictRoutes(router) {
           { onConflict: "id" }
         )
         .select();
+
+      res.setHeader("Cache-Control", "max-age=1, stale-while-revalidate");
+      await redisClient.set(req.url, JSON.stringify(results), {
+        EX: 200,
+        NX: true,
+      });
 
       return res.status(200).json(results);
     }

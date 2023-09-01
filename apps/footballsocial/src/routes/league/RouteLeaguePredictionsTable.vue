@@ -1,6 +1,8 @@
 <script setup>
+import { watch } from 'vue';
 import PredictionsResults from "../../components/PredictionsResults.vue";
 import { useCompetitionLoader } from "../../api/football-data/useCompetitionLoader";
+import { calculatePredictionTable } from "../../composables/usePredictionService";
 
 const props = defineProps({
   competitionCode: {
@@ -17,6 +19,12 @@ const props = defineProps({
   },
 });
 const { items: competition } = useCompetitionLoader();
+
+watch(competition, (_competition) => {
+  if (_competition?.currentSeason.currentMatchday) {
+    calculatePredictionTable(_competition.code, _competition.currentSeason.currentMatchday);
+  }
+}, { immediate: true });
 </script>
 <template>
   <div class="w-full">
@@ -31,7 +39,7 @@ const { items: competition } = useCompetitionLoader();
             '!border-indigo-600': !showGameweekResults,
           }"
         >
-          All time
+          Season
         </RouterLink>
       </li>
       <li>
