@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.5.11
+
+### Patch Changes
+
+- [#100](https://github.com/samternent/home/pull/100) [`6ad0970`](https://github.com/samternent/home/commit/6ad09700e45880086ca6714ac78339e03c016f6c) Thanks [@samternent](https://github.com/samternent)! - Updates admin page and adds gameweek table
+
 ## 0.5.10
 
 ### Patch Changes
