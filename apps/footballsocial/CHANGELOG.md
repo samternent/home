@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.5.12
+
+### Patch Changes
+
+- [`6153db2`](https://github.com/samternent/home/commit/6153db20d13648d269870f38a4fe4f545b01cfee) Thanks [@samternent](https://github.com/samternent)! - Auto calculate the tables
+
 ## 0.5.11
 
 ### Patch Changes
