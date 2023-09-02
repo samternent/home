@@ -51,6 +51,7 @@ export const leagueRoutes = [
             component: RouteLeaguePredictionsTable,
             beforeEnter(to: RouteLocation) {
               window.localStorage.setItem("lastLeaguePath", "table");
+              window.localStorage.setItem("lastLeagueTablePath", "");
             },
             props: true,
           },
@@ -58,9 +59,9 @@ export const leagueRoutes = [
             path: "table/gameweek",
             component: RouteLeaguePredictionsTable,
             beforeEnter(to: RouteLocation) {
-              window.localStorage.setItem("lastLeaguePath", "table");
+              window.localStorage.setItem("lastLeagueTablePath", "gameweek");
             },
-            props(route) {
+            props(route: any) {
               return {
                 ...route.params,
                 showGameweekResults: true,

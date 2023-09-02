@@ -23,6 +23,8 @@ const { profile } = useCurrentUser();
 
 const { items: competition } = useCompetitionLoader();
 const isCup = computed(() => competition.value.type === "CUP");
+
+const backPath = window.localStorage.getItem('lastLeagueTablePath');
 </script>
 <template>
   <div class="flex flex-col w-full">
@@ -31,7 +33,7 @@ const isCup = computed(() => competition.value.type === "CUP");
       class="text-zinc-300 mb-6"
     >
       <RouterLink
-        :to="`/leagues/${competitionCode}/standings`"
+        :to="`/leagues/${competitionCode}/table${backPath ? `/${backPath}` : ''}`"
         class="pb-2 hover:text-zinc-100 transition-all"
       >
         <svg
