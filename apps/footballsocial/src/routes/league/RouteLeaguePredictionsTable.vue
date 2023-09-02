@@ -1,5 +1,5 @@
 <script setup>
-import { watch } from 'vue';
+import { watch, shallowRef } from 'vue';
 import PredictionsResults from "../../components/PredictionsResults.vue";
 import { useCompetitionLoader } from "../../api/football-data/useCompetitionLoader";
 import { calculatePredictionTable } from "../../composables/usePredictionService";
@@ -19,10 +19,12 @@ const props = defineProps({
   },
 });
 const { items: competition } = useCompetitionLoader();
+const key = shallowRef(1);
 
-watch(competition, (_competition) => {
+watch(competition, async (_competition) => {
   if (_competition?.currentSeason.currentMatchday) {
-    calculatePredictionTable(_competition.code, _competition.currentSeason.currentMatchday);
+    await calculatePredictionTable(_competition.code, _competition.currentSeason.currentMatchday);
+    key.value += 1;
   }
 }, { immediate: true });
 </script>
@@ -58,10 +60,12 @@ watch(competition, (_competition) => {
       v-if="competition && showGameweekResults"
       :competitionCode="competition?.code"
       :gameweek="competition?.currentSeason.currentMatchday"
+      :key="`gameweek_${key}`"
     />
     <PredictionsResults
       v-else-if="competition"
       :competitionCode="competition?.code"
+      :key="`season_${key}`"
     />
     <div class="p-4 mt-6 text-zinc-200">
       <h3 class="text-xl font-light text-white">Rules</h3>
