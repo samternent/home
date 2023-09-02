@@ -1,10 +1,8 @@
 <script setup>
-import { shallowRef, unref, reactive } from "vue";
+import { reactive } from "vue";
 
 import { useRouter } from "vue-router";
-import { supabaseClient } from "../../service/supabase";
 import { useCurrentUser } from "../../composables/useCurrentUser";
-import { calculatePredictionTable } from "../../composables/usePredictionService";
 import { watch } from "vue";
 
 const { user, profile, signOut, updateProfile } = useCurrentUser();

@@ -1,7 +1,8 @@
 import { shallowRef, watch } from "vue";
-import api from "../utils/api";
+import { useAxios } from "../../composables/useAxios";
 
 export default function useLegueLoader({ country }) {
+  const api = useAxios();
   const items = shallowRef();
 
   try {

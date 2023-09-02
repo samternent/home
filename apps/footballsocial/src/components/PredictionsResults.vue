@@ -1,6 +1,6 @@
 <script setup>
 import { shallowRef, unref } from "vue";
-import { fetchPredictionTable } from "../composables/usePredictionService";
+import { usePredictionService } from "../composables/usePredictionService";
 import { useCurrentUser } from "../composables/useCurrentUser";
 import { watch } from "vue";
 
@@ -21,6 +21,8 @@ const props = defineProps({
 
 const predictionsLoaded = shallowRef(false);
 const table = shallowRef([]);
+
+const { fetchPredictionTable } = usePredictionService();
 
 async function loadPredictions() {
   const { data } = await fetchPredictionTable(props.competitionCode, props.gameweek);

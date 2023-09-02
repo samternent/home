@@ -1,68 +1,89 @@
-import api from "../utils/api";
+import { provide, inject } from "vue";
+import { useAxios } from "./useAxios";
 import { supabaseClient } from "../service/supabase";
 
-export const addPrediction = async (
-  username: string,
-  predictions: any,
-  competitionCode: string,
-  gameweek: Number
-) => {
-  return supabaseClient
-    .from("predictions")
-    .upsert(
-      Object.keys(predictions)
-        .map((fixtureId) => ({
-          id: `${username}_${fixtureId}_${gameweek}`,
-          username,
-          fixtureId,
-          homeScore: predictions[fixtureId].homeScore,
-          awayScore: predictions[fixtureId].awayScore,
-          competitionCode,
-          gameweek,
-        }))
-        .filter(
-          ({ homeScore, awayScore }) =>
-            homeScore !== undefined && awayScore !== undefined
-        ),
-      { onConflict: "id" }
-    )
-    .select();
-};
+const usePredictionServiceSymbol = Symbol('usePredictionService');
 
-export const getPredictions = async (
-  username: string,
-  competitionCode: string,
-  gameweek: Number
-) => {
-  return api.get(`/predict/${username}/${competitionCode}/${gameweek}`);
-};
+export function providePredictionService() {
+  const api = useAxios();
 
-export const getPredictionsCount = async (
-  username: string,
-  competitionCode: string,
-  gameweek: Number
-) => {
-  return supabaseClient
-    .from("predictions")
-    .select("*", { count: "exact", head: true });
-};
-
-export const fetchPredictionTable = async (
-  competitionCode: string,
-  gameweek: Number
-) => {
-  if (gameweek) {
-    return api.get(`/predict/${competitionCode}/table/${gameweek}`);
+  async function addPrediction(
+    username: string,
+    predictions: any,
+    competitionCode: string,
+    gameweek: Number
+  ) {
+    return supabaseClient
+      .from("predictions")
+      .upsert(
+        Object.keys(predictions)
+          .map((fixtureId) => ({
+            id: `${username}_${fixtureId}_${gameweek}`,
+            username,
+            fixtureId,
+            homeScore: predictions[fixtureId].homeScore,
+            awayScore: predictions[fixtureId].awayScore,
+            competitionCode,
+            gameweek,
+          }))
+          .filter(
+            ({ homeScore, awayScore }) =>
+              homeScore !== undefined && awayScore !== undefined
+          ),
+        { onConflict: "id" }
+      )
+      .select();
   }
-  return api.get(`/predict/${competitionCode}/table`);
-};
 
-export const calculatePredictionTable = async (
-  competitionCode: string,
-  gameweek: Number
-) => {
-  if (gameweek) {
-    return api.post(`/predict/${competitionCode}/calculate/${gameweek}`);
+  async function getPredictions(
+    username: string,
+    competitionCode: string,
+    gameweek: Number
+  ) {
+    return api.get(`/predict/${username}/${competitionCode}/${gameweek}`);
   }
-  return api.post(`/predict/${competitionCode}/calculate`);
-};
+
+  async function getPredictionsCount(
+    username: string,
+    competitionCode: string,
+    gameweek: Number
+  ) {
+    return supabaseClient
+      .from("predictions")
+      .select("*", { count: "exact", head: true });
+  }
+
+  async function fetchPredictionTable(
+    competitionCode: string,
+    gameweek: Number
+  ) {
+    if (gameweek) {
+      return api.get(`/predict/${competitionCode}/table/${gameweek}`);
+    }
+    return api.get(`/predict/${competitionCode}/table`);
+  }
+
+  async function calculatePredictionTable(
+    competitionCode: string,
+    gameweek: Number
+  ) {
+    if (gameweek) {
+      return api.post(`/predict/${competitionCode}/calculate/${gameweek}`);
+    }
+    return api.post(`/predict/${competitionCode}/calculate`);
+  }
+
+  const predictionService = {
+    getPredictions,
+    addPrediction,
+    getPredictionsCount,
+    fetchPredictionTable,
+    calculatePredictionTable,
+  };
+
+  provide(usePredictionServiceSymbol, predictionService)
+  return predictionService;
+}
+export function usePredictionService() {
+  return inject(usePredictionServiceSymbol);
+}

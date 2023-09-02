@@ -1,21 +1,19 @@
 <script setup>
-import { computed, shallowRef, watch } from "vue";
-import api from "./utils/api";
-import { useToast } from "vue-toastification";
-import GithubSvg from "./assets/github-mark-white.svg";
-import { provideCurrentUser } from "./composables/useCurrentUser";
-import SetUsername from "./components/SetUsername.vue";
-import UserMenu from "./components/UserMenu.vue";
-import Notifications from "./components/Notifications.vue";
-import { version } from "../package.json";
+import { shallowRef } from "vue";
 import { useLocalStorage, onClickOutside } from "@vueuse/core";
 import { useRouter } from "vue-router";
+import GithubSvg from "./assets/github-mark-white.svg";
+import { provideCurrentUser } from "./composables/useCurrentUser";
+import { provideAppVersion } from "./composables/useAppVersion";
+import SetUsername from "./components/SetUsername.vue";
+import UserMenu from "./components/UserMenu.vue";
+import Api from "./Api.vue";
+// import Notifications from "./components/Notifications.vue";
 
-const toast = useToast();
-
+const { appVersion, serverVersion } = provideAppVersion();
 const { user, profile, ready } = provideCurrentUser();
+
 const hasDismissedPopup = useLocalStorage("app/hasDismissedPopup", false);
-const isLoggedOutUser = computed(() => !profile.value && ready.value);
 
 const modalRef = shallowRef(null);
 
@@ -26,40 +24,44 @@ router.beforeEach((to, from) => {
   }
 });
 
-api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  (error) => {
-    if (error.response.status === 429) {
-      toast.error(
-        "Sorry, our servers are very busy right now. Please try again later",
-        {
-          position: "bottom-right",
-          timeout: 5000,
-          closeOnClick: true,
-          pauseOnFocusLoss: false,
-          pauseOnHover: true,
-          draggable: true,
-          draggablePercent: 0.6,
-          showCloseButtonOnHover: true,
-          hideProgressBar: true,
-          closeButton: "button",
-          icon: true,
-          rtl: false,
-        }
-      );
-    }
-    return Promise.reject(error);
-  }
-);
-
 onClickOutside(modalRef, (event) => (hasDismissedPopup.value = true));
+function reloadPage() {
+  window.location.reload();
+}
 </script>
 
 <template>
   <div class="dark:text-white absolute inset-0 flex flex-col">
     <div class="bg-indigo-50 sticky dark:bg-[#1c1c1c] top-0 z-30 shadow w-full">
+      <div
+        class="bg-blue-500 p-2 flex items-center"
+        v-if="appVersion && serverVersion && appVersion !== serverVersion"
+      >
+        <p class="max-w-4xl mx-auto">
+          A new version of the app is available. Refresh to get the latest
+          version v{{ serverVersion }}.
+          <button
+            class="bg-blue-800 px-3 py-1 ml-2 rounded hover:bg-blue-700"
+            @click="reloadPage"
+          >
+            Refresh
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-6 h-6 inline ml-2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
+              />
+            </svg>
+          </button>
+        </p>
+      </div>
       <div
         class="max-w-7xl flex justify-between mx-auto items-center w-full h-12"
       >
@@ -139,7 +141,9 @@ onClickOutside(modalRef, (event) => (hasDismissedPopup.value = true));
       <template v-if="user && !profile?.username">
         <SetUsername />
       </template>
-      <RouterView v-else />
+      <Api v-else>
+        <RouterView />
+      </Api>
     </div>
     <div v-else class="flex-1 flex justify-center items-center">
       <div class="lds-ring">
@@ -182,7 +186,7 @@ onClickOutside(modalRef, (event) => (hasDismissedPopup.value = true));
             :href="`https://github.com/samternent/home/releases/tag/footballsocial-${version}`"
             target="_blank"
             class="mr-2 hover:underline md:mr-4"
-            >v{{ version }}</a
+            >v{{ appVersion }}</a
           >
         </li>
         <li>
@@ -209,8 +213,6 @@ onClickOutside(modalRef, (event) => (hasDismissedPopup.value = true));
 </template>
 <style scoped>
 .lds-ring {
-  /* display: inline-block; */
-  /* position: relative; */
   width: 80px;
   height: 80px;
 }
