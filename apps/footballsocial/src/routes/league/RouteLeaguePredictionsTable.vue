@@ -1,5 +1,5 @@
 <script setup>
-import { watch, shallowRef } from 'vue';
+import { watch, shallowRef } from "vue";
 import PredictionsResults from "../../components/PredictionsResults.vue";
 import { useCompetitionLoader } from "../../api/football-data/useCompetitionLoader";
 import { calculatePredictionTable } from "../../composables/usePredictionService";
@@ -19,14 +19,25 @@ const props = defineProps({
   },
 });
 const { items: competition } = useCompetitionLoader();
-const key = shallowRef(1);
+const predictionsReady = shallowRef(false);
 
-watch(competition, async (_competition) => {
-  if (_competition?.currentSeason.currentMatchday) {
-    await calculatePredictionTable(_competition.code, _competition.currentSeason.currentMatchday);
-    key.value += 1;
-  }
-}, { immediate: true });
+watch(
+  competition,
+  async (_competition) => {
+    if (
+      _competition?.currentSeason.currentMatchday &&
+      _competition.code === props.competitionCode
+    ) {
+      await calculatePredictionTable(
+        _competition.code,
+        _competition.currentSeason.currentMatchday
+      );
+
+      predictionsReady.value = true;
+    }
+  },
+  { immediate: true }
+);
 </script>
 <template>
   <div class="w-full">
@@ -56,17 +67,25 @@ watch(competition, async (_competition) => {
         </RouterLink>
       </li>
     </ul>
-    <PredictionsResults
-      v-if="competition && showGameweekResults"
-      :competitionCode="competition?.code"
-      :gameweek="competition?.currentSeason.currentMatchday"
-      :key="`gameweek_${key}`"
-    />
-    <PredictionsResults
-      v-else-if="competition"
-      :competitionCode="competition?.code"
-      :key="`season_${key}`"
-    />
+    <template v-if="predictionsReady">
+      <PredictionsResults
+        v-if="competition && showGameweekResults"
+        :competitionCode="competition?.code"
+        :gameweek="competition?.currentSeason.currentMatchday"
+      />
+      <PredictionsResults
+        v-else-if="competition"
+        :competitionCode="competition?.code"
+      />
+    </template>
+    <div v-else class="w-full">
+      <div
+        v-for="i in 10"
+        :key="i"
+        class="bg-[#1e1e1e] animate-pulse my-2 rounded flex-1 h-8 w-full"
+      />
+    </div>
+
     <div class="p-4 mt-6 text-zinc-200">
       <h3 class="text-xl font-light text-white">Rules</h3>
       <ul class="text-sm font-light my-2">

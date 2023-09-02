@@ -225,7 +225,7 @@ export default function predictRoutes(router) {
 
       const cacheResults = await redisClient.get(req.url);
       if (cacheResults) {
-        return res.send(JSON.parse(cacheResults));
+        return res.send(200);
       }
 
       console.log(`calculating results for ${competitionCode} gameweek ${gameweek}.`);
@@ -341,7 +341,7 @@ export default function predictRoutes(router) {
         NX: true,
       });
 
-      return res.status(200).json(results);
+      return res.status(200);
     }
   );
 

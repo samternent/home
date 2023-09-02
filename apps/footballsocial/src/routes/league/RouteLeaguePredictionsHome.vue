@@ -54,7 +54,6 @@ const backPath = window.localStorage.getItem('lastLeagueTablePath');
         Back
       </RouterLink>
     </div>
-    {{ gameweek }}
     <PredictionsList
       v-if="competition && !isCup"
       :username="username"
