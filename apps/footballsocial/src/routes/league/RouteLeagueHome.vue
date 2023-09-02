@@ -88,7 +88,7 @@ const dismissFeatureBanner = useLocalStorage('footballsocial/dismissFeatureBanne
     <p class="text-xl font-thin">
       Thank you for playing
       <span
-        class="bg-gradient-to-r from-white to-70% to-indigo-100 transition-all via-40% bg-clip-text text-transparent font-black tracking-tighter"
+        class="bg-gradient-to-r from-white to-70% to-indigo-100 transition-all via-40% bg-clip-text text-transparent font-medium tracking-tighter"
       >
         Football Social<span class="text-pink-700">.</span></span
       >.
