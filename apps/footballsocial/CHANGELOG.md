@@ -1,5 +1,15 @@
 # concords-footballsocial
 
+## 0.6.0
+
+### Minor Changes
+
+- [#105](https://github.com/samternent/home/pull/105) [`948f6c3`](https://github.com/samternent/home/commit/948f6c3fe845e14b0829497695fd8fde10ace120) Thanks [@samternent](https://github.com/samternent)! - Adds version refresh button
+
+### Patch Changes
+
+- [`87cc35d`](https://github.com/samternent/home/commit/87cc35d2fb06e4a2c7c966cf42e48532e0cd79c8) Thanks [@samternent](https://github.com/samternent)! - Small banner logo tweak
+
 ## 0.5.13
 
 ### Patch Changes
