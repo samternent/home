@@ -1,5 +1,13 @@
 # concords-footballsocial
 
+## 0.5.13
+
+### Patch Changes
+
+- [`874d67f`](https://github.com/samternent/home/commit/874d67fc53632dc904681ef9cee54ae1284893d3) Thanks [@samternent](https://github.com/samternent)! - Update table after recalc
+
+- [`33f2952`](https://github.com/samternent/home/commit/33f2952b0eb33cb4fc2c513023ff7f2356e3a02e) Thanks [@samternent](https://github.com/samternent)! - Fix gameweek table backpath
+
 ## 0.5.12
 
 ### Patch Changes
