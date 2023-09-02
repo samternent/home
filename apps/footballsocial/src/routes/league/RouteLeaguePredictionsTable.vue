@@ -2,7 +2,7 @@
 import { watch, shallowRef } from "vue";
 import PredictionsResults from "../../components/PredictionsResults.vue";
 import { useCompetitionLoader } from "../../api/football-data/useCompetitionLoader";
-import { calculatePredictionTable } from "../../composables/usePredictionService";
+import { usePredictionService } from "../../composables/usePredictionService";
 
 const props = defineProps({
   competitionCode: {
@@ -20,6 +20,7 @@ const props = defineProps({
 });
 const { items: competition } = useCompetitionLoader();
 const predictionsReady = shallowRef(false);
+const { calculatePredictionTable } = usePredictionService();
 
 watch(
   competition,

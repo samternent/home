@@ -3,10 +3,7 @@ import { toRefs, computed, shallowRef, unref } from "vue";
 import { Interval, DateTime } from "luxon";
 import { watchThrottled } from "@vueuse/core";
 import useFixturesLoader from "../api/football-data/useCompetitionFixturesLoader";
-import {
-  addPrediction,
-  getPredictions,
-} from "../composables/usePredictionService";
+import { usePredictionService } from "../composables/usePredictionService";
 import { useCurrentUser } from "../composables/useCurrentUser";
 import CountdownTimer from "./CountdownTimer.vue";
 import Predictor from "./Predictor.vue";
@@ -34,6 +31,7 @@ const props = defineProps({
   },
 });
 
+const { addPrediction, getPredictions } = usePredictionService();
 const { competitionCode, currentGameweek, stage, username } = toRefs(props);
 const overrideGameweek = shallowRef();
 const gameweek = computed(

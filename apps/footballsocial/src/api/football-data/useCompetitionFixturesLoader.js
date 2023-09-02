@@ -1,5 +1,5 @@
 import { shallowRef, watch } from "vue";
-import api from "../../utils/api";
+import { useAxios } from "../../composables/useAxios";
 
 function normalizeData(data) {
   return data.matches;
@@ -11,6 +11,7 @@ function normalizeMeta(data) {
   };
 }
 export default function useFixturesLoader(competitionCode, stage, matchday) {
+  const api = useAxios();
   const items = shallowRef([]);
   const meta = shallowRef({});
   const loading = shallowRef(false);

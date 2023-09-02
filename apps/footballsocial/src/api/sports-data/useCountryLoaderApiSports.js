@@ -1,7 +1,8 @@
 import { shallowRef } from "vue";
-import api from "../utils/api";
+import { useAxios } from "../../composables/useAxios";
 
 export default function useFetcher({ id } = { id: 1 }) {
+  const api = useAxios();
   const items = shallowRef();
 
   api

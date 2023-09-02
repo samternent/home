@@ -3,23 +3,21 @@ import { useRouter } from "vue-router";
 import GithubSvg from "../assets/github-mark-white.svg";
 import { useLocalStorage } from "@vueuse/core";
 import { useCurrentUser } from "../composables/useCurrentUser";
-import { getPredictionsCount } from "../composables/usePredictionService";
+import { usePredictionService } from "../composables/usePredictionService";
 import { watch, onMounted, shallowRef } from "vue";
-import api from "../utils/api";
 import PredictionsResults from "../components/PredictionsResults.vue";
 
 const router = useRouter();
 const lastLeague = useLocalStorage("lastLeague", "PL");
 const { user } = useCurrentUser();
+const { getPredictionsCount, fetchPredictionTable } = usePredictionService();
 
 const players = shallowRef(0);
 const predictionsCount = shallowRef(0);
 const table = shallowRef([]);
 
 onMounted(async () => {
-  const { data } = await api.get(
-    "https://api.footballsocial.app/predict/PL/table"
-  );
+  const { data } = await fetchPredictionTable('PL')
   players.value = data?.length;
   table.value = data;
   const { count } = await getPredictionsCount();

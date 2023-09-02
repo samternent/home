@@ -1,9 +1,10 @@
 import { inject, provide, shallowRef, watch, computed } from "vue";
-import api from "../../utils/api";
+import { useAxios } from "../../composables/useAxios";
 
 const useCompetitionLoaderSymbol = Symbol("useCompetitionLoader");
 
 export function provideCompetitionLoader(competitionCode) {
+  const api = useAxios();
   const items = shallowRef();
   const loading = shallowRef(false);
   const loaded = shallowRef(false);

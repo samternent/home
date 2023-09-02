@@ -1,10 +1,11 @@
 import { shallowRef, watch } from "vue";
-import api from "../../utils/api";
+import { useAxios } from "../../composables/useAxios";
 
 function normalizeData(data) {
   return data.matches;
 }
 export default function useFixturesLoader(teamId) {
+  const api = useAxios();
   const items = shallowRef();
   const loading = shallowRef(false);
   const loaded = shallowRef(false);
