@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.6.3
+
+### Patch Changes
+
+- [`82e6730`](https://github.com/samternent/home/commit/82e6730700ad659f1dbd6ccc0ea49fcac14b1c23) Thanks [@samternent](https://github.com/samternent)! - Add deletion request flow
+
 ## 0.6.2
 
 ### Patch Changes
