@@ -40,8 +40,11 @@ async function signOutAndLeave() {
       class="absolute dark:bg-zinc-900 right-0 top-8 flex flex-col overflow-hidden text-left rounded border border-zinc-700 w-64"
     >
       <ul class="item">
-        <li v-if="profile.username === 'sam'" class="flex">
+        <!-- <li v-if="profile.username === 'sam'" class="flex">
           <RouterLink to="/admin" class="p-2 hover:bg-zinc-800 w-full hover:text-indigo-500">Admin</RouterLink>
+        </li> -->
+        <li class="flex">
+          <RouterLink to="/auth/profile" class="p-2 hover:bg-zinc-800 w-full hover:text-indigo-500">Profile</RouterLink>
         </li>
         <li class="p-2 flex hover:bg-zinc-800 cursor-pointer hover:text-red-600" @click="signOutAndLeave">
           <svg

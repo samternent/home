@@ -1,60 +1,58 @@
 <script setup>
-import { reactive } from "vue";
-
-import { useRouter } from "vue-router";
+import { shallowRef, unref } from "vue";
+import { supabaseClient } from "../../service/supabase";
 import { useCurrentUser } from "../../composables/useCurrentUser";
-import { watch } from "vue";
+import { onMounted } from "vue";
 
-const { user, profile, signOut, updateProfile } = useCurrentUser();
+const { user, profile } = useCurrentUser();
 
-const router = useRouter();
-defineProps({
-  username: {
-    type: String,
-    required: true,
-  },
-});
+const pendingDeletion = shallowRef(false);
 
-const updatedProfile = reactive({
-  username: null,
-});
+async function checkPendingDeletion() {
+  const { data, error } = await supabaseClient
+    .from("deletions")
+    .select()
+    .eq("username", profile.value.username);
 
-async function signOutAndLeave() {
-  await signOut();
-  router.push("/");
+  if (data[0]?.username === profile.value.username) {
+    pendingDeletion.value = true;
+  }
 }
+onMounted(checkPendingDeletion);
 
-async function saveProfile() {
-  await updateProfile(updatedProfile);
+async function requestAccountDeletion() {
+  const { data, error } = await supabaseClient
+    .from("deletions")
+    .insert({ username: profile.value.username })
+    .select();
+
+  if (data[0].username === profile.value.username) {
+    pendingDeletion.value = true;
+  }
 }
-
-watch(profile, (_profile) => {
-  router.push(`/auth/profile/${_profile.username}`);
-});
-
-// const avatarFile = event.target.files[0]
-// const { data, error } = await supabaseClient
-//   .storage
-//   .from('avatars')
-//   .upload('public/avatar1.png', avatarFile, {
-//     cacheControl: '3600',
-//     upsert: false
-//   })
 </script>
 <template>
-  <div class="mx-auto w-full max-w-4xl p-4">
+  <div class="mx-auto w-full max-w-3xl p-4">
     <div v-if="!user" class="text-3xl my-8 text-center">
       Please check your emails to confirm your signup.
     </div>
-    <div v-else class="bg-zinc-800 rounded p-2">
-      {{ profile.username }}
-      <p class="my-16">
-        <button @click="signOutAndLeave" class="px-4 py-2 bg-red-800">
-          Sign Out
-        </button>
+    <div v-else>
+      <p>
+        <span
+          class="text-6xl font-bold tracking-tighter dark:text-white shadow-text"
+          >@{{ profile.username }}</span
+        >
       </p>
 
-
+      <p class="my-16">
+        <div v-if="pendingDeletion">
+          <p>Deletion request is pending.</p>
+          <p>This will be processed withing 48 hours</p>
+        </div>
+        <button :disabled="pendingDeletion" @click="requestAccountDeletion" class="px-4 py-2 bg-red-800 disabled:opacity-50">
+          Request account deletion
+        </button>
+      </p>
     </div>
   </div>
 </template>
