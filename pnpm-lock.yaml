@@ -478,6 +478,9 @@ importers:
       redis:
         specifier: ^4.3.0
         version: 4.6.5
+      semver:
+        specifier: ^7.5.4
+        version: 7.5.4
       tippy.js:
         specifier: ^6.3.7
         version: 6.3.7

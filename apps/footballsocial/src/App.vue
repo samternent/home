@@ -1,7 +1,8 @@
 <script setup>
-import { shallowRef } from "vue";
+import { shallowRef, computed } from "vue";
 import { useLocalStorage, onClickOutside } from "@vueuse/core";
 import { useRouter } from "vue-router";
+import semverGt from 'semver/functions/gt';
 import GithubSvg from "./assets/github-mark-white.svg";
 import { provideCurrentUser } from "./composables/useCurrentUser";
 import { provideAppVersion } from "./composables/useAppVersion";
@@ -28,6 +29,13 @@ onClickOutside(modalRef, (event) => (hasDismissedPopup.value = true));
 function reloadPage() {
   window.location.reload();
 }
+
+const hasNewVersion = computed(() => {
+  if (!appVersion.value || !serverVersion.value) {
+    return false;
+  }
+  return semverGt(serverVersion.value, appVersion.value)
+})
 </script>
 
 <template>
@@ -35,7 +43,7 @@ function reloadPage() {
     <div class="bg-indigo-50 sticky dark:bg-[#1c1c1c] top-0 z-30 shadow w-full">
       <div
         class="bg-blue-500 p-2 flex items-center"
-        v-if="appVersion && serverVersion && appVersion !== serverVersion"
+        v-if="hasNewVersion"
       >
         <p class="max-w-4xl mx-auto">
           A new version of the app is available. Refresh to get the latest
