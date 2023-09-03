@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.6.1
+
+### Patch Changes
+
+- [`3fe89a6`](https://github.com/samternent/home/commit/3fe89a669d543a44750574c0983e383846997ec0) Thanks [@samternent](https://github.com/samternent)! - Use semver package for version comparison
+
 ## 0.6.0
 
 ### Minor Changes
