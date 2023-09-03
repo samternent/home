@@ -6,9 +6,9 @@ export default function systemRoutes(router) {
       console.log('updating server')
       try {
         shell.exec('git pull origin main');
-        res.status(200)
+        res.sendStatus(200)
       } catch (e) {
-        res.status(500)
+        res.sendStatus(500);
       }
     }
   );
