@@ -1,5 +1,11 @@
 # footballsocial-api
 
+## 0.0.5
+
+### Patch Changes
+
+- [`5c4fd5a`](https://github.com/samternent/home/commit/5c4fd5a90eb5d563e68df03047942c41506525d9) Thanks [@samternent](https://github.com/samternent)! - Update run command for compose
+
 ## 0.0.4
 
 ### Patch Changes
