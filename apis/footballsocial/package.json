@@ -6,7 +6,7 @@
   "scripts": {
     "build": "docker build -f ./Dockerfile ../../ -t samternent/footballsocial-api",
     "dev:api": "nodemon api/main.mjs",
-    "start": "pm2 startOrReload ecosystem.config.cjs"
+    "start": "node src/main.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.1.1",

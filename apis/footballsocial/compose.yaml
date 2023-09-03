@@ -1,0 +1,7 @@
+services:
+  footballsocial-api:
+    image: "samternent/footballsocial-api"
+    ports:
+      - "8000:4002"
+  redis:
+    image: "redis:alpine"
