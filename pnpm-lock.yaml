@@ -481,6 +481,9 @@ importers:
       semver:
         specifier: ^7.5.4
         version: 7.5.4
+      shelljs:
+        specifier: ^0.8.5
+        version: 0.8.5
       tippy.js:
         specifier: ^6.3.7
         version: 6.3.7
