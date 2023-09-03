@@ -2,7 +2,7 @@
 import { shallowRef, computed } from "vue";
 import { useLocalStorage, onClickOutside } from "@vueuse/core";
 import { useRouter } from "vue-router";
-import semverGt from 'semver/functions/gt';
+import semverGt from "semver/functions/gt";
 import GithubSvg from "./assets/github-mark-white.svg";
 import { provideCurrentUser } from "./composables/useCurrentUser";
 import { provideAppVersion } from "./composables/useAppVersion";
@@ -34,22 +34,23 @@ const hasNewVersion = computed(() => {
   if (!appVersion.value || !serverVersion.value) {
     return false;
   }
-  return semverGt(serverVersion.value, appVersion.value)
-})
+  return semverGt(serverVersion.value, appVersion.value);
+});
 </script>
 
 <template>
   <div class="dark:text-white absolute inset-0 flex flex-col">
     <div class="bg-indigo-50 sticky dark:bg-[#1c1c1c] top-0 z-30 shadow w-full">
       <div
-        class="bg-blue-500 p-2 flex items-center"
+        class="bg-blue-500"
         v-if="hasNewVersion"
       >
-        <p class="max-w-4xl mx-auto">
-          A new version of the app is available. Refresh to get the latest
-          version v{{ serverVersion }}.
+        <div  class="max-w-7xl mx-auto flex justify-left items-center flex-col lg:flex-row p-2">
+          <p>
+            A new version of the app is available.
+          </p>
           <button
-            class="bg-blue-800 px-3 py-1 ml-2 rounded hover:bg-blue-700"
+            class="bg-blue-800 px-3 py-1 lg:ml-4 rounded hover:bg-blue-700 mt-2 lg:mt-0"
             @click="reloadPage"
           >
             Refresh
@@ -68,7 +69,7 @@ const hasNewVersion = computed(() => {
               />
             </svg>
           </button>
-        </p>
+        </div>
       </div>
       <div
         class="max-w-7xl flex justify-between mx-auto items-center w-full h-12"
@@ -77,7 +78,7 @@ const hasNewVersion = computed(() => {
           <RouterLink
             to="/"
             alt="Home"
-            class="mr-4 text-lg no-underline hover:dark:text-white hover:no-underline dark:text-white mx-1 rounded h-10 flex items-center justify-center text-center px-2 py-1"
+            class="mr-4 text-lg no-underline hover:dark:text-white hover:no-underline dark:text-white mx-1 rounded h-10 flex items-center justify-center text-center pr-2 py-1"
           >
             <img
               alt="Football Social"
