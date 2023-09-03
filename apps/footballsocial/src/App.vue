@@ -192,7 +192,7 @@ const hasNewVersion = computed(() => {
         </li>
         <li>
           <a
-            :href="`https://github.com/samternent/home/releases/tag/footballsocial-${version}`"
+            :href="`https://github.com/samternent/home/releases/tag/footballsocial-${appVersion}`"
             target="_blank"
             class="mr-2 hover:underline md:mr-4"
             >v{{ appVersion }}</a
