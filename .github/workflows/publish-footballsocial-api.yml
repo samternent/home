@@ -51,7 +51,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build Docker image
-        run:  pnpm --filter footballsocial-api build
+        run:  pnpm build:footballsocial-api
 
       - name: Push docker image
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/footballsocial-api:latest
