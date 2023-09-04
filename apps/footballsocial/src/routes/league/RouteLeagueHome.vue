@@ -101,7 +101,7 @@ const dismissProductHuntBanner = useLocalStorage(
       >?
     </p>
     <p class="font-thin py-2 text-lg">
-      Please consider leaving an upvote or comment on <a href="https://www.producthunt.com/products/football-social/launches" target="_blank" class="league-link font-medium">ProductHunt.com</a>.
+      Please consider leaving an upvote or comment on <a href="https://www.producthunt.com/posts/football-social" target="_blank" class="league-link font-medium">ProductHunt.com</a>.
     </p>
   </div>
   <div

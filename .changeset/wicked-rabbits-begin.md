@@ -2,4 +2,4 @@
 "footballsocial": patch
 ---
 
-Adds producthunt banner
+Update product hunt URl

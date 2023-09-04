@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.6.5
+
+### Patch Changes
+
+- [`efe43b8`](https://github.com/samternent/home/commit/efe43b83477aadcab101986ac66653c1b386361b) Thanks [@samternent](https://github.com/samternent)! - Adds producthunt banner
+
 ## 0.6.4
 
 ### Patch Changes

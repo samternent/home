@@ -42,11 +42,14 @@ export default function predictRoutes(router) {
 
         returnData = data;
       } else {
-        const { data } = await supabaseClient
+        const { data, error } = await supabaseClient
           .from("gameweek_results")
           .select()
           .eq("competitionCode", competitionCode);
-        returnData = data;
+        if (error) {
+          res.status(500).json(error);
+        }
+        returnData = data || [];
       }
 
       const combinedTableStructure = {};
@@ -136,12 +139,16 @@ export default function predictRoutes(router) {
         ]),
       ];
 
-      const { data } = await supabaseClient
+      const { data, error } = await supabaseClient
         .from("gameweek_results")
         .select()
         .eq("competitionCode", competitionCode);
 
       const combinedTableStructure = {};
+
+      if (error) {
+        res.status(500).json(error);
+      }
 
       data.forEach((item) => {
         if (combinedTableStructure[item.username]) {
