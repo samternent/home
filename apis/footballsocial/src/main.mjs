@@ -1,19 +1,21 @@
-import express from "express";
-import routes from "./routes/index.mjs";
-import bodyParser from "body-parser";
-import cors from "cors";
+console.log('hello, world!');
 
-// App
-const app = express();
+// import express from "express";
+// import routes from "./routes/index.mjs";
+// import bodyParser from "body-parser";
+// import cors from "cors";
 
-app.use(bodyParser.json());
-app.use(cors());
+// // App
+// const app = express();
 
-// Set port
-const port = "4002";
-app.set("port", port);
+// app.use(bodyParser.json());
+// app.use(cors());
 
-app.use("/", routes);
+// // Set port
+// const port = "4002";
+// app.set("port", port);
 
-// Server
-app.listen(port, () => console.log(`Server running on localhost:${port}`));
+// app.use("/", routes);
+
+// // Server
+// app.listen(port, () => console.log(`Server running on localhost:${port}`));
