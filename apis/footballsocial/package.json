@@ -4,7 +4,7 @@
   "version": "0.0.5",
   "type": "module",
   "scripts": {
-    "build": "DOCKER_BUILDKIT=1 docker build -f ./Dockerfile ../../ -t samternent/footballsocial-api",
+    "build": "sh build-image.sh",
     "dev:api": "nodemon api/main.mjs",
     "start": "node src/main.mjs"
   },

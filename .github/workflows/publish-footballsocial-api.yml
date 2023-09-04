@@ -4,10 +4,13 @@ env:
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_CONCORDS_PROJECT_ID }}
   PNPM_CACHE_PATH: ~/.pnpm-store
   PNPM_CACHE_NAME: pnpm-store-cache
+
 on:
   push:
-    tags:
-      - 'footballsocial-api-*.*.*'
+    branches:
+      - 'dockerize'
+    # tags:
+    #   - 'footballsocial-api-*.*.*'
 
 jobs:
   Deploy-Production:
@@ -20,10 +23,19 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Get branch name
-        id: branch
+      - name: 'Create env file'
         run: |
-          echo "branch_name=$(echo ${GITHUB_REF#refs/heads/} | tr / -)" >> $GITHUB_ENV
+          touch .env
+          echo VITE_PUBLIC_SUPABASE_URL=${{ secrets.VITE_PUBLIC_SUPABASE_URL }} >> .env
+          echo VITE_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.API_KVITE_PUBLIC_SUPABASE_ANON_KEYEY }} >> .env
+          echo VITE_PUBLIC_SUPABASE_SUPER_KEY=${{ secrets.VITE_PUBLIC_SUPABASE_SUPER_KEY }} >> .env
+          echo REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }} >> .env
+          echo REDIS_ENDPOINT_URI=${{ secrets.REDIS_ENDPOINT_URI }} >> .env
+          echo FOOTBALL_DATA_API_KEY=${{ secrets.FOOTBALL_DATA_API_KEY }} >> .env
+          echo VAPID_PUBLIC_KEY=${{ secrets.VAPID_PUBLIC_KEY }} >> .env
+          echo VAPID_PRIVATE_KEY=${{ secrets.VAPID_PRIVATE_KEY }} >> .env
+          echo OPENAPI_KEY=${{ secrets.OPENAPI_KEY }} >> .env
+          cat .env
 
       - name: Get node version
         id: nvmrc
