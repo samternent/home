@@ -73,7 +73,7 @@ watch(
         v-if="predictionsCount"
       >
 
-      <div class="h-10">
+      <div>
         A total of
         <span class="text-6xl font-thin text-white"
           >{{ predictionsCount }}

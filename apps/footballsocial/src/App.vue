@@ -45,12 +45,12 @@ const hasNewVersion = computed(() => {
         class="bg-blue-500"
         v-if="hasNewVersion"
       >
-        <div  class="max-w-7xl mx-auto flex justify-left items-center flex-col lg:flex-row p-2">
+        <div  class="max-w-7xl mx-auto flex justify-left items-center flex-col md:flex-row p-2">
           <p>
             A new version of the app is available.
           </p>
           <button
-            class="bg-blue-800 px-3 py-1 lg:ml-4 rounded hover:bg-blue-700 mt-2 lg:mt-0"
+            class="bg-blue-800 px-3 py-1 md:ml-4 rounded hover:bg-blue-700 mt-2 md:mt-0"
             @click="reloadPage"
           >
             Refresh

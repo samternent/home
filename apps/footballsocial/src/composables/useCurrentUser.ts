@@ -25,6 +25,8 @@ export function provideCurrentUser() {
         .select("*")
         .eq("id", session.value.user.id);
       profile.value = data ? data[0] : null;
+    } else {
+      profile.value = null;
     }
     ready.value = true;
   }

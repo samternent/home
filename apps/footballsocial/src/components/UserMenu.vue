@@ -2,7 +2,7 @@
 import { shallowRef } from "vue";
 import { onClickOutside } from "@vueuse/core";
 import { useRouter } from "vue-router";
-import { useCurrentUser } from '../composables/useCurrentUser';
+import { useCurrentUser } from "../composables/useCurrentUser";
 
 const showMenu = shallowRef(false);
 const dropdownRef = shallowRef(null);
@@ -15,6 +15,7 @@ onClickOutside(dropdownRef, (event) => {
 
 async function signOutAndLeave() {
   await signOut();
+  showMenu.value = false;
   router.push("/");
 }
 </script>
@@ -44,9 +45,17 @@ async function signOutAndLeave() {
           <RouterLink to="/admin" class="p-2 hover:bg-zinc-800 w-full hover:text-indigo-500">Admin</RouterLink>
         </li> -->
         <li class="flex">
-          <RouterLink to="/auth/profile" class="p-2 hover:bg-zinc-800 w-full hover:text-indigo-500">Profile</RouterLink>
+          <RouterLink
+            @click="showMenu = false"
+            to="/auth/profile"
+            class="p-2 hover:bg-zinc-800 w-full hover:text-indigo-500"
+            >Profile</RouterLink
+          >
         </li>
-        <li class="p-2 flex hover:bg-zinc-800 cursor-pointer hover:text-red-600" @click="signOutAndLeave">
+        <li
+          class="p-2 flex hover:bg-zinc-800 cursor-pointer hover:text-red-600"
+          @click="signOutAndLeave"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
