@@ -1,5 +1,13 @@
 # concords-footballsocial
 
+## 0.6.4
+
+### Patch Changes
+
+- [`b3e121f`](https://github.com/samternent/home/commit/b3e121fdd21d7e7522a4a838e262a324a0be113f) Thanks [@samternent](https://github.com/samternent)! - Fix new version banner
+
+- [`4c9756b`](https://github.com/samternent/home/commit/4c9756bd4fb11e8e0a93cbc2ad8a53bfcf4fa4d1) Thanks [@samternent](https://github.com/samternent)! - Fix version
+
 ## 0.6.3
 
 ### Patch Changes
