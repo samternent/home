@@ -26,14 +26,12 @@ jobs:
       - name: 'Create env file'
         run: |
           touch .env
-          echo VITE_PUBLIC_SUPABASE_URL=${{ secrets.VITE_PUBLIC_SUPABASE_URL }} >> .env
-          echo VITE_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.API_KVITE_PUBLIC_SUPABASE_ANON_KEYEY }} >> .env
-          echo VITE_PUBLIC_SUPABASE_SUPER_KEY=${{ secrets.VITE_PUBLIC_SUPABASE_SUPER_KEY }} >> .env
+          echo VITE_PUBLIC_SUPABASE_URL=${{ secrets.SUPABASE_URL }} >> .env
+          echo VITE_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }} >> .env
+          echo VITE_PUBLIC_SUPABASE_SUPER_KEY=${{ secrets.SUPABASE_SUPER_KEY }} >> .env
           echo REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }} >> .env
           echo REDIS_ENDPOINT_URI=${{ secrets.REDIS_ENDPOINT_URI }} >> .env
           echo FOOTBALL_DATA_API_KEY=${{ secrets.FOOTBALL_DATA_API_KEY }} >> .env
-          echo VAPID_PUBLIC_KEY=${{ secrets.VAPID_PUBLIC_KEY }} >> .env
-          echo VAPID_PRIVATE_KEY=${{ secrets.VAPID_PRIVATE_KEY }} >> .env
           echo OPENAPI_KEY=${{ secrets.OPENAPI_KEY }} >> .env
           cat .env
 
