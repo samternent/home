@@ -1,5 +1,11 @@
 # concords-api
 
+## 0.0.4
+
+### Patch Changes
+
+- [`d1d296a`](https://github.com/samternent/home/commit/d1d296aa774a8e5f7859bc96fe07cdb8ca4a8659) Thanks [@samternent](https://github.com/samternent)! - Adds nodemon dep
+
 ## 0.0.3
 
 ### Patch Changes
