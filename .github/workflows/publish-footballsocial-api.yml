@@ -7,10 +7,8 @@ env:
 
 on:
   push:
-    branches:
-      - 'dockerize'
-    # tags:
-    #   - 'footballsocial-api-*.*.*'
+    tags:
+      - 'footballsocial-api-*.*.*'
 
 jobs:
   Deploy-Production:
