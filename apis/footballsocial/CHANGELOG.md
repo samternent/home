@@ -1,5 +1,11 @@
 # footballsocial-api
 
+## 0.0.6
+
+### Patch Changes
+
+- [#112](https://github.com/samternent/home/pull/112) [`5268e72`](https://github.com/samternent/home/commit/5268e72744bebb5b7c3f654515edce9b5ab30c24) Thanks [@samternent](https://github.com/samternent)! - Docker build
+
 ## 0.0.5
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.6.6
+
+### Patch Changes
+
+- [`221c2b6`](https://github.com/samternent/home/commit/221c2b69487b7c58f5842cf5cab56c9c855b6ae0) Thanks [@samternent](https://github.com/samternent)! - Update product hunt URl
+
 ## 0.6.5
 
 ### Patch Changes
