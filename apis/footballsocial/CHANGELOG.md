@@ -1,5 +1,11 @@
 # footballsocial-api
 
+## 0.0.8
+
+### Patch Changes
+
+- [`783ad5f`](https://github.com/samternent/home/commit/783ad5fd640ddbad2f9afce7613048502dd841bd) Thanks [@samternent](https://github.com/samternent)! - Adds missing OpenAI dep
+
 ## 0.0.7
 
 ### Patch Changes
