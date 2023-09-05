@@ -8,7 +8,6 @@ COPY ./apis/footballsocial /app
 FROM base AS prod-deps
 # Lockfile should be frozen but I can't figure it out. this is bad.
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --no-frozen-lockfile
-RUN --mount=type=secret,id=_env,dst=/.env
 
 FROM base
 COPY --from=prod-deps /app/node_modules /app/node_modules

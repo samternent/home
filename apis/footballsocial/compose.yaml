@@ -3,5 +3,15 @@ services:
     image: "samternent/footballsocial-api"
     ports:
       - "8000:4002"
+    env_file:
+      - '../../.env'
+    # environment:
+    #   VITE_PUBLIC_SUPABASE_URL: ${VITE_PUBLIC_SUPABASE_URL}
+    #   VITE_PUBLIC_SUPABASE_ANON_KEY: ${VITE_PUBLIC_SUPABASE_ANON_KEY}
+    #   VITE_PUBLIC_SUPABASE_SUPER_KEY: ${VITE_PUBLIC_SUPABASE_SUPER_KEY}
+    #   REDIS_PASSWORD: ${REDIS_PASSWORD}
+    #   REDIS_ENDPOINT_URI: ${REDIS_ENDPOINT_URI}
+    #   FOOTBALL_DATA_API_KEY: ${FOOTBALL_DATA_API_KEY}
+    #   OPENAPI_KEY: ${OPENAPI_KEY}
   redis:
     image: "redis:alpine"
