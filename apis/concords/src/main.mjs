@@ -1,10 +1,12 @@
-import express from "express";
-import routes from "./routes/index.mjs";
-import bodyParser from "body-parser";
-import cors from "cors";
 import { readFileSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
+
+import express from "express";
+import bodyParser from "body-parser";
+import cors from "cors";
+
+import routes from "./routes/index.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
