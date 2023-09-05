@@ -14,6 +14,7 @@
     "cors": "^2.8.5",
     "http-proxy-middleware": "^2.0.6",
     "luxon": "^3.0.3",
+    "openai": "^3.3.0",
     "redis": "^4.3.0",
     "shelljs": "^0.8.5",
     "uuid": "^8.3.2",

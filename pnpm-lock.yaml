@@ -42,6 +42,9 @@ importers:
       luxon:
         specifier: ^3.0.3
         version: 3.3.0
+      openai:
+        specifier: ^3.3.0
+        version: 3.3.0
       redis:
         specifier: ^4.3.0
         version: 4.6.5
