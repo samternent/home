@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "build": "docker build -f ./Dockerfile ../../ -t samternent/concords-api",
-    "start": "node src/main.mjs"
+    "start": "node src/main.mjs",
+    "start:dev": "nodemon src/main.mjs"
   },
   "dependencies": {
     "axios": "^0.27.2",
