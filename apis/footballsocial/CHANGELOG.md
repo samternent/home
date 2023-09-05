@@ -1,5 +1,11 @@
 # footballsocial-api
 
+## 0.0.7
+
+### Patch Changes
+
+- [`dd10619`](https://github.com/samternent/home/commit/dd1061920898ada41a0273e58da3d8061c7cf030) Thanks [@samternent](https://github.com/samternent)! - Adds missing shelljs dep
+
 ## 0.0.6
 
 ### Patch Changes
