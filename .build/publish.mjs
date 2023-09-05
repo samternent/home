@@ -1,6 +1,6 @@
 import shell from "shelljs";
 
-const apisToPublish = ["../apis/footballsocial"];
+const apisToPublish = ["../apis/footballsocial", "../apis/concords"];
 const appsToPublish = ["../apps/footballsocial", "../apps/concords"];
 const packagesToPublish = [
   "../packages/ledger",
