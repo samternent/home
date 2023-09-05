@@ -1,5 +1,11 @@
 # concords-api
 
+## 0.0.5
+
+### Patch Changes
+
+- [`7bb80d9`](https://github.com/samternent/home/commit/7bb80d97faccd2c50787c34eebe91ed3f8d182e1) Thanks [@samternent](https://github.com/samternent)! - Adds back postgress
+
 ## 0.0.4
 
 ### Patch Changes
