@@ -2,6 +2,7 @@ import express from "express";
 
 import pushNotificationRoutes from "./pushNotificationRoutes.mjs";
 import predictRoutes from "./predictRoutes.mjs";
+import systemRoutes from "./systemRoutes.mjs";
 
 import footballDataProxy from "../footballDataProxy.mjs";
 
@@ -17,5 +18,6 @@ router.get("/football-data/*", async function (req, res) {
 
 pushNotificationRoutes(router);
 predictRoutes(router);
+systemRoutes(router);
 
 export default router;
