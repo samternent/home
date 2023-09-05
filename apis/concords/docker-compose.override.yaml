@@ -1,0 +1,6 @@
+services:
+  concords-api:
+    image: "samternent/concords-api"
+    command: "nodemon src/main.mjs"
+    volumes:
+      - ../../../:/app
