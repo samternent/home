@@ -1,0 +1,43 @@
+name: Production Tag Deployment
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_CONCORDS_PROJECT_ID }}
+  PNPM_CACHE_PATH: ~/.pnpm-store
+  PNPM_CACHE_NAME: pnpm-store-cache
+
+on:
+  push:
+    tags:
+      - 'concords-api-[0-9]+.[0-9]+.[0-9]+'
+
+jobs:
+  Deploy-Production:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@master
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Get node version
+        id: nvmrc
+        run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build Docker image
+        run:  pnpm build:concords-api
+
+      - name: Push docker image
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/concords-api:latest

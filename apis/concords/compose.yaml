@@ -1,0 +1,9 @@
+services:
+  concords-api:
+    image: "samternent/concords-api"
+    ports:
+      - "8000:4002"
+    env_file:
+      - '../../.env'
+  redis:
+    image: "redis:alpine"
