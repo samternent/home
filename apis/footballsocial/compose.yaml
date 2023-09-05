@@ -3,5 +3,7 @@ services:
     image: "samternent/footballsocial-api"
     ports:
       - "8000:4002"
+    env_file:
+      - '../../.env'
   redis:
     image: "redis:alpine"

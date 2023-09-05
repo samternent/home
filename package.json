@@ -20,6 +20,7 @@
     "shelljs": "^0.8.5"
   },
   "scripts": {
-    "build:footballsocial": "pnpm --filter footballsocial build"
+    "build:footballsocial": "pnpm --filter footballsocial build",
+    "build:footballsocial-api": "docker build -f ./apis/footballsocial/Dockerfile . -t samternent/footballsocial-api"
   }
 }

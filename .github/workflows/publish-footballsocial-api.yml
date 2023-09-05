@@ -4,6 +4,7 @@ env:
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_CONCORDS_PROJECT_ID }}
   PNPM_CACHE_PATH: ~/.pnpm-store
   PNPM_CACHE_NAME: pnpm-store-cache
+
 on:
   push:
     tags:
@@ -19,11 +20,6 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-
-      - name: Get branch name
-        id: branch
-        run: |
-          echo "branch_name=$(echo ${GITHUB_REF#refs/heads/} | tr / -)" >> $GITHUB_ENV
 
       - name: Get node version
         id: nvmrc
@@ -41,7 +37,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build Docker image
-        run:  pnpm --filter footballsocial-api build
+        run:  pnpm build:footballsocial-api
 
       - name: Push docker image
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/footballsocial-api:latest
