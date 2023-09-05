@@ -15,6 +15,7 @@
     "http-proxy-middleware": "^2.0.6",
     "luxon": "^3.0.3",
     "redis": "^4.3.0",
+    "shelljs": "^0.8.5",
     "uuid": "^8.3.2",
     "web-push": "^3.5.0"
   },
