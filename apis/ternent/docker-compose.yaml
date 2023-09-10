@@ -1,8 +1,8 @@
 services:
   concords-api:
-    image: "samternent/concords-api"
+    image: "samternent/ternent-api"
     ports:
-      - "6661:4003"
+      - "6661:4001"
     env_file:
       - '../../.env'
 

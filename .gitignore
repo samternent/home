@@ -12,6 +12,8 @@ dist
 dist-ssr
 *.local
 
+docker-compose.override.yaml
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

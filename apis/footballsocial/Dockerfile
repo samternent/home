@@ -3,11 +3,12 @@ ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 WORKDIR /app
-COPY ./apis/footballsocial /app
+COPY ./apis/footballsocial /app/apis/footballsocial
+COPY ./pnpm*.yaml /app
+COPY ./package.json /app
 
 FROM base AS prod-deps
-# Lockfile should be frozen but I can't figure it out. this is bad.
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --no-frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm --filter footballsocial-api install
 
 FROM base
 COPY --from=prod-deps /app/node_modules /app/node_modules
