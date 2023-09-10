@@ -1,0 +1,7 @@
+# ternent-api
+
+## 0.0.2
+
+### Patch Changes
+
+- [#120](https://github.com/samternent/home/pull/120) [`e60c3a0`](https://github.com/samternent/home/commit/e60c3a02ffac5795f8a7257a979bfcf0193d2eee) Thanks [@samternent](https://github.com/samternent)! - Setup ternent-api project and container
