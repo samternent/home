@@ -1,5 +1,11 @@
 # ternent-api
 
+## 0.0.4
+
+### Patch Changes
+
+- [`8672296`](https://github.com/samternent/home/commit/86722965b03288e349a0577ec37ef9433a79fc4e) Thanks [@samternent](https://github.com/samternent)! - Fix node port
+
 ## 0.0.3
 
 ### Patch Changes
