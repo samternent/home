@@ -1,5 +1,11 @@
 # footballsocial-api
 
+## 0.0.9
+
+### Patch Changes
+
+- [#120](https://github.com/samternent/home/pull/120) [`074f893`](https://github.com/samternent/home/commit/074f893837aea2ce7e7e90bd02002ad82a7a30fb) Thanks [@samternent](https://github.com/samternent)! - Containerize footballsocial-api
+
 ## 0.0.8
 
 ### Patch Changes

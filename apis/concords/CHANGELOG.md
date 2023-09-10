@@ -1,5 +1,11 @@
 # concords-api
 
+## 0.0.6
+
+### Patch Changes
+
+- [#120](https://github.com/samternent/home/pull/120) [`9e95d76`](https://github.com/samternent/home/commit/9e95d76ffbfa3d5bf19a69b58d61e1a84804c429) Thanks [@samternent](https://github.com/samternent)! - Containerize concords-api
+
 ## 0.0.5
 
 ### Patch Changes
