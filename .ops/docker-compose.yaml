@@ -1,30 +1,38 @@
 services:
-  concords-api:
-    image: "samternent/concords-api"
+  ternent-api:
+    image: "samternent/ternent-api"
     restart: always
     ports:
-      - "6661:4003"
+      - "8001:3000"
     env_file:
-      - '.env'
+      - '../.env'
 
   footballsocial-api:
     image: "samternent/footballsocial-api"
     restart: always
     ports:
-      - "8000:4002"
+      - "8002:3000"
     env_file:
-      - '.env'
+      - '../.env'
 
-  redis:
-    image: "redis:alpine"
+  concords-api:
+    image: "samternent/concords-api"
     restart: always
-    env_file:
-      - '.env'
-
-  db:
-    image: postgres
-    restart: always
-    env_file:
-      - '.env'
     ports:
-      - 6662:5432
+      - "8003:3000"
+    env_file:
+      - '../.env'
+
+  # redis:
+  #   image: "redis:alpine"
+  #   restart: always
+  #   env_file:
+  #     - '../.env'
+
+  # db:
+  #   image: postgres
+  #   restart: always
+  #   env_file:
+  #     - '../.env'
+  #   ports:
+  #     - 6664:5432

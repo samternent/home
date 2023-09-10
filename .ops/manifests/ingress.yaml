@@ -9,6 +9,7 @@ spec:
   tls:
     - hosts:
       - api.concords.app
+      - api.ternent.dev
       secretName: letsencrypt-nginx
   rules:
     - host: api.concords.app
@@ -19,6 +20,16 @@ spec:
             backend:
               service:
                 name: concords-api
+                port:
+                  number: 80
+    - host: api.ternent.dev
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ternent-api
                 port:
                   number: 80
   ingressClassName: nginx

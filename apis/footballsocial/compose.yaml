@@ -2,7 +2,7 @@ services:
   footballsocial-api:
     image: "samternent/footballsocial-api"
     ports:
-      - "8000:4002"
+      - "8003:3000"
     env_file:
       - '../../.env'
   redis:

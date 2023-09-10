@@ -17,7 +17,7 @@ spec:
       - name: ternent-api
         image: samternent/ternent-api
         ports:
-          - containerPort: 4001
+          - containerPort: 3000
         resources:
           requests:
             cpu: "0.01"
@@ -34,6 +34,6 @@ metadata:
 spec:
   ports:
     - port: 80
-      targetPort: 4001
+      targetPort: 3000
   selector:
     app: ternent-api

@@ -1,6 +1,6 @@
 services:
   concords-api:
-    image: "samternent/concords-api"
-    command: "pnpm --filter concords-api start:dev"
+    image: "samternent/ternent-api"
+    command: "pnpm --filter ternent-api start:dev"
     volumes:
       - ../../../:/app

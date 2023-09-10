@@ -17,7 +17,7 @@ spec:
       - name: concords-api
         image: samternent/concords-api
         ports:
-          - containerPort: 4003
+          - containerPort: 3000
         resources:
           requests:
             cpu: "0.01"
@@ -34,6 +34,6 @@ metadata:
 spec:
   ports:
     - port: 80
-      targetPort: 4003
+      targetPort: 3000
   selector:
     app: concords-api

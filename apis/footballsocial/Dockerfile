@@ -12,5 +12,5 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm --filter footballsocial-a
 
 FROM base
 COPY --from=prod-deps /app/node_modules /app/node_modules
-EXPOSE 4002
+EXPOSE 3000
 CMD [ "pnpm", "--filter", "footballsocial-api", "start" ]

@@ -15,7 +15,7 @@ app.use(bodyParser.json());
 app.use(cors({ exposedHeaders: ["X-App-Version"] }));
 
 // Set port
-const port = "4002";
+const port = "3000";
 app.set("port", port);
 
 app.use(async function (req, res, next) {
@@ -29,4 +29,4 @@ app.use(async function (req, res, next) {
 app.use("/", routes);
 
 // Server
-app.listen(port, () => console.log(`Server running on localhost:${port}`));
+app.listen(port, () => console.log("footballsocial-api is running."));

@@ -14,21 +14,21 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 
 app.use(bodyParser.json());
-app.use(cors({ exposedHeaders: ["X-App-Version"] }));
+app.use(cors({ exposedHeaders: ["X-Api-Version"] }));
 
 // Set port
-const port = "4001";
+const port = "3000";
 app.set("port", port);
 
 app.use(async function (req, res, next) {
   const data = JSON.parse(
     await readFileSync(join(__dirname, "../package.json"), "utf8")
   );
-  res.setHeader("x-app-version", data.version);
+  res.setHeader("x-api-version", data.version);
   next();
 });
 
 app.use("/", routes);
 
 // Server
-app.listen(port, () => console.log(`Server running on localhost:${port}`));
+app.listen(port, () => console.log("ternent-api is running."));
