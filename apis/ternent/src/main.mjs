@@ -17,7 +17,7 @@ app.use(bodyParser.json());
 app.use(cors({ exposedHeaders: ["X-App-Version"] }));
 
 // Set port
-const port = "4003";
+const port = "4001";
 app.set("port", port);
 
 app.use(async function (req, res, next) {
