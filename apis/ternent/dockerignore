@@ -1,0 +1,7 @@
+*
+*/
+!apis/concords/
+apis/concords/data
+!pnpm-lock.yaml
+!pnpm-workspace.yaml
+docker-compose.override.yaml

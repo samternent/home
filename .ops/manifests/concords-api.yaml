@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: concords-api
+  namespace: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: concords-api
+  template:
+    metadata:
+      labels:
+        app: concords-api
+    spec:
+      containers:
+      - name: concords-api
+        image: samternent/concords-api
+        ports:
+          - containerPort: 4003
+        resources:
+          requests:
+            cpu: "0.01"
+            memory: 50Mi
+          limits:
+            cpu: "0.02"
+            memory: 100Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: concords-api
+  namespace: backend
+spec:
+  ports:
+    - port: 80
+      targetPort: 4003
+  selector:
+    app: concords-api
