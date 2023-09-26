@@ -15,6 +15,17 @@ spec:
       containers:
         - name: footballsocial-api
           image: samternent/footballsocial-api:latest
+          env: 
+            - name: SECRET_USERNAME 
+              valueFrom: 
+                secretKeyRef: 
+                  name: newsecret 
+                  key: username 
+            - name: SECRET_PASSWORD 
+              valueFrom: 
+                secretKeyRef: 
+                  name: newsecret 
+                  key: password 
           imagePullPolicy: Always
           ports:
             - name: http

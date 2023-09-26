@@ -8,7 +8,7 @@ env:
 on:
   push:
     tags:
-      - 'concords-api-[0-9]+.[0-9]+.[0-9]+'
+      - "concords-api-[0-9]+.[0-9]+.[0-9]+"
 
 jobs:
   Deploy-Production:
@@ -37,7 +37,18 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build Docker image
-        run:  pnpm build:concords-api
+        run: pnpm build:concords-api
 
       - name: Push docker image
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/concords-api:latest
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Save DigitalOcean kubeconfig Production
+        run: doctl kubernetes cluster kubeconfig save ${{ secrets.DIGITALOCEAN_K8S_CLUSTER_ID }}
+
+      - name: Kubernetes rollout the latest image
+        run: kubectl -n backend rollout restart deployment concords-api

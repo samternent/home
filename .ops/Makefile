@@ -9,6 +9,9 @@ kubectl create ns backend
 kubectl apply -f .ops/manifests/ternent_api_deployment.yaml
 kubectl apply -f .ops/manifests/ternent_api_service.yaml
 
+kubectl apply -f .ops/manifests/concords_api_deployment.yaml
+kubectl apply -f .ops/manifests/concords_api_service.yaml
+
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.0/cert-manager.crds.yaml
 
 ## Add the Jetstack Helm repository
@@ -20,4 +23,4 @@ helm install ternent --namespace cert-manager --version v1.13.0 jetstack/cert-ma
 kubectl apply -f .ops/manifests/cert_manager_issuer.yaml
 
 kubectl apply -f .ops/manifests/ternent_api_host.yaml
-kubectl apply -f .ops/manifests/ternent_staging_host.yaml
+kubectl apply -f .ops/manifests/concords_api_host.yaml

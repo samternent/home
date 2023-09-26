@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-api
+  namespace: backend
+  annotations:
+    cert-manager.io/issuer: letsencrypt-nginx
+    acme.cert-manager.io/http01-edit-in-place: "true"
+spec:
+  tls:
+    - hosts:
+        - api.concords.app
+      secretName: letsencrypt-nginx-api
+  rules:
+    - host: api.concords.app
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: concords-api
+                port:
+                  number: 80
+  ingressClassName: nginx
