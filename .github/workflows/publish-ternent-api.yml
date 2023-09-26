@@ -6,7 +6,7 @@ env:
 on:
   push:
     tags:
-      - 'ternent-api-[0-9]+.[0-9]+.[0-9]+'
+      - "ternent-api-[0-9]+.[0-9]+.[0-9]+"
 
 jobs:
   Deploy-Production:
@@ -35,18 +35,18 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build Docker image
-        run:  pnpm build:ternent-api
+        run: pnpm build:ternent-api
 
       - name: Push docker image
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/ternent-api:latest
 
-       - name: Install doctl
+      - name: Install doctl
         uses: digitalocean/action-doctl@v2
         with:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
       - name: Save DigitalOcean kubeconfig Production
         run: doctl kubernetes cluster kubeconfig save ${{ secrets.DIGITALOCEAN_K8S_CLUSTER_ID }}
-      
+
       - name: Kubernetes rollout the latest image
         run: kubectl -n backend rollout restart deployment ternent-api
