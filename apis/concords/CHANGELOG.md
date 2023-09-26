@@ -1,5 +1,11 @@
 # concords-api
 
+## 0.0.9
+
+### Patch Changes
+
+- [`f4e9e7a`](https://github.com/samternent/home/commit/f4e9e7ab0639c2621904314f4a2262c10f0afb08) Thanks [@samternent](https://github.com/samternent)! - Adds ECDSA key
+
 ## 0.0.8
 
 ### Patch Changes
