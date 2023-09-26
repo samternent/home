@@ -1,5 +1,11 @@
 # ternent-api
 
+## 0.0.8
+
+### Patch Changes
+
+- [`d0ae7d3`](https://github.com/samternent/home/commit/d0ae7d321c479d88964f4c0807335cb11b9fe9ab) Thanks [@samternent](https://github.com/samternent)! - Adds number to force release
+
 ## 0.0.7
 
 ### Patch Changes
