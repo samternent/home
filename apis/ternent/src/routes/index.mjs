@@ -8,6 +8,7 @@ router.get("/*", async function (req, res) {
     path: `${req.path}`,
     host: `${req.hostname}`,
     ready: true,
+    number: 7,
   });
 });
 

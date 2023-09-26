@@ -1,4 +1,4 @@
-name: Release Football Social
+name: Create Release
 
 on:
   push:
@@ -43,9 +43,9 @@ jobs:
         uses: actions/setup-node@v3
         with:
           always-auth: true
-          node-version-file: '.nvmrc'
+          node-version-file: ".nvmrc"
           registry-url: https://registry.npmjs.org
-          cache: 'pnpm'
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
