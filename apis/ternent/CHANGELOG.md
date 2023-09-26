@@ -1,5 +1,11 @@
 # ternent-api
 
+## 0.0.7
+
+### Patch Changes
+
+- [`30b37d4`](https://github.com/samternent/home/commit/30b37d4de18d131f5d11a293e2ec6dd549459f9b) Thanks [@samternent](https://github.com/samternent)! - Adds ready status
+
 ## 0.0.6
 
 ### Patch Changes
