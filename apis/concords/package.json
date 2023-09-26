@@ -1,6 +1,6 @@
 {
   "name": "concords-api",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "type": "module",
   "scripts": {
     "build": "docker build -f ./Dockerfile ../../ -t samternent/concords-api",
