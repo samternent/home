@@ -2,11 +2,11 @@
 ## Ref: https://github.com/kubernetes/ingress-nginx/tree/helm-chart-4.0.13/charts/ingress-nginx
 ##
 controller:
-  # replicaCount: 1
-  # resources:
-  #   requests:
-  #     cpu: "0.08"
-  #     memory: 90Mi
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: "0.01"
+      memory: 90Mi
   service:
     type: LoadBalancer
     annotations:
