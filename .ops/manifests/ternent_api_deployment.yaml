@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ternent-api
+  namespace: backend
+spec:
+  selector:
+    matchLabels:
+      app: ternent-api
+  template:
+    metadata:
+      labels:
+        app: ternent-api
+    spec:
+      containers:
+        - name: ternent-api
+          image: samternent/ternent-api
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 3000

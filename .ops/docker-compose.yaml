@@ -5,7 +5,7 @@ services:
     ports:
       - "8001:3000"
     env_file:
-      - '../.env'
+      - "../.env"
 
   footballsocial-api:
     image: "samternent/footballsocial-api"
@@ -13,7 +13,7 @@ services:
     ports:
       - "8002:3000"
     env_file:
-      - '../.env'
+      - "../.env"
 
   concords-api:
     image: "samternent/concords-api"
@@ -21,7 +21,7 @@ services:
     ports:
       - "8003:3000"
     env_file:
-      - '../.env'
+      - "../.env"
 
   # redis:
   #   image: "redis:alpine"

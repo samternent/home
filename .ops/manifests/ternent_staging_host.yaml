@@ -1,28 +1,18 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ingress-concords-api
+  name: ingress-staging
   namespace: backend
   annotations:
     cert-manager.io/issuer: letsencrypt-nginx
+    acme.cert-manager.io/http01-edit-in-place: "true"
 spec:
   tls:
     - hosts:
-      - api.concords.app
-      - api.ternent.dev
-      secretName: letsencrypt-nginx
+        - staging.ternent.dev
+      secretName: letsencrypt-nginx-staging
   rules:
-    - host: api.concords.app
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: concords-api
-                port:
-                  number: 80
-    - host: api.ternent.dev
+    - host: staging.ternent.dev
       http:
         paths:
           - path: /
