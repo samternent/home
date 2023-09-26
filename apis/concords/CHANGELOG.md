@@ -1,5 +1,11 @@
 # concords-api
 
+## 0.0.8
+
+### Patch Changes
+
+- [`7861479`](https://github.com/samternent/home/commit/78614792002c344da6a23e4cfc3934fdeb74f1b1) Thanks [@samternent](https://github.com/samternent)! - Catchall route
+
 ## 0.0.7
 
 ### Patch Changes
