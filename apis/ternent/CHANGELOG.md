@@ -1,5 +1,11 @@
 # ternent-api
 
+## 0.0.6
+
+### Patch Changes
+
+- [`e8e2903`](https://github.com/samternent/home/commit/e8e290304406a3b3c43e57a714335af6cf88fbd5) Thanks [@samternent](https://github.com/samternent)! - Updates JSOn for ternent api
+
 ## 0.0.5
 
 ### Patch Changes
