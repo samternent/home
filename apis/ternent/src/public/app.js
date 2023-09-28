@@ -11,3 +11,12 @@ socket.addEventListener("open", (event) => {
 socket.addEventListener("message", (event) => {
   console.log("message received: ", JSON.parse(event.data));
 });
+
+// rainbow scroll
+window.addEventListener("scroll", (e) => {
+  let scrollTop = document.body.scrollTop
+    ? document.body.scrollTop
+    : document.documentElement.scrollTop;
+  let newPos = scrollTop + "px";
+  document.documentElement.style.setProperty("--scrollPos", newPos);
+});

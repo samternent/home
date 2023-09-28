@@ -4,23 +4,62 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="/app.js"></script>
-    <style>
+    <style type="text/css" media="screen">
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
       /* System Fonts as used by GitHub */
       body {
         font-family: ui-monospace, Menlo, Monaco, "Cascadia Mono",
           "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace",
           "Source Code Pro", "Fira Mono", "Droid Sans Mono", "Courier New",
           monospace;
+        font-size: 16px;
+        margin: 0;
+      }
+
+      h1 {
+        font-size: 3.5em;
+      }
+      h1,
+      h2 {
         letter-spacing: -0.1em;
       }
+
+      .content {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 0 1em;
+      }
     </style>
+    <link rel="stylesheet" type="text/css" href="styles.css" media="screen" />
     <title>api.ternent.dev</title>
   </head>
 
   <body>
-    <h1>api.ternent.dev</h1>
-    <!-- <ul>
-      <li></li>
-    </ul> -->
+    <div class="content">
+      <header class="header">
+        <h1>
+          <span>ternent[dot]dev</span>
+        </h1>
+        <h2>[https|wss]://api.ternent.dev</h2>
+      </header>
+      <h3>sockets</h3>
+      <pre class="code-block">
+const socket = new WebSocket('wss://api.ternent.dev');
+
+// Send socket events
+socket.addEventListener('open', (event) => {
+    socket.send(JSON.stringify({ message: 'Hello Server!' }));
+});
+
+// Listen for socket events
+socket.addEventListener('message', (event) => {
+    console.log('message received: ', JSON.parse(event.data));
+});</pre
+      >
+    </div>
   </body>
 </html>
