@@ -1,8 +1,5 @@
-h3 {
-  position: sticky;
-  top: 6.5em;
-  background-color: #fff;
-  padding: 0 0 0.5em;
+:root {
+  --scrollPos: 5%;
 }
 
 .code-block {
@@ -24,12 +21,12 @@ h3 {
   max-width: 100vw;
 }
 
-h1 span {
+.pagescroll {
   background-image: url(spectrum.svg);
-  background-repeat: repeat-x;
-  background-size: 100vw 0.2em;
+  background-repeat: no-repeat;
+  background-size: var(--scrollPos) 0.2em;
   background-position: left bottom 5px;
-  background-position-x: var(--scrollPos);
+  transition: background-position 1.3s ease;
 }
 
 .header {
@@ -38,4 +35,5 @@ h1 span {
   padding: 1em 0;
   margin: 0 0 1em;
   background-color: #fff;
+  z-index: 10;
 }

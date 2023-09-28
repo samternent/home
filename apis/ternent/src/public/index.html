@@ -28,10 +28,22 @@
         letter-spacing: -0.1em;
       }
 
+      h3 {
+        position: sticky;
+        top: 7.8em;
+        background-color: #fff;
+        padding: 0.5em;
+        margin: 1em 0;
+        text-transform: uppercase;
+        font-size: 1.4em;
+        border-left: 0.5em solid pink;
+      }
+
       .content {
         max-width: 1080px;
         margin: 0 auto;
         padding: 0 1em;
+        background: #fff;
       }
     </style>
     <link rel="stylesheet" type="text/css" href="styles.css" media="screen" />
@@ -42,12 +54,17 @@
     <div class="content">
       <header class="header">
         <h1>
-          <span>ternent[dot]dev</span>
+          <span class="pagescroll"
+            >ternent[dot]dev<strong style="color: pink; font-size: 100px"
+              >.</strong
+            ></span
+          >
         </h1>
-        <h2>[https|wss]://api.ternent.dev</h2>
+        <h2><span>[https|wss]://api.ternent.dev</span></h2>
       </header>
-      <h3>sockets</h3>
-      <pre class="code-block">
+      <div>
+        <h3>sockets</h3>
+        <pre class="code-block">
 const socket = new WebSocket('wss://api.ternent.dev');
 
 // Send socket events
@@ -59,7 +76,22 @@ socket.addEventListener('open', (event) => {
 socket.addEventListener('message', (event) => {
     console.log('message received: ', JSON.parse(event.data));
 });</pre
-      >
+        >
+      </div>
+      <div>
+        <h3>endpoints</h3>
+        <p>There aren't any yet.</p>
+      </div>
+      <div style="margin-top: 100vh; height: 70vh; margin-bottom: 100px">
+        <h3>Sorry</h3>
+        <p style="margin: 10em 0">You needn't have scrolled this far.</p>
+        <p style="margin: 5em 0">
+          But don't worry, there are no cookies or analytics here.
+        </p>
+      </div>
+      <footer style="background-color: pink; padding: 2em 1em; height: 10em">
+        booyaa
+      </footer>
     </div>
   </body>
 </html>
