@@ -1,5 +1,11 @@
 # ternent-api
 
+## 0.0.11
+
+### Patch Changes
+
+- [`2b097c6`](https://github.com/samternent/home/commit/2b097c63b726a957bacd007ac85baf6b7239705d) Thanks [@samternent](https://github.com/samternent)! - Update client socket protocol
+
 ## 0.0.10
 
 ### Patch Changes
