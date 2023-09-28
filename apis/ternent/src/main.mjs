@@ -28,6 +28,7 @@ app.use(async function (req, res, next) {
   next();
 });
 
+app.use(express.static(join(__dirname, "public")));
 app.use("/", routes);
 
 // Server
