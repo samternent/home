@@ -7,6 +7,7 @@ import bodyParser from "body-parser";
 import cors from "cors";
 
 import routes from "./routes/index.mjs";
+import { createWebSocketServer } from "./services/sockets/index.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -32,4 +33,6 @@ app.use(express.static(join(__dirname, "public")));
 app.use("/", routes);
 
 // Server
-app.listen(port, () => console.log("ternent-api is running."));
+const server = app.listen(port, () => console.log("ternent-api is running."));
+
+createWebSocketServer(server);
