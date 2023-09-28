@@ -4,8 +4,8 @@
   "type": "module",
   "scripts": {
     "build": "docker build -f ./Dockerfile ../../ -t samternent/ternent-api",
-    "start": "node src/main.mjs",
-    "start:dev": "nodemon src/main.mjs"
+    "start": "node server/main.mjs",
+    "start:dev": "nodemon server/main.mjs"
   },
   "dependencies": {
     "@inrupt/solid-client": "^1.26.0",

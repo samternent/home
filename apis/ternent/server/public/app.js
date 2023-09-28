@@ -30,14 +30,19 @@ function throttle(callback, limit) {
 
 function getVerticalScrollPercentage(el) {
   const p = el.parentNode;
-  return (
-    ((el.scrollTop || p.scrollTop) / (p.scrollHeight - p.clientHeight)) * 100
-  );
+  return `${
+    Math.round(
+      ((el.scrollTop || p.scrollTop) / (p.scrollHeight - p.clientHeight)) * 100
+    ) + 5
+  }%`;
 }
 
+let lastPos = null;
 // rainbow scroll
 window.addEventListener("scroll", (e) => {
   const pos = getVerticalScrollPercentage(document.body);
-  const newPos = `${Math.round(pos) + 5}%`;
-  document.documentElement.style.setProperty("--scrollPos", newPos);
+  if (pos !== lastPos) {
+    document.documentElement.style.setProperty("--scrollPos", pos);
+  }
+  lastPos = pos;
 });

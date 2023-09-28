@@ -32,7 +32,7 @@
 .header {
   position: sticky;
   top: 0;
-  padding: 1em 0;
+  padding: 2em 0 1em;
   margin: 0 0 1em;
   background-color: #fff;
   z-index: 10;
