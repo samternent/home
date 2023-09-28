@@ -1,5 +1,11 @@
 # ternent-api
 
+## 0.0.12
+
+### Patch Changes
+
+- [`a63e441`](https://github.com/samternent/home/commit/a63e441d27a1dcc90231e670cacd1076344bffae) Thanks [@samternent](https://github.com/samternent)! - Adds landing page styles
+
 ## 0.0.11
 
 ### Patch Changes
