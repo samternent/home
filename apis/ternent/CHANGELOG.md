@@ -1,5 +1,11 @@
 # ternent-api
 
+## 0.0.13
+
+### Patch Changes
+
+- [`176234f`](https://github.com/samternent/home/commit/176234f823933d2cf225b68e9e490a0d276a4dfc) Thanks [@samternent](https://github.com/samternent)! - Adds styles
+
 ## 0.0.12
 
 ### Patch Changes
