@@ -1,5 +1,11 @@
 # ternent-api
 
+## 0.0.16
+
+### Patch Changes
+
+- [`5edeb66`](https://github.com/samternent/home/commit/5edeb666fef59cb2afa652af78d19bb6f654a2d7) Thanks [@samternent](https://github.com/samternent)! - Reduce progress bar
+
 ## 0.0.15
 
 ### Patch Changes
