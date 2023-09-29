@@ -1,6 +1,6 @@
 import express from "express";
 
-import pushNotificationRoutes from "./pushNotificationRoutes.mjs";
+// import pushNotificationRoutes from "./pushNotificationRoutes.mjs";
 import predictRoutes from "./predictRoutes.mjs";
 import systemRoutes from "./systemRoutes.mjs";
 
@@ -16,7 +16,7 @@ router.get("/football-data/*", async function (req, res) {
   return res.send(data);
 });
 
-pushNotificationRoutes(router);
+// pushNotificationRoutes(router);
 predictRoutes(router);
 systemRoutes(router);
 

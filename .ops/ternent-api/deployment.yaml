@@ -21,4 +21,7 @@ spec:
               containerPort: 3000
           env:
             - name: SUPERSECRET
-              value: "shhhhhh"
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api
+                  key: ternent-supersecret

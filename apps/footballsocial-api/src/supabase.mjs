@@ -9,8 +9,8 @@ const supabaseOptions = {
 };
 
 const supabaseClient = createClient(
-  process.env.VITE_PUBLIC_SUPABASE_URL || "",
-  process.env.VITE_PUBLIC_SUPABASE_SUPER_KEY || "",
+  process.env.SUPABASE_URL || "",
+  process.env.SUPABASE_SUPER_KEY || "",
   supabaseOptions
 );
 

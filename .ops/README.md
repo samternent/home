@@ -10,18 +10,18 @@ kubectl create ns backend
 ```
 
 ```bash
-kubectl apply -f .ops/manifests/ternent-api/deployment.yaml
-kubectl apply -f .ops/manifests/ternent-api/service.yaml
+kubectl apply -f .ops/ternent-api/deployment.yaml
+kubectl apply -f .ops/ternent-api/service.yaml
 ```
 
 ```bash
-kubectl apply -f .ops/manifests/concords-api/deployment.yaml
-kubectl apply -f .ops/manifests/concords-api/service.yaml
+kubectl apply -f .ops/concords-api/deployment.yaml
+kubectl apply -f .ops/concords-api/service.yaml
 ```
 
 ```bash
-kubectl apply -f .ops/manifests/footballsocial-api/deployment.yaml
-kubectl apply -f .ops/manifests/footballsocial-api/service.yaml
+kubectl apply -f .ops/footballsocial-api/deployment.yaml
+kubectl apply -f .ops/footballsocial-api/service.yaml
 ```
 
 ```bash
@@ -39,7 +39,7 @@ kubectl apply -f .ops/manifests/cert-manager-issuer.yaml
 ```
 
 ```bash
-kubectl apply -f .ops/manifests/ternent-api/host.yaml
-kubectl apply -f .ops/manifests/concords-api/host.yaml
-kubectl apply -f .ops/manifests/footballsocial-api/host.yaml
+kubectl apply -f .ops/ternent-api/host.yaml
+kubectl apply -f .ops/concords-api/host.yaml
+kubectl apply -f .ops/footballsocial-api/host.yaml
 ```

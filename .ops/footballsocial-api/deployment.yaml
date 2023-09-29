@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: footballsocial-api
+  namespace: backend
+spec:
+  selector:
+    matchLabels:
+      app: footballsocial-api
+  template:
+    metadata:
+      labels:
+        app: footballsocial-api
+    spec:
+      containers:
+        - name: footballsocial-api
+          image: samternent/footballsocial-api:latest
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 3000
+          env:
+            - name: SUPABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: footballsocial-api-env
+                  key: supabase-url
+            - name: SUPABASE_SUPER_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: footballsocial-api-env
+                  key: supabase-super-key
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: footballsocial-api-env
+                  key: redis-password
+            - name: REDIS_ENDPOINT_URI
+              valueFrom:
+                secretKeyRef:
+                  name: footballsocial-api-env
+                  key: redis-endpoint-uri
+            - name: FOOTBALL_DATA_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: footballsocial-api-env
+                  key: football-data-api-key
+            - name: OPENAPI_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: footballsocial-api-env
+                  key: open-api-key

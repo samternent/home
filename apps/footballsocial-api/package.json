@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "docker build -f ./Dockerfile ../../ -t samternent/footballsocial-api",
-    "dev:api": "nodemon api/main.mjs",
+    "dev": "nodemon api/main.mjs",
     "start": "node src/main.mjs"
   },
   "dependencies": {
