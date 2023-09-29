@@ -9,10 +9,10 @@ metadata:
 spec:
   tls:
     - hosts:
-        - v1.footballsocial.app
+        - api.footballsocial.app
       secretName: letsencrypt-nginx-footballsocial-api
   rules:
-    - host: v1.footballsocial.app
+    - host: api.footballsocial.app
       http:
         paths:
           - path: /
