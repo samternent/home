@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.7.1
+
+### Patch Changes
+
+- [`268a411`](https://github.com/samternent/home/commit/268a4110b1da00f6dc3037a9f12e2141fcc8eb62) Thanks [@samternent](https://github.com/samternent)! - Use api.footballsocial.app
+
 ## 0.7.0
 
 ### Minor Changes
