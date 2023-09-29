@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.7.0
+
+### Minor Changes
+
+- [`e3e5099`](https://github.com/samternent/home/commit/e3e5099e9207fe8f52e06c23115a3144704612a3) Thanks [@samternent](https://github.com/samternent)! - Update to v1 k8s footballsocial-api
+
 ## 0.6.6
 
 ### Patch Changes
