@@ -1,5 +1,11 @@
 # ternent-api
 
+## 0.0.15
+
+### Patch Changes
+
+- [`bf9c656`](https://github.com/samternent/home/commit/bf9c656f2a04d7a3e1cf0d6f3ee04b1272cb5d9e) Thanks [@samternent](https://github.com/samternent)! - Tweaks border width
+
 ## 0.0.14
 
 ### Patch Changes
