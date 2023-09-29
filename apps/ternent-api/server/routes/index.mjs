@@ -5,4 +5,8 @@ const router = express.Router();
 router.get("/", (req, res) => {
   res.send({ message: "Hello WWW!" });
 });
+
+router.get("/secret", (req, res) => {
+  res.send({ message: process.env.SUPERSECRET });
+});
 export default router;

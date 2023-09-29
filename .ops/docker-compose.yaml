@@ -7,13 +7,13 @@ services:
     env_file:
       - "../.env"
 
-  footballsocial-api:
-    image: "samternent/footballsocial-api"
-    restart: always
-    ports:
-      - "8002:3000"
-    env_file:
-      - "../.env"
+  # footballsocial-api:
+  #   image: "samternent/footballsocial-api"
+  #   restart: always
+  #   ports:
+  #     - "8002:3000"
+  #   env_file:
+  #     - "../.env"
 
   concords-api:
     image: "samternent/concords-api"
@@ -22,3 +22,11 @@ services:
       - "8003:3000"
     env_file:
       - "../.env"
+
+  # gov-kit:
+  #   image: "samternent/gov-kit"
+  #   restart: always
+  #   ports:
+  #     - "8004:3000"
+  #   env_file:
+  #     - "../.env"

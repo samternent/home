@@ -611,6 +611,9 @@ importers:
       '@govuk-prototype-kit/common-templates':
         specifier: 1.2.2
         version: 1.2.2
+      '@govuk-prototype-kit/task-list':
+        specifier: 1.1.2
+        version: 1.1.2
       govuk-frontend:
         specifier: 4.7.0
         version: 4.7.0
@@ -3371,6 +3374,10 @@ packages:
 
   /@govuk-prototype-kit/common-templates@1.2.2:
     resolution: {integrity: sha512-VGk7dQhtAk9SvlsG5DPawAifRcM+aPHykH595zJomf8Upvn4DIIQfdLEDMHAr3b6d4BPpF5Cho5G5TGhyHXddg==}
+    dev: false
+
+  /@govuk-prototype-kit/task-list@1.1.2:
+    resolution: {integrity: sha512-7FZhtHf2X0Wd6T76Ewar5mJjwT5ZgtBjaG/1mFzeRmBs3mCYhjdN1nhqliddkIGZknH0x/hN66Fjxl90gTtmdg==}
     dev: false
 
   /@grpc/grpc-js@1.7.3:
