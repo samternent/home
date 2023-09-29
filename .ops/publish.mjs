@@ -1,11 +1,11 @@
 import shell from "shelljs";
 
-const apisToPublish = [
-  "../apis/footballsocial",
-  "../apis/concords",
-  "../apis/ternent",
+const appsToPublish = [
+  "../apps/concords",
+  "../apps/footballsocial",
+  "../apps/footballsocial-api",
+  "../apps/ternent-api",
 ];
-const appsToPublish = ["../apps/footballsocial", "../apps/concords"];
 const packagesToPublish = [
   "../packages/ledger",
   "../packages/encrypt",
@@ -15,7 +15,7 @@ const packagesToPublish = [
   "../packages/game-kit",
 ];
 
-const toPublish = [...apisToPublish, ...appsToPublish, ...packagesToPublish];
+const toPublish = [...appsToPublish, ...packagesToPublish];
 
 let i = 0;
 for (; i < toPublish.length; i++) {

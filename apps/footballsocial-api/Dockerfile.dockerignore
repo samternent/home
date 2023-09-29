@@ -1,0 +1,5 @@
+*
+*/
+!apps/footballsocial-api/
+!pnpm-lock.yaml
+!pnpm-workspace.yaml
