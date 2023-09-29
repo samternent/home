@@ -1,0 +1,7 @@
+*
+*/
+!apps/gov-kit/
+apps/gov-kit/data
+!pnpm-lock.yaml
+!pnpm-workspace.yaml
+docker-compose.override.yaml
