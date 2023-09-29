@@ -1,5 +1,11 @@
 # footballsocial-api
 
+## 0.0.10
+
+### Patch Changes
+
+- [`5056824`](https://github.com/samternent/home/commit/5056824ecb6bc63844a69f379a1d3d96fc811cb6) Thanks [@samternent](https://github.com/samternent)! - Adds secrets
+
 ## 0.0.9
 
 ### Patch Changes
