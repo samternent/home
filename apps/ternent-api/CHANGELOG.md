@@ -1,5 +1,11 @@
 # ternent-api
 
+## 0.0.14
+
+### Patch Changes
+
+- [`341391e`](https://github.com/samternent/home/commit/341391e4bba8281b0a86746c2d7d35a5a48dc9a1) Thanks [@samternent](https://github.com/samternent)! - Fix scrolling perf and responsive text
+
 ## 0.0.13
 
 ### Patch Changes
