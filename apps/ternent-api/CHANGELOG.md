@@ -1,5 +1,11 @@
 # ternent-api
 
+## 0.0.17
+
+### Patch Changes
+
+- [`790ad5f`](https://github.com/samternent/home/commit/790ad5f2f8011b6a6864642373a9b6aa85daddc4) Thanks [@samternent](https://github.com/samternent)! - Adds secret test
+
 ## 0.0.16
 
 ### Patch Changes
