@@ -1,6 +1,6 @@
 {
   "name": "ternent-api",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "type": "module",
   "scripts": {
     "build": "docker build -f ./Dockerfile ../../ -t samternent/ternent-api",
