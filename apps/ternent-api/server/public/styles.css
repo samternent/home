@@ -25,7 +25,7 @@
   background-image: url(spectrum.svg);
   background-repeat: no-repeat;
   background-size: var(--scrollPos) 0.2em;
-  background-position: left bottom 5px;
+  background-position: left bottom 3px;
   transition: background-position 1.3s ease;
 }
 
