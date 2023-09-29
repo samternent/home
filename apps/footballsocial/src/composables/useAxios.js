@@ -11,8 +11,8 @@ export function provideAxios() {
 
   const instance = axios.create({
     baseURL: import.meta.env.DEV
-      ? "http://localhost:4002/"
-      : "https://api.footballsocial.app/",
+      ? "http://localhost:8002/"
+      : "https://v1.footballsocial.app/",
     crossDomain: true,
   });
 

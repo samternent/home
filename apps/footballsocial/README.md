@@ -3,4 +3,3 @@
 > The friendly football score prediction game.
 
 - https://footballsocial.app
-- https://api.footballsocial.app
