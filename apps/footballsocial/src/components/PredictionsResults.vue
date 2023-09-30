@@ -25,7 +25,10 @@ const table = shallowRef([]);
 const { fetchPredictionTable } = usePredictionService();
 
 async function loadPredictions() {
-  const { data } = await fetchPredictionTable(props.competitionCode, props.gameweek);
+  const { data } = await fetchPredictionTable(
+    props.competitionCode,
+    props.gameweek
+  );
   table.value = data;
   predictionsLoaded.value = true;
 }
@@ -50,11 +53,10 @@ const { profile } = useCurrentUser();
   </div>
   <div v-else class="flex flex-col w-full">
     <table class="w-full text-base md:text-base rounded overflow-hidden shadow">
-      <thead
-        class="h-10 font-light bg-gradient-to-r from-indigo-800 to-pink-900"
-      >
+      <thead class="h-10 font-light relative table-header">
         <tr class="font-thin text-center text-white">
-          <th class="w-16 font-medium">POS</th>
+          <th v-if="!gameweek" class="w-10"></th>
+          <th class="w-12 font-medium">POS</th>
           <th class="text-left">
             <abbr class="font-medium" title="Teams in Competition"
               >USERNAME</abbr
@@ -90,11 +92,25 @@ const { profile } = useCurrentUser();
           }"
         >
           <td
-            class="text-center text-md p-2 text-white border-r border-zinc-800"
+            v-if="!gameweek"
+            class="text-center py-2 px-1 text-white border-r border-zinc-800"
+          >
+            <span v-if="row.position > row.lastPosition" class="text-green-800"
+              >▲</span
+            >
+            <span
+              v-else-if="row.lastPosition > row.position"
+              class="text-red-900"
+              >▼</span
+            >
+            <span v-else-if="row.lastPosition">➖</span>
+          </td>
+          <td
+            class="text-center font-medium text-md p-2 border-r border-zinc-800"
           >
             {{ row.position }}
           </td>
-          <td class="text-left py-2 px-3">
+          <td class="text-left py-2 px-3 flex">
             <RouterLink
               class="league-link"
               v-if="!private"
@@ -102,6 +118,25 @@ const { profile } = useCurrentUser();
               >{{ row.username }}</RouterLink
             >
             <p v-else class="blur-md">{{ row.username }}</p>
+            <span
+              v-if="gameweek ? row.position === 1 : row.gameweekPosition === 1"
+              class="text-orange-400"
+              ><svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="w-6 h-6 ml-2"
+                :class="{
+                  'blur-md': private,
+                }"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M12.963 2.286a.75.75 0 00-1.071-.136 9.742 9.742 0 00-3.539 6.177A7.547 7.547 0 016.648 6.61a.75.75 0 00-1.152-.082A9 9 0 1015.68 4.534a7.46 7.46 0 01-2.717-2.248zM15.75 14.25a3.75 3.75 0 11-7.313-1.172c.628.465 1.35.81 2.133 1a5.99 5.99 0 011.925-3.545 3.75 3.75 0 013.255 3.717z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </span>
           </td>
           <td class="text-center p-1">{{ row.totalHomeGoals || 0 }}</td>
           <td class="text-center p-1">{{ row.totalAwayGoals || 0 }}</td>
@@ -125,5 +160,16 @@ const { profile } = useCurrentUser();
 .v-enter-from,
 .v-leave-to {
   opacity: 1;
+}
+
+.table-header::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, rgb(55 48 163), rgb(131 24 67));
+  z-index: -1;
 }
 </style>

@@ -117,8 +117,8 @@ watch(
         </a>
       </p>
     </div>
-    <div class="flex-1 md:w-1/2 items-center flex">
-      <div class="h-3/4 overflow-y-scroll w-full">
+    <div class="flex-1 md:w-1/2 mt-6 flex">
+      <div class="overflow-y-scroll w-full h-4/6">
         <PredictionsResults competitionCode="PL" :private="!user" />
       </div>
     </div>

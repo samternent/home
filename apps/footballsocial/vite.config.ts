@@ -6,21 +6,15 @@ import Markdown from "vite-plugin-md";
 import { ViteEjsPlugin } from "vite-plugin-ejs";
 import { version } from "./package.json";
 
-const domain = "footballsocial.localhost";
-
 // https://vitejs.dev/config/
 export default defineConfig({
   envDir: resolve("../../"),
   server: {
     proxy: {
       "/api": {
-        target: `http://localhost:4002`,
+        target: `http://localhost:8002`,
         changeOrigin: true,
       },
-    },
-    https: {
-      key: "./footballsocial.localhost+2-key.pem",
-      cert: "./footballsocial.localhost+2.pem",
     },
   },
   plugins: [
