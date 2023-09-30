@@ -12,7 +12,7 @@ export function createWebSocketServer(server, appVersion) {
   const wss = new WebSocketServer({ noServer: true });
   wss.on("connection", async function connection(ws) {
     const data = JSON.parse(
-      await readFileSync(join(__dirname, "../../../package.json"), "utf8")
+      await readFileSync(join(__dirname, "../../package.json"), "utf8")
     );
 
     ws.on("error", console.error);

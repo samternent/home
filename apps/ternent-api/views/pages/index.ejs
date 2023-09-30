@@ -3,7 +3,6 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="/app.js"></script>
     <style type="text/css" media="screen">
       * {
         box-sizing: border-box;
@@ -71,23 +70,40 @@
       </header>
       <div>
         <h3>Welcome</h3>
-        <p>Oh hello.</p>
+        <p>Hello, thanks for dropping by to my little slice of the internet.</p>
+      </div>
+      <div>
+        <h3>Apps</h3>
+        <p><a href="https://api.ternent.dev">api.ternent.dev</a></p>
+        <p>
+          <a href="https://www.footballsocial.app">www.footballsocial.app</a>
+        </p>
+        <p>
+          <a href="https://api.footballsocial.app">api.footballsocial.app</a>
+        </p>
       </div>
       <div>
         <h3>Stack</h3>
-        <p>k8s and node and postgress and other stuff.</p>
+        <p>
+          kubernetes and node and vercel and supabase and redis and vue and some
+          other stuff.
+        </p>
       </div>
       <div>
         <h3>Costs</h3>
-        <p>
-          I'll put a breakdown of costs to run this stack here. Ideally
-          accurately and in realtime.
-        </p>
-        <p>Current costs are:</p>
-        <ul>
-          <li>$12 p/m kubernetes cluster through digital ocean</li>
-          <li>$12 p/m load balancer through digital ocean</li>
-        </ul>
+        <p>DigitalOcean current monthly usage: <span id="my-costs"></span></p>
+        <table class="my-costs__table">
+          <caption>
+            Billing history
+          </caption>
+          <thead>
+            <tr>
+              <th>date</th>
+              <th>amount($)</th>
+            </tr>
+          </thead>
+          <tbody id="my-costs__table"></tbody>
+        </table>
       </div>
       <div>
         <h3>socket API</h3>
@@ -111,15 +127,17 @@ socket.addEventListener('message', (event) => {
       </div>
       <div style="margin-top: 100vh; height: 70vh; margin-bottom: 100px">
         <h3>Sorry</h3>
-        <p style="margin: 10em 0">You needn't have scrolled this far.</p>
-        <p style="margin: 5em 0">
-          But don't worry. There are no cookies, intrusive analytics or other
-          nasties here.
+        <p style="margin: 10em 0">
+          You needn't have scrolled this far... I'm just testing that fancy
+          scroll indicator under my name up there.
         </p>
       </div>
       <footer style="background-color: pink; padding: 2em 1em; height: 10em">
-        booyaa
+        <p>This is a safe space.</p>
+        <p>There are no cookies, intrusive analytics or other nasties here.</p>
       </footer>
     </div>
+
+    <script type="module" src="js/main.js"></script>
   </body>
 </html>
