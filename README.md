@@ -1,19 +1,12 @@
-## The personal infrastructure for samternent.
+## The personal infrastructure for ternent[dot]dev.
 
-All apis, apps and packages are managed through changesets.
-
-### APIs
-
-APIs are published upon release to dockerhub and deployed to a kubenertes cluster through the .ops scripts.
-
-TODOs
-
-- [ ] deploy all APIs to their respective domains, in full working order with ssl.
-- [x] deploy APIs using GHA
+All apps and packages are released through changesets.
 
 ### Apps
 
-Apps are deployed upon release to Vercel through the vercel cli.
+Server apps are published upon release to dockerhub.io and deployed to a Kubernetes cluster through the .ops scripts.
+
+Static sites are deployed upon release to Vercel through the vercel-cli.
 
 ### Packages
 
