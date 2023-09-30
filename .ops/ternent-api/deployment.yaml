@@ -20,8 +20,8 @@ spec:
             - name: http
               containerPort: 3000
           env:
-            - name: SUPERSECRET
+            - name: DIGITALOCEAN_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: ternent-api
-                  key: ternent-supersecret
+                  name: ternent-api-env
+                  key: digitalocean-token
