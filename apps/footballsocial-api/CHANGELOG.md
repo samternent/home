@@ -1,5 +1,11 @@
 # footballsocial-api
 
+## 0.0.12
+
+### Patch Changes
+
+- [`f3b06c1`](https://github.com/samternent/home/commit/f3b06c1d15b87c7aa79fe372d441a2d15c3a623f) Thanks [@samternent](https://github.com/samternent)! - Adds lastPosition to table endpoint
+
 ## 0.0.11
 
 ### Patch Changes
