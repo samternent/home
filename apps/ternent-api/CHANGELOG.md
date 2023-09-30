@@ -1,5 +1,11 @@
 # ternent-api
 
+## 0.0.19
+
+### Patch Changes
+
+- [`3ef59a8`](https://github.com/samternent/home/commit/3ef59a82a7455c138dde00e5010adcc251f7da8e) Thanks [@samternent](https://github.com/samternent)! - Adds costs to api page
+
 ## 0.0.18
 
 ### Patch Changes
