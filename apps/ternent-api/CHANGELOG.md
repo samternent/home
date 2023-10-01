@@ -1,5 +1,11 @@
 # ternent-api
 
+## 0.0.20
+
+### Patch Changes
+
+- [`5f60d68`](https://github.com/samternent/home/commit/5f60d683b61d4d4e115d7247cad29b2afa9e1fb7) Thanks [@samternent](https://github.com/samternent)! - Adds animation to scroll indicator
+
 ## 0.0.19
 
 ### Patch Changes
