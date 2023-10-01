@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.7.3
+
+### Patch Changes
+
+- [`beedf5a`](https://github.com/samternent/home/commit/beedf5a8d81dfeb19cb0a849c6b54a5f554e908c) Thanks [@samternent](https://github.com/samternent)! - Remove gradient from table because of apple
+
 ## 0.7.2
 
 ### Patch Changes
