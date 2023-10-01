@@ -53,7 +53,7 @@ const { profile } = useCurrentUser();
   </div>
   <div v-else class="flex flex-col w-full">
     <table class="w-full text-base md:text-base rounded overflow-hidden shadow">
-      <thead class="h-10 font-light relative table-header">
+      <thead class="h-10 font-light relative bg-indigo-900">
         <tr class="font-thin text-center text-white">
           <th v-if="!gameweek" class="w-10"></th>
           <th class="w-12 font-medium">POS</th>
@@ -160,16 +160,5 @@ const { profile } = useCurrentUser();
 .v-enter-from,
 .v-leave-to {
   opacity: 1;
-}
-
-.table-header::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(to right, rgb(55 48 163), rgb(131 24 67));
-  z-index: -1;
 }
 </style>

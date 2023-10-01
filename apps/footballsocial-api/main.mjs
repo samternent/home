@@ -11,6 +11,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 // App
 const app = express();
 
+app.set("view engine", "ejs");
+
 app.use(bodyParser.json());
 app.use(cors({ exposedHeaders: ["X-App-Version"] }));
 
@@ -20,12 +22,13 @@ app.set("port", port);
 
 app.use(async function (req, res, next) {
   const data = JSON.parse(
-    await readFileSync(join(__dirname, "../package.json"), "utf8")
+    await readFileSync(join(__dirname, "./package.json"), "utf8")
   );
   res.setHeader("x-app-version", data.version);
   next();
 });
 
+app.use(express.static(join(__dirname, "public")));
 app.use("/", routes);
 
 // Server

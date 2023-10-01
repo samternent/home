@@ -10,7 +10,7 @@ export default function billingRoutes(router) {
 
     return res.status(200).send({
       currentUsage: billing.month_to_date_usage,
-      history: billing_history.filter(({ type }) => type === "Payment"),
+      history: billing_history.filter(({ type }) => type === "Invoice"),
     });
   });
 }

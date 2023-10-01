@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style type="text/css" media="screen">
+      * {
+        box-sizing: border-box;
+      }
+      h1,
+      h2,
+      h3,
+      h4,
+      h5 {
+        margin: 0;
+        padding: 0;
+      }
+      /* System Fonts as used by GitHub */
+      body {
+        font-family: ui-monospace, Menlo, Monaco, "Cascadia Mono",
+          "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace",
+          "Source Code Pro", "Fira Mono", "Droid Sans Mono", "Courier New",
+          monospace;
+        font-size: calc(15px + 0.390625vw);
+        margin: 0;
+      }
+
+      h1 {
+        font-size: 2em;
+      }
+      h2 {
+        font-size: 1.2em;
+        font-weight: 100;
+      }
+      h1,
+      h2 {
+        letter-spacing: -0.1em;
+      }
+
+      h3 {
+        position: sticky;
+        top: 5.7em;
+        background-color: #fff;
+        padding: 0.5em;
+        margin: 1em 0;
+        text-transform: uppercase;
+        border-left: 0.4em solid pink;
+      }
+
+      .content {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 0 1em;
+        background: #fff;
+      }
+    </style>
+    <link rel="stylesheet" type="text/css" href="styles.css" media="screen" />
+    <title>api.footballsocial.app</title>
+  </head>
+
+  <body>
+    <div class="content">
+      <header class="header">
+        <h1>
+          <span class="pagescroll"
+            >ternent[dot]dev<span style="color: pink">.</span></span
+          >
+        </h1>
+        <h2><span>api.footballsocial.app</span></h2>
+      </header>
+      <div>
+        <h3>Welcome</h3>
+        <p>
+          This is the API for
+          <a href="https://footballsocial.app">footballsocial.app</a>.
+        </p>
+      </div>
+      <div>
+        <h3>rest API</h3>
+        <div>
+          <a href="/predict/PL/table"
+            >GET: /predict/:competitionCode/table/:gameweek?</a
+          >
+          <p>Get the total or gameweek league table.</p>
+        </div>
+        <div>
+          <a href="/predict/PL/calculate/7"
+            >POST: /predict/:competitionCode/calculate/:gameweek</a
+          >
+          <p>Calculate the gameweek results</p>
+        </div>
+        <div>
+          <a href="/predict/sam/PL/7"
+            >GET: /predict/:username/:competitionCode/:gameweek</a
+          >
+          <p>Get gameweek user predictions</p>
+        </div>
+      </div>
+
+      <footer style="background-color: pink; padding: 2em 1em; height: 10em">
+        <p>This is a safe space.</p>
+        <p>There are no cookies, intrusive analytics or other nasties here.</p>
+      </footer>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+  </body>
+</html>

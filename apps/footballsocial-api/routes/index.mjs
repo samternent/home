@@ -1,12 +1,13 @@
 import express from "express";
 
-// import pushNotificationRoutes from "./pushNotificationRoutes.mjs";
 import predictRoutes from "./predictRoutes.mjs";
-import systemRoutes from "./systemRoutes.mjs";
-
-import footballDataProxy from "../footballDataProxy.mjs";
+import footballDataProxy from "../services/footballDataProxy.mjs";
 
 const router = express.Router();
+
+router.get("/", (req, res) => {
+  res.render("pages/index");
+});
 
 router.get("/football-data/*", async function (req, res) {
   const { error, data } = await footballDataProxy(req, res);
@@ -16,8 +17,6 @@ router.get("/football-data/*", async function (req, res) {
   return res.send(data);
 });
 
-// pushNotificationRoutes(router);
 predictRoutes(router);
-systemRoutes(router);
 
 export default router;

@@ -5,13 +5,14 @@
   "type": "module",
   "scripts": {
     "build": "docker build -f ./Dockerfile ../../ -t samternent/footballsocial-api",
-    "dev": "nodemon api/main.mjs",
-    "start": "node src/main.mjs"
+    "dev": "nodemon main.mjs",
+    "start": "node main.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.1.1",
     "axios": "^0.27.2",
     "cors": "^2.8.5",
+    "ejs": "^3.1.9",
     "http-proxy-middleware": "^2.0.6",
     "luxon": "^3.0.3",
     "openai": "^3.3.0",
