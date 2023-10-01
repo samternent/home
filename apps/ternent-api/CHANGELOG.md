@@ -1,5 +1,11 @@
 # ternent-api
 
+## 0.0.21
+
+### Patch Changes
+
+- [`d8be112`](https://github.com/samternent/home/commit/d8be1128d2fce39ef161aeb2e4e78e749cc237ff) Thanks [@samternent](https://github.com/samternent)! - Show invoice on billing section
+
 ## 0.0.20
 
 ### Patch Changes
