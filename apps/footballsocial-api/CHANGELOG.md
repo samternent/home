@@ -1,5 +1,11 @@
 # footballsocial-api
 
+## 0.0.14
+
+### Patch Changes
+
+- [`c11bb7b`](https://github.com/samternent/home/commit/c11bb7b949b815aeca978eddd532eb9eff759791) Thanks [@samternent](https://github.com/samternent)! - Optimise and cache table query
+
 ## 0.0.13
 
 ### Patch Changes

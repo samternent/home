@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.7.4
+
+### Patch Changes
+
+- [`7598d1d`](https://github.com/samternent/home/commit/7598d1d1e7fa8cae634a529e36d5bd1b5667ceee) Thanks [@samternent](https://github.com/samternent)! - Adds sentry for perf and error logging
+
 ## 0.7.3
 
 ### Patch Changes
