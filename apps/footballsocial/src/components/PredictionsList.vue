@@ -218,7 +218,7 @@ const gameweekPoints = computed(() => {
       <CountdownTimer
         :gameweek="gameweek"
         :currentGameweek="currentGameweek"
-        :kickOff="predictionsList[0]?.utcDate"
+        :kickOff="predictionsList[0]?.utcDate || 'undefined'"
       />
       <button
         @click="setGameweek(gameweek + 1)"

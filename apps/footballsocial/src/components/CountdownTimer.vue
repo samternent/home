@@ -16,8 +16,8 @@ const props = defineProps({
     required: true,
   },
   currentGameweek: {
-    type: String,
-    default: "",
+    type: Number,
+    required: true,
   },
 });
 
@@ -49,5 +49,11 @@ const showTimer = computed(() => {
 </script>
 <template>
   gameweek {{ gameweek }}
-  {{ gameweek < currentGameweek ? 'has finished' : (showTimer ? `starts ${countdown || "..."} ` : "has started") }}.
+  {{
+    gameweek < currentGameweek
+      ? "has finished"
+      : showTimer
+      ? `starts ${countdown || "..."} `
+      : "has started"
+  }}.
 </template>

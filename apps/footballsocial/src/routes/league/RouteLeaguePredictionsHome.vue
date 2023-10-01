@@ -13,27 +13,20 @@ const props = defineProps({
     type: String,
     default: null,
   },
-  gameweek: {
-    type: Number,
-    default: null,
-  },
 });
-
-const { profile } = useCurrentUser();
 
 const { items: competition } = useCompetitionLoader();
 const isCup = computed(() => competition.value.type === "CUP");
 
-const backPath = window.localStorage.getItem('lastLeagueTablePath');
+const backPath = window.localStorage.getItem("lastLeagueTablePath");
 </script>
 <template>
   <div class="flex flex-col w-full">
-    <div
-      v-if="username"
-      class="text-zinc-300 mb-6"
-    >
+    <div v-if="username" class="text-zinc-300 mb-6">
       <RouterLink
-        :to="`/leagues/${competitionCode}/table${backPath ? `/${backPath}` : ''}`"
+        :to="`/leagues/${competitionCode}/table${
+          backPath ? `/${backPath}` : ''
+        }`"
         class="pb-2 hover:text-zinc-100 transition-all"
       >
         <svg
@@ -58,7 +51,7 @@ const backPath = window.localStorage.getItem('lastLeagueTablePath');
       v-if="competition && !isCup"
       :username="username"
       :competitionCode="competition?.code"
-      :currentGameweek="gameweek || competition?.currentSeason?.currentMatchday"
+      :currentGameweek="competition?.currentSeason?.currentMatchday"
       @selected="
         (fixture) =>
           $router.push(

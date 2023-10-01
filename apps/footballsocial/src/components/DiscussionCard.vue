@@ -113,17 +113,14 @@ onMounted(async () => {
       </div>
       <div class="flex relative shrink-0" v-if="showTeams">
         <div v-for="team in teams" :key="team.team.id">
-          <RouterLink
-            class="shadow-block dark:bg-[#242424] rounded-lg"
-            :to="`/leagues/${discussion.competition}/teams/${team?.team?.id}`"
-          >
+          <div class="dark:bg-[#242424] rounded-lg p-2">
             <img
               :alt="team?.team?.name"
               v-if="team?.team?.crest"
               class="w-10 h-10 md:w-14 md:h-14 mx-1"
               :src="team.team?.crest"
             />
-          </RouterLink>
+          </div>
         </div>
         <div
           v-if="moreTeams > 0"

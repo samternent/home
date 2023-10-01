@@ -30,7 +30,7 @@ export default function predictRoutes(router) {
     async function (req, res) {
       const { competitionCode, gameweek } = req.params;
 
-      const cacheResults = null; //await redisClient.get(req.url);
+      const cacheResults = await redisClient.get(req.url);
       if (cacheResults) {
         return res.send(JSON.parse(cacheResults));
       }
@@ -80,7 +80,7 @@ export default function predictRoutes(router) {
             combinedTableStructure[item.username] = item;
           }
 
-          return combinedTableStructure;
+          return { ...combinedTableStructure };
         }
 
         let previousResults = {};
@@ -113,30 +113,27 @@ export default function predictRoutes(router) {
 
         const combinedResults = Object.keys(previousResults)
           .map((username) => {
-            return [previousResults[username], currentResults[username]].reduce(
-              (acc, curr) => {
-                if (!curr) {
-                  return acc;
-                }
-
-                return {
-                  id: acc.id || curr.id,
-                  points: (acc.points || 0) + curr.points,
-                  correctScore: (acc.correctScore || 0) + curr.correctScore,
-                  totalCorrectResult:
-                    (acc.totalCorrectResult || 0) + curr.totalCorrectResult,
-                  totalAwayGoals:
-                    (acc.totalAwayGoals || 0) + curr.totalAwayGoals,
-                  totalHomeGoals:
-                    (acc.totalHomeGoals || 0) + curr.totalHomeGoals,
-                  lastPosition: acc.lastPosition || curr.lastPosition || 0,
-                  gameweekPosition:
-                    acc.gameweekPosition || curr.gameweekPosition || 0,
-                  username: acc.username || curr.username,
-                };
-              },
-              {}
-            );
+            return [
+              { ...previousResults[username] },
+              { ...currentResults[username] },
+            ].reduce((acc, curr) => {
+              return {
+                points: (acc.points || 0) + (curr.points || 0),
+                correctScore:
+                  (acc.correctScore || 0) + (curr.correctScore || 0),
+                totalCorrectResult:
+                  (acc.totalCorrectResult || 0) +
+                  (curr.totalCorrectResult || 0),
+                totalAwayGoals:
+                  (acc.totalAwayGoals || 0) + (curr.totalAwayGoals || 0),
+                totalHomeGoals:
+                  (acc.totalHomeGoals || 0) + (curr.totalHomeGoals || 0),
+                lastPosition: acc.lastPosition || curr.lastPosition || 0,
+                gameweekPosition:
+                  acc.gameweekPosition || curr.gameweekPosition || 0,
+                username: acc.username || curr.username,
+              };
+            }, {});
           })
           .sort(sortTable)
           .map((row, i) => {

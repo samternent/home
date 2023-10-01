@@ -14,8 +14,8 @@ const props = defineProps({
     default: null,
   },
   showGameweekResults: {
-    type: String,
-    default: null,
+    type: Boolean,
+    default: false,
   },
 });
 const { items: competition } = useCompetitionLoader();

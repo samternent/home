@@ -116,7 +116,7 @@ export const leagueRoutes = [
             },
           },
           {
-            path: "predictions/:username?/:gameweek?",
+            path: "predictions/:username?",
             component: RouteLeaguePredictionsHome,
             beforeEnter(to: RouteLocation) {
               window.localStorage.setItem("lastLeaguePath", "predictions");

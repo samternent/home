@@ -302,6 +302,9 @@ importers:
 
   apps/footballsocial:
     dependencies:
+      '@sentry/vue':
+        specifier: ^7.72.0
+        version: 7.72.0(vue@3.2.47)
       '@supabase/supabase-js':
         specifier: ^2.1.1
         version: 2.12.1(encoding@0.1.13)
@@ -721,64 +724,6 @@ importers:
         specifier: ^0.39.5
         version: 0.39.5(typescript@4.9.5)
 
-  apps/ternent:
-    dependencies:
-      '@supabase/supabase-js':
-        specifier: ^2.1.1
-        version: 2.12.1(encoding@0.1.13)
-      axios:
-        specifier: ^0.27.2
-        version: 0.27.2
-      cors:
-        specifier: ^2.8.5
-        version: 2.8.5
-      http-proxy-middleware:
-        specifier: ^2.0.6
-        version: 2.0.6
-      luxon:
-        specifier: ^3.0.3
-        version: 3.3.0
-      redis:
-        specifier: ^4.3.0
-        version: 4.6.5
-      uuid:
-        specifier: ^8.3.2
-        version: 8.3.2
-      web-push:
-        specifier: ^3.5.0
-        version: 3.5.0
-    devDependencies:
-      '@types/uuid':
-        specifier: ^8.3.4
-        version: 8.3.4
-      '@vercel/node':
-        specifier: ^2.5.10
-        version: 2.10.1(encoding@0.1.13)
-      autoprefixer:
-        specifier: ^10.4.8
-        version: 10.4.14(postcss@8.4.21)
-      body-parser:
-        specifier: ^1.20.0
-        version: 1.20.2
-      dotenv:
-        specifier: ^16.0.2
-        version: 16.0.3
-      express:
-        specifier: ^4.18.1
-        version: 4.18.2
-      nodemon:
-        specifier: ^2.0.20
-        version: 2.0.22
-      pm2:
-        specifier: ^5.2.0
-        version: 5.3.0
-      vercel:
-        specifier: ^28.1.4
-        version: 28.18.2(@types/node@14.18.33)(encoding@0.1.13)
-      vue-tsc:
-        specifier: ^0.39.5
-        version: 0.39.5(typescript@4.9.5)
-
   apps/ternent-api:
     dependencies:
       '@inrupt/solid-client':
@@ -802,6 +747,9 @@ importers:
       express:
         specifier: ^4.18.1
         version: 4.18.2
+      marked:
+        specifier: ^9.0.3
+        version: 9.0.3
       nodemon:
         specifier: ^2.0.20
         version: 2.0.22
@@ -4088,6 +4036,73 @@ packages:
       colors: 1.2.5
       string-argv: 0.3.1
     dev: true
+
+  /@sentry-internal/tracing@7.72.0:
+    resolution: {integrity: sha512-DToryaRSHk9R5RLgN4ktYEXZjQdqncOAWPqyyIurji8lIobXFRfmLtGL1wjoCK6sQNgWsjhSM9kXxwGnva1DNw==}
+    engines: {node: '>=8'}
+    dependencies:
+      '@sentry/core': 7.72.0
+      '@sentry/types': 7.72.0
+      '@sentry/utils': 7.72.0
+      tslib: 2.5.0
+    dev: false
+
+  /@sentry/browser@7.72.0:
+    resolution: {integrity: sha512-fcFDTzqhPd3VZAmmYW3KvBTBaEfrKjPmRhlAsfhkGWYLCHqVkNtzsFER4cmUNRGNxjyt9tcG3WlTTqgLRucycQ==}
+    engines: {node: '>=8'}
+    dependencies:
+      '@sentry-internal/tracing': 7.72.0
+      '@sentry/core': 7.72.0
+      '@sentry/replay': 7.72.0
+      '@sentry/types': 7.72.0
+      '@sentry/utils': 7.72.0
+      tslib: 2.5.0
+    dev: false
+
+  /@sentry/core@7.72.0:
+    resolution: {integrity: sha512-G03JdQ5ZsFNRjcNNi+QvCjqOuBvYqU92Gs1T2iK3GE8dSBTu2khThydMpG4xrKZQLIpHOyiIhlFZiuPtZ66W8w==}
+    engines: {node: '>=8'}
+    dependencies:
+      '@sentry/types': 7.72.0
+      '@sentry/utils': 7.72.0
+      tslib: 2.5.0
+    dev: false
+
+  /@sentry/replay@7.72.0:
+    resolution: {integrity: sha512-dHH/mYCFBwJ/kYmL9L5KihjwQKcefiuvcH0otHSwKSpbbeEoM/BV+SHQoYGd6OMSYnL9fq1dHfF7Zo26p5Yu0Q==}
+    engines: {node: '>=12'}
+    dependencies:
+      '@sentry/core': 7.72.0
+      '@sentry/types': 7.72.0
+      '@sentry/utils': 7.72.0
+    dev: false
+
+  /@sentry/types@7.72.0:
+    resolution: {integrity: sha512-g6u0mk62yGshx02rfFADIfyR/S9VXcf3RG2qQPuvykrWtOfN/BOTrZypF7I+MiqKwRW76r3Pcu2C/AB+6z9XQA==}
+    engines: {node: '>=8'}
+    dev: false
+
+  /@sentry/utils@7.72.0:
+    resolution: {integrity: sha512-o/MtqI7WJXuswidH0bSgBP40KN2lrnyQEIx5uoyJUJi/QEaboIsqbxU62vaFJpde8SYrbA+rTnP3J3ujF2gUag==}
+    engines: {node: '>=8'}
+    dependencies:
+      '@sentry/types': 7.72.0
+      tslib: 2.5.0
+    dev: false
+
+  /@sentry/vue@7.72.0(vue@3.2.47):
+    resolution: {integrity: sha512-XTJK7C8WH370jBhXzKwPS3TgG5w5tT+qW25IQ+ypyBv4vclcaKeeGMlIehuH2n3hVI9ut/f4Wjj1EwCrQE4ORw==}
+    engines: {node: '>=8'}
+    peerDependencies:
+      vue: 2.x || 3.x
+    dependencies:
+      '@sentry/browser': 7.72.0
+      '@sentry/core': 7.72.0
+      '@sentry/types': 7.72.0
+      '@sentry/utils': 7.72.0
+      tslib: 2.5.0
+      vue: 3.2.47
+    dev: false
 
   /@shuding/opentype.js@1.4.0-beta.0:
     resolution: {integrity: sha512-3NgmNyH3l/Hv6EvsWJbsvpcpUba6R8IREQ83nH83cyakCw7uM1arZKNfHwv1Wz6jgqrF/j4x5ELvR6PnK9nTcA==}
@@ -9766,6 +9781,12 @@ packages:
   /marked@4.3.0:
     resolution: {integrity: sha512-PRsaiG84bK+AMvxziE/lCFss8juXjNaWzVbN5tXAm4XjeaS9NAHhop+PjQxz2A9h8Q4M/xGmzP8vqNwy6JeK0A==}
     engines: {node: '>= 12'}
+    hasBin: true
+    dev: false
+
+  /marked@9.0.3:
+    resolution: {integrity: sha512-pI/k4nzBG1PEq1J3XFEHxVvjicfjl8rgaMaqclouGSMPhk7Q3Ejb2ZRxx/ZQOcQ1909HzVoWCFYq6oLgtL4BpQ==}
+    engines: {node: '>= 16'}
     hasBin: true
     dev: false
 
