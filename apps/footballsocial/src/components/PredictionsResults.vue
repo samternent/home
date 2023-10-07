@@ -95,11 +95,11 @@ const { profile } = useCurrentUser();
             v-if="!gameweek"
             class="text-center py-2 px-1 text-white border-r border-zinc-800"
           >
-            <span v-if="row.position > row.lastPosition" class="text-green-800"
+            <span v-if="row.position < row.lastPosition" class="text-green-800"
               >▲</span
             >
             <span
-              v-else-if="row.lastPosition > row.position"
+              v-else-if="row.position > row.lastPosition"
               class="text-red-900"
               >▼</span
             >
