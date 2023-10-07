@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.7.5
+
+### Patch Changes
+
+- [`3a30761`](https://github.com/samternent/home/commit/3a307610d607deb9601a764cef26cfbf51db65df) Thanks [@samternent](https://github.com/samternent)! - Fix position indicator
+
 ## 0.7.4
 
 ### Patch Changes
