@@ -10,9 +10,3 @@ services:
     command: "pnpm --filter ternent-api start:dev"
     volumes:
       - ../:/app
-
-  gov-kit:
-    image: "samternent/gov-kit"
-    command: "pnpm --filter gov-kit dev"
-    volumes:
-      - ../:/app

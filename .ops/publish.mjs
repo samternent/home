@@ -5,7 +5,6 @@ const appsToPublish = [
   "../apps/footballsocial",
   "../apps/footballsocial-api",
   "../apps/ternent-api",
-  "../apps/gov-kit",
 ];
 const packagesToPublish = [
   "../packages/ledger",
