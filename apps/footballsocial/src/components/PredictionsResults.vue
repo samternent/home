@@ -17,6 +17,10 @@ const props = defineProps({
     type: Number,
     default: null,
   },
+  limit: {
+    type: Number,
+    default: null,
+  },
 });
 
 const predictionsLoaded = shallowRef(false);
@@ -29,7 +33,8 @@ async function loadPredictions() {
     props.competitionCode,
     props.gameweek
   );
-  table.value = data;
+
+  table.value = props.limit ? data.slice(0, props.limit) : data;
   predictionsLoaded.value = true;
 }
 
@@ -88,7 +93,6 @@ const { profile } = useCurrentUser();
           :class="{
             'bg-opacity-10 bg-indigo-500': row.username === profile?.username,
             'bg-opacity-10 bg-green-500': row.position === 1,
-            'bg-opacity-10 bg-red-500': row.position === table.length,
           }"
         >
           <td

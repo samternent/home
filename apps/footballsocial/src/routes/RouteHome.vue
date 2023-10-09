@@ -38,11 +38,11 @@ watch(
 </script>
 <template>
   <div
-    class="w-full max-w-6xl mx-auto h-full flex-1 flex md:flex-row flex-col p-4"
+    class="w-full max-w-6xl mx-auto h-full flex-1 flex lg:flex-row flex-col p-4"
   >
-    <div class="md:w-1/2 py-6 px-2">
+    <div class="lg:w-1/2 py-6 px-2">
       <h1
-        class="bg-gradient-to-r from-white to-70% to-indigo-500 via-40% bg-clip-text text-transparent text-5xl font-bold tracking-tighter"
+        class="animate-gradient bg-gradient-to-r from-white to-70% to-indigo-500 via-40% bg-clip-text text-transparent text-5xl font-bold tracking-tighter"
       >
         Football Social<span class="text-pink-700">.</span>
       </h1>
@@ -117,9 +117,9 @@ watch(
         </a>
       </p>
     </div>
-    <div class="flex-1 md:w-1/2 mt-6 flex">
-      <div class="overflow-y-scroll w-full h-4/6">
-        <PredictionsResults competitionCode="PL" :private="!user" />
+    <div class="flex-1 lg:w-1/2 lg:mt-24 mb-8 px-2 flex">
+      <div class="w-full">
+        <PredictionsResults competitionCode="PL" :private="!user" :limit="10" />
       </div>
     </div>
   </div>
@@ -127,20 +127,15 @@ watch(
 <style>
 .animate-gradient {
   background-size: 200%;
-  /* -webkit-animation: animatedgradient 6s ease infinite alternate;
-  -moz-animation: animatedgradient 6s ease infinite alternate;
-  animation: animatedgradient 3s ease infinite alternate; */
+  animation: animatedgradient 10s ease infinite alternate;
 }
 
 @keyframes animatedgradient {
   0% {
-    background-position: 0% 50%;
-  }
-  80% {
-    background-position: 100% 50%;
+    background-position: 0% 100%;
   }
   100% {
-    background-position: 0% 50%;
+    background-position: 50% 100%;
   }
 }
 </style>
