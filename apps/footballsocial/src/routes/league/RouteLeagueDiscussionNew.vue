@@ -284,7 +284,7 @@ watch(
             @click="addComment"
             class="bg-pink-600 transition-all shadow-block-yellow dark:text-white px-4 py-2 rounded no-underline hover:no-underline hover:dark:text-white hover:bg-pink-500"
           >
-            Start Discussion
+            Start discussion
           </button>
         </div>
       </div>
