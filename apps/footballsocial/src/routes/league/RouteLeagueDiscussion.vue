@@ -129,9 +129,7 @@ watch(
 );
 </script>
 <template>
-  <div
-    class="flex-1 flex flex-col overflow-hidden w-full  mx-auto h-[calc(100vh_-_15rem)] max-h-[calc(100vh_-_15rem)]"
-  >
+  <div class="flex-1 flex flex-col overflow-hidden w-full mx-auto">
     <!-- Top bar -->
     <div class="mx-2">
       <RouterLink
@@ -191,11 +189,11 @@ watch(
       </div>
     </div>
     <!-- Chat messages -->
-    <div class="flex-1 flex overflow-auto">
+    <div class="flex-1 flex">
       <div class="flex-1 flex flex-col w-full mx-auto">
         <div
           v-if="user"
-          class="px-2 md:px-6 py-4 overflow-y-auto my-2 flex flex-col flex-1 flex-col-reverse"
+          class="px-2 md:px-6 py-4 my-2 flex flex-1 flex-col-reverse"
           ref="replyList"
         >
           <div
@@ -212,7 +210,7 @@ watch(
             >
               {{ answer?.username?.[0] }}
             </div>
-            <div class="flex-1 overflow-hidden">
+            <div class="flex-1">
               <div>
                 <span
                   class="font-medium text-base text-indigo-300 mr-2 dark:text-white"
@@ -222,7 +220,7 @@ watch(
                   formatTimeStamp(answer.created_at)
                 }}</span>
               </div>
-              <p
+              <div
                 class="dark:text-white text-base leading-normal font-light"
                 v-html="answer.body"
               />

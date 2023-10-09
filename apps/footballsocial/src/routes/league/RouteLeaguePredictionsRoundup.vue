@@ -1,7 +1,6 @@
 <script setup>
 import { computed, shallowRef } from "vue";
 import { useCompetitionLoader } from "../../api/football-data/useCompetitionLoader";
-import Keane from '../../module/ai/roundups/gameweek-2-keane.md'
 
 const props = defineProps({
   competitionCode: {

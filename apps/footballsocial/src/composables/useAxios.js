@@ -10,7 +10,7 @@ export function provideAxios() {
   const toast = useToast();
 
   const instance = axios.create({
-    baseURL: import.meta.env.DEV
+    baseURL: !import.meta.env.DEV
       ? "http://localhost:8002/"
       : "https://api.footballsocial.app/",
     crossDomain: true,

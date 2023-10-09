@@ -8,7 +8,6 @@ import RouteLeaguePredictionsLeagues from "./RouteLeaguePredictionsLeagues.vue";
 import RouteLeaguePredictionsLeagueCreate from "./RouteLeaguePredictionsLeagueCreate.vue";
 import RouteLeaguePredictionsLeagueJoin from "./RouteLeaguePredictionsLeagueJoin.vue";
 import RouteLeaguePredictionsLeague from "./RouteLeaguePredictionsLeague.vue";
-import RouteLeaguePredictionsRoundup from "./RouteLeaguePredictionsRoundup.vue";
 import RouteLeagueFixtures from "./RouteLeagueFixtures.vue";
 import RouteLeaguePredictionsHome from "./RouteLeaguePredictionsHome.vue";
 
@@ -99,14 +98,6 @@ export const leagueRoutes = [
               window.localStorage.setItem("lastLeaguePath", "leagues");
             },
             props: true,
-          },
-          {
-            path: "roundup",
-            props: true,
-            component: RouteLeaguePredictionsRoundup,
-            beforeEnter(to: RouteLocation) {
-              window.localStorage.setItem("lastLeaguePath", "roundup");
-            },
           },
           {
             path: "fixtures",
