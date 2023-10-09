@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.7.8
+
+### Patch Changes
+
+- [`033f1df`](https://github.com/samternent/home/commit/033f1df80db9f71ae18a2b6f5ec16864bee3f723) Thanks [@samternent](https://github.com/samternent)! - Update home page styles
+
 ## 0.7.7
 
 ### Patch Changes
