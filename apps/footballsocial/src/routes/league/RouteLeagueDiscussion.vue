@@ -129,9 +129,7 @@ watch(
 );
 </script>
 <template>
-  <div
-    class="flex-1 flex flex-col overflow-hidden w-full  mx-auto h-[calc(100vh_-_15rem)] max-h-[calc(100vh_-_15rem)]"
-  >
+  <div class="flex-1 flex flex-col overflow-hidden w-full mx-auto">
     <!-- Top bar -->
     <div class="mx-2">
       <RouterLink
@@ -191,11 +189,11 @@ watch(
       </div>
     </div>
     <!-- Chat messages -->
-    <div class="flex-1 flex overflow-auto">
+    <div class="flex-1 flex">
       <div class="flex-1 flex flex-col w-full mx-auto">
         <div
           v-if="user"
-          class="px-2 md:px-6 py-4 overflow-y-auto my-2 flex flex-col flex-1 flex-col-reverse"
+          class="px-2 md:px-6 py-4 my-2 flex flex-1 flex-col-reverse"
           ref="replyList"
         >
           <div
@@ -207,22 +205,24 @@ watch(
               'dark:bg-[#252525] p-2': $route.hash === `#${answer.id}`,
             }"
           >
-            <div
-              class="h-8 w-8 flex items-center justify-center uppercase text-2xl font-medium rounded-lg bg-indigo-700 shadow-lg mr-4"
-            >
-              {{ answer?.username?.[0] }}
-            </div>
-            <div class="flex-1 overflow-hidden">
-              <div>
-                <span
-                  class="font-medium text-base text-indigo-300 mr-2 dark:text-white"
-                  >{{ answer?.username }}</span
+            <div class="flex-1">
+              <div class="flex pb-6">
+                <div
+                  class="h-10 w-10 flex items-center justify-center uppercase text-2xl font-medium rounded-lg bg-indigo-700 shadow-lg mr-4"
                 >
-                <span class="text-[#a3a3a3] text-xs">{{
-                  formatTimeStamp(answer.created_at)
-                }}</span>
+                  {{ answer?.username?.[0] }}
+                </div>
+                <div class="flex flex-col">
+                  <span
+                    class="font-medium text-base text-indigo-300 mr-2 dark:text-white"
+                    >{{ answer?.username }}</span
+                  >
+                  <span class="text-[#a3a3a3] text-xs">{{
+                    formatTimeStamp(answer.created_at)
+                  }}</span>
+                </div>
               </div>
-              <p
+              <div
                 class="dark:text-white text-base leading-normal font-light"
                 v-html="answer.body"
               />
@@ -252,36 +252,24 @@ watch(
             to join the conversation.
           </p>
         </div>
-        <div class="pb-6 px-4 flex-none">
-          <div
-            class="flex rounded-lg border-2 border-[#343434] overflow-hidden"
-            v-if="user"
-          >
+        <div class="pb-6 px-4 flex-none w-full max-w-4xl mx-auto">
+          <div v-if="user" class="flex flex-col">
             <Editor
               type="text"
               v-model="replyBody"
               @submit="addAnswer"
-              class="border-[#343434] text-light w-full px-4 dark:bg-[#1d1d1d]"
+              class="border-[#343434] border text-light w-full px-4 dark:bg-[#1d1d1d] my-3"
               placeholder="Reply"
             />
-            <span class="text-3xl text-grey border-l-2 border-[#343434] p-2">
+            <div class="flex justify-end mt-2">
               <button
                 aria-label="Add reply"
                 @click="addAnswer"
-                class="transition-all dark:text-white px-4 py-2 rounded no-underline hover:no-underline hover:dark:text-white"
+                class="transition-all bg-green-500 hover:bg-green-600 px-4 py-2 rounded no-underline hover:no-underline hover:dark:text-white"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  class="w-6 h-6 text-[#4c4c4c]"
-                >
-                  <path
-                    d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"
-                  />
-                </svg>
+                Post reply
               </button>
-            </span>
+            </div>
           </div>
         </div>
       </div>

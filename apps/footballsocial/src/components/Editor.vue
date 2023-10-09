@@ -8,7 +8,6 @@ import Bold from "@tiptap/extension-bold";
 import Text from "@tiptap/extension-text";
 import HardBreak from "@tiptap/extension-hard-break";
 import { useMentions } from "../composables/useMentions";
-import { EmojiSearch } from "../utils/tiptap/emoji";
 
 const props = defineProps({
   modelValue: {
@@ -30,7 +29,7 @@ const editor = useEditor({
   },
   editorProps: {
     attributes: {
-      class: "max-h-96 overflow-auto py-4 text-lg focus:outline-none",
+      class: "max-h-96 h-24 overflow-auto py-4 text-lg focus:outline-none",
     },
   },
   extensions: [
