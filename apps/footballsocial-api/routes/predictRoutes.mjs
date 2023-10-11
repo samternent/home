@@ -2,13 +2,11 @@ import footballDataProxy, {
   redisClient,
 } from "../services/footballDataProxy.mjs";
 import { supabaseClient } from "../services/supabase.mjs";
+import OpenAI from "openai";
 
-import { Configuration, OpenAIApi } from "openai";
-
-const configuration = new Configuration({
+const openai = new OpenAI({
   apiKey: process.env.OPENAPI_KEY,
 });
-const openai = new OpenAIApi(configuration);
 
 function sortTable(a, b) {
   if (a.points === b.points) {
@@ -142,7 +140,7 @@ export default function predictRoutes(router) {
 
         res.setHeader("Cache-Control", "max-age=1, stale-while-revalidate");
         await redisClient.set(req.url, JSON.stringify(combinedResults), {
-          EX: 20,
+          EX: 300,
           NX: true,
         });
 
@@ -154,7 +152,7 @@ export default function predictRoutes(router) {
 
         res.setHeader("Cache-Control", "max-age=1, stale-while-revalidate");
         await redisClient.set(req.url, JSON.stringify(results), {
-          EX: 20,
+          EX: 300,
           NX: true,
         });
 
@@ -309,4 +307,30 @@ export default function predictRoutes(router) {
       return res.send({ predictions: predictionData });
     }
   );
+
+  async function generatePrediction(matches) {
+    const prompt = constructPrompt(matches);
+
+    try {
+      const response = await openaiClient.complete({
+        prompt,
+        max_tokens: 10, // Adjust based on the desired length of the generated prediction
+      });
+
+      return response.choices[0].text.trim();
+    } catch (error) {
+      console.error("Error generating prediction from OpenAI:", error);
+      throw error;
+    }
+  }
+
+  // Usage to predict
+  router.post("/predict-ai", async (req, res) => {
+    try {
+      const prediction = await generatePrediction(matches);
+      res.json({ prediction });
+    } catch (error) {
+      res.status(500).json({ error: "Error generating prediction" });
+    }
+  });
 }

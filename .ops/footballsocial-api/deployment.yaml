@@ -30,6 +30,11 @@ spec:
                 secretKeyRef:
                   name: footballsocial-api-env
                   key: supabase-super-key
+            - name: SUPABASE_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: footballsocial-api-env
+                  key: supabase-jwt-secret
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:

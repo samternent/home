@@ -1,13 +1,13 @@
 import { provide, inject } from "vue";
 import axios from "axios";
-import { useToast } from "vue-toastification";
 import { useAppVersion } from "./useAppVersion";
+import { useCurrentUser } from "./useCurrentUser";
 
 const useAxiosSymbol = Symbol("useAxios");
 
 export function provideAxios() {
   const { serverVersion } = useAppVersion();
-  const toast = useToast();
+  const { session } = useCurrentUser();
 
   const instance = axios.create({
     baseURL: import.meta.env.DEV
@@ -15,6 +15,28 @@ export function provideAxios() {
       : "https://api.footballsocial.app/",
     crossDomain: true,
   });
+
+  instance.interceptors.request.use(
+    async function (config) {
+      return {
+        ...config,
+        headers: {
+          ...(config.headers || {}),
+          "Access-Token": session.value?.access_token,
+        },
+      };
+    },
+    (error) => {
+      console.log(error);
+      if (error.response?.status === 429) {
+        // show error message
+        console.error(
+          "Sorry, our servers are very busy right now. Please try again later"
+        );
+      }
+      return Promise.reject(error);
+    }
+  );
 
   instance.interceptors.response.use(
     function (resp) {
@@ -25,23 +47,11 @@ export function provideAxios() {
       return resp;
     },
     (error) => {
-      if (error.response.status === 429) {
-        toast.error(
-          "Sorry, our servers are very busy right now. Please try again later",
-          {
-            position: "bottom-right",
-            timeout: 5000,
-            closeOnClick: true,
-            pauseOnFocusLoss: false,
-            pauseOnHover: true,
-            draggable: true,
-            draggablePercent: 0.6,
-            showCloseButtonOnHover: true,
-            hideProgressBar: true,
-            closeButton: "button",
-            icon: true,
-            rtl: false,
-          }
+      console.log(error);
+      if (error.response?.status === 429) {
+        // show error message
+        console.error(
+          "Sorry, our servers are very busy right now. Please try again later"
         );
       }
       return Promise.reject(error);

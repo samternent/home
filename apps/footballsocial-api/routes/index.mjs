@@ -1,7 +1,9 @@
 import express from "express";
-
 import predictRoutes from "./predictRoutes.mjs";
-import footballDataProxy from "../services/footballDataProxy.mjs";
+import footballDataProxy, {
+  redisClient,
+} from "../services/footballDataProxy.mjs";
+import { supabaseClient } from "../services/supabase.mjs";
 
 const router = express.Router();
 
@@ -15,6 +17,21 @@ router.get("/football-data/*", async function (req, res) {
     res.send(error);
   }
   return res.send(data);
+});
+
+router.get("/landing-stats", async function (req, res) {
+  const { count: predictionCount } = await supabaseClient
+    .from("predictions")
+    .select("*", { count: "exact", head: true });
+
+  const { count: userCount } = await supabaseClient
+    .from("profiles")
+    .select("*", { count: "exact", head: true });
+
+  return res.status(200).send({
+    predictions: predictionCount,
+    users: userCount,
+  });
 });
 
 predictRoutes(router);

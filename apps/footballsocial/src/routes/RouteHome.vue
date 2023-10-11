@@ -10,18 +10,17 @@ import PredictionsResults from "../components/PredictionsResults.vue";
 const router = useRouter();
 const lastLeague = useLocalStorage("lastLeague", "PL");
 const { user } = useCurrentUser();
-const { getPredictionsCount, fetchPredictionTable } = usePredictionService();
+const { fetchLandingStats } = usePredictionService();
 
 const players = shallowRef(0);
 const predictionsCount = shallowRef(0);
 const table = shallowRef([]);
 
 onMounted(async () => {
-  const { data } = await fetchPredictionTable('PL')
-  players.value = data?.length;
-  table.value = data;
-  const { count } = await getPredictionsCount();
-  predictionsCount.value = count;
+  const { data } = await fetchLandingStats();
+  players.value = data?.users;
+  predictionsCount.value = data?.predictions;
+  table.value = data?.table;
 });
 
 watch(
@@ -38,55 +37,36 @@ watch(
 </script>
 <template>
   <div
-    class="w-full max-w-6xl mx-auto h-full flex-1 flex lg:flex-row flex-col p-4"
+    class="w-full max-w-3xl mx-auto h-full flex-1 flex lg:flex-row flex-col p-4"
   >
-    <div class="lg:w-1/2 py-6 px-2">
+    <div class="py-6 px-2">
       <h1
         class="animate-gradient bg-gradient-to-r from-white to-70% to-indigo-500 via-40% bg-clip-text text-transparent text-5xl font-bold tracking-tighter"
       >
         Football Social<span class="text-pink-700">.</span>
       </h1>
-      <h2 class="text-2xl sm:text-3xl font-thin tracking-tighter my-8">
+      <h2 class="text-2xl sm:text-3xl font-light tracking-tighter mt-2 mb-12">
         The friendly football score prediction game.
       </h2>
-      <p class="text-2xl font-thin tracking-tighter my-4" v-if="players">
-        FootballSocial currently has
-        <span class="text-3xl font-medium text-pink-500"> {{ players }} </span>
-        active players for the
-        <span class="text-2xl font-medium">Premier League</span>... Join in to
-        be number
+      <p class="text-2xl font-thin tracking-tighter my-4">
+        <span class="font-medium">FootballSocial</span> has
+        <span class="text-3xl font-medium text-pink-500">
+          {{ players || "__" }}
+        </span>
+        players and
+        <span class="text-3xl font-medium text-white"
+          >{{ predictionsCount }}
+        </span>
+        predictions across
+        <span class="text-3xl font-medium text-white">7 </span> leagues... Join
+        in to be number
         <span class="text-3xl font-medium text-green-600">{{
-          players + 1
+          players ? players + 1 : "__"
         }}</span
         >!
       </p>
-      <div class="text-2xl font-thin tracking-tighter my-4 w-full" v-else>
-        <div
-          class="bg-[#1e1e1e] animate-pulse my-2 rounded flex-1 h-10 w-full"
-        />
-        <div
-          class="bg-[#1e1e1e] animate-pulse my-2 rounded flex-1 h-10 w-full"
-        />
-      </div>
-      <p
-        class="text-2xl font-thin tracking-tighter my-12"
-        v-if="predictionsCount"
-      >
 
-      <div>
-        A total of
-        <span class="text-6xl font-thin text-white"
-          >{{ predictionsCount }}
-        </span>
-        predictions have been made.
-        </div>
-      </p>
-      <div class="text-2xl font-thin tracking-tighter my-8 w-full" v-else>
-        <div
-          class="bg-[#1e1e1e] animate-pulse rounded flex-1 h-16 w-full"
-        />
-      </div>
-      <div class="flex text-2xl justify-senter items-end my-8">
+      <div class="flex text-2xl justify-senter items-end my-12">
         <RouterLink
           aria-label="Login"
           v-if="!user"
@@ -105,7 +85,7 @@ watch(
           Join
         </RouterLink>
       </div>
-      <p class="text-xl font-light tracking-tighter my-4">
+      <p class="text-lg font-light tracking-tighter my-4 mt-16">
         If you're here to look at the code, it's open-source on Github.
         <a
           href="https://github.com/samternent/home/tree/main/apps/footballsocial"
@@ -116,11 +96,6 @@ watch(
           samternent/home/apps/footballsocial
         </a>
       </p>
-    </div>
-    <div class="flex-1 lg:w-1/2 lg:mt-24 mb-8 px-2 flex">
-      <div class="w-full">
-        <PredictionsResults competitionCode="PL" :private="!user" :limit="10" />
-      </div>
     </div>
   </div>
 </template>

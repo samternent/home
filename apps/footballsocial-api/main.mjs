@@ -5,6 +5,7 @@ import cors from "cors";
 import { readFileSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
+import jwt from "jsonwebtoken";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -20,12 +21,30 @@ app.use(cors({ exposedHeaders: ["X-App-Version"] }));
 const port = "3000";
 app.set("port", port);
 
+const unauthenticatedRoutes = ["/landing-stats"];
+
 app.use(async function (req, res, next) {
   const data = JSON.parse(
     await readFileSync(join(__dirname, "./package.json"), "utf8")
   );
   res.setHeader("x-app-version", data.version);
-  next();
+
+  if (unauthenticatedRoutes.includes(req.url)) {
+    next();
+    return;
+  }
+
+  const accessToken = req.headers["access-token"];
+  if (accessToken) {
+    const decoded = jwt.verify(accessToken, process.env.SUPABASE_JWT_SECRET);
+    if (decoded.role === "authenticated") {
+      next();
+      return;
+    }
+    res.status(401).json({ status: 401 });
+  } else {
+    res.status(401).json({ status: 401 });
+  }
 });
 
 app.use(express.static(join(__dirname, "public")));

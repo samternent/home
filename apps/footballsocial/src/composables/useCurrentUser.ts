@@ -118,6 +118,7 @@ export function provideCurrentUser() {
     signupWithGoogle,
     updateProfile,
     ready,
+    session,
   };
 
   provide(currentUserSymbol, currentUser);

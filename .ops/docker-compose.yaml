@@ -14,11 +14,3 @@ services:
       - "8002:3000"
     env_file:
       - "./footballsocial-api/.env"
-
-  concords-api:
-    image: "samternent/concords-api"
-    restart: always
-    ports:
-      - "8003:3000"
-    env_file:
-      - "./concords-api/.env"

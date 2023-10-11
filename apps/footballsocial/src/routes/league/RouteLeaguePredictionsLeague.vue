@@ -1,6 +1,5 @@
 <script setup>
 import { shallowRef, computed } from "vue";
-import { useToast } from "vue-toastification";
 import { supabaseClient } from "../../service/supabase";
 
 const props = defineProps({
@@ -30,7 +29,6 @@ function sortTable(a, b) {
 const league = shallowRef({});
 const members = shallowRef([]);
 const table = shallowRef([]);
-const toast = useToast();
 
 async function fetchLeague() {
   const { data: leagueData } = await supabaseClient
@@ -101,20 +99,7 @@ function copyLink() {
   // Copy the text inside the text field
   navigator.clipboard.writeText(linkEl.value.value);
 
-  toast.success(`${linkEl.value.value} copied to clipboard`, {
-    position: "bottom-right",
-    timeout: 5000,
-    closeOnClick: true,
-    pauseOnFocusLoss: false,
-    pauseOnHover: true,
-    draggable: true,
-    draggablePercent: 0.6,
-    showCloseButtonOnHover: true,
-    hideProgressBar: true,
-    closeButton: "button",
-    icon: true,
-    rtl: false,
-  });
+  // emit copy to clipboard message
 }
 const leagueLink = computed(
   () =>

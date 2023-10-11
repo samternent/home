@@ -73,12 +73,17 @@ export function providePredictionService() {
     return api.post(`/predict/${competitionCode}/calculate`);
   }
 
+  async function fetchLandingStats() {
+    return api.get(`/landing-stats`);
+  }
+
   const predictionService = {
     getPredictions,
     addPrediction,
     getPredictionsCount,
     fetchPredictionTable,
     calculatePredictionTable,
+    fetchLandingStats
   };
 
   provide(usePredictionServiceSymbol, predictionService)
