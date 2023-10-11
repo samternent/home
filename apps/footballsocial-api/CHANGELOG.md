@@ -1,5 +1,11 @@
 # footballsocial-api
 
+## 0.0.15
+
+### Patch Changes
+
+- [`363c606`](https://github.com/samternent/home/commit/363c606c574ff0273a39318a7ca44275875b07d0) Thanks [@samternent](https://github.com/samternent)! - Adds API protection
+
 ## 0.0.14
 
 ### Patch Changes
