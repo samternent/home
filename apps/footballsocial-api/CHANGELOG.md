@@ -1,5 +1,11 @@
 # footballsocial-api
 
+## 0.1.5
+
+### Patch Changes
+
+- [`752d08b`](https://github.com/samternent/home/commit/752d08bfaec9faf3acaa79c18cd22cfbf5ba1f60) Thanks [@samternent](https://github.com/samternent)! - get redis version from cache
+
 ## 0.1.4
 
 ### Patch Changes
