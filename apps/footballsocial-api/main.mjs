@@ -15,7 +15,7 @@ const app = express();
 app.set("view engine", "ejs");
 
 app.use(bodyParser.json());
-app.use(cors({ exposedHeaders: ["X-App-Version"] }));
+app.use(cors({ exposedHeaders: ["X-App-Version", "X-Api-Version"] }));
 
 // Set port
 const port = "3000";
@@ -24,10 +24,19 @@ app.set("port", port);
 const unauthenticatedRoutes = ["/landing-stats"];
 
 app.use(async function (req, res, next) {
-  const data = JSON.parse(
+  const { version: apiVersion } = JSON.parse(
     await readFileSync(join(__dirname, "./package.json"), "utf8")
   );
-  res.setHeader("x-app-version", data.version);
+
+  // too tight. do fix
+  const { version: appVersion } = JSON.parse(
+    await readFileSync(
+      join(__dirname, "../footballsocial/package.json"),
+      "utf8"
+    )
+  );
+  res.setHeader("x-app-version", appVersion);
+  res.setHeader("x-api-version", apiVersion);
 
   if (unauthenticatedRoutes.includes(req.url)) {
     next();
