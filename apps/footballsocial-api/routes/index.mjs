@@ -1,8 +1,6 @@
 import express from "express";
 import predictRoutes from "./predictRoutes.mjs";
-import footballDataProxy, {
-  redisClient,
-} from "../services/footballDataProxy.mjs";
+import footballDataProxy from "../services/footballDataProxy.mjs";
 import { supabaseClient } from "../services/supabase.mjs";
 
 const router = express.Router();
