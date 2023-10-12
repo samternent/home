@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.8.0
+
+### Minor Changes
+
+- [`d9dbf41`](https://github.com/samternent/home/commit/d9dbf410c5be6e12e48856414f3bced1a370e8f6) Thanks [@samternent](https://github.com/samternent)! - Update stles and landing page
+
 ## 0.7.9
 
 ### Patch Changes
