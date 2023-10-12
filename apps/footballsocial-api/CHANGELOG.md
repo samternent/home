@@ -1,5 +1,11 @@
 # footballsocial-api
 
+## 0.1.1
+
+### Patch Changes
+
+- [`5a4f7a9`](https://github.com/samternent/home/commit/5a4f7a92c5b67fa8e457bdc3001c1d710f30efda) Thanks [@samternent](https://github.com/samternent)! - Adds correct app version header
+
 ## 0.1.0
 
 ### Minor Changes
