@@ -29,11 +29,15 @@ app.use(async function (req, res, next) {
     await readFileSync(join(__dirname, "./package.json"), "utf8")
   );
 
-  // too tight. do fix
-  const resp = await axios.get("https://www.footballsocial.app/api/version");
+  try {
+    const { data } = await axios.get(
+      "https://www.footballsocial.app/api/version"
+    );
+    res.setHeader("x-app-version", data.version);
+  } catch (e) {
+    console.warn("couldn't find app version");
+  }
 
-  console.log(resp);
-  // res.setHeader("x-app-version", resp.version);
   res.setHeader("x-api-version", apiVersion);
 
   if (unauthenticatedRoutes.includes(req.url)) {
