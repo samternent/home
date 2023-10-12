@@ -1,5 +1,11 @@
 # footballsocial-api
 
+## 0.1.2
+
+### Patch Changes
+
+- [`bd2c2f3`](https://github.com/samternent/home/commit/bd2c2f336631d343538f137dc10f9e33de4b8af5) Thanks [@samternent](https://github.com/samternent)! - Revert api header
+
 ## 0.1.1
 
 ### Patch Changes
