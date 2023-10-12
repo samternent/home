@@ -2,8 +2,8 @@
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
   "functions": {
     "api/version.ts": {
-      "memory": 3008,
-      "maxDuration": 60
+      "memory": 1000,
+      "maxDuration": 1
     }
   }
 }

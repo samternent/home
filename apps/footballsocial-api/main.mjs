@@ -5,6 +5,7 @@ import cors from "cors";
 import { readFileSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
+import axios from "axios";
 import jwt from "jsonwebtoken";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -29,13 +30,10 @@ app.use(async function (req, res, next) {
   );
 
   // too tight. do fix
-  const { version: appVersion } = JSON.parse(
-    await readFileSync(
-      join(__dirname, "../footballsocial/package.json"),
-      "utf8"
-    )
-  );
-  res.setHeader("x-app-version", appVersion);
+  const resp = await axios.get("https://www.footballsocial.app/api/version");
+
+  console.log(resp);
+  // res.setHeader("x-app-version", resp.version);
   res.setHeader("x-api-version", apiVersion);
 
   if (unauthenticatedRoutes.includes(req.url)) {
