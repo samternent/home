@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.8.1
+
+### Patch Changes
+
+- [`a30ec49`](https://github.com/samternent/home/commit/a30ec49d109d673307e02474ff7b823aa52ca097) Thanks [@samternent](https://github.com/samternent)! - Adds vercel function
+
 ## 0.8.0
 
 ### Minor Changes
