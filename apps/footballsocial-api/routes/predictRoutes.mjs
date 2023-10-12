@@ -1,6 +1,5 @@
-import footballDataProxy, {
-  redisClient,
-} from "../services/footballDataProxy.mjs";
+import footballDataProxy from "../services/footballDataProxy.mjs";
+import { redisClient } from "../services/redis.mjs";
 import { supabaseClient } from "../services/supabase.mjs";
 import OpenAI from "openai";
 

@@ -7,6 +7,7 @@ import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import axios from "axios";
 import jwt from "jsonwebtoken";
+import { redisClient } from "./services/redis.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -30,12 +31,17 @@ app.use(async function (req, res, next) {
   );
 
   try {
-    const { data } = await axios.get(
-      "https://www.footballsocial.app/api/version"
-    );
-    res.setHeader("x-app-version", data.version);
+    const cacheVersion = await redisClient.get("footballsocial-app-version");
+    if (!cacheVersion) {
+      const { data } = await axios.get(
+        "https://www.footballsocial.app/api/version"
+      );
+      res.setHeader("x-app-version", data.version);
+    } else {
+      res.setHeader("x-app-version", cacheVersion);
+    }
   } catch (e) {
-    console.warn("couldn't find app version");
+    console.error(e);
   }
 
   res.setHeader("x-api-version", apiVersion);
