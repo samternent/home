@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.8.3
+
+### Patch Changes
+
+- [`b75a997`](https://github.com/samternent/home/commit/b75a997fe0da4741244b3eef8f9e779893e22ad5) Thanks [@samternent](https://github.com/samternent)! - Fix version function
+
 ## 0.8.2
 
 ### Patch Changes
