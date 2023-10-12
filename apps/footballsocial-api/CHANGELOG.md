@@ -1,5 +1,11 @@
 # footballsocial-api
 
+## 0.1.3
+
+### Patch Changes
+
+- [`53e4ae8`](https://github.com/samternent/home/commit/53e4ae896d4754958d5bf030ffda052e16946042) Thanks [@samternent](https://github.com/samternent)! - Adds back API version, missing key
+
 ## 0.1.2
 
 ### Patch Changes
