@@ -1,7 +1,10 @@
 import { readFileSync } from "fs";
-import { join } from "path";
+import { dirname, join } from "path";
+import { fileURLToPath } from "url";
 import type { VercelRequest, VercelResponse } from '@vercel/node';
- 
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
 export default async function handler(
   request: VercelRequest,
   response: VercelResponse,
