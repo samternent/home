@@ -41,7 +41,7 @@ watch(
   >
     <div class="py-6 px-2">
       <h1
-        class="animate-gradient bg-gradient-to-r from-white to-70% to-indigo-500 via-40% bg-clip-text text-transparent text-5xl font-bold tracking-tighter"
+        class="bg-gradient-to-r from-white to-70% to-indigo-500 via-40% bg-clip-text text-transparent text-5xl font-bold tracking-tighter"
       >
         Football Social<span class="text-pink-700">.</span>
       </h1>
