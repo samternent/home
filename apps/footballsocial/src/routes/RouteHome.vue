@@ -49,21 +49,16 @@ watch(
         The friendly football score prediction game.
       </h2>
       <p class="text-2xl font-thin tracking-tighter my-4">
-        <span class="font-medium">FootballSocial</span> has
-        <span class="text-3xl font-medium text-pink-500">
+        With
+        <span class="text-3xl font-medium text-white"
+          >{{ predictionsCount || "___" }}
+        </span>
+        predictions from
+        <span class="text-3xl font-medium">
           {{ players || "__" }}
         </span>
-        players and
-        <span class="text-3xl font-medium text-white"
-          >{{ predictionsCount }}
-        </span>
-        predictions across
-        <span class="text-3xl font-medium text-white">7 </span> leagues... Join
-        in to be number
-        <span class="text-3xl font-medium text-green-600">{{
-          players ? players + 1 : "__"
-        }}</span
-        >!
+        players, across
+        <span class="text-3xl font-medium text-white">7 </span> leagues.
       </p>
 
       <div class="flex text-2xl justify-senter items-end my-12">

@@ -1,7 +1,6 @@
 <script setup>
 import { shallowRef } from "vue";
 import { useRouter } from "vue-router";
-import { useLocalStorage } from "@vueuse/core";
 import { useCurrentUser } from "../../composables/useCurrentUser";
 import SignInWithGoogle from "../../components/SignInWithGoogle.vue";
 
@@ -32,13 +31,13 @@ async function googleLogin() {
 }
 </script>
 <template>
-  <div class="mx-auto flex max-w-lg w-full">
+  <div class="mx-auto flex max-w-3xl w-full">
     <div
       class="container mx-auto flex-1 flex flex-col items-center justify-center px-2"
     >
       <div class="px-6 py-8 w-full flex flex-col">
         <h1
-          class="text-4xl sm:text-5xl dark:text-white font-bold tracking-tighter shadow-text my-8"
+          class="text-4xl sm:text-5xl dark:text-white font-medium tracking-tighter"
         >
           Login
         </h1>
@@ -48,11 +47,7 @@ async function googleLogin() {
         >
           {{ errorMessage }}
         </div>
-        <div class="text-center my-6">
-          <SignInWithGoogle @click="googleLogin"
-            >Login with Google</SignInWithGoogle
-          >
-        </div>
+        <br class="mt-4" />
         <input
           v-model="email"
           type="email"
@@ -73,10 +68,16 @@ async function googleLogin() {
           <button
             type="submit"
             @click="login"
-            class="bg-pink-600 transition-all shadow-block-yellow dark:text-white px-4 py-2 rounded no-underline hover:no-underline hover:dark:text-white hover:bg-pink-500"
+            class="flex items-center px-4 py-2 text-md font-bold uppercase text-white bg-indigo-600"
           >
-            Login
+            Login with email
           </button>
+        </div>
+        <div class="text-zinc-500 text-right my-2">or</div>
+        <div class="text-right my-6">
+          <SignInWithGoogle @click="googleLogin"
+            >Login with Google</SignInWithGoogle
+          >
         </div>
       </div>
 

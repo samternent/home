@@ -20,7 +20,7 @@ const router = useRouter();
 
 const league = shallowRef(null);
 const canJoinLeague = shallowRef(false);
-const { leagueCode } = toRefs(props);
+const leagueCode = shallowRef(props.leagueCode);
 
 async function findLeague() {
   if (!leagueCode.value) return;
@@ -98,7 +98,7 @@ findLeague();
           @click="findLeague"
           :disabled="!leagueCode"
         >
-          find league
+          Find league
         </button>
       </div>
     </div>

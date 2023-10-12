@@ -118,13 +118,8 @@ watch(
 );
 </script>
 <template>
-  <div class="flex w-full dark:text-white p-2">
-    <div class="max-w-screen-3xl flex mx-auto flex-col w-full my-2">
-      <h1
-        class="text-5xl dark:text-white font-bold tracking-tighter shadow-text my-2"
-      >
-        Start a discussion
-      </h1>
+  <div class="flex w-full dark:text-white">
+    <div class="flex mx-auto flex-col w-full">
       <RouterLink
         :to="`/leagues/${competition?.code}/discussions`"
         class="text-gray-400 no-underline hover:no-underline flex grow-0 w-fit items-center py-3"

@@ -75,10 +75,10 @@ watch(loadMoreVisible, (_shouldLoadMore) => {
       Before joining or starting a discussion remember to always be civil. Treat
       others with respect. ⚽
     </p>
-    <div class="mx-2 mt-4 mb-8 flex justify-end">
+    <div class="mt-4 mb-8 flex justify-end">
       <RouterLink
         :to="`/leagues/${competitionCode}/discussions/new`"
-        class="bg-pink-600 transition-all shadow-block-yellow dark:text-white px-4 py-2 rounded no-underline hover:no-underline hover:dark:text-white hover:bg-pink-500"
+        class="flex items-center px-4 py-2 text-md border-2 border-indigo-600 font-medium uppercase"
       >
         Start a discussion
       </RouterLink>

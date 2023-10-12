@@ -33,14 +33,11 @@ async function requestAccountDeletion() {
 </script>
 <template>
   <div class="mx-auto w-full max-w-3xl p-4">
-    <div v-if="!user" class="text-3xl my-8 text-center">
-      Please check your emails to confirm your signup.
-    </div>
-    <div v-else>
+    <div>
       <p>
         <span
-          class="text-6xl font-bold tracking-tighter dark:text-white shadow-text"
-          >@{{ profile.username }}</span
+          class="text-4xl sm:text-5xl dark:text-white font-medium tracking-tighter"
+          >{{ profile.username }}</span
         >
       </p>
 

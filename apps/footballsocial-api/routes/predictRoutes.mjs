@@ -107,6 +107,8 @@ export default function predictRoutes(router) {
           .sort(sortTable)
           .forEach((row, i) => {
             currentResults[row.username].gameweekPosition = i + 1;
+            currentResults[row.username].gameweekPoints =
+              currentResults[row.username].points;
           });
 
         const combinedResults = Object.keys(previousResults)
@@ -129,6 +131,7 @@ export default function predictRoutes(router) {
                 lastPosition: acc.lastPosition || curr.lastPosition || 0,
                 gameweekPosition:
                   acc.gameweekPosition || curr.gameweekPosition || 0,
+                gameweekPoints: acc.gameweekPoints || curr.gameweekPoints || 0,
                 username: acc.username || curr.username,
               };
             }, {});

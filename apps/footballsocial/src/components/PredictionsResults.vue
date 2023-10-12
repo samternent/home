@@ -123,7 +123,10 @@ const { profile } = useCurrentUser();
             >
             <p v-else class="blur-md">{{ row.username }}</p>
             <span
-              v-if="gameweek ? row.position === 1 : row.gameweekPosition === 1"
+              v-if="
+                row.gameweekPoints > 0 &&
+                (gameweek ? row.position === 1 : row.gameweekPosition === 1)
+              "
               class="text-orange-400"
               ><svg
                 xmlns="http://www.w3.org/2000/svg"

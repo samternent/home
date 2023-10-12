@@ -1,4 +1,5 @@
 import { provide, inject } from "vue";
+import { useRouter } from "vue-router";
 import axios from "axios";
 import { useAppVersion } from "./useAppVersion";
 import { useCurrentUser } from "./useCurrentUser";
@@ -8,6 +9,7 @@ const useAxiosSymbol = Symbol("useAxios");
 export function provideAxios() {
   const { serverVersion } = useAppVersion();
   const { session } = useCurrentUser();
+  const router = useRouter();
 
   const instance = axios.create({
     baseURL: import.meta.env.DEV
@@ -16,27 +18,15 @@ export function provideAxios() {
     crossDomain: true,
   });
 
-  instance.interceptors.request.use(
-    async function (config) {
-      return {
-        ...config,
-        headers: {
-          ...(config.headers || {}),
-          "Access-Token": session.value?.access_token,
-        },
-      };
-    },
-    (error) => {
-      console.log(error);
-      if (error.response?.status === 429) {
-        // show error message
-        console.error(
-          "Sorry, our servers are very busy right now. Please try again later"
-        );
-      }
-      return Promise.reject(error);
-    }
-  );
+  instance.interceptors.request.use(async function (config) {
+    return {
+      ...config,
+      headers: {
+        ...(config.headers || {}),
+        "Access-Token": session.value?.access_token,
+      },
+    };
+  });
 
   instance.interceptors.response.use(
     function (resp) {
@@ -47,12 +37,14 @@ export function provideAxios() {
       return resp;
     },
     (error) => {
-      console.log(error);
       if (error.response?.status === 429) {
         // show error message
         console.error(
           "Sorry, our servers are very busy right now. Please try again later"
         );
+      }
+      if (error.response?.status === 401) {
+        router.push("/");
       }
       return Promise.reject(error);
     }
