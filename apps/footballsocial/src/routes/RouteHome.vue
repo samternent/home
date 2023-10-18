@@ -41,7 +41,7 @@ watch(
   >
     <div class="py-6 px-2">
       <h1
-        class="bg-gradient-to-r from-white to-70% to-indigo-500 via-40% bg-clip-text text-transparent text-5xl font-bold tracking-tighter"
+        class="bg-gradient-to-r from-white to-70% to-indigo-500 via-40% bg-clip-text text-transparent text-7xl font-medium tracking-tighter"
       >
         Football Social<span class="text-pink-700">.</span>
       </h1>
@@ -50,13 +50,21 @@ watch(
       </h2>
       <p class="text-2xl font-thin tracking-tighter my-4">
         With
-        <span class="text-3xl font-medium text-white"
-          >{{ predictionsCount || "___" }}
+        <span v-if="predictionsCount" class="text-3xl font-medium text-white"
+          >{{ predictionsCount }}
         </span>
+        <span
+          v-else
+          class="bg-[#3e3e3e] inline-block animate-pulse h-6 w-10 rounded mx-1"
+        />
         predictions from
-        <span class="text-3xl font-medium">
-          {{ players || "__" }}
+        <span v-if="players" class="text-3xl font-medium">
+          {{ players }}
         </span>
+        <span
+          v-else
+          class="bg-[#3e3e3e] inline-block animate-pulse h-6 w-8 rounded mx-1"
+        />
         players, across
         <span class="text-3xl font-medium text-white">7 </span> leagues.
       </p>
@@ -89,6 +97,14 @@ watch(
         >
           <img :src="GithubSvg" class="h-6 w-6 inline mr-2" />
           samternent/home/apps/footballsocial
+        </a>
+        <a
+          href="https://github.com/samternent/home/tree/main/apps/footballsocial-api"
+          class="block my-2 hover:text-indigo-300 transition-all"
+          target="_blank"
+        >
+          <img :src="GithubSvg" class="h-6 w-6 inline mr-2" />
+          samternent/home/apps/footballsocial-api
         </a>
       </p>
     </div>

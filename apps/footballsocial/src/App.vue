@@ -41,14 +41,11 @@ const hasNewVersion = computed(() => {
 <template>
   <div class="dark:text-white absolute inset-0 flex flex-col">
     <div class="bg-indigo-50 sticky dark:bg-[#1c1c1c] top-0 z-30 shadow w-full">
-      <div
-        class="bg-blue-500"
-        v-if="hasNewVersion"
-      >
-        <div  class="max-w-7xl mx-auto flex justify-left items-center flex-col md:flex-row p-2">
-          <p>
-            A new version of the app is available.
-          </p>
+      <div class="bg-blue-500" v-if="hasNewVersion">
+        <div
+          class="max-w-7xl mx-auto flex justify-left items-center flex-col md:flex-row p-2"
+        >
+          <p>A new version of the app is available.</p>
           <button
             class="bg-blue-800 px-3 py-1 md:ml-4 rounded hover:bg-blue-700 mt-2 md:mt-0"
             @click="reloadPage"
@@ -163,15 +160,18 @@ const hasNewVersion = computed(() => {
       </div>
     </div>
     <footer
-      class="p-4 bg-indigo-100 dark:bg-[#242424] dark:text-white lg:flex md:items-center lg:justify-between lg:p-6"
+      class="flex flex-col p-4 bg-indigo-100 dark:bg-[#242424] dark:text-white lg:flex xl:items-center"
     >
-      <span class="flex text-sm dark:text-gray-200 font-thin"
-        ><a
+      <p class="text-sm dark:text-gray-200 font-thin py-3">
+        <a
           href="https://www.footballsocial.app/"
-          class="league-link font-medium"
+          class="league-link font-medium mr-1"
           >FootballSocial</a
-        >: hand-crafted and open-source.
-      </span>
+        >is independent, hand-crafted and open-source, by
+        <a href="https://ternent.dev" class="league-link font-light">
+          ternent.dev</a
+        >.
+      </p>
       <p class="text-sm font-thin py-1">
         Football data provided by the
         <a
@@ -182,29 +182,20 @@ const hasNewVersion = computed(() => {
         >
         API.
       </p>
-      <ul class="flex flex-wrap items-center mt-3 text-sm dark:text-gray-400">
-        <li class="text-sm sm:text-center dark:text-gray-200 mr-2 md:mr-4">
-          <a
-            href="https://github.com/samternent/home/tree/main/apps/footballsocial"
-          >
-            <img :src="GithubSvg" class="h-6 w-6 mx-auto" />
-          </a>
-        </li>
+      <ul
+        class="flex flex-wrap xl:flex-row flex-col mt-3 text-sm dark:text-gray-400 py-2 xl:pt-6"
+      >
         <li>
-          <a
-            :href="`https://github.com/samternent/home/releases/tag/footballsocial-${appVersion}`"
-            target="_blank"
-            class="mr-2 hover:underline md:mr-4"
-            >v{{ appVersion }}</a
-          >
-        </li>
-        <li>
-          <RouterLink to="/legal/privacy" class="mr-2 hover:underline md:mr-4"
+          <RouterLink
+            to="/legal/privacy"
+            class="hover:text-gray-300 transition-colors mr-2 hover:underline h-6 xl:p-2"
             >Privacy Policy</RouterLink
           >
         </li>
         <li>
-          <RouterLink to="/legal/terms" class="mr-2 hover:underline md:mr-4"
+          <RouterLink
+            to="/legal/terms"
+            class="hover:text-gray-300 transition-colors mr-2 hover:underline h-6 xl:p-2"
             >Terms of Use</RouterLink
           >
         </li>
@@ -212,8 +203,16 @@ const hasNewVersion = computed(() => {
           <a
             href="https://sam.staging.teamwork.com/p/forms/PBLRygLcpZ6NjG0Zlaoe"
             target="_blank"
-            class="mr-2 hover:underline md:mr-4"
+            class="hover:text-gray-300 transition-colors mr-2 hover:underline h-6 xl:p-2"
             >Feedback</a
+          >
+        </li>
+        <li>
+          <a
+            :href="`https://github.com/samternent/home/releases/tag/footballsocial-${appVersion}`"
+            target="_blank"
+            class="hover:text-gray-200 transition-colors mr-2 hover:underline h-6 xl:p-2"
+            >v{{ appVersion }}</a
           >
         </li>
       </ul>

@@ -1,0 +1,5 @@
+---
+"footballsocial": patch
+---
+
+Redesign footer
