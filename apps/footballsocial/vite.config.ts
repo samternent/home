@@ -4,6 +4,7 @@ import vue from "@vitejs/plugin-vue";
 import { VitePWA } from "vite-plugin-pwa";
 import Markdown from "vite-plugin-md";
 import { ViteEjsPlugin } from "vite-plugin-ejs";
+import federation from "@originjs/vite-plugin-federation";
 import { version } from "./package.json";
 
 // https://vitejs.dev/config/
@@ -33,5 +34,12 @@ export default defineConfig({
       },
     }),
     Markdown(),
+    federation({
+      name: 'ui',
+      remotes: {
+        'ternent/ui': "http://127.0.0.1:5001/assets/ternentUIEntry.js",
+      },
+      shared: ['vue']
+    })
   ],
 });

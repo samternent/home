@@ -1,4 +1,4 @@
-import { createApp } from "vue";
+import { createApp, defineAsyncComponent } from "vue";
 import * as Sentry from "@sentry/vue";
 import "./style.css";
 import App from "./App.vue";
@@ -24,6 +24,7 @@ Sentry.init({
   replaysSessionSampleRate: 0.1,
   replaysOnErrorSampleRate: 1.0,
 });
+
 
 app.use(router);
 registerSW();

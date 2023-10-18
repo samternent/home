@@ -9,6 +9,7 @@ import { provideAppVersion } from "./composables/useAppVersion";
 import SetUsername from "./components/SetUsername.vue";
 import UserMenu from "./components/UserMenu.vue";
 import Api from "./Api.vue";
+import TButton from "ternent/ui/Button";
 // import Notifications from "./components/Notifications.vue";
 
 const { appVersion, serverVersion } = provideAppVersion();
@@ -112,6 +113,7 @@ const hasNewVersion = computed(() => {
 
           <div v-else-if="!profile"></div>
           <div v-else class="flex">
+            1<TButton>Hey</TButton>1
             <!-- <Notifications /> -->
             <UserMenu />
           </div>
