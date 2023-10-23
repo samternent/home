@@ -11,9 +11,12 @@ const props = defineProps({
 });
 
 const leagues = shallowRef([]);
+const isLoading = shallowRef(false);
 const { profile } = useCurrentUser();
 
 async function fetchMyLeagues() {
+  isLoading.value = true;
+
   const { data: myLeagueIds, error: myLeagueError } = await supabaseClient
     .from("league_members")
     .select()
@@ -28,6 +31,7 @@ async function fetchMyLeagues() {
       myLeagueIds.map(({ league_id }) => league_id)
     );
 
+  isLoading.value = false;
   leagues.value = data;
 }
 
@@ -37,28 +41,23 @@ fetchMyLeagues();
   <div class="w-full">
     <div class="flex justify-end w-full py-2">
       <RouterLink
-        class="text-center mx-2 border-2 border-indigo-600 hover:bg-indigo-900 transition-all py-2 px-4 rounded"
+        class="text-center mx-2 border-2 transition-all py-2 px-4 rounded"
         :to="`/leagues/${competitionCode}/leagues/join`"
         >Join League</RouterLink
       >
       <RouterLink
-        class="text-center mx-2 bg-green-600 hover:bg-green-500 transition-all py-2 px-4 rounded"
+        class="text-center mx-2 transition-all py-2 px-4 rounded"
         :to="`/leagues/${competitionCode}/leagues/create`"
         >Create League</RouterLink
       >
     </div>
-    <div
-      v-for="league in leagues"
-      :key="league.id"
-      class="bg-zinc-900 my-2 p-2"
-    >
+    <div v-if="isLoading" class="h-screen"></div>
+    <div v-for="league in leagues" :key="league.id" class="my-2 p-2">
       <h2 class="text-3xl font-thin p-2 mb-4">{{ league.name }}</h2>
       <div class="flex">
-        <div class="bg-zinc-800 w-50">
+        <div class="w-50">
           <p class="text-xl my-2 text-center py-2">League Code</p>
-          <div
-            class="mt-2 p-6 text-4xl text-center font-bold tracking-tighter bg-gradient-to-r from-indigo-500 to-70% to-pink-500 via-40%"
-          >
+          <div class="mt-2 p-6 text-4xl text-center font-bold tracking-tighter">
             {{ league.league_code }}
           </div>
         </div>
@@ -66,7 +65,10 @@ fetchMyLeagues();
           <p class="text-xl mb-2 font-thin">
             League commissioner: @{{ league.owner }}
           </p>
-          <p class="text-xl mb-2 font-thin" v-if="league.gameweek_start === league.gameweek_end">
+          <p
+            class="text-xl mb-2 font-thin"
+            v-if="league.gameweek_start === league.gameweek_end"
+          >
             Gameweek: {{ league.gameweek_start }}
           </p>
           <p class="text-xl mb-2 font-thin" v-else>
@@ -74,13 +76,16 @@ fetchMyLeagues();
           </p>
           <RouterLink
             :to="`/leagues/${competitionCode}/leagues/${league.id}`"
-            class="bg-green-700 text-center py-2 px-4 rounded font-light text-xl"
+            class="text-center py-2 px-4 rounded font-light text-xl"
             >View League</RouterLink
           >
         </div>
       </div>
     </div>
-    <div v-if="!leagues?.length" class="text-4xl font-thin text-center flex flex-col items-center justify-center my-6">
+    <div
+      v-if="!leagues?.length"
+      class="text-4xl font-thin text-center flex flex-col items-center justify-center my-6 h-screen"
+    >
       <p>No leagues found</p>
       <p class="text-3xl">Create or join one.</p>
     </div>

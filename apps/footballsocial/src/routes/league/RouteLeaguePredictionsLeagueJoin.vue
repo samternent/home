@@ -90,11 +90,11 @@ findLeague();
         <input
           type="text"
           v-model="leagueCode"
-          class="block border-0 bg-transparent py-1.5 pl-1 focus:ring-0 bg-zinc-800 rounded w-52"
+          class="block border-0 py-1.5 pl-1 focus:ring-0 rounded w-52"
           placeholder="League Code"
         />
         <button
-          class="ml-4 bg-indigo-500 rounded px-4"
+          class="ml-4 rounded px-4"
           @click="findLeague"
           :disabled="!leagueCode"
         >
@@ -102,7 +102,7 @@ findLeague();
         </button>
       </div>
     </div>
-    <div v-if="league" class="bg-zinc-900 my-2 p-2">
+    <div v-if="league" class="my-2 p-2">
       <h2 class="text-3xl font-thin p-2 mb-4">{{ league.name }}</h2>
       <div class="flex">
         <div class="px-4 flex flex-col justify-between">
@@ -115,7 +115,7 @@ findLeague();
           <button
             @click="joinLeague"
             v-if="canJoinLeague"
-            class="bg-green-700 text-center py-2 px-4 rounded font-light text-xl"
+            class="text-center py-2 px-4 rounded font-light text-xl"
           >
             Join league
           </button>

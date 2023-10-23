@@ -33,9 +33,9 @@ const activeStage = useLocalStorage(
       <li v-for="t in tabs" :key="`${t}`">
         <button
           @click="activeStage = t"
-          class="px-2 py-1 hover:border-indigo-800 dark:text-white border-b-2 border-transparent"
+          class="px-2 py-1 border-b-2 border-transparent"
           :class="{
-            'border-indigo-900': activeStage === t,
+            '': activeStage === t,
           }"
         >
           {{ t }}

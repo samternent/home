@@ -5,7 +5,8 @@ import { useLocalStorage } from "@vueuse/core";
 import { useCurrentUser } from "../composables/useCurrentUser";
 import { usePredictionService } from "../composables/usePredictionService";
 import { watch, onMounted, shallowRef } from "vue";
-import PredictionsResults from "../components/PredictionsResults.vue";
+
+import TBrandHeader from "ternent/ui/TBrandHeader";
 
 const router = useRouter();
 const lastLeague = useLocalStorage("lastLeague", "PL");
@@ -40,17 +41,13 @@ watch(
     class="w-full max-w-3xl mx-auto h-full flex-1 flex lg:flex-row flex-col p-4"
   >
     <div class="py-6 px-2">
-      <h1
-        class="bg-gradient-to-r from-white to-70% to-indigo-500 via-40% bg-clip-text text-transparent text-7xl font-medium tracking-tighter"
-      >
-        Football Social<span class="text-pink-700">.</span>
-      </h1>
+      <TBrandHeader>Football Social</TBrandHeader>
       <h2 class="text-2xl sm:text-3xl font-light tracking-tighter mt-2 mb-12">
         The friendly football score prediction game.
       </h2>
       <p class="text-2xl font-thin tracking-tighter my-4">
         With
-        <span v-if="predictionsCount" class="text-3xl font-medium text-white"
+        <span v-if="predictionsCount" class="text-3xl font-medium"
           >{{ predictionsCount }}
         </span>
         <span
@@ -66,7 +63,7 @@ watch(
           class="bg-[#3e3e3e] inline-block animate-pulse h-6 w-8 rounded mx-1"
         />
         players, across
-        <span class="text-3xl font-medium text-white">7 </span> leagues.
+        <span class="text-3xl font-medium">7 </span> leagues.
       </p>
 
       <div class="flex text-2xl justify-senter items-end my-12">
@@ -74,7 +71,7 @@ watch(
           aria-label="Login"
           v-if="!user"
           to="/auth/login"
-          class="flex items-center mx-2 px-4 py-2 text-md border-2 border-indigo-600 font-medium uppercase"
+          class="bg-blue"
         >
           Login
         </RouterLink>
@@ -83,7 +80,7 @@ watch(
           aria-label="Signup"
           v-if="!user"
           to="/auth/signup"
-          class="flex items-center mx-2 px-4 py-2 text-md font-bold uppercase text-gray-900 bg-white"
+          class="flex items-center mx-2 px-4 py-2 text-md font-bold uppercase"
         >
           Join
         </RouterLink>

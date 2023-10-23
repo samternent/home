@@ -100,7 +100,7 @@ async function createLeague() {
           type="text"
           v-model="leagueName"
           name="league_name"
-          class="block text-xl flex-1 border-0 bg-transparent px-3 py-2 focus:ring-0 bg-zinc-800 rounded"
+          class="block text-xl flex-1 border-0 px-3 py-2 focus:ring-0 rounded"
           placeholder="Enter league name"
         />
       </div>
@@ -113,7 +113,7 @@ async function createLeague() {
         >
         <select
           v-model="startGameweek"
-          class="block flex-1 border-0 bg-transparent py-2 px-3 text-xl focus:ring-0 mr-2 bg-zinc-800 rounded"
+          class="block flex-1 border-0 py-2 px-3 text-xl focus:ring-0 mr-2 rounded"
         >
           <option v-for="gw in gameweeks" :key="`startWeek${gw}`" :value="gw">
             {{ gw }}
@@ -126,7 +126,7 @@ async function createLeague() {
         >
         <select
           v-model="endGameweek"
-          class="block flex-1 border-0 bg-transparent py-2 px-3 text-xl focus:ring-0 mr-2 bg-zinc-800 rounded"
+          class="block flex-1 border-0 py-2 px-3 text-xl focus:ring-0 mr-2 rounded"
         >
           <option v-for="gw in gameweeks" :key="`endWeek${gw}`" :value="gw">
             {{ gw }}
@@ -143,7 +143,7 @@ async function createLeague() {
         type="submit"
         @click="createLeague"
         :disabled="!leagueName"
-        class="rounded-md disabled:opacity-30 bg-green-600 px-3 py-2 hover:bg-green-700 transition-bg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+        class="rounded-md disabled:opacity-30 transition-bg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
       >
         Create league
       </button>

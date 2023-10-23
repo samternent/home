@@ -1,6 +1,6 @@
 <script setup>
 import { provideAxios } from "./composables/useAxios";
-import PredictionService from "./routes/PredictionService.vue";
+import PredictionService from "./PredictionService.vue";
 
 provideAxios();
 </script>

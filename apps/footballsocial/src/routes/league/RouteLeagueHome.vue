@@ -62,9 +62,9 @@ const dismissProductHuntBanner = useLocalStorage(
     <li v-for="t in tabs" :key="`${t}`">
       <RouterLink
         :to="`/leagues/${competitionCode}/${t}`"
-        class="mx-2 py-3 uppercase hover:border-indigo-900 dark:text-white border-b-4 border-transparent"
+        class="mx-2 py-3 uppercase border-b-4 border-transparent"
         :class="{
-          '!border-indigo-600': isActiveLink(t),
+          '': isActiveLink(t),
         }"
       >
         {{ t }}
@@ -74,9 +74,12 @@ const dismissProductHuntBanner = useLocalStorage(
   <!-- Banner -->
   <div
     v-if="!dismissProductHuntBanner"
-    class="bg-indigo-700 bg-opacity-20 w-full rounded-lg my-4 border-dashed border border-indigo-300 p-4"
+    class="bg-opacity-20 w-full rounded-lg my-4 border-dashed borde p-4"
   >
-    <div @click="dismissProductHuntBanner = true" class="cursor-pointer float-right text-indigo-300 hover:text-indigo-500 transition-colors">
+    <div
+      @click="dismissProductHuntBanner = true"
+      class="cursor-pointer float-right transition-colors"
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -94,23 +97,27 @@ const dismissProductHuntBanner = useLocalStorage(
     </div>
     <p class="text-xl font-thin">
       Enjoying
-      <span
-        class="bg-gradient-to-r from-white to-70% to-indigo-100 transition-all via-40% bg-clip-text text-transparent font-medium tracking-tighter"
-      >
+      <span class="transition-all font-medium tracking-tighter">
         Football Social<span class="text-pink-700">.</span></span
       >?
     </p>
     <p class="font-thin py-2 text-lg">
-      Please consider leaving an upvote or comment on <a href="https://www.producthunt.com/posts/football-social" target="_blank" class="league-link font-medium">ProductHunt.com</a>.
+      Please consider leaving an upvote or comment on
+      <a
+        href="https://www.producthunt.com/posts/football-social"
+        target="_blank"
+        class="league-link font-medium"
+        >ProductHunt.com</a
+      >.
     </p>
   </div>
   <div
     v-else-if="!dismissFeatureBanner"
-    class="bg-indigo-700 bg-opacity-20 w-full rounded-lg my-4 border-dashed border border-indigo-300 p-4"
+    class="bg-indigo-700 bg-opacity-20 w-full rounded-lg my-4 border-dashed border p-4"
   >
     <div
       @click="dismissFeatureBanner = true"
-      class="cursor-pointer float-right text-indigo-300 hover:text-indigo-500 transition-colors"
+      class="cursor-pointer float-right transition-colors"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

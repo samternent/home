@@ -36,15 +36,8 @@ async function googleLogin() {
       class="container mx-auto flex-1 flex flex-col items-center justify-center px-2"
     >
       <div class="px-6 py-8 w-full flex flex-col">
-        <h1
-          class="text-4xl sm:text-5xl dark:text-white font-medium tracking-tighter"
-        >
-          Login
-        </h1>
-        <div
-          v-if="errorMessage"
-          class="dark:text-white bg-red-900 py-2 px-4 rounded"
-        >
+        <h1 class="text-4xl sm:text-5xl font-medium tracking-tighter">Login</h1>
+        <div v-if="errorMessage" class="bg-red-900 py-2 px-4 rounded">
           {{ errorMessage }}
         </div>
         <br class="mt-4" />
@@ -68,7 +61,7 @@ async function googleLogin() {
           <button
             type="submit"
             @click="login"
-            class="flex items-center px-4 py-2 text-md font-bold uppercase text-white bg-indigo-600"
+            class="flex items-center px-4 py-2 text-md font-bold uppercase bg-indigo-600"
           >
             Login with email
           </button>

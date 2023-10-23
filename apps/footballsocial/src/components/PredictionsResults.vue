@@ -47,7 +47,7 @@ const { profile } = useCurrentUser();
     <div
       v-for="i in 10"
       :key="i"
-      class="bg-[#1e1e1e] animate-pulse my-2 rounded flex-1 h-8 w-full"
+      class="animate-pulse my-2 rounded flex-1 h-8 w-full"
     />
   </div>
   <div
@@ -58,8 +58,8 @@ const { profile } = useCurrentUser();
   </div>
   <div v-else class="flex flex-col w-full">
     <table class="w-full text-base md:text-base rounded overflow-hidden shadow">
-      <thead class="h-10 font-light relative bg-indigo-900">
-        <tr class="font-thin text-center text-white">
+      <thead class="h-10 font-light relative">
+        <tr class="font-thin text-center">
           <th v-if="!gameweek" class="w-10"></th>
           <th class="w-12 font-medium">POS</th>
           <th class="text-left">
@@ -87,17 +87,17 @@ const { profile } = useCurrentUser();
       </thead>
       <tbody class="font-light">
         <tr
-          class="border-b border-b-zinc-800 transition-all text-white hover:bg-zinc-900"
+          class="border-b border-b-zinc-800 transition-all"
           v-for="row in table"
           :key="row.username"
           :class="{
-            'bg-opacity-10 bg-indigo-500': row.username === profile?.username,
-            'bg-opacity-10 bg-green-500': row.position === 1,
+            'bg-opacity-10 ': row.username === profile?.username,
+            'bg-opacity-10 ': row.position === 1,
           }"
         >
           <td
             v-if="!gameweek"
-            class="text-center py-2 px-1 text-white border-r border-zinc-800"
+            class="text-center py-2 px-1 border-r border-zinc-800"
           >
             <span v-if="row.position < row.lastPosition" class="text-green-800"
               >▲</span

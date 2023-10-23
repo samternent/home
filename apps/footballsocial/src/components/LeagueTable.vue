@@ -29,7 +29,7 @@ const tableData = computed(() => {
   <div v-for="standing in tableData" :key="standing?.id" class="py-2 w-full">
     <TransitionGroup>
       <label
-        class="p-2 px-4 block w-full dark:bg-[#2e2e2e] font-medium border-b-2 border-[#4b4b4b]"
+        class="p-2 px-4 block w-full font-medium border-b-2"
         v-if="isCup"
         >{{ standing.group.replace("_", " ") }}</label
       >
@@ -37,9 +37,9 @@ const tableData = computed(() => {
         class="w-full text-sm md:text-base"
         v-if="standing && !tableLoading"
       >
-        <thead class="bg-indigo-900 h-10">
-          <tr class="font-medium text-center dark:text-white">
-            <th class="w-10 border-b border-b-[#2e2e2e]">&nbsp;</th>
+        <thead class="h-10">
+          <tr class="font-medium text-center">
+            <th class="w-10 border-b">&nbsp;</th>
             <th class="text-center w-10 min-w-[2.5rem] md:w-14">&nbsp;</th>
             <th class="text-left">
               <abbr title="Teams in Competition">TEAM</abbr>
@@ -82,11 +82,9 @@ const tableData = computed(() => {
                 `/leagues/${competitionCode}/discussions/new?team=${row.team?.id}`
               )
             "
-            class="dark:bg-[#1e1e1e] border-b border-b-[#2e2e2e] transition-all dark:text-white h-14 hover:dark:bg-[#2e2e2e]"
+            class="border-b transition-all h-14"
           >
-            <td
-              class="text-center text-md p-2 dark:text-white dark:bg-[#3c3c3c ]"
-            >
+            <td class="text-center text-md p-2">
               {{ row.position }}
             </td>
             <td class="text-center p-1">
@@ -143,7 +141,7 @@ const tableData = computed(() => {
         <div
           v-for="i in 20"
           :key="i"
-          class="dark:bg-[#1e1e1e] animate-pulse my-2 rounded flex-1 h-12 w-full"
+          class="animate-pulse my-2 rounded flex-1 h-12 w-full"
         />
       </div>
     </TransitionGroup>

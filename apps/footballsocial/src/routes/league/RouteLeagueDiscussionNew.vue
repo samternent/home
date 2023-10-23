@@ -118,11 +118,11 @@ watch(
 );
 </script>
 <template>
-  <div class="flex w-full dark:text-white">
+  <div class="flex w-full">
     <div class="flex mx-auto flex-col w-full">
       <RouterLink
         :to="`/leagues/${competition?.code}/discussions`"
-        class="text-gray-400 no-underline hover:no-underline flex grow-0 w-fit items-center py-3"
+        class="no-underline hover:no-underline flex grow-0 w-fit items-center py-3"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -143,10 +143,10 @@ watch(
       <div class="flex p-4 px-0">
         <div
           :class="{
-            'border-indigo-500 text-indigo-100': type === 'discussion',
+            '': type === 'discussion',
           }"
           @click="type = 'discussion'"
-          class="cursor-pointer mr-2 border-2 border-[#323232] transition-all px-4 py-4 rounded no-underline hover:no-underline hover:border-indigo-500"
+          class="cursor-pointer mr-2 border-2 transition-all px-4 py-4 rounded no-underline hover:no-underline"
         >
           Discussion
         </div>
@@ -161,7 +161,7 @@ watch(
         </div> -->
       </div>
       <div v-if="user">
-        <label class="text-sm text-gray-300">Choose topic (optional)</label>
+        <label class="text-sm">Choose topic (optional)</label>
         <div class="flex items-center py-4">
           <div
             v-for="team in !fixture ? teams : []"
@@ -173,7 +173,7 @@ watch(
               v-if="!fixture"
               @click="removeTeam(team.id)"
               type="button"
-              class="mt-3 absolute -right-6 -top-7 text-gray-300 animate-all z-20 inline-flex hover:text-red-700 w-full justify-center rounded-md p-2 text-base font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+              class="mt-3 absolute -right-6 -top-7 animate-all z-20 inline-flex hover:text-red-700 w-full justify-center rounded-md p-2 text-base font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -192,16 +192,11 @@ watch(
             </button>
             <img :alt="team.name" :src="team.crest" />
           </div>
-          <div
-            v-if="!fixture && teams.length"
-            class="mx-4 text-sm text-gray-400"
-          >
-            +
-          </div>
+          <div v-if="!fixture && teams.length" class="mx-4 text-sm">+</div>
           <div
             v-if="!fixture"
             @click="showTeamModal = true"
-            class="cursor-pointer mr-2 text-center justify-center flex px-2 md:px-4 py-1 w-24 h-24 dark:text-white dark:bg-[#2e2e2e] rounded-full flex items-center text-lg font-light"
+            class="cursor-pointer mr-2 text-center justify-center flex px-2 md:px-4 py-1 w-24 h-24 dark:bg-[#2e2e2e] rounded-full flex items-center text-lg font-light"
           >
             <span v-if="!fixture">Team</span>
           </div>
@@ -213,7 +208,7 @@ watch(
           />
           <span
             v-if="!teams.length && !fixture"
-            class="text-base font-light dark:text-white mr-2"
+            class="text-base font-light mr-2"
             >or</span
           >
           <div
@@ -222,7 +217,7 @@ watch(
             }"
             v-if="!fixture && !teams.length"
             @click="showFixtureModal = true"
-            class="cursor-pointer mr-2 text-center justify-center flex px-2 md:px-4 py-1 w-24 h-24 dark:text-white dark:bg-[#2e2e2e] rounded-full flex items-center text-lg font-light"
+            class="cursor-pointer mr-2 text-center justify-center flex px-2 md:px-4 py-1 w-24 h-24 dark:bg-[#2e2e2e] rounded-full flex items-center text-lg font-light"
           >
             Fixture
           </div>
@@ -233,10 +228,10 @@ watch(
             @close="showFixtureModal = false"
             @selected="selectFixture"
           />
-          <!-- <span v-if="team" class="text-xs text-gray-500 mr-2">+/or</span>
+          <!-- <span v-if="team" class="text-xs  mr-2">+/or</span>
           <div
             v-if="team"
-            class="cursor-pointer text-center justify-center flex px-2 md:px-4 py-1 w-16 h-16 bg-gray-100 border-4 border-dashed rounded-full flex items-center justify-center text-sm font-light"
+            class="cursor-pointer text-center justify-center flex px-2 md:px-4 py-1 w-16 h-16  border-4 border-dashed rounded-full flex items-center justify-center text-sm font-light"
           >
             Player
           </div> -->
@@ -247,7 +242,7 @@ watch(
             aria-label="Remove Fixture"
             @click="removeFixture"
             type="button"
-            class="mt-3 absolute -right-2 -top-12 text-gray-300 animate-all z-20 inline-flex hover:text-red-600 justify-center rounded-md p-2 text-base font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            class="mt-3 absolute -right-2 -top-12 animate-all z-20 inline-flex hover:text-red-600 justify-center rounded-md p-2 text-base font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -277,7 +272,7 @@ watch(
           <button
             aria-label="Add comment"
             @click="addComment"
-            class="bg-pink-600 transition-all shadow-block-yellow dark:text-white px-4 py-2 rounded no-underline hover:no-underline hover:dark:text-white hover:bg-pink-500"
+            class="bg-pink-600 transition-all shadow-block-yellow px-4 py-2 rounded no-underline hover:no-underline hover: hover:bg-pink-500"
           >
             Start discussion
           </button>

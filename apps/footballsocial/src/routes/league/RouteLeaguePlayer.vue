@@ -31,7 +31,7 @@ const age = computed(() =>
 );
 </script>
 <template>
-  <div class="h-24 lg:h-32 p-2 flex w-full border-b-2 border-gray-100 bg-white">
+  <div class="h-24 lg:h-32 p-2 flex w-full border-b-2 border-gray-100">
     <div
       class="max-w-screen-2xl mx-auto w-full justify-between items-center flex"
     >
@@ -48,14 +48,10 @@ const age = computed(() =>
         </div>
         <div v-else>
           <h1 class="text-2xl font-thin mb-2">
-            <div
-              class="bg-gray-100 animate-pulse m-2 rounded flex-1 h-8 w-32"
-            />
+            <div class="animate-pulse m-2 rounded flex-1 h-8 w-32" />
           </h1>
           <h2 class="text-xl font-thin">
-            <div
-              class="bg-gray-100 animate-pulse m-2 rounded flex-1 h-6 w-40"
-            />
+            <div class="animate-pulse m-2 rounded flex-1 h-6 w-40" />
           </h2>
         </div>
       </div>

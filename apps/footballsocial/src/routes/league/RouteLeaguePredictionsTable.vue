@@ -48,9 +48,9 @@ watch(
       <li>
         <RouterLink
           :to="`/leagues/${competitionCode}/table`"
-          class="mx-2 py-1 uppercase hover:border-indigo-900 dark:text-white border-b-4 border-transparent"
+          class="mx-2 py-1 uppercase border-b-4 border-transparent"
           :class="{
-            '!border-indigo-600': !showGameweekResults,
+            '': !showGameweekResults,
           }"
         >
           Season
@@ -59,9 +59,9 @@ watch(
       <li>
         <RouterLink
           :to="`/leagues/${competitionCode}/table/gameweek`"
-          class="mx-2 py-1 uppercase hover:border-indigo-900 dark:text-white border-b-4 border-transparent"
+          class="mx-2 py-1 uppercase border-b-4 border-transparent"
           :class="{
-            '!border-indigo-600': showGameweekResults,
+            '': showGameweekResults,
           }"
         >
           Gameweek {{ competition?.currentSeason.currentMatchday }}
@@ -83,19 +83,19 @@ watch(
       <div
         v-for="i in 10"
         :key="i"
-        class="bg-[#1e1e1e] animate-pulse my-2 rounded flex-1 h-8 w-full"
+        class="animate-pulse my-2 rounded flex-1 h-8 w-full"
       />
     </div>
 
     <div class="p-4 mt-6 text-zinc-200">
-      <h3 class="text-xl font-light text-white">Rules</h3>
+      <h3 class="text-xl font-light">Rules</h3>
       <ul class="text-sm font-light my-2">
         <li>* 1 point for a correct home score</li>
         <li>* 1 point for a correct away score</li>
         <li>* 2 points for a correct result (W/L/D)</li>
         <li>* 3 points for a correct score</li>
       </ul>
-      <p class="text-lg font-light my-8 text-white">
+      <p class="text-lg font-light my-8">
         Rules and point system are subject to change.
       </p>
     </div>

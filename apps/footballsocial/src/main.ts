@@ -1,6 +1,9 @@
-import { createApp, defineAsyncComponent } from "vue";
+import './style.css';
+import 'ui/style';
+
+import { createApp } from "vue";
 import * as Sentry from "@sentry/vue";
-import "./style.css";
+
 import App from "./App.vue";
 import router from "./router";
 import registerSW from "./utils/registerSW";

@@ -73,12 +73,10 @@ onMounted(async () => {
 </script>
 <template>
   <div
-    class="w-full z-0 shadow my-1 p-4 flex dark:bg-[#1e1e1e] border border-x-0 md:border-x border-[#2e2e2e] shadow dark:text-white flex-col"
+    class="w-full z-0 my-1 p-4 flexborder border-x-0 md:border-x shadow flex-col"
   >
     <div class="flex">
-      <div
-        class="flex items-center flex-col justify-between shrink-0 text-[#6c6c6c]"
-      >
+      <div class="flex items-center flex-col justify-between shrink-0">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
@@ -99,21 +97,19 @@ onMounted(async () => {
         >
           {{ discussion.title }}
         </h3>
-        <div
-          class="flex text-xs md:text-sm pt-3 shrink font-light text-[#a2a2a2]"
-        >
-          <span class="mr-4 truncate font-medium text-[#e3e3e3]">{{
+        <div class="flex text-xs md:text-sm pt-3 shrink font-light">
+          <span class="mr-4 truncate font-medium">{{
             discussion.profile?.username
           }}</span>
           <span class="truncate">{{ formatTime(discussion.created_at) }}</span>
-          <span v-if="user" class="text-[#cecece] text-sm font-light ml-8"
+          <span v-if="user" class="text-sm font-light ml-8"
             >{{ commentCount }} replies</span
           >
         </div>
       </div>
       <div class="flex relative shrink-0" v-if="showTeams">
         <div v-for="team in teams" :key="team.team.id">
-          <div class="dark:bg-[#242424] rounded-lg p-2">
+          <div class="rounded-lg p-2">
             <img
               :alt="team?.team?.name"
               v-if="team?.team?.crest"
@@ -127,13 +123,13 @@ onMounted(async () => {
           @click.prevent
           @mouseenter="showTeamsTooltip = true"
           @mouseleave="showTeamsTooltip = false"
-          class="flex relative cursor-default items-center text-xs text-center justify-center absolute top-0 shadow-block-yellow-sm -right-1 rounded-lg bg-pink-600 dark:text-white font-medium w-6 h-6"
+          class="flex cursor-default items-center text-xs text-center justify-center absolute top-0 -right-1 rounded-lgfont-medium w-6 h-6"
         >
           +{{ moreTeams }}
           <Transition>
             <div
               v-if="showTeamsTooltip"
-              class="absolute top-full flex flex-col text-base z-20 w-64 px-4 py-2 text-left my-2 right-0 dark:bg-[#2d2d2d] bg-opacity-90 dark:text-white rounded"
+              class="absolute top-full flex flex-col text-base z-20 w-64 px-4 py-2 text-left my-2 right-0 bg-opacity-90 rounded"
             >
               <span
                 v-for="team in discussion_entity"

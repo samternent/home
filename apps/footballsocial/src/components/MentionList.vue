@@ -4,8 +4,8 @@
   >
     <template v-if="items.length">
       <button
-        class="dark:bg-[#1d1d1d] block px-3 py-1 text-left w-full"
-        :class="{ 'dark:bg-[#3e3e3e]': index === selectedIndex }"
+        class="block px-3 py-1 text-left w-full"
+        :class="{ '': index === selectedIndex }"
         v-for="(item, index) in items"
         :key="index"
         @click="selectItem(index)"

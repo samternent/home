@@ -36,7 +36,7 @@ async function requestAccountDeletion() {
     <div>
       <p>
         <span
-          class="text-4xl sm:text-5xl dark:text-white font-medium tracking-tighter"
+          class="text-4xl sm:text-5xl  font-medium tracking-tighter"
           >{{ profile.username }}</span
         >
       </p>

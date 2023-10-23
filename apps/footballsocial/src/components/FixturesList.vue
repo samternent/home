@@ -49,7 +49,7 @@ function setGameweek(_gameweek) {
   <div>
     <div
       v-if="currentGameweek"
-      class="flex items-center justify-center w-full bg-indigo-900 h-10 text-sm md:text-base font-medium mb-2"
+      class="flex items-center justify-center w-full h-10 text-sm md:text-base font-medium mb-2"
     >
       <button
         @click="setGameweek(gameweek - 1)"
@@ -57,7 +57,7 @@ function setGameweek(_gameweek) {
         :aria-label="`Gameweek ${gameweek - 1}`"
       >
         <svg
-          class="w-4 h-4 md:w-5 md:h-5 fill-white"
+          class="w-4 h-4 md:w-5 md:h-5"
           stroke="currentColor"
           viewBox="0 0 1024 1024"
           version="1.1"
@@ -66,7 +66,7 @@ function setGameweek(_gameweek) {
           <path d="M640 0l-512 512 512 512 192-192-320-320 320-320-192-192z" />
         </svg>
       </button>
-      <h2 class="px-2 mx-6 font-bold uppercase text-center dark:text-white">
+      <h2 class="px-2 mx-6 font-bold uppercase text-center">
         Gameweek {{ gameweek }}
       </h2>
       <button
@@ -74,7 +74,7 @@ function setGameweek(_gameweek) {
         :aria-label="`Gameweek ${gameweek + 1}`"
       >
         <svg
-          class="w-4 h-4 md:w-5 md:h-5 fill-white"
+          class="w-4 h-4 md:w-5 md:h-5"
           stroke="currentColor"
           viewBox="0 0 1024 1024"
           version="1.1"
@@ -99,22 +99,10 @@ function setGameweek(_gameweek) {
           <div
             v-for="i in 10"
             :key="i"
-            class="dark:bg-[#1e1e1e] animate-pulse m-2 my-4 rounded flex-1 h-20 w-full"
+            class="animate-pulse m-2 my-4 rounded flex-1 h-20 w-full"
           />
         </div>
       </Transition>
     </div>
   </div>
 </template>
-<style scoped>
-.v-enter-active,
-.v-leave-active {
-  transition: opacity 0.9s ease;
-  transition-duration: 0.2s;
-}
-
-.v-enter-from,
-.v-leave-to {
-  opacity: 1;
-}
-</style>

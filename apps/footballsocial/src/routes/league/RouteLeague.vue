@@ -5,6 +5,8 @@ import { useTitle, useLocalStorage } from "@vueuse/core";
 import { competitions } from "../../utils/competitions";
 import { provideCompetitionLoader } from "../../api/football-data/useCompetitionLoader";
 
+import TBrandHeader from "ternent/ui/TBrandHeader";
+
 const props = defineProps({
   competitionCode: {
     type: String,
@@ -53,7 +55,7 @@ function gotoCompetition(e) {
   >
     <Teleport to="#HeaderControls">
       <div
-        class="dark:text-white text-right text-sm border rounded border-zinc-700"
+        class="text-right text-sm border rounded border-zinc-700"
         v-if="competition"
       >
         <select
@@ -71,29 +73,23 @@ function gotoCompetition(e) {
         </select>
       </div>
     </Teleport>
-    <div class="flex w-full p-2 text-white">
+    <div class="flex w-full p-2">
       <div
-        class="px-1 p-2 font-thin dark:bg-zinc900 rounded-lg flex-1 flex flex-col justify-center"
+        class="px-1 p-2 font-thin rounded-lg flex-1 flex flex-col justify-center"
       >
-      <div class="flex items-start">
-        <h1
-          class=" header inline-block bg-gradient-to-r from-white to-90% to-indigo-500 bg-clip-text text-transparent tracking-tighter text-5xl md:text-6xl font-bold bg-300% animate-gradient"
-        >
-          Football Social<span class="text-pink-700">.</span>
-        </h1>
-      </div>
-        <div
-          class="text-2xl tracking-tightest font-light header"
-        >
+        <div class="flex items-start">
+          <TBrandHeader>Football Social</TBrandHeader>
+        </div>
+        <div class="text-lg tracking-tightest font-light">
           {{ competition?.name }}.
         </div>
         <p
           class="text-xl md:text-2xl font-light leading-tighter tracking-tighter text-zinc-200"
         ></p>
-        <p class="flex items-center py-4">
+        <p class="flex items-center py-2">
           <img
             v-if="competition"
-            class="h-5 opacity-90 rounded mr-2 shadow-lg"
+            class="h-4 opacity-90 rounded mr-2 shadow-lg"
             :src="competition?.area?.flag"
           />
           <span class="font-light tracking-tighter header">{{
@@ -106,8 +102,3 @@ function gotoCompetition(e) {
   </div>
   <div v-else class="flex-1 h-screen"></div>
 </template>
-<style>
-.header {
-  font-family: Poppins;
-}
-</style>

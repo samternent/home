@@ -76,15 +76,12 @@ watch(
   },
   { immediate: true }
 );
-watch(
-  [homeScore, awayScore],
-  ([_homeScore, _awayScore]) => {
-    if (_homeScore === undefined || _awayScore === undefined) {
-      return;
-    }
-    emit("update:prediction", { homeScore: _homeScore, awayScore: _awayScore });
+watch([homeScore, awayScore], ([_homeScore, _awayScore]) => {
+  if (_homeScore === undefined || _awayScore === undefined) {
+    return;
   }
-);
+  emit("update:prediction", { homeScore: _homeScore, awayScore: _awayScore });
+});
 
 const homeScorePrediction = computed(() => {
   if (props.prediction?.homeScore === props.fixture?.score.fullTime.home) {
@@ -131,73 +128,48 @@ const resultPrediction = computed(() => {
   <div
     class="flex flex-col relative transition-all font-light items-center w-full border-x-[transparent] border-transparent border-x-4"
     :class="{
-      'border-l-4 border-l-green-700':
-        fixture.score?.winner?.includes('HOME_TEAM'),
-      'border-r-4 border-r-green-700':
-        fixture.score?.winner?.includes('AWAY_TEAM'),
-      'border-l-4 border-l-red-800':
-        fixture.score?.winner?.includes('AWAY_TEAM'),
-      'border-r-4 border-r-red-800':
-        fixture.score?.winner?.includes('HOME_TEAM'),
-      'border-l-4 border-l-zinc-700':
-        fixture.score?.winner?.includes('DRAW'),
-      'border-r-4 border-r-zinc-700':
-        fixture.score?.winner?.includes('DRAW'),
+      'border-l-4': fixture.score?.winner?.includes('HOME_TEAM'),
+      'border-r-4': fixture.score?.winner?.includes('AWAY_TEAM'),
+      'border-l-4': fixture.score?.winner?.includes('AWAY_TEAM'),
+      'border-r-4': fixture.score?.winner?.includes('HOME_TEAM'),
+      'border-l-4': fixture.score?.winner?.includes('DRAW'),
+      'border-r-4': fixture.score?.winner?.includes('DRAW'),
       'text-xl': size === 'lg',
       'text-base ': size === 'md',
     }"
   >
     <div class="flex flex-col items-center justify-center p-2">
-      <span class="w-full font-light text-sm md:text-base text-zinc-300 bg-zinc-800 py-1 md:py-2 px-6 rounded shadow">{{
-        kickOff
-      }}</span>
+      <span
+        class="w-full font-light text-sm md:text-base py-1 md:py-2 px-6 rounded shadow"
+        >{{ kickOff }}</span
+      >
       <span
         v-if="fixture.status === 'IN_PLAY'"
-        class="absolute left-2 text-xs px-4 bg-green-600 rounded-full dark:text-white"
+        class="absolute left-2 text-xs px-4 rounded-full"
         >In play</span
       >
       <span
         v-else-if="fixture.status === 'PAUSED'"
-        class="absolute left-2 text-xs px-4 bg-orange-900 rounded-full dark:text-white"
+        class="absolute left-2 text-xs px-4 rounded-full"
         >Half time</span
       >
       <span
         v-else-if="!!fixture.score?.winner"
-        class="absolute left-2 text-xs px-4 bg-zinc-600 rounded-full dark:text-white"
+        class="absolute left-2 text-xs px-4 rounded-full"
         >Finished</span
       >
       <span
         v-else-if="fixture.status === 'POSTPONED'"
-        class="absolute left-2 text-xs px-4 bg-red-800 rounded-full dark:text-white"
+        class="absolute left-2 text-xs px-4 rounded-full"
         >POSTPONED</span
       >
     </div>
 
     <div class="flex text-xs" v-if="hasStarted">
-      <div
-        v-if="scorePrediction"
-        class="px-3 bg-green-500 bg-opacity-50 rounded mx-1"
-      >
-        MS +3
-      </div>
-      <div
-        v-if="resultPrediction"
-        class="mx-1 px-3 bg-green-600 bg-opacity-50 rounded"
-      >
-        MR +2
-      </div>
-      <div
-        v-if="homeScorePrediction"
-        class="mx-1 px-3 bg-green-700 bg-opacity-50 rounded"
-      >
-        HS +1
-      </div>
-      <div
-        v-if="awayScorePrediction"
-        class="mx-1 px-3 bg-green-700 bg-opacity-50 rounded"
-      >
-        AS +1
-      </div>
+      <div v-if="scorePrediction" class="px-3 rounded mx-1">MS +3</div>
+      <div v-if="resultPrediction" class="mx-1 px-3 rounded">MR +2</div>
+      <div v-if="homeScorePrediction" class="mx-1 px-3 rounded">HS +1</div>
+      <div v-if="awayScorePrediction" class="mx-1 px-3 rounded">AS +1</div>
     </div>
 
     <div
@@ -231,28 +203,28 @@ const resultPrediction = computed(() => {
               max="9"
               class="text-center text-2xl w-12 h-12 rounded ml-2 font-bold"
               :class="{
-                'blur-md bg-transparent': hidePredictions && !hasStarted,
-                'text-zinc-500': disabled,
+                'blur-md': hidePredictions && !hasStarted,
+                '': disabled,
               }"
             />
             <span
               v-if="hasStarted"
               class="text-2xl rounded font-medium mr-2 ml-4"
               :class="{
-                'text-red-600': fixture.score?.fullTime?.home != homeScore,
-                'text-green-600': fixture.score?.fullTime?.home == homeScore,
+                '': fixture.score?.fullTime?.home != homeScore,
+                '': fixture.score?.fullTime?.home == homeScore,
               }"
               >{{ fixture.score?.fullTime?.home }}</span
             >
           </div>
-          <span class="mx-1 mt-3 font-thin text-lg text-zinc-700">|</span>
+          <span class="mx-1 mt-3 font-thin text-lg">|</span>
           <div class="flex flex-row text-center justify-center items-center">
             <span
               v-if="hasStarted"
               class="text-2xl rounded font-medium ml-2 mr-4"
               :class="{
-                'text-green-600': fixture.score?.fullTime?.away == awayScore,
-                'text-red-600': fixture.score?.fullTime?.away != awayScore,
+                '': fixture.score?.fullTime?.away == awayScore,
+                '': fixture.score?.fullTime?.away != awayScore,
               }"
               >{{ fixture.score?.fullTime?.away }}</span
             >
@@ -264,8 +236,8 @@ const resultPrediction = computed(() => {
               max="9"
               class="text-center text-2xl w-12 h-12 mr-2 rounded font-bold"
               :class="{
-                'blur-md bg-transparent': hidePredictions && !hasStarted,
-                'text-zinc-500': disabled,
+                'blur-md': hidePredictions && !hasStarted,
+                '': disabled,
               }"
             />
           </div>

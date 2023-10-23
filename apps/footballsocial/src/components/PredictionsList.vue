@@ -186,10 +186,9 @@ const gameweekPoints = computed(() => {
 <template>
   <div class="w-full flex flex-col mx-auto" v-if="predictionsLoaded">
     <div
-      class="uppercase text-center font-light flex justify-between bg-gradient-to-r from-indigo-800 to-indigo-900 rounded-t text-white py-2 px-2"
+      class="uppercase text-center font-light flex justify-between rounded-t py-2 px-2"
       :class="{
-        'text-indigo-300 bg-gradient-to-r from-indigo-900 to-indigo-800 rounded-b bg-opacity-30':
-          gameweek < currentGameweek,
+        'rounded-b': gameweek < currentGameweek,
       }"
     >
       <button
@@ -242,7 +241,7 @@ const gameweekPoints = computed(() => {
     </div>
     <div class="text-center my-0 flex flex-col">
       <span
-        class="text-xl font-thin bg-gradient-to-r from-green-900 to-green-700 py-1"
+        class="text-xl font-thinpy-1"
         :class="{
           ' bg-opacity-50': gameweek < currentGameweek,
         }"
@@ -250,12 +249,10 @@ const gameweekPoints = computed(() => {
         >{{ username ? `${username} scored` : "You scored" }}
         {{ gameweekPoints }} points</span
       >
-      <span
-        class="text-xl font-thin bg-indigo-900 bg-opacity-70 py-1"
-        v-else-if="hasPredictions"
+      <span class="text-xl font-thin-70 py-1" v-else-if="hasPredictions"
         >{{ username ? `${username}s` : "Your" }} predictions are in!</span
       >
-      <span class="text-lg font-thin py-1 bg-indigo-500 bg-opacity-30" v-else
+      <span class="text-lg font-thin py-1" v-else
         >{{ username ? `${username}s` : "Your" }} predictions are not in
         yet.</span
       >
@@ -264,7 +261,7 @@ const gameweekPoints = computed(() => {
     <div v-for="(fixture, i) in predictionsList" :key="fixture.id">
       <div
         v-if="fixture?.status !== 'POSTPONED'"
-        class="mx-auto w-full flex-1 mb-2 bg-zinc-900 overflow-hidden"
+        class="mx-auto w-full flex-1 mb-2 overflow-hidden"
       >
         <Predictor
           :fixture="fixture"
@@ -294,7 +291,7 @@ const gameweekPoints = computed(() => {
         :disabled="!isDirty"
         v-if="profile && (!username || profile.username === username)"
         @click="savePredictions"
-        class="bg-green-700 font-thin w-64 text-xl uppercase disabled:opacity-20 rounded p-2 my-2"
+        class="font-thin w-64 text-xl uppercase disabled:opacity-20 rounded p-2 my-2"
       >
         Save predictions
       </button>
@@ -305,7 +302,7 @@ const gameweekPoints = computed(() => {
     <div
       v-for="i in 10"
       :key="i"
-      class="bg-[#1e1e1e] animate-pulse m-2 my-4 rounded flex-1 h-20 w-full"
+      class="animate-pulse m-2 my-4 rounded flex-1 h-20 w-full"
     />
   </div>
 </template>

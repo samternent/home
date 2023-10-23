@@ -16,7 +16,10 @@ export default defineConfig({
       name: "ternent-ui",
       filename: "ternentUIEntry.js",
       exposes: {
-        "./Button": "./src/components/action/Button.vue",
+        "./TButton": "./src/components/action/TButton.vue",
+        "./TSpinner": "./src/components/TSpinner.vue",
+        "./TBrandHeader": "./src/components/TBrandHeader.vue",
+        "./style": "./src/style.js",
       },
       shared: ["vue", "tailwindcss"],
     }),

@@ -43,7 +43,7 @@ const competition = computed(() =>
 </script>
 <template>
   <div class="md:px-2 lg:px-4 flex-1 max-w-3xl mx-auto pt-0 w-full mb-16">
-    <div class="pt-8 pb-12 px-2 flex dark:text-white">
+    <div class="pt-8 pb-12 px-2 flex">
       <img
         v-if="hasTeam"
         :alt="team.name"
@@ -51,9 +51,7 @@ const competition = computed(() =>
         :src="team.crest"
       />
       <div v-if="hasTeam">
-        <h1
-          class="text-4xl md:text-5xl dark:text-white font-bold tracking-tighter shadow-text"
-        >
+        <h1 class="text-4xl md:text-5xl font-bold tracking-tighter shadow-text">
           {{ team.name }}
         </h1>
         <h2 class="text-md lg:text-lg font-medium">est. {{ team.founded }}</h2>
@@ -61,7 +59,7 @@ const competition = computed(() =>
     </div>
     <RouterLink
       :to="`/leagues/${competition?.code}`"
-      class="text-gray-400 no-underline hover:no-underline flex grow-0 w-fit items-center"
+      class="no-underline hover:no-underline flex grow-0 w-fit items-center"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -95,7 +93,7 @@ const competition = computed(() =>
     </RouterLink>
     <!-- <div
 			v-if="hasTeam"
-			class="mx-auto w-full flex flex-col items-center dark:text-white"
+			class="mx-auto w-full flex flex-col items-center "
 		>
 			<div class="flex flex-col items-center">
 				<div class="grid grid-cols-3 gap-1">
