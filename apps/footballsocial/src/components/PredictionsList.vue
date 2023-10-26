@@ -6,7 +6,7 @@ import useFixturesLoader from "../api/football-data/useCompetitionFixturesLoader
 import { usePredictionService } from "../composables/usePredictionService";
 import { useCurrentUser } from "../composables/useCurrentUser";
 import CountdownTimer from "./CountdownTimer.vue";
-import Predictor from "./Predictor.vue";
+import { PredictionCard } from "../module/prediction";
 
 const props = defineProps({
   competitionCode: {
@@ -263,7 +263,7 @@ const gameweekPoints = computed(() => {
         v-if="fixture?.status !== 'POSTPONED'"
         class="mx-auto w-full flex-1 mb-2 overflow-hidden"
       >
-        <Predictor
+        <PredictionCard
           :fixture="fixture"
           :size="size"
           :disabled="

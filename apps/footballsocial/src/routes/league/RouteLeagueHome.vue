@@ -4,6 +4,8 @@ import { useRoute } from "vue-router";
 import { useTitle, useLocalStorage } from "@vueuse/core";
 import { useCompetitionLoader } from "../../api/football-data/useCompetitionLoader";
 
+import TTabs from "ternent/ui/TTabs";
+
 const props = defineProps({
   competitionCode: {
     type: String,
@@ -31,7 +33,18 @@ const crestMap = {
 const crest = computed(
   () => crestMap[competitionCode.value] || competitionCode.value
 );
-const tabs = shallowRef(["predictions", "table", "leagues", "discussions"]);
+const tabs = computed(() => [
+  {
+    title: "Predictions",
+    path: `/leagues/${competitionCode.value}/predictions`,
+  },
+  { title: "Table", path: `/leagues/${competitionCode.value}/table` },
+  { title: "Leagues", path: `/leagues/${competitionCode.value}/leagues` },
+  {
+    title: "Discussions",
+    path: `/leagues/${competitionCode.value}/discussions`,
+  },
+]);
 
 watch(
   competition,
@@ -43,11 +56,6 @@ watch(
   { immediate: true }
 );
 
-function isActiveLink(t) {
-  const regex = new RegExp(`/leagues/${competitionCode.value}/${t}*`, "g");
-  return regex.test(route.path);
-}
-
 const dismissFeatureBanner = useLocalStorage(
   "footballsocial/dismissFeatureBanner",
   false
@@ -58,19 +66,7 @@ const dismissProductHuntBanner = useLocalStorage(
 );
 </script>
 <template>
-  <ul class="flex max-w-[100vw] overflow-x-auto h-auto pb-4 overflow-y-hidden">
-    <li v-for="t in tabs" :key="`${t}`">
-      <RouterLink
-        :to="`/leagues/${competitionCode}/${t}`"
-        class="mx-2 py-3 uppercase border-b-4 border-transparent"
-        :class="{
-          '': isActiveLink(t),
-        }"
-      >
-        {{ t }}
-      </RouterLink>
-    </li>
-  </ul>
+  <TTabs :items="tabs" :path="route.path" />
   <!-- Banner -->
   <div
     v-if="!dismissProductHuntBanner"
@@ -113,11 +109,11 @@ const dismissProductHuntBanner = useLocalStorage(
   </div>
   <div
     v-else-if="!dismissFeatureBanner"
-    class="bg-indigo-700 bg-opacity-20 w-full rounded-lg my-4 border-dashed border p-4"
+    class="bg-indigo-700 bg-opacity-20 w-full rounded-lg my-4 border-dashed border border-indigo-300 p-4"
   >
     <div
       @click="dismissFeatureBanner = true"
-      class="cursor-pointer float-right transition-colors"
+      class="cursor-pointer float-right text-indigo-300 hover:text-indigo-500 transition-colors"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

@@ -18,6 +18,7 @@ export default defineConfig({
       exposes: {
         "./TButton": "./src/components/action/TButton.vue",
         "./TSpinner": "./src/components/TSpinner.vue",
+        "./TTabs": "./src/components/TTabs.vue",
         "./TBrandHeader": "./src/components/TBrandHeader.vue",
         "./style": "./src/style.js",
       },
