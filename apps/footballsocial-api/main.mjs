@@ -5,9 +5,7 @@ import cors from "cors";
 import { readFileSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
-import axios from "axios";
 import jwt from "jsonwebtoken";
-import { redisClient } from "./services/redis.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -29,21 +27,6 @@ app.use(async function (req, res, next) {
   const { version: apiVersion } = JSON.parse(
     await readFileSync(join(__dirname, "./package.json"), "utf8")
   );
-
-  try {
-    const cacheVersion = await redisClient.get("footballsocial-app-version");
-    if (!cacheVersion) {
-      const { data } = await axios.get(
-        "https://www.footballsocial.app/api/version"
-      );
-      res.setHeader("x-app-version", data.version);
-    } else {
-      res.setHeader("x-app-version", cacheVersion);
-    }
-  } catch (e) {
-    console.error(e);
-  }
-
   res.setHeader("x-api-version", apiVersion);
 
   if (unauthenticatedRoutes.includes(req.url)) {
