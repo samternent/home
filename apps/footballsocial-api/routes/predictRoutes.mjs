@@ -110,7 +110,12 @@ export default function predictRoutes(router) {
               currentResults[row.username].points;
           });
 
-        const combinedResults = Object.keys(previousResults)
+        const allUsers = new Set([
+          ...Object.keys(currentResults),
+          ...Object.keys(previousResults),
+        ]);
+
+        const combinedResults = [...allUsers]
           .map((username) => {
             return [
               { ...previousResults[username] },
