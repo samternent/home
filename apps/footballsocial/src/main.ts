@@ -1,5 +1,5 @@
-import './style.css';
-import 'ui/style';
+import 'ternent-ui/tailwind';
+import 'ternent-ui/styles';
 
 import { createApp } from "vue";
 import * as Sentry from "@sentry/vue";

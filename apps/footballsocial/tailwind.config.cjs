@@ -1,4 +1,7 @@
-const tailwindConfig = require("ui/tailwind.config");
+const tailwindConfig = require("ternent-ui/tailwind.config");
 
 /** @type {import('tailwindcss').Config} */
-module.exports = tailwindConfig;
+module.exports = {
+  content: ["./src/**/*.{js,ts,vue}"],
+  ...tailwindConfig,
+};

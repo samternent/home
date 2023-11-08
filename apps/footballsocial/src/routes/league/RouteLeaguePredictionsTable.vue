@@ -1,8 +1,10 @@
 <script setup>
-import { watch, shallowRef } from "vue";
+import { watch, shallowRef, computed } from "vue";
 import PredictionsResults from "../../components/PredictionsResults.vue";
 import { useCompetitionLoader } from "../../api/football-data/useCompetitionLoader";
 import { usePredictionService } from "../../composables/usePredictionService";
+
+import { STabs, SSkeleton } from "ternent-ui/components";
 
 const props = defineProps({
   competitionCode: {
@@ -29,6 +31,7 @@ watch(
       _competition?.currentSeason.currentMatchday &&
       _competition.code === props.competitionCode
     ) {
+      predictionsReady.value = false;
       await calculatePredictionTable(
         _competition.code,
         _competition.currentSeason.currentMatchday
@@ -39,36 +42,22 @@ watch(
   },
   { immediate: true }
 );
+
+const tabs = computed(() => [
+  {
+    title: "Season",
+    path: `/leagues/${props.competitionCode}/table`,
+  },
+  {
+    title: `Gameweek ${competition.value?.currentSeason.currentMatchday}`,
+    path: `/leagues/${props.competitionCode}/table/gameweek`,
+  },
+]);
 </script>
 <template>
   <div class="w-full">
-    <ul
-      class="flex max-w-[100vw] overflow-x-auto h-auto pb-2 mb-2 overflow-y-hidden"
-    >
-      <li>
-        <RouterLink
-          :to="`/leagues/${competitionCode}/table`"
-          class="mx-2 py-1 uppercase border-b-4 border-transparent"
-          :class="{
-            '': !showGameweekResults,
-          }"
-        >
-          Season
-        </RouterLink>
-      </li>
-      <li>
-        <RouterLink
-          :to="`/leagues/${competitionCode}/table/gameweek`"
-          class="mx-2 py-1 uppercase border-b-4 border-transparent"
-          :class="{
-            '': showGameweekResults,
-          }"
-        >
-          Gameweek {{ competition?.currentSeason.currentMatchday }}
-        </RouterLink>
-      </li>
-    </ul>
-    <template v-if="predictionsReady">
+    <STabs :items="tabs" :path="$route.path" :exact="true" />
+    <div v-if="predictionsReady" class="my-4">
       <PredictionsResults
         v-if="competition && showGameweekResults"
         :competitionCode="competition?.code"
@@ -78,13 +67,9 @@ watch(
         v-else-if="competition"
         :competitionCode="competition?.code"
       />
-    </template>
-    <div v-else class="w-full">
-      <div
-        v-for="i in 10"
-        :key="i"
-        class="animate-pulse my-2 rounded flex-1 h-8 w-full"
-      />
+    </div>
+    <div v-else class="w-full py-4">
+      <SSkeleton v-for="i in 10" :key="i" class="h-8" />
     </div>
 
     <div class="p-4 mt-6 text-zinc-200">

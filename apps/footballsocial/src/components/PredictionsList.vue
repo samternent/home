@@ -182,9 +182,26 @@ const gameweekPoints = computed(() => {
     return points + acc;
   }, 0);
 });
+
+const weekdays = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
+];
+
+function formatKickoff(utcDate) {
+  const date = DateTime.fromISO(utcDate);
+  return `${weekdays[date.weekday - 1]}, ${date.toLocaleString(
+    DateTime.DATETIME_MED
+  )}`;
+}
 </script>
 <template>
-  <div class="w-full flex flex-col mx-auto" v-if="predictionsLoaded">
+  <div class="w-full flex flex-col mx-auto max-w-4xl" v-if="predictionsLoaded">
     <div
       class="uppercase text-center font-light flex justify-between rounded-t py-2 px-2"
       :class="{
@@ -258,32 +275,44 @@ const gameweekPoints = computed(() => {
       >
     </div>
 
-    <div v-for="(fixture, i) in predictionsList" :key="fixture.id">
+    <div class="flex flex-col w-full">
       <div
-        v-if="fixture?.status !== 'POSTPONED'"
-        class="mx-auto w-full flex-1 mb-2 overflow-hidden"
+        v-for="(fixture, i) in predictionsList"
+        :key="fixture.id"
+        class="w-full flex flex-row"
       >
-        <PredictionCard
-          :fixture="fixture"
-          :size="size"
-          :disabled="
-            new Date(fixture.utcDate).getTime() < new Date().getTime() ||
-            ['IN_PLAY', 'FINISHED'].includes(fixture.status) ||
-            !profile?.username ||
-            (username && profile?.username !== username) ||
-            false
-          "
-          :hidePredictions="
-            hidePredictions &&
-            new Date(fixture.utcDate).getTime() > new Date().getTime()
-          "
-          :showDate="fixture.utcDate !== fixtures[i - 1]?.utcDate"
-          :prediction="fixture.prediction"
-          @update:prediction="
-            (prediction) => updatePrediction(prediction, fixture)
-          "
-          @click="(fixture) => $emit('selected', fixture)"
-        />
+        <div
+          v-if="fixture?.status !== 'POSTPONED'"
+          class="mb-2 flex-1 overflow-hidden"
+        >
+          <div
+            v-if="fixture.utcDate !== predictionsList[i - 1]?.utcDate"
+            class="p-2 text-xl font-light"
+          >
+            {{ formatKickoff(fixture.utcDate) }}
+          </div>
+          <PredictionCard
+            :fixture="fixture"
+            :size="size"
+            :disabled="
+              new Date(fixture.utcDate).getTime() < new Date().getTime() ||
+              ['IN_PLAY', 'FINISHED'].includes(fixture.status) ||
+              !profile?.username ||
+              (username && profile?.username !== username) ||
+              false
+            "
+            :hidePredictions="
+              hidePredictions &&
+              new Date(fixture.utcDate).getTime() > new Date().getTime()
+            "
+            :showDate="fixture.utcDate !== fixtures[i - 1]?.utcDate"
+            :prediction="fixture.prediction"
+            @update:prediction="
+              (prediction) => updatePrediction(prediction, fixture)
+            "
+            @click="(fixture) => $emit('selected', fixture)"
+          />
+        </div>
       </div>
     </div>
     <div class="text-center mt-8 flex flex-col items-end">

@@ -1,11 +1,9 @@
 <script setup>
-import { computed, toRefs, watch, shallowRef } from "vue";
-import { onBeforeRouteUpdate, useRouter } from "vue-router";
+import { toRefs, watch } from "vue";
 import { useTitle, useLocalStorage } from "@vueuse/core";
-import { competitions } from "../../utils/competitions";
 import { provideCompetitionLoader } from "../../api/football-data/useCompetitionLoader";
 
-import TBrandHeader from "ternent/ui/TBrandHeader";
+import { SBrandHeader, SSpinner, SHeader } from "ternent-ui/components";
 
 const props = defineProps({
   competitionCode: {
@@ -22,16 +20,10 @@ const props = defineProps({
   },
 });
 
-const { competitionCode, gameweek, season } = toRefs(props);
+const { competitionCode } = toRefs(props);
 const title = useTitle();
 
-const router = useRouter();
-
-const {
-  items: competition,
-  loading: competitionLoading,
-  loaded: competitionLoaded,
-} = provideCompetitionLoader(competitionCode);
+const { items: competition, error } = provideCompetitionLoader(competitionCode);
 
 const lastLeague = useLocalStorage("lastLeague", "PL");
 
@@ -43,62 +35,42 @@ watch(
   },
   { immediate: true }
 );
-
-function gotoCompetition(e) {
-  router.push({ path: `/leagues/${e.target.value}` });
-}
 </script>
 <template>
   <div
-    class="md:px-2 lg:px-4 flex-1 max-w-7xl mx-auto pt-0 w-full z-10"
+    class="md:px-2 lg:px-4 flex-1 max-w-6xl mx-auto pt-0 w-full"
     v-if="competition"
   >
-    <Teleport to="#HeaderControls">
-      <div
-        class="text-right text-sm border rounded border-zinc-700"
-        v-if="competition"
-      >
-        <select
-          :value="competition.code"
-          class="capitalize p-1 rounded bg-inherit"
-          @change="gotoCompetition"
-        >
-          <option
-            v-for="competition in competitions"
-            :key="competition.code"
-            :value="competition.code"
-          >
-            {{ competition.name }}
-          </option>
-        </select>
-      </div>
-    </Teleport>
-    <div class="flex w-full p-2">
+    <!-- <SHeader>
       <div
         class="px-1 p-2 font-thin rounded-lg flex-1 flex flex-col justify-center"
       >
-        <div class="flex items-start">
-          <TBrandHeader>Football Social</TBrandHeader>
-        </div>
-        <div class="text-lg tracking-tightest font-light">
-          {{ competition?.name }}.
+        <div class="flex text-lg tracking-tightest font-light">
+          {{ competition?.name }},
+          <span class="font-light tracking-tighter header ml-1">
+            {{ competition?.area?.name }}
+          </span>
+          <img
+            v-if="competition"
+            class="h-3 opacity-90 rounded ml-2 shadow-lg"
+            :src="competition?.area?.flag"
+          />
         </div>
         <p
           class="text-xl md:text-2xl font-light leading-tighter tracking-tighter text-zinc-200"
         ></p>
-        <p class="flex items-center py-2">
-          <img
-            v-if="competition"
-            class="h-4 opacity-90 rounded mr-2 shadow-lg"
-            :src="competition?.area?.flag"
-          />
-          <span class="font-light tracking-tighter header">{{
-            competition?.area?.name
-          }}</span>
-        </p>
       </div>
-    </div>
+    </SHeader> -->
     <RouterView :competitionCode="competitionCode" :key="competitionCode" />
   </div>
-  <div v-else class="flex-1 h-screen"></div>
+  <div v-else-if="error" class="flex-1 h-screen mx-auto max-w-4xl w-full">
+    <h1 class="text-4xl font-bold">{{ error.message }}</h1>
+    <p>Sorry, we messed up.</p>
+    <p>{{ error.config.baseURL }}</p>
+    <p>{{ error.config.method }}</p>
+    <p>{{ error.config.url }}</p>
+  </div>
+  <div v-else class="flex flex-1 h-screen w-full justify-center items-center">
+    <SSpinner />
+  </div>
 </template>

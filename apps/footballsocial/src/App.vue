@@ -10,7 +10,7 @@ import UserMenu from "./components/UserMenu.vue";
 import Api from "./Api.vue";
 
 // DS components
-import TSpinner from "ternent/ui/TSpinner";
+import { SSpinner, SNavBar } from "ternent-ui/components";
 
 // import Notifications from "./components/Notifications.vue";
 
@@ -42,8 +42,8 @@ const hasNewVersion = computed(() => {
 </script>
 
 <template>
-  <div class="absolute inset-0 flex flex-col">
-    <div class="sticky top-0 z-30 shadow w-full bg-default">
+  <div class="min-h-screen flex flex-col max-w-6xl mx-auto">
+    <!-- <div class="sticky top-0 z-30 shadow w-full bg-primary-content">
       <div class="" v-if="hasNewVersion">
         <div
           class="max-w-7xl mx-auto flex justify-left items-center flex-col md:flex-row p-2"
@@ -112,13 +112,16 @@ const hasNewVersion = computed(() => {
 
           <div v-else-if="!profile"></div>
           <div v-else class="flex">
-            <!-- <Notifications /> -->
             <UserMenu />
           </div>
         </div>
       </div>
-    </div>
-
+    </div> -->
+    <SNavBar title="Football Social">
+      <div class="text-right text-sm border rounded border-zinc-700">
+        <select></select>
+      </div>
+    </SNavBar>
     <div class="flex-1 flex flex-col" v-if="ready">
       <template v-if="user && !profile?.username">
         <SetUsername />
@@ -128,7 +131,7 @@ const hasNewVersion = computed(() => {
       </Api>
     </div>
     <div v-else class="flex-1 flex justify-center items-center">
-      <TSpinner />
+      <SSpinner />
     </div>
     <footer class="flex flex-col p-4 lg:flex xl:items-center">
       <p class="text-sm font-thin py-3">

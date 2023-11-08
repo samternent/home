@@ -6,7 +6,7 @@ import { useCurrentUser } from "../composables/useCurrentUser";
 import { usePredictionService } from "../composables/usePredictionService";
 import { watch, onMounted, shallowRef } from "vue";
 
-import TBrandHeader from "ternent/ui/TBrandHeader";
+import { SBrandHeader } from "ternent-ui/components";
 
 const router = useRouter();
 const lastLeague = useLocalStorage("lastLeague", "PL");
@@ -41,7 +41,7 @@ watch(
     class="w-full max-w-3xl mx-auto h-full flex-1 flex lg:flex-row flex-col p-4"
   >
     <div class="py-6 px-2">
-      <TBrandHeader>Football Social</TBrandHeader>
+      <SBrandHeader>Football Social</SBrandHeader>
       <h2 class="text-2xl sm:text-3xl font-light tracking-tighter mt-2 mb-12">
         The friendly football score prediction game.
       </h2>

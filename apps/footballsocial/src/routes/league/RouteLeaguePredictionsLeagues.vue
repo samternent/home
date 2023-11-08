@@ -3,6 +3,8 @@ import { shallowRef } from "vue";
 import { useCurrentUser } from "../../composables/useCurrentUser";
 import { supabaseClient } from "../../service/supabase";
 
+import { SButton } from "ternent-ui/components";
+
 const props = defineProps({
   competitionCode: {
     type: String,
@@ -40,15 +42,14 @@ fetchMyLeagues();
 <template>
   <div class="w-full">
     <div class="flex justify-end w-full py-2">
-      <RouterLink
-        class="text-center mx-2 border-2 transition-all py-2 px-4 rounded"
-        :to="`/leagues/${competitionCode}/leagues/join`"
-        >Join League</RouterLink
+      <SButton :to="`/leagues/${competitionCode}/leagues/join`"
+        >Join League</SButton
       >
-      <RouterLink
-        class="text-center mx-2 transition-all py-2 px-4 rounded"
+      <SButton
+        class="btn-primary"
+        type="primary"
         :to="`/leagues/${competitionCode}/leagues/create`"
-        >Create League</RouterLink
+        >Create League</SButton
       >
     </div>
     <div v-if="isLoading" class="h-screen"></div>

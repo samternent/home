@@ -21,6 +21,7 @@
   },
   "scripts": {
     "build:footballsocial": "pnpm --filter footballsocial build",
+    "dev:footballsocial": "pnpm --filter footballsocial dev",
     "build:footballsocial-api": "docker build -f ./apps/footballsocial-api/Dockerfile . -t samternent/footballsocial-api",
     "build:concords-api": "docker build -f ./apps/concords-api/Dockerfile . -t samternent/concords-api",
     "build:ternent-api": "docker build -f ./apps/ternent-api/Dockerfile . -t samternent/ternent-api",

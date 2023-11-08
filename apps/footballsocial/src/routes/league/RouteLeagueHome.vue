@@ -4,7 +4,7 @@ import { useRoute } from "vue-router";
 import { useTitle, useLocalStorage } from "@vueuse/core";
 import { useCompetitionLoader } from "../../api/football-data/useCompetitionLoader";
 
-import TTabs from "ternent/ui/TTabs";
+import { STabs } from "ternent-ui/components";
 
 const props = defineProps({
   competitionCode: {
@@ -30,9 +30,7 @@ const { items: competition, hasItems: hasCompetition } = useCompetitionLoader();
 const crestMap = {
   DED: "ED",
 };
-const crest = computed(
-  () => crestMap[competitionCode.value] || competitionCode.value
-);
+
 const tabs = computed(() => [
   {
     title: "Predictions",
@@ -66,7 +64,7 @@ const dismissProductHuntBanner = useLocalStorage(
 );
 </script>
 <template>
-  <TTabs :items="tabs" :path="route.path" />
+  <STabs :items="tabs" :path="route.path" />
   <!-- Banner -->
   <div
     v-if="!dismissProductHuntBanner"

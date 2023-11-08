@@ -286,15 +286,15 @@ importers:
       shelljs:
         specifier: ^0.8.5
         version: 0.8.5
-      style-dictionary:
+      ternent-style-dictionary:
         specifier: workspace*
-        version: link:../../packages/style-dictionary
+        version: link:../../packages/ternent-style-dictionary
+      ternent-ui:
+        specifier: workspace*
+        version: link:../../packages/ternent-ui
       tippy.js:
         specifier: ^6.3.7
         version: 6.3.7
-      ui:
-        specifier: workspace*
-        version: link:../../packages/ui
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -771,23 +771,23 @@ importers:
         specifier: ^1.7.1
         version: 1.7.3(vite@2.9.15)
 
-  packages/style-dictionary:
+  packages/ternent-style-dictionary:
     devDependencies:
       style-dictionary:
         specifier: ^3.8.0
         version: 3.8.0
 
-  packages/ui:
+  packages/ternent-ui:
     dependencies:
       autoprefixer:
         specifier: ^10.4.16
         version: 10.4.16(postcss@8.4.31)
+      daisyui:
+        specifier: ^3.9.4
+        version: 3.9.4
       postcss:
         specifier: ^8.4.31
         version: 8.4.31
-      style-dictionary:
-        specifier: workspace*
-        version: link:../style-dictionary
       tailwind-merge:
         specifier: ^1.14.0
         version: 1.14.0
@@ -7361,6 +7361,10 @@ packages:
     hasBin: true
     dev: true
 
+  /colord@2.9.3:
+    resolution: {integrity: sha512-jeC1axXpnb0/2nn/Y1LPuLdgXBLH7aDcHu4KEKfqw3CUhX7ZpfBSlPKyqXE6btIgEzfWtrX3/tyBCaCvXvMkOw==}
+    dev: false
+
   /colors@1.2.5:
     resolution: {integrity: sha512-erNRLao/Y3Fv54qUa0LBB+//Uf3YwMUmdJinN20yMXm9zdKKqH9wt7R9IIVZ+K7ShzfpLV/Zg8+VyrBJYB4lpg==}
     engines: {node: '>=0.1.90'}
@@ -7552,6 +7556,13 @@ packages:
     engines: {node: '>=4'}
     dev: false
 
+  /css-selector-tokenizer@0.8.0:
+    resolution: {integrity: sha512-Jd6Ig3/pe62/qe5SBPTN8h8LeUg/pT4lLgtavPf7updwwHpvFzxvOQBHYj2LZDMjUnBzgvIUSjRcf6oT5HzHFg==}
+    dependencies:
+      cssesc: 3.0.0
+      fastparse: 1.1.2
+    dev: false
+
   /css-to-react-native@3.2.0:
     resolution: {integrity: sha512-e8RKaLXMOFii+02mOlqwjbD00KSEKqblnpO9e++1aXS1fPQOpS1YoqdVHBqPjHNoxeF2mimzVqawm2KCbEdtHQ==}
     dependencies:
@@ -7617,6 +7628,19 @@ packages:
     dependencies:
       es5-ext: 0.10.62
       type: 1.2.0
+    dev: false
+
+  /daisyui@3.9.4:
+    resolution: {integrity: sha512-fvi2RGH4YV617/6DntOVGcOugOPym9jTGWW2XySb5ZpvdWO4L7bEG77VHirrnbRUEWvIEVXkBpxUz2KFj0rVnA==}
+    engines: {node: '>=16.9.0'}
+    dependencies:
+      colord: 2.9.3
+      css-selector-tokenizer: 0.8.0
+      postcss: 8.4.31
+      postcss-js: 4.0.1(postcss@8.4.31)
+      tailwindcss: 3.3.3
+    transitivePeerDependencies:
+      - ts-node
     dev: false
 
   /dash-get@1.0.2:
@@ -8895,6 +8919,10 @@ packages:
   /fast-levenshtein@2.0.6:
     resolution: {integrity: sha512-DCXu6Ifhqcks7TZKY3Hxp3y6qphY5SJZmrWMDrKcERSOXWQdMhU9Ig/PYrzyw/ul9jOIyh0N4M0tbC5hodg8dw==}
     dev: true
+
+  /fastparse@1.1.2:
+    resolution: {integrity: sha512-483XLLxTVIwWK3QTrMGRqUfUpoOs/0hbQrl2oz4J0pAcm3A3bu84wxTFqGqkJzewCLdME38xJLJAxBABfQT8sQ==}
+    dev: false
 
   /fastq@1.15.0:
     resolution: {integrity: sha512-wBrocU2LCXXa+lWBt8RoIRD89Fi8OdABODa/kEnyeyjS5aZO5/GNvI5sEINADqP/h8M29UHTHUb53sUu5Ihqdw==}
