@@ -41,7 +41,7 @@ watch(
     class="md:px-2 lg:px-4 flex-1 max-w-6xl mx-auto pt-0 w-full"
     v-if="competition"
   >
-    <!-- <SHeader>
+    <SHeader>
       <div
         class="px-1 p-2 font-thin rounded-lg flex-1 flex flex-col justify-center"
       >
@@ -60,7 +60,7 @@ watch(
           class="text-xl md:text-2xl font-light leading-tighter tracking-tighter text-zinc-200"
         ></p>
       </div>
-    </SHeader> -->
+    </SHeader>
     <RouterView :competitionCode="competitionCode" :key="competitionCode" />
   </div>
   <div v-else-if="error" class="flex-1 h-screen mx-auto max-w-4xl w-full">

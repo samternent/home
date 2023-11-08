@@ -1,8 +1,8 @@
 <script setup>
-import { shallowRef, unref } from "vue";
+import { shallowRef, watch } from "vue";
+import { DateTime, Interval } from "luxon";
 import { usePredictionService } from "../composables/usePredictionService";
 import { useCurrentUser } from "../composables/useCurrentUser";
-import { watch } from "vue";
 
 const props = defineProps({
   competitionCode: {
@@ -24,17 +24,19 @@ const props = defineProps({
 });
 
 const predictionsLoaded = shallowRef(false);
+const lastUpdated = shallowRef(null);
 const table = shallowRef([]);
 
 const { fetchPredictionTable } = usePredictionService();
 
 async function loadPredictions() {
-  const { data } = await fetchPredictionTable(
-    props.competitionCode,
-    props.gameweek
-  );
+  const {
+    data: { table: _data, lastUpdated: _lastUpdated },
+  } = await fetchPredictionTable(props.competitionCode, props.gameweek);
 
-  table.value = props.limit ? data.slice(0, props.limit) : data;
+  lastUpdated.value = DateTime.fromMillis(_lastUpdated).toFormat("DD hh:mm:ss");
+
+  table.value = props.limit ? _data.slice(0, props.limit) : _data;
   predictionsLoaded.value = true;
 }
 
@@ -57,6 +59,9 @@ const { profile } = useCurrentUser();
     This league has no predictions yet.
   </div>
   <div v-else class="flex flex-col w-full">
+    <div class="text-xs p-2 flex justify-end">
+      Last updated: {{ lastUpdated }}
+    </div>
     <table class="w-full text-base md:text-base rounded overflow-hidden shadow">
       <thead class="h-10 font-light relative">
         <tr class="font-thin text-center">
