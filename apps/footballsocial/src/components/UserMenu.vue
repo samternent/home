@@ -4,6 +4,8 @@ import { onClickOutside } from "@vueuse/core";
 import { useRouter } from "vue-router";
 import { useCurrentUser } from "../composables/useCurrentUser";
 
+import { SAvatar } from "ternent-ui/components";
+
 const showMenu = shallowRef(false);
 const dropdownRef = shallowRef(null);
 const { profile, signOut } = useCurrentUser();
@@ -20,50 +22,43 @@ async function signOutAndLeave() {
 }
 </script>
 <template>
-  <div class="relative" ref="dropdownRef">
-    <button @click="showMenu = !showMenu" class="flex">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="currentColor"
-        class="w-6 h-6 text-[#4d4d4d]"
-      >
-        <path
-          fill-rule="evenodd"
-          d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z"
-          clip-rule="evenodd"
-        />
-      </svg>
-    </button>
-
-    <div
-      v-if="showMenu"
-      class="absolute right-0 top-8 flex flex-col overflow-hidden text-left rounded border border-zinc-700 w-64"
+  <div class="dropdown dropdown-end">
+    <label tabindex="0" class="btn btn-ghost btn-circle avatar">
+      <SAvatar :name="profile.username" />
+    </label>
+    <ul
+      tabindex="0"
+      class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52"
     >
-      <ul class="item">
-        <!-- <li v-if="profile.username === 'sam'" class="flex">
-          <RouterLink to="/admin" class="p-2  w-full hover:text-indigo-500">Admin</RouterLink>
-        </li> -->
-
-        <li class="flex">
-          <RouterLink
-            @click="showMenu = false"
-            to="/auth/profile"
-            class="p-2 w-full hover:text-indigo-500"
-            >Profile</RouterLink
-          >
-        </li>
-        <li
-          class="p-2 flex cursor-pointer hover:text-red-600"
-          @click="signOutAndLeave"
-        >
+      <li>
+        <RouterLink to="/auth/profile">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
             stroke-width="1.5"
             stroke="currentColor"
-            class="w-6 h-6 mr-4"
+            class="w-4 h-4"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+            />
+          </svg>
+
+          Profile</RouterLink
+        >
+      </li>
+      <li>
+        <span @click="signOutAndLeave">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-4 h-4 mr-2"
           >
             <path
               stroke-linecap="round"
@@ -71,9 +66,9 @@ async function signOutAndLeave() {
               d="M5.636 5.636a9 9 0 1012.728 0M12 3v9"
             />
           </svg>
-          Sign out
-        </li>
-      </ul>
-    </div>
+          Logout</span
+        >
+      </li>
+    </ul>
   </div>
 </template>

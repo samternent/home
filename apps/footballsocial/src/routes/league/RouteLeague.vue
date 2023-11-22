@@ -43,9 +43,10 @@ watch(
   >
     <SHeader>
       <div
-        class="px-1 p-2 font-thin rounded-lg flex-1 flex flex-col justify-center"
+        class="px-1 p-2 font-thin rounded-lg flex-1 flex flex-col justify-center mb-2"
       >
-        <div class="flex text-lg tracking-tightest font-light">
+        <SBrandHeader>Football Social</SBrandHeader>
+        <div class="flex text-lg tracking-tightest font-light items-center">
           {{ competition?.name }},
           <span class="font-light tracking-tighter header ml-1">
             {{ competition?.area?.name }}
@@ -63,7 +64,7 @@ watch(
     </SHeader>
     <RouterView :competitionCode="competitionCode" :key="competitionCode" />
   </div>
-  <div v-else-if="error" class="flex-1 h-screen mx-auto max-w-4xl w-full">
+  <div v-else-if="error" class="flex-1 h-screen mx-auto max-w-6xl w-full">
     <h1 class="text-4xl font-bold">{{ error.message }}</h1>
     <p>Sorry, we messed up.</p>
     <p>{{ error.config.baseURL }}</p>

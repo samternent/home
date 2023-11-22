@@ -62,14 +62,14 @@ const { profile } = useCurrentUser();
     <div class="text-xs p-2 flex justify-end">
       Last updated: {{ lastUpdated }}
     </div>
-    <table class="w-full text-base md:text-base rounded overflow-hidden shadow">
-      <thead class="h-10 font-light relative">
-        <tr class="font-thin text-center">
+    <table class="table rounded-tl-lg">
+      <thead class="bg-neutral text-neutral-content rounded-none p-2">
+        <tr class="border-0 text-md bg-neutral text-neutral-content">
           <th v-if="!gameweek" class="w-10"></th>
           <th class="w-12 font-medium">POS</th>
           <th class="text-left">
             <abbr class="font-medium" title="Teams in Competition"
-              >USERNAME</abbr
+              >Username</abbr
             >
           </th>
 
@@ -90,20 +90,18 @@ const { profile } = useCurrentUser();
           </th>
         </tr>
       </thead>
-      <tbody class="font-light">
+      <tbody>
         <tr
-          class="border-b border-b-zinc-800 transition-all"
           v-for="row in table"
           :key="row.username"
+          class="border-0 bg-base-100 hover:bg-base-200"
           :class="{
-            'bg-opacity-10 ': row.username === profile?.username,
-            'bg-opacity-10 ': row.position === 1,
+            'bg-primary bg-opacity-10': row.username === profile?.username,
+            'bg-green-600 bg-opacity-10': row.position === 1,
+            'bg-base-200 bg-opacity-10': row.position % 2 == 0,
           }"
         >
-          <td
-            v-if="!gameweek"
-            class="text-center py-2 px-1 border-r border-zinc-800"
-          >
+          <td v-if="!gameweek" class="text-center py-2 px-1 border-r">
             <span
               v-if="
                 row.position < row.lastPosition ||
@@ -119,12 +117,10 @@ const { profile } = useCurrentUser();
             >
             <span v-else-if="row.lastPosition">➖</span>
           </td>
-          <td
-            class="text-center font-medium text-md p-2 border-r border-zinc-800"
-          >
+          <td class="text-center font-medium text-md p-2">
             {{ row.position }}
           </td>
-          <td class="text-left py-2 px-3 flex">
+          <td class="text-left py-2 px-3 flex border-l">
             <RouterLink
               class="league-link"
               v-if="!private"
@@ -159,7 +155,7 @@ const { profile } = useCurrentUser();
           <td class="text-center p-1">{{ row.totalAwayGoals || 0 }}</td>
           <td class="text-center p-1">{{ row.totalCorrectResult || 0 }}</td>
           <td class="text-center p-1">{{ row.correctScore || 0 }}</td>
-          <td class="text-center p-1 border-l border-zinc-800">
+          <td class="text-center p-1 border-l">
             {{ row.points || 0 }}
           </td>
         </tr>

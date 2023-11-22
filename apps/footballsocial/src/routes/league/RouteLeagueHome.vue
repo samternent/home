@@ -37,11 +37,11 @@ const tabs = computed(() => [
     path: `/leagues/${competitionCode.value}/predictions`,
   },
   { title: "Table", path: `/leagues/${competitionCode.value}/table` },
-  { title: "Leagues", path: `/leagues/${competitionCode.value}/leagues` },
-  {
-    title: "Discussions",
-    path: `/leagues/${competitionCode.value}/discussions`,
-  },
+  // { title: "Leagues", path: `/leagues/${competitionCode.value}/leagues` },
+  // {
+  //   title: "Discussions",
+  //   path: `/leagues/${competitionCode.value}/discussions`,
+  // },
 ]);
 
 watch(

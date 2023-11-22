@@ -3,6 +3,7 @@ import { shallowRef, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useCurrentUser } from "../../composables/useCurrentUser";
 import { supabaseClient } from "../../service/supabase";
+import { getCompetitionGameweeks } from "../../utils/competitions";
 
 const props = defineProps({
   competitionCode: {
@@ -11,20 +12,8 @@ const props = defineProps({
   },
 });
 
-const gameweekDefinitions = {
-  PL: 38,
-  PD: 38,
-  ELC: 46,
-  BL1: 34,
-  SA: 38,
-  FL1: 38,
-  DED: 34,
-};
 const gameweeks = computed(() =>
-  Array.from(
-    { length: gameweekDefinitions[props.competitionCode] },
-    (_, i) => i + 1
-  )
+  getCompetitionGameweeks(props.competitionCode)
 );
 
 const leagueName = shallowRef("");

@@ -6,7 +6,7 @@ import { useCurrentUser } from "../composables/useCurrentUser";
 import { usePredictionService } from "../composables/usePredictionService";
 import { watch, onMounted, shallowRef } from "vue";
 
-import { SBrandHeader } from "ternent-ui/components";
+import { SBrandHeader, SButton } from "ternent-ui/components";
 
 const router = useRouter();
 const lastLeague = useLocalStorage("lastLeague", "PL");
@@ -66,24 +66,26 @@ watch(
         <span class="text-3xl font-medium">7 </span> leagues.
       </p>
 
-      <div class="flex text-2xl justify-senter items-end my-12">
-        <RouterLink
+      <div class="flex text-2xl justify-senter items-center my-12">
+        <SButton
           aria-label="Login"
           v-if="!user"
           to="/auth/login"
-          class="bg-blue"
+          class="btn-primary"
+          type="primary"
         >
           Login
-        </RouterLink>
-        <span class="font-thin text-2xl mx-6">or</span>
-        <RouterLink
+        </SButton>
+        <span class="font-thin text-2xl mx-2">or</span>
+        <SButton
           aria-label="Signup"
           v-if="!user"
           to="/auth/signup"
-          class="flex items-center mx-2 px-4 py-2 text-md font-bold uppercase"
+          class="btn-secondary"
+          type="secondary"
         >
           Join
-        </RouterLink>
+        </SButton>
       </div>
       <p class="text-lg font-light tracking-tighter my-4 mt-16">
         If you're here to look at the code, it's open-source on Github.

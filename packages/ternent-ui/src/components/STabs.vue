@@ -22,12 +22,13 @@ function isExactActiveLink(t) {
 }
 </script>
 <template>
-  <ul class="tabs">
+  <ul role="tablist" class="tabs tabs-bordered flex-grow-0 flex">
     <RouterLink
       v-for="t in items"
       :key="`${t.path}`"
       :to="t.path"
-      class="tab tab-bordered font-light"
+      role="tab"
+      class="tab"
       :class="{
         'tab-active':
           (!exact && isActiveLink(t)) || (exact && isExactActiveLink(t)),

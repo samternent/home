@@ -10,7 +10,7 @@ import UserMenu from "./components/UserMenu.vue";
 import Api from "./Api.vue";
 
 // DS components
-import { SSpinner, SNavBar } from "ternent-ui/components";
+import { SSpinner, SNavBar, SBanner } from "ternent-ui/components";
 
 // import Notifications from "./components/Notifications.vue";
 
@@ -18,6 +18,7 @@ const { appVersion, serverVersion } = provideAppVersion();
 const { user, profile, ready } = provideCurrentUser();
 
 const hasDismissedPopup = useLocalStorage("app/hasDismissedPopup", false);
+const theme = useLocalStorage("app/theme", "bumblebee");
 
 const modalRef = shallowRef(null);
 
@@ -39,90 +40,56 @@ const hasNewVersion = computed(() => {
   }
   return semverGt(serverVersion.value, appVersion.value);
 });
+
+const themes = shallowRef([
+  "light",
+  "dark",
+  "cupcake",
+  "bumblebee",
+  "synthwave",
+  "cyberpunk",
+  "dim",
+]);
+function setTheme(_theme) {
+  theme.value = _theme;
+}
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col max-w-6xl mx-auto">
-    <!-- <div class="sticky top-0 z-30 shadow w-full bg-primary-content">
-      <div class="" v-if="hasNewVersion">
-        <div
-          class="max-w-7xl mx-auto flex justify-left items-center flex-col md:flex-row p-2"
-        >
-          <p>A new version of the app is available.</p>
-          <button
-            class="px-3 py-1 md:ml-4 rounded mt-2 md:mt-0"
-            @click="reloadPage"
-          >
-            Refresh
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="w-6 h-6 inline ml-2"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
-              />
-            </svg>
-          </button>
-        </div>
-      </div>
-      <div
-        class="max-w-7xl flex justify-between mx-auto items-center w-full h-12"
-      >
-        <div class="flex flex-1">
-          <RouterLink
-            to="/"
-            alt="Home"
-            class="mr-4 text-lg no-underline hover:no-underline mx-1 rounded h-10 flex items-center justify-center text-center pr-2 py-1"
-          >
-            <img
-              alt="Football Social"
-              src="./assets/logo-small.png"
-              class="h-8 w-8"
-            />
-          </RouterLink>
-          <section
-            id="HeaderControls"
-            class="flex-1 flex items-center"
-          ></section>
-        </div>
-
-        <div class="flex items-center" :key="profile?.id || 'empty'">
-          <RouterLink
-            aria-label="Login"
-            v-if="!user"
-            to="/auth/login"
-            class="flex items-center mx-2 px-4 py-2 text-md font-light uppercase"
-          >
-            Login
-          </RouterLink>
-          <RouterLink
-            aria-label="Signup"
-            v-if="!user"
-            to="/auth/signup"
-            class="flex items-center mx-2 px-4 py-2 text-md font-bold uppercase"
-          >
-            Join
-          </RouterLink>
-
-          <div v-else-if="!profile"></div>
-          <div v-else class="flex">
+  <div class="min-h-screen flex flex-col" :data-theme="theme">
+    <div class="sticky top-0 z-10 bg-primary">
+      <SBanner
+        v-if="hasNewVersion"
+        @click="reloadPage"
+        buttonText="refresh"
+        message="A new version of the app is available."
+      />
+      <SNavBar title="FS">
+        <template #right>
+          <div class="flex" v-if="profile">
+            <!-- <details class="dropdown">
+              <summary class="m-1 btn">Theme</summary>
+              <ul
+                class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52"
+              >
+                <li
+                  v-for="theme in themes"
+                  :key="theme"
+                  @click="setTheme(theme)"
+                >
+                  {{ theme }}
+                </li>
+              </ul>
+            </details> -->
             <UserMenu />
           </div>
-        </div>
-      </div>
-    </div> -->
-    <SNavBar title="Football Social">
-      <div class="text-right text-sm border rounded border-zinc-700">
-        <select></select>
-      </div>
-    </SNavBar>
-    <div class="flex-1 flex flex-col" v-if="ready">
+        </template>
+      </SNavBar>
+    </div>
+    <div
+      class="flex-1 flex flex-col pt-2 bg-base-100 max-w-7xl w-full mx-auto"
+      v-if="ready"
+    >
       <template v-if="user && !profile?.username">
         <SetUsername />
       </template>
@@ -130,10 +97,12 @@ const hasNewVersion = computed(() => {
         <RouterView />
       </Api>
     </div>
-    <div v-else class="flex-1 flex justify-center items-center">
+    <div v-else class="flex-1 flex justify-center items-center h-screen">
       <SSpinner />
     </div>
-    <footer class="flex flex-col p-4 lg:flex xl:items-center">
+    <footer
+      class="flex flex-col p-4 lg:flex xl:items-center border-t-8 border-primary bg-base-300"
+    >
       <p class="text-sm font-thin py-3">
         <a href="https://www.footballsocial.app/" class="font-medium mr-1"
           >FootballSocial</a

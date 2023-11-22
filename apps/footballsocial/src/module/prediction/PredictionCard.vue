@@ -110,39 +110,19 @@ const resultPrediction = computed(() => {
 </script>
 <template>
   <div
-    class="flex flex-col w-full bg-default border border-light rounded-tr-lg rounded-bl-lg overflow-hidden"
-    :class="{
-      'text-xl': size === 'lg',
-      'text-base ': size === 'md',
-    }"
+    class="card bg-base-200 rounded-tl-md rounded-tr-lg rounded-bl-lg overflow-hidden p-2"
   >
     <div
-      class="flex justify-between border-b border-light bg-surface text-white"
+      class="flex justify-between bg-neutral text-neutral-content rounded-md p-2"
     >
       <div class="flex text-xs">
-        <span v-if="fixture.status === 'IN_PLAY'" class="px-4 py-2 bg-success"
-          >In play</span
-        >
-        <span
-          v-else-if="fixture.status === 'PAUSED'"
-          class="px-4 py-2 bg-success"
-          >Half time</span
-        >
-        <span v-else-if="!!fixture.score?.winner" class="px-4 py-2 bg-success"
-          >Finished</span
-        >
-        <span
-          v-else-if="fixture.status === 'POSTPONED'"
-          class="px-4 py-2 bg-success"
-          >POSTPONED</span
-        >
-        <span
-          v-else-if="fixture.status === 'TIMED'"
-          class="px-4 py-2 bg-success"
-          >Scheduled</span
-        >
+        <span v-if="fixture.status === 'IN_PLAY'">In play</span>
+        <span v-else-if="fixture.status === 'PAUSED'">Half time</span>
+        <span v-else-if="!!fixture.score?.winner">Finished</span>
+        <span v-else-if="fixture.status === 'POSTPONED'">POSTPONED</span>
+        <span v-else-if="fixture.status === 'TIMED'">Scheduled</span>
       </div>
-      <div class="flex text-xs p-2" v-if="hasStarted">
+      <div class="flex text-xs" v-if="hasStarted">
         <div
           v-if="scorePrediction"
           class="px-3 rounded mx-1 bg-green-600 text-green-300"
@@ -171,7 +151,7 @@ const resultPrediction = computed(() => {
     </div>
 
     <div
-      class="flex flex-col flex-1 w-full px-2 justify-between items-center truncate text-sm sm:text-base p-2"
+      class="flex flex-col flex-1 w-full justify-between items-center truncate text-sm sm:text-base p-1"
     >
       <div class="flex w-full">
         <div
@@ -190,14 +170,14 @@ const resultPrediction = computed(() => {
             fixture.homeTeam.shortName
           }}</span>
         </div>
-        <div class="flex flex-row text-center justify-center items-center">
+        <div class="flex flex-row text-center justify-center items-center my-1">
           <input
             :disabled="disabled"
             v-model="homeScore"
             type="number"
             min="0"
             max="9"
-            class="text-center text-2xl w-12 h-12 rounded pl-4 font-medium border-light border"
+            class="bg-base-100 text-center text-xl w-16 h-12 rounded pl-2 font-medium border"
             :class="{
               'blur-md': hidePredictions && !hasStarted,
               '': disabled,
@@ -215,7 +195,7 @@ const resultPrediction = computed(() => {
         </div>
       </div>
 
-      <div class="flex w-full">
+      <div class="flex w-full gap-2">
         <div
           class="flex-1 flex items-center truncate my-1 lg:text-xl md:font-light pr-2"
         >
@@ -239,7 +219,7 @@ const resultPrediction = computed(() => {
             type="number"
             min="0"
             max="9"
-            class="text-center text-2xl w-12 h-12 rounded pl-4 font-medium border-light border"
+            class="bg-base-100 text-center text-xl w-16 h-12 rounded pl-2 font-medium border"
             :class="{
               'blur-md': hidePredictions && !hasStarted,
               '': disabled,

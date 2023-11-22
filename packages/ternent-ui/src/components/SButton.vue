@@ -14,6 +14,10 @@ defineEmits(["click"]);
 const classMap = {
   neutral: "btn-neutral",
   ghost: "btn-ghost",
+  success: "btn-success",
+  primary: "btn-primary",
+  secondary: "btn-secondary",
+  accent: "btn-accent",
 };
 </script>
 <template>

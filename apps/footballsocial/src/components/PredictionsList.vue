@@ -5,8 +5,10 @@ import { watchThrottled } from "@vueuse/core";
 import useFixturesLoader from "../api/football-data/useCompetitionFixturesLoader";
 import { usePredictionService } from "../composables/usePredictionService";
 import { useCurrentUser } from "../composables/useCurrentUser";
-import CountdownTimer from "./CountdownTimer.vue";
 import { PredictionCard } from "../module/prediction";
+import { getCompetitionGameweeks } from "../utils/competitions";
+
+import { SCountdown, SButton } from "ternent-ui/components";
 
 const props = defineProps({
   competitionCode: {
@@ -33,9 +35,13 @@ const props = defineProps({
 
 const { addPrediction, getPredictions } = usePredictionService();
 const { competitionCode, currentGameweek, stage, username } = toRefs(props);
-const overrideGameweek = shallowRef();
+const overrideGameweek = shallowRef(currentGameweek.value);
 const gameweek = computed(
   () => overrideGameweek.value || currentGameweek.value
+);
+
+const gameweeks = computed(() =>
+  getCompetitionGameweeks(props.competitionCode)
 );
 
 const { items: fixtures } = useFixturesLoader(competitionCode, stage, gameweek);
@@ -51,6 +57,7 @@ async function loadPredictions() {
   predictions.value = {};
   serverPredictions.value = null;
   predictionsToUpdate.value = {};
+  predictionsLoaded.value = false;
 
   const { data } = await getPredictions(
     props.username || profile.value?.username,
@@ -130,10 +137,6 @@ const hidePredictions = computed(() => {
   return !!(props.username && profile.value?.username !== props.username);
 });
 
-function setGameweek(_gameweek) {
-  overrideGameweek.value = _gameweek;
-}
-
 const gameweekPoints = computed(() => {
   return predictionsList.value?.reduce((acc, fixture) => {
     const timeDiff = Interval.fromDateTimes(
@@ -201,78 +204,27 @@ function formatKickoff(utcDate) {
 }
 </script>
 <template>
-  <div class="w-full flex flex-col mx-auto max-w-4xl" v-if="predictionsLoaded">
-    <div
-      class="uppercase text-center font-light flex justify-between rounded-t py-2 px-2"
-      :class="{
-        'rounded-b': gameweek < currentGameweek,
-      }"
-    >
-      <button
-        @click="setGameweek(gameweek - 1)"
-        :disabled="gameweek <= 1"
-        :class="{
-          'opacity-20': gameweek <= 1,
-        }"
-        :aria-label="`Gameweek ${gameweek - 1}`"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-          class="w-6 h-6"
+  <div class="w-full flex flex-col mx-auto max-w-6xl" v-if="predictionsLoaded">
+    <div class="font-light flex justify-between items-center">
+      <div class="my-2 flex items-center" v-if="gameweekPoints > -1">
+        <select
+          v-model="overrideGameweek"
+          class="select select-bordered select-sm mr-4"
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M15.75 19.5L8.25 12l7.5-7.5"
-          />
-        </svg>
-      </button>
-      <CountdownTimer
-        :gameweek="gameweek"
-        :currentGameweek="currentGameweek"
-        :kickOff="predictionsList[0]?.utcDate || 'undefined'"
-      />
-      <button
-        @click="setGameweek(gameweek + 1)"
-        :aria-label="`Gameweek ${gameweek + 1}`"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-          class="w-6 h-6"
+          <option v-for="gw in gameweeks" :key="`gameweek${gw}`" :value="gw">
+            Gameweek {{ gw }}
+          </option>
+        </select>
+        <span class="text-xl py-1" v-if="gameweekPoints">
+          {{ gameweekPoints }} points scored.</span
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M8.25 4.5l7.5 7.5-7.5 7.5"
-          />
-        </svg>
-      </button>
-    </div>
-    <div class="text-center my-0 flex flex-col">
-      <span
-        class="text-xl font-thinpy-1"
-        :class="{
-          ' bg-opacity-50': gameweek < currentGameweek,
-        }"
-        v-if="gameweekPoints"
-        >{{ username ? `${username} scored` : "You scored" }}
-        {{ gameweekPoints }} points</span
-      >
-      <span class="text-xl font-thin-70 py-1" v-else-if="hasPredictions"
-        >{{ username ? `${username}s` : "Your" }} predictions are in!</span
-      >
-      <span class="text-lg font-thin py-1" v-else
-        >{{ username ? `${username}s` : "Your" }} predictions are not in
-        yet.</span
-      >
+        <span class="text-xl py-1" v-else-if="hasPredictions"
+          >{{ username ? `${username}s` : "Your" }} predictions are in!</span
+        >
+      </div>
+      <div class="flex flex-col">
+        <SCountdown :time="predictionsList[0]?.utcDate" />
+      </div>
     </div>
 
     <div class="flex flex-col w-full">
@@ -316,14 +268,14 @@ function formatKickoff(utcDate) {
       </div>
     </div>
     <div class="text-center mt-8 flex flex-col items-end">
-      <button
+      <SButton
         :disabled="!isDirty"
         v-if="profile && (!username || profile.username === username)"
         @click="savePredictions"
-        class="font-thin w-64 text-xl uppercase disabled:opacity-20 rounded p-2 my-2"
+        type="success"
       >
         Save predictions
-      </button>
+      </SButton>
     </div>
   </div>
 
