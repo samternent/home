@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.9.0
+
+### Minor Changes
+
+- [#170](https://github.com/samternent/home/pull/170) [`84c6c66`](https://github.com/samternent/home/commit/84c6c663322e4b85a0224ba9deca83b84663b625) Thanks [@samternent](https://github.com/samternent)! - Use ternent-ui
+
 ## 0.8.6
 
 ### Patch Changes
