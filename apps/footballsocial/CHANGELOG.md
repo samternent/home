@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.9.2
+
+### Patch Changes
+
+- [`6c193c4`](https://github.com/samternent/home/commit/6c193c4bf1770597bfe0e2d9b8d0ce97d14466a6) Thanks [@samternent](https://github.com/samternent)! - Remove deleted app version api func
+
 ## 0.9.1
 
 ### Patch Changes
