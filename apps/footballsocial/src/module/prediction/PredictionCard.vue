@@ -178,7 +178,7 @@ const resultPrediction = computed(() => {
             type="number"
             min="0"
             max="9"
-            class="bg-base-100 text-center text-xl w-16 h-12 rounded pl-2 !pr-0 font-medium input input-bordered"
+            class="bg-base-100 text-center text-xl h-12 rounded pl-2 !pr-0 font-medium input input-bordered"
             :class="{
               'blur-md': hidePredictions && !hasStarted,
               '': disabled,
@@ -186,7 +186,7 @@ const resultPrediction = computed(() => {
           />
           <span
             v-if="hasStarted"
-            class="text-xl rounded font-medium mr-2 md:ml-4 w-10"
+            class="text-xl rounded font-medium mx-2 w-10"
             :class="{
               '': fixture.score?.fullTime?.home != homeScore,
               '': fixture.score?.fullTime?.home == homeScore,
@@ -220,7 +220,7 @@ const resultPrediction = computed(() => {
             type="number"
             min="0"
             max="9"
-            class="bg-base-100 text-center text-xl w-16 h-12 rounded pl-2 font-medium !pr-0 input input-bordered"
+            class="bg-base-100 text-center text-xl h-12 rounded pl-2 font-medium !pr-0 input input-bordered"
             :class="{
               'blur-md': hidePredictions && !hasStarted,
               '': disabled,
@@ -228,7 +228,7 @@ const resultPrediction = computed(() => {
           />
           <span
             v-if="hasStarted"
-            class="text-xl rounded font-medium mr-2 md:ml-4 w-10"
+            class="text-xl rounded font-medium mx-2 w-10"
             :class="{
               '': fixture.score?.fullTime?.away != awayScore,
               '': fixture.score?.fullTime?.away == awayScore,
