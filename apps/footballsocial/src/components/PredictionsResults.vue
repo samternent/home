@@ -48,7 +48,7 @@ const { profile } = useCurrentUser();
     <div
       v-for="i in 10"
       :key="i"
-      class="skeleton my-2 rounded flex-1 h-8 w-full"
+      class="animate-pulse my-2 rounded flex-1 h-8 w-full"
     />
   </div>
   <div
@@ -57,109 +57,111 @@ const { profile } = useCurrentUser();
   >
     This league has no predictions yet.
   </div>
-  <div v-else class="flex flex-col w-full">
+  <div v-else>
     <div class="text-xs p-2 flex justify-end">
       Last updated: {{ lastUpdated }}
     </div>
-    <table class="table rounded-tl-lg">
-      <thead class="bg-neutral text-neutral-content rounded-none p-2">
-        <tr class="border-0 text-md bg-neutral text-neutral-content">
-          <th v-if="!gameweek" class="w-10"></th>
-          <th class="w-12 font-medium">POS</th>
-          <th class="text-left">
-            <abbr class="font-medium" title="Teams in Competition"
-              >Username</abbr
-            >
-          </th>
-
-          <th class="w-10">
-            <abbr class="font-medium" title="Correct Home Score">HS</abbr>
-          </th>
-          <th class="w-10">
-            <abbr class="font-medium" title="Correct Away Score">AS</abbr>
-          </th>
-          <th class="w-10">
-            <abbr class="font-medium" title="Correct Match Result">MR</abbr>
-          </th>
-          <th class="w-10">
-            <abbr class="font-medium" title="Correct Match Score">MS</abbr>
-          </th>
-          <th class="w-12">
-            <abbr class="font-medium" title="Points">PTS</abbr>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-for="row in table"
-          :key="row.username"
-          class="border-0 bg-base-100 hover:bg-base-200"
-          :class="{
-            'bg-primary bg-opacity-10': row.username === profile?.username,
-            'bg-green-600 bg-opacity-10': row.position === 1,
-            'bg-base-200 bg-opacity-10': row.position % 2 == 0,
-          }"
-        >
-          <td v-if="!gameweek" class="text-center py-2 px-1 border-r">
-            <span
-              v-if="
-                row.position < row.lastPosition ||
-                (!row.lastPosition && row.position > row.lastPosition)
-              "
-              class="text-green-800"
-              >▲</span
-            >
-            <span
-              v-else-if="row.lastPosition && row.position > row.lastPosition"
-              class="text-red-900"
-              >▼</span
-            >
-            <span v-else-if="row.lastPosition">➖</span>
-          </td>
-          <td class="text-center font-medium text-md p-2">
-            {{ row.position }}
-          </td>
-          <td class="text-left py-2 px-3 flex border-l">
-            <RouterLink
-              class="league-link"
-              v-if="!private"
-              :to="`/leagues/${competitionCode}/predictions/${row.username}`"
-              >{{ row.username }}</RouterLink
-            >
-            <p v-else class="blur-md">{{ row.username }}</p>
-            <span
-              v-if="
-                row.gameweekPoints > 0 &&
-                (gameweek ? row.position === 1 : row.gameweekPosition === 1)
-              "
-              class="text-orange-400"
-              ><svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                class="w-6 h-6 ml-2"
-                :class="{
-                  'blur-md': private,
-                }"
+    <div class="flex flex-col w-full overflow-x-auto">
+      <table class="rounded-tl-lg text-xs lg:text-base">
+        <thead class="bg-neutral text-neutral-content rounded-none p-2">
+          <tr class="border-0 text-sm bg-neutral text-neutral-content">
+            <th v-if="!gameweek" class="w-10"></th>
+            <th class="w-12 font-medium p-2">POS</th>
+            <th class="text-left p-2">
+              <abbr class="font-medium" title="Teams in Competition"
+                >Username</abbr
               >
-                <path
-                  fill-rule="evenodd"
-                  d="M12.963 2.286a.75.75 0 00-1.071-.136 9.742 9.742 0 00-3.539 6.177A7.547 7.547 0 016.648 6.61a.75.75 0 00-1.152-.082A9 9 0 1015.68 4.534a7.46 7.46 0 01-2.717-2.248zM15.75 14.25a3.75 3.75 0 11-7.313-1.172c.628.465 1.35.81 2.133 1a5.99 5.99 0 011.925-3.545 3.75 3.75 0 013.255 3.717z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-            </span>
-          </td>
-          <td class="text-center p-1">{{ row.totalHomeGoals || 0 }}</td>
-          <td class="text-center p-1">{{ row.totalAwayGoals || 0 }}</td>
-          <td class="text-center p-1">{{ row.totalCorrectResult || 0 }}</td>
-          <td class="text-center p-1">{{ row.correctScore || 0 }}</td>
-          <td class="text-center p-1 border-l !border-neutral">
-            {{ row.points || 0 }}
-          </td>
-        </tr>
-      </tbody>
-    </table>
+            </th>
+
+            <th class="w-10 p-2">
+              <abbr class="font-medium" title="Correct Home Score">HS</abbr>
+            </th>
+            <th class="w-10 p-2">
+              <abbr class="font-medium" title="Correct Away Score">AS</abbr>
+            </th>
+            <th class="w-10 p-2">
+              <abbr class="font-medium" title="Correct Match Result">MR</abbr>
+            </th>
+            <th class="w-10 p-2">
+              <abbr class="font-medium" title="Correct Match Score">MS</abbr>
+            </th>
+            <th class="w-12 p-2">
+              <abbr class="font-medium" title="Points">PTS</abbr>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="row in table"
+            :key="row.username"
+            class="border-0 bg-base-100 hover:bg-base-200"
+            :class="{
+              'bg-primary bg-opacity-10': row.username === profile?.username,
+              'bg-green-600 bg-opacity-10': row.position === 1,
+              'bg-base-200 bg-opacity-10': row.position % 2 == 0,
+            }"
+          >
+            <td v-if="!gameweek" class="text-center py-2 px-1">
+              <span
+                v-if="
+                  row.position < row.lastPosition ||
+                  (!row.lastPosition && row.position > row.lastPosition)
+                "
+                class="text-green-800"
+                >▲</span
+              >
+              <span
+                v-else-if="row.lastPosition && row.position > row.lastPosition"
+                class="text-red-900"
+                >▼</span
+              >
+              <span v-else-if="row.lastPosition">➖</span>
+            </td>
+            <td class="text-center font-medium text-sm p-2">
+              {{ row.position }}
+            </td>
+            <td class="text-left py-2 px-3 flex">
+              <RouterLink
+                class="league-link"
+                v-if="!private"
+                :to="`/leagues/${competitionCode}/predictions/${row.username}`"
+                >{{ row.username }}</RouterLink
+              >
+              <p v-else class="blur-md">{{ row.username }}</p>
+              <span
+                v-if="
+                  row.gameweekPoints > 0 &&
+                  (gameweek ? row.position === 1 : row.gameweekPosition === 1)
+                "
+                class="text-orange-400"
+                ><svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  class="w-6 h-6 ml-2"
+                  :class="{
+                    'blur-md': private,
+                  }"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M12.963 2.286a.75.75 0 00-1.071-.136 9.742 9.742 0 00-3.539 6.177A7.547 7.547 0 016.648 6.61a.75.75 0 00-1.152-.082A9 9 0 1015.68 4.534a7.46 7.46 0 01-2.717-2.248zM15.75 14.25a3.75 3.75 0 11-7.313-1.172c.628.465 1.35.81 2.133 1a5.99 5.99 0 011.925-3.545 3.75 3.75 0 013.255 3.717z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </span>
+            </td>
+            <td class="text-center p-1">{{ row.totalHomeGoals || 0 }}</td>
+            <td class="text-center p-1">{{ row.totalAwayGoals || 0 }}</td>
+            <td class="text-center p-1">{{ row.totalCorrectResult || 0 }}</td>
+            <td class="text-center p-1">{{ row.correctScore || 0 }}</td>
+            <td class="text-center p-1">
+              {{ row.points || 0 }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 <style scoped>

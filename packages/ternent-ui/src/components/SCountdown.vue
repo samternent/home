@@ -23,26 +23,26 @@ onBeforeUnmount(() => {
     class="grid grid-flow-col gap-5 text-center auto-cols-max"
     v-if="countdown?.seconds"
   >
-    <div class="flex flex-col">
-      <span class="font-mono text-2xl">
+    <div class="flex flex-col text-sm lg:text-base">
+      <span class="font-mono text-lg lg:text-2xl">
         <span>{{ countdown.days }}</span>
       </span>
       day
     </div>
-    <div class="flex flex-col">
-      <span class="font-mono text-2xl">
+    <div class="flex flex-col text-sm lg:text-base">
+      <span class="font-mono text-lg lg:text-2xl">
         <span>{{ countdown.hours }}</span>
       </span>
       hour
     </div>
-    <div class="flex flex-col">
-      <span class="font-mono text-2xl">
+    <div class="flex flex-col text-sm lg:text-base">
+      <span class="font-mono text-lg lg:text-2xl">
         <span>{{ Math.floor(countdown.minutes) }}</span>
       </span>
       min
     </div>
-    <div class="flex flex-col">
-      <span class="font-mono text-2xl">
+    <div class="flex flex-col text-sm lg:text-base">
+      <span class="font-mono text-lg lg:text-2xl">
         <span>{{ Math.floor(countdown.seconds) }}</span>
       </span>
       sec

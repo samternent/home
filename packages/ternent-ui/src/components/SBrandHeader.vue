@@ -11,7 +11,7 @@ defineProps({
   <div
     class="tracking-tight font-extrabold text-default"
     :class="{
-      'text-6xl': size === 'lg',
+      'text-4xl lg:text-5xl': size === 'lg',
       'text-xl': size === 'md',
       'text-lg': size === 'sm',
     }"
