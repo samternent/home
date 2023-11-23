@@ -18,11 +18,7 @@ export default defineConfig({
     },
   },
   plugins: [
-    ViteEjsPlugin(() => {
-      return {
-        __APP_VERSION__: version,
-      };
-    }),
+    ViteEjsPlugin(() => ({ __APP_VERSION__: version })),
     vue({
       include: [/\.vue$/, /\.md$/],
     }),

@@ -32,21 +32,21 @@ async function requestAccountDeletion() {
 }
 </script>
 <template>
-  <div class="mx-auto w-full max-w-3xl p-4">
+  <div class="mx-auto w-full max-w-4xl p-4">
     <div>
       <p>
         <span
-          class="text-4xl sm:text-5xl dark:text-white font-medium tracking-tighter"
+          class="text-4xl sm:text-5xl  font-medium tracking-tighter"
           >{{ profile.username }}</span
         >
       </p>
 
       <p class="my-16">
-        <div v-if="pendingDeletion">
+        <div v-if="pendingDeletion" class="mb-6">
           <p>Deletion request is pending.</p>
-          <p>This will be processed withing 48 hours</p>
+          <p>This will be processed within 48 hours</p>
         </div>
-        <button :disabled="pendingDeletion" @click="requestAccountDeletion" class="px-4 py-2 bg-red-800 disabled:opacity-50">
+        <button :disabled="pendingDeletion" @click="requestAccountDeletion" class="btn btn-error">
           Request account deletion
         </button>
       </p>

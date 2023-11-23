@@ -137,10 +137,8 @@ const leagueLink = computed(
         <table
           class="w-full text-base md:text-base rounded overflow-hidden shadow"
         >
-          <thead
-            class="h-10 font-light bg-gradient-to-r from-indigo-800 to-pink-900"
-          >
-            <tr class="font-thin text-center text-white">
+          <thead class="h-10 font-light">
+            <tr class="font-thin text-center">
               <th class="w-16 font-medium">POS</th>
               <th class="text-left">
                 <abbr class="font-medium" title="Teams in Competition"
@@ -167,19 +165,16 @@ const leagueLink = computed(
           </thead>
           <tbody class="font-light">
             <tr
-              class="border-b border-b-zinc-800 transition-all text-white hover:bg-zinc-900"
+              class="border-b transition-all"
               v-for="row in table"
               :key="row.username"
               :class="{
-                'bg-opacity-10 bg-indigo-500':
-                  row.username === profile?.username,
-                'bg-opacity-10 bg-green-500': row.position === 1,
-                'bg-opacity-10 bg-red-500': row.position === table.length,
+                'bg-opacity-10': row.username === profile?.username,
+                'bg-opacity-10': row.position === 1,
+                'bg-opacity-10': row.position === table.length,
               }"
             >
-              <td
-                class="text-center text-md p-2 text-white border-r border-zinc-800"
-              >
+              <td class="text-center text-md p-2 border-r">
                 {{ row.position }}
               </td>
               <td class="text-left py-2 px-3">
@@ -215,20 +210,18 @@ const leagueLink = computed(
         <p class="text-xl mb-2 font-thin" v-else>
           Gameweeks: {{ league.gameweek_start }} - {{ league.gameweek_end }}
         </p>
-        <p class="bg-zinc-800 text-xl text-center py-4">League Code</p>
-        <div
-          class="p-6 text-4xl text-center font-bold tracking-tighter bg-gradient-to-r from-indigo-500 to-70% to-pink-500 via-40%"
-        >
+        <p class="text-xl text-center py-4">League Code</p>
+        <div class="p-6 text-4xl text-center font-bold tracking-tighter">
           {{ league.league_code }}
         </div>
         <div class="flex w-full">
           <input
             ref="linkEl"
             dir="rtl"
-            class="flex-1 p-2 font-thin bg-zinc-800"
+            class="flex-1 p-2 font-thin"
             :value="leagueLink"
           />
-          <button @click="copyLink" class="p-2 bg-indigo-900">
+          <button @click="copyLink" class="p-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"

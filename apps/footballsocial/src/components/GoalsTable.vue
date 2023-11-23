@@ -20,8 +20,8 @@ const hasScorers = computed(() => !scorerLoading.value && scorerLoaded.value);
 const scorerData = computed(() => scorer.value?.scorers);
 </script>
 <template>
-  <h2 class="text-2xl my-4 font-light text-gray-700 px-2">Top Scorers</h2>
-  <div class="bg-white shadow md:rounded-lg text-sm md:text-base max-w-[100vw]">
+  <h2 class="text-2xl my-4 font-light px-2">Top Scorers</h2>
+  <div class="shadow md:rounded-lg text-sm md:text-base max-w-[100vw]">
     <table class="w-full text-sm md:text-base">
       <thead>
         <tr class="border-b border-gray-200">
@@ -75,11 +75,7 @@ const scorerData = computed(() => scorer.value?.scorers);
       </tbody>
     </table>
     <div v-if="!hasScorers">
-      <div
-        v-for="i in 10"
-        :key="i"
-        class="bg-gray-100 animate-pulse m-2 rounded flex-1 h-8"
-      />
+      <div v-for="i in 10" :key="i" class="skeleton m-2 rounded flex-1 h-8" />
     </div>
   </div>
 </template>

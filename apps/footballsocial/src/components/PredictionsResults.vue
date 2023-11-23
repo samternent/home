@@ -1,8 +1,8 @@
 <script setup>
-import { shallowRef, unref } from "vue";
+import { shallowRef, watch } from "vue";
+import { DateTime, Interval } from "luxon";
 import { usePredictionService } from "../composables/usePredictionService";
 import { useCurrentUser } from "../composables/useCurrentUser";
-import { watch } from "vue";
 
 const props = defineProps({
   competitionCode: {
@@ -19,22 +19,23 @@ const props = defineProps({
   },
   limit: {
     type: Number,
-    default: null,
+    default: 30,
   },
 });
 
 const predictionsLoaded = shallowRef(false);
+const lastUpdated = shallowRef(null);
 const table = shallowRef([]);
 
 const { fetchPredictionTable } = usePredictionService();
 
 async function loadPredictions() {
-  const { data } = await fetchPredictionTable(
-    props.competitionCode,
-    props.gameweek
-  );
+  const {
+    data: { table: _data, lastUpdated: _lastUpdated },
+  } = await fetchPredictionTable(props.competitionCode, props.gameweek);
+  lastUpdated.value = DateTime.fromMillis(_lastUpdated).toFormat("DD hh:mm:ss");
 
-  table.value = props.limit ? data.slice(0, props.limit) : data;
+  table.value = props.limit ? _data.slice(0, props.limit) : _data;
   predictionsLoaded.value = true;
 }
 
@@ -47,7 +48,7 @@ const { profile } = useCurrentUser();
     <div
       v-for="i in 10"
       :key="i"
-      class="bg-[#1e1e1e] animate-pulse my-2 rounded flex-1 h-8 w-full"
+      class="skeleton my-2 rounded flex-1 h-8 w-full"
     />
   </div>
   <div
@@ -57,14 +58,17 @@ const { profile } = useCurrentUser();
     This league has no predictions yet.
   </div>
   <div v-else class="flex flex-col w-full">
-    <table class="w-full text-base md:text-base rounded overflow-hidden shadow">
-      <thead class="h-10 font-light relative bg-indigo-900">
-        <tr class="font-thin text-center text-white">
+    <div class="text-xs p-2 flex justify-end">
+      Last updated: {{ lastUpdated }}
+    </div>
+    <table class="table rounded-tl-lg">
+      <thead class="bg-neutral text-neutral-content rounded-none p-2">
+        <tr class="border-0 text-md bg-neutral text-neutral-content">
           <th v-if="!gameweek" class="w-10"></th>
           <th class="w-12 font-medium">POS</th>
           <th class="text-left">
             <abbr class="font-medium" title="Teams in Competition"
-              >USERNAME</abbr
+              >Username</abbr
             >
           </th>
 
@@ -85,20 +89,18 @@ const { profile } = useCurrentUser();
           </th>
         </tr>
       </thead>
-      <tbody class="font-light">
+      <tbody>
         <tr
-          class="border-b border-b-zinc-800 transition-all text-white hover:bg-zinc-900"
           v-for="row in table"
           :key="row.username"
+          class="border-0 bg-base-100 hover:bg-base-200"
           :class="{
-            'bg-opacity-10 bg-indigo-500': row.username === profile?.username,
-            'bg-opacity-10 bg-green-500': row.position === 1,
+            'bg-primary bg-opacity-10': row.username === profile?.username,
+            'bg-green-600 bg-opacity-10': row.position === 1,
+            'bg-base-200 bg-opacity-10': row.position % 2 == 0,
           }"
         >
-          <td
-            v-if="!gameweek"
-            class="text-center py-2 px-1 text-white border-r border-zinc-800"
-          >
+          <td v-if="!gameweek" class="text-center py-2 px-1 border-r">
             <span
               v-if="
                 row.position < row.lastPosition ||
@@ -114,12 +116,10 @@ const { profile } = useCurrentUser();
             >
             <span v-else-if="row.lastPosition">➖</span>
           </td>
-          <td
-            class="text-center font-medium text-md p-2 border-r border-zinc-800"
-          >
+          <td class="text-center font-medium text-md p-2">
             {{ row.position }}
           </td>
-          <td class="text-left py-2 px-3 flex">
+          <td class="text-left py-2 px-3 flex border-l">
             <RouterLink
               class="league-link"
               v-if="!private"
@@ -154,7 +154,7 @@ const { profile } = useCurrentUser();
           <td class="text-center p-1">{{ row.totalAwayGoals || 0 }}</td>
           <td class="text-center p-1">{{ row.totalCorrectResult || 0 }}</td>
           <td class="text-center p-1">{{ row.correctScore || 0 }}</td>
-          <td class="text-center p-1 border-l border-zinc-800">
+          <td class="text-center p-1 border-l !border-neutral">
             {{ row.points || 0 }}
           </td>
         </tr>

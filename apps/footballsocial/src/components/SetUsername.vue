@@ -2,8 +2,8 @@
 import { shallowRef } from "vue";
 import { useCurrentUser } from "../composables/useCurrentUser";
 
-const { updateProfile, signOut } = useCurrentUser();
-const username = shallowRef();
+const { updateProfile, signOut, profile } = useCurrentUser();
+const username = shallowRef(profile.value.username);
 
 function setUsername() {
   updateProfile({ username: username.value });
@@ -18,25 +18,16 @@ async function signOutAndLeave() {
     <input
       type="text"
       v-model="username"
-      class="dark:bg-[#1d1d1d] w-full rounded p-4 border-2 border-[#343434] my-2"
+      class="input input-bordered w-full"
       name="pick_username"
       required="true"
       @beforeinput="(e) => /[^a-zA-Z0-9_]/.test(e.data) && e.preventDefault()"
       placeholder="Pick Username"
     />
     <div class="mx-2 my-4 flex justify-end">
-      <button
-        type="submit"
-        @click="setUsername"
-        class="bg-green-700 text-center py-2 px-4 rounded font-light text-xl"
-      >
+      <button type="submit" @click="setUsername" class="btn btn-success">
         Update username
       </button>
     </div>
-    <p class="my-16">
-      <button @click="signOutAndLeave" class="px-4 py-2 bg-red-800">
-        Sign Out
-      </button>
-    </p>
   </div>
 </template>

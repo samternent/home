@@ -1,6 +1,9 @@
+import 'ternent-ui/tailwind';
+import 'ternent-ui/styles';
+
 import { createApp } from "vue";
 import * as Sentry from "@sentry/vue";
-import "./style.css";
+
 import App from "./App.vue";
 import router from "./router";
 import registerSW from "./utils/registerSW";
@@ -24,6 +27,7 @@ Sentry.init({
   replaysSessionSampleRate: 0.1,
   replaysOnErrorSampleRate: 1.0,
 });
+
 
 app.use(router);
 registerSW();

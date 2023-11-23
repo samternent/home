@@ -21,7 +21,7 @@
             @click="$emit('close')"
             type="button"
             aria-label="Close modal"
-            class="mt-3 absolute right-0 -top-12 dark:bg-[#1a1a1a] sm:top-0 inline-flex w-full justify-center rounded-md px-4 py-2 text-base font-medium text-gray-200 hover:dark:bg-[#2d2d2d] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+            class="mt-3 absolute right-0 -top-12 dark:bg-[#1a1a1a] sm:top-0 inline-flex w-full justify-center rounded-md px-4 py-2 text-base font-medium hover:dark:bg-[#2d2d2d] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

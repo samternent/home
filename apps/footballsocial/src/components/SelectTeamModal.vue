@@ -40,7 +40,7 @@ const teams = computed(
         <div class="px-1 md:px-2 lg:px-4">
           <img :alt="team.name" :src="team.crest" class="w-full" />
         </div>
-        <span class="truncate text-base dark:text-white mt-3 w-full text-center"
+        <span class="truncate text-base mt-3 w-full text-center"
           >{{ team.shortName }}
         </span>
       </div>

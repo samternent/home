@@ -36,3 +36,24 @@ export const competitions = [
     name: "Eredivisie",
   },
 ];
+
+interface StringArray {
+  [key: string]: number;
+}
+
+const gameweekDefinitions : StringArray = {
+  PL: 38,
+  PD: 38,
+  ELC: 46,
+  BL1: 34,
+  SA: 38,
+  FL1: 38,
+  DED: 34,
+};
+
+export function getCompetitionGameweeks(competitionCode: string) {
+  return Array.from(
+    { length: gameweekDefinitions[competitionCode] },
+    (_, i) => i + 1
+  )
+}

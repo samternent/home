@@ -1,0 +1,51 @@
+<script setup>
+import { shallowRef, onBeforeUnmount } from "vue";
+import { Interval, DateTime } from "luxon";
+
+const props = defineProps({ time: { type: String, default: undefined } });
+const countdown = shallowRef(null);
+
+let timerInterval = setInterval(() => {
+  countdown.value = Interval.fromDateTimes(
+    DateTime.now(),
+    DateTime.fromISO(props.time)
+  )
+    .toDuration(["days", "hours", "minutes", "seconds"])
+    .toObject();
+}, 1 * 1000);
+
+onBeforeUnmount(() => {
+  clearInterval(timerInterval);
+});
+</script>
+<template>
+  <div
+    class="grid grid-flow-col gap-5 text-center auto-cols-max"
+    v-if="countdown?.seconds"
+  >
+    <div class="flex flex-col">
+      <span class="font-mono text-2xl">
+        <span>{{ countdown.days }}</span>
+      </span>
+      day
+    </div>
+    <div class="flex flex-col">
+      <span class="font-mono text-2xl">
+        <span>{{ countdown.hours }}</span>
+      </span>
+      hour
+    </div>
+    <div class="flex flex-col">
+      <span class="font-mono text-2xl">
+        <span>{{ Math.floor(countdown.minutes) }}</span>
+      </span>
+      min
+    </div>
+    <div class="flex flex-col">
+      <span class="font-mono text-2xl">
+        <span>{{ Math.floor(countdown.seconds) }}</span>
+      </span>
+      sec
+    </div>
+  </div>
+</template>

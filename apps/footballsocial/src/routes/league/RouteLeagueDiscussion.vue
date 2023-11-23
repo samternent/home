@@ -134,7 +134,7 @@ watch(
     <div class="mx-2">
       <RouterLink
         :to="`/leagues/${competition?.code}/discussions`"
-        class="text-gray-400 no-underline hover:no-underline flex grow-0 w-fit items-center py-3"
+        class="no-underline hover:no-underline flex grow-0 w-fit items-center py-3"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -155,14 +155,14 @@ watch(
     </div>
     <Fixture :fixture="fixture" v-if="fixture" size="sm" />
     <div v-else-if="fixtureLoading" class="w-full rounded overflow-hidden">
-      <div class="animate-pulse m-2 rounded flex-1 h-12" />
+      <div class="skeleton m-2 rounded flex-1 h-12" />
     </div>
     <div class="flex flex-col sm:flex-row px-6 py-2 items-start flex-none">
       <div class="flex flex-col mb-2">
         <h3 class="text-xl font-bold">
           {{ comment?.title }}
         </h3>
-        <p class="text-sm text-gray-400">
+        <p class="text-sm">
           <span class="font-medium mr-4 text-base">{{
             comment.profile?.username
           }}</span>
@@ -213,17 +213,16 @@ watch(
                   {{ answer?.username?.[0] }}
                 </div>
                 <div class="flex flex-col">
-                  <span
-                    class="font-medium text-base text-indigo-300 mr-2 dark:text-white"
-                    >{{ answer?.username }}</span
-                  >
+                  <span class="font-medium text-base text-indigo-300 mr-2">{{
+                    answer?.username
+                  }}</span>
                   <span class="text-[#a3a3a3] text-xs">{{
                     formatTimeStamp(answer.created_at)
                   }}</span>
                 </div>
               </div>
               <div
-                class="dark:text-white text-base leading-normal font-light"
+                class="text-base leading-normal font-light"
                 v-html="answer.body"
               />
             </div>
@@ -265,7 +264,7 @@ watch(
               <button
                 aria-label="Add reply"
                 @click="addAnswer"
-                class="transition-all bg-green-500 hover:bg-green-600 px-4 py-2 rounded no-underline hover:no-underline hover:dark:text-white"
+                class="transition-all bg-green-500 hover:bg-green-600 px-4 py-2 rounded no-underline hover:no-underline hover:"
               >
                 Post reply
               </button>

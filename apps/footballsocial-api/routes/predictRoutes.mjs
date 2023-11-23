@@ -27,6 +27,8 @@ export default function predictRoutes(router) {
     async function (req, res) {
       const { competitionCode, gameweek } = req.params;
 
+      let lastUpdated = 0;
+
       const cacheResults = await redisClient.get(req.url);
       if (cacheResults) {
         return res.send(JSON.parse(cacheResults));
@@ -52,6 +54,8 @@ export default function predictRoutes(router) {
         }
         returnData = data || [];
       }
+
+      lastUpdated = Date.now();
 
       if (!gameweek) {
         const currentGameweek = Math.max(
@@ -146,24 +150,32 @@ export default function predictRoutes(router) {
           });
 
         res.setHeader("Cache-Control", "max-age=1, stale-while-revalidate");
-        await redisClient.set(req.url, JSON.stringify(combinedResults), {
-          EX: 300,
-          NX: true,
-        });
+        await redisClient.set(
+          req.url,
+          JSON.stringify({ table: combinedResults, lastUpdated }),
+          {
+            EX: 300,
+            NX: true,
+          }
+        );
 
-        return res.status(200).json(combinedResults);
+        return res.status(200).json({ table: combinedResults, lastUpdated });
       } else {
         const results = returnData.sort(sortTable).map((row, i) => {
           return { position: i + 1, ...row };
         });
 
         res.setHeader("Cache-Control", "max-age=1, stale-while-revalidate");
-        await redisClient.set(req.url, JSON.stringify(results), {
-          EX: 300,
-          NX: true,
-        });
+        await redisClient.set(
+          req.url,
+          JSON.stringify({ table: results, lastUpdated }),
+          {
+            EX: 300,
+            NX: true,
+          }
+        );
 
-        return res.status(200).json(results);
+        return res.status(200).json({ table: results, lastUpdated });
       }
     }
   );

@@ -1,11 +1,11 @@
 <script setup>
 import { useRouter } from "vue-router";
-import GithubSvg from "../assets/github-mark-white.svg";
 import { useLocalStorage } from "@vueuse/core";
 import { useCurrentUser } from "../composables/useCurrentUser";
 import { usePredictionService } from "../composables/usePredictionService";
 import { watch, onMounted, shallowRef } from "vue";
-import PredictionsResults from "../components/PredictionsResults.vue";
+
+import { SBrandHeader, SButton } from "ternent-ui/components";
 
 const router = useRouter();
 const lastLeague = useLocalStorage("lastLeague", "PL");
@@ -40,53 +40,44 @@ watch(
     class="w-full max-w-3xl mx-auto h-full flex-1 flex lg:flex-row flex-col p-4"
   >
     <div class="py-6 px-2">
-      <h1
-        class="bg-gradient-to-r from-white to-70% to-indigo-500 via-40% bg-clip-text text-transparent text-7xl font-medium tracking-tighter"
-      >
-        Football Social<span class="text-pink-700">.</span>
-      </h1>
+      <SBrandHeader>Football Social</SBrandHeader>
       <h2 class="text-2xl sm:text-3xl font-light tracking-tighter mt-2 mb-12">
         The friendly football score prediction game.
       </h2>
       <p class="text-2xl font-thin tracking-tighter my-4">
         With
-        <span v-if="predictionsCount" class="text-3xl font-medium text-white"
+        <span v-if="predictionsCount" class="text-3xl font-medium"
           >{{ predictionsCount }}
         </span>
-        <span
-          v-else
-          class="bg-[#3e3e3e] inline-block animate-pulse h-6 w-10 rounded mx-1"
-        />
+        <span v-else class="skeleton inline-block h-6 w-10 mx-1" />
         predictions from
         <span v-if="players" class="text-3xl font-medium">
           {{ players }}
         </span>
-        <span
-          v-else
-          class="bg-[#3e3e3e] inline-block animate-pulse h-6 w-8 rounded mx-1"
-        />
+        <span v-else class="skeleton inline-block h-6 w-8 mx-1" />
         players, across
-        <span class="text-3xl font-medium text-white">7 </span> leagues.
+        <span class="text-3xl font-medium">7 </span> leagues.
       </p>
 
-      <div class="flex text-2xl justify-senter items-end my-12">
-        <RouterLink
+      <div class="flex text-2xl justify-senter items-center my-12">
+        <SButton
           aria-label="Login"
           v-if="!user"
           to="/auth/login"
-          class="flex items-center mx-2 px-4 py-2 text-md border-2 border-indigo-600 font-medium uppercase"
+          type="primary"
         >
           Login
-        </RouterLink>
-        <span class="font-thin text-2xl mx-6">or</span>
-        <RouterLink
+        </SButton>
+        <span class="font-thin text-2xl mx-2">or</span>
+        <SButton
           aria-label="Signup"
           v-if="!user"
           to="/auth/signup"
-          class="flex items-center mx-2 px-4 py-2 text-md font-bold uppercase text-gray-900 bg-white"
+          class="btn-outline"
+          type="primary"
         >
           Join
-        </RouterLink>
+        </SButton>
       </div>
       <p class="text-lg font-light tracking-tighter my-4 mt-16">
         If you're here to look at the code, it's open-source on Github.
@@ -95,7 +86,20 @@ watch(
           class="block my-2 hover:text-indigo-300 transition-all"
           target="_blank"
         >
-          <img :src="GithubSvg" class="h-6 w-6 inline mr-2" />
+          <svg
+            width="98"
+            height="96"
+            viewBox="0 0 100 100"
+            class="inline w-6 h-6 mr-2"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z"
+              fill="currentColor"
+            />
+          </svg>
           samternent/home/apps/footballsocial
         </a>
         <a
@@ -103,7 +107,20 @@ watch(
           class="block my-2 hover:text-indigo-300 transition-all"
           target="_blank"
         >
-          <img :src="GithubSvg" class="h-6 w-6 inline mr-2" />
+          <svg
+            width="98"
+            height="96"
+            viewBox="0 0 100 100"
+            class="inline w-6 h-6 mr-2"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z"
+              fill="currentColor"
+            />
+          </svg>
           samternent/home/apps/footballsocial-api
         </a>
       </p>
