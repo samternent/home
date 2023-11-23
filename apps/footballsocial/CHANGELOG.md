@@ -1,5 +1,13 @@
 # concords-footballsocial
 
+## 0.9.5
+
+### Patch Changes
+
+- [`81b3fe7`](https://github.com/samternent/home/commit/81b3fe7585de39cc85296b1c93866309b031efed) Thanks [@samternent](https://github.com/samternent)! - Fix border colour in inputrs
+
+- [`097d85d`](https://github.com/samternent/home/commit/097d85dc54d681b382d7c40ff2505136fc781613) Thanks [@samternent](https://github.com/samternent)! - prediction responsive tweak
+
 ## 0.9.4
 
 ### Patch Changes
