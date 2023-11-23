@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.9.3
+
+### Patch Changes
+
+- [`2bd8f38`](https://github.com/samternent/home/commit/2bd8f385e4135f37f2670978a73c5eda1a84e0ff) Thanks [@samternent](https://github.com/samternent)! - Adds missing luxon dep
+
 ## 0.9.2
 
 ### Patch Changes
