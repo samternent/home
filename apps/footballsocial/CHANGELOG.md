@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.9.1
+
+### Patch Changes
+
+- [`363dae2`](https://github.com/samternent/home/commit/363dae223312f43c712d05d2e3189329e45d972d) Thanks [@samternent](https://github.com/samternent)! - install deps on publish
+
 ## 0.9.0
 
 ### Minor Changes
