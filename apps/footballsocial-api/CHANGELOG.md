@@ -1,5 +1,11 @@
 # footballsocial-api
 
+## 0.1.7
+
+### Patch Changes
+
+- [#170](https://github.com/samternent/home/pull/170) [`5f6f18e`](https://github.com/samternent/home/commit/5f6f18eb588eb62eb860ca0e8d49c2f200e0f4c7) Thanks [@samternent](https://github.com/samternent)! - For updates with the ui overhaul
+
 ## 0.1.6
 
 ### Patch Changes
