@@ -776,6 +776,9 @@ importers:
       daisyui:
         specifier: ^4.4.2
         version: 4.4.2(postcss@8.4.31)
+      luxon:
+        specifier: ^3.4.3
+        version: 3.4.3
       postcss:
         specifier: ^8.4.31
         version: 8.4.31
