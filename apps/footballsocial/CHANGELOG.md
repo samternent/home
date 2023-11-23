@@ -1,5 +1,13 @@
 # concords-footballsocial
 
+## 0.9.4
+
+### Patch Changes
+
+- [`73c2a63`](https://github.com/samternent/home/commit/73c2a6329b3ba5e6d1ae2022bfe49c624a7df398) Thanks [@samternent](https://github.com/samternent)! - :facepalm:
+
+- [`724c6fa`](https://github.com/samternent/home/commit/724c6fa4113e84ecc1b05e007794d14e091d9889) Thanks [@samternent](https://github.com/samternent)! - responsive tweaks
+
 ## 0.9.3
 
 ### Patch Changes
