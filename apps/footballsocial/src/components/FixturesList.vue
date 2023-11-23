@@ -99,7 +99,7 @@ function setGameweek(_gameweek) {
           <div
             v-for="i in 10"
             :key="i"
-            class="animate-pulse m-2 my-4 rounded flex-1 h-20 w-full"
+            class="skeleton m-2 my-4 rounded flex-1 h-20 w-full"
           />
         </div>
       </Transition>

@@ -33,7 +33,6 @@ async function loadPredictions() {
   const {
     data: { table: _data, lastUpdated: _lastUpdated },
   } = await fetchPredictionTable(props.competitionCode, props.gameweek);
-
   lastUpdated.value = DateTime.fromMillis(_lastUpdated).toFormat("DD hh:mm:ss");
 
   table.value = props.limit ? _data.slice(0, props.limit) : _data;
@@ -49,7 +48,7 @@ const { profile } = useCurrentUser();
     <div
       v-for="i in 10"
       :key="i"
-      class="animate-pulse my-2 rounded flex-1 h-8 w-full"
+      class="skeleton my-2 rounded flex-1 h-8 w-full"
     />
   </div>
   <div
@@ -155,7 +154,7 @@ const { profile } = useCurrentUser();
           <td class="text-center p-1">{{ row.totalAwayGoals || 0 }}</td>
           <td class="text-center p-1">{{ row.totalCorrectResult || 0 }}</td>
           <td class="text-center p-1">{{ row.correctScore || 0 }}</td>
-          <td class="text-center p-1 border-l">
+          <td class="text-center p-1 border-l !border-neutral">
             {{ row.points || 0 }}
           </td>
         </tr>

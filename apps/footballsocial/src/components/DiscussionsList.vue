@@ -97,7 +97,7 @@ watch(loadMoreVisible, (_shouldLoadMore) => {
         <div
           v-for="i in 5"
           :key="i"
-          class="animate-pulse m-2 my-4 rounded flex-1 h-24 w-full"
+          class="skeleton m-2 my-4 rounded flex-1 h-24 w-full"
         />
       </div>
       <div

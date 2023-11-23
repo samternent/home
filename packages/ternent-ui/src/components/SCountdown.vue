@@ -27,13 +27,13 @@ onBeforeUnmount(() => {
       <span class="font-mono text-2xl">
         <span>{{ countdown.days }}</span>
       </span>
-      days
+      day
     </div>
     <div class="flex flex-col">
       <span class="font-mono text-2xl">
         <span>{{ countdown.hours }}</span>
       </span>
-      hours
+      hour
     </div>
     <div class="flex flex-col">
       <span class="font-mono text-2xl">

@@ -38,7 +38,7 @@ watch(
 </script>
 <template>
   <div
-    class="md:px-2 lg:px-4 flex-1 max-w-6xl mx-auto pt-0 w-full"
+    class="md:px-2 lg:px-4 flex-1 max-w-4xl mx-auto pt-0 w-full"
     v-if="competition"
   >
     <SHeader>

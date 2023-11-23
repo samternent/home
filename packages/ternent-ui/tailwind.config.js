@@ -9,20 +9,27 @@ module.exports = {
   safelist: [
     {
       pattern:
-        /(bg|text)-(accent|primary|secondary)|(bg|text|btn)-(info|green|base)-(100|200|300|400|500|600|700|800|900)/,
+        /(bg|text|border|btn)-(accent|primary|secondary|error|info|success)|(bg|text|btn)-(info|green|base)-(100|200|300|400|500|600|700|800|900)|skeleton|input/,
       variants: ["hover"],
     },
   ],
   plugins: [require("daisyui")],
   daisyui: {
     themes: [
-      "light",
-      "dark",
       "cupcake",
-      "bumblebee",
-      "synthwave",
-      "cyberpunk",
       "dim",
+      {
+        light: {
+          ...require("daisyui/src/theming/themes")["cupcake"],
+          primary: "#4F46E5",
+          accent: "#BE195D",
+        },
+        dark: {
+          ...require("daisyui/src/theming/themes")["dim"],
+          primary: "#4F46E5",
+          accent: "#BE195D",
+        },
+      },
     ],
   },
 };

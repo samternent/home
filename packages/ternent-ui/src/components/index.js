@@ -10,3 +10,6 @@ export { default as SHeader } from "./SHeader.vue";
 export { default as SBanner } from "./SBanner.vue";
 export { default as SCountdown } from "./SCountdown.vue";
 export { default as SAvatar } from "./SAvatar.vue";
+export { default as SFooter } from "./SFooter.vue";
+export { default as SAlert } from "./SAlert.vue";
+export { default as SThemeToggle } from "./SThemeToggle.vue";

@@ -44,7 +44,7 @@ async function googleLogin() {
         <input
           v-model="email"
           type="email"
-          class="dark:bg-[#1d1d1d] autofill:!bg-yellow-200 w-full rounded p-4 border-2 border-[#343434] my-2"
+          class="input input-bordered my-2"
           name="email"
           placeholder="Email"
         />
@@ -52,29 +52,23 @@ async function googleLogin() {
         <input
           v-model="password"
           type="password"
-          class="dark:bg-[#1d1d1d] w-full rounded p-4 border-2 border-[#343434] my-2"
+          class="input input-bordered my-2"
           name="password"
           placeholder="Password"
         />
 
         <div class="mx-2 my-4 flex justify-end">
-          <button
-            type="submit"
-            @click="login"
-            class="flex items-center px-4 py-2 text-md font-bold uppercase bg-indigo-600"
-          >
+          <button type="submit" @click="login" class="btn btn-primary">
             Login with email
           </button>
-        </div>
-        <div class="text-zinc-500 text-right my-2">or</div>
-        <div class="text-right my-6">
+          <div class="divider divider-horizontal">OR</div>
           <SignInWithGoogle @click="googleLogin"
             >Login with Google</SignInWithGoogle
           >
         </div>
       </div>
 
-      <div class="mt-6">
+      <div class="my-6">
         Don't have an account yet?
         <RouterLink to="/auth/signup" class="league-link"> Sign up </RouterLink
         >.

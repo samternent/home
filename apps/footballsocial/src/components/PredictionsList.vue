@@ -8,7 +8,7 @@ import { useCurrentUser } from "../composables/useCurrentUser";
 import { PredictionCard } from "../module/prediction";
 import { getCompetitionGameweeks } from "../utils/competitions";
 
-import { SCountdown, SButton } from "ternent-ui/components";
+import { SCountdown, SButton, SAlert } from "ternent-ui/components";
 
 const props = defineProps({
   competitionCode: {
@@ -202,30 +202,33 @@ function formatKickoff(utcDate) {
     DateTime.DATETIME_MED
   )}`;
 }
+
+const alertMessage = computed(() =>
+  gameweekPoints.value
+    ? `${gameweekPoints.value} points scored.`
+    : `${username.value ? `${username.value}s` : "Your"} predictions are in!`
+);
 </script>
 <template>
   <div class="w-full flex flex-col mx-auto max-w-6xl" v-if="predictionsLoaded">
-    <div class="font-light flex justify-between items-center">
-      <div class="my-2 flex items-center" v-if="gameweekPoints > -1">
-        <select
-          v-model="overrideGameweek"
-          class="select select-bordered select-sm mr-4"
-        >
-          <option v-for="gw in gameweeks" :key="`gameweek${gw}`" :value="gw">
-            Gameweek {{ gw }}
-          </option>
-        </select>
-        <span class="text-xl py-1" v-if="gameweekPoints">
-          {{ gameweekPoints }} points scored.</span
-        >
-        <span class="text-xl py-1" v-else-if="hasPredictions"
-          >{{ username ? `${username}s` : "Your" }} predictions are in!</span
-        >
-      </div>
-      <div class="flex flex-col">
-        <SCountdown :time="predictionsList[0]?.utcDate" />
-      </div>
+    <div
+      class="my-1 flex items-center justify-between px-2 md:px-0 font-light"
+      v-if="gameweekPoints > -1"
+    >
+      <select
+        v-model="overrideGameweek"
+        class="select select-bordered select-sm mr-4"
+      >
+        <option v-for="gw in gameweeks" :key="`gameweek${gw}`" :value="gw">
+          Gameweek {{ gw }}
+        </option>
+      </select>
+      <SCountdown :time="predictionsList[0]?.utcDate" />
     </div>
+
+    <SAlert v-if="hasPredictions || gameweekPoints" :message="alertMessage">
+      <template #icon>🎉</template>
+    </SAlert>
 
     <div class="flex flex-col w-full">
       <div
@@ -283,7 +286,7 @@ function formatKickoff(utcDate) {
     <div
       v-for="i in 10"
       :key="i"
-      class="animate-pulse m-2 my-4 rounded flex-1 h-20 w-full"
+      class="skeleton m-2 my-4 rounded flex-1 h-20 w-full"
     />
   </div>
 </template>

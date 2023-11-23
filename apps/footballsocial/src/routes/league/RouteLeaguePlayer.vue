@@ -48,10 +48,10 @@ const age = computed(() =>
         </div>
         <div v-else>
           <h1 class="text-2xl font-thin mb-2">
-            <div class="animate-pulse m-2 rounded flex-1 h-8 w-32" />
+            <div class="skeleton m-2 rounded flex-1 h-8 w-32" />
           </h1>
           <h2 class="text-xl font-thin">
-            <div class="animate-pulse m-2 rounded flex-1 h-6 w-40" />
+            <div class="skeleton m-2 rounded flex-1 h-6 w-40" />
           </h2>
         </div>
       </div>

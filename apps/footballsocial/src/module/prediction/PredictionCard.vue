@@ -147,6 +147,7 @@ const resultPrediction = computed(() => {
         >
           AS +1
         </div>
+        <div v-if="scorePrediction" class="ml-2">⭐</div>
       </div>
     </div>
 

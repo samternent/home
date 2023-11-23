@@ -11,8 +11,25 @@
     "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace",
     "Source Code Pro", "Fira Mono", "Droid Sans Mono", "Courier New", monospace;
 }
-/* 
-html,
-body {
-  font-family: var(--font-system-sans);
-} */
+
+.league-link {
+  background: linear-gradient(
+      to right,
+      rgba(219, 39, 119, 1),
+      rgba(219, 39, 119, 1)
+    ),
+    linear-gradient(
+      to right,
+      rgba(219, 39, 119, 1),
+      rgba(219, 39, 119, 1),
+      rgba(253, 224, 71, 1)
+    );
+  background-size: 100% 2px, 0 2px;
+  background-position: 100% 100%, 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 400ms;
+}
+
+.league-link:hover {
+  background-size: 0 2px, 100% 2px;
+}

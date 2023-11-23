@@ -10,7 +10,13 @@ import UserMenu from "./components/UserMenu.vue";
 import Api from "./Api.vue";
 
 // DS components
-import { SSpinner, SNavBar, SBanner } from "ternent-ui/components";
+import {
+  SSpinner,
+  SNavBar,
+  SBanner,
+  SFooter,
+  SThemeToggle,
+} from "ternent-ui/components";
 
 // import Notifications from "./components/Notifications.vue";
 
@@ -18,7 +24,6 @@ const { appVersion, serverVersion } = provideAppVersion();
 const { user, profile, ready } = provideCurrentUser();
 
 const hasDismissedPopup = useLocalStorage("app/hasDismissedPopup", false);
-const theme = useLocalStorage("app/theme", "bumblebee");
 
 const modalRef = shallowRef(null);
 
@@ -41,18 +46,32 @@ const hasNewVersion = computed(() => {
   return semverGt(serverVersion.value, appVersion.value);
 });
 
-const themes = shallowRef([
-  "light",
-  "dark",
-  "cupcake",
-  "bumblebee",
-  "synthwave",
-  "cyberpunk",
-  "dim",
-]);
-function setTheme(_theme) {
-  theme.value = _theme;
-}
+const links = [
+  {
+    title: "Privacy policy",
+    to: "/legal/privacy",
+  },
+  {
+    title: "Terms of use",
+    to: "/legal/terms",
+  },
+  {
+    title: "Feedback",
+    to: "https://sam.staging.teamwork.com/p/forms/PBLRygLcpZ6NjG0Zlaoe",
+    external: true,
+  },
+  {
+    title: `v${appVersion.value}`,
+    to: `https://github.com/samternent/home/releases/tag/footballsocial-${appVersion.value}`,
+    external: true,
+  },
+];
+const theme = useLocalStorage(
+  "app/theme",
+  window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light"
+);
 </script>
 
 <template>
@@ -66,23 +85,7 @@ function setTheme(_theme) {
       />
       <SNavBar title="FS">
         <template #right>
-          <div class="flex" v-if="profile">
-            <!-- <details class="dropdown">
-              <summary class="m-1 btn">Theme</summary>
-              <ul
-                class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52"
-              >
-                <li
-                  v-for="theme in themes"
-                  :key="theme"
-                  @click="setTheme(theme)"
-                >
-                  {{ theme }}
-                </li>
-              </ul>
-            </details> -->
-            <UserMenu />
-          </div>
+          <UserMenu v-if="profile" />
         </template>
       </SNavBar>
     </div>
@@ -100,57 +103,28 @@ function setTheme(_theme) {
     <div v-else class="flex-1 flex justify-center items-center h-screen">
       <SSpinner />
     </div>
-    <footer
-      class="flex flex-col p-4 lg:flex xl:items-center border-t-8 border-primary bg-base-300"
-    >
-      <p class="text-sm font-thin py-3">
-        <a href="https://www.footballsocial.app/" class="font-medium mr-1"
-          >FootballSocial</a
-        >is independent, hand-crafted and open-source, by
-        <a href="https://ternent.dev" class="font-light"> ternent.dev</a>.
-      </p>
-      <p class="text-sm font-thin py-1">
-        Football data provided by the
-        <a
-          href="https://www.football-data.org/"
-          target="_blank"
-          class="league-link font-medium"
-          >Football-Data.org</a
-        >
-        API.
-      </p>
-      <ul class="flex flex-wrap xl:flex-row flex-col mt-3 text-sm py-2 xl:pt-6">
-        <li>
-          <RouterLink
-            to="/legal/privacy"
-            class="transition-colors mr-2 hover:underline h-6 xl:p-2"
-            >Privacy Policy</RouterLink
-          >
-        </li>
-        <li>
-          <RouterLink
-            to="/legal/terms"
-            class="transition-colors mr-2 hover:underline h-6 xl:p-2"
-            >Terms of Use</RouterLink
-          >
-        </li>
-        <li>
+    <SFooter :links="links">
+      <template #middle>
+        <p class="text-sm font-thin">
+          Football data provided by the
           <a
-            href="https://sam.staging.teamwork.com/p/forms/PBLRygLcpZ6NjG0Zlaoe"
+            href="https://www.football-data.org/"
             target="_blank"
-            class="transition-colors mr-2 hover:underline h-6 xl:p-2"
-            >Feedback</a
+            class="league-link font-medium"
+            >Football-Data.org</a
           >
-        </li>
-        <li>
-          <a
-            :href="`https://github.com/samternent/home/releases/tag/footballsocial-${appVersion}`"
-            target="_blank"
-            class="transition-colors mr-2 hover:underline h-6 xl:p-2"
-            >v{{ appVersion }}</a
-          >
-        </li>
-      </ul>
-    </footer>
+          API.
+        </p>
+      </template>
+      <template #bottom>
+        <p class="text-sm font-thin mb-4">
+          <a href="https://www.footballsocial.app/" class="font-medium mr-1"
+            >FootballSocial</a
+          >is independent, hand-crafted and open-source, by
+          <a href="https://ternent.dev" class="font-light"> ternent.dev</a>.
+        </p>
+        <SThemeToggle v-model="theme" />
+      </template>
+    </SFooter>
   </div>
 </template>

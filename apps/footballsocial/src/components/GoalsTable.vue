@@ -75,11 +75,7 @@ const scorerData = computed(() => scorer.value?.scorers);
       </tbody>
     </table>
     <div v-if="!hasScorers">
-      <div
-        v-for="i in 10"
-        :key="i"
-        class="animate-pulse m-2 rounded flex-1 h-8"
-      />
+      <div v-for="i in 10" :key="i" class="skeleton m-2 rounded flex-1 h-8" />
     </div>
   </div>
 </template>

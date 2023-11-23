@@ -155,7 +155,7 @@ watch(
     </div>
     <Fixture :fixture="fixture" v-if="fixture" size="sm" />
     <div v-else-if="fixtureLoading" class="w-full rounded overflow-hidden">
-      <div class="animate-pulse m-2 rounded flex-1 h-12" />
+      <div class="skeleton m-2 rounded flex-1 h-12" />
     </div>
     <div class="flex flex-col sm:flex-row px-6 py-2 items-start flex-none">
       <div class="flex flex-col mb-2">

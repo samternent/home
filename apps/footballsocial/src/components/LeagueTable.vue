@@ -141,7 +141,7 @@ const tableData = computed(() => {
         <div
           v-for="i in 20"
           :key="i"
-          class="animate-pulse my-2 rounded flex-1 h-12 w-full"
+          class="skeleton my-2 rounded flex-1 h-12 w-full"
         />
       </div>
     </TransitionGroup>
