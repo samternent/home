@@ -22,12 +22,12 @@ const backPath = window.localStorage.getItem("lastLeagueTablePath");
 </script>
 <template>
   <div class="flex flex-col w-full">
-    <div v-if="username" class="text-zinc-300 mb-6">
+    <div v-if="username" class="my-1">
       <RouterLink
         :to="`/leagues/${competitionCode}/table${
           backPath ? `/${backPath}` : ''
         }`"
-        class="pb-2 hover:text-zinc-100 transition-all"
+        class="btn btn-ghost btn-sm"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

@@ -186,7 +186,7 @@ const resultPrediction = computed(() => {
           />
           <span
             v-if="hasStarted"
-            class="text-xl rounded font-medium mr-2 ml-4"
+            class="text-xl rounded font-medium mr-2 md:ml-4 w-10"
             :class="{
               '': fixture.score?.fullTime?.home != homeScore,
               '': fixture.score?.fullTime?.home == homeScore,
@@ -228,7 +228,7 @@ const resultPrediction = computed(() => {
           />
           <span
             v-if="hasStarted"
-            class="text-xl rounded font-medium mr-2 ml-4"
+            class="text-xl rounded font-medium mr-2 md:ml-4 w-10"
             :class="{
               '': fixture.score?.fullTime?.away != awayScore,
               '': fixture.score?.fullTime?.away == awayScore,
