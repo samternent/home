@@ -34,11 +34,14 @@ jobs:
         with:
           version: 8
 
-      - name: Build libs
-        run: pnpm --filter ternent-ui build
-
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build libs
+        run: pnpm --filter ternent-ui build
 
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
