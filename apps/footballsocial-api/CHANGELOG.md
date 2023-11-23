@@ -1,5 +1,11 @@
 # footballsocial-api
 
+## 0.1.6
+
+### Patch Changes
+
+- [`0c93c3d`](https://github.com/samternent/home/commit/0c93c3d48b364f8ee1cf1f3df397514fa1dea933) Thanks [@samternent](https://github.com/samternent)! - Fix new users not appearing on table
+
 ## 0.1.5
 
 ### Patch Changes
