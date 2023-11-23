@@ -9,7 +9,7 @@ module.exports = {
   safelist: [
     {
       pattern:
-        /(bg|text|border|btn)-(accent|primary|secondary|error|info|success)|(bg|text|btn)-(info|green|base)-(100|200|300|400|500|600|700|800|900)|skeleton|input/,
+        /(bg|text|border|btn)-(accent|primary|secondary|error|info|success)|(bg|text|btn)-(info|green|base|red|orange)-(100|200|300|400|500|600|700|800|900)|skeleton|input/,
       variants: ["hover"],
     },
   ],

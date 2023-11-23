@@ -178,7 +178,7 @@ const resultPrediction = computed(() => {
             type="number"
             min="0"
             max="9"
-            class="bg-base-100 text-center text-xl h-12 rounded pl-2 !pr-0 font-medium input input-bordered"
+            class="bg-base-100 text-center text-xl h-12 rounded px-2 font-medium input input-bordered"
             :class="{
               'blur-md': hidePredictions && !hasStarted,
               '': disabled,
@@ -220,7 +220,7 @@ const resultPrediction = computed(() => {
             type="number"
             min="0"
             max="9"
-            class="bg-base-100 text-center text-xl h-12 rounded pl-2 font-medium !pr-0 input input-bordered"
+            class="bg-base-100 text-center text-xl h-12 rounded px-2 font-medium input input-bordered"
             :class="{
               'blur-md': hidePredictions && !hasStarted,
               '': disabled,
