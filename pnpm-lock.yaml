@@ -4,6 +4,14 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  '@supabase/gotrue-js@2.55.0':
+    hash: trhn4sngjtx4tdyo33ketwi2dm
+    path: patches/@supabase__gotrue-js@2.55.0.patch
+  '@supabase/supabase-js@2.38.0':
+    hash: xjxlmljw756zqjkt6eruvrbpbe
+    path: patches/@supabase__supabase-js@2.38.0.patch
+
 importers:
 
   .:
@@ -210,7 +218,7 @@ importers:
     dependencies:
       '@supabase/supabase-js':
         specifier: ^2.38.0
-        version: 2.38.0
+        version: 2.38.0(patch_hash=xjxlmljw756zqjkt6eruvrbpbe)
       '@tailwindcss/typography':
         specifier: ^0.5.10
         version: 0.5.10(tailwindcss@3.3.3)
@@ -358,7 +366,7 @@ importers:
     dependencies:
       '@supabase/supabase-js':
         specifier: ^2.38.0
-        version: 2.38.0
+        version: 2.38.0(patch_hash=xjxlmljw756zqjkt6eruvrbpbe)
       axios:
         specifier: ^1.5.1
         version: 1.5.1
@@ -4281,11 +4289,12 @@ packages:
       - encoding
     dev: false
 
-  /@supabase/gotrue-js@2.55.0:
+  /@supabase/gotrue-js@2.55.0(patch_hash=trhn4sngjtx4tdyo33ketwi2dm):
     resolution: {integrity: sha512-wZAP66Lo68iROKo33m8seY30rCeGiR34leMEZ80j9fPm+/ar6h3y43Hb7f9F2STVMwT3Sv+aM+w0yCon5bih4g==}
     dependencies:
       '@supabase/node-fetch': 2.6.14
     dev: false
+    patched: true
 
   /@supabase/node-fetch@2.6.14:
     resolution: {integrity: sha512-w/Tsd22e/5fAeoxqQ4P2MX6EyF+iM6rc9kmlMVFkHuG0rAltt2TLhFbDJfemnHbtvnazWaRfy5KnFU/SYT37dQ==}
@@ -4357,11 +4366,11 @@ packages:
       - supports-color
     dev: false
 
-  /@supabase/supabase-js@2.38.0:
+  /@supabase/supabase-js@2.38.0(patch_hash=xjxlmljw756zqjkt6eruvrbpbe):
     resolution: {integrity: sha512-FSkIcz+/+TTBqNqhR8AdtblxEqCF72//CCkmZFIRCa3Xh/aiI0F4cBdL7AB3aIQn2DhE4aGxZ4mGiGR593096Q==}
     dependencies:
       '@supabase/functions-js': 2.1.5
-      '@supabase/gotrue-js': 2.55.0
+      '@supabase/gotrue-js': 2.55.0(patch_hash=trhn4sngjtx4tdyo33ketwi2dm)
       '@supabase/node-fetch': 2.6.14
       '@supabase/postgrest-js': 1.8.4
       '@supabase/realtime-js': 2.8.0
@@ -4369,6 +4378,7 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: false
+    patched: true
 
   /@surma/rollup-plugin-off-main-thread@2.2.3:
     resolution: {integrity: sha512-lR8q/9W7hZpMWweNiAKU7NQerBnzQQLvi8qnTDU/fxItPhtZVMbPV3lbCwjhIlNBe9Bbr5V+KHshvWmVSG9cxQ==}

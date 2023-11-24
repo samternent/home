@@ -5,6 +5,7 @@ const supabaseOptions: SupabaseClientOptions = {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true,
+    broadcast: false,
   },
 };
 

@@ -1,17 +1,20 @@
 <script setup>
-import { shallowRef } from "vue";
+import { shallowRef, watch } from "vue";
 import { useCurrentUser } from "../composables/useCurrentUser";
 
-const { updateProfile, signOut, profile } = useCurrentUser();
-const username = shallowRef(profile.value.username);
+const { updateProfile, profile } = useCurrentUser();
+const username = shallowRef();
 
 function setUsername() {
   updateProfile({ username: username.value });
 }
-async function signOutAndLeave() {
-  await signOut();
-  router.push("/");
-}
+watch(
+  profile,
+  (_profile) => {
+    username.value = profile.value?.username;
+  },
+  { immediate: true }
+);
 </script>
 <template>
   <div class="w-full mx-auto max-w-2xl py-8">

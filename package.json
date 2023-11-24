@@ -27,5 +27,11 @@
     "build:concords-api": "docker build -f ./apps/concords-api/Dockerfile . -t samternent/concords-api",
     "build:ternent-api": "docker build -f ./apps/ternent-api/Dockerfile . -t samternent/ternent-api",
     "dev:docker": "cd .ops && docker-compose up -d"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "@supabase/gotrue-js@2.55.0": "patches/@supabase__gotrue-js@2.55.0.patch",
+      "@supabase/supabase-js@2.38.0": "patches/@supabase__supabase-js@2.38.0.patch"
+    }
   }
 }
