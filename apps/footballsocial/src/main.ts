@@ -17,4 +17,12 @@ if (localStorage.getItem('storageFlush/0') !== "flushed") {
   localStorage.setItem("storageFlush/0", 'flushed');
 }
 
+window.addEventListener('pagehide', () => {
+  new BroadcastChannel('supabase.auth.token').close();
+});
+
+window.addEventListener('pageshow', () => {
+  new BroadcastChannel('supabase.auth.token');
+});
+
 app.mount("#app");
