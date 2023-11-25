@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.10.0
+
+### Minor Changes
+
+- [`7aff3a2`](https://github.com/samternent/home/commit/7aff3a2f1bada4cea3ecd705d0d41fbd39b97efa) Thanks [@samternent](https://github.com/samternent)! - Adds supabase-js & gotrue-js patch to disable BroadcastChannel
+
 ## 0.9.8
 
 ### Patch Changes
