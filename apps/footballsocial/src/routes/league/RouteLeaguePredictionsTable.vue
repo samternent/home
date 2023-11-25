@@ -57,7 +57,7 @@ const tabs = computed(() => [
 <template>
   <div class="w-full">
     <STabs :items="tabs" :path="$route.path" :exact="true" />
-    <div v-if="predictionsReady" class="my-4">
+    <div v-if="predictionsReady" class="my-4 min-h-screen">
       <PredictionsResults
         v-if="competition && showGameweekResults"
         :competitionCode="competition?.code"
@@ -68,21 +68,24 @@ const tabs = computed(() => [
         :competitionCode="competition?.code"
       />
     </div>
-    <div v-else class="w-full py-4">
+    <div v-else class="w-full min-h-screen py-4">
       <SSkeleton v-for="i in 10" :key="i" class="h-8" />
     </div>
 
-    <div class="p-4 mt-6">
-      <h3 class="text-xl font-light">Rules</h3>
-      <ul class="text-sm font-light my-2">
-        <li>* 1 point for a correct home score</li>
-        <li>* 1 point for a correct away score</li>
-        <li>* 2 points for a correct result (W/L/D)</li>
-        <li>* 3 points for a correct score</li>
-      </ul>
-      <p class="text-lg font-light my-8">
-        Rules and point system are subject to change.
-      </p>
+    <div class="collapse bg-base-200">
+      <input type="checkbox" />
+      <div class="collapse-title text-lg font-medium">Rules</div>
+      <div class="collapse-content">
+        <ul class="text-sm font-light my-2">
+          <li>* 1 point for a correct home score</li>
+          <li>* 1 point for a correct away score</li>
+          <li>* 2 points for a correct result (W/L/D)</li>
+          <li>* 3 points for a correct score</li>
+        </ul>
+        <p class="text-lg font-light my-8">
+          Rules and point system are subject to change.
+        </p>
+      </div>
     </div>
   </div>
 </template>

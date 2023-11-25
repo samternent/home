@@ -44,7 +44,7 @@ watch(() => props.competitionCode, loadPredictions, { immediate: true });
 const { profile } = useCurrentUser();
 </script>
 <template>
-  <div v-if="!predictionsLoaded" class="w-full">
+  <div v-if="!predictionsLoaded" class="w-full min-h-screen">
     <div
       v-for="i in 10"
       :key="i"
@@ -159,6 +159,26 @@ const { profile } = useCurrentUser();
               {{ row.points || 0 }}
             </td>
           </tr>
+          <template v-if="table.length < 20">
+            <tr
+              v-for="(_, i) in [...Array(20 - table.length)]"
+              :key="`empty_${i}`"
+              class="border-0 bg-base-100 hover:bg-base-200 h-10"
+              :class="{
+                'bg-base-200 bg-opacity-10': i % 2 !== 0,
+              }"
+            >
+              <th scope="row" class="text-center p-1">
+                <span class="opacity-50">➖</span>
+              </th>
+              <td class="text-center p-1"></td>
+              <td class="text-center p-1"></td>
+              <td class="text-center p-1"></td>
+              <td class="text-center p-1"></td>
+              <td class="text-center p-1"></td>
+              <td class="text-center p-1"></td>
+            </tr>
+          </template>
         </tbody>
       </table>
     </div>

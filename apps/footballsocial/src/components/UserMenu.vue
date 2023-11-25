@@ -6,10 +6,10 @@ import { useCurrentUser } from "../composables/useCurrentUser";
 
 const showMenu = shallowRef(false);
 const dropdownRef = shallowRef(null);
-const { profile, signOut } = useCurrentUser();
+const { signOut } = useCurrentUser();
 const router = useRouter();
 
-onClickOutside(dropdownRef, (event) => {
+onClickOutside(dropdownRef, () => {
   showMenu.value = false;
 });
 
@@ -47,10 +47,6 @@ async function signOutAndLeave() {
       class="absolute bg-base-200 right-0 top-12 flex flex-col overflow-hidden text-left rounded shadow-lg w-64"
     >
       <ul class="item">
-        <!-- <li v-if="profile.username === 'sam'" class="flex">
-          <RouterLink to="/admin" class="p-2 hover:bg-zinc-800 w-full hover:text-indigo-500">Admin</RouterLink>
-        </li> -->
-
         <li class="flex">
           <RouterLink
             @click="showMenu = false"

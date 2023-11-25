@@ -5,7 +5,7 @@ import { useRouter } from "vue-router";
 import semverGt from "semver/functions/gt";
 import { provideCurrentUser } from "./composables/useCurrentUser";
 import { provideAppVersion } from "./composables/useAppVersion";
-import SetUsername from "./components/SetUsername.vue";
+
 import UserMenu from "./components/UserMenu.vue";
 import Api from "./Api.vue";
 
@@ -21,7 +21,7 @@ import {
 // import Notifications from "./components/Notifications.vue";
 
 const { appVersion, serverVersion } = provideAppVersion();
-const { user, profile, ready } = provideCurrentUser();
+const { user, ready } = provideCurrentUser();
 
 const hasDismissedPopup = useLocalStorage("app/hasDismissedPopup", false);
 
@@ -85,23 +85,16 @@ const theme = useLocalStorage(
       />
       <SNavBar title="FS">
         <template #right>
-          <UserMenu v-if="profile" />
+          <UserMenu />
         </template>
       </SNavBar>
     </div>
     <div
-      class="flex-1 flex flex-col pt-2 bg-base-100 max-w-7xl w-full mx-auto"
-      v-if="ready"
+      class="flex-1 flex flex-col pt-2 bg-base-100 max-w-7xl w-full mx-auto min-h-screen"
     >
-      <template v-if="user && !profile?.username">
-        <SetUsername />
-      </template>
-      <Api v-else>
+      <Api>
         <RouterView />
       </Api>
-    </div>
-    <div v-else class="flex-1 flex justify-center items-center h-screen">
-      <SSpinner />
     </div>
     <SFooter :links="links">
       <template #middle>

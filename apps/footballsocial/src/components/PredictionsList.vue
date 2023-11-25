@@ -7,6 +7,7 @@ import { usePredictionService } from "../composables/usePredictionService";
 import { useCurrentUser } from "../composables/useCurrentUser";
 import { PredictionCard } from "../module/prediction";
 import { getCompetitionGameweeks } from "../utils/competitions";
+import SetUsername from "../components/SetUsername.vue";
 
 import { SCountdown, SButton, SAlert } from "ternent-ui/components";
 
@@ -85,7 +86,7 @@ async function loadPredictions() {
   predictionsLoaded.value = true;
 }
 
-const { profile } = useCurrentUser();
+const { user, profile } = useCurrentUser();
 
 async function savePredictions() {
   await addPrediction(
@@ -272,9 +273,12 @@ const alertMessage = computed(() =>
       </div>
     </div>
     <div class="text-center mt-8 flex flex-col items-end">
+      <template v-if="user && !profile?.username">
+        <SetUsername />
+      </template>
       <SButton
         :disabled="!isDirty"
-        v-if="profile && (!username || profile.username === username)"
+        v-else-if="profile && (!username || profile.username === username)"
         @click="savePredictions"
         type="success"
       >
