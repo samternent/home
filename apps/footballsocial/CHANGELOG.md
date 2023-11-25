@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.10.1
+
+### Patch Changes
+
+- [`aae718f`](https://github.com/samternent/home/commit/aae718f82167e8b8953ba53d8595705a81aadaba) Thanks [@samternent](https://github.com/samternent)! - Lighthouse perf improvements
+
 ## 0.10.0
 
 ### Minor Changes
