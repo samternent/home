@@ -57,7 +57,7 @@ async function googleLogin() {
           placeholder="Password"
         />
 
-        <div class="mx-2 my-4 flex justify-end">
+        <div class="mx-2 my-4 flex md:!flex-row flex-col justify-end">
           <button type="submit" @click="login" class="btn btn-primary">
             Login with email
           </button>

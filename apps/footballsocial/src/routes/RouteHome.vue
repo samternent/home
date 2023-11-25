@@ -70,7 +70,7 @@ watch(
         </SButton>
         <span class="font-thin text-2xl mx-2">or</span>
         <SButton
-          aria-label="Signup"
+          aria-label="Join"
           v-if="!user"
           to="/auth/signup"
           class="btn-outline"
