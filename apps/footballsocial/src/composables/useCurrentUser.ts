@@ -50,14 +50,10 @@ export function provideCurrentUser() {
 
   async function loginWithGoogle() {
     return authLoginWithGoogle();
-    await getSession();
-    return true;
   }
 
   async function signupWithGoogle(username: string) {
     return authSignupWithGoogle(username);
-    await getSession();
-    return true;
   }
 
   async function updateProfile(_profile: Object) {

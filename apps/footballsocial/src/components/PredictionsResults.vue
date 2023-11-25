@@ -120,7 +120,7 @@ const { profile } = useCurrentUser();
               >
               <span v-else-if="row.lastPosition">➖</span>
             </td>
-            <td class="text-left py-2 px-3 flex">
+            <td class="text-left py-2 px-3 flex items-center">
               <RouterLink
                 class="league-link"
                 v-if="!private"
@@ -138,7 +138,7 @@ const { profile } = useCurrentUser();
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
                   fill="currentColor"
-                  class="w-6 h-6 ml-2"
+                  class="w-5 h-5 md:w-6 md:h-6 ml-2"
                   :class="{
                     'blur-md': private,
                   }"

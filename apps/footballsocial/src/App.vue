@@ -75,7 +75,10 @@ const theme = useLocalStorage(
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col" :data-theme="theme">
+  <div
+    class="min-h-screen flex flex-col"
+    :data-theme="`${profile?.club ? `${profile.club}-` : ''}${theme}`"
+  >
     <div class="sticky top-0 z-10 bg-primary">
       <SBanner
         v-if="hasNewVersion"

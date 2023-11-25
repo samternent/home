@@ -74,7 +74,7 @@ const tabs = computed(() => [
 
     <div class="collapse bg-base-200">
       <input type="checkbox" aria-label="Rules" />
-      <div class="collapse-title text-lg font-medium">Rules</div>
+      <div class="collapse-title text-base font-light">Rules</div>
       <div class="collapse-content">
         <ul class="text-sm font-light my-2">
           <li>* 1 point for a correct home score</li>
