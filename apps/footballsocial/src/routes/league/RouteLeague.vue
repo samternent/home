@@ -51,11 +51,6 @@ watch(
           <span class="font-light tracking-tighter header ml-1">
             {{ competition?.area?.name }}
           </span>
-          <img
-            v-if="competition"
-            class="h-3 opacity-90 rounded ml-2 shadow-lg"
-            :src="competition?.area?.flag"
-          />
         </div>
         <p
           class="text-xl md:text-2xl font-light leading-tighter tracking-tighter text-zinc-200"

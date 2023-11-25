@@ -160,6 +160,8 @@ const resultPrediction = computed(() => {
         >
           <img
             v-if="!hideCrests"
+            width="60"
+            height="60"
             :alt="fixture.homeTeam.name"
             :src="fixture.homeTeam.crest || '/blank.png'"
             class="w-10 h-10 sm:w-14 sm:h-14 mr-2 lg:mr-4"
@@ -204,7 +206,9 @@ const resultPrediction = computed(() => {
             v-if="!hideCrests"
             :alt="fixture.awayTeam.name"
             :src="fixture.awayTeam.crest || '/blank.png'"
-            class="w-10 h-10 sm:w-14 sm:h-14 mr-2 lg:mr-4"
+            width="60"
+            height="60"
+            class="w-12 h-12 sm:w-14 sm:h-14 mr-2 lg:mr-4"
           />
           <span class="hidden md:inline truncate">{{
             fixture.awayTeam.name
