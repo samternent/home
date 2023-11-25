@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.11.1
+
+### Patch Changes
+
+- [`e9f6473`](https://github.com/samternent/home/commit/e9f647393c1a7a50dba5dd77db23989fa9194dd6) Thanks [@samternent](https://github.com/samternent)! - Remove console.log and prettier from patches
+
 ## 0.11.0
 
 ### Minor Changes
