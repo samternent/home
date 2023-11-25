@@ -21,7 +21,7 @@ import {
 // import Notifications from "./components/Notifications.vue";
 
 const { appVersion, serverVersion } = provideAppVersion();
-const { user, ready } = provideCurrentUser();
+const { user, ready, profile } = provideCurrentUser();
 
 const hasDismissedPopup = useLocalStorage("app/hasDismissedPopup", false);
 
@@ -85,7 +85,7 @@ const theme = useLocalStorage(
       />
       <SNavBar title="FS">
         <template #right>
-          <UserMenu />
+          <UserMenu v-if="profile" />
         </template>
       </SNavBar>
     </div>
