@@ -180,6 +180,7 @@ const resultPrediction = computed(() => {
             type="number"
             min="0"
             max="9"
+            aria-label="Home score"
             class="bg-base-100 text-center text-xl h-12 rounded px-2 font-medium input input-bordered"
             :class="{
               'blur-md': hidePredictions && !hasStarted,
@@ -224,6 +225,7 @@ const resultPrediction = computed(() => {
             type="number"
             min="0"
             max="9"
+            aria-label="Away score"
             class="bg-base-100 text-center text-xl h-12 rounded px-2 font-medium input input-bordered"
             :class="{
               'blur-md': hidePredictions && !hasStarted,

@@ -217,6 +217,7 @@ const alertMessage = computed(() =>
     >
       <select
         v-model="overrideGameweek"
+        aria-label="Gameweek"
         class="select select-bordered select-sm mr-4"
       >
         <option v-for="gw in gameweeks" :key="`gameweek${gw}`" :value="gw">

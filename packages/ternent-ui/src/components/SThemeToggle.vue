@@ -15,7 +15,7 @@ function updateTheme(e) {
 const checked = computed(() => props.modelValue === "dark");
 </script>
 <template>
-  <label class="flex cursor-pointer gap-2">
+  <label class="flex cursor-pointer gap-2" aria-label="Toggle dark mode">
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="20"
@@ -36,6 +36,7 @@ const checked = computed(() => props.modelValue === "dark");
       type="checkbox"
       @click="updateTheme"
       :checked="checked"
+      aria-label="Toggle dark mode"
       class="toggle theme-controller"
     />
     <svg

@@ -65,27 +65,27 @@ const { profile } = useCurrentUser();
       <table class="rounded-tl-lg text-xs lg:text-base">
         <thead class="bg-neutral text-neutral-content rounded-none p-2">
           <tr class="border-0 text-sm bg-neutral text-neutral-content">
-            <th v-if="!gameweek" class="w-10"></th>
-            <th class="w-12 font-medium p-2">POS</th>
-            <th class="text-left p-2">
+            <th scope="col" class="w-12 font-medium p-2">POS</th>
+            <th scope="col" v-if="!gameweek" class="w-10"></th>
+            <th scope="col" class="text-left p-2">
               <abbr class="font-medium" title="Teams in Competition"
                 >Username</abbr
               >
             </th>
 
-            <th class="w-10 p-2">
+            <th scope="col" class="w-10 p-2">
               <abbr class="font-medium" title="Correct Home Score">HS</abbr>
             </th>
-            <th class="w-10 p-2">
+            <th scope="col" class="w-10 p-2">
               <abbr class="font-medium" title="Correct Away Score">AS</abbr>
             </th>
-            <th class="w-10 p-2">
+            <th scope="col" class="w-10 p-2">
               <abbr class="font-medium" title="Correct Match Result">MR</abbr>
             </th>
-            <th class="w-10 p-2">
+            <th scope="col" class="w-10 p-2">
               <abbr class="font-medium" title="Correct Match Score">MS</abbr>
             </th>
-            <th class="w-12 p-2">
+            <th scope="col" class="w-12 p-2">
               <abbr class="font-medium" title="Points">PTS</abbr>
             </th>
           </tr>
@@ -101,6 +101,9 @@ const { profile } = useCurrentUser();
               'bg-base-200 bg-opacity-10': row.position % 2 == 0,
             }"
           >
+            <th scope="row" class="text-center font-medium text-sm p-2">
+              {{ row.position }}
+            </th>
             <td v-if="!gameweek" class="text-center py-2 px-1">
               <span
                 v-if="
@@ -116,9 +119,6 @@ const { profile } = useCurrentUser();
                 >▼</span
               >
               <span v-else-if="row.lastPosition">➖</span>
-            </td>
-            <td class="text-center font-medium text-sm p-2">
-              {{ row.position }}
             </td>
             <td class="text-left py-2 px-3 flex">
               <RouterLink
