@@ -73,7 +73,7 @@ const tabs = computed(() => [
     </div>
 
     <div class="collapse bg-base-200">
-      <input type="checkbox" />
+      <input type="checkbox" aria-label="Rules" />
       <div class="collapse-title text-lg font-medium">Rules</div>
       <div class="collapse-content">
         <ul class="text-sm font-light my-2">
