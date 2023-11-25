@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.11.0
+
+### Minor Changes
+
+- [`b5dbc21`](https://github.com/samternent/home/commit/b5dbc21c7e998be12160c13664ea282467d831a9) Thanks [@samternent](https://github.com/samternent)! - Adds custom club theming
+
 ## 0.10.5
 
 ### Patch Changes
