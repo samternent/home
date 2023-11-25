@@ -127,8 +127,6 @@ const themes = Object.keys(teamColors).reduce((result, team) => {
   return result;
 }, {});
 
-console.log(themes);
-
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
