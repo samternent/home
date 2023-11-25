@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.10.3
+
+### Patch Changes
+
+- [`2bb3319`](https://github.com/samternent/home/commit/2bb3319e96d7457ad8bdcb6785a0b4627126ed02) Thanks [@samternent](https://github.com/samternent)! - Improve Lighthouse CLS score
+
 ## 0.10.2
 
 ### Patch Changes
