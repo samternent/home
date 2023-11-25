@@ -1,5 +1,13 @@
 # concords-footballsocial
 
+## 0.9.8
+
+### Patch Changes
+
+- [`80fab0f`](https://github.com/samternent/home/commit/80fab0ffd30c2e14e4d1d3c9e832b9c5eecd0d74) Thanks [@samternent](https://github.com/samternent)! - Close supabase BroadcastChannel when hidden. Fixes bfcache issuein Lighthouse
+
+- [`e577c7e`](https://github.com/samternent/home/commit/e577c7e3f748b38f38bc34481773a0f5d56259e1) Thanks [@samternent](https://github.com/samternent)! - Removes Sentry error monitoring. We're not using it and it creates a pref issue with bfcache
+
 ## 0.9.7
 
 ### Patch Changes
