@@ -1,5 +1,11 @@
 # footballsocial-api
 
+## 0.1.8
+
+### Patch Changes
+
+- [`bfa5184`](https://github.com/samternent/home/commit/bfa51849330338639959048212e4467fa2a1d87c) Thanks [@samternent](https://github.com/samternent)! - Adds options success status
+
 ## 0.1.7
 
 ### Patch Changes
