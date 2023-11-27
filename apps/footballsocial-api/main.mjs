@@ -15,7 +15,12 @@ const app = express();
 app.set("view engine", "ejs");
 
 app.use(bodyParser.json());
-app.use(cors({ exposedHeaders: ["X-App-Version", "X-Api-Version"] }));
+app.use(
+  cors({
+    optionsSuccessStatus: 200,
+    exposedHeaders: ["X-App-Version", "X-Api-Version"],
+  })
+);
 
 // Set port
 const port = "3000";
