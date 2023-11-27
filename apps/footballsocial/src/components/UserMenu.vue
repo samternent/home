@@ -24,7 +24,7 @@ async function signOutAndLeave() {
     <button
       aria-label="User menu"
       @click="showMenu = !showMenu"
-      class="btn btn-ghost"
+      class="btn btn-ghost btn-sm"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

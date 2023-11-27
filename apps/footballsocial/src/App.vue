@@ -48,11 +48,11 @@ const hasNewVersion = computed(() => {
 
 const links = [
   {
-    title: "Privacy policy",
+    title: "Privacy",
     to: "/legal/privacy",
   },
   {
-    title: "Terms of use",
+    title: "Terms",
     to: "/legal/terms",
   },
   {
@@ -87,7 +87,7 @@ const theme = useLocalStorage(
         message="A new version of the app is available."
       />
       <SNavBar title="FS">
-        <template #right>
+        <template #end>
           <UserMenu v-if="profile" />
         </template>
       </SNavBar>
@@ -100,7 +100,7 @@ const theme = useLocalStorage(
       </Api>
     </div>
     <SFooter :links="links">
-      <template #middle>
+      <template #bottom>
         <p class="text-sm font-thin">
           Football data provided by the
           <a
@@ -111,8 +111,6 @@ const theme = useLocalStorage(
           >
           API.
         </p>
-      </template>
-      <template #bottom>
         <p class="text-sm font-thin mb-4">
           <a href="https://www.footballsocial.app/" class="font-medium mr-1"
             >FootballSocial</a

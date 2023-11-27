@@ -4,10 +4,9 @@
   "version": "0.0.9",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "vite build",
-    "preview": "vite preview",
-    "dev:api": "nodemon api/main.mjs"
+    "preview": "vite preview"
   },
   "dependencies": {
     "concords-encrypt": "workspace:*",
@@ -15,6 +14,7 @@
     "concords-ledger": "workspace:*",
     "concords-proof-of-work": "workspace:*",
     "concords-utils": "workspace:*",
+    "ternent-ui": "workspace*",
     "@formkit/themes": "1.0.0-beta.13",
     "@formkit/vue": "1.0.0-beta.13",
     "@inrupt/solid-client": "^1.26.0",

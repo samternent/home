@@ -92,8 +92,10 @@ watch(profile, (_profile) => {
           </option>
         </select>
       </div>
-
-      <p class="my-16">
+<div class="divider divider-end my-8">Admin</div>
+<div class="flex justify-end w-full">
+  
+  <p >
         <div v-if="pendingDeletion" class="mb-6">
           <p>Deletion request is pending.</p>
           <p>This will be processed within 48 hours</p>
@@ -101,7 +103,7 @@ watch(profile, (_profile) => {
         <button :disabled="pendingDeletion" @click="requestAccountDeletion" class="btn btn-error">
           Request account deletion
         </button>
-      </p>
+      </p></div>
     </div>
   </div>
 </template>

@@ -1,102 +1,91 @@
 <script setup>
-import PrivacyPolicy from "./PrivacyPolicy.md";
+import { SBrandHeader } from "ternent-ui/components";
 </script>
 <template>
-  <div class="max-w-screen-2xl p-8 mx-auto mt-8">
-    <PrivacyPolicy />
+  <div class="max-w-6xl p-2 mx-auto mb-12">
+    <SBrandHeader>Privacy Policy</SBrandHeader>
+
+    <p class="my-8">
+      This Privacy Policy governs the practices of FootballSocial.app regarding
+      the collection, usage, maintenance, and disclosure of information obtained
+      from users ("User") of the FootballSocial.app mobile application ("App").
+    </p>
+
+    <h2 class="text-xl font-semibold my-2">Information Collection</h2>
+    <p class="mb-4">
+      Upon user signup, FootballSocial.app collects essential information,
+      including email addresses and usernames. This data is necessary to
+      facilitate seamless user account creation and login within the App.
+    </p>
+
+    <h2 class="text-xl font-semibold my-2">Purpose of Data Collection</h2>
+    <p class="mb-4">
+      The collected information serves the sole purpose of enabling user
+      authentication and providing access to the features and functionalities
+      offered within the App.
+    </p>
+
+    <h2 class="text-xl font-semibold my-2">Data Usage</h2>
+    <p class="mb-4">
+      FootballSocial.app strictly refrains from utilizing or sharing the
+      collected user information for marketing purposes or with any third
+      parties. The data is exclusively utilized for facilitating user
+      authentication and access to the App.
+    </p>
+
+    <h2 class="text-xl font-semibold my-2">Security Measures</h2>
+    <p class="mb-4">
+      User data is securely stored within a database managed by Supabase, a
+      trusted cloud service provider known for its robust security measures.
+      Access to this data is restricted solely to authorized personnel and
+      secured via Github Single Sign-On (SSO) login, limiting administrative
+      access to a single individual.
+    </p>
+
+    <h2 class="text-xl font-semibold my-2">Analytics and Tracking</h2>
+    <p class="mb-4">
+      FootballSocial.app uses GoatCounter for analytics purposes. GoatCounter
+      employs non-identifiable tracking to analyze user interactions within the
+      App, ensuring the privacy and anonymity of our users.
+    </p>
+
+    <h2 class="text-xl font-semibold my-2">User Rights</h2>
+    <p class="mb-4">
+      Users have the right to contact FootballSocial.app via email at
+      sam.ternent@gmail.com for any queries or concerns regarding their data.
+      Account deletion requests can be initiated directly through the User's
+      profile page. To ensure security, identity verification may be necessary
+      before completing deletion requests.
+    </p>
+
+    <h2 class="text-xl font-semibold my-2">
+      Compliance with UK and Ireland Laws
+    </h2>
+    <p class="mb-4">
+      FootballSocial.app is committed to adhering to the pertinent data
+      protection laws in the UK and Ireland concerning the collection, storage,
+      and handling of user data.
+    </p>
+
+    <h2 class="text-xl font-semibold my-2">Changes to this Privacy Policy</h2>
+    <p class="mb-4">
+      FootballSocial.app reserves the right to update or modify this Privacy
+      Policy at its discretion. Users are encouraged to periodically review this
+      policy to stay informed about how their personal information is protected
+      and utilized.
+    </p>
+
+    <p>
+      By utilizing this App, Users signify their acknowledgment and acceptance
+      of this policy. Users who disagree with this policy are advised not to use
+      the App.
+    </p>
+
+    <h2 class="text-xl font-semibold my-2 mt-8">Contact Us</h2>
+    <p class="mb-4">
+      For any inquiries or clarifications regarding this Privacy Policy or the
+      practices of FootballSocial.app, please contact us at
+      <a href="mailto:sam.ternent@gmail.com">sam.ternent@gmail.com</a>.
+    </p>
   </div>
 </template>
-<style scoped>
-a {
-  color: #4183c4;
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-p,
-blockquote,
-ul,
-ol,
-dl,
-table,
-pre {
-  margin: 15px 0;
-}
-
-ul,
-ol {
-  padding-left: 30px;
-}
-
-h1 {
-  border-bottom: 1px solid #ddd;
-  color: #000;
-  font-size: 2.5em;
-}
-
-h2 {
-  border-bottom: 1px solid #eee;
-  color: #000;
-  font-size: 2em;
-}
-
-h3 {
-  font-size: 1.5em;
-}
-
-h4 {
-  font-size: 1.2em;
-}
-
-h5 {
-  font-size: 1em;
-}
-
-h6 {
-  color: #777;
-  font-size: 1em;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-weight: bold;
-  line-height: 1.7;
-  margin: 1em 0 15px 0;
-}
-
-h1 + p,
-h2 + p,
-h3 + p {
-  margin-top: 10px;
-}
-
-img {
-  max-width: 100%;
-}
-
-code,
-pre {
-  background-color: #f8f8f8;
-  border-radius: 3px;
-  border: 1px solid #ddd;
-  font-family: Consolas, "Liberation Mono", Courier, monospace;
-  font-size: 12px;
-  margin: 0 2px;
-  padding: 0 5px;
-  white-space: pre;
-}
-
-pre code {
-  border: none;
-  margin: 0;
-  padding: 0;
-  white-space: pre;
-}
-</style>

@@ -66,7 +66,7 @@ const dismissProductHuntBanner = useLocalStorage(
 <template>
   <STabs :items="tabs" :path="route.path" />
   <!-- Banner -->
-  <div
+  <!-- <div
     v-if="!dismissProductHuntBanner"
     class="bg-opacity-20 w-full rounded-lg my-4 border-dashed borde p-4"
   >
@@ -148,7 +148,7 @@ const dismissProductHuntBanner = useLocalStorage(
         >.</span
       >
     </p>
-  </div>
+  </div> -->
 
   <div class="flex mb-16 w-full mt-4">
     <RouterView />
