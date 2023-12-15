@@ -796,21 +796,9 @@ importers:
       axios:
         specifier: ^1.5.1
         version: 1.5.1
-      concords-utils:
-        specifier: workspace:*
-        version: link:../../packages/utils
       luxon:
         specifier: ^3.4.3
         version: 3.4.3
-      openai:
-        specifier: ^4.11.1
-        version: 4.11.1(encoding@0.1.13)
-      semver:
-        specifier: ^7.5.4
-        version: 7.5.4
-      shelljs:
-        specifier: ^0.8.5
-        version: 0.8.5
       ternent-ui:
         specifier: workspace:*
         version: link:../../packages/ternent-ui
@@ -836,21 +824,12 @@ importers:
       tailwindcss:
         specifier: ^3.3.3
         version: 3.3.3
-      typescript:
-        specifier: ^5.2.2
-        version: 5.2.2
-      vercel:
-        specifier: ^32.4.1
-        version: 32.4.1(encoding@0.1.13)
       vite:
         specifier: ^4.4.11
-        version: 4.5.0(@types/node@14.18.33)
+        version: 4.5.0(@types/node@18.15.11)
       vite-plugin-pwa:
         specifier: ^0.16.5
         version: 0.16.5(vite@4.5.0)(workbox-build@7.0.0)(workbox-window@7.0.0)
-      vue-tsc:
-        specifier: ^1.8.18
-        version: 1.8.18(typescript@5.2.2)
 
   packages/encrypt:
     dependencies:
@@ -5445,7 +5424,6 @@ packages:
 
   /@types/node@18.15.11:
     resolution: {integrity: sha512-E5Kwq2n4SbMzQOn6wnmBjuK9ouqlURrcZDVfbo9ftDDTFt3nk7ZKK4GMOzoYgnpQJKcxwQw+lGaBvvlMo0qN/Q==}
-    dev: false
 
   /@types/node@20.10.0:
     resolution: {integrity: sha512-D0WfRmU9TQ8I9PFx9Yc+EBHw+vSpIub4IDvQivcp26PtPrdMGAq5SDcpXEo/epqa/DXotVpekHiLNTg3iaKXBQ==}
@@ -15639,7 +15617,6 @@ packages:
       rollup: 3.29.4
     optionalDependencies:
       fsevents: 2.3.3
-    dev: false
 
   /vitest@0.25.8(happy-dom@8.9.0):
     resolution: {integrity: sha512-X75TApG2wZTJn299E/TIYevr4E9/nBo1sUtZzn0Ci5oK8qnpZAZyhwg0qCeMSakGIWtc6oRwcQFyFfW14aOFWg==}
