@@ -43,6 +43,9 @@ jobs:
       - name: Build libs
         run: pnpm --filter ternent-ui build
 
+      - name: Link Vercel project
+        run: vercel link --cwd ./apps/footballsocial --yes --token=${{ secrets.VERCEL_TOKEN }}
+
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
