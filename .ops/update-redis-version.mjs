@@ -15,15 +15,23 @@ export const redisClient = createClient({
 redisClient.on("error", (error) => console.error(`Error : ${error}`));
 redisClient.connect();
 
-const { version } = JSON.parse(
+const { version: footballSocialVersion } = JSON.parse(
   await readFileSync(
     join(__dirname, "../apps/footballsocial/package.json"),
     "utf8"
   )
 );
 
+const { version: ternentdotdevVersion } = JSON.parse(
+  await readFileSync(
+    join(__dirname, "../apps/ternentdotdev/package.json"),
+    "utf8"
+  )
+);
+
 try {
-  await redisClient.set("footballsocial-app-version", version);
+  await redisClient.set("footballsocial-app-version", footballSocialVersion);
+  await redisClient.set("ternentdotdev-app-version", ternentdotdevVersion);
 } catch (e) {
   console.error("unable to set redis");
 } finally {
