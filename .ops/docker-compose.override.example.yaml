@@ -1,12 +1,12 @@
 services:
-  concords-api:
-    image: "samternent/concords-api"
-    command: "pnpm --filter concords-api dev"
-    volumes:
-      - ../:/app
-
   ternent-api:
     image: "samternent/ternent-api"
     command: "pnpm --filter ternent-api start:dev"
+    volumes:
+      - ../:/app
+
+  footballsocial-api:
+    image: "samternent/footballsocial-api"
+    command: "pnpm --filter footballsocial-api dev"
     volumes:
       - ../:/app
