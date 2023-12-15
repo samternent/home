@@ -13,6 +13,7 @@ const packagesToPublish = [
   "../packages/utils",
   "../packages/proof-of-work",
   "../packages/game-kit",
+  "../packages/ternent-ui",
 ];
 
 const toPublish = [...appsToPublish, ...packagesToPublish];

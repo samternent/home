@@ -1,10 +1,16 @@
 <script setup>
 import { SBrandHeader } from "ternent-ui/components";
+import { useBreadcrumbs } from "../../module/breadcrumbs/useBreadcrumbs";
+
+useBreadcrumbs({
+  path: "/demo/board",
+  name: "Board demo",
+});
 </script>
 <template>
   <div class="flex flex-col h-full flex-1 p-4">
     <!-- <SBrandHeader>Boards</SBrandHeader> -->
-    <div class="flex flex-1 gap gap-6 py-4">
+    <div class="flex flex-1 gap gap-6">
       <div class="w-96 shrink-0">
         <SBrandHeader size="md">TODO</SBrandHeader>
         <div class="card bg-base-200 p-4 my-2">

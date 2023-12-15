@@ -28,6 +28,7 @@ const classMap = {
     v-bind="$attrs"
     class="btn mx-1"
     :class="classMap[type]"
+    activeClass="btn-active"
     ><slot
   /></RouterLink>
   <button

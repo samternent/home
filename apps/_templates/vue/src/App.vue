@@ -1,13 +1,13 @@
 <script setup>
 import { useLocalStorage } from "@vueuse/core";
+import { provideBreadcrumbs } from "./module/breadcrumbs/useBreadcrumbs";
 
 // DS components
 import {
-  SNavBar,
   SFooter,
   SThemeToggle,
   SBrandHeader,
-  SBreadcrumbs,
+  SButton,
 } from "ternent-ui/components";
 
 const links = [
@@ -29,6 +29,8 @@ const theme = useLocalStorage(
 );
 
 const appName = import.meta.env.VITE_APP_NAME;
+
+provideBreadcrumbs();
 </script>
 
 <template>
@@ -40,11 +42,14 @@ const appName = import.meta.env.VITE_APP_NAME;
       <div
         class="flex flex-col shrink-0 w-64 bg-base-200 justify-between min-h-screen max-h-screen h-screen"
       >
-        <header class="p-2 flex justify-center border-b-2 border-base-300">
+        <header class="p-2 flex justify-center py-8">
           <RouterLink to="/"
             ><SBrandHeader size="md">{{ appName }}</SBrandHeader></RouterLink
           >
         </header>
+        <div class="flex flex-1 w-full items-start py-8 justify-center px-2">
+          <SButton type="primary" to="/demo" class="flex-1">Demos</SButton>
+        </div>
         <footer>
           <SFooter :links="links">
             <template #middle>Concords boards.</template>
@@ -54,23 +59,7 @@ const appName = import.meta.env.VITE_APP_NAME;
           </SFooter>
         </footer>
       </div>
-      <div
-        class="flex flex-col flex-1 min-h-screen max-h-screen h-screen overflow-hidden"
-      >
-        <SNavBar>
-          <template #start><SBreadcrumbs /></template>
-          <template #end
-            ><input
-              type="search"
-              class="input input-bordered input-sm"
-              placeholder="Search"
-            />
-          </template>
-        </SNavBar>
-        <div class="flex flex-col flex-1 overflow-auto">
-          <RouterView />
-        </div>
-      </div>
+      <RouterView />
     </div>
   </div>
 </template>

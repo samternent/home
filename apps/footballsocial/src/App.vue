@@ -11,7 +11,7 @@ import Api from "./Api.vue";
 
 // DS components
 import {
-  SSpinner,
+  SBrandHeader,
   SNavBar,
   SBanner,
   SFooter,
@@ -106,6 +106,7 @@ const theme = useLocalStorage(
           <a
             href="https://www.football-data.org/"
             target="_blank"
+            referrerpolicy="noreferrer"
             class="league-link font-medium"
             >Football-Data.org</a
           >
@@ -115,7 +116,19 @@ const theme = useLocalStorage(
           <a href="https://www.footballsocial.app/" class="font-medium mr-1"
             >FootballSocial</a
           >is independent, hand-crafted and open-source, by
-          <a href="https://ternent.dev" class="font-light"> ternent.dev</a>.
+          <a
+            href="https://ternent.dev"
+            target="_blank"
+            referrerpolicy="noreferrer"
+            class="font-light hover:text-primary transition-colors group"
+          >
+            <span class="font-medium"
+              >ternent<span
+                class="font-light text-base-content border-b-2 transition-all border-transparent group-hover:border-primary"
+                >dot</span
+              >dev</span
+            ></a
+          >.
         </p>
         <SThemeToggle v-model="theme" />
       </template>

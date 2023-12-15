@@ -2,10 +2,16 @@ import { legalRoutes } from "./legal";
 import { demoRoutes } from "./demo";
 
 export default [
-  ...demoRoutes,
-  ...legalRoutes,
   {
     path: "",
-    component: () => import("./RouteHome.vue"),
+    component: () => import("./RouteLayout.vue"),
+    children: [
+      {
+        path: "",
+        component: () => import("./RouteHome.vue"),
+      },
+      ...demoRoutes,
+      ...legalRoutes,
+    ],
   },
 ];

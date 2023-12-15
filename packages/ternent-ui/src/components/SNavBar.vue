@@ -7,7 +7,7 @@ defineProps({
 });
 </script>
 <template>
-  <div class="w-full bg-base-100 border-primary border-b-2 sticky top-0 z-10">
+  <div class="w-full bg-base-100 border-primary border-b-4 sticky top-0 z-10">
     <div class="navbar flex min-h-0 items-center px-4">
       <div class="flex-1 flex items-center">
         <slot name="start">

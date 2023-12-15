@@ -14,3 +14,6 @@ export { default as SFooter } from "./SFooter.vue";
 export { default as SAlert } from "./SAlert.vue";
 export { default as SThemeToggle } from "./SThemeToggle.vue";
 export { default as SBreadcrumbs } from "./SBreadcrumbs.vue";
+export { default as SDrawerRight } from "./SDrawerRight.vue";
+export { default as SBrowserMockup } from "./SBrowserMockup.vue";
+export { default as STimeline } from "./STimeline.vue";
