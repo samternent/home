@@ -1,5 +1,14 @@
 # ternentdotdev
 
+## 0.1.2
+
+### Patch Changes
+
+- [`5cdc9887be8502dfd1f4f14065f7783cb4980e1e`](https://github.com/samternent/home/commit/5cdc9887be8502dfd1f4f14065f7783cb4980e1e) Thanks [@samternent](https://github.com/samternent)! - Updating Vercel monorepo deployment actions
+
+- Updated dependencies [[`0d7ddc5753740017962335661e9a169093edebb4`](https://github.com/samternent/home/commit/0d7ddc5753740017962335661e9a169093edebb4)]:
+  - ternent-ui@0.0.2
+
 ## 0.1.1
 
 ### Patch Changes
