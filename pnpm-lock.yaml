@@ -51,7 +51,7 @@ importers:
         specifier: ^0.8.5
         version: 0.8.5
       ternent-ui:
-        specifier: workspace*
+        specifier: workspace:*
         version: link:../../../packages/ternent-ui
       vite-plugin-ejs:
         specifier: ^1.6.4
@@ -196,7 +196,7 @@ importers:
         specifier: ^7.8.0
         version: 7.8.0
       ternent-ui:
-        specifier: workspace*
+        specifier: workspace:*
         version: link:../../packages/ternent-ui
       tippy.js:
         specifier: ^6.3.7
@@ -353,7 +353,7 @@ importers:
         specifier: ^0.8.5
         version: 0.8.5
       ternent-ui:
-        specifier: workspace*
+        specifier: workspace:*
         version: link:../../packages/ternent-ui
       tippy.js:
         specifier: ^6.3.7
@@ -705,7 +705,7 @@ importers:
         specifier: ^0.8.5
         version: 0.8.5
       ternent-ui:
-        specifier: workspace*
+        specifier: workspace:*
         version: link:../../packages/ternent-ui
       vite-plugin-ejs:
         specifier: ^1.6.4
@@ -812,7 +812,7 @@ importers:
         specifier: ^0.8.5
         version: 0.8.5
       ternent-ui:
-        specifier: workspace*
+        specifier: workspace:*
         version: link:../../packages/ternent-ui
       vite-plugin-ejs:
         specifier: ^1.6.4
