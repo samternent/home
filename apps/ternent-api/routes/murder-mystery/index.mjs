@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 
 const openai = new OpenAI({
-  apiKey: "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",
+  apiKey: "had to delete that key",
 });
 
 async function generateMurderMystery(numberOfPlayers) {
