@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.1.4
+
+### Patch Changes
+
+- [`bf2a0d2087cefbe6b353e7e1c78ae7731b8ec5b4`](https://github.com/samternent/home/commit/bf2a0d2087cefbe6b353e7e1c78ae7731b8ec5b4) Thanks [@samternent](https://github.com/samternent)! - Update worklfow again
+
 ## 0.1.3
 
 ### Patch Changes
