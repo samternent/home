@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.1.3
+
+### Patch Changes
+
+- [`834b00ee42b114035b6fa0c26430b42781677ad4`](https://github.com/samternent/home/commit/834b00ee42b114035b6fa0c26430b42781677ad4) Thanks [@samternent](https://github.com/samternent)! - try fix dotdev
+
 ## 0.1.2
 
 ### Patch Changes
