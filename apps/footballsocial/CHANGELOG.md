@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.11.5
+
+### Patch Changes
+
+- [`3992952fcca6b97c46d48d4f387170a0ad51d3de`](https://github.com/samternent/home/commit/3992952fcca6b97c46d48d4f387170a0ad51d3de) Thanks [@samternent](https://github.com/samternent)! - Remove vercel build from workflow
+
 ## 0.11.4
 
 ### Patch Changes
