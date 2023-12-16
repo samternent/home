@@ -41,13 +41,13 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build libs
-        run: pnpm --filter ternent-ui build
+        run: pnpm --filter ternent-ui --filter footballsocial build
 
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy Project Artifacts to Vercel
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel deploy --prebuilt --prod --cwd ${{ github.workspace }}/apps/footballsocial --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Update app version in Redis
         run: node .ops/update-redis-version.mjs
