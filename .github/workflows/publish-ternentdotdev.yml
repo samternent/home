@@ -44,7 +44,7 @@ jobs:
         run: pnpm --filter ternent-ui --filter ternentdotdev build
 
       - name: Link Vercel project
-        run: vercel link --yes --environment=production --cwd ${{ github.workspace }}/apps/ternentdotdev --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel link --yes --cwd ${{ github.workspace }}/apps/ternentdotdev --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=production --cwd ${{ github.workspace }}/apps/ternentdotdev --token=${{ secrets.VERCEL_TOKEN }}
