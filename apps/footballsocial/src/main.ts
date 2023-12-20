@@ -1,5 +1,5 @@
-import 'ternent-ui/tailwind';
-import 'ternent-ui/styles';
+import "ternent-ui/tailwind";
+import "ternent-ui/styles";
 
 import { createApp } from "vue";
 
@@ -12,9 +12,9 @@ const app = createApp(App);
 app.use(router);
 registerSW();
 
-if (localStorage.getItem('storageFlush/0') !== "flushed") {
+if (localStorage.getItem("storageFlush/0") !== "flushed") {
   localStorage.clear();
-  localStorage.setItem("storageFlush/0", 'flushed');
+  localStorage.setItem("storageFlush/0", "flushed");
 }
 
 app.mount("#app");
