@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.11.7
+
+### Patch Changes
+
+- [`c1e792fce1aad7424e3b7e644f8d9ff6e157aa5b`](https://github.com/samternent/home/commit/c1e792fce1aad7424e3b7e644f8d9ff6e157aa5b) Thanks [@samternent](https://github.com/samternent)! - Hopefully fix Vercel deployment atcions
+
 ## 0.11.6
 
 ### Patch Changes
