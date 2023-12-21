@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.1.19
+
+### Patch Changes
+
+- [`77edf9dacb310b54dec5608cd630db2c1dfa4f01`](https://github.com/samternent/home/commit/77edf9dacb310b54dec5608cd630db2c1dfa4f01) Thanks [@samternent](https://github.com/samternent)! - Update maskable logo
+
 ## 0.1.18
 
 ### Patch Changes
