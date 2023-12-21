@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.1.13
+
+### Patch Changes
+
+- [`f6cb83b39240bd0da801b7672a730cafb3f78348`](https://github.com/samternent/home/commit/f6cb83b39240bd0da801b7672a730cafb3f78348) Thanks [@samternent](https://github.com/samternent)! - Fix sidenav animation
+
 ## 0.1.12
 
 ### Patch Changes
