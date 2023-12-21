@@ -6,6 +6,8 @@
     "start_url": "/",
     "name": "ternentdotdev",
     "short_name": "ternent",
+	"description": "building software",
+	"orientation": "portrait",
     "icons": [
         {
             "src": "/icon-192x192.png",

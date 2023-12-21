@@ -1,8 +1,8 @@
 export const ternentDotDev = {
   "ternentdotdev-dark": {
-    primary: "#3F8EFC", // Dodger Blue
-    secondary: "#FF6B6B", // Melon
-    accent: "#FFC107", // Amber
+    primary: "#fd575a", // Dodger Blue
+    secondary: "#d35597", // Melon
+    accent: "#9753ef", // Amber
     neutral: "#333333", // Dark Gray
     info: "#4BC0C0", // Turquoise
     success: "#77DD77", // Pastel Green
@@ -24,9 +24,9 @@ export const ternentDotDev = {
     "color-scheme": "dark",
   },
   "ternentdotdev-light": {
-    primary: "#1565C0", // Dark Blue
-    secondary: "#FF8A65", // Coral
-    accent: "#FFD54F", // Yellow
+    primary: "#9753ef", // Dodger Blue
+    secondary: "#d35597", // Melon
+    accent: "#fd575a", // Amber
     neutral: "#F5F5F5", // Light Gray
     info: "#81C784", // Light Green
     success: "#A5D6A7", // Pale Green
