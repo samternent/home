@@ -1,5 +1,11 @@
 # ternent-ui
 
+## 0.0.4
+
+### Patch Changes
+
+- [`f8abac1f83db402de41970b39677d0c045a210c0`](https://github.com/samternent/home/commit/f8abac1f83db402de41970b39677d0c045a210c0) Thanks [@samternent](https://github.com/samternent)! - Close nav on navigate
+
 ## 0.0.3
 
 ### Patch Changes
