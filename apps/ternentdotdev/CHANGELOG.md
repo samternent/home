@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.1.17
+
+### Patch Changes
+
+- [`db1055653a73932fe9d9df37ea2b80328cfb68ef`](https://github.com/samternent/home/commit/db1055653a73932fe9d9df37ea2b80328cfb68ef) Thanks [@samternent](https://github.com/samternent)! - Adds icons
+
 ## 0.1.16
 
 ### Patch Changes
