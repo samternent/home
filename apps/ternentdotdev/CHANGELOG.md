@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.1.11
+
+### Patch Changes
+
+- [`813e837fde0a3ab15191bfadf49fcb5ae48c7a5d`](https://github.com/samternent/home/commit/813e837fde0a3ab15191bfadf49fcb5ae48c7a5d) Thanks [@samternent](https://github.com/samternent)! - Adds responsive app layout
+
 ## 0.1.10
 
 ### Patch Changes
