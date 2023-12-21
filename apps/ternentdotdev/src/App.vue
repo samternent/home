@@ -62,8 +62,8 @@ const showSidebar = computed(() => mdAndLarger.value || openSideBar.value);
       <transition
         enter-from-class="translate-x-[-100%]"
         leave-to-class="translate-x-[-100%]"
-        enter-active-class="transition duration-3000"
-        leave-active-class="transition duration-3000"
+        :enter-active-class="smallerThanMd ? 'transition duration-3000' : ''"
+        :leave-active-class="smallerThanMd ? 'transition duration-3000' : ''"
       >
         <div
           v-if="showSidebar"
