@@ -8,7 +8,7 @@ defineProps({
 </script>
 <template>
   <footer
-    class="text-sm font-light tracking-tight p-3 flex flex-col justify-center lg:items-center w-full"
+    class="text-sm font-light tracking-tight p-3 flex flex-col justify-center items-center md:items-left lg:items-center w-full"
   >
     <nav class="flex gap-2 my-2 xs:flex-row lg:flex-row md:flex-col">
       <template v-for="link in links" :key="link.to">
@@ -24,7 +24,9 @@ defineProps({
         }}</RouterLink>
       </template>
     </nav>
-    <aside class="my-2 flex justify-center flex-col lg:items-center">
+    <aside
+      class="my-2 flex justify-center flex-col items-center md:items-left lg:items-center"
+    >
       <slot name="bottom" />
     </aside>
   </footer>

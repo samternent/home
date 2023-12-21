@@ -121,7 +121,10 @@ const showSidebar = computed(() => mdAndLarger.value || openSideBar.value);
           <footer>
             <SFooter :links="links">
               <template #bottom>
-                <SThemeToggle v-model="themeVariation" />
+                <SThemeToggle
+                  v-model="themeVariation"
+                  :size="lgAndLarger || smallerThanMd ? 'md' : 'sm'"
+                />
               </template>
             </SFooter>
           </footer>

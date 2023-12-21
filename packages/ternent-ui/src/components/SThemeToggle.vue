@@ -5,6 +5,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  size: {
+    type: String,
+    default: "md",
+  },
 });
 const emit = defineEmits(["update:modelValue"]);
 
@@ -17,6 +21,7 @@ const checked = computed(() => props.modelValue === "dark");
 <template>
   <label class="flex cursor-pointer gap-2" aria-label="Toggle dark mode">
     <svg
+      v-if="size !== 'sm'"
       xmlns="http://www.w3.org/2000/svg"
       width="20"
       height="20"
@@ -40,6 +45,7 @@ const checked = computed(() => props.modelValue === "dark");
       class="toggle theme-controller"
     />
     <svg
+      v-if="size !== 'sm'"
       xmlns="http://www.w3.org/2000/svg"
       width="20"
       height="20"
