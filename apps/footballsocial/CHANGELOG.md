@@ -1,5 +1,12 @@
 # concords-footballsocial
 
+## 0.11.12
+
+### Patch Changes
+
+- Updated dependencies [[`dfb7156622931290d861583139e0d16b8711fdc1`](https://github.com/samternent/home/commit/dfb7156622931290d861583139e0d16b8711fdc1)]:
+  - ternent-ui@0.0.6
+
 ## 0.11.11
 
 ### Patch Changes
