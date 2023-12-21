@@ -34,7 +34,7 @@ const currentPathTitle = computed(
 </script>
 <template>
   <div class="flex items-center p-2">
-    <h2 class="text-2xl font-light border-r border-base-300 px-8">
+    <h2 class="text-2xl font-light border-r border-base-300 px-4 sm:px-8">
       {{ title }}
     </h2>
     <STabs

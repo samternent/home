@@ -47,13 +47,5 @@ const viewType = useLocalStorage("work/gzip/viewType", "mobile");
         </svg>
       </button>
     </div>
-    <SBrowserMockup
-      url="https://gzip.ternent.dev"
-      class="flex-1 w-full mx-auto"
-      :class="{
-        'max-w-7xl': viewType === 'desktop',
-        'max-w-md': viewType === 'mobile',
-      }"
-    />
   </div>
 </template>

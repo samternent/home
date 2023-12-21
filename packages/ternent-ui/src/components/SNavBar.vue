@@ -15,13 +15,15 @@ defineProps({
     <div class="navbar flex min-h-0 items-center">
       <div class="flex-1 items-center">
         <slot name="nav" v-if="smallerThanMd"> </slot>
-        <slot name="start">
-          <RouterLink
-            to="/"
-            class="btn btn-ghost btn-sm text-base normal-case font-extrabold md:mx-4"
-            >{{ title }}<span class="text-accent -mx-2">.</span></RouterLink
-          >
-        </slot>
+        <div class="px-2">
+          <slot name="start">
+            <RouterLink
+              to="/"
+              class="btn btn-ghost btn-sm text-base normal-case font-extrabold md:mx-4"
+              >{{ title }}<span class="text-accent -mx-2">.</span></RouterLink
+            >
+          </slot>
+        </div>
       </div>
       <div class="flex-none md:px-4">
         <slot name="end" />

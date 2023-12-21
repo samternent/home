@@ -33,17 +33,6 @@ const months = [
 <template>
   <div class="flex flex-col h-full flex-1 p-4">
     <SBrandHeader class="font-light">Technology</SBrandHeader>
-    <p class="my-2 mx-1 text-lg">
-      Ternent.dev is built on our own open-source infrastructure.
-    </p>
-    <p class="my-2 mx-1 text-lg">
-      We use node.js on the backend, where all services are deployed to our
-      Kubernetes cluster, managed through Digital Ocean.
-    </p>
-    <p class="my-2 mx-1 text-lg">
-      Front frontend development, we use VueJS and have our own design system
-      using Tailwind and DaisyUI.
-    </p>
     <SBrandHeader size="md" class="my-4 font-light">Our costs</SBrandHeader>
     <table class="w-full">
       <thead>

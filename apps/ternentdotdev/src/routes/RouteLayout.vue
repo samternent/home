@@ -1,6 +1,11 @@
 <script setup>
 import { useLocalStorage } from "@vueuse/core";
-import { SNavBar, SBreadcrumbs, SButton } from "ternent-ui/components";
+import {
+  SNavBar,
+  SBreadcrumbs,
+  SButton,
+  SBrandHeader,
+} from "ternent-ui/components";
 import { useBreadcrumbs } from "../module/breadcrumbs/useBreadcrumbs";
 
 const breadcrumbs = useBreadcrumbs({
@@ -41,7 +46,13 @@ const openSideBar = useLocalStorage("ternentdotdev/openSideBar", false);
       <template #start>
         <SBreadcrumbs :breadcrumbs="breadcrumbs" />
       </template>
-      <template #end> </template>
+      <template #end>
+        <RouterLink to="/" class="btn btn-ghost btn-sm text-base md:!hidden"
+          ><SBrandHeader size="sm" class="font-light"
+            >t</SBrandHeader
+          ></RouterLink
+        >
+      </template>
     </SNavBar>
     <div class="flex flex-col flex-1 overflow-auto">
       <RouterView />
