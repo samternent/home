@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.1.18
+
+### Patch Changes
+
+- [`f2a4be339d21052e4ea38c3de752714f1b4957f6`](https://github.com/samternent/home/commit/f2a4be339d21052e4ea38c3de752714f1b4957f6) Thanks [@samternent](https://github.com/samternent)! - Fix manifest
+
 ## 0.1.17
 
 ### Patch Changes
