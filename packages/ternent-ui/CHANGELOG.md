@@ -1,5 +1,11 @@
 # ternent-ui
 
+## 0.0.5
+
+### Patch Changes
+
+- [`9dcad6a68edb8012b34dfc30d2f652114db085d4`](https://github.com/samternent/home/commit/9dcad6a68edb8012b34dfc30d2f652114db085d4) Thanks [@samternent](https://github.com/samternent)! - Updates responsiveness of things
+
 ## 0.0.4
 
 ### Patch Changes
