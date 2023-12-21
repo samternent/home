@@ -1,5 +1,14 @@
 # ternentdotdev
 
+## 0.1.16
+
+### Patch Changes
+
+- [`dfb7156622931290d861583139e0d16b8711fdc1`](https://github.com/samternent/home/commit/dfb7156622931290d861583139e0d16b8711fdc1) Thanks [@samternent](https://github.com/samternent)! - Remove content and tweak tabs
+
+- Updated dependencies [[`dfb7156622931290d861583139e0d16b8711fdc1`](https://github.com/samternent/home/commit/dfb7156622931290d861583139e0d16b8711fdc1)]:
+  - ternent-ui@0.0.6
+
 ## 0.1.15
 
 ### Patch Changes

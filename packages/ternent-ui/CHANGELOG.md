@@ -1,5 +1,11 @@
 # ternent-ui
 
+## 0.0.6
+
+### Patch Changes
+
+- [`dfb7156622931290d861583139e0d16b8711fdc1`](https://github.com/samternent/home/commit/dfb7156622931290d861583139e0d16b8711fdc1) Thanks [@samternent](https://github.com/samternent)! - Remove content and tweak tabs
+
 ## 0.0.5
 
 ### Patch Changes
