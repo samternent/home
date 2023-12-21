@@ -1,7 +1,8 @@
-import { baseColors, clubColors } from "./themes";
+import { ternentDotDev, murder, clubColors } from "./themes";
 import { buildThemes } from "./themes/util";
 
-const themes = buildThemes({ ...clubColors });
+const themes = { ...buildThemes({ ...clubColors }), murder, ...ternentDotDev };
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [

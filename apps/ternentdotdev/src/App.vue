@@ -33,12 +33,20 @@ const links = [
   },
 ];
 
-const theme = useLocalStorage(
-  "app/theme",
+const themeVariation = useLocalStorage(
+  "app/themeVariation",
   window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
     ? "dark"
     : "light"
 );
+const themeName = useLocalStorage(
+  "app/theme",
+  `ternentdotdev-${themeVariation.value}`
+);
+
+watch(themeVariation, (_themeVariation) => {
+  themeName.value = `ternentdotdev-${_themeVariation}`;
+});
 
 const appName = import.meta.env.VITE_APP_NAME;
 
@@ -61,14 +69,14 @@ const showSidebar = computed(() => mdAndLarger.value || openSideBar.value);
 <template>
   <div
     class="min-h-screen max-h-screen h-screen flex flex-col"
-    :data-theme="theme"
+    :data-theme="themeName"
   >
     <div class="flex-1 flex bg-base-100 w-full mx-auto">
       <transition
         enter-from-class="translate-x-[-100%]"
         leave-to-class="translate-x-[-100%]"
-        :enter-active-class="smallerThanMd ? 'transition duration-3000' : ''"
-        :leave-active-class="smallerThanMd ? 'transition duration-3000' : ''"
+        enter-active-class="transition duration-3000"
+        leave-active-class=""
       >
         <div
           v-if="showSidebar"
@@ -76,8 +84,8 @@ const showSidebar = computed(() => mdAndLarger.value || openSideBar.value);
           :class="{
             'w-20 relative': mdAndLarger && smallerThanLg,
             'w-64 relative': lgAndLarger,
-            'w-[95%] absolute z-20': smallerThanMd,
-            'w-full absolute z-20': smallerThanSm,
+            'w-[95%] absolute z-20': smallerThanMd && openSideBar,
+            'w-full absolute z-20': smallerThanSm && openSideBar,
           }"
         >
           <SButton
@@ -113,7 +121,7 @@ const showSidebar = computed(() => mdAndLarger.value || openSideBar.value);
           <footer>
             <SFooter :links="links">
               <template #bottom>
-                <SThemeToggle v-model="theme" />
+                <SThemeToggle v-model="themeVariation" />
               </template>
             </SFooter>
           </footer>
