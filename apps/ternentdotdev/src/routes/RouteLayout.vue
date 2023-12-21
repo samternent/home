@@ -28,7 +28,7 @@ const openSideBar = useLocalStorage("ternentdotdev/openSideBar", false);
             stroke-width="1.5"
             stroke="currentColor"
             data-slot="icon"
-            class="w-4 h-4"
+            class="w-6 h-6"
           >
             <path
               stroke-linecap="round"

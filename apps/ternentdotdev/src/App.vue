@@ -67,7 +67,7 @@ const showSidebar = computed(() => mdAndLarger.value || openSideBar.value);
       >
         <div
           v-if="showSidebar"
-          class="flex flex-col shrink-0 bg-base-200 justify-between min-h-screen max-h-screen h-screen transition-all"
+          class="flex flex-col shrink-0 bg-base-200 justify-between min-h-screen max-h-screen h-screen"
           :class="{
             'w-20 relative': mdAndLarger && smallerThanLg,
             'w-64 relative': lgAndLarger,
@@ -86,7 +86,7 @@ const showSidebar = computed(() => mdAndLarger.value || openSideBar.value);
               stroke-width="1.5"
               stroke="currentColor"
               data-slot="icon"
-              class="w-4 h-4"
+              class="w-6 h-6"
             >
               <path
                 stroke-linecap="round"
