@@ -4,7 +4,8 @@ import {
   breakpointsTailwind,
   useBreakpoints,
 } from "@vueuse/core";
-import { computed } from "vue";
+import { computed, watch } from "vue";
+import { useRoute } from "vue-router";
 import { provideBreadcrumbs } from "./module/breadcrumbs/useBreadcrumbs";
 import { provideDrawerRoute } from "./module/drawer-route/useDrawerRoute";
 import DrawerRouterView from "./module/drawer-route/DrawerRoute.vue";
@@ -19,6 +20,7 @@ import {
 } from "ternent-ui/components";
 
 const breakpoints = useBreakpoints(breakpointsTailwind);
+const route = useRoute();
 
 const links = [
   {
@@ -49,6 +51,9 @@ const smallerThanMd = breakpoints.smaller("md");
 const smallerThanLg = breakpoints.smaller("lg");
 const smallerThanSm = breakpoints.smaller("sm");
 
+watch(route, () => {
+  openSideBar.value = false;
+});
 const openSideBar = useLocalStorage("ternentdotdev/openSideBar", false);
 const showSidebar = computed(() => mdAndLarger.value || openSideBar.value);
 </script>

@@ -45,7 +45,7 @@ const months = [
       using Tailwind and DaisyUI.
     </p>
     <SBrandHeader size="md" class="my-4 font-light">Our costs</SBrandHeader>
-    <table class="w-1/2">
+    <table class="w-full">
       <thead>
         <tr class="text-left">
           <th class="w-1/2">Date</th>
