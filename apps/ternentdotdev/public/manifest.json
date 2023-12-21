@@ -30,7 +30,7 @@
             "type": "image/png"
         },
         {
-            "src": "logo-mask.png",
+            "src": "logo-maskable.png",
             "type": "image/png",
             "purpose": "maskable"
         }
