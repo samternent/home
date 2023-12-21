@@ -42,13 +42,13 @@ function isExactActiveLink(t) {
     </div>
     <ul
       tabindex="0"
-      class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+      class="dropdown-content z-[1] menu p-2 shadow bg-base-200 rounded-box w-52"
     >
       <li v-for="(item, i) in items" :key="`dropdown_${i}`">
         <RouterLink
           :to="item.path"
           :class="{
-            'tab-active !bg-base-200 !text-primary':
+            '!text-primary':
               (!exact && isActiveLink(item)) ||
               (exact && isExactActiveLink(item)),
           }"
