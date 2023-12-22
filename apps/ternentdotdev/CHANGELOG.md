@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.1.20
+
+### Patch Changes
+
+- [`0f1a95243842ec39eebd1dd0d9bf2c18def61e29`](https://github.com/samternent/home/commit/0f1a95243842ec39eebd1dd0d9bf2c18def61e29) Thanks [@samternent](https://github.com/samternent)! - Update mask icon
+
 ## 0.1.19
 
 ### Patch Changes
