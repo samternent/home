@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.1.21
+
+### Patch Changes
+
+- [`2456707b1b62cfd5822098aafd97cfa3f86028f2`](https://github.com/samternent/home/commit/2456707b1b62cfd5822098aafd97cfa3f86028f2) Thanks [@samternent](https://github.com/samternent)! - Update maskable icon
+
 ## 0.1.20
 
 ### Patch Changes
