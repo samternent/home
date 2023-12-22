@@ -1,11 +1,11 @@
 {
-    "theme_color": "#F55765",
+    "theme_color": "#2d2d2d",
     "background_color": "#2d2d2d",
     "display": "standalone",
     "scope": "/",
     "start_url": "/",
     "name": "ternentdotdev",
-    "short_name": "ternent",
+    "short_name": "ternentdotdev",
 	"description": "building software",
 	"orientation": "portrait",
     "icons": [
@@ -32,6 +32,7 @@
         {
             "src": "logo-maskable.png",
             "type": "image/png",
+            "sizes": "425x425",
             "purpose": "maskable"
         }
     ]
