@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.1.23
+
+### Patch Changes
+
+- [`56602675978e7ff9fb1b3fc96864f8ffb58b496b`](https://github.com/samternent/home/commit/56602675978e7ff9fb1b3fc96864f8ffb58b496b) Thanks [@samternent](https://github.com/samternent)! - adds logo and fix nav width
+
 ## 0.1.22
 
 ### Patch Changes
