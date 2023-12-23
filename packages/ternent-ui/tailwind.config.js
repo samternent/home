@@ -14,7 +14,7 @@ module.exports = {
   safelist: [
     {
       pattern:
-        /(bg|text|border|btn)-(accent|primary|secondary|error|info|success|base-(100|200|300))|(bg|text|btn)-(info|green|base|red|orange)-(100|200|300|400|500|600|700|800|900)|skeleton|input|join-item|join/,
+        /(fill|bg|text|border|btn)-(accent|primary|secondary|error|info|success|base-(100|200|300))|(bg|text|btn)-(info|green|base|red|orange)-(100|200|300|400|500|600|700|800|900)|skeleton|input|join-item|join/,
       variants: ["hover"],
     },
   ],

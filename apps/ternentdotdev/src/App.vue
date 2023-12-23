@@ -10,6 +10,7 @@ import { provideBreadcrumbs } from "./module/breadcrumbs/useBreadcrumbs";
 import { provideDrawerRoute } from "./module/drawer-route/useDrawerRoute";
 import DrawerRouterView from "./module/drawer-route/DrawerRoute.vue";
 import SideNavItems from "./module/side-nav/SideNavItems.vue";
+import Logo from "./module/brand/Logo.vue";
 
 // DS components
 import {
@@ -84,8 +85,7 @@ const showSidebar = computed(() => mdAndLarger.value || openSideBar.value);
           :class="{
             'w-20 relative': mdAndLarger && smallerThanLg,
             'w-64 relative': lgAndLarger,
-            'w-[95%] absolute z-20': smallerThanMd && openSideBar,
-            'w-full absolute z-20': smallerThanSm && openSideBar,
+            'w-64 absolute z-20': smallerThanMd && openSideBar,
           }"
         >
           <SButton
@@ -118,7 +118,8 @@ const showSidebar = computed(() => mdAndLarger.value || openSideBar.value);
             >
           </header>
           <SideNavItems />
-          <footer>
+          <footer class="flex flex-col justify-end">
+            <Logo class="w-24 mx-auto h-auto mb-2" />
             <SFooter :links="links">
               <template #bottom>
                 <SThemeToggle
