@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.11.13
+
+### Patch Changes
+
+- [`ce10eb50e4ee48f20a7b91cd902e9dcc0b9b8557`](https://github.com/samternent/home/commit/ce10eb50e4ee48f20a7b91cd902e9dcc0b9b8557) Thanks [@samternent](https://github.com/samternent)! - Fix missing team names
+
 ## 0.11.12
 
 ### Patch Changes
