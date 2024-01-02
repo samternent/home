@@ -85,7 +85,7 @@ const showSidebar = computed(() => mdAndLarger.value || openSideBar.value);
           :class="{
             'w-20 relative': mdAndLarger && smallerThanLg,
             'w-64 relative': lgAndLarger,
-            'w-64 absolute z-20': smallerThanMd && openSideBar,
+            'w-64 absolute z-20 shadow-lg': smallerThanMd && openSideBar,
           }"
         >
           <SButton
@@ -119,7 +119,12 @@ const showSidebar = computed(() => mdAndLarger.value || openSideBar.value);
           </header>
           <SideNavItems />
           <footer class="flex flex-col justify-end">
-            <Logo class="w-24 mx-auto h-auto mb-2" />
+            <Logo
+              class="mx-auto h-auto mb-2 w-24"
+              :class="{
+                'w-12': mdAndLarger && smallerThanLg,
+              }"
+            />
             <SFooter :links="links">
               <template #bottom>
                 <SThemeToggle
