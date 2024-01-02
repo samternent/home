@@ -166,7 +166,7 @@ const resultPrediction = computed(() => {
             :src="fixture.homeTeam.crest || '/blank.png'"
             class="w-10 h-10 sm:w-14 sm:h-14 mr-2 lg:mr-4"
           />
-          <span class="hidden md:inline truncate">{{
+          <span class="md:!inline hidden truncate">{{
             fixture.homeTeam.name
           }}</span
           ><span class="md:hidden truncate">{{
@@ -211,7 +211,7 @@ const resultPrediction = computed(() => {
             height="60"
             class="w-12 h-12 sm:w-14 sm:h-14 mr-2 lg:mr-4"
           />
-          <span class="hidden md:inline truncate">{{
+          <span class="hidden md:!block truncate">{{
             fixture.awayTeam.name
           }}</span
           ><span class="md:hidden truncate">{{
