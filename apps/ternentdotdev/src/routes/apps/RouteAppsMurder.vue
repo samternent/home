@@ -1,6 +1,6 @@
 <script setup>
 import { shallowRef } from "vue";
-import { useAxios } from "../module/api/useAxios";
+import { useAxios } from "../../module/api/useAxios";
 
 const theme = shallowRef("90s grunge");
 const players = shallowRef(9);

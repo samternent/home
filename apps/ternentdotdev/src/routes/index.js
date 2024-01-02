@@ -1,4 +1,5 @@
 import { aboutRoutes } from "./about";
+import { appsRoutes } from "./apps";
 import { legalRoutes } from "./legal";
 import { workRoutes } from "./work";
 
@@ -12,6 +13,7 @@ export default [
         component: () => import("./RouteHome.vue"),
       },
       ...aboutRoutes,
+      ...appsRoutes,
       ...legalRoutes,
       ...workRoutes,
     ],

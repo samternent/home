@@ -25,3 +25,8 @@ spec:
                 secretKeyRef:
                   name: ternent-api-env
                   key: digitalocean-token
+            - name: OPEN_AI_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-env
+                  key: open-ai-key

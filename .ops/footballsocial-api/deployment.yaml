@@ -50,8 +50,8 @@ spec:
                 secretKeyRef:
                   name: footballsocial-api-env
                   key: football-data-api-key
-            - name: OPENAPI_KEY
+            - name: OPEN_AI_KEY
               valueFrom:
                 secretKeyRef:
                   name: footballsocial-api-env
-                  key: open-api-key
+                  key: open-ai-key

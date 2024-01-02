@@ -1,17 +1,8 @@
 <script setup>
 import { useLocalStorage } from "@vueuse/core";
-import { provideBreadcrumbs } from "./module/breadcrumbs/useBreadcrumbs";
-import { provideDrawerRoute } from "./module/drawer-route/useDrawerRoute";
-import DrawerRouterView from "./module/drawer-route/DrawerRoute.vue";
-import SideNavItems from "./module/side-nav/SideNavItems.vue";
-
+import { provideAxios } from "./module/api/useAxios";
 // DS components
-import {
-  SFooter,
-  SThemeToggle,
-  SBrandHeader,
-  SButton,
-} from "ternent-ui/components";
+import { SFooter, SBrandHeader } from "ternent-ui/components";
 
 const links = [
   {
@@ -33,8 +24,7 @@ const theme = useLocalStorage(
 
 const appName = import.meta.env.VITE_APP_NAME;
 
-provideBreadcrumbs();
-provideDrawerRoute();
+provideAxios();
 </script>
 
 <template>
@@ -44,20 +34,16 @@ provideDrawerRoute();
   >
     <div class="flex flex-1 flex-col w-full mx-auto max-w-6xl py-4">
       <header class="p-2 flex pt-8">
-        <RouterLink to="/"
+        <RouterLink to="/" class="btn btn-ghost"
           ><SBrandHeader size="md"
-            >murder <span class="font-light">ltd</span></SBrandHeader
+            >murder<span class="font-light">.ltd</span></SBrandHeader
           ></RouterLink
         >
       </header>
       <RouterView />
     </div>
-    <footer class="bg-base-100">
-      <SFooter :links="links">
-        <!-- <template #bottom>
-          <SThemeToggle v-model="theme" />
-        </template> -->
-      </SFooter>
+    <footer class="bg-base-200 pt-6">
+      <SFooter :links="links" />
     </footer>
   </div>
 </template>
