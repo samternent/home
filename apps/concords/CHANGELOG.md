@@ -1,5 +1,12 @@
 # concords-app
 
+## 0.0.15
+
+### Patch Changes
+
+- Updated dependencies [[`bb82d84026eb26dfc8e048e5d35d2bebb918c664`](https://github.com/samternent/home/commit/bb82d84026eb26dfc8e048e5d35d2bebb918c664)]:
+  - ternent-ui@0.0.7
+
 ## 0.0.14
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # ternentdotdev
 
+## 0.1.24
+
+### Patch Changes
+
+- [`bb82d84026eb26dfc8e048e5d35d2bebb918c664`](https://github.com/samternent/home/commit/bb82d84026eb26dfc8e048e5d35d2bebb918c664) Thanks [@samternent](https://github.com/samternent)! - Update theme and home page
+
+- Updated dependencies [[`bb82d84026eb26dfc8e048e5d35d2bebb918c664`](https://github.com/samternent/home/commit/bb82d84026eb26dfc8e048e5d35d2bebb918c664)]:
+  - ternent-ui@0.0.7
+
 ## 0.1.23
 
 ### Patch Changes
