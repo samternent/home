@@ -11,6 +11,7 @@ import { provideDrawerRoute } from "./module/drawer-route/useDrawerRoute";
 import DrawerRouterView from "./module/drawer-route/DrawerRoute.vue";
 import SideNavItems from "./module/side-nav/SideNavItems.vue";
 import Logo from "./module/brand/Logo.vue";
+import { provideAxios } from "./module/api/useAxios";
 
 // DS components
 import {
@@ -51,6 +52,7 @@ watch(themeVariation, (_themeVariation) => {
 
 const appName = import.meta.env.VITE_APP_NAME;
 
+provideAxios();
 provideBreadcrumbs();
 provideDrawerRoute();
 
@@ -122,7 +124,7 @@ const showSidebar = computed(() => mdAndLarger.value || openSideBar.value);
             <Logo
               class="mx-auto h-auto mb-2 w-24"
               :class="{
-                'w-12': mdAndLarger && smallerThanLg,
+                '!w-12': mdAndLarger && smallerThanLg,
               }"
             />
             <SFooter :links="links">

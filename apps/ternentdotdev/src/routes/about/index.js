@@ -12,8 +12,8 @@ export const aboutRoutes = [
         component: () => import("./RouteAboutWho.vue"),
       },
       {
-        path: "services",
-        component: () => import("./RouteAboutServices.vue"),
+        path: "cv",
+        component: () => import("./RouteAboutCV.vue"),
       },
       {
         path: "stack",

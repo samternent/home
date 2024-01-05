@@ -13,8 +13,8 @@ const tabs = computed(() => [
     path: "/about/who",
   },
   {
-    title: "Stack",
-    path: "/about/stack",
+    title: "CV",
+    path: "/about/cv",
   },
 ]);
 </script>

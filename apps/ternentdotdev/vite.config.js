@@ -20,6 +20,11 @@ export default ({ mode }) => {
         },
       },
     },
+    resolve: {
+      alias: {
+        "@": resolve(__dirname, "./src"),
+      },
+    },
     plugins: [
       ViteEjsPlugin(() => ({
         __APP_VERSION__: version,
