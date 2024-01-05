@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.1.25
+
+### Patch Changes
+
+- [`ff8404b628e2bd79697907fac28fb810b09595d2`](https://github.com/samternent/home/commit/ff8404b628e2bd79697907fac28fb810b09595d2) Thanks [@samternent](https://github.com/samternent)! - Adds sweet shop
+
 ## 0.1.24
 
 ### Patch Changes
