@@ -59,7 +59,7 @@ const results = computed(() => {
       v-model="amount"
       class="my-4 w-full"
     />
-    <p class="text-gray-700 text-base pt-2 text-right">
+    <p class="pt-2 text-right">
       <strong>Total Order:</strong> {{ results?.total }}
     </p>
 
@@ -67,13 +67,11 @@ const results = computed(() => {
       <p
         v-for="packet in Object.keys(combinations)"
         :key="packet"
-        class="bg-gray-100 font-normal flex rounded-full px-3 text-xs text-gray-700 m-1 py-1"
+        class="bg-base-300 font-normal flex rounded-full px-3 text-xs m-1 py-2"
       >
         <span class="mr-4">{{ packet }}</span>
-        <span class="font-thin"
-          ><span class="text-l mr-2">🛍️ </span> x{{
-            combinations[packet] || 0
-          }}</span
+        <span class="font-light"
+          ><span class="mr-2">🛍️ </span> x{{ combinations[packet] || 0 }}</span
         >
       </p>
     </section>
@@ -83,7 +81,7 @@ const results = computed(() => {
           v-for="bag in bags"
           :key="`bag_${bag}`"
           @click="remove(bag)"
-          class="bg-purple-100 text-gray-800 font-normal cursor-pointer flex rounded-full px-3 text-xs m-1 py-1"
+          class="bg-primary bg-opacity-10 font-normal cursor-pointer flex rounded-full px-3 text-xs m-1 py-1"
         >
           <span class="mr-4">{{ bag }}</span> x
         </p>
