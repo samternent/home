@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.1.27
+
+### Patch Changes
+
+- [`872daa252a1b2521a387460da903997f394bc6b4`](https://github.com/samternent/home/commit/872daa252a1b2521a387460da903997f394bc6b4) Thanks [@samternent](https://github.com/samternent)! - colors
+
 ## 0.1.26
 
 ### Patch Changes
