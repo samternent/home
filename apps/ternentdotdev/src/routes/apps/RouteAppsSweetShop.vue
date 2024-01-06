@@ -103,17 +103,22 @@ const results = computed(() => {
       changed their pack sizes and may change them again in future depending on
       demand.
     </p>
-    <p class="my-4">
+    <p class="my-4 p-2">
       <SBrandHeader size="md" class="font-light mb-2"
         >Requirements</SBrandHeader
       >
       Build a solution that will enable SSS to send out packs of sweets with as
       little wastage as possible for any given order size. In orderto achieve
-      this, the following rules should be followed. 1. Only whole packs can be
-      sent. Packs cannot be broken open. 2. Within the constraints of Rule 1
-      above, send out no more Sweets than necessary to fulfil the order. 3.
+      this, the following rules should be followed. 
+      <ul class="my-4">
+        <li>1. Only whole packs can be
+      sent. Packs cannot be broken open.</li>
+        <li>2. Within the constraints of Rule 1
+      above, send out no more Sweets than necessary to fulfil the order.</li>
+        <li>3.
       Within the constraints of Rules 1 & 2 above, send out as few packs as
-      possible to fulfil each order. The solution should also be flexible enough
+      possible to fulfil each order. </li>
+      </ul> The solution should also be flexible enough
       to add orremove pack sizes as well as change current pack sizes with
       minimal adjustments to the program.
     </p>

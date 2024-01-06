@@ -1,10 +1,12 @@
 <script setup>
+import { watch } from "vue";
 import { useLocalStorage } from "@vueuse/core";
 import {
   SNavBar,
   SBreadcrumbs,
   SButton,
   SBrandHeader,
+  SThemeToggle,
 } from "ternent-ui/components";
 import { useBreadcrumbs } from "../module/breadcrumbs/useBreadcrumbs";
 
@@ -14,6 +16,21 @@ const breadcrumbs = useBreadcrumbs({
 });
 
 const openSideBar = useLocalStorage("ternentdotdev/openSideBar", false);
+
+const themeVariation = useLocalStorage(
+  "app/themeVariation",
+  window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light"
+);
+const themeName = useLocalStorage(
+  "app/theme",
+  `ternentdotdev-${themeVariation.value}`
+);
+
+watch(themeVariation, (_themeVariation) => {
+  themeName.value = `ternentdotdev-${_themeVariation}`;
+});
 </script>
 <template>
   <div
@@ -47,6 +64,7 @@ const openSideBar = useLocalStorage("ternentdotdev/openSideBar", false);
         <SBreadcrumbs :breadcrumbs="breadcrumbs" />
       </template>
       <template #end>
+        <SThemeToggle v-model="themeVariation" size="sm" />
         <RouterLink to="/" class="btn btn-ghost btn-sm text-base md:!hidden"
           ><SBrandHeader size="sm" class="font-light"
             >t</SBrandHeader

@@ -13,14 +13,20 @@ const tabs = computed(() => [
   //   path: "/apps/murder-mystery",
   // },
   {
-    title: "Sweets Shop",
+    title: "Sweet Shop",
     path: "/apps/sweet-shop",
+  },
+  {
+    title: "Game",
+    path: "/apps/game",
   },
 ]);
 </script>
 <template>
   <div class="flex flex-col h-full flex-1">
     <SNavTabs :items="tabs" title="Apps" :path="$route.path" :exact="true" />
-    <div class="flex-1 overflow-auto"><RouterView /></div>
+    <div class="flex flex-1 overflow-auto relative">
+      <RouterView />
+    </div>
   </div>
 </template>

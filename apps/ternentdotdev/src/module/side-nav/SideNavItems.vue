@@ -1,18 +1,14 @@
 <script setup>
-import { computed } from "vue";
-import { breakpointsTailwind, useBreakpoints } from "@vueuse/core";
 import { useDrawerRoute } from "../drawer-route/useDrawerRoute";
 import { SButton } from "ternent-ui/components";
 
+defineProps({
+  collapsed: {
+    type: Boolean,
+    default: false,
+  },
+});
 const { setDrawerRoutePath } = useDrawerRoute();
-
-const breakpoints = useBreakpoints(breakpointsTailwind);
-const mdAndLarger = breakpoints.greaterOrEqual("md");
-const smallerThanLg = breakpoints.smaller("lg");
-
-const shouldShowSmall = computed(
-  () => mdAndLarger.value && smallerThanLg.value
-);
 </script>
 <template>
   <div class="flex flex-col flex-1 w-full items-center py-8 justify-start px-2">
@@ -36,7 +32,7 @@ const shouldShowSmall = computed(
         />
       </svg>
 
-      <span v-if="!shouldShowSmall">Contact</span></SButton
+      <span v-if="!collapsed">Contact</span></SButton
     >
     <div class="my-4"></div>
     <SButton type="ghost" to="/about" class="w-full my-1">
@@ -56,7 +52,7 @@ const shouldShowSmall = computed(
         />
       </svg>
 
-      <span v-if="!shouldShowSmall">About</span></SButton
+      <span v-if="!collapsed">About</span></SButton
     >
     <SButton type="ghost" to="/work" class="w-full my-1">
       <svg
@@ -75,7 +71,7 @@ const shouldShowSmall = computed(
         />
       </svg>
 
-      <span v-if="!shouldShowSmall">Work</span></SButton
+      <span v-if="!collapsed">Work</span></SButton
     >
     <SButton type="ghost" to="/apps" class="w-full my-1">
       <svg
@@ -93,7 +89,7 @@ const shouldShowSmall = computed(
         />
       </svg>
 
-      <span v-if="!shouldShowSmall">Apps</span></SButton
+      <span v-if="!collapsed">Apps</span></SButton
     >
   </div>
 </template>

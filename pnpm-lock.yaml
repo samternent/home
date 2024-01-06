@@ -738,6 +738,9 @@ importers:
       luxon:
         specifier: ^3.4.3
         version: 3.4.3
+      sams-game-kit:
+        specifier: workspace:*
+        version: link:../../packages/game-kit
       ternent-ui:
         specifier: workspace:*
         version: link:../../packages/ternent-ui
@@ -765,7 +768,7 @@ importers:
         version: 3.3.3
       vite:
         specifier: ^4.4.11
-        version: 4.5.0(@types/node@14.18.33)
+        version: 4.5.0(@types/node@18.15.11)
       vite-plugin-pwa:
         specifier: ^0.16.5
         version: 0.16.5(vite@4.5.0)(workbox-build@7.0.0)(workbox-window@7.0.0)
@@ -5366,7 +5369,6 @@ packages:
 
   /@types/node@18.15.11:
     resolution: {integrity: sha512-E5Kwq2n4SbMzQOn6wnmBjuK9ouqlURrcZDVfbo9ftDDTFt3nk7ZKK4GMOzoYgnpQJKcxwQw+lGaBvvlMo0qN/Q==}
-    dev: false
 
   /@types/node@20.10.0:
     resolution: {integrity: sha512-D0WfRmU9TQ8I9PFx9Yc+EBHw+vSpIub4IDvQivcp26PtPrdMGAq5SDcpXEo/epqa/DXotVpekHiLNTg3iaKXBQ==}
@@ -6033,7 +6035,7 @@ packages:
       vite: ^4.0.0
       vue: ^3.2.25
     dependencies:
-      vite: 4.5.0(@types/node@14.18.33)
+      vite: 4.5.0(@types/node@18.15.11)
       vue: 3.3.4
     dev: true
 
@@ -15356,7 +15358,7 @@ packages:
       debug: 4.3.4
       fast-glob: 3.3.2
       pretty-bytes: 6.1.1
-      vite: 4.5.0(@types/node@14.18.33)
+      vite: 4.5.0(@types/node@18.15.11)
       workbox-build: 7.0.0
       workbox-window: 7.0.0
     transitivePeerDependencies:
@@ -15560,7 +15562,6 @@ packages:
       rollup: 3.29.4
     optionalDependencies:
       fsevents: 2.3.3
-    dev: false
 
   /vitest@0.25.8(happy-dom@8.9.0):
     resolution: {integrity: sha512-X75TApG2wZTJn299E/TIYevr4E9/nBo1sUtZzn0Ci5oK8qnpZAZyhwg0qCeMSakGIWtc6oRwcQFyFfW14aOFWg==}

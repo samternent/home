@@ -4,7 +4,7 @@ import {
   breakpointsTailwind,
   useBreakpoints,
 } from "@vueuse/core";
-import { computed, watch } from "vue";
+import { computed, watch, shallowRef } from "vue";
 import { useRoute } from "vue-router";
 import { provideBreadcrumbs } from "./module/breadcrumbs/useBreadcrumbs";
 import { provideDrawerRoute } from "./module/drawer-route/useDrawerRoute";
@@ -14,12 +14,7 @@ import Logo from "./module/brand/Logo.vue";
 import { provideAxios } from "./module/api/useAxios";
 
 // DS components
-import {
-  SFooter,
-  SThemeToggle,
-  SBrandHeader,
-  SButton,
-} from "ternent-ui/components";
+import { SThemeToggle, SBrandHeader, SButton } from "ternent-ui/components";
 
 const breakpoints = useBreakpoints(breakpointsTailwind);
 const route = useRoute();
@@ -35,21 +30,6 @@ const links = [
   },
 ];
 
-const themeVariation = useLocalStorage(
-  "app/themeVariation",
-  window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "dark"
-    : "light"
-);
-const themeName = useLocalStorage(
-  "app/theme",
-  `ternentdotdev-${themeVariation.value}`
-);
-
-watch(themeVariation, (_themeVariation) => {
-  themeName.value = `ternentdotdev-${_themeVariation}`;
-});
-
 const appName = import.meta.env.VITE_APP_NAME;
 
 provideAxios();
@@ -60,13 +40,22 @@ const mdAndLarger = breakpoints.greaterOrEqual("md");
 const lgAndLarger = breakpoints.greaterOrEqual("lg");
 const smallerThanMd = breakpoints.smaller("md");
 const smallerThanLg = breakpoints.smaller("lg");
-const smallerThanSm = breakpoints.smaller("sm");
+
+const collapsedSideBar = useLocalStorage("app/collapsedSideBar", false);
 
 watch(route, () => {
   openSideBar.value = false;
 });
+watch(smallerThanMd, () => {
+  collapsedSideBar.value = false;
+});
 const openSideBar = useLocalStorage("ternentdotdev/openSideBar", false);
 const showSidebar = computed(() => mdAndLarger.value || openSideBar.value);
+
+const themeName = useLocalStorage(
+  "app/theme",
+  `ternentdotdev-${localStorage.getItem("app/themeVariation")}`
+);
 </script>
 
 <template>
@@ -83,13 +72,37 @@ const showSidebar = computed(() => mdAndLarger.value || openSideBar.value);
       >
         <div
           v-if="showSidebar"
-          class="flex flex-col shrink-0 bg-base-200 justify-between min-h-screen max-h-screen h-screen"
+          class="flex flex-col shrink-0 bg-base-200 justify-between min-h-screen max-h-screen duration-100 h-screen"
+          style="transition: width 200ms"
           :class="{
-            'w-20 relative': mdAndLarger && smallerThanLg,
-            'w-64 relative': lgAndLarger,
+            'w-20 relative': (mdAndLarger && smallerThanLg) || collapsedSideBar,
+            'w-64 relative': lgAndLarger && !collapsedSideBar,
             'w-64 absolute z-20 shadow-lg': smallerThanMd && openSideBar,
           }"
         >
+          <SButton
+            class="btn btn-circle btn-primary btn-sm -right-5 z-30 bottom-16 shadow absolute transition-transform duration-1000"
+            type="neutral"
+            :class="{
+              'rotate-180': collapsedSideBar,
+            }"
+            v-if="lgAndLarger"
+            @click="collapsedSideBar = !collapsedSideBar"
+            ><svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-4 h-4"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15.75 19.5 8.25 12l7.5-7.5"
+              />
+            </svg>
+          </SButton>
           <SButton
             v-if="smallerThanMd"
             @click="openSideBar = false"
@@ -112,29 +125,26 @@ const showSidebar = computed(() => mdAndLarger.value || openSideBar.value);
           </SButton>
           <header class="p-2 flex md:justify-center sm:py-2">
             <RouterLink to="/" class="btn btn-ghost text-base"
-              ><SBrandHeader v-if="lgAndLarger || smallerThanMd" size="md"
+              ><SBrandHeader
+                v-if="(lgAndLarger || smallerThanMd) && !collapsedSideBar"
+                size="md"
                 >ternent<span class="font-light">dot</span>dev</SBrandHeader
               ><SBrandHeader v-else size="lg" class="font-light"
                 >t</SBrandHeader
               ></RouterLink
             >
           </header>
-          <SideNavItems />
+          <SideNavItems
+            :collapsed="!(lgAndLarger || smallerThanMd) || collapsedSideBar"
+          />
           <footer class="flex flex-col justify-end">
             <Logo
-              class="mx-auto h-auto mb-2 w-24"
+              class="mx-auto h-auto my-6 w-24 transition-all"
               :class="{
-                '!w-12': mdAndLarger && smallerThanLg,
+                '!w-12 !my-4':
+                  (mdAndLarger && smallerThanLg) || collapsedSideBar,
               }"
             />
-            <SFooter :links="links">
-              <template #bottom>
-                <SThemeToggle
-                  v-model="themeVariation"
-                  :size="lgAndLarger || smallerThanMd ? 'md' : 'sm'"
-                />
-              </template>
-            </SFooter>
           </footer>
         </div>
       </transition>

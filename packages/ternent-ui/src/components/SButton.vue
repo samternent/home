@@ -26,7 +26,7 @@ const classMap = {
     :to="to"
     role="button"
     v-bind="$attrs"
-    class="btn mx-1"
+    class="btn mx-1 flex truncate flex-nowrap"
     :class="classMap[type]"
     activeClass="btn-active"
     ><slot

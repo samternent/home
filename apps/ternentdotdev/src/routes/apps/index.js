@@ -15,6 +15,10 @@ export const appsRoutes = [
         path: "/apps/sweet-shop",
         component: () => import("./RouteAppsSweetShop.vue"),
       },
+      {
+        path: "/apps/game",
+        component: () => import("./RouteAppsGame.vue"),
+      },
     ],
   },
 ];

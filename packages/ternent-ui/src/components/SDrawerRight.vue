@@ -10,7 +10,7 @@ defineProps({
 defineEmits(["update:modelValue"]);
 </script>
 <template>
-  <div class="drawer drawer-end z-100">
+  <div class="drawer drawer-end">
     <input
       id="my-drawer-4"
       type="checkbox"
