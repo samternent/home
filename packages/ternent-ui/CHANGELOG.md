@@ -1,5 +1,11 @@
 # ternent-ui
 
+## 0.0.8
+
+### Patch Changes
+
+- [`383c709f107fc869a19430a9565f2b84c8ddc9cf`](https://github.com/samternent/home/commit/383c709f107fc869a19430a9565f2b84c8ddc9cf) Thanks [@samternent](https://github.com/samternent)! - Adds game
+
 ## 0.0.7
 
 ### Patch Changes
