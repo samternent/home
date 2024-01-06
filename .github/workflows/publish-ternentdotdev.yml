@@ -41,7 +41,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build libs
-        run: pnpm --filter ternent-ui --filter ternentdotdev build
+        run: pnpm --filter ternent-ui --filter sams-game-kit --filter ternentdotdev build
 
       - name: Link Vercel project
         run: vercel link --yes --cwd ${{ github.workspace }}/apps/ternentdotdev --token=${{ secrets.VERCEL_TOKEN }}
