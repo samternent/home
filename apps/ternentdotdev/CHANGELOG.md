@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.1.29
+
+### Patch Changes
+
+- [`11ba293b1b8fc74b2aa4beac2680d42defafb816`](https://github.com/samternent/home/commit/11ba293b1b8fc74b2aa4beac2680d42defafb816) Thanks [@samternent](https://github.com/samternent)! - buld game kit
+
 ## 0.1.28
 
 ### Patch Changes
