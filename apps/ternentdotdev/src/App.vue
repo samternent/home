@@ -77,7 +77,7 @@ const themeName = useLocalStorage(
           :class="{
             'w-20 relative': (mdAndLarger && smallerThanLg) || collapsedSideBar,
             'w-64 relative': lgAndLarger && !collapsedSideBar,
-            'w-64 absolute z-20 shadow-lg': smallerThanMd && openSideBar,
+            'w-64 absolute z-30 shadow-lg': smallerThanMd && openSideBar,
           }"
         >
           <SButton
