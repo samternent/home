@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.1.30
+
+### Patch Changes
+
+- [`0a7edd26fec6b62d773fff3460b1b3a9c5e97801`](https://github.com/samternent/home/commit/0a7edd26fec6b62d773fff3460b1b3a9c5e97801) Thanks [@samternent](https://github.com/samternent)! - Improve game mechanics
+
 ## 0.1.29
 
 ### Patch Changes
