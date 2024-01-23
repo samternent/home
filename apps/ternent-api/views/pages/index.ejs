@@ -3,57 +3,6 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <style type="text/css" media="screen">
-      * {
-        box-sizing: border-box;
-      }
-      h1,
-      h2,
-      h3,
-      h4,
-      h5 {
-        margin: 0;
-        padding: 0;
-      }
-      /* System Fonts as used by GitHub */
-      body {
-        font-family: ui-monospace, Menlo, Monaco, "Cascadia Mono",
-          "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace",
-          "Source Code Pro", "Fira Mono", "Droid Sans Mono", "Courier New",
-          monospace;
-        font-size: calc(15px + 0.390625vw);
-        margin: 0;
-      }
-
-      h1 {
-        font-size: 2em;
-      }
-      h2 {
-        font-size: 1.2em;
-        font-weight: 100;
-      }
-      h1,
-      h2 {
-        letter-spacing: -0.1em;
-      }
-
-      h3 {
-        position: sticky;
-        top: 5.7em;
-        background-color: #fff;
-        padding: 0.5em;
-        margin: 1em 0;
-        text-transform: uppercase;
-        border-left: 0.4em solid pink;
-      }
-
-      .content {
-        max-width: 1080px;
-        margin: 0 auto;
-        padding: 0 1em;
-        background: #fff;
-      }
-    </style>
     <link rel="stylesheet" type="text/css" href="styles.css" media="screen" />
     <title>api.ternent.dev</title>
   </head>
@@ -63,7 +12,7 @@
       <header class="header">
         <h1>
           <span class="pagescroll"
-            >ternent[dot]dev<span style="color: pink">.</span></span
+            >ternent[dot]dev<span class="text-pink">.</span></span
           >
         </h1>
         <h2><span>api.ternent.dev</span></h2>
@@ -90,22 +39,6 @@
         </p>
       </div>
       <div>
-        <h3>Costs</h3>
-        <p>DigitalOcean current monthly usage: <span id="my-costs"></span></p>
-        <table class="my-costs__table">
-          <caption>
-            Billing history
-          </caption>
-          <thead>
-            <tr>
-              <th>date</th>
-              <th>amount($)</th>
-            </tr>
-          </thead>
-          <tbody id="my-costs__table"></tbody>
-        </table>
-      </div>
-      <div>
         <h3>socket API</h3>
         <pre class="code-block">
 const socket = new WebSocket('wss://api.ternent.dev');
@@ -125,14 +58,7 @@ socket.addEventListener('message', (event) => {
         <h3>rest API</h3>
         <p>There aren't any yet.</p>
       </div>
-      <div style="margin-top: 100vh; height: 70vh; margin-bottom: 100px">
-        <h3>Sorry</h3>
-        <p style="margin: 10em 0">
-          You needn't have scrolled this far... I'm just testing that fancy
-          scroll indicator under my name up there.
-        </p>
-      </div>
-      <footer style="background-color: pink; padding: 2em 1em; height: 10em">
+      <footer class="footer">
         <p>This is a safe space.</p>
         <p>There are no cookies, intrusive analytics or other nasties here.</p>
       </footer>

@@ -1,5 +1,4 @@
 import watchScrollPercentage from "./scroll-percentage.js";
-import renderMyCosts from "./my-costs.js";
 
 const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
 const host = window.location.host;
@@ -16,4 +15,3 @@ socket.addEventListener("message", (event) => {
 });
 
 watchScrollPercentage();
-renderMyCosts();

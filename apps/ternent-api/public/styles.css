@@ -2,6 +2,55 @@
   --scrollPos: 100%;
 }
 
+* {
+  box-sizing: border-box;
+}
+h1,
+h2,
+h3,
+h4,
+h5 {
+  margin: 0;
+  padding: 0;
+}
+/* System Fonts as used by GitHub */
+body {
+  font-family: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono",
+    "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro",
+    "Fira Mono", "Droid Sans Mono", "Courier New", monospace;
+  font-size: calc(15px + 0.390625vw);
+  margin: 0;
+}
+
+h1 {
+  font-size: 2em;
+}
+h2 {
+  font-size: 1.2em;
+  font-weight: 100;
+}
+h1,
+h2 {
+  letter-spacing: -0.1em;
+}
+
+h3 {
+  position: sticky;
+  top: 5.7em;
+  background-color: #fff;
+  padding: 0.5em;
+  margin: 1em 0;
+  text-transform: uppercase;
+  border-left: 0.4em solid pink;
+}
+
+.content {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 1em;
+  background: #fff;
+}
+
 .code-block {
   font-size: 1.1em;
   background-origin: content-box;
@@ -37,88 +86,12 @@
   background-color: #fff;
   z-index: 10;
 }
-
-#my-costs {
-  font-size: 1.5em;
+.text-pink {
+  coor: pink;
 }
-
-.my-costs__table {
-  border: 1px solid #ccc;
-  border-collapse: collapse;
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  table-layout: fixed;
-}
-
-.my-costs__table caption {
-  font-size: 1em;
-  margin: 0.5em 0 0.75em;
-}
-
-.my-costs__table tr {
-  background-color: #f8f8f8;
-  border: 1px solid #ddd;
-  padding: 0.35em;
-}
-
-.my-costs__table th,
-.my-costs__table td {
-  padding: 0.625em;
-  text-align: center;
-}
-
-.my-costs__table th {
-  font-size: 0.85em;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-@media screen and (max-width: 600px) {
-  .my-costs__table {
-    border: 0;
-  }
-
-  .my-costs__table caption {
-    font-size: 1em;
-  }
-
-  .my-costs__table thead {
-    border: none;
-    clip: rect(0 0 0 0);
-    height: 1px;
-    margin: -1px;
-    overflow: hidden;
-    padding: 0;
-    position: absolute;
-    width: 1px;
-  }
-
-  .my-costs__table tr {
-    border-bottom: 3px solid #ddd;
-    display: block;
-    margin-bottom: 0.625em;
-  }
-
-  .my-costs__table td {
-    border-bottom: 1px solid #ddd;
-    display: block;
-    font-size: 0.8em;
-    text-align: right;
-  }
-
-  .my-costs__table td::before {
-    /*
-    * aria-label has no advantage, it won't be read inside a table
-    content: attr(aria-label);
-    */
-    content: attr(data-label);
-    float: left;
-    font-weight: bold;
-    text-transform: uppercase;
-  }
-
-  .my-costs__table td:last-child {
-    border-bottom: 0;
-  }
+.footer {
+  background-color: pink;
+  padding: 2em 1em;
+  height: 10em;
+  margin-top: 10em;
 }
