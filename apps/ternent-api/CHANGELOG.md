@@ -1,5 +1,11 @@
 # ternent-api
 
+## 0.0.23
+
+### Patch Changes
+
+- [`c68caae3514dd233c65ab573e3f95b6314647492`](https://github.com/samternent/home/commit/c68caae3514dd233c65ab573e3f95b6314647492) Thanks [@samternent](https://github.com/samternent)! - Adds server CSP
+
 ## 0.0.22
 
 ### Patch Changes
