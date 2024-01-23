@@ -1,6 +1,10 @@
 <script setup>
 import { shallowRef, computed, onMounted, reactive, watch } from "vue";
-import { useLocalStorage, useElementSize } from "@vueuse/core";
+import {
+  reactiveComputed,
+  useLocalStorage,
+  useElementSize,
+} from "@vueuse/core";
 import { createEngine, createSprite } from "sams-game-kit";
 import { ScrollingBackgroundImage } from "./background";
 
@@ -17,11 +21,13 @@ import roll from "@/assets/character/roll.png";
 
 const canvas = shallowRef();
 const bg = shallowRef();
+const platform = shallowRef();
 const ctx = computed(() => canvas.value?.getContext("2d"));
 const characterState = shallowRef("idle");
 const size = reactive(
   useElementSize(bg, { width: 0, height: 0 }, { box: "border-box" })
 );
+
 const { onLoop } = createEngine();
 const { drawSprite } = createSprite(
   {
@@ -127,6 +133,10 @@ function drawScene(timestamp) {
     characterDirection.value >= 0 ? 0 : size.width, // set the x origin
     size.height
   );
+
+  ctx.fillStyle = "red";
+  ctx.value.fillRect(100 - cameraX.value + -1, -100, 100, 100);
+
   drawSprite(ctx.value, {
     state: characterState.value,
     position: {
@@ -141,6 +151,7 @@ function drawScene(timestamp) {
       "crouchIdle",
     ].includes(characterState.value),
   });
+
   ctx.value.restore(); // restore
 }
 
@@ -229,6 +240,13 @@ const sceneLayerMultiplier = computed(() => {
   />
   <div class="absolute flex top-0 left-0 overflow-hidden bottom-0 right-0 z-20">
     <canvas ref="canvas" class="flex-1 z-20"></canvas>
+    <div
+      class="absolute top-0 bottom-0 left-0 flex-1"
+      :style="{
+        width: `${sceneWidth}px`,
+        transform: `translate3d(${cameraX}px, ${cameraY / 5}px, 0)`,
+      }"
+    ></div>
     <div
       class="text-xs font-light bg-base-100 absolute border-t-2 border-accent w-full bottom-0 flex justify-end items-center px-4"
       :style="`height: ${40 - cameraY / 10}px`"

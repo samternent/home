@@ -15,7 +15,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self';font-src fonts.gstatic.com;style-src 'self' fonts.googleapis.com"
+          "value": "default-src 'self';font-src fonts.gstatic.com;style-src 'self' fonts.googleapis.com; object-src 'none'; base-uri: 'self'"
         },
         {
           "key": "X-Content-Type-Options",
