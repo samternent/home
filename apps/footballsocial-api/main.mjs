@@ -21,6 +21,18 @@ app.use(
     exposedHeaders: ["X-App-Version", "X-Api-Version"],
   })
 );
+app.use(function (req, res, next) {
+  res.setHeader("Content-Security-Policy", "default-src 'self';");
+  res.setHeader("X-XSS-Protection", "0");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("Referrer-Policy", "same-origin");
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader(
+    "Strict-Transport-Security",
+    "max-age=31536000 ; includeSubDomains"
+  );
+  next();
+});
 
 // Set port
 const port = "3000";
