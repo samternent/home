@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.11.19
+
+### Patch Changes
+
+- [`a3b2214e3fe67e0b91dc24a84eb7497cfc2167a1`](https://github.com/samternent/home/commit/a3b2214e3fe67e0b91dc24a84eb7497cfc2167a1) Thanks [@samternent](https://github.com/samternent)! - Fix CSP again
+
 ## 0.11.18
 
 ### Patch Changes
