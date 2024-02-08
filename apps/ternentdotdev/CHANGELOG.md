@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.1.36
+
+### Patch Changes
+
+- [`406082715d19d96f62cc45ea263afa2890e7f4d2`](https://github.com/samternent/home/commit/406082715d19d96f62cc45ea263afa2890e7f4d2) Thanks [@samternent](https://github.com/samternent)! - Update CSP
+
 ## 0.1.35
 
 ### Patch Changes
