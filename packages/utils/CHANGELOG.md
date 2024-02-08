@@ -1,5 +1,11 @@
 # concords-utils
 
+## 1.0.8
+
+### Patch Changes
+
+- [`90b078e2e6ac4adbbb97c571219e61ae6b8bd191`](https://github.com/samternent/home/commit/90b078e2e6ac4adbbb97c571219e61ae6b8bd191) Thanks [@samternent](https://github.com/samternent)! - Adds unit tests
+
 ## 1.0.7
 
 ### Patch Changes

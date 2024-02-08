@@ -1,5 +1,12 @@
 # vue-template
 
+## 0.0.9
+
+### Patch Changes
+
+- Updated dependencies [[`d464a231ac93035bd252e67d1f278d1fb59f9e09`](https://github.com/samternent/home/commit/d464a231ac93035bd252e67d1f278d1fb59f9e09)]:
+  - ternent-ui@0.0.9
+
 ## 0.0.8
 
 ### Patch Changes

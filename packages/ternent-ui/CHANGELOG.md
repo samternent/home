@@ -1,5 +1,11 @@
 # ternent-ui
 
+## 0.0.9
+
+### Patch Changes
+
+- [`d464a231ac93035bd252e67d1f278d1fb59f9e09`](https://github.com/samternent/home/commit/d464a231ac93035bd252e67d1f278d1fb59f9e09) Thanks [@samternent](https://github.com/samternent)! - Update ternentdotdev theme and some styles
+
 ## 0.0.8
 
 ### Patch Changes

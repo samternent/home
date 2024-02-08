@@ -1,5 +1,16 @@
 # concords-app
 
+## 0.0.17
+
+### Patch Changes
+
+- Updated dependencies [[`90b078e2e6ac4adbbb97c571219e61ae6b8bd191`](https://github.com/samternent/home/commit/90b078e2e6ac4adbbb97c571219e61ae6b8bd191), [`d464a231ac93035bd252e67d1f278d1fb59f9e09`](https://github.com/samternent/home/commit/d464a231ac93035bd252e67d1f278d1fb59f9e09)]:
+  - concords-proof-of-work@0.0.9
+  - concords-utils@1.0.8
+  - ternent-ui@0.0.9
+  - concords-ledger@1.0.14
+  - concords-identity@0.0.10
+
 ## 0.0.16
 
 ### Patch Changes
