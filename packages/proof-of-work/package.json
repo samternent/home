@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "vite build --watch",
     "build": "vite build",
-    "preview": "vite preview"
+    "test": "vitest"
   },
   "context": "browser",
   "targets": {
@@ -21,9 +21,10 @@
   "license": "ISC",
   "browserslist": "last 2 versions",
   "dependencies": {
-    "concords-utils": "workspace:*",
     "@swc/helpers": "^0.4.3",
-    "regenerator-runtime": "^0.13.9"
+    "concords-utils": "workspace:*",
+    "regenerator-runtime": "^0.13.9",
+    "vitest": "^1.2.2"
   },
   "devDependencies": {
     "vite": "^2.9.9",

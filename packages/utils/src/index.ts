@@ -9,7 +9,7 @@ export function addNewLines(str: string): string {
 }
 
 export function removeLines(str: string): string {
-  return str.replace("\n", "");
+  return str.replaceAll("\n", "");
 }
 
 export function stripIdentityKey(key: string) {

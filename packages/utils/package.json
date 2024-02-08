@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "vite build --watch",
     "build": "vite build",
-    "preview": "vite preview"
+    "test": "vitest"
   },
   "context": "browser",
   "targets": {
@@ -22,7 +22,8 @@
   "browserslist": "last 2 versions",
   "dependencies": {
     "@swc/helpers": "^0.4.3",
-    "regenerator-runtime": "^0.13.9"
+    "regenerator-runtime": "^0.13.9",
+    "vitest": "^1.2.2"
   },
   "devDependencies": {
     "vite": "^2.9.9",
