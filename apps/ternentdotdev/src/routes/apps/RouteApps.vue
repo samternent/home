@@ -8,24 +8,24 @@ useBreadcrumbs({
   name: "Apps",
 });
 const tabs = computed(() => [
-  // {
-  //   title: "Murder Mystery?",
-  //   path: "/apps/murder-mystery",
-  // },
+  {
+    title: "Tasks",
+    path: "/apps/tasks",
+  },
   {
     title: "Sweet Shop",
     path: "/apps/sweet-shop",
   },
   {
-    title: "Game",
-    path: "/apps/game",
+    title: "Permissions",
+    path: "/apps/permissions",
   },
 ]);
 </script>
 <template>
   <div class="flex flex-col h-full flex-1">
     <SNavTabs :items="tabs" title="Apps" :path="$route.path" :exact="true" />
-    <div class="flex flex-1 overflow-auto relative">
+    <div class="flex flex-1 overflow-y-auto relative">
       <RouterView />
     </div>
   </div>

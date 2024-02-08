@@ -11,6 +11,10 @@
   "dependencies": {
     "@vueuse/core": "^10.5.0",
     "axios": "^1.5.1",
+    "concords-encrypt": "workspace:*",
+    "concords-identity": "workspace:*",
+    "concords-ledger": "workspace:*",
+    "concords-utils": "workspace:*",
     "luxon": "^3.4.3",
     "sams-game-kit": "workspace:*",
     "ternent-ui": "workspace:*",
