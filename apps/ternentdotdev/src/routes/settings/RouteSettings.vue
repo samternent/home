@@ -18,6 +18,17 @@ const themeName = useLocalStorage(
   `ternentdotdev-${themeVariation.value}`
 );
 
+const links = [
+  {
+    title: "Privacy",
+    to: "/legal/privacy",
+  },
+  {
+    title: "Terms",
+    to: "/legal/terms",
+  },
+];
+
 watch(themeVariation, (_themeVariation) => {
   themeName.value = `ternentdotdev-${_themeVariation}`;
 });

@@ -15,7 +15,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self';font-src fonts.gstatic.com;style-src 'self' fonts.googleapis.com; object-src 'none'; base-uri: 'self'"
+          "value": "default-src 'unsafe-inline' 'unsafe-eval' 'self' *.ternent.dev *.concords.app;font-src fonts.gstatic.com;style-src 'unsafe-inline' 'self' *.ternent.dev *.concords.app fonts.googleapis.com; object-src 'none'; base-uri 'self';"
         },
         {
           "key": "X-Content-Type-Options",
