@@ -1,5 +1,17 @@
 # ternentdotdev
 
+## 0.1.33
+
+### Patch Changes
+
+- [`3dd3728a3dbc1ee428672c6387911e131c5c2aeb`](https://github.com/samternent/home/commit/3dd3728a3dbc1ee428672c6387911e131c5c2aeb) Thanks [@samternent](https://github.com/samternent)! - Update styles and structure. Adds concords
+
+- Updated dependencies [[`90b078e2e6ac4adbbb97c571219e61ae6b8bd191`](https://github.com/samternent/home/commit/90b078e2e6ac4adbbb97c571219e61ae6b8bd191), [`d464a231ac93035bd252e67d1f278d1fb59f9e09`](https://github.com/samternent/home/commit/d464a231ac93035bd252e67d1f278d1fb59f9e09)]:
+  - concords-utils@1.0.8
+  - ternent-ui@0.0.9
+  - concords-ledger@1.0.14
+  - concords-identity@0.0.10
+
 ## 0.1.32
 
 ### Patch Changes
