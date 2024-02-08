@@ -21,7 +21,7 @@ defineEmits(["update:modelValue"]);
     <div class="drawer-content">
       <RouterView />
     </div>
-    <div class="drawer-side z-20">
+    <div class="drawer-side overflow-x-hidden z-30">
       <label
         for="my-drawer-4"
         aria-label="close sidebar"

@@ -1,8 +1,8 @@
 export const ternentDotDev = {
   "ternentdotdev-dark": {
-    primary: "#9753ef", // Purple
+    primary: "#fd575a", // Red
     secondary: "#d35597", // Melon
-    accent: "#fd575a", // Red
+    accent: "#9753ef", // Purple
     neutral: "#1F1F1F", // Very Dark Gray
     info: "#4BC0C0", // Turquoise
     success: "#77DD77", // Pastel Green
@@ -12,15 +12,10 @@ export const ternentDotDev = {
     "base-200": "#2C2C2C", // Charcoal
     "base-300": "#424242", // Darker Gray
     "base-content": "#FFFFFF", // Updated to a lighter shade for better contrast in dark mode
-    "--rounded-box": "1.4rem", // Slightly rounded corners for boxes
-    "--rounded-btn": "1.2rem", // Softened button curves for a modern look
-    "--rounded-badge": "2.2rem", // Rounded badges for a playful touch
-    "--animation-btn": "0.35s", // Smooth button animations
-    "--animation-input": "0.28s", // Input animations
-    "--btn-focus-scale": "0.95", // Slightly reduced button scaling on focus
-    "--border-btn": "2px", // Border thickness for buttons
-    "--tab-border": "2px", // Border thickness for tabs
-    "--tab-radius": "0.8rem", // Tab corner radius
+    "--rounded-box": "0",
+    "--rounded-btn": "0.8em 0 0.8em 0",
+    "--rounded-badge": "0",
+    "--tab-radius": "0",
     "color-scheme": "dark",
   },
   "ternentdotdev-light": {
@@ -36,15 +31,10 @@ export const ternentDotDev = {
     "base-200": "#F9F9F9", // Off White
     "base-300": "#E0E0E0", // Lighter Gray
     "base-content": "#262626", // Updated to a darker shade for better contrast in light mode
-    "--rounded-box": "1.4rem", // Slightly rounded corners for boxes
-    "--rounded-btn": "1.2rem", // Softened button curves for a modern look
-    "--rounded-badge": "2.2rem", // Rounded badges for a playful touch
-    "--animation-btn": "0.35s", // Smooth button animations
-    "--animation-input": "0.28s", // Input animations
-    "--btn-focus-scale": "0.95", // Slightly reduced button scaling on focus
-    "--border-btn": "2px", // Border thickness for buttons
-    "--tab-border": "2px", // Border thickness for tabs
-    "--tab-radius": "0.8rem", // Tab corner radius
+    "--rounded-box": "0",
+    "--rounded-btn": "0.8em 0 0.8em 0",
+    "--rounded-badge": "0",
+    "--tab-radius": "0",
     "color-scheme": "light",
   },
 };

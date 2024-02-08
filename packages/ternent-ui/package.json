@@ -15,9 +15,10 @@
     "./components": "./dist/ternent-ui.js"
   },
   "dependencies": {
+    "@tailwindcss/typography": "^0.5.10",
     "@vueuse/core": "^10.5.0",
     "autoprefixer": "^10.4.16",
-    "daisyui": "^4.4.2",
+    "daisyui": "^4.6.0",
     "luxon": "^3.4.3",
     "postcss": "^8.4.31",
     "tailwind-merge": "^1.14.0",

@@ -18,7 +18,7 @@ module.exports = {
       variants: ["hover"],
     },
   ],
-  plugins: [require("daisyui")],
+  plugins: [require("@tailwindcss/typography"), require("daisyui")],
   daisyui: {
     themes: [themes],
   },
