@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.1.34
+
+### Patch Changes
+
+- [`e0f20a9f5df77c856a3e1a2505d43953b6bd3b14`](https://github.com/samternent/home/commit/e0f20a9f5df77c856a3e1a2505d43953b6bd3b14) Thanks [@samternent](https://github.com/samternent)! - Update build packages in workflow
+
 ## 0.1.33
 
 ### Patch Changes
