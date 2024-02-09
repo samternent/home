@@ -8,6 +8,7 @@ import { computed, watch } from "vue";
 import { useRoute } from "vue-router";
 import SideNavItems from "../side-nav/SideNavItems.vue";
 import Logo from "../brand/Logo.vue";
+import { useWhiteLabel } from "../brand/useWhiteLabel";
 
 import { SBrandHeader, SButton } from "ternent-ui/components";
 
@@ -19,6 +20,7 @@ const smallerThanMd = breakpoints.smaller("md");
 const smallerThanLg = breakpoints.smaller("lg");
 
 const collapsedSideBar = useLocalStorage("app/collapsedSideBar", false);
+const whiteLabel = useWhiteLabel();
 
 watch(route, () => {
   openSideBar.value = false;
@@ -94,10 +96,12 @@ const showSidebar = computed(() => mdAndLarger.value || openSideBar.value);
           ><SBrandHeader
             v-if="(lgAndLarger || smallerThanMd) && !collapsedSideBar"
             size="md"
-            >ternent<span class="font-light">dot</span>dev</SBrandHeader
-          ><SBrandHeader v-else size="lg" class="font-light"
-            >t</SBrandHeader
-          ></RouterLink
+            >{{ whiteLabel.name[0]
+            }}<span class="font-light">{{ whiteLabel.name[1] }}</span
+            >{{ whiteLabel.name[2] }}</SBrandHeader
+          ><SBrandHeader v-else size="lg" class="font-light">{{
+            whiteLabel.name[0][0]
+          }}</SBrandHeader></RouterLink
         >
       </header>
       <SideNavItems
