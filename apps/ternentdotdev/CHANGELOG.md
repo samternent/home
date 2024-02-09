@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.1.38
+
+### Patch Changes
+
+- [`38d70e5b22bb9761104fe3734f0aa766f655b369`](https://github.com/samternent/home/commit/38d70e5b22bb9761104fe3734f0aa766f655b369) Thanks [@samternent](https://github.com/samternent)! - Fix typo
+
 ## 0.1.37
 
 ### Patch Changes
