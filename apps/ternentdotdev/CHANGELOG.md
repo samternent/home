@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.1.37
+
+### Patch Changes
+
+- [`dd1840d2ffdf2aba57e93092875220cf2ccb997f`](https://github.com/samternent/home/commit/dd1840d2ffdf2aba57e93092875220cf2ccb997f) Thanks [@samternent](https://github.com/samternent)! - Forgot to push whitelabel
+
 ## 0.1.36
 
 ### Patch Changes
