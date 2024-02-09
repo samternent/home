@@ -22,7 +22,7 @@ export function provideWhiteLabel() {
       description: "Specialists in Frontend and Platform Engineering.",
     };
   }
-  if (window.location.host.includes("concords.dev")) {
+  if (window.location.host.includes("concords.app")) {
     whiteLabel.value = {
       ...whiteLabel.value,
       name: ["concords", "dot", "app"],
