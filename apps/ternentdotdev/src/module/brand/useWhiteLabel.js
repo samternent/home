@@ -6,13 +6,15 @@ export function provideWhiteLabel() {
   const whiteLabel = shallowRef({
     name: ["ternent", "dot", "dev"],
     description: "Specialists in Frontend and Platform Engineering.",
+    themeName: "ternentdotdev",
   });
 
   if (window.location.host.includes("localhost")) {
     whiteLabel.value = {
       ...whiteLabel.value,
-      name: ["localhost", ":", "5173"],
+      name: ["ternent", "dot", "local"],
       description: "My localhost development",
+      themeName: "mancity",
     };
   }
   if (window.location.host.includes("ternent.dev")) {
@@ -20,6 +22,7 @@ export function provideWhiteLabel() {
       ...whiteLabel.value,
       name: ["ternent", "dot", "dev"],
       description: "Specialists in Frontend and Platform Engineering.",
+      themeName: "ternentdotdev",
     };
   }
   if (window.location.host.includes("concords.app")) {
@@ -27,10 +30,13 @@ export function provideWhiteLabel() {
       ...whiteLabel.value,
       name: ["concords", "dot", "app"],
       description: "Concords is a white labelled version of ternent.dev",
+      themeName: "concords",
     };
   }
 
   provide(useWhiteLabelSymbol, whiteLabel);
+
+  return whiteLabel;
 }
 
 export function useWhiteLabel() {

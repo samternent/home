@@ -13,17 +13,17 @@ provideAxios();
 provideBreadcrumbs();
 provideDrawerRoute();
 
+const whiteLabel = provideWhiteLabel();
+
 const themeName = useLocalStorage(
   "app/theme",
-  `ternentdotdev-${
+  `${whiteLabel.value.themeName}-${
     localStorage.getItem("app/themeVariation") ||
     window.matchMedia?.("(prefers-color-scheme: dark)").matches
       ? "dark"
       : "light"
   }`
 );
-
-provideWhiteLabel();
 </script>
 
 <template>

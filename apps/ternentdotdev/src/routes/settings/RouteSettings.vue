@@ -6,7 +6,9 @@ import {
 } from "@vueuse/core";
 import { computed, watch, shallowRef } from "vue";
 import { SThemeToggle } from "ternent-ui/components";
+import { useWhiteLabel } from "@/module/brand/useWhiteLabel";
 
+const whiteLabel = useWhiteLabel();
 const themeVariation = useLocalStorage(
   "app/themeVariation",
   window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
@@ -15,7 +17,7 @@ const themeVariation = useLocalStorage(
 );
 const themeName = useLocalStorage(
   "app/theme",
-  `ternentdotdev-${themeVariation.value}`
+  `${whiteLabel.value.themeName}-${themeVariation.value}`
 );
 
 const links = [
@@ -30,7 +32,7 @@ const links = [
 ];
 
 watch(themeVariation, (_themeVariation) => {
-  themeName.value = `ternentdotdev-${_themeVariation}`;
+  themeName.value = `${whiteLabel.value.themeName}-${_themeVariation}`;
 });
 </script>
 <template>
