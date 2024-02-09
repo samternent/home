@@ -1,5 +1,14 @@
 # ternentdotdev
 
+## 0.1.39
+
+### Patch Changes
+
+- [`765c387249dbd62441490a5083b8d4d30af46369`](https://github.com/samternent/home/commit/765c387249dbd62441490a5083b8d4d30af46369) Thanks [@samternent](https://github.com/samternent)! - Adds concords themes
+
+- Updated dependencies [[`765c387249dbd62441490a5083b8d4d30af46369`](https://github.com/samternent/home/commit/765c387249dbd62441490a5083b8d4d30af46369)]:
+  - ternent-ui@0.0.10
+
 ## 0.1.38
 
 ### Patch Changes
