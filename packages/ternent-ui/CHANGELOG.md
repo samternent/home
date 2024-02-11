@@ -1,5 +1,11 @@
 # ternent-ui
 
+## 0.0.11
+
+### Patch Changes
+
+- [`f80141b83a9cc857d0a9c7e7bccaac9b0fd04d70`](https://github.com/samternent/home/commit/f80141b83a9cc857d0a9c7e7bccaac9b0fd04d70) Thanks [@samternent](https://github.com/samternent)! - Adds greener theme
+
 ## 0.0.10
 
 ### Patch Changes

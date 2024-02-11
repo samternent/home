@@ -1,5 +1,11 @@
 # concords-ledger
 
+## 1.0.15
+
+### Patch Changes
+
+- [`3aded1d6b06c3cdfef8ecad7b142d07f2d469553`](https://github.com/samternent/home/commit/3aded1d6b06c3cdfef8ecad7b142d07f2d469553) Thanks [@samternent](https://github.com/samternent)! - Adds delete to ledger api
+
 ## 1.0.14
 
 ### Patch Changes
