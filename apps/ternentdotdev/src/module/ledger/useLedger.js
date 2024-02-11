@@ -44,6 +44,9 @@ export function provideLedger() {
         onUpdate({ ledger: _ledger }) {
           ledger.value = _ledger;
         },
+        onDestroy({ ledger: _ledger }) {
+          ledger.value = _ledger;
+        },
       },
     ],
   });

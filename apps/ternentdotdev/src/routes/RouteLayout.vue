@@ -1,5 +1,5 @@
 <script setup>
-import { watch } from "vue";
+import { shallowRef, onMounted, onBeforeUnmount } from "vue";
 import { useLocalStorage } from "@vueuse/core";
 import {
   SNavBar,
@@ -8,6 +8,12 @@ import {
   SBrandHeader,
 } from "ternent-ui/components";
 import { useBreadcrumbs } from "../module/breadcrumbs/useBreadcrumbs";
+import { useAppShell } from "../module/app-shell/useAppshell";
+import ConcordsLog from "../module/concords/ConcordsLog.vue";
+
+const { isBottomPanelExpanded, bottomPanelHeight } = useAppShell();
+
+const isDragging = shallowRef(false);
 
 const breadcrumbs = useBreadcrumbs({
   path: "/",
@@ -15,6 +21,42 @@ const breadcrumbs = useBreadcrumbs({
 });
 
 const openSideBar = useLocalStorage("ternentdotdev/openSideBar", false);
+
+function handleDragStart() {
+  isDragging.value = true;
+  document.body.style.overflowY = "hidden";
+}
+function handleDragEnd() {
+  isDragging.value = false;
+  document.body.style.overflowY = "";
+}
+
+function handleMouseMove(e) {
+  if (isDragging.value && window.innerHeight - e.pageY > 100 && e.pageY > 54) {
+    bottomPanelHeight.value = window.innerHeight - e.pageY;
+  }
+}
+function handleTouchMove(e) {
+  if (
+    isDragging.value &&
+    window.innerHeight - e.changedTouches[0].pageY > 100 &&
+    e.changedTouches[0].pageY > 54
+  ) {
+    bottomPanelHeight.value = window.innerHeight - e.changedTouches[0].pageY;
+  }
+}
+onMounted(() => {
+  window.addEventListener("mouseup", handleDragEnd);
+  window.addEventListener("mousemove", handleMouseMove);
+  window.addEventListener("touchend", handleDragEnd);
+  window.addEventListener("touchmove", handleTouchMove);
+});
+onBeforeUnmount(() => {
+  window.removeEventListener("mouseup", handleDragEnd);
+  window.removeEventListener("mousemove", handleMouseMove);
+  window.removeEventListener("touchend", handleDragEnd);
+  window.removeEventListener("touchmove", handleTouchMove);
+});
 </script>
 <template>
   <div
@@ -77,7 +119,67 @@ const openSideBar = useLocalStorage("ternentdotdev/openSideBar", false);
       </template>
     </SNavBar>
     <div class="flex flex-col flex-1 overflow-auto">
-      <RouterView />
+      <div class="flex-1 overflow-auto w-full">
+        <RouterView />
+      </div>
+      <!-- Bottom expandable panel -->
+      <section
+        class="flex flex-col z-20"
+        :class="{
+          'h-16': !isBottomPanelExpanded,
+          'transition-all': !isDragging,
+        }"
+        :style="`height: ${
+          isBottomPanelExpanded ? `${bottomPanelHeight}px` : '2.5rem'
+        }`"
+      >
+        <div
+          @click="isBottomPanelExpanded = true"
+          @mousedown="handleDragStart"
+          @touchstart="handleDragStart"
+          :class="{
+            'hover:opacity-100 cursor-row-resize': isBottomPanelExpanded,
+            'h-0.5': !isBottomPanelExpanded,
+            '!bg-secondary': isDragging,
+          }"
+          class="w-full h-1 transition-all bg-primary opacity-50"
+        />
+        <!-- Panel Control + Indicator -->
+        <div
+          class="flex justify-between py-1 px-2 h-10 border-b border-base-300 bg-base-200"
+        >
+          <div class="flex-1" />
+
+          <div class="flex items-center justify-center">
+            <button
+              aria-label="Toggle Bottom Panel"
+              :aria-pressed="isBottomPanelExpanded"
+              @click="isBottomPanelExpanded = !isBottomPanelExpanded"
+              class="mr-2"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 transition-transform duration-300 transform-gpu"
+                :class="isBottomPanelExpanded ? 'rotate-0' : 'rotate-180'"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex-1 flex overflow-auto bg-base-100 font-thin text-sm">
+          <ConcordsLog />
+        </div>
+      </section>
     </div>
   </div>
 </template>

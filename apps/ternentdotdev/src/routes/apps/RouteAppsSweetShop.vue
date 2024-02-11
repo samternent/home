@@ -42,7 +42,7 @@ const results = computed(() => {
 });
 </script>
 <template>
-  <div class="p-2 max-w-4xl">
+  <div class="p-2 max-w-4xl flex-1">
     <SBrandHeader class="font-light mb-4">Sweet Shop</SBrandHeader>
 
     <input

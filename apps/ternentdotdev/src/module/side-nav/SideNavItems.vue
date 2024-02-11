@@ -40,7 +40,7 @@ const { publicKeyPEM } = useIdentity();
 
       <span v-if="!collapsed">Contact</span></SButton
     >
-    <div class="my-4 flex flex-1 w-full">
+    <div class="my-4 flex flex-1 w-full flex-col">
       <!-- <SButton type="ghost" to="/about" class="w-full my-1">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -79,7 +79,7 @@ const { publicKeyPEM } = useIdentity();
 
       <span v-if="!collapsed">Work</span></SButton
     > -->
-      <SButton type="ghost" to="/apps" class="flex-1 my-1">
+      <SButton type="ghost" to="/apps" class="my-1">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -98,7 +98,25 @@ const { publicKeyPEM } = useIdentity();
         <span v-if="!collapsed">Apps</span></SButton
       >
     </div>
-    <div class="w-full flex flex-col">
+    <div class="w-full flex flex-col gap-8">
+      <SButton type="secondary" to="/solid" class="my-1">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="w-4 h-4"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"
+          />
+        </svg>
+
+        <span v-if="!collapsed">Solid</span></SButton
+      >
       <SButton type="ghost" to="/profile" class="flex-1 my-1">
         <IdentityAvatar :identity="publicKeyPEM" size="xs" />
 

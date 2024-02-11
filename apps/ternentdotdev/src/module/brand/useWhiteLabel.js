@@ -1,12 +1,13 @@
-import { provide, inject, shallowRef } from "vue";
+import { inject, shallowRef } from "vue";
 
 const useWhiteLabelSymbol = Symbol("useWhiteLabel");
 
-export function provideWhiteLabel() {
+export function provideWhiteLabel(app) {
   const whiteLabel = shallowRef({
     name: ["ternent", "dot", "dev"],
     description: "Specialists in Frontend and Platform Engineering.",
     themeName: "ternentdotdev",
+    domain: "ternent.dev",
   });
 
   if (window.location.host.includes("localhost")) {
@@ -14,7 +15,8 @@ export function provideWhiteLabel() {
       ...whiteLabel.value,
       name: ["ternent", "dot", "local"],
       description: "My localhost development",
-      themeName: "mancity",
+      themeName: "greener",
+      domain: "localhost:5173",
     };
   }
   if (window.location.host.includes("ternent.dev")) {
@@ -23,6 +25,7 @@ export function provideWhiteLabel() {
       name: ["ternent", "dot", "dev"],
       description: "Specialists in Frontend and Platform Engineering.",
       themeName: "ternentdotdev",
+      domain: "ternent.dev",
     };
   }
   if (window.location.host.includes("concords.app")) {
@@ -31,12 +34,11 @@ export function provideWhiteLabel() {
       name: ["concords", "dot", "app"],
       description: "Concords is a white labelled version of ternent.dev",
       themeName: "concords",
+      domain: "concords.app",
     };
   }
 
-  provide(useWhiteLabelSymbol, whiteLabel);
-
-  return whiteLabel;
+  app.provide(useWhiteLabelSymbol, whiteLabel);
 }
 
 export function useWhiteLabel() {

@@ -28,7 +28,6 @@ onMounted(async () => {
   if (ledgerStorage.value) {
     await load(JSON.parse(ledgerStorage.value));
   } else {
-    console.log(publicKeyIdentityPEM);
     await create({
       identity: stripIdentityKey(publicKeyIdentityPEM.value),
       encryption: publicKeyEncryption.value,

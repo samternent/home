@@ -1,13 +1,20 @@
 <script setup>
 import { useLedger } from "@/module/ledger/useLedger";
-import { useIdentity } from "@/module/identity/useIdentity";
-import IdentityAvatar from "@/module/identity/IdentityAvatar.vue";
+import LedgerDataTable from "../ledger/LedgerDataTable.vue";
 
 import { SButton } from "ternent-ui/components";
-
-const { publicKeyPEM, privateKeyPEM } = useIdentity();
+import { watch, shallowRef } from "vue";
 
 const { ledger, addItem, getCollection } = useLedger();
+const tasks = shallowRef();
+
+watch(
+  ledger,
+  () => {
+    tasks.value = [...getCollection("tasks").data];
+  },
+  { immediate: true }
+);
 
 function addTaskItem() {
   addItem(
@@ -20,9 +27,10 @@ function addTaskItem() {
 }
 </script>
 <template>
-  <div>
-    <IdentityAvatar :identity="publicKeyPEM" size="md" class="mr-4" />
-    <SButton @click="addTaskItem">Add item</SButton>
-    <pre>{{ JSON.stringify(ledger, null, 2, 2) }}</pre>
+  <div class="text-base font-thin">
+    <SButton @click="addTaskItem" type="secondary" class="my-2"
+      >Add item</SButton
+    >
+    <LedgerDataTable table="tasks" />
   </div>
 </template>

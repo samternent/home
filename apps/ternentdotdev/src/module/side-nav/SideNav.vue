@@ -92,7 +92,9 @@ const showSidebar = computed(() => mdAndLarger.value || openSideBar.value);
         </svg>
       </SButton>
       <header class="p-2 flex md:justify-center sm:py-2">
-        <RouterLink to="/" class="btn btn-ghost text-base"
+        <RouterLink
+          to="/"
+          class="btn btn-ghost text-base "
           ><SBrandHeader
             v-if="(lgAndLarger || smallerThanMd) && !collapsedSideBar"
             size="md"
