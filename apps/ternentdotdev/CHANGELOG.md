@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.1.41
+
+### Patch Changes
+
+- [`4fe7b41da9c5025041ae2116de93e1667a6c9da8`](https://github.com/samternent/home/commit/4fe7b41da9c5025041ae2116de93e1667a6c9da8) Thanks [@samternent](https://github.com/samternent)! - Fix broken import
+
 ## 0.1.40
 
 ### Patch Changes
