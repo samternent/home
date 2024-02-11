@@ -15,7 +15,7 @@ export function provideWhiteLabel(app) {
       ...whiteLabel.value,
       name: ["ternent", "dot", "local"],
       description: "My localhost development",
-      themeName: "greener",
+      themeName: "ternentdotdev",
       domain: "localhost:5173",
     };
   }

@@ -8,7 +8,7 @@ import {
   SBrandHeader,
 } from "ternent-ui/components";
 import { useBreadcrumbs } from "../module/breadcrumbs/useBreadcrumbs";
-import { useAppShell } from "../module/app-shell/useAppshell";
+import { useAppShell } from "../module/app-shell/useAppShell";
 import ConcordsLog from "../module/concords/ConcordsLog.vue";
 
 const { isBottomPanelExpanded, bottomPanelHeight } = useAppShell();
