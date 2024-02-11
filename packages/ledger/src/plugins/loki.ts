@@ -22,12 +22,20 @@ export default function useLokiPlugin(
 
   const db = new loki(`${name}.db`);
 
+  function deleteDatabase() {
+    Object.keys(collections).forEach((collection) => {
+      db.removeCollection(collection);
+      delete collections[collection];
+    });
+  }
+
   return {
     db,
     getCollection: (col: string) => collections[col] || collection,
     getCollections: () => collections,
     plugin: {
       onLoad: createCollection,
+      onDestroy: deleteDatabase,
       async onAdd(record: IRecord) {
         if (!record.data && !record.encrypted) return;
         if (record.data?.permission) {

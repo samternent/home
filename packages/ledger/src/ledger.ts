@@ -1,10 +1,5 @@
 import { hashData } from "concords-utils";
-import {
-  addRecord,
-  createLedger,
-  IRecord,
-  mine,
-} from "concords-proof-of-work";
+import { addRecord, createLedger, IRecord, mine } from "concords-proof-of-work";
 import { sign, exportPublicKeyAsPem } from "concords-identity";
 import type { ILedger } from "concords-proof-of-work";
 import { stripIdentityKey, generateId } from "concords-utils";
@@ -234,9 +229,9 @@ export default function useLedger(
     );
 
     state.ledger.pending_records.splice(index, 1);
+    await destroy();
+    await replay();
     await runHooks("onUpdate", state);
-    // dirty, dirty but effective
-    window.location.reload();
     return state.ledger;
   }
 
