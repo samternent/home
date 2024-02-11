@@ -1,5 +1,15 @@
 # ternentdotdev
 
+## 0.1.40
+
+### Patch Changes
+
+- [`5a2eefa026e08bd3e55e34c8daea04dbb20c6888`](https://github.com/samternent/home/commit/5a2eefa026e08bd3e55e34c8daea04dbb20c6888) Thanks [@samternent](https://github.com/samternent)! - Adds solid
+
+- Updated dependencies [[`f80141b83a9cc857d0a9c7e7bccaac9b0fd04d70`](https://github.com/samternent/home/commit/f80141b83a9cc857d0a9c7e7bccaac9b0fd04d70), [`3aded1d6b06c3cdfef8ecad7b142d07f2d469553`](https://github.com/samternent/home/commit/3aded1d6b06c3cdfef8ecad7b142d07f2d469553)]:
+  - ternent-ui@0.0.11
+  - concords-ledger@1.0.15
+
 ## 0.1.39
 
 ### Patch Changes
