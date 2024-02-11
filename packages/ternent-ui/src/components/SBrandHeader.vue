@@ -9,7 +9,7 @@ defineProps({
 </script>
 <template>
   <div
-    class="tracking-tighter font-extrabold text-default"
+    class="tracking-tighter uppercase font-extrabold text-default"
     :class="{
       'text-3xl lg:text-4xl': size === 'lg',
       'text-2xl': size === 'md',

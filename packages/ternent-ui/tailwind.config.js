@@ -1,4 +1,4 @@
-import { ternentDotDev, murder, clubColors, concords } from "./themes";
+import { ternentDotDev, murder, clubColors, concords, greener } from "./themes";
 import { buildThemes } from "./themes/util";
 
 const themes = {
@@ -6,6 +6,7 @@ const themes = {
   murder,
   ...ternentDotDev,
   ...concords,
+  ...greener,
 };
 
 /** @type {import('tailwindcss').Config} */
