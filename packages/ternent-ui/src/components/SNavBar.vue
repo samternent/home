@@ -12,8 +12,8 @@ defineProps({
 </script>
 <template>
   <div class="w-full bg-base-100 border-primary border-b-4 sticky top-0 z-10">
-    <div class="navbar flex min-h-0 items-center">
-      <div class="flex-1 items-center">
+    <div class="navbar flex min-h-0 items-end">
+      <div class="flex-1 items-end">
         <slot name="nav" v-if="smallerThanMd"> </slot>
         <div class="px-2">
           <slot name="start">
