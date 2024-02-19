@@ -1,5 +1,14 @@
 # ternentdotdev
 
+## 0.1.42
+
+### Patch Changes
+
+- [`49917383dd64f2524b15c5c2baf334190969d328`](https://github.com/samternent/home/commit/49917383dd64f2524b15c5c2baf334190969d328) Thanks [@samternent](https://github.com/samternent)! - Adds basic ledger
+
+- Updated dependencies [[`ba650644b361ca55b8b46cceb550bc384e997433`](https://github.com/samternent/home/commit/ba650644b361ca55b8b46cceb550bc384e997433)]:
+  - ternent-ui@0.0.12
+
 ## 0.1.41
 
 ### Patch Changes

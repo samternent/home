@@ -1,5 +1,11 @@
 # ternent-ui
 
+## 0.0.12
+
+### Patch Changes
+
+- [`ba650644b361ca55b8b46cceb550bc384e997433`](https://github.com/samternent/home/commit/ba650644b361ca55b8b46cceb550bc384e997433) Thanks [@samternent](https://github.com/samternent)! - Adds base varient to tabs
+
 ## 0.0.11
 
 ### Patch Changes
