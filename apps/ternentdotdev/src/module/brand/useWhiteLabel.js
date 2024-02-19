@@ -15,7 +15,7 @@ export function provideWhiteLabel(app) {
       ...whiteLabel.value,
       name: ["ternent", "dot", "local"],
       description: "My localhost development",
-      themeName: "ternentdotdev",
+      themeName: "greener",
       domain: "localhost:5173",
     };
   }
@@ -24,14 +24,14 @@ export function provideWhiteLabel(app) {
       ...whiteLabel.value,
       name: ["ternent", "dot", "dev"],
       description: "Specialists in Frontend and Platform Engineering.",
-      themeName: "ternentdotdev",
+      themeName: "greener",
       domain: "ternent.dev",
     };
   }
   if (window.location.host.includes("concords.app")) {
     whiteLabel.value = {
       ...whiteLabel.value,
-      name: ["concords", "dot", "app"],
+      name: ["concords", "ledger", ""],
       description: "Concords is a white labelled version of ternent.dev",
       themeName: "concords",
       domain: "concords.app",

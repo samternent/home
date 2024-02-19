@@ -2,6 +2,7 @@
 import { shallowRef, onMounted, onBeforeUnmount, computed } from "vue";
 import { useLocalStorage } from "@vueuse/core";
 import { STabs, SButton, SIndicator } from "ternent-ui/components";
+import { DateTime } from "luxon";
 import { useBreadcrumbs } from "../../module/breadcrumbs/useBreadcrumbs";
 import { useAppShell } from "../../module/app-shell/useAppShell";
 import ConcordsLog from "../../module/concords/ConcordsLog.vue";
@@ -11,7 +12,7 @@ import { useLedger } from "../../module/ledger/useLedger";
 const { isBottomPanelExpanded, bottomPanelHeight } = useAppShell();
 
 const isDragging = shallowRef(false);
-const { ledger } = useLedger();
+const { ledger, getCollections } = useLedger();
 
 const openSideBar = useLocalStorage("ternentdotdev/openSideBar", false);
 
@@ -52,25 +53,48 @@ onBeforeUnmount(() => {
 });
 
 useBreadcrumbs({
-  path: "/apps",
-  name: "Apps",
+  path: "/l",
+  name: "Ledger",
 });
-const tabs = computed(() => [
-  {
-    title: "sweets",
-    path: "/apps/sweet-shop",
-  },
-]);
+const tabs = computed(() => {
+  const collections = getCollections();
+  const sheets = new Set(
+    Object.keys(collections).map((collection) =>
+      collection.split(":")[0].toLowerCase()
+    )
+  );
+  return [
+    ...[...sheets].map((sheet) => ({
+      title: sheet,
+      path: `/l/${sheet}`,
+    })),
+    {
+      title: "+",
+      path: "/l/add",
+    },
+  ];
+});
+
+function formatTime(time) {
+  const date = DateTime.fromMillis(time);
+  return date.toRelative(DateTime.DATETIME_MED);
+}
 </script>
 <template>
   <div class="md:px-[1em]">
-    <div class="my-4 flex">
-      <div>{{ ledger.id }}</div>
-      <div>{{ ledger.chain[0].records[0].timestamp }}</div>
-      <IdentityAvatar
-        size="sm"
-        identity="ledger.chain[0].records[0].identity"
-      />
+    <div class="my-4 flex justify-between">
+      <div class="text-lg">
+        <span>{{ ledger.id.slice(0, 6) }}.concord</span>
+      </div>
+      <div class="mr-2 flex text-xs items-end">
+        Created
+        {{ formatTime(ledger.chain[0].timestamp) }} by
+        <IdentityAvatar
+          size="xs"
+          class="ml-2"
+          :identity="ledger.chain[0].records[0].identity"
+        />
+      </div>
     </div>
     <STabs :items="tabs" type="lifted" :path="$route.path" />
   </div>

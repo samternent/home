@@ -1,5 +1,6 @@
 import { aboutRoutes } from "./about";
 import { appsRoutes } from "./apps";
+import { ledgerRoutes } from "./ledger";
 import { legalRoutes } from "./legal";
 import { settingsRoutes } from "./settings";
 import { solidRoutes } from "./solid";
@@ -13,10 +14,11 @@ export default [
     children: [
       {
         path: "",
-        component: () => import("./RouteHome.vue"),
+        redirect: "/l/",
       },
       ...aboutRoutes,
       ...appsRoutes,
+      ...ledgerRoutes,
       ...legalRoutes,
       ...profileRoutes,
       ...settingsRoutes,

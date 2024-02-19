@@ -79,7 +79,7 @@ const { publicKeyPEM } = useIdentity();
 
       <span v-if="!collapsed">Work</span></SButton
     > -->
-      <SButton type="ghost" to="/apps" class="my-1">
+      <!-- <SButton type="ghost" to="/apps" class="my-1">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -96,7 +96,7 @@ const { publicKeyPEM } = useIdentity();
         </svg>
 
         <span v-if="!collapsed">Apps</span></SButton
-      >
+      > -->
     </div>
     <div class="w-full flex flex-col gap-8">
       <SButton type="secondary" to="/solid" class="my-1">

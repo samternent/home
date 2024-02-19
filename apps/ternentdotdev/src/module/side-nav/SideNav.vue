@@ -49,7 +49,7 @@ const showSidebar = computed(() => mdAndLarger.value || openSideBar.value);
       }"
     >
       <SButton
-        class="btn btn-circle btn-primary btn-sm -right-5 z-30 bottom-16 shadow absolute transition-transform duration-1000"
+        class="btn btn-circle btn-primary btn-xs -right-4 z-30 bottom-16 shadow absolute transition-transform duration-1000"
         type="neutral"
         :class="{
           'rotate-180': collapsedSideBar,
@@ -74,7 +74,7 @@ const showSidebar = computed(() => mdAndLarger.value || openSideBar.value);
       <SButton
         v-if="smallerThanMd"
         @click="openSideBar = false"
-        class="btn-sm mt-2"
+        class="btn-xs mt-2"
         ><svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -92,9 +92,7 @@ const showSidebar = computed(() => mdAndLarger.value || openSideBar.value);
         </svg>
       </SButton>
       <header class="p-2 flex md:justify-center sm:py-2">
-        <RouterLink
-          to="/"
-          class="btn btn-ghost text-base "
+        <RouterLink to="/" class="btn btn-ghost text-base"
           ><SBrandHeader
             v-if="(lgAndLarger || smallerThanMd) && !collapsedSideBar"
             size="md"

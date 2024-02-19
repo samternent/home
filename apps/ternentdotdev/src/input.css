@@ -4,6 +4,7 @@
 
 :root {
   font-family: "Fira Code", monospace;
+  /* font-family: "Source Sans 3", sans-serif; */
 
   --font-system-mono: ui-monospace, Menlo, Monaco, "Cascadia Mono",
     "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace",

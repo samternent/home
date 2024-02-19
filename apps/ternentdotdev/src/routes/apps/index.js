@@ -8,16 +8,8 @@ export const appsRoutes = [
         redirect: "/apps/sweet-shop",
       },
       {
-        path: "/apps/permissions",
-        component: () => import("./RouteAppsPermissions.vue"),
-      },
-      {
         path: "/apps/murder-mystery",
         component: () => import("./RouteAppsMurder.vue"),
-      },
-      {
-        path: "/apps/tasks",
-        component: () => import("./RouteAppsTasks.vue"),
       },
       {
         path: "/apps/sweet-shop",
