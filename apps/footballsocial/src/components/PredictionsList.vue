@@ -227,7 +227,7 @@ function isSameDay(date1, date2) {
         aria-label="Gameweek"
         class="select select-bordered select-sm mr-4"
       >
-        <option v-for="gw in gameweeks" :key="`gameweek${gw}`" :value="gw">
+        <option v-for="gw in gameweeks" :key="`gameweek_${competitionCode}_${gw}`" :value="gw">
           Gameweek {{ gw }}
         </option>
       </select>

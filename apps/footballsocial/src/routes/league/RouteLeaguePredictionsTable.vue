@@ -20,7 +20,7 @@ const props = defineProps({
     default: false,
   },
 });
-const { items: competition } = useCompetitionLoader();
+const { items: competition, loading } = useCompetitionLoader();
 const predictionsReady = shallowRef(false);
 const { calculatePredictionTable } = usePredictionService();
 
@@ -59,7 +59,7 @@ const tabs = computed(() => [
 <template>
   <div class="w-full">
     <STabs :items="tabs" :path="$route.path" :exact="true" />
-    <div v-if="predictionsReady" class="my-4 min-h-screen">
+    <div v-if="predictionsReady && !loading" class="my-4 min-h-screen">
       <PredictionsResults
         v-if="competition && showGameweekResults"
         :competitionCode="competition?.code"
@@ -70,14 +70,18 @@ const tabs = computed(() => [
         :competitionCode="competition?.code"
       />
     </div>
-    <div v-else class="w-full min-h-screen py-4">
-      <SSkeleton v-for="i in 10" :key="i" class="h-8" />
+    <div v-else class="w-full pt-14">
+      <div
+        v-for="i in 10"
+        :key="i"
+        class="skeleton m-2 my-2 rounded flex-1 h-10 w-full"
+      />
     </div>
 
     <div class="collapse mt-16">
       <input type="checkbox" aria-label="Rules" />
       <div
-        class="collapse-title text-3xl bg-base-content text-base-100 anton-regular"
+        class="collapse-title text-xl lg:text-3xl bg-base-content text-base-100 anton-regular"
       >
         Rules
       </div>

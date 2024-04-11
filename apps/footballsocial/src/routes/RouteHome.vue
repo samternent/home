@@ -37,7 +37,7 @@ watch(
 </script>
 <template>
   <div
-    class="w-full max-w-3xl mx-auto h-full flex-1 flex lg:flex-row flex-col p-4 border-x mb-16"
+    class="w-full max-w-3xl mx-auto h-full flex-1 flex lg:flex-row flex-col p-4 mb-16"
   >
     <div class="py-6 px-2 w-full">
       <div class="flex flex-col w-full">

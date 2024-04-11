@@ -34,15 +34,24 @@ const colorMode = useColorMode();
 const { profile } = useCurrentUser();
 const router = useRouter();
 
-const { items: competition, error } = provideCompetitionLoader(competitionCode);
+const {
+  items: competition,
+  error,
+  loading,
+} = provideCompetitionLoader(competitionCode);
 
 const lastLeague = useLocalStorage("lastLeague", "PL");
 
 watch(
   competition,
   (_competition) => {
-    title.value = `${_competition?.name} - Football Social`;
-    lastLeague.value = _competition?.code;
+    if (_competition?.name) {
+      title.value = `${_competition?.name} - Football Social`;
+    }
+    if (_competition?.code) {
+      lastLeague.value = _competition?.code;
+    }
+    
   },
   { immediate: true }
 );
@@ -92,20 +101,20 @@ onClickOutside(editCompetitionTarget, () => (editCompetition.value = false));
   <div class="md:px-2 lg:px-4 flex-1 max-w-4xl mx-auto pt-0 w-full h-screen">
     <SHeader>
       <div
-        class="px-1 p-2 font-thin rounded-lg flex-1 flex flex-col justify-center mb-2"
+        class="px-1 p-2 font-thin rounded-lg flex-1 flex flex-col justify-center"
       >
         <div class="flex justify-start lg:hidden mx-2 group">
           <div
             class="flex flex-col items-start justify-center -translate-x-6 anton-regular"
           >
             <div
-              class="bg-base-content text-base-100 text-[21.3px] md:text-[30.7px] lg:text-[43.9px] [transform:rotate(-90deg)] px-2 uppercase group-hover:bg-primary "
+              class="bg-base-content text-base-100 text-[24.3px] md:text-[30.7px] lg:text-[43.9px] [transform:rotate(-90deg)] px-2 uppercase group-hover:bg-primary"
             >
               Social
             </div>
           </div>
           <div
-            class="font-bold text-base-content text-[68px] md:text-[96px] -translate-x-10 lg:text-[136px] uppercase anton-regular"
+            class="font-bold text-base-content text-[78px] md:text-[96px] -translate-x-10 lg:text-[136px] uppercase anton-regular"
           >
             Football
           </div>
@@ -118,14 +127,14 @@ onClickOutside(editCompetitionTarget, () => (editCompetition.value = false));
               v-if="competition && !editCompetition"
               @click="editCompetition = true"
             >
-              <p class="md:text-3xl mt-0 ">{{ competition?.name }},</p>
+              <p class="md:text-3xl mt-0">{{ competition?.name }},</p>
               <p
                 class="px-2 py-1 mx-2 lg:mx-0 lg:my-2 md:text-3xl transition-color inline-block font-bold bg-base-content group-hover:bg-primary tracking-tighter header text-base-100"
               >
                 {{ competition?.area?.name }}.
               </p>
               <p
-                class="text-lg font-thin lg:my-2 tracking-tighter flex items-center "
+                class="text-lg font-thin lg:my-2 tracking-tighter flex items-center"
               >
                 2023/24
 
@@ -181,24 +190,33 @@ onClickOutside(editCompetitionTarget, () => (editCompetition.value = false));
               </div>
             </div>
             <div
-              class="flex justify-end text-2xl md:text-3xl lg:text-4xl font-thin tracking-tighter border-t py-2"
+              class="flex justify-end font-thin tracking-tighter border-t py-2"
             >
               <!-- Prediction league. -->
             </div>
           </div>
         </div>
-        <p
-          class="text-xl md:text-2xl font-light leading-tighter tracking-tighter text-zinc-200"
-        ></p>
       </div>
     </SHeader>
 
     <RouterView
-      v-if="competition"
+      v-if="!loading"
       :competitionCode="competitionCode"
       :key="competitionCode"
     />
-    <div v-else class="h-96">LOADING</div>
+    <div v-else class="h-1/2 flex justify-center items-center">
+      <div
+        class="absolute right-1/2 bottom-1/2 transform translate-x-1/2 translate-y-1/2"
+      >
+        <div
+          class="p-4 bg-gradient-to-tr animate-spin from-[#ff5757] to-[#8c52ff] rounded-full"
+        >
+          <div class="bg-base-100 rounded-full">
+            <div class="w-24 h-24 rounded-full"></div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div
       v-if="error"
       class="absolute min-h-screen flex-1 h-screen mx-auto max-w-6xl w-full"

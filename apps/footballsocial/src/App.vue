@@ -90,7 +90,7 @@ const theme = useLocalStorage(
     <div
       class="flex-1 flex flex-col pt-2 bg-base-100 max-w-4xl w-full mx-auto"
     >
-      <div class="flex justify-between w-full max-w-6xl border-b mb-4 pb-2 items-center">
+      <div class="flex justify-between w-full max-w-6xl border-b pb-2 items-center">
         <RouterLink to="/" class="btn btn-ghost btn-sm">FS</RouterLink>
         <UserMenu v-if="profile" />
       </div>

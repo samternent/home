@@ -45,19 +45,19 @@ async function signOutAndLeave() {
 
     <div
       v-if="showMenu"
-      class="absolute bg-base-200 right-0 top-12 flex flex-col overflow-hidden text-left rounded shadow-lg w-64"
+      class="absolute bg-base-200 z-20 right-2 top-12 flex flex-col overflow-hidden text-left shadow-lg w-64"
     >
-      <ul class="item">
+      <ul class="item m-1">
         <li class="flex">
           <RouterLink
             @click="showMenu = false"
             to="/auth/profile"
-            class="p-2 hover:bg-base-300 w-full"
+            class="p-2 bg-base-100 border-b hover:bg-base-200 w-full"
             >Profile</RouterLink
           >
         </li>
         <li
-          class="p-2 flex hover:bg-base-300 cursor-pointer hover:text-red-600"
+          class="p-2 flex bg-base-100 hover:bg-base-200 cursor-pointer hover:text-red-600"
           @click="signOutAndLeave"
         >
           <svg

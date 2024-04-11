@@ -44,11 +44,11 @@ watch(() => props.competitionCode, loadPredictions, { immediate: true });
 const { profile } = useCurrentUser();
 </script>
 <template>
-  <div v-if="!predictionsLoaded" class="w-full min-h-screen">
+  <div v-if="!predictionsLoaded" class="w-full pt-10">
     <div
       v-for="i in 10"
       :key="i"
-      class="animate-pulse my-2 rounded flex-1 h-8 w-full"
+      class="skeleton m-2 my-2 rounded flex-1 h-10 w-full"
     />
   </div>
   <div
@@ -65,7 +65,9 @@ const { profile } = useCurrentUser();
       <table class="rounded-tl-lg text-xs lg:text-base">
         <thead class="rounded-none p-2">
           <tr class="border-0 text-base border-b bg-base-content text-base-100">
-            <th scope="col" class="w-12 p-2 tracking-tight font-medium"><abbr title="Position">POS</abbr></th>
+            <th scope="col" class="w-12 p-2 tracking-tight font-medium">
+              <abbr title="Position">POS</abbr>
+            </th>
             <th scope="col" v-if="!gameweek" class="w-10"></th>
             <th scope="col" class="text-left p-2 tracking-tight font-medium">
               <abbr class="" title="Username">Username</abbr>
