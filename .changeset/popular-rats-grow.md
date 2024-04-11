@@ -1,5 +1,0 @@
----
-"footballsocial": minor
----
-
-Redesign
