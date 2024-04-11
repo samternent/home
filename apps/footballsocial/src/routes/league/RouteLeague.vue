@@ -1,9 +1,10 @@
 <script setup>
-import { toRefs, watch } from "vue";
-import { useTitle, useLocalStorage } from "@vueuse/core";
+import { toRefs, watch, computed } from "vue";
+import { useTitle, useLocalStorage, useColorMode } from "@vueuse/core";
 import { provideCompetitionLoader } from "../../api/football-data/useCompetitionLoader";
+import { useCurrentUser } from "../../composables/useCurrentUser";
 
-import { SBrandHeader, SSpinner, SHeader } from "ternent-ui/components";
+import { SHeader } from "ternent-ui/components";
 
 const props = defineProps({
   competitionCode: {
@@ -22,6 +23,8 @@ const props = defineProps({
 
 const { competitionCode } = toRefs(props);
 const title = useTitle();
+const colorMode = useColorMode();
+const { profile } = useCurrentUser();
 
 const { items: competition, error } = provideCompetitionLoader(competitionCode);
 
@@ -35,6 +38,33 @@ watch(
   },
   { immediate: true }
 );
+
+const lookups = {
+  arsenal: 1,
+  astonvilla: 1,
+  afcbournemouth: 1,
+  brighton: 1,
+  brentford: 1,
+  burnley: 1,
+  chelsea: 1,
+  crystalpalace: 1,
+  everton: 1,
+  fulham: 1,
+  liverpoolfc: 1,
+  luton: 1,
+  mancity: 65,
+  manutd: 1,
+  newcastle: 1,
+  nottmforest: 351,
+  sheffieldutd: 1,
+  spurs: 1,
+  wolves: 1,
+  westham: 1,
+  birmingham: 332,
+};
+const clubBadgeId = computed(() => {
+  return lookups[profile.value?.club];
+});
 </script>
 <template>
   <div class="md:px-2 lg:px-4 flex-1 max-w-4xl mx-auto pt-0 w-full h-screen">
@@ -42,12 +72,64 @@ watch(
       <div
         class="px-1 p-2 font-thin rounded-lg flex-1 flex flex-col justify-center mb-2"
       >
-        <SBrandHeader>Football Social</SBrandHeader>
-        <div class="flex text-lg tracking-tightest font-light items-center">
-          {{ competition?.name }},
-          <span class="font-light tracking-tighter header ml-1">
-            {{ competition?.area?.name }}
-          </span>
+        <div class="flex justify-start lg:hidden mx-2">
+          <div
+            class="flex flex-col items-start justify-center -translate-x-6 anton-regular"
+          >
+            <div
+              class="bg-base-content text-base-100 text-[21.3px] md:text-[30.7px] lg:text-[43.9px] [transform:rotate(-90deg)] px-2 uppercase"
+            >
+              Social
+            </div>
+          </div>
+          <div
+            class="font-bold text-base-content text-[68px] md:text-[96px] -translate-x-10 lg:text-[136px] uppercase anton-regular"
+          >
+            Football
+          </div>
+        </div>
+        <div class="flex flex-col lg:flex-row justify-between mb-4">
+          <div class="flex flex-1">
+            <!-- ads -->
+            <div
+              class="tracking-tightest font-thin flex lg:flex-col items-end lg:items-start"
+              v-if="competition"
+            >
+              <p class="md:text-3xl mt-0">{{ competition?.name }},</p>
+              <p
+                class="px-2 py-1 mx-2 lg:mx-0 lg:my-2 md:text-3xl inline-block font-bold bg-base-content tracking-tighter header text-base-100"
+              >
+                {{ competition?.area?.name }}.
+              </p>
+              <p class="text-lg font-thin lg:my-2 tracking-tighter">
+                2023/24
+              </p>
+            </div>
+          </div>
+
+          <div class="flex flex-col">
+            <div class="lg:flex justify-end hidden">
+              <div
+                class="flex flex-col items-end justify-center translate-x-6 anton-regular"
+              >
+                <div
+                  class="bg-base-content text-base-100 text-[30.7px] lg:text-[43.9px] [transform:rotate(-90deg)] px-2 uppercase"
+                >
+                  Social
+                </div>
+              </div>
+              <div
+                class="font-bold text-base-content text-[96px] lg:text-[136px] uppercase anton-regular"
+              >
+                Football
+              </div>
+            </div>
+            <div
+              class="flex justify-end text-2xl md:text-3xl lg:text-4xl font-thin tracking-tighter border-t py-2"
+            >
+              Prediction league.
+            </div>
+          </div>
         </div>
         <p
           class="text-xl md:text-2xl font-light leading-tighter tracking-tighter text-zinc-200"

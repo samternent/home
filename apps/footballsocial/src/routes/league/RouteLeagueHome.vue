@@ -27,9 +27,6 @@ const route = useRoute();
 
 const { items: competition, hasItems: hasCompetition } = useCompetitionLoader();
 
-const crestMap = {
-  DED: "ED",
-};
 
 const tabs = computed(() => [
   {
@@ -48,7 +45,7 @@ watch(
   competition,
   (_competition) => {
     if (_competition?.name) {
-      title.value = `${_competition.name}  - Football Social`;
+      title.value = `${_competition.name} - Football Social`;
     }
   },
   { immediate: true }
@@ -149,7 +146,6 @@ const dismissProductHuntBanner = useLocalStorage(
       >
     </p>
   </div> -->
-
   <div class="flex mb-16 w-full mt-4">
     <RouterView />
   </div>

@@ -48,7 +48,7 @@ const backPath = window.localStorage.getItem("lastLeagueTablePath");
       </RouterLink>
     </div>
     <PredictionsList
-      v-if="competition && !isCup"
+      v-if="competition"
       :username="username"
       :competitionCode="competition?.code"
       :currentGameweek="competition?.currentSeason?.currentMatchday"

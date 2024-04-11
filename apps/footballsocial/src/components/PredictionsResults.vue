@@ -58,35 +58,33 @@ const { profile } = useCurrentUser();
     This league has no predictions yet.
   </div>
   <div v-else>
-    <div class="text-xs p-2 flex justify-end">
+    <div class="text-xs p-2 flex justify-end font-thin">
       Last updated: {{ lastUpdated }}
     </div>
     <div class="flex flex-col w-full overflow-x-auto">
       <table class="rounded-tl-lg text-xs lg:text-base">
-        <thead class="bg-neutral text-neutral-content rounded-none p-2">
-          <tr class="border-0 text-sm bg-neutral text-neutral-content">
-            <th scope="col" class="w-12 font-medium p-2">POS</th>
+        <thead class="rounded-none p-2">
+          <tr class="border-0 text-base border-b bg-base-content text-base-100">
+            <th scope="col" class="w-12 p-2 tracking-tight font-medium"><abbr title="Position">POS</abbr></th>
             <th scope="col" v-if="!gameweek" class="w-10"></th>
-            <th scope="col" class="text-left p-2">
-              <abbr class="font-medium" title="Teams in Competition"
-                >Username</abbr
-              >
+            <th scope="col" class="text-left p-2 tracking-tight font-medium">
+              <abbr class="" title="Username">Username</abbr>
             </th>
 
-            <th scope="col" class="w-10 p-2">
-              <abbr class="font-medium" title="Correct Home Score">HS</abbr>
+            <th scope="col" class="w-10 p-2 tracking-tight font-medium">
+              <abbr title="Correct Home Score">HS</abbr>
             </th>
-            <th scope="col" class="w-10 p-2">
-              <abbr class="font-medium" title="Correct Away Score">AS</abbr>
+            <th scope="col" class="w-10 p-2 tracking-tight font-medium">
+              <abbr title="Correct Away Score">AS</abbr>
             </th>
-            <th scope="col" class="w-10 p-2">
-              <abbr class="font-medium" title="Correct Match Result">MR</abbr>
+            <th scope="col" class="w-10 p-2 tracking-tight font-medium">
+              <abbr title="Correct Match Result">MR</abbr>
             </th>
-            <th scope="col" class="w-10 p-2">
-              <abbr class="font-medium" title="Correct Match Score">MS</abbr>
+            <th scope="col" class="w-10 p-2 tracking-tight font-medium">
+              <abbr title="Correct Match Score">MS</abbr>
             </th>
-            <th scope="col" class="w-12 p-2">
-              <abbr class="font-medium" title="Points">PTS</abbr>
+            <th scope="col" class="w-12 p-2 tracking-tight font-medium">
+              <abbr title="Points">PTS</abbr>
             </th>
           </tr>
         </thead>
@@ -96,9 +94,9 @@ const { profile } = useCurrentUser();
             :key="row.username"
             class="border-0 bg-base-100 hover:bg-base-200"
             :class="{
-              'bg-primary bg-opacity-10': row.username === profile?.username,
-              'bg-green-600 bg-opacity-10': row.position === 1,
-              'bg-base-200 bg-opacity-10': row.position % 2 == 0,
+              'bg-primary bg-opacity-20': row.username === profile?.username,
+              'bg-green-500 bg-opacity-10': row.position === 1,
+              'bg-base-300 bg-opacity-20': row.position % 2 == 0,
             }"
           >
             <th scope="row" class="text-center font-medium text-sm p-2">

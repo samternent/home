@@ -4,6 +4,10 @@ export const competitions = [
   //   name: "FIFA World Cup",
   // },
   {
+    code: "EC",
+    name: "European Championship",
+  },
+  {
     code: "PL",
     name: "Premier League",
   },
@@ -49,6 +53,7 @@ const gameweekDefinitions : StringArray = {
   SA: 38,
   FL1: 38,
   DED: 34,
+  EC: 7,
 };
 
 export function getCompetitionGameweeks(competitionCode: string) {

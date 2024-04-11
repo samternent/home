@@ -49,7 +49,9 @@ const tabs = computed(() => [
     path: `/leagues/${props.competitionCode}/table`,
   },
   {
-    title: `Gameweek ${competition.value?.currentSeason.currentMatchday}`,
+    title: `Gameweek ${
+      competition.value?.currentSeason.currentMatchday || "..."
+    }`,
     path: `/leagues/${props.competitionCode}/table/gameweek`,
   },
 ]);
@@ -72,18 +74,22 @@ const tabs = computed(() => [
       <SSkeleton v-for="i in 10" :key="i" class="h-8" />
     </div>
 
-    <div class="collapse bg-base-200">
+    <div class="collapse mt-16">
       <input type="checkbox" aria-label="Rules" />
-      <div class="collapse-title text-base font-light">Rules</div>
-      <div class="collapse-content">
-        <ul class="text-sm font-light my-2">
-          <li>* 1 point for a correct home score</li>
-          <li>* 1 point for a correct away score</li>
-          <li>* 2 points for a correct result (W/L/D)</li>
-          <li>* 3 points for a correct score</li>
+      <div
+        class="collapse-title text-3xl bg-base-content text-base-100 anton-regular"
+      >
+        Rules
+      </div>
+      <div class="collapse-content bg-base-300">
+        <ul class="text-base font-light my-8">
+          <li>- 1 point for a correct home score</li>
+          <li>- 1 point for a correct away score</li>
+          <li>- 2 points for a correct result (W/L/D)</li>
+          <li>- 3 points for a correct score</li>
         </ul>
-        <p class="text-lg font-light my-8">
-          Rules and point system are subject to change.
+        <p class="text-lg font-thin mt-4 mb-2">
+          *Rules and point system are subject to change.
         </p>
       </div>
     </div>

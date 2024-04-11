@@ -29,6 +29,7 @@ const activeStage = useLocalStorage(
 </script>
 <template>
   <div>
+    hi
     <ul class="flex my-4 text-sm px-2">
       <li v-for="t in tabs" :key="`${t}`">
         <button

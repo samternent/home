@@ -197,21 +197,27 @@ const weekdays = [
   "Sunday",
 ];
 
-function formatKickoff(utcDate) {
+function formatKickOff(utcDate) {
   const date = DateTime.fromISO(utcDate);
   return `${weekdays[date.weekday - 1]}, ${date.toLocaleString(
-    DateTime.DATETIME_MED
+    DateTime.DATE_MED
   )}`;
 }
+
+
 
 const alertMessage = computed(() =>
   gameweekPoints.value
     ? `${gameweekPoints.value} points scored.`
     : `${username.value ? `${username.value}s` : "Your"} predictions are in!`
 );
+
+function isSameDay(date1, date2) {
+  return DateTime.fromISO(date1).hasSame(DateTime.fromISO(date2), "day");
+}
 </script>
 <template>
-  <div class="w-full flex flex-col mx-auto max-w-6xl" v-if="predictionsLoaded">
+  <div class="w-full flex flex-col mx-auto max-w-6xl">
     <div
       class="my-1 flex items-center justify-between px-2 md:px-0 font-light"
       v-if="gameweekPoints > -1"
@@ -225,7 +231,11 @@ const alertMessage = computed(() =>
           Gameweek {{ gw }}
         </option>
       </select>
-      <SCountdown :time="predictionsList[0]?.utcDate" />
+      <SCountdown
+        v-if="predictionsLoaded"
+        :time="predictionsList[0]?.utcDate"
+      />
+      <div v-else class="skeleton h-14 w-64"></div>
     </div>
 
     <SAlert v-if="hasPredictions || gameweekPoints" :message="alertMessage">
@@ -243,10 +253,10 @@ const alertMessage = computed(() =>
           class="mb-2 flex-1 overflow-hidden"
         >
           <div
-            v-if="fixture.utcDate !== predictionsList[i - 1]?.utcDate"
-            class="p-2 text-xl font-light"
+            v-if="!isSameDay(fixture.utcDate, predictionsList[i - 1]?.utcDate)"
+            class="p-2 px-2 md:px-4 md:text-xl font-thin my-4 bg-base-content text-base-100 inline-block anton-regular"
           >
-            {{ formatKickoff(fixture.utcDate) }}
+            {{ formatKickOff(fixture.utcDate) }}
           </div>
           <PredictionCard
             :fixture="fixture"
@@ -272,7 +282,10 @@ const alertMessage = computed(() =>
         </div>
       </div>
     </div>
-    <div class="text-center mt-8 flex flex-col items-end">
+    <div
+      class="text-center mt-8 flex flex-col items-end"
+      v-if="predictionsLoaded"
+    >
       <template v-if="user && !profile?.username">
         <SetUsername />
       </template>
@@ -285,14 +298,13 @@ const alertMessage = computed(() =>
         Save predictions
       </SButton>
     </div>
-  </div>
-
-  <div v-else class="flex flex-col h-screen w-full pr-4 pt-1">
-    <div
-      v-for="i in 10"
-      :key="i"
-      class="skeleton m-2 my-4 rounded flex-1 h-20 w-full"
-    />
+    <div v-else class="w-full pr-4 pt-10">
+      <div
+        v-for="i in 10"
+        :key="i"
+        class="skeleton m-2 my-8 rounded flex-1 h-48 w-full"
+      />
+    </div>
   </div>
 </template>
 <style scoped>

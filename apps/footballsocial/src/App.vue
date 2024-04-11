@@ -1,12 +1,12 @@
 <script setup>
 import { shallowRef, computed } from "vue";
-import { useLocalStorage, onClickOutside } from "@vueuse/core";
+import { useLocalStorage, onClickOutside, useColorMode } from "@vueuse/core";
 import { useRouter } from "vue-router";
 import semverGt from "semver/functions/gt";
 import { provideCurrentUser } from "./composables/useCurrentUser";
 import { provideAppVersion } from "./composables/useAppVersion";
-
 import UserMenu from "./components/UserMenu.vue";
+import Logo from "./module/brand/Logo.vue";
 import Api from "./Api.vue";
 
 // DS components
@@ -24,7 +24,7 @@ const { appVersion, serverVersion } = provideAppVersion();
 const { user, ready, profile } = provideCurrentUser();
 
 const hasDismissedPopup = useLocalStorage("app/hasDismissedPopup", false);
-
+const mode = useColorMode() 
 const modalRef = shallowRef(null);
 
 const router = useRouter();
@@ -86,22 +86,22 @@ const theme = useLocalStorage(
         buttonText="refresh"
         message="A new version of the app is available."
       />
-      <SNavBar title="FS">
-        <template #end>
-          <UserMenu v-if="profile" />
-        </template>
-      </SNavBar>
     </div>
     <div
-      class="flex-1 flex flex-col pt-2 bg-base-100 max-w-7xl w-full mx-auto min-h-screen"
+      class="flex-1 flex flex-col pt-2 bg-base-100 max-w-4xl w-full mx-auto"
     >
+      <div class="flex justify-between w-full max-w-6xl border-b mb-4 pb-2 items-center">
+        <RouterLink to="/" class="btn btn-ghost btn-sm">FS</RouterLink>
+        <UserMenu v-if="profile" />
+      </div>
+
       <Api>
         <RouterView />
       </Api>
     </div>
     <SFooter :links="links">
       <template #bottom>
-        <p class="text-sm font-thin">
+        <p class="text-sm font-thin text-center">
           Football data provided by the
           <a
             href="https://www.football-data.org/"
@@ -112,7 +112,7 @@ const theme = useLocalStorage(
           >
           API.
         </p>
-        <p class="text-sm font-thin mb-4">
+        <p class="text-sm font-thin mb-4 text-center">
           <a href="https://www.footballsocial.app/" class="font-medium mr-1"
             >FootballSocial</a
           >is independent, hand-crafted and open-source, by
@@ -130,6 +130,7 @@ const theme = useLocalStorage(
             ></a
           >.
         </p>
+        <Logo class="mx-auto h-auto w-12 mb-4" />
         <SThemeToggle v-model="theme" />
       </template>
     </SFooter>

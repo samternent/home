@@ -107,22 +107,26 @@ const resultPrediction = computed(() => {
 
   return false;
 });
+
+function formatKickOffTime(utcDate) {
+  return DateTime.fromISO(utcDate).toLocaleString(DateTime.TIME_SIMPLE);
+}
 </script>
 <template>
-  <div
-    class="card bg-base-200 rounded-tl-md rounded-tr-lg rounded-bl-lg overflow-hidden p-2"
-  >
+  <div class="bg-base-200 overflow-hidden my-2 border-base-300 border-t">
     <div
-      class="flex justify-between bg-neutral text-neutral-content rounded-md p-2"
+      class="flex justify-between bg-base-100 p-2 py-4 border-b-2 border-b-primary border-opacity-50"
     >
-      <div class="flex text-xs">
+      <div class="flex text-base tracking-tighter uppercase">
         <span v-if="fixture.status === 'IN_PLAY'">In play</span>
         <span v-else-if="fixture.status === 'PAUSED'">Half time</span>
         <span v-else-if="!!fixture.score?.winner">Finished</span>
         <span v-else-if="fixture.status === 'POSTPONED'">POSTPONED</span>
-        <span v-else-if="fixture.status === 'TIMED'">Scheduled</span>
+        <span v-else-if="fixture.status === 'TIMED'"
+          >Scheduled @ {{ formatKickOffTime(fixture.utcDate) }}</span
+        >
       </div>
-      <div class="flex text-xs" v-if="hasStarted">
+      <div class="flex text-sm" v-if="hasStarted">
         <div
           v-if="scorePrediction"
           class="px-3 rounded mx-1 bg-green-600 text-green-300"
@@ -152,20 +156,24 @@ const resultPrediction = computed(() => {
     </div>
 
     <div
-      class="flex flex-col flex-1 w-full justify-between items-center truncate text-sm sm:text-base p-1"
+      class="flex flex-col flex-1 w-full justify-between items-center truncate text-sm sm:text-base p-2 px-4"
     >
       <div class="flex w-full">
         <div
-          class="flex-1 flex items-center truncate my-1 lg:text-xl md:font-light pr-2"
+          class="flex-1 flex items-center truncate my-1 text-xl md:text-2xl font-thin pr-2"
         >
-          <img
-            v-if="!hideCrests"
-            width="60"
-            height="60"
-            :alt="fixture.homeTeam.name"
-            :src="fixture.homeTeam.crest || '/blank.png'"
-            class="w-10 h-10 sm:w-14 sm:h-14 mr-2 lg:mr-4"
-          />
+          <div
+            class="bg-white flex justify-center items-center p-2 mr-4 lg:mr-8 rounded-full overflow-hidden"
+          >
+            <img
+              v-if="!hideCrests"
+              width="60"
+              height="60"
+              :alt="fixture.homeTeam.name"
+              :src="fixture.homeTeam.crest || '/blank.png'"
+              class="w-10 h-10 sm:w-14 sm:h-14"
+            />
+          </div>
           <span class="md:!inline hidden truncate">{{
             fixture.homeTeam.name
           }}</span
@@ -198,19 +206,23 @@ const resultPrediction = computed(() => {
           >
         </div>
       </div>
-
+      <hr class="h-1 border-0 bg-base-300 w-full block mx-4 my-2" />
       <div class="flex w-full gap-2">
         <div
-          class="flex-1 flex items-center truncate my-1 lg:text-xl md:font-light pr-2"
+          class="flex-1 flex items-center truncate my-1 text-xl md:text-2xl font-thin pr-2"
         >
-          <img
-            v-if="!hideCrests"
-            :alt="fixture.awayTeam.name"
-            :src="fixture.awayTeam.crest || '/blank.png'"
-            width="60"
-            height="60"
-            class="w-12 h-12 sm:w-14 sm:h-14 mr-2 lg:mr-4"
-          />
+          <div
+            class="bg-white flex justify-center items-center p-2 mr-4 lg:mr-8 rounded-full overflow-hidden"
+          >
+            <img
+              v-if="!hideCrests"
+              :alt="fixture.awayTeam.name"
+              :src="fixture.awayTeam.crest || '/blank.png'"
+              width="60"
+              height="60"
+              class="w-12 h-12 sm:w-14 sm:h-14"
+            />
+          </div>
           <span class="hidden md:!block truncate">{{
             fixture.awayTeam.name
           }}</span

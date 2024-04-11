@@ -54,11 +54,11 @@ async function googleLogin() {
     <div
       class="container mx-auto flex-1 flex flex-col items-center justify-center px-2"
     >
-      <div class="px-6 py-8 w-full flex flex-col">
-        <h1 class="text-4xl sm:text-5xl font-medium tracking-tighter">
+      <div class="px-6 py-8 w-full flex flex-col max-w-xl">
+        <h1 class="text-4xl sm:text-5xl uppercase anton-regular mb-4">
           Sign up
         </h1>
-        <div v-if="errorMessage" class="bg-red-900 py-2 px-4 rounded">
+        <div v-if="errorMessage" class="bg-red-500 py-2 px-4">
           {{ errorMessage }}
         </div>
         <br class="mt-4" />
@@ -85,11 +85,11 @@ async function googleLogin() {
           placeholder="Confirm Password"
         />
 
-        <div class="mx-2 my-4 flex md:!flex-row flex-col justify-end">
-          <button type="submit" @click="login" class="btn btn-primary">
+        <div class="mx-2 my-4 flex flex-col items-end">
+          <button type="submit" @click="login" class="btn btn-secondary">
             Create Account
           </button>
-          <div class="divider divider-horizontal">OR</div>
+          <div class="my-4 justify-end">OR</div>
           <SignInWithGoogle @click="googleLogin"
             >Sign up with Google</SignInWithGoogle
           >
@@ -97,18 +97,18 @@ async function googleLogin() {
 
         <div class="text-center text-sm mt-8">
           By signing up, you agree to the
-          <RouterLink to="/legal/terms" class="league-link">
+          <RouterLink to="/legal/terms" class="underline hover:text-primary transition-colors">
             Terms of Service
           </RouterLink>
           and
-          <RouterLink to="/legal/privacy" class="league-link">
+          <RouterLink to="/legal/privacy" class="underline hover:text-primary transition-colors">
             Privacy Policy
           </RouterLink>
         </div>
       </div>
       <div class="text-grey-dark my-6">
         Already have an account?
-        <RouterLink to="/auth/login" class="league-link"> Log in </RouterLink>.
+        <RouterLink to="/auth/login" class="underline hover:text-primary transition-colors"> Log in </RouterLink>.
       </div>
     </div>
   </div>

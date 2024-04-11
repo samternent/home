@@ -37,34 +37,53 @@ watch(
 </script>
 <template>
   <div
-    class="w-full max-w-3xl mx-auto h-full flex-1 flex lg:flex-row flex-col p-4"
+    class="w-full max-w-3xl mx-auto h-full flex-1 flex lg:flex-row flex-col p-4 border-x mb-16"
   >
-    <div class="py-6 px-2">
-      <SBrandHeader>Football Social</SBrandHeader>
-      <h2 class="text-2xl sm:text-3xl font-light tracking-tighter mt-2 mb-12">
-        The friendly football score prediction game.
-      </h2>
-      <p class="text-2xl font-thin tracking-tighter my-4">
+    <div class="py-6 px-2 w-full">
+      <div class="flex flex-col w-full">
+        <div class="flex justify-center">
+          <div
+            class="flex flex-col items-end justify-center translate-x-6 anton-regular"
+          >
+            <div
+              class="bg-base-content text-base-100 text-[30.7px] lg:text-[43.9px] [transform:rotate(-90deg)] px-2 uppercase"
+            >
+              Social
+            </div>
+          </div>
+          <div
+            class="font-bold text-base-content text-[96px] lg:text-[136px] uppercase anton-regular"
+          >
+            Football
+          </div>
+        </div>
+        <div
+          class="flex justify-center text-2xl md:text-3xl lg:text-4xl font-thin tracking-tighter border-t py-2"
+        >
+          The friendly football score prediction game.
+        </div>
+      </div>
+      <p class="text-2xl font-thin my-12 text-center">
         With
-        <span v-if="predictionsCount" class="text-3xl font-medium"
+        <span v-if="predictionsCount" class="text-3xl bg-base-content text-base-100 px-2 anton-regular"
           >{{ predictionsCount }}
         </span>
         <span v-else class="skeleton inline-block h-6 w-10 mx-1" />
         predictions from
-        <span v-if="players" class="text-3xl font-medium">
+        <span v-if="players" class="text-3xl bg-base-content text-base-100 px-2 anton-regular">
           {{ players }}
         </span>
         <span v-else class="skeleton inline-block h-6 w-8 mx-1" />
         players, across
-        <span class="text-3xl font-medium">7 </span> leagues.
+        <span class="text-3xl bg-base-content text-base-100 px-2 anton-regular">7</span> leagues.
       </p>
 
-      <div class="flex text-2xl justify-senter items-center my-12">
+      <div class="flex text-4xl justify-center items-center mt-20">
         <SButton
           aria-label="Login"
           v-if="!user"
           to="/auth/login"
-          type="primary"
+          type="secondary"
         >
           Login
         </SButton>
@@ -74,12 +93,12 @@ watch(
           v-if="!user"
           to="/auth/signup"
           class="btn-outline"
-          type="primary"
+          type="ghost"
         >
           Join
         </SButton>
       </div>
-      <p class="text-lg font-light tracking-tighter my-4 mt-16">
+      <div class="text-lg w-full text-center font-thin tracking-tighter my-4 mt-20">
         If you're here to look at the code, it's open-source on Github.
         <a
           href="https://github.com/samternent/home/tree/main/apps/footballsocial"
@@ -123,7 +142,7 @@ watch(
           </svg>
           samternent/home/apps/footballsocial-api
         </a>
-      </p>
+      </div>
     </div>
   </div>
 </template>

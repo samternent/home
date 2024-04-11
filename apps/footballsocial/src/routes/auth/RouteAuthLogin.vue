@@ -35,12 +35,11 @@ async function googleLogin() {
     <div
       class="container mx-auto flex-1 flex flex-col items-center justify-center px-2"
     >
-      <div class="px-6 py-8 w-full flex flex-col">
-        <h1 class="text-4xl sm:text-5xl font-medium tracking-tighter">Login</h1>
-        <div v-if="errorMessage" class="bg-red-900 py-2 px-4 rounded">
+      <div class="px-6 py-8 w-full flex flex-col max-w-xl">
+        <h1 class="text-4xl sm:text-5xl uppercase anton-regular mb-4">Login</h1>
+        <div v-if="errorMessage" class="bg-red-500 py-2 px-4">
           {{ errorMessage }}
         </div>
-        <br class="mt-4" />
         <input
           v-model="email"
           type="email"
@@ -57,11 +56,11 @@ async function googleLogin() {
           placeholder="Password"
         />
 
-        <div class="mx-2 my-4 flex md:!flex-row flex-col justify-end">
-          <button type="submit" @click="login" class="btn btn-primary">
+        <div class="mx-2 my-4 flex flex-col items-end">
+          <button type="submit" @click="login" class="btn btn-secondary">
             Login with email
           </button>
-          <div class="divider divider-horizontal">OR</div>
+          <div class="my-4 justify-end">OR</div>
           <SignInWithGoogle @click="googleLogin"
             >Login with Google</SignInWithGoogle
           >
@@ -70,7 +69,7 @@ async function googleLogin() {
 
       <div class="my-6">
         Don't have an account yet?
-        <RouterLink to="/auth/signup" class="league-link"> Sign up </RouterLink
+        <RouterLink to="/auth/signup" class="underline hover:text-primary transition-colors"> Sign up </RouterLink
         >.
       </div>
     </div>
