@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.12.2
+
+### Patch Changes
+
+- [`58927a4aed0b6659a4aa8814f81b36ff22520c71`](https://github.com/samternent/home/commit/58927a4aed0b6659a4aa8814f81b36ff22520c71) Thanks [@samternent](https://github.com/samternent)! - Better league selection
+
 ## 0.12.1
 
 ### Patch Changes
