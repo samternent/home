@@ -5,7 +5,7 @@ export const lightBase = {
   "base-200": "#efeae6",
   "base-300": "#e7e2df",
   "base-content": "#291334",
-  "--rounded-btn": "1.9rem",
+  "--rounded-btn": "0rem",
   "--tab-border": "2px",
   "--tab-radius": "0.7rem",
 };
@@ -17,7 +17,7 @@ export const darkBase = {
   "base-200": "#2B2B2B",
   "base-300": "#333333",
   "base-content": "#DADADA",
-  "--rounded-btn": "1.9rem",
+  "--rounded-btn": "0rem",
   "--tab-border": "2px",
   "--tab-radius": "0.7rem",
 };

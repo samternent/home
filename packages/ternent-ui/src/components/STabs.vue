@@ -28,11 +28,7 @@ function isExactActiveLink(t) {
 <template>
   <ul
     role="tablist"
-    class="tabs tabs-base flex-grow-0 flex relative"
-    :class="{
-      'tabs-base': type === 'base',
-      'tabs-lifted': type === 'lifted',
-    }"
+    class="flex-grow-0 flex relative"
   >
     <div
       v-if="type === 'lifted'"
@@ -43,12 +39,12 @@ function isExactActiveLink(t) {
       :key="`${t.path}`"
       :to="t.path"
       role="tab"
-      class="tab focus:outline-none border-b-4 z-10 border-transparent hover:border-primary hover:border-opacity-50 transition-all"
+      class="pb-2 px-4 focus:outline-none border-b z-10 border-transparent hover:border-base-content hover:border-opacity-50 transition-all text-lg font-thin"
       :class="{
-        'tab-active !border-primary':
+        '!border-base-content border-opacity-80 !font-medium':
           (type === 'base' && !exact && isActiveLink(t)) ||
           (exact && isExactActiveLink(t)),
-        'tab-active !border-b-0 !border-base-300 !bg-base-200 font-medium':
+        '!border-b-0 !border-base-300 !bg-base-200 font-medium':
           ((!exact && isActiveLink(t)) || (exact && isExactActiveLink(t))) &&
           type === 'lifted',
         '!border-base-300 !bg-base-200 !border-b !opacity-50 hover:!opacity-100':

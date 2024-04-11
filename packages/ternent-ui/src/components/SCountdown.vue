@@ -21,28 +21,28 @@ onBeforeUnmount(() => {
 <template>
   <div class="grid grid-flow-col gap-5 text-center auto-cols-max">
     <div class="flex flex-col text-sm lg:text-base">
-      <span class="font-mono text-lg lg:text-2xl">
+      <span class="anton-regular text-lg lg:text-2xl">
         <span>{{ countdown?.days || 0 }}</span>
       </span>
-      day
+      DAY
     </div>
     <div class="flex flex-col text-sm lg:text-base">
-      <span class="font-mono text-lg lg:text-2xl">
+      <span class="anton-regular text-lg lg:text-2xl">
         <span>{{ countdown?.hours || 0 }}</span>
       </span>
-      hour
+      HOUR
     </div>
     <div class="flex flex-col text-sm lg:text-base">
-      <span class="font-mono text-lg lg:text-2xl">
+      <span class="anton-regular text-lg lg:text-2xl">
         <span>{{ Math.floor(countdown?.minutes || 0) }}</span>
       </span>
-      min
+      MIN
     </div>
     <div class="flex flex-col text-sm lg:text-base">
-      <span class="font-mono text-lg lg:text-2xl">
+      <span class="anton-regular text-lg lg:text-2xl">
         <span>{{ Math.floor(countdown?.seconds || 0) }}</span>
       </span>
-      sec
+      SEC
     </div>
   </div>
 </template>

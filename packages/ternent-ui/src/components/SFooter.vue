@@ -10,7 +10,7 @@ defineProps({
   <footer
     class="text-sm font-light tracking-tight p-3 flex flex-col justify-center items-center md:items-left lg:items-center w-full"
   >
-    <nav class="flex gap-2 my-2 xs:flex-row lg:flex-row md:flex-col">
+    <nav class="flex gap-2 my-2 xs:flex-row lg:flex-row">
       <template v-for="link in links" :key="link.to">
         <a
           v-if="link.external"
