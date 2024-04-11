@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.12.1
+
+### Patch Changes
+
+- [`265746f93de0552ca5511843a6f42225b1750d2f`](https://github.com/samternent/home/commit/265746f93de0552ca5511843a6f42225b1750d2f) Thanks [@samternent](https://github.com/samternent)! - Adds league picker b ack in
+
 ## 0.12.0
 
 ### Minor Changes
