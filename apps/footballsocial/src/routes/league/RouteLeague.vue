@@ -1,8 +1,10 @@
 <script setup>
 import { toRefs, watch, computed } from "vue";
+import { useRouter } from 'vue-router';
 import { useTitle, useLocalStorage, useColorMode } from "@vueuse/core";
 import { provideCompetitionLoader } from "../../api/football-data/useCompetitionLoader";
 import { useCurrentUser } from "../../composables/useCurrentUser";
+import { competitions } from "../../utils/competitions";
 
 import { SHeader } from "ternent-ui/components";
 
@@ -25,6 +27,7 @@ const { competitionCode } = toRefs(props);
 const title = useTitle();
 const colorMode = useColorMode();
 const { profile } = useCurrentUser();
+const router = useRouter();
 
 const { items: competition, error } = provideCompetitionLoader(competitionCode);
 
@@ -65,10 +68,33 @@ const lookups = {
 const clubBadgeId = computed(() => {
   return lookups[profile.value?.club];
 });
+
+const currentCompetition = computed({
+  get() {
+    return competitionCode.value;
+  },
+  set(value) {
+    router.push(`/leagues/${value}`);
+  },
+});
 </script>
 <template>
   <div class="md:px-2 lg:px-4 flex-1 max-w-4xl mx-auto pt-0 w-full h-screen">
     <SHeader>
+      <div class="flex justify-end">
+        <select
+          v-model="currentCompetition"
+          class="block border-0 py-2 px-3 text-xl focus:ring-0 mr-2 rounded"
+        >
+          <option
+            v-for="gw in competitions"
+            :key="`startWeek${gw}`"
+            :value="gw.code"
+          >
+            {{ gw.name }}
+          </option>
+        </select>
+      </div>
       <div
         class="px-1 p-2 font-thin rounded-lg flex-1 flex flex-col justify-center mb-2"
       >
@@ -101,9 +127,7 @@ const clubBadgeId = computed(() => {
               >
                 {{ competition?.area?.name }}.
               </p>
-              <p class="text-lg font-thin lg:my-2 tracking-tighter">
-                2023/24
-              </p>
+              <p class="text-lg font-thin lg:my-2 tracking-tighter">2023/24</p>
             </div>
           </div>
 
@@ -136,7 +160,9 @@ const clubBadgeId = computed(() => {
         ></p>
       </div>
     </SHeader>
-    <RouterView :competitionCode="competitionCode" :key="competitionCode" />
+
+    <RouterView v-if="competition" :competitionCode="competitionCode" :key="competitionCode" />
+    <div v-else class="h-96">LOADING</div>
     <div
       v-if="error"
       class="absolute min-h-screen flex-1 h-screen mx-auto max-w-6xl w-full"
