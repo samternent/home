@@ -123,7 +123,7 @@ const linkedCollections = computed(() => {
           <td class="border-r border-base-300 border-b"></td>
         </tr>
       </template>
-      <tr @keyup.enter="addListItem" class="sticky bottom-0 bg-base-100">
+      <tr @keyup.enter="() => {}" class="sticky bottom-0 bg-base-100">
         <td></td>
         <td class="">
           <div>
@@ -173,7 +173,7 @@ const linkedCollections = computed(() => {
             <SButton
               class="w-full max-w-32"
               variant="tonal"
-              @click="addListItem"
+              @click="() => {}"
               color="success"
             >
               Add

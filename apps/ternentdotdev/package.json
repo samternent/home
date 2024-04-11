@@ -15,6 +15,7 @@
     "@vueform/vueform": "^1.7.3",
     "@vueuse/core": "^10.5.0",
     "axios": "^1.5.1",
+    "blockchain": "workspace:*",
     "concords-encrypt": "workspace:*",
     "concords-identity": "workspace:*",
     "concords-ledger": "workspace:*",
@@ -32,6 +33,7 @@
     "postcss": "^8.4.31",
     "tailwindcss": "^3.3.3",
     "vite": "^4.4.11",
-    "vite-plugin-pwa": "^0.16.5"
+    "vite-plugin-pwa": "^0.16.5",
+    "vite-plugin-wasm": "^3.3.0"
   }
 }

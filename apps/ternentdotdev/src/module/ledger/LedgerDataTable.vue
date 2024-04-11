@@ -176,21 +176,15 @@ const editItem = shallowRef(null);
 </script>
 
 <template>
-  <table
-    class="text-left table-auto w-full whitespace-nowrap border-separate text-sm"
-  >
-    <thead class="sticky top-[0.2em] bg-base-200">
-      <th
-        class="uppercase p-2 z-10 bg-base-300 border-base-200 border font-thin"
-      >
-        id
-      </th>
+  <table class="text-left table-auto w-full whitespace-nowrap text-sm">
+    <thead class="sticky top-[0.2em] bg-base-200 my-2">
+      <th class="uppercase p-4 z-10 font-thin">id</th>
       <th
         v-for="(column, i) in columns"
         :key="`header_${i}`"
         :style="`width: ${column.width}px`"
         @click="sortBy = `data.${column.name}`"
-        class="uppercase p-2 z-10 bg-base-300 border-base-200 border font-thin"
+        class="uppercase p-4 z-10 font-thin"
       >
         <div class="flex justify-between items-center">
           {{ column.name }}
@@ -215,10 +209,7 @@ const editItem = shallowRef(null);
           </svg>
         </div>
       </th>
-      <th
-        class="uppercase p-2 z-10 bg-base-300 border-base-200 border font-thin"
-        @click="sortBy = 'timestamp'"
-      >
+      <th class="uppercase p-4 z-10 font-thin" @click="sortBy = 'timestamp'">
         <div class="flex justify-between items-center">
           Updated
           <svg
@@ -243,7 +234,7 @@ const editItem = shallowRef(null);
         </div>
       </th>
       <th
-        class="uppercase p-2 z-10 bg-base-300 border-base-200 border font-thin"
+        class="uppercase p-4 z-10 font-thin"
         @click="sortBy = 'data.permission'"
       >
         <div class="flex justify-between items-center">
@@ -270,7 +261,7 @@ const editItem = shallowRef(null);
         </div>
       </th>
       <th
-        class="uppercase p-2 z-20 bg-base-300 border-base-200 border font-thin"
+        class="uppercase p-4 z-20 font-thin"
         :colspan="canEdit ? 3 : 2"
         @click="sortBy = 'identity'"
       >
@@ -317,15 +308,11 @@ const editItem = shallowRef(null);
     </thead>
     <tbody class="">
       <template v-for="item in sortedItems" :key="item.id">
-        <tr tabindex="0" class="h-12 border-base-300 border-b border-l">
-          <td class="border-r border-base-300 border-b truncate w-20">
+        <tr tabindex="0" class="h-12">
+          <td class="truncate w-20">
             {{ item.data.id }}
           </td>
-          <td
-            v-for="(column, k) in columns"
-            :key="`header_${item.id}${k}`"
-            class="border-r border-base-300 border-b"
-          >
+          <td v-for="(column, k) in columns" :key="`header_${item.id}${k}`">
             <div v-if="column.type.includes(':types')">
               {{ getValue(column.type, column.name, item.data[column.name]) }}
             </div>
@@ -335,10 +322,10 @@ const editItem = shallowRef(null);
               v-bind="{ item: item.data[column.name] }"
             ></component>
           </td>
-          <td class="border-r border-base-300 border-b">
+          <td>
             <TextCell :item="formatTime(item?.timestamp)" />
           </td>
-          <td class="border-r border-base-300 border-b">
+          <td>
             <div class="w-64 truncate p-2 flex">
               <IdentityAvatar
                 v-if="item.data?.permission?.startsWith('MFkw')"
@@ -351,13 +338,13 @@ const editItem = shallowRef(null);
               }}
             </div>
           </td>
-          <td class="text-center border-base-300 border-b">
+          <td class="text-center">
             <IdentityAvatar :identity="item.identity" />
           </td>
-          <td class="text-center border-base-300 border-b">
+          <td class="text-center">
             <VerifyRowCell v-bind="{ ...getVerifyProps(item) }" />
           </td>
-          <td class="px-2 border-r border-base-300 border-b" v-if="canEdit">
+          <td class="px-2" v-if="canEdit">
             <button
               icon
               variant="plain"

@@ -35,11 +35,8 @@ function addTaskItem() {
   <div
     class="text-base flex flex-col flex-1 w-full font-thin absolute top-0 bottom-0"
   >
-    <div class="flex items-center justify-between px-2">
+    <div class="flex items-center justify-between p-2">
       <SBrandHeader size="md" class="font-light">{{ collection }}</SBrandHeader>
-      <SButton @click="addTaskItem" type="ghost" class="my-2 btn-sm"
-        >Add item</SButton
-      >
     </div>
     <div
       class="h-[0.2em] sticky-0 absolute top-[2.8em] z-10 w-full bg-base-100"
