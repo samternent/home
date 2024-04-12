@@ -48,8 +48,6 @@ const gameweeks = computed(() =>
 );
 const { user, profile } = useCurrentUser();
 
-console.log(profile.value);
-
 const { items: fixtures } = useFixturesLoader(competitionCode, stage, gameweek);
 
 const predictions = shallowRef({});
