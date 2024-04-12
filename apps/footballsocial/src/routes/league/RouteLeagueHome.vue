@@ -27,7 +27,6 @@ const route = useRoute();
 
 const { items: competition, hasItems: hasCompetition } = useCompetitionLoader();
 
-
 const tabs = computed(() => [
   {
     title: "Predictions",
@@ -51,25 +50,20 @@ watch(
   { immediate: true }
 );
 
-const dismissFeatureBanner = useLocalStorage(
-  "footballsocial/dismissFeatureBanner",
-  false
-);
-const dismissProductHuntBanner = useLocalStorage(
-  "footballsocial/dismissProductHuntBanner",
+const dismissEurosBanner = useLocalStorage(
+  "footballsocial/dissmissEurosBanner",
   false
 );
 </script>
 <template>
-  <STabs :items="tabs" :path="route.path" />
   <!-- Banner -->
-  <!-- <div
-    v-if="!dismissProductHuntBanner"
-    class="bg-opacity-20 w-full rounded-lg my-4 border-dashed borde p-4"
+  <div
+    v-if="!dismissEurosBanner && competitionCode !== 'EC'"
+    class="bg-base-content text-base-100 w-full mb-8 p-8 flex flex-col relative"
   >
     <div
-      @click="dismissProductHuntBanner = true"
-      class="cursor-pointer float-right transition-colors"
+      @click="dismissEurosBanner = true"
+      class="cursor-pointer absolute right-2 top-2 opacity-60 hover:opacity-100 transition-opacity"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -86,66 +80,27 @@ const dismissProductHuntBanner = useLocalStorage(
         />
       </svg>
     </div>
-    <p class="text-xl font-thin">
-      Enjoying
-      <span class="transition-all font-medium tracking-tighter">
-        Football Social<span class="text-pink-700">.</span></span
-      >?
-    </p>
-    <p class="font-thin py-2 text-lg">
-      Please consider leaving an upvote or comment on
-      <a
-        href="https://www.producthunt.com/posts/football-social"
-        target="_blank"
-        class="league-link font-medium"
-        >ProductHunt.com</a
-      >.
+    <div class="justify-between flex flex-col lg:flex-row items-bottom">
+      <p class="text-xl font-thin p-b">
+        The
+        <span class="transition-all font-medium tracking-tighter">
+          European Championships</span
+        >
+        are coming!
+      </p>
+
+      <RouterLink
+        to="/leagues/EC/predictions"
+        class="btn btn-success mt-4 lg:mt-0 mx-2"
+        >Place Euros predictions</RouterLink
+      >
+    </div>
+    <p class="text-xs font-thin tracing-tight mt-4">
+      TIP: You can change competition at any time by clicking the league name in
+      the header.
     </p>
   </div>
-  <div
-    v-else-if="!dismissFeatureBanner"
-    class="bg-indigo-700 bg-opacity-20 w-full rounded-lg my-4 border-dashed border border-indigo-300 p-4"
-  >
-    <div
-      @click="dismissFeatureBanner = true"
-      class="cursor-pointer float-right text-indigo-300 hover:text-indigo-500 transition-colors"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke-width="1.5"
-        stroke="currentColor"
-        class="w-6 h-6"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-        />
-      </svg>
-    </div>
-    <p class="text-xl font-thin">
-      Thank you for playing
-      <span
-        class="bg-gradient-to-r from-white to-70% to-indigo-100 transition-all via-40% bg-clip-text text-transparent font-medium tracking-tighter"
-      >
-        Football Social<span class="text-pink-700">.</span></span
-      >.
-    </p>
-    <p class="font-thin py-2 text-lg">
-      If you have any issues, feedback or feature requests, please use
-      <a
-        href="https://sam.staging.teamwork.com/p/forms/PBLRygLcpZ6NjG0Zlaoe"
-        target="_blank"
-        class="league-link font-light"
-        >this form</a
-      >, or the link in the footer<span
-        class="font-black text-base text-pink-700"
-        >.</span
-      >
-    </p>
-  </div> -->
+  <STabs :items="tabs" :path="route.path" />
   <div class="flex mb-16 w-full mt-4">
     <RouterView />
   </div>

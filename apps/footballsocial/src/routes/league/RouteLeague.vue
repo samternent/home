@@ -104,10 +104,16 @@ onClickOutside(editCompetitionTarget, () => (editCompetition.value = false));
       >
         <FSLogo class="lg:hidden flex" />
         <div class="flex flex-col lg:flex-row justify-between mb-4">
-          <div class="flex items-center">
+          <div
+            class="flex items-center"
+            :class="{
+              'items-center': !editCompetition,
+              'items-start': editCompetition,
+            }"
+          >
             <!-- ads -->
             <div
-              class="tracking-tightest font-thin flex lg:flex-col items-end lg:items-start group cursor-pointer"
+              class="tracking-tightest font-thin flex lg:flex-col items-end lg:items-start group cursor-pointer p-4"
               v-if="competition && !editCompetition"
               @click="editCompetition = true"
             >
@@ -138,12 +144,12 @@ onClickOutside(editCompetitionTarget, () => (editCompetition.value = false));
                 </svg>
               </p>
             </div>
-            <div v-else-if="competition" class="">
+            <div v-else-if="competition" class="-mx-2">
               <select
                 ref="editCompetitionTarget"
                 autofocus
                 v-model="currentCompetition"
-                class="block border-0 py-2 px-3 text-xl focus:ring-0 mr-2 rounded"
+                class="block border-0 text-xl focus:ring-0 p-2"
               >
                 <option
                   v-for="gw in competitions"
