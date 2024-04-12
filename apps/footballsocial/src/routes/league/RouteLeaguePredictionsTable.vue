@@ -81,7 +81,7 @@ const tabs = computed(() => [
     <div class="collapse mt-16">
       <input type="checkbox" aria-label="Rules" />
       <div
-        class="collapse-title text-xl lg:text-3xl bg-base-content text-base-100 anton-regular"
+        class="collapse-title text-xl lg:text-2xl bg-base-content text-base-100 anton-regular"
       >
         Rules
       </div>

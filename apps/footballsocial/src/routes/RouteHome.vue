@@ -5,7 +5,9 @@ import { useCurrentUser } from "../composables/useCurrentUser";
 import { usePredictionService } from "../composables/usePredictionService";
 import { watch, onMounted, shallowRef } from "vue";
 
-import { SBrandHeader, SButton } from "ternent-ui/components";
+import { SButton } from "ternent-ui/components";
+
+import FSLogo from "../module/brand/FSLogo.vue";
 
 const router = useRouter();
 const lastLeague = useLocalStorage("lastLeague", "PL");
@@ -41,49 +43,21 @@ watch(
   >
     <div class="py-6 px-2 w-full">
       <div class="flex flex-col w-full">
-        <div class="flex justify-center">
-          <div
-            class="flex flex-col items-end justify-center translate-x-6 anton-regular"
-          >
-            <div
-              class="bg-base-content text-base-100 text-[30.7px] lg:text-[43.9px] [transform:rotate(-90deg)] px-2 uppercase"
-            >
-              Social
-            </div>
-          </div>
-          <div
-            class="font-bold text-base-content text-[96px] lg:text-[136px] uppercase anton-regular"
-          >
-            Football
-          </div>
-        </div>
+        <FSLogo class="justify-center" />
         <div
-          class="flex justify-center text-2xl md:text-3xl lg:text-4xl font-thin tracking-tighter border-t py-2"
+          class="flex justify-center text-xl md:text-3xl lg:text-4xl font-thin tracking-tighter border-t py-2"
         >
           The friendly football score prediction game.
         </div>
       </div>
-      <p class="text-2xl font-thin my-12 text-center">
-        With
-        <span v-if="predictionsCount" class="text-3xl bg-base-content text-base-100 px-2 anton-regular"
-          >{{ predictionsCount }}
-        </span>
-        <span v-else class="skeleton inline-block h-6 w-10 mx-1" />
-        predictions from
-        <span v-if="players" class="text-3xl bg-base-content text-base-100 px-2 anton-regular">
-          {{ players }}
-        </span>
-        <span v-else class="skeleton inline-block h-6 w-8 mx-1" />
-        players, across
-        <span class="text-3xl bg-base-content text-base-100 px-2 anton-regular">7</span> leagues.
-      </p>
 
-      <div class="flex text-4xl justify-center items-center mt-20">
+      <div class="flex text-4xl justify-center items-center my-20">
         <SButton
           aria-label="Login"
           v-if="!user"
           to="/auth/login"
-          type="secondary"
+          class="text-2xl font-medium"
+          type="primary"
         >
           Login
         </SButton>
@@ -92,13 +66,37 @@ watch(
           aria-label="Join"
           v-if="!user"
           to="/auth/signup"
-          class="btn-outline"
-          type="ghost"
+          class="btn-outline text-2xl font-thin"
+          type="secondary"
         >
           Join
         </SButton>
       </div>
-      <div class="text-lg w-full text-center font-thin tracking-tighter my-4 mt-20">
+      <p class="text-2xl font-thin my-12 text-center">
+        With
+        <span
+          v-if="predictionsCount"
+          class="text-3xl bg-base-content text-base-100 px-2 anton-regular"
+          >{{ predictionsCount }}
+        </span>
+        <span v-else class="skeleton inline-block h-6 w-10 mx-1" />
+        predictions from
+        <span
+          v-if="players"
+          class="text-3xl bg-base-content text-base-100 px-2 anton-regular"
+        >
+          {{ players }}
+        </span>
+        <span v-else class="skeleton inline-block h-6 w-8 mx-1" />
+        players, across
+        <span class="text-3xl bg-base-content text-base-100 px-2 anton-regular"
+          >7</span
+        >
+        leagues.
+      </p>
+      <div
+        class="text-lg w-full text-center font-thin tracking-tighter my-4 mt-20"
+      >
         If you're here to look at the code, it's open-source on Github.
         <a
           href="https://github.com/samternent/home/tree/main/apps/footballsocial"

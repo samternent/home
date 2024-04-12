@@ -10,7 +10,7 @@ import {
 import { provideCompetitionLoader } from "../../api/football-data/useCompetitionLoader";
 import { useCurrentUser } from "../../composables/useCurrentUser";
 import { competitions } from "../../utils/competitions";
-
+import FSLogo from "../../module/brand/FSLogo.vue";
 import { SHeader } from "ternent-ui/components";
 
 const props = defineProps({
@@ -51,7 +51,6 @@ watch(
     if (_competition?.code) {
       lastLeague.value = _competition?.code;
     }
-    
   },
   { immediate: true }
 );
@@ -103,24 +102,9 @@ onClickOutside(editCompetitionTarget, () => (editCompetition.value = false));
       <div
         class="px-1 p-2 font-thin rounded-lg flex-1 flex flex-col justify-center"
       >
-        <div class="flex justify-start lg:hidden mx-2 group">
-          <div
-            class="flex flex-col items-start justify-center -translate-x-6 anton-regular"
-          >
-            <div
-              class="bg-base-content text-base-100 text-[24.3px] md:text-[30.7px] lg:text-[43.9px] [transform:rotate(-90deg)] px-2 uppercase group-hover:bg-primary"
-            >
-              Social
-            </div>
-          </div>
-          <div
-            class="font-bold text-base-content text-[78px] md:text-[96px] -translate-x-10 lg:text-[136px] uppercase anton-regular"
-          >
-            Football
-          </div>
-        </div>
+        <FSLogo class="lg:hidden flex" />
         <div class="flex flex-col lg:flex-row justify-between mb-4">
-          <div class="">
+          <div class="flex items-center">
             <!-- ads -->
             <div
               class="tracking-tightest font-thin flex lg:flex-col items-end lg:items-start group cursor-pointer"
@@ -173,22 +157,7 @@ onClickOutside(editCompetitionTarget, () => (editCompetition.value = false));
           </div>
 
           <div class="flex flex-col">
-            <div class="lg:flex justify-end hidden">
-              <div
-                class="flex flex-col items-end justify-center translate-x-6 anton-regular"
-              >
-                <div
-                  class="bg-base-content text-base-100 text-[30.7px] lg:text-[43.9px] [transform:rotate(-90deg)] px-2 uppercase"
-                >
-                  Social
-                </div>
-              </div>
-              <div
-                class="font-bold text-base-content text-[96px] lg:text-[136px] uppercase anton-regular"
-              >
-                Football
-              </div>
-            </div>
+            <FSLogo class="hidden lg:flex" />
             <div
               class="flex justify-end font-thin tracking-tighter border-t py-2"
             >
@@ -204,7 +173,7 @@ onClickOutside(editCompetitionTarget, () => (editCompetition.value = false));
       :competitionCode="competitionCode"
       :key="competitionCode"
     />
-    <div v-else class="h-1/2 flex justify-center items-center">
+    <div v-else class="h-screen flex justify-center items-center">
       <div
         class="absolute right-1/2 bottom-1/2 transform translate-x-1/2 translate-y-1/2"
       >
