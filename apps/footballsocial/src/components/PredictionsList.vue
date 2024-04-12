@@ -1,7 +1,6 @@
 <script setup>
-import { toRefs, computed, shallowRef, unref } from "vue";
+import { computed, shallowRef, unref, watch } from "vue";
 import { Interval, DateTime } from "luxon";
-import { watchThrottled } from "@vueuse/core";
 import useFixturesLoader from "../api/football-data/useCompetitionFixturesLoader";
 import { usePredictionService } from "../composables/usePredictionService";
 import { useCurrentUser } from "../composables/useCurrentUser";
@@ -35,7 +34,10 @@ const props = defineProps({
 });
 
 const { addPrediction, getPredictions } = usePredictionService();
-const { competitionCode, currentGameweek, stage, username } = toRefs(props);
+const competitionCode = computed(() => props.competitionCode);
+const currentGameweek = computed(() => props.currentGameweek);
+const stage = computed(() => props.stage);
+const username = computed(() => props.username);
 const overrideGameweek = shallowRef(currentGameweek.value);
 const gameweek = computed(
   () => overrideGameweek.value || currentGameweek.value
@@ -44,6 +46,9 @@ const gameweek = computed(
 const gameweeks = computed(() =>
   getCompetitionGameweeks(props.competitionCode)
 );
+const { user, profile } = useCurrentUser();
+
+console.log(profile.value);
 
 const { items: fixtures } = useFixturesLoader(competitionCode, stage, gameweek);
 
@@ -61,9 +66,9 @@ async function loadPredictions() {
   predictionsLoaded.value = false;
 
   const { data } = await getPredictions(
-    props.username || profile.value?.username,
-    unref(competitionCode),
-    unref(gameweek)
+    username.value || profile.value?.username,
+    competitionCode.value,
+    gameweek.value
   );
 
   data.predictions?.forEach((prediction) => {
@@ -85,8 +90,6 @@ async function loadPredictions() {
 
   predictionsLoaded.value = true;
 }
-
-const { user, profile } = useCurrentUser();
 
 async function savePredictions() {
   await addPrediction(
@@ -116,10 +119,21 @@ const isDirty = computed(() => {
   return Object.keys(predictionsToUpdate.value).length > 0;
 });
 
-watchThrottled([gameweek, competitionCode, username], loadPredictions, {
-  throttle: 500,
-  immediate: true,
-});
+watch(
+  [gameweek, competitionCode, profile, username],
+  () => {
+    if (
+      gameweek.value &&
+      competitionCode.value &&
+      (profile.value || username.value)
+    ) {
+      loadPredictions();
+    }
+  },
+  {
+    immediate: true,
+  }
+);
 
 const predictionsList = computed(
   () =>
@@ -204,8 +218,6 @@ function formatKickOff(utcDate) {
   )}`;
 }
 
-
-
 const alertMessage = computed(() =>
   gameweekPoints.value
     ? `${gameweekPoints.value} points scored.`
@@ -227,7 +239,11 @@ function isSameDay(date1, date2) {
         aria-label="Gameweek"
         class="select select-bordered select-sm mr-4"
       >
-        <option v-for="gw in gameweeks" :key="`gameweek_${competitionCode}_${gw}`" :value="gw">
+        <option
+          v-for="gw in gameweeks"
+          :key="`gameweek_${competitionCode}_${gw}`"
+          :value="gw"
+        >
           Gameweek {{ gw }}
         </option>
       </select>
