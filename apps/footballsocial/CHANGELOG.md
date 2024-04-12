@@ -1,5 +1,13 @@
 # concords-footballsocial
 
+## 0.12.5
+
+### Patch Changes
+
+- [`1ffeacc4cd0a74c51ccb63410c0e067b08b8e315`](https://github.com/samternent/home/commit/1ffeacc4cd0a74c51ccb63410c0e067b08b8e315) Thanks [@samternent](https://github.com/samternent)! - Fix predictions not loading
+
+- [`0044ec5f8a0acb2224992a8add92cc8cf297f0cd`](https://github.com/samternent/home/commit/0044ec5f8a0acb2224992a8add92cc8cf297f0cd) Thanks [@samternent](https://github.com/samternent)! - Adds euros banner
+
 ## 0.12.4
 
 ### Patch Changes
