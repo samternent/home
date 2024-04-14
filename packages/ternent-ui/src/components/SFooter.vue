@@ -10,6 +10,11 @@ defineProps({
   <footer
     class="text-sm font-light tracking-tight p-3 flex flex-col justify-center items-center md:items-left lg:items-center w-full"
   >
+    <aside
+      class="my-2 flex justify-center flex-col items-center md:items-left lg:items-center"
+    >
+      <slot name="top" />
+    </aside>
     <nav class="flex gap-2 my-2 xs:flex-row lg:flex-row">
       <template v-for="link in links" :key="link.to">
         <a

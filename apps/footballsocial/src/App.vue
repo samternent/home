@@ -24,7 +24,7 @@ const { appVersion, serverVersion } = provideAppVersion();
 const { user, ready, profile } = provideCurrentUser();
 
 const hasDismissedPopup = useLocalStorage("app/hasDismissedPopup", false);
-const mode = useColorMode() 
+const mode = useColorMode();
 const modalRef = shallowRef(null);
 
 const router = useRouter();
@@ -87,10 +87,10 @@ const theme = useLocalStorage(
         message="A new version of the app is available."
       />
     </div>
-    <div
-      class="flex-1 flex flex-col pt-2 bg-base-100 max-w-4xl w-full mx-auto"
-    >
-      <div class="flex justify-between w-full max-w-6xl border-b pb-2 items-center">
+    <div class="flex-1 flex flex-col pt-2 bg-base-100 max-w-4xl w-full mx-auto">
+      <div
+        class="flex justify-between w-full max-w-6xl border-b pb-2 items-center"
+      >
         <RouterLink to="/" class="btn btn-ghost btn-sm">FS</RouterLink>
         <UserMenu v-if="profile" />
       </div>
@@ -100,20 +100,20 @@ const theme = useLocalStorage(
       </Api>
     </div>
     <SFooter :links="links">
-      <template #bottom>
-        <p class="text-sm font-thin text-center">
+      <template #top>
+        <p class="text-sm font-light text-center">
           Football data provided by the
           <a
             href="https://www.football-data.org/"
             target="_blank"
             referrerpolicy="noreferrer"
-            class="league-link font-medium"
+            class="league-link font-bold"
             >Football-Data.org</a
           >
           API.
         </p>
-        <p class="text-sm font-thin mb-4 text-center">
-          <a href="https://www.footballsocial.app/" class="font-medium mr-1"
+        <p class="text-sm font-light mb-4 text-center">
+          <a href="https://www.footballsocial.app/" class="font-bold mr-1"
             >FootballSocial</a
           >is independent, hand-crafted and open-source, by
           <a
@@ -122,7 +122,7 @@ const theme = useLocalStorage(
             referrerpolicy="noreferrer"
             class="font-light hover:text-primary transition-colors group"
           >
-            <span class="font-medium"
+            <span class="font-bold"
               >ternent<span
                 class="font-light text-base-content border-b-2 transition-all border-transparent group-hover:border-primary"
                 >dot</span
@@ -130,8 +130,10 @@ const theme = useLocalStorage(
             ></a
           >.
         </p>
-        <Logo class="mx-auto h-auto w-12 mb-4" />
-        <SThemeToggle v-model="theme" />
+        <Logo class="mx-auto h-auto w-12" />
+      </template>
+      <template #bottom>
+        <SThemeToggle v-model="theme" class="mt-4"/>
       </template>
     </SFooter>
   </div>
