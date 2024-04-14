@@ -8,14 +8,25 @@
   font-style: normal;
 }
 
-:root {
-  --font-system-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-    "Segoe UI Symbol";
+// <uniquifier>: Use a unique and descriptive class name
+// <weight>: Use a value from 100 to 900
 
-  --font-system-mono: ui-monospace, Menlo, Monaco, "Cascadia Mono",
-    "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace",
-    "Source Code Pro", "Fira Mono", "Droid Sans Mono", "Courier New", monospace;
+.hanken-grotesk {
+  font-family: "Hanken Grotesk", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+html {
+  font-family: "Hanken Grotesk", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 16px;
+  font-variation-settings:
+    "wdth" 100,
+    "GRAD" 0;
 }
 /* 
 .league-link {

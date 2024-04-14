@@ -81,21 +81,23 @@ const dismissEurosBanner = useLocalStorage(
       </svg>
     </div>
     <div class="justify-between flex flex-col lg:flex-row items-bottom">
-      <p class="text-xl font-thin p-b">
+      <p class="text-xl font-light p-b flex-1">
         The
-        <span class="transition-all font-medium tracking-tighter">
+        <span class="transition-all font-bold tracking-tighter">
           European Championships</span
         >
         are coming!
       </p>
 
-      <RouterLink
-        to="/leagues/EC/predictions"
-        class="btn btn-success mt-4 lg:mt-0 mx-2"
-        >Place Euros predictions</RouterLink
-      >
+      <div class="w-full lg:w-64 px-4 flex justify-center items-center my-4 lg:my-0">
+        <RouterLink
+          to="/leagues/EC/predictions"
+          class="btn btn-success w-full"
+          >Place Euros predictions</RouterLink
+        >
+      </div>
     </div>
-    <p class="text-xs font-thin tracing-tight mt-4">
+    <p class="text-sm font-light tracing-tight">
       TIP: You can change competition at any time by clicking the league name in
       the header.
     </p>

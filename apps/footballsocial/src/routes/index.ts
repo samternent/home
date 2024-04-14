@@ -12,4 +12,8 @@ export default [
     path: "",
     component: () => import("./RouteHome.vue"),
   },
+  {
+    path: '/:path(.*)*',
+    redirect: "/",
+  },
 ];

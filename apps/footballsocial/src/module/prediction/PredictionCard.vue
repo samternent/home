@@ -117,7 +117,7 @@ function formatKickOffTime(utcDate) {
     <div
       class="flex justify-between bg-base-100 p-2 py-4 border-b-2 border-b-primary border-opacity-50"
     >
-      <div class="flex text-base tracking-tighter uppercase">
+      <div class="flex text-base tracking-tighter uppercase font-light">
         <span v-if="fixture.status === 'IN_PLAY'">In play</span>
         <span v-else-if="fixture.status === 'PAUSED'">Half time</span>
         <span v-else-if="!!fixture.score?.winner">Finished</span>
@@ -160,7 +160,7 @@ function formatKickOffTime(utcDate) {
     >
       <div class="flex w-full">
         <div
-          class="flex-1 flex items-center truncate my-1 text-xl md:text-2xl font-thin pr-2"
+          class="flex-1 flex items-center truncate my-1 text-xl md:text-2xl font-light pr-2"
         >
           <div
             class="bg-white flex justify-center items-center p-2 mr-4 lg:mr-8 rounded-full overflow-hidden"
@@ -209,7 +209,7 @@ function formatKickOffTime(utcDate) {
       <hr class="h-1 border-0 bg-base-300 w-full block mx-4 my-2" />
       <div class="flex w-full gap-2">
         <div
-          class="flex-1 flex items-center truncate my-1 text-xl md:text-2xl font-thin pr-2"
+          class="flex-1 flex items-center truncate my-1 text-xl md:text-2xl font-light pr-2"
         >
           <div
             class="bg-white flex justify-center items-center p-2 mr-4 lg:mr-8 rounded-full overflow-hidden"

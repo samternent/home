@@ -103,7 +103,7 @@ onClickOutside(editCompetitionTarget, () => (editCompetition.value = false));
         class="px-1 p-2 font-thin rounded-lg flex-1 flex flex-col justify-center"
       >
         <FSLogo class="lg:hidden flex" />
-        <div class="flex flex-col lg:flex-row justify-between mb-4">
+        <div class="flex flex-col lg:flex-row justify-between">
           <div
             class="flex items-center"
             :class="{
@@ -113,13 +113,13 @@ onClickOutside(editCompetitionTarget, () => (editCompetition.value = false));
           >
             <!-- ads -->
             <div
-              class="tracking-tightest font-thin flex lg:flex-col items-end lg:items-start group cursor-pointer p-4"
+              class="tracking-tightest font-thin flex lg:flex-col items-end lg:items-start group cursor-pointer pt-2 px-2"
               v-if="competition && !editCompetition"
               @click="editCompetition = true"
             >
-              <p class="md:text-3xl mt-0">{{ competition?.name }},</p>
+              <p class="md:text-2xl lg:text-3xl mt-0">{{ competition?.name }},</p>
               <p
-                class="px-2 py-1 mx-2 lg:mx-0 lg:my-2 md:text-3xl transition-color inline-block font-bold bg-base-content group-hover:bg-primary tracking-tighter header text-base-100"
+                class="px-2 py-1 mx-2 lg:mx-0 lg:my-2 md:text-2xl lg:text-3xl transition-color inline-block font-bold bg-base-content group-hover:bg-primary tracking-tighter header text-base-100"
               >
                 {{ competition?.area?.name }}.
               </p>
