@@ -1,5 +1,11 @@
 # footballsocial-api
 
+## 0.2.0
+
+### Minor Changes
+
+- [`1f3ad0d2b7052f3b8359e94f1edb20ef4b40c73a`](https://github.com/samternent/home/commit/1f3ad0d2b7052f3b8359e94f1edb20ef4b40c73a) Thanks [@samternent](https://github.com/samternent)! - Remove 401 block
+
 ## 0.1.9
 
 ### Patch Changes
