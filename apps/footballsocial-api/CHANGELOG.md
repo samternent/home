@@ -1,5 +1,11 @@
 # footballsocial-api
 
+## 0.2.3
+
+### Patch Changes
+
+- [`dea0005325ab5559937e8fa467ba274b967197d9`](https://github.com/samternent/home/commit/dea0005325ab5559937e8fa467ba274b967197d9) Thanks [@samternent](https://github.com/samternent)! - Fix typo
+
 ## 0.2.2
 
 ### Patch Changes
