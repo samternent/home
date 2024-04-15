@@ -1,5 +1,11 @@
 # footballsocial-api
 
+## 0.2.1
+
+### Patch Changes
+
+- [`a018f2bbe80f331b281c9954694bf748b611af8a`](https://github.com/samternent/home/commit/a018f2bbe80f331b281c9954694bf748b611af8a) Thanks [@samternent](https://github.com/samternent)! - Fix caching on unauth
+
 ## 0.2.0
 
 ### Minor Changes
