@@ -32,7 +32,7 @@ export default function predictRoutes(router) {
       let lastUpdated = 0;
 
       const cacheResults = await redisClient.get(
-        `${req.url}-${isloggedIn ? "loggedIn" : "loggedOut"}`
+        `${req.url}- ${isLoggedIn ? "loggedIn" : "loggedOut"}`
       );
       if (cacheResults) {
         return res.send(JSON.parse(cacheResults));
@@ -163,7 +163,7 @@ export default function predictRoutes(router) {
 
         res.setHeader("Cache-Control", "max-age=1, stale-while-revalidate");
         await redisClient.set(
-          `${req.url}-${isloggedIn ? "loggedIn" : "loggedOut"}`,
+          `${req.url}- ${isLoggedIn ? "loggedIn" : "loggedOut"}`,
           JSON.stringify({ table: combinedResults, lastUpdated }),
           {
             EX: 300,
@@ -187,7 +187,7 @@ export default function predictRoutes(router) {
 
         res.setHeader("Cache-Control", "max-age=1, stale-while-revalidate");
         await redisClient.set(
-          `${req.url}-${isloggedIn ? "loggedIn" : "loggedOut"}`,
+          `${req.url}- ${isLoggedIn ? "loggedIn" : "loggedOut"}`,
           JSON.stringify({ table: results, lastUpdated }),
           {
             EX: 300,
