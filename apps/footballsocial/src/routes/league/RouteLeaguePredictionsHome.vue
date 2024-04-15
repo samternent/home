@@ -50,8 +50,8 @@ const backPath = window.localStorage.getItem("lastLeagueTablePath");
     <PredictionsList
       v-if="competition"
       :username="username"
-      :competitionCode="competition?.code"
-      :currentGameweek="competition?.currentSeason?.currentMatchday"
+      :competitionCode="competition.code"
+      :currentGameweek="competition.currentSeason?.currentMatchday"
       @selected="
         (fixture) =>
           $router.push(

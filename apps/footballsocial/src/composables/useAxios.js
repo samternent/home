@@ -43,9 +43,7 @@ export function provideAxios() {
           "Sorry, our servers are very busy right now. Please try again later"
         );
       }
-      if (error.response?.status === 401) {
-        router.push("/");
-      }
+
       return Promise.reject(error);
     }
   );

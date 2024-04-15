@@ -53,6 +53,7 @@ const { items: fixtures } = useFixturesLoader(competitionCode, stage, gameweek);
 const predictions = shallowRef({});
 const serverPredictions = shallowRef(null);
 const predictionsLoaded = shallowRef(false);
+const predictionsLoading = shallowRef(false);
 const lockedPredictions = shallowRef([]);
 const predictionsToUpdate = shallowRef({});
 
@@ -62,31 +63,43 @@ async function loadPredictions() {
   serverPredictions.value = null;
   predictionsToUpdate.value = {};
   predictionsLoaded.value = false;
+  predictionsLoading.value = true;
 
-  const { data } = await getPredictions(
-    username.value || profile.value?.username,
-    competitionCode.value,
-    gameweek.value
-  );
+  try {
+    if (!profile.value && !username.value) {
+      predictionsLoaded.value = false;
+      predictionsLoading.value = false;
+      return;
+    }
 
-  data.predictions?.forEach((prediction) => {
-    lockedPredictions.value = [
-      ...lockedPredictions.value,
-      prediction.fixtureId,
-    ];
+    const { data } = await getPredictions(
+      username.value || profile.value?.username,
+      competitionCode.value,
+      gameweek.value
+    );
 
-    predictions.value = {
-      ...predictions.value,
-      [prediction.fixtureId]: {
-        homeScore: prediction.homeScore,
-        awayScore: prediction.awayScore,
-      },
-    };
+    data.predictions?.forEach((prediction) => {
+      lockedPredictions.value = [
+        ...lockedPredictions.value,
+        prediction.fixtureId,
+      ];
 
+      predictions.value = {
+        ...predictions.value,
+        [prediction.fixtureId]: {
+          homeScore: prediction.homeScore,
+          awayScore: prediction.awayScore,
+        },
+      };
+    });
     serverPredictions.value = JSON.stringify(predictions.value);
-  });
 
-  predictionsLoaded.value = true;
+    predictionsLoaded.value = true;
+    predictionsLoading.value = false;
+  } catch (e) {
+    predictionsLoaded.value = false;
+    predictionsLoading.value = false;
+  }
 }
 
 async function savePredictions() {
@@ -245,10 +258,7 @@ function isSameDay(date1, date2) {
           Gameweek {{ gw }}
         </option>
       </select>
-      <SCountdown
-        v-if="predictionsLoaded"
-        :time="predictionsList[0]?.utcDate"
-      />
+      <SCountdown v-if="fixtures" :time="fixtures[0]?.utcDate" />
       <div v-else class="skeleton h-14 w-64"></div>
     </div>
 
@@ -278,7 +288,6 @@ function isSameDay(date1, date2) {
             :disabled="
               new Date(fixture.utcDate).getTime() < new Date().getTime() ||
               ['IN_PLAY', 'FINISHED'].includes(fixture.status) ||
-              !profile?.username ||
               (username && profile?.username !== username) ||
               false
             "
@@ -298,7 +307,7 @@ function isSameDay(date1, date2) {
     </div>
     <div
       class="text-center mt-8 flex flex-col items-end"
-      v-if="predictionsLoaded"
+      v-if="predictionsLoaded && fixtures.length"
     >
       <template v-if="user && !profile?.username">
         <SetUsername />
@@ -312,12 +321,38 @@ function isSameDay(date1, date2) {
         Save predictions
       </SButton>
     </div>
-    <div v-else class="w-full pr-4 pt-10">
+    <div
+      v-else-if="predictionsLoading || !fixtures.length"
+      class="w-full pr-4 pt-10"
+    >
       <div
         v-for="i in 10"
         :key="i"
         class="skeleton m-2 my-8 rounded flex-1 h-48 w-full"
       />
+    </div>
+    <div v-else class="w-full pr-4 pt-6">
+      <div class="flex text-4xl justify-center items-center my-10">
+        <SButton
+          aria-label="Login"
+          v-if="!user"
+          to="/auth/login"
+          class="text-2xl font-light"
+          type="primary"
+        >
+          Login
+        </SButton>
+        <span class="font-thin text-2xl mx-2">or</span>
+        <SButton
+          aria-label="Join"
+          v-if="!user"
+          to="/auth/signup"
+          class="btn-outline text-2xl font-thin"
+          type="secondary"
+        >
+          Join
+        </SButton>
+      </div>
     </div>
   </div>
 </template>

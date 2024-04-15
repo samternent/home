@@ -59,7 +59,7 @@ const dismissEurosBanner = useLocalStorage(
   <!-- Banner -->
   <div
     v-if="!dismissEurosBanner && competitionCode !== 'EC'"
-    class="bg-base-content text-base-100 w-full mb-8 p-8 flex flex-col relative"
+    class="bg-base-content text-base-100 w-full mb-8 p-8 flex flex-col relative border-t-2 border-primary"
   >
     <div
       @click="dismissEurosBanner = true"

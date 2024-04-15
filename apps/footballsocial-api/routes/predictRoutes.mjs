@@ -2,6 +2,7 @@ import footballDataProxy from "../services/footballDataProxy.mjs";
 import { redisClient } from "../services/redis.mjs";
 import { supabaseClient } from "../services/supabase.mjs";
 import OpenAI from "openai";
+import { isAuthenticated } from "../util/index.mjs";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAPI_KEY,
@@ -27,6 +28,7 @@ export default function predictRoutes(router) {
     async function (req, res) {
       const { competitionCode, gameweek } = req.params;
 
+      const isLoggedIn = isAuthenticated(req);
       let lastUpdated = 0;
 
       const cacheResults = await redisClient.get(req.url);
@@ -146,7 +148,13 @@ export default function predictRoutes(router) {
           })
           .sort(sortTable)
           .map((row, i) => {
-            return { position: i + 1, ...row };
+            return {
+              position: i + 1,
+              ...row,
+              username: isLoggedIn
+                ? row.username
+                : `${row.username[0]}******${row.username[row.username.length - 1]}`,
+            };
           });
 
         res.setHeader("Cache-Control", "max-age=1, stale-while-revalidate");
@@ -162,7 +170,13 @@ export default function predictRoutes(router) {
         return res.status(200).json({ table: combinedResults, lastUpdated });
       } else {
         const results = returnData.sort(sortTable).map((row, i) => {
-          return { position: i + 1, ...row };
+          return {
+            position: i + 1,
+            ...row,
+            username: isLoggedIn
+                ? row.username
+                : `${row.username[0]}******${row.username[row.username.length - 1]}`,
+          };
         });
 
         res.setHeader("Cache-Control", "max-age=1, stale-while-revalidate");

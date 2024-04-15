@@ -11,8 +11,7 @@ import Api from "./Api.vue";
 
 // DS components
 import {
-  SBrandHeader,
-  SNavBar,
+  SButton,
   SBanner,
   SFooter,
   SThemeToggle,
@@ -26,13 +25,6 @@ const { user, ready, profile } = provideCurrentUser();
 const hasDismissedPopup = useLocalStorage("app/hasDismissedPopup", false);
 const mode = useColorMode();
 const modalRef = shallowRef(null);
-
-const router = useRouter();
-router.beforeEach((to, from) => {
-  if (to.meta.auth && ready.value && !user.value) {
-    router.push("/");
-  }
-});
 
 onClickOutside(modalRef, (event) => (hasDismissedPopup.value = true));
 function reloadPage() {
@@ -93,6 +85,27 @@ const theme = useLocalStorage(
       >
         <RouterLink to="/" class="btn btn-ghost btn-sm">FS</RouterLink>
         <UserMenu v-if="profile" />
+        <div v-else-if="!user">
+          <div class="flex justify-center items-center">
+            <SButton
+              aria-label="Login"
+              to="/auth/login"
+              class="font-medium btn-sm"
+              type="primary"
+            >
+              Login
+            </SButton>
+            <span class="font-thin mx-2">or</span>
+            <SButton
+              aria-label="Join"
+              to="/auth/signup"
+              class="btn-outline btn-sm font-thin"
+              type="secondary"
+            >
+              Join
+            </SButton>
+          </div>
+        </div>
       </div>
 
       <Api>
@@ -133,7 +146,7 @@ const theme = useLocalStorage(
         <Logo class="mx-auto h-auto w-12" />
       </template>
       <template #bottom>
-        <SThemeToggle v-model="theme" class="mt-4"/>
+        <SThemeToggle v-model="theme" class="mt-4" />
       </template>
     </SFooter>
   </div>

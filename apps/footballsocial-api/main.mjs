@@ -6,6 +6,7 @@ import { readFileSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import jwt from "jsonwebtoken";
+import { isAuthenticated } from "./util/index.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -38,7 +39,12 @@ app.use(function (req, res, next) {
 const port = "3000";
 app.set("port", port);
 
-const unauthenticatedRoutes = ["/landing-stats"];
+const unauthenticatedRoutes = [
+  /\/landing-stats/,
+  /\/football-data\//,
+  /\/predict\/[A-Z]*\/calculate/,
+  /\/predict\/[A-Z]*\/table/,
+];
 
 app.use(async function (req, res, next) {
   const { version: apiVersion } = JSON.parse(
@@ -46,19 +52,17 @@ app.use(async function (req, res, next) {
   );
   res.setHeader("x-api-version", apiVersion);
 
-  if (unauthenticatedRoutes.includes(req.url)) {
+  const isAuthorizedRoute = unauthenticatedRoutes.some((route) => {
+    return route.test(req.url);
+  });
+  if (isAuthorizedRoute) {
     next();
     return;
   }
 
-  const accessToken = req.headers["access-token"];
-  if (accessToken) {
-    const decoded = jwt.verify(accessToken, process.env.SUPABASE_JWT_SECRET);
-    if (decoded.role === "authenticated") {
-      next();
-      return;
-    }
-    res.status(401).json({ status: 401 });
+  if (isAuthenticated(req)) {
+    next();
+    return;
   } else {
     res.status(401).json({ status: 401 });
   }

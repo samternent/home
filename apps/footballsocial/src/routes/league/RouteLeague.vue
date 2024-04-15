@@ -1,5 +1,5 @@
 <script setup>
-import { toRefs, watch, computed, shallowRef } from "vue";
+import { toRefs, watch, computed, shallowRef, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import {
   useTitle,
@@ -8,6 +8,7 @@ import {
   onClickOutside,
 } from "@vueuse/core";
 import { provideCompetitionLoader } from "../../api/football-data/useCompetitionLoader";
+import { usePredictionService } from "../../composables/usePredictionService";
 import { useCurrentUser } from "../../composables/useCurrentUser";
 import { competitions } from "../../utils/competitions";
 import FSLogo from "../../module/brand/FSLogo.vue";
@@ -34,11 +35,23 @@ const colorMode = useColorMode();
 const { profile } = useCurrentUser();
 const router = useRouter();
 
+const players = shallowRef(0);
+const predictionsCount = shallowRef(0);
+const table = shallowRef([]);
+
+onMounted(async () => {
+  const { data } = await fetchLandingStats();
+  players.value = data?.users;
+  predictionsCount.value = data?.predictions;
+  table.value = data?.table;
+});
+
 const {
   items: competition,
   error,
   loading,
 } = provideCompetitionLoader(competitionCode);
+const { fetchLandingStats } = usePredictionService();
 
 const lastLeague = useLocalStorage("lastLeague", "PL");
 
@@ -117,7 +130,9 @@ onClickOutside(editCompetitionTarget, () => (editCompetition.value = false));
               v-if="competition && !editCompetition"
               @click="editCompetition = true"
             >
-              <p class="md:text-2xl lg:text-3xl mt-0">{{ competition?.name }},</p>
+              <p class="md:text-2xl lg:text-3xl mt-0">
+                {{ competition?.name }},
+              </p>
               <p
                 class="px-2 py-1 mx-2 lg:mx-0 lg:my-2 md:text-2xl lg:text-3xl transition-color inline-block font-bold bg-base-content group-hover:bg-primary tracking-tighter header text-base-100"
               >
@@ -202,5 +217,27 @@ onClickOutside(editCompetitionTarget, () => (editCompetition.value = false));
       <p>{{ error.config.method }}</p>
       <p>{{ error.config.url }}</p>
     </div>
+    <p class="text-2xl font-thin my-12 text-center">
+      With
+      <span
+        v-if="predictionsCount"
+        class="text-3xl bg-base-content text-base-100 px-2 anton-regular"
+        >{{ predictionsCount.toLocaleString() }}
+      </span>
+      <span v-else class="skeleton inline-block h-6 w-10 mx-1" />
+      predictions, from
+      <span
+        v-if="players"
+        class="text-3xl bg-base-content text-base-100 px-2 anton-regular"
+      >
+        {{ players }}
+      </span>
+      <span v-else class="skeleton inline-block h-6 w-8 mx-1" />
+      players, across
+      <span class="text-3xl bg-base-content text-base-100 px-2 anton-regular"
+        >8</span
+      >
+      competitions.
+    </p>
   </div>
 </template>

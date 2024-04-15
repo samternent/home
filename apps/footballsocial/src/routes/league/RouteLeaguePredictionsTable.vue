@@ -64,10 +64,12 @@ const tabs = computed(() => [
         v-if="competition && showGameweekResults"
         :competitionCode="competition?.code"
         :gameweek="competition?.currentSeason.currentMatchday"
+        :private="!username"
       />
       <PredictionsResults
         v-else-if="competition"
         :competitionCode="competition?.code"
+        :private="!username"
       />
     </div>
     <div v-else class="w-full pt-14">

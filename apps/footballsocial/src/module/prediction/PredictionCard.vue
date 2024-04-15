@@ -126,7 +126,7 @@ function formatKickOffTime(utcDate) {
           >Scheduled @ {{ formatKickOffTime(fixture.utcDate) }}</span
         >
       </div>
-      <div class="flex text-sm" v-if="hasStarted">
+      <div class="flex text-sm" v-if="hasStarted && prediction">
         <div
           v-if="scorePrediction"
           class="px-3 rounded mx-1 bg-green-600 text-green-300"

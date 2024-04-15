@@ -127,7 +127,7 @@ const { profile } = useCurrentUser();
                 :to="`/leagues/${competitionCode}/predictions/${row.username}`"
                 >{{ row.username }}</RouterLink
               >
-              <p v-else class="blur-md">{{ row.username }}</p>
+              <p v-else>{{ row.username }}</p>
               <span
                 v-if="
                   row.gameweekPoints > 0 &&
@@ -139,9 +139,6 @@ const { profile } = useCurrentUser();
                   viewBox="0 0 24 24"
                   fill="currentColor"
                   class="w-5 h-5 md:w-6 md:h-6 ml-2"
-                  :class="{
-                    'blur-md': private,
-                  }"
                 >
                   <path
                     fill-rule="evenodd"
