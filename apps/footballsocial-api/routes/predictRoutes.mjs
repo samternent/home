@@ -31,7 +31,9 @@ export default function predictRoutes(router) {
       const isLoggedIn = isAuthenticated(req);
       let lastUpdated = 0;
 
-      const cacheResults = await redisClient.get(req.url);
+      const cacheResults = await redisClient.get(
+        `${req.url}-${isloggedIn ? "loggedIn" : "loggedOut"}`
+      );
       if (cacheResults) {
         return res.send(JSON.parse(cacheResults));
       }
@@ -153,13 +155,15 @@ export default function predictRoutes(router) {
               ...row,
               username: isLoggedIn
                 ? row.username
-                : `${row.username[0]}******${row.username[row.username.length - 1]}`,
+                : `${row.username[0]}******${
+                    row.username[row.username.length - 1]
+                  }`,
             };
           });
 
         res.setHeader("Cache-Control", "max-age=1, stale-while-revalidate");
         await redisClient.set(
-          req.url,
+          `${req.url}-${isloggedIn ? "loggedIn" : "loggedOut"}`,
           JSON.stringify({ table: combinedResults, lastUpdated }),
           {
             EX: 300,
@@ -174,14 +178,16 @@ export default function predictRoutes(router) {
             position: i + 1,
             ...row,
             username: isLoggedIn
-                ? row.username
-                : `${row.username[0]}******${row.username[row.username.length - 1]}`,
+              ? row.username
+              : `${row.username[0]}******${
+                  row.username[row.username.length - 1]
+                }`,
           };
         });
 
         res.setHeader("Cache-Control", "max-age=1, stale-while-revalidate");
         await redisClient.set(
-          req.url,
+          `${req.url}-${isloggedIn ? "loggedIn" : "loggedOut"}`,
           JSON.stringify({ table: results, lastUpdated }),
           {
             EX: 300,
