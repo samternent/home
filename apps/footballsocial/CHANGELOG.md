@@ -1,5 +1,16 @@
 # concords-footballsocial
 
+## 0.13.0
+
+### Minor Changes
+
+- [`1f3ad0d2b7052f3b8359e94f1edb20ef4b40c73a`](https://github.com/samternent/home/commit/1f3ad0d2b7052f3b8359e94f1edb20ef4b40c73a) Thanks [@samternent](https://github.com/samternent)! - Remove 401 block
+
+### Patch Changes
+
+- Updated dependencies [[`1f3ad0d2b7052f3b8359e94f1edb20ef4b40c73a`](https://github.com/samternent/home/commit/1f3ad0d2b7052f3b8359e94f1edb20ef4b40c73a)]:
+  - ternent-ui@0.1.0
+
 ## 0.12.6
 
 ### Patch Changes
