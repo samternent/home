@@ -1,5 +1,14 @@
 # concords-footballsocial
 
+## 0.13.1
+
+### Patch Changes
+
+- [`4dbe84d678340adfec62721ca1aea8755d88717e`](https://github.com/samternent/home/commit/4dbe84d678340adfec62721ca1aea8755d88717e) Thanks [@samternent](https://github.com/samternent)! - Adjust small font sizes and player links
+
+- Updated dependencies [[`4dbe84d678340adfec62721ca1aea8755d88717e`](https://github.com/samternent/home/commit/4dbe84d678340adfec62721ca1aea8755d88717e)]:
+  - ternent-ui@0.1.1
+
 ## 0.13.0
 
 ### Minor Changes
