@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.13.2
+
+### Patch Changes
+
+- [`2bf0c46ea4738dff3c83c0304c43b3ad95a225c5`](https://github.com/samternent/home/commit/2bf0c46ea4738dff3c83c0304c43b3ad95a225c5) Thanks [@samternent](https://github.com/samternent)! - Adds CSP for Albania flag from wikoedia
+
 ## 0.13.1
 
 ### Patch Changes
