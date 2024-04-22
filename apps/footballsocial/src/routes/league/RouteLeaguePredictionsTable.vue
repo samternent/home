@@ -3,8 +3,9 @@ import { watch, shallowRef, computed } from "vue";
 import PredictionsResults from "../../components/PredictionsResults.vue";
 import { useCompetitionLoader } from "../../api/football-data/useCompetitionLoader";
 import { usePredictionService } from "../../composables/usePredictionService";
+import { useCurrentUser } from "../../composables/useCurrentUser";
 
-import { STabs, SSkeleton } from "ternent-ui/components";
+import { STabs } from "ternent-ui/components";
 
 const props = defineProps({
   competitionCode: {
@@ -23,6 +24,7 @@ const props = defineProps({
 const { items: competition, loading } = useCompetitionLoader();
 const predictionsReady = shallowRef(false);
 const { calculatePredictionTable } = usePredictionService();
+const { user } = useCurrentUser();
 
 watch(
   competition,
@@ -64,12 +66,12 @@ const tabs = computed(() => [
         v-if="competition && showGameweekResults"
         :competitionCode="competition?.code"
         :gameweek="competition?.currentSeason.currentMatchday"
-        :private="!username"
+        :private="!user"
       />
       <PredictionsResults
         v-else-if="competition"
         :competitionCode="competition?.code"
-        :private="!username"
+        :private="!user"
       />
     </div>
     <div v-else class="w-full pt-14">

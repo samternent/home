@@ -1,6 +1,7 @@
 <script setup>
 import { toRefs, watch, computed, shallowRef, onMounted } from "vue";
 import { useRouter } from "vue-router";
+import { DateTime } from "luxon";
 import {
   useTitle,
   useLocalStorage,
@@ -55,14 +56,38 @@ const { fetchLandingStats } = usePredictionService();
 
 const lastLeague = useLocalStorage("lastLeague", "PL");
 
+function formatYearRange(dateStr1, dateStr2) {
+  // Parse the dates from ISO format
+  const date1 = DateTime.fromISO(dateStr1);
+  const date2 = DateTime.fromISO(dateStr2);
+
+  // Extract the years
+  const year1 = date1.year;
+  const year2 = date2.year;
+
+  // Check if the years are the same
+  if (year1 === year2) {
+    // Return the year if both dates are in the same year
+    return year1.toString();
+  } else {
+    // Return the formatted string 'YYYY/YY' if different
+    // Assuming year1 is always less than or equal to year2
+    const shortYear2 = year2.toString().slice(-2); // get last two digits
+    return `${year1}/${shortYear2}`;
+  }
+}
+
+const currentSeasonFormat = shallowRef();
 watch(
   competition,
   (_competition) => {
-    if (_competition?.name) {
+    if (_competition) {
       title.value = `${_competition?.name} - Football Social`;
-    }
-    if (_competition?.code) {
       lastLeague.value = _competition?.code;
+      currentSeasonFormat.value = formatYearRange(
+        _competition.currentSeason.startDate,
+        _competition.currentSeason.endDate
+      );
     }
   },
   { immediate: true }
@@ -113,7 +138,7 @@ onClickOutside(editCompetitionTarget, () => (editCompetition.value = false));
   <div class="md:px-2 lg:px-4 flex-1 max-w-4xl mx-auto pt-0 w-full h-screen">
     <SHeader>
       <div
-        class="px-1 p-2 font-thin rounded-lg flex-1 flex flex-col justify-center"
+        class="px-1 p-2 font-light rounded-lg flex-1 flex flex-col justify-center"
       >
         <FSLogo class="lg:hidden flex" />
         <div class="flex flex-col lg:flex-row justify-between">
@@ -126,7 +151,7 @@ onClickOutside(editCompetitionTarget, () => (editCompetition.value = false));
           >
             <!-- ads -->
             <div
-              class="tracking-tightest font-thin flex lg:flex-col items-end lg:items-start group cursor-pointer pt-2 px-2"
+              class="tracking-tightest font-light flex lg:flex-col items-end lg:items-start group cursor-pointer pt-2 px-2"
               v-if="competition && !editCompetition"
               @click="editCompetition = true"
             >
@@ -139,9 +164,9 @@ onClickOutside(editCompetitionTarget, () => (editCompetition.value = false));
                 {{ competition?.area?.name }}.
               </p>
               <p
-                class="text-lg font-thin lg:my-2 tracking-tighter flex items-center"
+                class="text-lg font-light lg:my-2 tracking-tighter flex items-center"
               >
-                2023/24
+                {{ currentSeasonFormat }}
 
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -159,7 +184,7 @@ onClickOutside(editCompetitionTarget, () => (editCompetition.value = false));
                 </svg>
               </p>
             </div>
-            <div v-else-if="competition" class="-mx-2">
+            <div v-else-if="competition" class="-mx-3">
               <select
                 ref="editCompetitionTarget"
                 autofocus
@@ -180,7 +205,7 @@ onClickOutside(editCompetitionTarget, () => (editCompetition.value = false));
           <div class="flex flex-col">
             <FSLogo class="hidden lg:flex" />
             <div
-              class="flex justify-end font-thin tracking-tighter border-t py-2"
+              class="flex justify-end font-light tracking-tighter border-t py-2"
             >
               <!-- Prediction league. -->
             </div>
@@ -217,7 +242,7 @@ onClickOutside(editCompetitionTarget, () => (editCompetition.value = false));
       <p>{{ error.config.method }}</p>
       <p>{{ error.config.url }}</p>
     </div>
-    <p class="text-2xl font-thin my-12 text-center">
+    <p class="text-2xl font-light my-12 text-center">
       With
       <span
         v-if="predictionsCount"
