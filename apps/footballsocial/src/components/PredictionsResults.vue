@@ -53,9 +53,9 @@ const { profile } = useCurrentUser();
   </div>
   <div
     v-else-if="!table.length"
-    class="w-full text-center py-8 text-3xl font-light"
+    class="w-full text-center py-16 text-3xl font-light"
   >
-    This league has no predictions yet.
+    No predictions found
   </div>
   <div v-else>
     <div class="text-xs p-2 flex justify-end font-light">

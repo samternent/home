@@ -11,41 +11,45 @@ export const leagueRoutes = [
     children: [
       {
         path: "",
-        component: () => import("./RouteLeagueHome.vue"),
+        redirect(to: any) {
+          return `/leagues/${to.params.competitionCode || "PL"}/${
+            window.localStorage.getItem("lastLeaguePath") || "predictions"
+          }`;
+        },
+      },
+      {
+        path: "discussions",
+        component: () => import("./RouteLeagueDiscussions.vue"),
+        beforeEnter(to: RouteLocation) {
+          window.localStorage.setItem("lastLeaguePath", "discussions");
+        },
+      },
+      {
+        path: "standings",
+        redirect(to: any) {
+          return `/leagues/${to.params.competitionCode || "PL"}/table`;
+        },
+      },
+      {
+        path: "table",
+        component: () => import("./RouteLeagueTable.vue"),
+        beforeEnter(to: RouteLocation) {
+          window.localStorage.setItem("lastLeaguePath", "table");
+          window.localStorage.setItem("lastLeagueTablePath", "season");
+        },
+        props: true,
         children: [
           {
             path: "",
             redirect(to: any) {
-              return `/leagues/${to.params.competitionCode || "PL"}/${
-                window.localStorage.getItem("lastLeaguePath") || "predictions"
-              }`;
-            },
-          },
-          // {
-          //   path: "discussions",
-          //   component: RouteLeagueDiscussions,
-          //   beforeEnter(to: RouteLocation) {
-          //     window.localStorage.setItem("lastLeaguePath", "discussions");
-          //   },
-          // },
-          {
-            path: "standings",
-            redirect(to: any) {
-              return `/leagues/${to.params.competitionCode || "PL"}/table`;
+              return `/leagues/${
+                to.params.competitionCode || "PL"
+              }/table/season`;
             },
           },
           {
-            path: "table",
-            component: () => import("./RouteLeaguePredictionsTable.vue"),
-            beforeEnter(to: RouteLocation) {
-              window.localStorage.setItem("lastLeaguePath", "table");
-              window.localStorage.setItem("lastLeagueTablePath", "");
-            },
-            props: true,
-          },
-          {
-            path: "table/gameweek",
-            component: () => import("./RouteLeaguePredictionsTable.vue"),
+            path: "season",
+            component: () => import("./RouteLeagueTableSeason.vue"),
             beforeEnter(to: RouteLocation) {
               window.localStorage.setItem("lastLeagueTablePath", "gameweek");
             },
@@ -57,64 +61,77 @@ export const leagueRoutes = [
             },
           },
           {
-            path: "leagues",
-            component: () => import("./RouteLeaguePredictionsLeagues.vue"),
+            path: "gameweek",
+            component: () => import("./RouteLeagueTableGameweek.vue"),
             beforeEnter(to: RouteLocation) {
-              window.localStorage.setItem("lastLeaguePath", "leagues");
+              window.localStorage.setItem("lastLeagueTablePath", "gameweek");
             },
-            props: true,
-          },
-          {
-            path: "leagues/create",
-            component: () => import("./RouteLeaguePredictionsLeagueCreate.vue"),
-            beforeEnter(to: RouteLocation) {
-              window.localStorage.setItem("lastLeaguePath", "leagues");
+            props(route: any) {
+              return {
+                ...route.params,
+                showGameweekResults: true,
+              };
             },
-            props: true,
-          },
-          {
-            path: "leagues/join/:leagueCode?",
-            component: () => import("./RouteLeaguePredictionsLeagueJoin.vue"),
-            beforeEnter(to: RouteLocation) {
-              window.localStorage.setItem("lastLeaguePath", "leagues");
-            },
-            props: true,
-          },
-          {
-            path: "leagues/:id",
-            component: () => import("./RouteLeaguePredictionsLeague.vue"),
-            beforeEnter(to: RouteLocation) {
-              window.localStorage.setItem("lastLeaguePath", "leagues");
-            },
-            props: true,
-          },
-          // {
-          //   path: "fixtures",
-          //   component: RouteLeagueFixtures,
-          //   beforeEnter(to: RouteLocation) {
-          //     window.localStorage.setItem("lastLeaguePath", "fixtures");
-          //   },
-          // },
-          {
-            path: "predictions/:username?",
-            component: () => import("./RouteLeaguePredictionsHome.vue"),
-            beforeEnter(to: RouteLocation) {
-              window.localStorage.setItem("lastLeaguePath", "predictions");
-            },
-            props: true,
           },
         ],
       },
+      {
+        path: "leagues",
+        component: () => import("./RouteLeaguePredictionsLeagues.vue"),
+        beforeEnter(to: RouteLocation) {
+          window.localStorage.setItem("lastLeaguePath", "leagues");
+        },
+        props: true,
+      },
+      {
+        path: "leagues/create",
+        component: () => import("./RouteLeaguePredictionsLeagueCreate.vue"),
+        beforeEnter(to: RouteLocation) {
+          window.localStorage.setItem("lastLeaguePath", "leagues");
+        },
+        props: true,
+      },
+      {
+        path: "leagues/join/:leagueCode?",
+        component: () => import("./RouteLeaguePredictionsLeagueJoin.vue"),
+        beforeEnter(to: RouteLocation) {
+          window.localStorage.setItem("lastLeaguePath", "leagues");
+        },
+        props: true,
+      },
+      {
+        path: "leagues/:id",
+        component: () => import("./RouteLeaguePredictionsLeague.vue"),
+        beforeEnter(to: RouteLocation) {
+          window.localStorage.setItem("lastLeaguePath", "leagues");
+        },
+        props: true,
+      },
       // {
-      //   path: "discussions/:discussionId",
-      //   props: true,
-      //   component: () => import("./RouteLeagueDiscussion.vue"),
+      //   path: "fixtures",
+      //   component: RouteLeagueFixtures,
+      //   beforeEnter(to: RouteLocation) {
+      //     window.localStorage.setItem("lastLeaguePath", "fixtures");
+      //   },
       // },
-      // {
-      //   path: "discussions/new",
-      //   props: true,
-      //   component: () => import("./RouteLeagueDiscussionNew.vue"),
-      // },
+      {
+        path: "predictions/:username?",
+        component: () => import("./RouteLeaguePredictionsHome.vue"),
+        beforeEnter(to: RouteLocation) {
+          window.localStorage.setItem("lastLeaguePath", "predictions");
+        },
+        props: true,
+      },
+      {
+        path: "discussions/:discussionId",
+        props: true,
+        component: () => import("./RouteLeagueDiscussion.vue"),
+      },
+      {
+        path: "discussions/new",
+        props: true,
+        component: () => import("./RouteLeagueDiscussionNew.vue"),
+      },
       {
         path: "*",
         redirect(to: any) {

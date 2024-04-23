@@ -36,9 +36,9 @@ function isExactActiveLink(t) {
       :key="`${t.path}`"
       :to="t.path"
       role="tab"
-      class="pb-2 px-4 focus:outline-none border-b z-10 border-transparent hover:border-base-content hover:border-opacity-50 transition-all text-lg font-light"
+      class="pb-2 px-4 focus:outline-none border-b-2 z-10 border-transparent hover:border-base-content hover:border-opacity-50 transition-all text-lg font-light"
       :class="{
-        '!border-base-content border-opacity-80 !font-medium':
+        '!border-primary border-opacity-80 !font-medium':
           (type === 'base' && !exact && isActiveLink(t)) ||
           (exact && isExactActiveLink(t)),
         '!border-b-0 !border-base-300 !bg-base-200 font-medium':

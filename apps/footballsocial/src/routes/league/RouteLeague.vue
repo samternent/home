@@ -1,6 +1,6 @@
 <script setup>
 import { toRefs, watch, computed, shallowRef, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { DateTime } from "luxon";
 import {
   useTitle,
@@ -13,7 +13,7 @@ import { usePredictionService } from "../../composables/usePredictionService";
 import { useCurrentUser } from "../../composables/useCurrentUser";
 import { competitions } from "../../utils/competitions";
 import FSLogo from "../../module/brand/FSLogo.vue";
-import { SHeader } from "ternent-ui/components";
+import { SHeader, STabs } from "ternent-ui/components";
 
 const props = defineProps({
   competitionCode: {
@@ -35,6 +35,7 @@ const title = useTitle();
 const colorMode = useColorMode();
 const { profile } = useCurrentUser();
 const router = useRouter();
+const route = useRoute();
 
 const players = shallowRef(0);
 const predictionsCount = shallowRef(0);
@@ -133,6 +134,29 @@ const editCompetition = shallowRef(false);
 const editCompetitionTarget = shallowRef(null);
 
 onClickOutside(editCompetitionTarget, () => (editCompetition.value = false));
+
+const tabs = computed(() => [
+  {
+    title: "Predictions",
+    path: `/leagues/${competitionCode.value}/predictions`,
+  },
+  { title: "Table", path: `/leagues/${competitionCode.value}/table` },
+]);
+
+watch(
+  competition,
+  (_competition) => {
+    if (_competition?.name) {
+      title.value = `${_competition.name} - Football Social`;
+    }
+  },
+  { immediate: true }
+);
+
+const dismissEurosBanner = useLocalStorage(
+  "footballsocial/dissmissEurosBanner",
+  false
+);
 </script>
 <template>
   <div class="md:px-2 lg:px-4 flex-1 max-w-4xl mx-auto pt-0 w-full h-screen">
@@ -214,33 +238,79 @@ onClickOutside(editCompetitionTarget, () => (editCompetition.value = false));
       </div>
     </SHeader>
 
-    <RouterView
-      v-if="!loading"
-      :competitionCode="competitionCode"
-      :key="competitionCode"
-    />
-    <div v-else class="h-screen flex justify-center items-center">
+    <div
+      v-if="!dismissEurosBanner && competitionCode !== 'EC'"
+      class="bg-base-content text-base-100 w-full mb-8 p-8 flex flex-col relative border-t-2 border-primary"
+    >
       <div
-        class="absolute right-1/2 bottom-1/2 transform translate-x-1/2 translate-y-1/2"
+        @click="dismissEurosBanner = true"
+        class="cursor-pointer absolute right-2 top-2 opacity-60 hover:opacity-100 transition-opacity"
       >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="w-6 h-6"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+      </div>
+      <div class="justify-between flex flex-col lg:flex-row items-bottom">
+        <p class="text-xl font-light p-b flex-1">
+          The
+          <span class="transition-all font-bold tracking-tighter">
+            European Championships</span
+          >
+          are coming!
+        </p>
+
         <div
-          class="p-4 bg-gradient-to-tr animate-spin from-[#ff5757] to-[#8c52ff] rounded-full"
+          class="w-full lg:w-64 px-4 flex justify-center items-center my-4 lg:my-0"
+        >
+          <RouterLink
+            to="/leagues/EC/predictions"
+            class="btn btn-success w-full"
+            >Place Euros predictions</RouterLink
+          >
+        </div>
+      </div>
+      <p class="text-sm font-light tracing-tight">
+        TIP: You can change competition at any time by clicking the league name
+        in the header.
+      </p>
+    </div>
+    <STabs :items="tabs" :path="route.path" />
+    <div class="flex mb-16 w-full mt-4">
+      <RouterView
+        v-if="!loading"
+        :competitionCode="competitionCode"
+        :key="competitionCode"
+      />
+      <div v-else class="flex justify-center items-center w-full">
+        <div
+          class="p-4 bg-gradient-to-tr animate-spin from-[#ff5757] to-[#8c52ff] rounded-full my-32"
         >
           <div class="bg-base-100 rounded-full">
             <div class="w-24 h-24 rounded-full"></div>
           </div>
         </div>
       </div>
-    </div>
-    <div
-      v-if="error"
-      class="absolute min-h-screen flex-1 h-screen mx-auto max-w-6xl w-full"
-    >
-      <h1 class="text-4xl font-bold">{{ error.message }}</h1>
-      <p>Sorry, we messed up.</p>
-      <p>{{ error.config.baseURL }}</p>
-      <p>{{ error.config.method }}</p>
-      <p>{{ error.config.url }}</p>
+      <div
+        v-if="error"
+        class="absolute min-h-screen flex-1 h-screen mx-auto max-w-6xl w-full"
+      >
+        <h1 class="text-4xl font-bold">{{ error.message }}</h1>
+        <p>Sorry, we messed up.</p>
+        <p>{{ error.config.baseURL }}</p>
+        <p>{{ error.config.method }}</p>
+        <p>{{ error.config.url }}</p>
+      </div>
     </div>
     <p class="text-2xl font-light my-12 text-center">
       With
