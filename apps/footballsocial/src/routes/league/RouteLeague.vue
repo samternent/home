@@ -140,7 +140,8 @@ const tabs = computed(() => [
     title: "Predictions",
     path: `/leagues/${competitionCode.value}/predictions`,
   },
-  { title: "Table", path: `/leagues/${competitionCode.value}/table` },
+  { title: "Tables", path: `/leagues/${competitionCode.value}/table` },
+  // { title: "Leagues", path: `/leagues/${competitionCode.value}/leagues` },
 ]);
 
 watch(
