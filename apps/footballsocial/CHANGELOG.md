@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.13.4
+
+### Patch Changes
+
+- [`dde002142d5e56fc31092974556d3853ab75baab`](https://github.com/samternent/home/commit/dde002142d5e56fc31092974556d3853ab75baab) Thanks [@samternent](https://github.com/samternent)! - Adjust routing struture and start leagues feature
+
 ## 0.13.3
 
 ### Patch Changes
