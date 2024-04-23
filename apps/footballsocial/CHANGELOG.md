@@ -1,5 +1,14 @@
 # concords-footballsocial
 
+## 0.13.3
+
+### Patch Changes
+
+- [`0bc405a1277d88bf868980aa9b25eab044937715`](https://github.com/samternent/home/commit/0bc405a1277d88bf868980aa9b25eab044937715) Thanks [@samternent](https://github.com/samternent)! - Adds gamewek navigation
+
+- Updated dependencies [[`0bc405a1277d88bf868980aa9b25eab044937715`](https://github.com/samternent/home/commit/0bc405a1277d88bf868980aa9b25eab044937715)]:
+  - ternent-ui@0.1.2
+
 ## 0.13.2
 
 ### Patch Changes

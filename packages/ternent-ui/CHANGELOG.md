@@ -1,5 +1,11 @@
 # ternent-ui
 
+## 0.1.2
+
+### Patch Changes
+
+- [`0bc405a1277d88bf868980aa9b25eab044937715`](https://github.com/samternent/home/commit/0bc405a1277d88bf868980aa9b25eab044937715) Thanks [@samternent](https://github.com/samternent)! - Adds gamewek navigation
+
 ## 0.1.1
 
 ### Patch Changes
