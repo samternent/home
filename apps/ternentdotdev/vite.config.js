@@ -4,6 +4,7 @@ import vue from "@vitejs/plugin-vue";
 import { VitePWA } from "vite-plugin-pwa";
 import { ViteEjsPlugin } from "vite-plugin-ejs";
 import wasm from "vite-plugin-wasm";
+import topLevelAwait from "vite-plugin-top-level-await";
 import { version } from "./package.json";
 
 /** @type {import('vite').UserConfig} */
@@ -41,7 +42,11 @@ export default ({ mode }) => {
           navigateFallbackDenylist: [/^\/api/],
         },
       }),
-      wasm()
+      wasm(),
+      topLevelAwait(),
     ],
+    worker: {
+      plugins: [wasm(), topLevelAwait()],
+    },
   });
 };
