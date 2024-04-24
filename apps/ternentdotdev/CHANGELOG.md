@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.1.48
+
+### Patch Changes
+
+- [`cffc02019f8beb7b0a20c79241e8d3dd9b237e6a`](https://github.com/samternent/home/commit/cffc02019f8beb7b0a20c79241e8d3dd9b237e6a) Thanks [@samternent](https://github.com/samternent)! - Try wasm-build
+
 ## 0.1.47
 
 ### Patch Changes
