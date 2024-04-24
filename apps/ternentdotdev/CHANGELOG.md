@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.2.0
+
+### Minor Changes
+
+- [`5baf82e0a09a334e2c7de43f885248aa6a3424c2`](https://github.com/samternent/home/commit/5baf82e0a09a334e2c7de43f885248aa6a3424c2) Thanks [@samternent](https://github.com/samternent)! - Adds landing page
+
 ## 0.1.49
 
 ### Patch Changes
