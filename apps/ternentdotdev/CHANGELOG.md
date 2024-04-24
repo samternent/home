@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.1.49
+
+### Patch Changes
+
+- [`dfc39827c182e886147164948eac0fd0026106d2`](https://github.com/samternent/home/commit/dfc39827c182e886147164948eac0fd0026106d2) Thanks [@samternent](https://github.com/samternent)! - Fix build with wasm in workers
+
 ## 0.1.48
 
 ### Patch Changes
