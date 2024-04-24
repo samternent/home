@@ -42,7 +42,7 @@ const checked = computed(() => props.modelValue === "dark");
       @click="updateTheme"
       :checked="checked"
       aria-label="Toggle dark mode"
-      class="toggle theme-controller"
+      class="toggle theme-controller toggle-xs"
     />
     <svg
       v-if="size !== 'sm'"

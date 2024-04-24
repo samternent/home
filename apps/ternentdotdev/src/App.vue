@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, shallowRef } from "vue";
-// import { useLocalStorage } from "@vueuse/core";
+import { useLocalStorage } from "@vueuse/core";
 import { provideBreadcrumbs } from "./module/breadcrumbs/useBreadcrumbs";
 import { provideDrawerRoute } from "./module/drawer-route/useDrawerRoute";
 import DrawerRouterView from "./module/drawer-route/DrawerRoute.vue";
@@ -23,16 +23,16 @@ const { handleSessionLogin } = provideSolid();
 
 const whiteLabel = useWhiteLabel();
 
-const themeName = shallowRef(`${whiteLabel.value.themeName}-light`);
-// const themeName = useLocalStorage(
-//   "app/theme",
-//   `${whiteLabel.value.themeName}-${
-//     localStorage.getItem("app/themeVariation") ||
-//     window.matchMedia?.("(prefers-color-scheme: dark)").matches
-//       ? "dark"
-//       : "light"
-//   }`
-// );
+// const themeName = shallowRef(`${whiteLabel.value.themeName}-light`);
+const themeName = useLocalStorage(
+  "app/theme",
+  `${whiteLabel.value.themeName}-${
+    localStorage.getItem("app/themeVariation") ||
+    window.matchMedia?.("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light"
+  }`
+);
 
 onMounted(handleSessionLogin);
 </script>
