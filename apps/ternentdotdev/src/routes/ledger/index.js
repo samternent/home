@@ -1,23 +1,23 @@
 export const ledgerRoutes = [
   {
-    path: "/l",
+    path: "l",
     component: () => import("./RouteLedger.vue"),
     children: [
       {
         path: "",
-        redirect: "/l/add",
+        redirect: "/app/l/add",
       },
       {
-        path: "/l/permissions",
+        path: "permissions",
         component: () => import("./RouteLedgerPermissions.vue"),
       },
       {
-        path: "/l/:sheetName",
+        path: ":sheetName",
         component: () => import("./RouteLedgerSheet.vue"),
         props: true,
       },
       {
-        path: "/l/add",
+        path: "add",
         component: () => import("./RouteLedgerAdd.vue"),
       },
     ],

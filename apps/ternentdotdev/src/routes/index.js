@@ -10,20 +10,31 @@ import { workRoutes } from "./work";
 export default [
   {
     path: "",
+    component: () => import("./RouteHome.vue"),
+  },
+  {
+    path: "/app",
     component: () => import("./RouteLayout.vue"),
     children: [
       {
-        path: "",
-        redirect: "/l/",
+        path: "test",
+        component: () => import("./RouteTest.vue"),
       },
-      ...aboutRoutes,
-      ...appsRoutes,
       ...ledgerRoutes,
-      ...legalRoutes,
-      ...profileRoutes,
-      ...settingsRoutes,
-      ...solidRoutes,
-      ...workRoutes,
     ],
+    // children: [
+    //   ...aboutRoutes,
+    //   ...appsRoutes,
+    //   ...ledgerRoutes,
+    //   ...legalRoutes,
+    //   ...profileRoutes,
+    //   ...settingsRoutes,
+    //   ...solidRoutes,
+    //   ...workRoutes,
+    //   {
+    //     path: "/test",
+    //     component: () => import("./RouteTest.vue"),
+    //   },
+    // ],
   },
 ];

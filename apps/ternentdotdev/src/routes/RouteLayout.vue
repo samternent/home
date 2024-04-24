@@ -12,6 +12,7 @@ import {
 import { useBreadcrumbs } from "../module/breadcrumbs/useBreadcrumbs";
 import { useAppShell } from "../module/app-shell/useAppShell";
 import ConcordsLog from "../module/concords/ConcordsLog.vue";
+import SideNav from "../module/side-nav/SideNav.vue";
 
 const { isBottomPanelExpanded, bottomPanelHeight } = useAppShell();
 
@@ -61,6 +62,7 @@ onBeforeUnmount(() => {
 });
 </script>
 <template>
+  <SideNav />
   <div
     class="flex flex-col flex-1 min-h-screen max-h-screen h-screen overflow-hidden"
   >

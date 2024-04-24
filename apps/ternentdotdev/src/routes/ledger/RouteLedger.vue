@@ -8,7 +8,7 @@ import { useAppShell } from "../../module/app-shell/useAppShell";
 import ConcordsLog from "../../module/concords/ConcordsLog.vue";
 import IdentityAvatar from "../../module/identity/IdentityAvatar.vue";
 import { useLedger } from "../../module/ledger/useLedger";
-import Worker from './worker?worker'
+import Worker from "./worker?worker";
 
 new Worker();
 

@@ -10,7 +10,6 @@ import { provideAppShell } from "./module/app-shell/useAppShell";
 import { provideSolid } from "./module/solid/useSolid";
 import { useWhiteLabel } from "./module/brand/useWhiteLabel";
 import Concords from "./module/concords/Concords.vue";
-import SideNav from "./module/side-nav/SideNav.vue";
 
 if (!window.location.pathname.startsWith("/solid/redirect")) {
   window.localStorage.setItem("app/lastPath", window.location.pathname);
@@ -44,9 +43,8 @@ onMounted(handleSessionLogin);
   >
     <Concords>
       <div class="flex-1 flex bg-base-100 w-full mx-auto">
-        <SideNav />
-        <!-- <div class="w-20 border-x bg-base-200"></div> -->
-        <DrawerRouterView />
+        <!-- <SideNav /> -->
+        <RouterView />
       </div>
     </Concords>
   </div>
