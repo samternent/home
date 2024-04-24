@@ -34,6 +34,12 @@ jobs:
         with:
           version: 8
 
+      - name: Install
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
+      - name: Build rust libs
+        run: cd packages/blockchain && pnpm build && cd ../..
+
       - name: Install Vercel CLI
         run: pnpm install --global vercel@latest
 
