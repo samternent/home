@@ -1,5 +1,16 @@
 # ternentdotdev
 
+## 0.2.1
+
+### Patch Changes
+
+- [`db5d7b6f2dec68da81a68185cbbfb7c27444dc23`](https://github.com/samternent/home/commit/db5d7b6f2dec68da81a68185cbbfb7c27444dc23) Thanks [@samternent](https://github.com/samternent)! - Updates branding
+
+- [`7435a4dc0feb608720f58c878c30635b809fd36e`](https://github.com/samternent/home/commit/7435a4dc0feb608720f58c878c30635b809fd36e) Thanks [@samternent](https://github.com/samternent)! - Update home p age feel
+
+- Updated dependencies [[`7435a4dc0feb608720f58c878c30635b809fd36e`](https://github.com/samternent/home/commit/7435a4dc0feb608720f58c878c30635b809fd36e)]:
+  - ternent-ui@0.1.3
+
 ## 0.2.0
 
 ### Minor Changes

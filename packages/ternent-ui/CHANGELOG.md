@@ -1,5 +1,11 @@
 # ternent-ui
 
+## 0.1.3
+
+### Patch Changes
+
+- [`7435a4dc0feb608720f58c878c30635b809fd36e`](https://github.com/samternent/home/commit/7435a4dc0feb608720f58c878c30635b809fd36e) Thanks [@samternent](https://github.com/samternent)! - Update home p age feel
+
 ## 0.1.2
 
 ### Patch Changes
