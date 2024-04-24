@@ -14,7 +14,7 @@ export function provideWhiteLabel(app) {
     whiteLabel.value = {
       ...whiteLabel.value,
       name: ["ternent", "dot", "local"],
-      description: "My localhost development",
+      description: "Front End & Platform Engineer.",
       themeName: "greener",
       domain: "localhost:5173",
     };
@@ -23,7 +23,7 @@ export function provideWhiteLabel(app) {
     whiteLabel.value = {
       ...whiteLabel.value,
       name: ["ternent", "dot", "dev"],
-      description: "Specialists in Frontend and Platform Engineering.",
+      description: "Front End & Platform Engineer.",
       themeName: "greener",
       domain: "ternent.dev",
     };

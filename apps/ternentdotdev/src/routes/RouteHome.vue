@@ -11,5 +11,8 @@ const whiteLabel = useWhiteLabel();
       }}<span class="font-light">{{ whiteLabel.name[1] }}</span
       >{{ whiteLabel.name[2] }}</SBrandHeader
     >
+    <p class="text-xl font-light px-1">
+      {{ whiteLabel.description }}
+    </p>
   </div>
 </template>
