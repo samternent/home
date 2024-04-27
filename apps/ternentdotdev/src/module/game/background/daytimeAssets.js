@@ -5,9 +5,9 @@ import rocks from "@/assets/game_background_4/layers/rocks.png";
 import sky from "@/assets/game_background_4/layers/sky.png";
 
 export default [
-  // { image: sky, fixedY: true, fixedX: true },
-  // { image: clouds1, fixedY: true },
+  { image: sky, fixedY: true, fixedX: true },
+  { image: clouds1, fixedY: true },
   { image: rocks, fixedY: true },
   { image: clouds2, fixedY: true },
-  { image: ground },
+  { image: ground, fixedY: true },
 ];

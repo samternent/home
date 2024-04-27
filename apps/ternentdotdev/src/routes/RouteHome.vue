@@ -30,25 +30,44 @@ watch(themeVariation, (_themeVariation) => {
 });
 </script>
 <template>
-  <div class="flex h-screen items-end flex-1 p-4">
-    <div class="flex items-center flex-1">
-      <div class="flex flex-col">
+  <div
+    class="flex h-screen flex-col justify-end flex-1 p-4 w-full max-w-7xl relative mx-auto"
+  >
+    <div class="flex justify-end">
+      <SThemeToggle v-model="themeVariation" size="sm" />
+    </div>
+    <div
+      class="flex-1 bg-base-200 w-full mb-12 mt-8 border border-base-300 mx-auto max-w-6xl overflow-auto relative"
+    >
+      <RouterView />
+    </div>
+    <div class="flex items-center justify-between flex-1 max-h-20 w-full">
+      <div class="flex items-center">
         <Logo class="h-auto w-16 lg:w-20 mr-2" />
+        <div class="flex flex-0 flex-col justify-center">
+          <SBrandHeader
+            >{{ whiteLabel.name[0]
+            }}<span class="font-light">{{ whiteLabel.name[1] }}</span
+            >{{ whiteLabel.name[2] }}</SBrandHeader
+          >
+          <p class="text-xl font-light px-1 flex flex-col justify-start">
+            {{ whiteLabel.description }}
+          </p>
+        </div>
       </div>
-      <div class="flex flex-col justify-center">
-        <SBrandHeader
-          >{{ whiteLabel.name[0]
-          }}<span class="font-light">{{ whiteLabel.name[1] }}</span
-          >{{ whiteLabel.name[2] }}</SBrandHeader
+      <div class="flex items-center">
+        <a
+          href="https://github.com/samternent"
+          target="_blank"
+          class="opacity-80 hover:opacity-100 transition-colors"
         >
-        <p class="text-xl font-light px-1 flex flex-col justify-start">
-          {{ whiteLabel.description }}
-          <SThemeToggle
-            v-model="themeVariation"
-            size="sm"
-            class="absolute top-5 right-5"
+          <img
+            v-if="themeVariation === 'dark'"
+            class="h-16"
+            src="@/assets/github-mark-white.png"
           />
-        </p>
+          <img v-else class="h-16" src="@/assets/github-mark.png" />
+        </a>
       </div>
     </div>
   </div>

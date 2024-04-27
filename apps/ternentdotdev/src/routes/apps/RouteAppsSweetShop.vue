@@ -42,7 +42,8 @@ const results = computed(() => {
 });
 </script>
 <template>
-  <div class="p-2 max-w-4xl flex-1">
+  <div class="p-2 w-full flex lg:flex-row flex-col flex-1">
+    <div class="w-full lg:w-1/2 flex-1 p-4">
     <SBrandHeader class="font-light mb-4">Sweet Shop</SBrandHeader>
 
     <input
@@ -94,6 +95,8 @@ const results = computed(() => {
         </SButton>
       </p>
     </div>
+  </div>
+  <div class="lg:w-1/2 p-4">
     <p class="my-4 p-2">
       <SBrandHeader size="md" class="font-light mb-2">Background</SBrandHeader>
       Simon’s Sweet Shop (SSS) is a confectionery wholesalerthat sells sweets in
@@ -122,5 +125,6 @@ const results = computed(() => {
       to add orremove pack sizes as well as change current pack sizes with
       minimal adjustments to the program.
     </p>
+  </div>
   </div>
 </template>

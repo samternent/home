@@ -25,14 +25,16 @@ const assetPack = computed(() => {
 });
 </script>
 <template>
-  <div class="absolute top-0 left-0 overflow-hidden bottom-0 right-0">
+  <div class="absolute top-0 left-0 overflow-hidden bottom-[30px] right-0">
     <div
       v-for="(_scene, i) in assetPack"
       :key="i"
       :style="{
         backgroundImage: `url('${_scene.image}')`,
         transform: `translate3d(${
-          _scene.fixedX ? 0 : cameraX / (assetPack.length - i || 1)
+          _scene.fixedX
+            ? 0
+            : cameraX / ((assetPack.length - i) * layerMultiplier || 1)
         }px, ${_scene.fixedY ? 0 : cameraY / 5}px, 0)`,
         width: `${width}px`,
         zIndex: _scene.position === 'front' ? 25 : 1,

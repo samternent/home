@@ -8,20 +8,20 @@ import {
 import { createEngine, createSprite } from "sams-game-kit";
 import { ScrollingBackgroundImage } from "./background";
 
-import idle from "@/assets/character/idle.png";
-import walk from "@/assets/character/walk.png";
-import run from "@/assets/character/run.png";
-import jump from "@/assets/character/jump.png";
-import jumpSpin from "@/assets/character/jump-spin.png";
-import land from "@/assets/character/land.png";
-import punch from "@/assets/character/punch.png";
-import crouchIdle from "@/assets/character/crouch-idle.png";
-import crouchWalk from "@/assets/character/crouch-walk.png";
-import roll from "@/assets/character/roll.png";
+import boyIdle from "@/assets/boy/idle.png";
+import boyWalk from "@/assets/boy/walk.png";
+import boyRun from "@/assets/boy/run.png";
+import boyJump from "@/assets/boy/jump.png";
+
+import dinoIdle from "@/assets/dino/idle.png";
+import dinoWalk from "@/assets/dino/walk.png";
+import dinoRun from "@/assets/dino/run.png";
+import dinoJump from "@/assets/dino/jump.png";
 
 const canvas = shallowRef();
 const bg = shallowRef();
 const platform = shallowRef();
+const characterType = useLocalStorage("app/characterType", "boy");
 const ctx = computed(() => canvas.value?.getContext("2d"));
 const characterState = shallowRef("idle");
 const size = reactive(
@@ -29,20 +29,23 @@ const size = reactive(
 );
 
 const { onLoop } = createEngine();
-const { drawSprite } = createSprite(
+const { drawSprite: drawBoySprite } = createSprite(
   {
-    idle,
-    walk,
-    run,
-    jump,
-    jumpSpin,
-    land,
-    punch,
-    crouchIdle,
-    crouchWalk,
-    roll,
+    idle: boyIdle,
+    walk: boyWalk,
+    run: boyRun,
+    jump: boyJump,
   },
-  { state: characterState.value, width: 384, height: 384 }
+  { state: characterState.value, width: 614, height: 564 }
+);
+const { drawSprite: drawDinoSprite } = createSprite(
+  {
+    idle: dinoIdle,
+    walk: dinoWalk,
+    run: dinoRun,
+    jump: dinoJump,
+  },
+  { state: characterState.value, width: 680, height: 472 }
 );
 
 function resizeScene() {
@@ -97,21 +100,21 @@ function drawScene(timestamp) {
   }
 
   if (punchFrames.value > 0) {
-    characterState.value = "punch";
+    // characterState.value = "punch";
     punchFrames.value -= 1;
   } else if (rollFrames.value > 0) {
-    characterState.value = "roll";
+    // characterState.value = "roll";
     rollFrames.value -= 1;
   } else if (cameraY.value > 0) {
-    characterState.value = speed.value > 8 ? "jumpSpin" : "jump";
+    characterState.value = "jump";
   } else if (speed.value > 0 && !rollFrames.value && isMoving.value) {
-    if (isCrouching.value) {
-      characterState.value = "crouchWalk";
-    } else {
-      characterState.value = speed.value > 8 ? "run" : "walk";
-    }
+    // if (isCrouching.value) {
+    //   characterState.value = "crouchWalk";
+    // } else {
+    characterState.value = speed.value > 8 ? "run" : "walk";
+    // }
   } else {
-    characterState.value = isCrouching.value ? "crouchIdle" : "idle";
+    characterState.value = "idle"; // isCrouching.value ? "crouchIdle" : "idle";
   }
 
   if (speed.value > 0 && isMoving.value) {
@@ -134,23 +137,28 @@ function drawScene(timestamp) {
     size.height
   );
 
-  ctx.fillStyle = "red";
-  ctx.value.fillRect(100 - cameraX.value + -1, -100, 100, 100);
+  // ctx.fillStyle = "red";
+  // ctx.value.fillRect(100 - cameraX.value + -1, -100, 100, 100);
 
-  drawSprite(ctx.value, {
-    state: characterState.value,
-    position: {
-      x: size.width / 2 - 81,
-      y: cameraY.value * -1,
-    },
-    repeatAnimation: [
-      "idle",
-      "walk",
-      "run",
-      "crouchWalk",
-      "crouchIdle",
-    ].includes(characterState.value),
-  });
+  if (characterType.value === "boy") {
+    drawBoySprite(ctx.value, {
+      state: characterState.value,
+      position: {
+        x: size.width / 2 - 81,
+        y: cameraY.value * -1 + 20,
+      },
+      repeatAnimation: ["idle", "walk", "run"].includes(characterState.value),
+    });
+  } else if (characterType.value === "dino") {
+    drawDinoSprite(ctx.value, {
+      state: characterState.value,
+      position: {
+        x: size.width / 2 - 81,
+        y: cameraY.value * -1 + 20,
+      },
+      repeatAnimation: ["idle", "walk", "run"].includes(characterState.value),
+    });
+  }
 
   ctx.value.restore(); // restore
 }
@@ -177,7 +185,7 @@ function onKeydown(e) {
     isMoving.value = true;
   }
   if (e.key === "w" || e.key === "ArrowUp") {
-    velocityY.value = 1.5;
+    velocityY.value = e.shiftKey ? 2 : 1.7;
   }
   if (e.key === "s" || e.key === "ArrowDown") {
     isCrouching.value = true;
@@ -220,7 +228,7 @@ const sceneType = useLocalStorage("app/themeVariation");
 const sceneLayerMultiplier = computed(() => {
   switch (sceneType.value) {
     case "light":
-      return 0.9;
+      return 1.5;
     case "dark":
       return 1;
     default:
@@ -248,10 +256,14 @@ const sceneLayerMultiplier = computed(() => {
       }"
     ></div>
     <div
-      class="text-xs font-light bg-base-100 absolute border-t-2 border-accent w-full bottom-0 flex justify-end items-center px-4"
-      :style="`height: ${40 - cameraY / 10}px`"
+      class="text-xs font-light absolute w-full bg-base-300 bottom-0 flex justify-between items-center px-4"
+      :style="`height: 30px`"
     >
-      <span class="absolute right-2 bottom-3">{{ fps }}fps</span>
+      <select v-model="characterType" class="z-20 bg-transparent">
+        <option value="boy">Boy</option>
+        <option value="dino">Dino</option>
+      </select>
+      <span class="w-10 text-right">{{ fps }}fps</span>
     </div>
   </div>
 </template>

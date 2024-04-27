@@ -11,6 +11,20 @@ export default [
   {
     path: "",
     component: () => import("./RouteHome.vue"),
+    children: [
+      {
+        path: "",
+        component: () => import("./apps/RouteAppsGame.vue"),
+      },
+      {
+        path: "game",
+        component: () => import("./apps/RouteAppsGame.vue"),
+      },
+      {
+        path: "sweet-shop",
+        component: () => import("./apps/RouteAppsSweetShop.vue"),
+      },
+    ],
   },
   {
     path: "/app",

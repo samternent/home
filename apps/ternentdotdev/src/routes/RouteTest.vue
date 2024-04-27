@@ -5,14 +5,7 @@ import { useWhiteLabel } from "@/module/brand/useWhiteLabel";
 const whiteLabel = useWhiteLabel();
 </script>
 <template>
-  <div class="flex flex-col h-full flex-1 p-4">
-    <SBrandHeader
-      >{{ whiteLabel.name[0]
-      }}<span class="font-light">{{ whiteLabel.name[1] }}</span
-      >{{ whiteLabel.name[2] }}</SBrandHeader
-    >
-    <p class="my-6 text-base font-light">
-      {{ whiteLabel.description }}
-    </p>
+  <div class="flex flex-col h-full flex-1 p-4 font-mono relative">
+    <!-- <iframe src="https://footballsocial.app" class="border-0 w-full h-full" /> -->
   </div>
 </template>
