@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.2.2
+
+### Patch Changes
+
+- [`68ff78c3153d247a821790f4111daf7668b9a0e2`](https://github.com/samternent/home/commit/68ff78c3153d247a821790f4111daf7668b9a0e2) Thanks [@samternent](https://github.com/samternent)! - Adds main game page
+
 ## 0.2.1
 
 ### Patch Changes
