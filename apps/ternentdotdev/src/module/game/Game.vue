@@ -254,6 +254,14 @@ const percentageCompleted = computed(() =>
   />
   <div class="absolute flex top-0 left-0 overflow-hidden bottom-0 right-0 z-20">
     <canvas ref="canvas" class="flex-1 z-20"></canvas>
+
+    <div
+      class="absolute bottom-1 h-6 rounded-full z-10 bg-black opacity-20 shadow-lg transition-opacity transition-duration-300"
+      :style="{
+        left: `${size.width / 2 - 30}px`,
+        width: `${120 - cameraY / 10}px`,
+      }"
+    />
     <div
       class="absolute top-0 h-6 text-xs left-0 w-full bg-base-100 border-r-2 border-primary flex-1 z-30 flex justify-end items-center"
       :style="{
