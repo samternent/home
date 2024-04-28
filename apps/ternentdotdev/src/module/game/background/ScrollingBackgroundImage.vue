@@ -37,9 +37,9 @@ const assetPack = computed(() => {
             : cameraX / ((assetPack.length - i) * layerMultiplier || 1)
         }px, ${_scene.fixedY ? 0 : cameraY / 5}px, 0)`,
         width: `${width}px`,
-        zIndex: _scene.position === 'front' ? 25 : 1,
+        zIndex: 1,
       }"
-      class="background-scene h-screen absolute"
+      class="background-scene h-full absolute"
     />
   </div>
 </template>
@@ -51,7 +51,7 @@ const assetPack = computed(() => {
   background-size: contain;
   transition: transform 0.1s;
   transition-timing-function: linear;
-  height: 100vh;
-  width: 100vw;
+  height: 100%;
+  width: 100%;
 }
 </style>

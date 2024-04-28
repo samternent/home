@@ -185,7 +185,9 @@ function onKeydown(e) {
     isMoving.value = true;
   }
   if (e.key === "w" || e.key === "ArrowUp") {
-    velocityY.value = e.shiftKey ? 2 : 1.7;
+    if (cameraY.value === 0) {
+      velocityY.value = e.shiftKey ? 2 : 1.7;
+    }
   }
   if (e.key === "s" || e.key === "ArrowDown") {
     isCrouching.value = true;
@@ -235,6 +237,10 @@ const sceneLayerMultiplier = computed(() => {
       return 1;
   }
 });
+
+const percentageCompleted = computed(() =>
+  Math.round(((cameraX.value * -1) / (sceneWidth.value - size.width)) * 100)
+);
 </script>
 
 <template>
@@ -249,14 +255,17 @@ const sceneLayerMultiplier = computed(() => {
   <div class="absolute flex top-0 left-0 overflow-hidden bottom-0 right-0 z-20">
     <canvas ref="canvas" class="flex-1 z-20"></canvas>
     <div
-      class="absolute top-0 bottom-0 left-0 flex-1"
+      class="absolute top-0 h-6 text-xs left-0 w-full bg-base-100 border-r-2 border-primary flex-1 z-30 flex justify-end items-center"
       :style="{
-        width: `${sceneWidth}px`,
-        transform: `translate3d(${cameraX}px, ${cameraY / 5}px, 0)`,
+        width: `${((cameraX * -1) / (sceneWidth - size.width)) * 100}%`,
       }"
-    ></div>
+    >
+      <span v-if="percentageCompleted > 3" class="mx-2"
+        >{{ percentageCompleted }}%</span
+      >
+    </div>
     <div
-      class="text-xs font-light absolute w-full bg-base-300 bottom-0 flex justify-between items-center px-4"
+      class="text-xs font-light absolute w-full bg-base-200 bottom-0 flex justify-between items-center px-4"
       :style="`height: 30px`"
     >
       <select v-model="characterType" class="z-20 bg-transparent">

@@ -20,6 +20,7 @@
     "concords-identity": "workspace:*",
     "concords-ledger": "workspace:*",
     "concords-utils": "workspace:*",
+    "highlight.js": "^11.9.0",
     "luxon": "^3.4.3",
     "sams-game-kit": "workspace:*",
     "ternent-ui": "workspace:*",
