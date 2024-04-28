@@ -1,5 +1,13 @@
 # ternentdotdev
 
+## 0.2.3
+
+### Patch Changes
+
+- [`f83c4a44effdd8445bd1e55df0f9bf71f7f3c1db`](https://github.com/samternent/home/commit/f83c4a44effdd8445bd1e55df0f9bf71f7f3c1db) Thanks [@samternent](https://github.com/samternent)! - Adds sweet shop code and fixes jumping
+
+- [`6e9169bec877d9599276b7e599a2c459dbaae9c7`](https://github.com/samternent/home/commit/6e9169bec877d9599276b7e599a2c459dbaae9c7) Thanks [@samternent](https://github.com/samternent)! - Adds shadow character
+
 ## 0.2.2
 
 ### Patch Changes
