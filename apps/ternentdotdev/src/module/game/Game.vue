@@ -255,10 +255,11 @@ const percentageCompleted = computed(() =>
   <div class="absolute flex top-0 left-0 overflow-hidden bottom-0 right-0 z-20">
     <canvas ref="canvas" class="flex-1 z-20"></canvas>
 
+    <!-- character shadow -->
     <div
       class="absolute bottom-1 h-6 rounded-full z-10 bg-black opacity-20 shadow-lg transition-opacity transition-duration-300"
       :style="{
-        left: `${size.width / 2 - 30}px`,
+        left: `${size.width / 2 + cameraY / 20 - 40}px`,
         width: `${120 - cameraY / 10}px`,
       }"
     />
