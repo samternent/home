@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.2.4
+
+### Patch Changes
+
+- [`deebf29131dbca1009336c4662de39b3ba1fdec5`](https://github.com/samternent/home/commit/deebf29131dbca1009336c4662de39b3ba1fdec5) Thanks [@samternent](https://github.com/samternent)! - Fix shadow
+
 ## 0.2.3
 
 ### Patch Changes
