@@ -8,14 +8,10 @@ import { provideAppVersion } from "./composables/useAppVersion";
 import UserMenu from "./components/UserMenu.vue";
 import Logo from "./module/brand/Logo.vue";
 import Api from "./Api.vue";
+import SetUsername from "./components/SetUsername.vue";
 
 // DS components
-import {
-  SButton,
-  SBanner,
-  SFooter,
-  SThemeToggle,
-} from "ternent-ui/components";
+import { SButton, SBanner, SFooter, SThemeToggle } from "ternent-ui/components";
 
 // import Notifications from "./components/Notifications.vue";
 
@@ -109,6 +105,14 @@ const theme = useLocalStorage(
       </div>
 
       <Api>
+        <div
+          v-if="user && !profile?.username"
+          class="fixed top-0 left-0 bottom-0 right-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+        >
+          <div class="bg-base-100 px-4 rounded-lg shadow-lg w-96 text-center">
+            <SetUsername />
+          </div>
+        </div>
         <RouterView />
       </Api>
     </div>

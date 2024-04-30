@@ -6,7 +6,6 @@ import { usePredictionService } from "../composables/usePredictionService";
 import { useCurrentUser } from "../composables/useCurrentUser";
 import { PredictionCard } from "../module/prediction";
 import { getCompetitionGameweeks } from "../utils/competitions";
-import SetUsername from "../components/SetUsername.vue";
 
 import { SCountdown, SButton, SAlert } from "ternent-ui/components";
 
@@ -309,12 +308,9 @@ function isSameDay(date1, date2) {
       class="text-center mt-8 flex flex-col items-end"
       v-if="predictionsLoaded && fixtures.length"
     >
-      <template v-if="user && !profile?.username">
-        <SetUsername />
-      </template>
       <SButton
         :disabled="!isDirty"
-        v-else-if="profile && (!username || profile.username === username)"
+        v-if="profile && (!username || profile.username === username)"
         @click="savePredictions"
         type="success"
       >
