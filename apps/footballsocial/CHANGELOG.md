@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.13.6
+
+### Patch Changes
+
+- [`5288f9d4bbc103deaf544f124c6562fa1fa426b9`](https://github.com/samternent/home/commit/5288f9d4bbc103deaf544f124c6562fa1fa426b9) Thanks [@samternent](https://github.com/samternent)! - Fix set username
+
 ## 0.13.5
 
 ### Patch Changes
