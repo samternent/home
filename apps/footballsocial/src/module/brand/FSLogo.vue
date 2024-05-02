@@ -22,7 +22,7 @@ const { isWhiteLabel, host } = useWhiteLabel();
     <div
       class="flex flex-col justify-center anton-regular items-center w-48 p-4 mx-auto"
     >
-      <img src="https://www.walkers.co.uk/assets/img/walkers__logo.png" />
+      <img src="../../assets/walkers__logo.png" />
     </div>
     <!-- <div
       class="flex items-center font-bold text-base-content text-6xl md:text-7xl lg:text-9xl uppercase anton-regular"
