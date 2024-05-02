@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.13.7
+
+### Patch Changes
+
+- [`0ca2d8de57fcdf8f9e8c81ea23a3a0828cfee710`](https://github.com/samternent/home/commit/0ca2d8de57fcdf8f9e8c81ea23a3a0828cfee710) Thanks [@samternent](https://github.com/samternent)! - Fixed username modal showing too early
+
 ## 0.13.6
 
 ### Patch Changes
