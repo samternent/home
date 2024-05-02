@@ -8,15 +8,15 @@ import {
 import { createEngine, createSprite } from "sams-game-kit";
 import { ScrollingBackgroundImage } from "./background";
 
-import boyIdle from "@/assets/boy/idle.png";
-import boyWalk from "@/assets/boy/walk.png";
-import boyRun from "@/assets/boy/run.png";
-import boyJump from "@/assets/boy/jump.png";
+import boyIdle from "@/assets/boy/idle-min.png";
+import boyWalk from "@/assets/boy/walk-min.png";
+import boyRun from "@/assets/boy/run-min.png";
+import boyJump from "@/assets/boy/jump-min.png";
 
-import dinoIdle from "@/assets/dino/idle.png";
-import dinoWalk from "@/assets/dino/walk.png";
-import dinoRun from "@/assets/dino/run.png";
-import dinoJump from "@/assets/dino/jump.png";
+import dinoIdle from "@/assets/dino/idle-min.png";
+import dinoWalk from "@/assets/dino/walk-min.png";
+import dinoRun from "@/assets/dino/run-min.png";
+import dinoJump from "@/assets/dino/jump-min.png";
 
 const canvas = shallowRef();
 const bg = shallowRef();
@@ -189,17 +189,6 @@ function onKeydown(e) {
       velocityY.value = e.shiftKey ? 2 : 1.7;
     }
   }
-  if (e.key === "s" || e.key === "ArrowDown") {
-    isCrouching.value = true;
-  }
-  if (e.key === " ") {
-    punchFrames.value = 8 * 4;
-  }
-  if (e.key === "r" || e.key === "R") {
-    if (cameraY.value === 0) {
-      rollFrames.value = 7 * 4;
-    }
-  }
 
   if (e.key === "Shift") {
     running.value = true;
@@ -230,9 +219,9 @@ const sceneType = useLocalStorage("app/themeVariation");
 const sceneLayerMultiplier = computed(() => {
   switch (sceneType.value) {
     case "light":
-      return 1.5;
+      return 1.8;
     case "dark":
-      return 1;
+      return 1.2;
     default:
       return 1;
   }
