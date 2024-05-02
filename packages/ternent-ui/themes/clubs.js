@@ -1,86 +1,90 @@
 export const clubColors = {
   arsenal: {
     primary: "#EF0107",
-    accent: "#063672",
+    secondary: "#063672",
   },
   astonvilla: {
     primary: "#670E36",
-    accent: "#95BFE5",
+    secondary: "#95BFE5",
   },
   afcbournemouth: {
     primary: "#DA291C",
-    accent: "#000000",
+    secondary: "#000000",
   },
   brighton: {
     primary: "#0057B8",
-    accent: "#FFCD00",
+    secondary: "#FFCD00",
   },
   brentford: {
     primary: "#e30613",
-    accent: "#140e0c",
+    secondary: "#140e0c",
   },
   burnley: {
     primary: "#6C1D45",
-    accent: "#99D6EA",
+    secondary: "#99D6EA",
   },
   chelsea: {
     primary: "#034694",
-    accent: "#EE242C",
+    secondary: "#EE242C",
   },
   crystalpalace: {
     primary: "#1B458F",
-    accent: "#C4122E",
+    secondary: "#C4122E",
   },
   everton: {
     primary: "#003399",
-    accent: "#FFFFFF",
+    secondary: "#FFFFFF",
   },
   fulham: {
     primary: "#000",
-    accent: "#CC0000",
+    secondary: "#CC0000",
   },
   liverpoolfc: {
     primary: "#C8102E",
-    accent: "#00A398",
+    secondary: "#00A398",
   },
   luton: {
     primary: "#F78F1E",
-    accent: "#002D62",
+    secondary: "#002D62",
   },
   mancity: {
     primary: "#6CADDF",
-    accent: "#FFCB05",
+    secondary: "#FFCB05",
   },
   manutd: {
     primary: "#DA291C",
-    accent: "#FBE122",
+    secondary: "#FBE122",
   },
   newcastle: {
     primary: "#241F20",
-    accent: "#FFFFFF",
+    secondary: "#FFFFFF",
   },
   nottmforest: {
     primary: "#DD0000",
-    accent: "#FFFFFF",
+    secondary: "#FFFFFF",
   },
   sheffieldutd: {
     primary: "#EE2737",
-    accent: "#000000",
+    secondary: "#000000",
   },
   spurs: {
     primary: "#132257",
-    accent: "#FFFFFF",
+    secondary: "#FFFFFF",
   },
   westham: {
     primary: "#7A263A",
-    accent: "#1BB1E7",
+    secondary: "#1BB1E7",
   },
   wolves: {
     primary: "#FDB913",
-    accent: "#231F20",
+    secondary: "#231F20",
   },
   birmingham: {
     primary: "#0000FF",
-    accent: "#ffffff",
+    secondary: "#ffffff",
+  },
+  walkers: {
+    primary: "#2671BD",
+    secondary: "#FFD700",
   },
 };

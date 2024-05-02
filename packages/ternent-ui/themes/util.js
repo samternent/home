@@ -5,13 +5,13 @@ export function buildThemes(themes) {
     (acc, curr) => {
       const lightTheme = {
         primary: themes[curr].primary,
-        accent: themes[curr].accent,
+        secondary: themes[curr].secondary,
         ...lightBase,
       };
 
       const darkTheme = {
         primary: themes[curr].primary,
-        accent: themes[curr].accent,
+        secondary: themes[curr].secondary,
         ...darkBase,
       };
 

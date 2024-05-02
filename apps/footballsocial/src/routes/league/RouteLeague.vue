@@ -161,12 +161,12 @@ const dismissEurosBanner = useLocalStorage(
 </script>
 <template>
   <div class="md:px-2 lg:px-4 flex-1 max-w-4xl mx-auto pt-0 w-full h-screen">
-    <SHeader>
+    <SHeader class="my-4">
       <div
-        class="px-1 p-2 font-light rounded-lg flex-1 flex flex-col justify-center"
+        class="px-1 p-2 font-light rounded-lg flex-1 flex flex-col justify-between"
       >
         <FSLogo class="lg:hidden flex" />
-        <div class="flex flex-col lg:flex-row justify-between">
+        <div class="flex flex-col lg:flex-row justify-between w-full">
           <div
             class="flex items-center"
             :class="{
@@ -176,7 +176,7 @@ const dismissEurosBanner = useLocalStorage(
           >
             <!-- ads -->
             <div
-              class="tracking-tightest font-light flex lg:flex-col items-end lg:items-start group cursor-pointer pt-2 px-2"
+              class="tracking-tightest font-light flex lg:flex-col items-end lg:items-start group cursor-pointer pt-2 px-2 w-full"
               v-if="competition && !editCompetition"
               @click="editCompetition = true"
             >
@@ -227,13 +227,9 @@ const dismissEurosBanner = useLocalStorage(
             </div>
           </div>
 
-          <div class="flex flex-col">
+          <div class="flex flex-col justify-end">
             <FSLogo class="hidden lg:flex" />
-            <div
-              class="flex justify-end font-light tracking-tighter border-t py-2"
-            >
-              <!-- Prediction league. -->
-            </div>
+            <!--  -->
           </div>
         </div>
       </div>
@@ -265,18 +261,18 @@ const dismissEurosBanner = useLocalStorage(
         </div>
 
         <div
-          class="w-full lg:w-64 px-4 flex justify-center items-center mx-4 my-4 lg:my-0"
+          class="w-full lg:w-64 flex justify-center items-center lg:mx-4 mx-auto my-4"
         >
           <RouterLink
             v-if="competitionCode === 'EC'"
             to="/leagues/PL/predictions"
-            class="btn btn-success w-full"
+            class="btn btn-primary w-full"
             >Premier League predictions</RouterLink
           >
           <RouterLink
             v-else
             to="/leagues/EC/predictions"
-            class="btn btn-success w-full"
+            class="btn btn-primary w-full"
             >Please Euros predictions</RouterLink
           >
         </div>

@@ -15,7 +15,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' gc.zgo.at; connect-src *.footballsocial.app zvlzrjykwmznchhodntc.supabase.co concords.goatcounter.com; font-src fonts.gstatic.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; img-src 'self' crests.football-data.org https://upload.wikimedia.org;"
+          "value": "default-src 'self'; script-src 'self' gc.zgo.at; connect-src *.footballsocial.app zvlzrjykwmznchhodntc.supabase.co concords.goatcounter.com; font-src fonts.gstatic.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; img-src 'self' data: crests.football-data.org https://upload.wikimedia.org;"
         },
         {
           "key": "X-Content-Type-Options",

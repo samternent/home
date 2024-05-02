@@ -13,7 +13,7 @@ defineProps({
 defineEmits(["click"]);
 </script>
 <template>
-  <div class="alert my-1">
+  <div class="alert">
     <svg
       xmlns="http://www.w3.org/2000/svg"
       fill="none"

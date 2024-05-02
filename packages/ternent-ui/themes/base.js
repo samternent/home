@@ -24,9 +24,9 @@ export const darkBase = {
 
 export const lightColors = {
   primary: "#8338ec",
-  accent: "#FC93AD",
+  secondary: "#FC93AD",
 };
 export const darkColors = {
   primary: "#8338ec",
-  accent: "#FFA8B0",
+  secondary: "#FFA8B0",
 };

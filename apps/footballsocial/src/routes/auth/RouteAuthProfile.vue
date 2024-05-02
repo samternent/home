@@ -2,9 +2,11 @@
 import { shallowRef, watch } from "vue";
 import { supabaseClient } from "../../service/supabase";
 import { useCurrentUser } from "../../composables/useCurrentUser";
+import { useWhiteLabel } from "../../module/brand/useWhiteLabel";
 import { onMounted } from "vue";
 
 const { profile, updateProfile } = useCurrentUser();
+const { isWhiteLabel } = useWhiteLabel();
 
 const pendingDeletion = shallowRef(false);
 
@@ -77,7 +79,7 @@ watch(profile, (_profile) => {
         >
       </p>
 
-      <div class="form-control w-full max-w-xs">
+      <div class="form-control w-full max-w-xs" v-if="!isWhiteLabel">
         <label class="label">
           <span class="label-text">Pick your team</span>
         </label>

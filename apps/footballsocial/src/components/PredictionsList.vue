@@ -338,12 +338,12 @@ function isSameDay(date1, date2) {
         >
           Login
         </SButton>
-        <span class="font-thin text-2xl mx-2">or</span>
+        <span class="font-light text-2xl mx-2">or</span>
         <SButton
           aria-label="Join"
           v-if="!user"
           to="/auth/signup"
-          class="btn-outline text-2xl font-thin"
+          class="text-2xl font-light"
           type="secondary"
         >
           Join
