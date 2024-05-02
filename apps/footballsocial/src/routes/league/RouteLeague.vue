@@ -240,51 +240,47 @@ const dismissEurosBanner = useLocalStorage(
     </SHeader>
 
     <div
-      v-if="!dismissEurosBanner && competitionCode !== 'EC'"
       class="bg-base-content text-base-100 w-full mb-8 p-8 flex flex-col relative border-t-2 border-primary"
     >
-      <div
-        @click="dismissEurosBanner = true"
-        class="cursor-pointer absolute right-2 top-2 opacity-60 hover:opacity-100 transition-opacity"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-          class="w-6 h-6"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-      </div>
       <div class="justify-between flex flex-col lg:flex-row items-bottom">
-        <p class="text-xl font-light p-b flex-1">
-          The
-          <span class="transition-all font-bold tracking-tighter">
-            European Championships</span
-          >
-          are coming!
-        </p>
+        <div class="text-xl font-light p-b flex-1">
+          <span v-if="competitionCode === 'EC'">
+            Fan of the
+            <span class="transition-all font-bold tracking-tighter">
+              Premier League</span
+            >
+            ?
+          </span>
+          <span v-else>
+            The
+            <span class="transition-all font-bold tracking-tighter">
+              European Championships</span
+            >
+            are coming!
+          </span>
+          <p class="text-sm font-light tracing-tight mt-4">
+            TIP: We support 8 competitions. You can change competition at any
+            time by clicking the league name in the header.
+          </p>
+        </div>
 
         <div
-          class="w-full lg:w-64 px-4 flex justify-center items-center my-4 lg:my-0"
+          class="w-full lg:w-64 px-4 flex justify-center items-center mx-4 my-4 lg:my-0"
         >
           <RouterLink
+            v-if="competitionCode === 'EC'"
+            to="/leagues/PL/predictions"
+            class="btn btn-success w-full"
+            >Premier League predictions</RouterLink
+          >
+          <RouterLink
+            v-else
             to="/leagues/EC/predictions"
             class="btn btn-success w-full"
-            >Place Euros predictions</RouterLink
+            >Please Euros predictions</RouterLink
           >
         </div>
       </div>
-      <p class="text-sm font-light tracing-tight">
-        TIP: You can change competition at any time by clicking the league name
-        in the header.
-      </p>
     </div>
     <STabs :items="tabs" :path="route.path" />
     <div class="flex mb-16 w-full mt-4">
