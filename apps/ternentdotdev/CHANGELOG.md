@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.2.5
+
+### Patch Changes
+
+- [`40b5054f0c26030868d00edf1cd724c43ee39f07`](https://github.com/samternent/home/commit/40b5054f0c26030868d00edf1cd724c43ee39f07) Thanks [@samternent](https://github.com/samternent)! - Optimize character assets
+
 ## 0.2.4
 
 ### Patch Changes
