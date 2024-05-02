@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.13.8
+
+### Patch Changes
+
+- [`ed19f0247c947bd0f2eea4476d250aada4d49609`](https://github.com/samternent/home/commit/ed19f0247c947bd0f2eea4476d250aada4d49609) Thanks [@samternent](https://github.com/samternent)! - Add competition banner always
+
 ## 0.13.7
 
 ### Patch Changes
