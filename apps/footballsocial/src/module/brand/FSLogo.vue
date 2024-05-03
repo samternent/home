@@ -20,9 +20,13 @@ const { isWhiteLabel, host } = useWhiteLabel();
   </div>
   <div class="flex mx-2 group" v-else>
     <div
-      class="flex flex-col justify-center anton-regular items-center w-36 lg:pt-4 pb-8 lg:w-48 lg:pb-4 mx-auto"
+      class="flex justify-center anton-regular items-center pb-8 lg:pb-4 mx-auto max-w-lg"
     >
-      <img v-if="host === 'walkers'" src="../../assets/walkers__logo.png" />
+      <img
+        v-if="host === 'walkers'"
+        src="../../assets/walkers__logo.png"
+        class="h-32 lg:h-40"
+      />
       <img
         v-if="host === 'thecyclinggk'"
         src="../../assets/cgk.jpeg"
