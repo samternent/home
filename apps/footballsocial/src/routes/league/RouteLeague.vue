@@ -170,27 +170,32 @@ const dismissEurosBanner = useLocalStorage(
 </script>
 <template>
   <div class="md:px-2 lg:px-4 flex-1 max-w-4xl mx-auto pt-0 w-full h-screen">
-    <SHeader class="my-4">
+    <SHeader class="md:my-4">
       <div
         class="px-1 p-2 font-light rounded-lg flex-1 flex flex-col justify-between"
       >
         <FSLogo class="flex" />
         <!-- ads -->
         <div
-          class="flex justify-between items-center w-full"
+          class="flex flex-row lg:flex-row justify-start lg:items-center w-full"
           v-if="competition"
         >
           <div
             class="tracking-tightest font-light flex items-end lg:items-center group w-full"
           >
-            <p class="md:text-2xl lg:text-3xl mt-0">{{ competition?.name }},</p>
-            <p
-              class="px-2 py-1 mx-2 lg:my-2 md:text-2xl lg:text-3xl transition-color inline-block font-bold bg-primary tracking-tighter header text-base-100"
-            >
-              {{ competition?.area?.name }}.
+            <p class="text-lg md:text-2xl mt-0">
+              {{ competition?.name }}
+              <span
+                class="px-2 py-1 mx-2 lg:my-2 hidden md:inline-block md:text-2xl lg:text-3xl transition-color font-bold bg-primary tracking-tighter header text-base-100"
+              >
+                {{ competition?.area?.name }}.
+              </span>
             </p>
           </div>
-          <div class="relative" ref="dropdownRef">
+          <div
+            class="relative flex justify-end items-center w-full"
+            ref="dropdownRef"
+          >
             <SButton
               type="ghost"
               @click="showMenu = !showMenu"

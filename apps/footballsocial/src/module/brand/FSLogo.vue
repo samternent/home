@@ -5,7 +5,9 @@ const { isWhiteLabel, host, colorTheme } = useWhiteLabel();
 </script>
 <template>
   <div class="flex mx-2 group h-full" v-if="!isWhiteLabel">
-    <div class="flex flex-col justify-center -translate-x-12 anton-regular">
+    <div
+      class="flex flex-col justify-center -translate-x-6 lg:-translate-x-12 anton-regular"
+    >
       <div
         class="bg-base-content text-base-100 text-[24.3px] md:text-[30.7px] lg:text-[43.9px] [transform:rotate(-90deg)translate(0px,0px)] md:[transform:rotate(-90deg)translate(0px,0px)] lg:[transform:rotate(-90deg)translate(0px,24px)] px-2 uppercase"
       >
@@ -13,7 +15,7 @@ const { isWhiteLabel, host, colorTheme } = useWhiteLabel();
       </div>
     </div>
     <div
-      class="font-bold text-base-content text-[78px] md:text-[96px] lg:text-[136px] uppercase anton-regular [transform:translateX(-80px)] md:[transform:translateX(-84px)] lg:[transform:translateX(-48px)]"
+      class="font-bold text-base-content text-[78px] md:text-[96px] lg:text-[136px] uppercase anton-regular [transform:translateX(-40px)] md:[transform:translateX(-42px)] lg:[transform:translateX(-48px)]"
     >
       Football
     </div>
