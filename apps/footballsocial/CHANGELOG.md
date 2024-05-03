@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.13.15
+
+### Patch Changes
+
+- [`530eb6a01139c6c2cbdd359267e73e915a709150`](https://github.com/samternent/home/commit/530eb6a01139c6c2cbdd359267e73e915a709150) Thanks [@samternent](https://github.com/samternent)! - update walkers
+
 ## 0.13.14
 
 ### Patch Changes
