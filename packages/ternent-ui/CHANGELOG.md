@@ -1,5 +1,11 @@
 # ternent-ui
 
+## 0.1.5
+
+### Patch Changes
+
+- [`f8a222fb97d95038f940503d1bbd6427b4cfb0ee`](https://github.com/samternent/home/commit/f8a222fb97d95038f940503d1bbd6427b4cfb0ee) Thanks [@samternent](https://github.com/samternent)! - Update white label themes
+
 ## 0.1.4
 
 ### Patch Changes
