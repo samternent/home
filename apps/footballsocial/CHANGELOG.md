@@ -1,5 +1,14 @@
 # concords-footballsocial
 
+## 0.13.11
+
+### Patch Changes
+
+- [`f8a222fb97d95038f940503d1bbd6427b4cfb0ee`](https://github.com/samternent/home/commit/f8a222fb97d95038f940503d1bbd6427b4cfb0ee) Thanks [@samternent](https://github.com/samternent)! - Update white label themes
+
+- Updated dependencies [[`f8a222fb97d95038f940503d1bbd6427b4cfb0ee`](https://github.com/samternent/home/commit/f8a222fb97d95038f940503d1bbd6427b4cfb0ee)]:
+  - ternent-ui@0.1.5
+
 ## 0.13.10
 
 ### Patch Changes
