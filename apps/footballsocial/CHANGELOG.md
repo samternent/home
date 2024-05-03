@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.13.13
+
+### Patch Changes
+
+- [`61f1e9deb719cf0d290f6aaec58a331d18b27bbf`](https://github.com/samternent/home/commit/61f1e9deb719cf0d290f6aaec58a331d18b27bbf) Thanks [@samternent](https://github.com/samternent)! - Finish whitelabel start
+
 ## 0.13.12
 
 ### Patch Changes
