@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.13.14
+
+### Patch Changes
+
+- [`0048348d3621e3e345ae1c7a8e5729f9dea3d1d5`](https://github.com/samternent/home/commit/0048348d3621e3e345ae1c7a8e5729f9dea3d1d5) Thanks [@samternent](https://github.com/samternent)! - Fix leagueselection on mobile
+
 ## 0.13.13
 
 ### Patch Changes
