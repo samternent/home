@@ -1,5 +1,14 @@
 # concords-footballsocial
 
+## 0.13.12
+
+### Patch Changes
+
+- [`0263ee49bbd5bcd82d4ddd142dbf0bd72294a48a`](https://github.com/samternent/home/commit/0263ee49bbd5bcd82d4ddd142dbf0bd72294a48a) Thanks [@samternent](https://github.com/samternent)! - Adds teamwork theme
+
+- Updated dependencies [[`0263ee49bbd5bcd82d4ddd142dbf0bd72294a48a`](https://github.com/samternent/home/commit/0263ee49bbd5bcd82d4ddd142dbf0bd72294a48a)]:
+  - ternent-ui@0.1.6
+
 ## 0.13.11
 
 ### Patch Changes
