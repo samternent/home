@@ -1,0 +1,5 @@
+---
+"footballsocial": patch
+---
+
+update walkers

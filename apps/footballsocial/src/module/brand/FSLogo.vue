@@ -26,8 +26,8 @@ const { isWhiteLabel, host, colorTheme } = useWhiteLabel();
     >
       <img
         v-if="host === 'walkers'"
-        src="../../assets/walkers__logo.png"
-        class="h-32 lg:h-40"
+        src="../../assets/walkers__logo.jpg"
+        class="rounded-lg shadow-lg"
       />
       <img
         v-if="host === 'thecyclinggk'"
