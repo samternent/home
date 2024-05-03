@@ -14,7 +14,7 @@ import { useCurrentUser } from "../../composables/useCurrentUser";
 import { competitions } from "../../utils/competitions";
 import FSLogo from "../../module/brand/FSLogo.vue";
 import { useWhiteLabel } from "../../module/brand/useWhiteLabel";
-import { SHeader, STabs } from "ternent-ui/components";
+import { SHeader, STabs, SButton } from "ternent-ui/components";
 
 const props = defineProps({
   competitionCode: {
@@ -156,6 +156,13 @@ watch(
   { immediate: true }
 );
 
+const showMenu = shallowRef(false);
+const dropdownRef = shallowRef(null);
+
+onClickOutside(dropdownRef, () => {
+  showMenu.value = false;
+});
+
 const dismissEurosBanner = useLocalStorage(
   "footballsocial/dissmissEurosBanner",
   false
@@ -167,71 +174,68 @@ const dismissEurosBanner = useLocalStorage(
       <div
         class="px-1 p-2 font-light rounded-lg flex-1 flex flex-col justify-between"
       >
-        <FSLogo class="lg:hidden flex" />
-        <div class="flex flex-col lg:flex-row justify-between w-full">
+        <FSLogo class="flex" />
+        <!-- ads -->
+        <div
+          class="flex justify-between items-center w-full"
+          v-if="competition"
+        >
           <div
-            class="flex items-center"
-            :class="{
-              'items-center': !editCompetition,
-              'items-start': editCompetition,
-            }"
+            class="tracking-tightest font-light flex items-end lg:items-center group w-full"
           >
-            <!-- ads -->
-            <div
-              class="tracking-tightest font-light flex lg:flex-col items-end lg:items-start group cursor-pointer pt-2 px-2 w-full"
-              v-if="competition && !editCompetition"
-              @click="editCompetition = true"
+            <p class="md:text-2xl lg:text-3xl mt-0">{{ competition?.name }},</p>
+            <p
+              class="px-2 py-1 mx-2 lg:my-2 md:text-2xl lg:text-3xl transition-color inline-block font-bold bg-primary tracking-tighter header text-base-100"
             >
-              <p class="md:text-2xl lg:text-3xl mt-0">
-                {{ competition?.name }},
-              </p>
-              <p
-                class="px-2 py-1 mx-2 lg:mx-0 lg:my-2 md:text-2xl lg:text-3xl transition-color inline-block font-bold bg-base-content group-hover:bg-primary tracking-tighter header text-base-100"
-              >
-                {{ competition?.area?.name }}.
-              </p>
-              <p
-                class="text-lg font-light lg:my-2 tracking-tighter flex items-center"
-              >
-                {{ currentSeasonFormat }}
-
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                  class="w-4 h-4 mx-2 inline group-hover:inline opacity-40"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
-                  />
-                </svg>
-              </p>
-            </div>
-            <div v-else-if="competition" class="-mx-3">
-              <select
-                ref="editCompetitionTarget"
-                autofocus
-                v-model="currentCompetition"
-                class="block border-0 text-xl focus:ring-0 p-2"
-              >
-                <option
-                  v-for="gw in competitions"
-                  :key="`startWeek${gw}`"
-                  :value="gw.code"
-                >
-                  {{ gw.name }}
-                </option>
-              </select>
-            </div>
+              {{ competition?.area?.name }}.
+            </p>
           </div>
+          <div class="relative" ref="dropdownRef">
+            <SButton
+              type="ghost"
+              @click="showMenu = !showMenu"
+              class="btn-sm uppercase lg:my-2 flex items-center justify-end w-44 font-light"
+            >
+              Change league
 
-          <div class="flex flex-col justify-end">
-            <FSLogo class="hidden lg:flex" />
-            <!--  -->
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-4 h-4 ml-2 inline group-hover:inline opacity-40"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+                />
+              </svg>
+            </SButton>
+
+            <div
+              v-if="showMenu"
+              class="absolute bg-base-100 z-20 right-2 top-12 flex flex-col overflow-hidden text-left shadow-lg w-64"
+            >
+              <ul class="item">
+                <li
+                  class="flex font-medium"
+                  v-for="gw in competitions"
+                  :key="`startWeek${gw.code}`"
+                >
+                  <RouterLink
+                    :to="`/leagues/${gw.code}/predictions`"
+                    class="p-2 bg-base-100 border-b border-base-300 hover:bg-primary hover:bg-opacity-10 w-full"
+                    @click="showMenu = !showMenu"
+                    :class="{
+                      'bg-primary bg-opacity-20': gw.code === competitionCode,
+                    }"
+                    >{{ gw.name }}</RouterLink
+                  >
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -275,7 +279,7 @@ const dismissEurosBanner = useLocalStorage(
             v-else
             to="/leagues/EC/predictions"
             class="btn btn-primary w-full"
-            >Please Euros predictions</RouterLink
+            >Place Euros predictions</RouterLink
           >
         </div>
       </div>

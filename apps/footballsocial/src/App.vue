@@ -129,7 +129,7 @@ const links = [
       </Api>
     </div>
     <SFooter :links="links">
-      <template #top>
+      <template #top v-if="!isWhiteLabel">
         <p class="text-sm font-light text-center">
           Football data provided by the
           <a
