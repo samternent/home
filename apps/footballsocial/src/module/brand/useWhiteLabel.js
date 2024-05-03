@@ -8,7 +8,7 @@ export function provideWhiteLabel(app) {
   const { profile } = useCurrentUser();
   const host = shallowRef(window.location.hostname.split(".")[0]);
   const isWhiteLabel = computed(() =>
-    ["walkers", "netflix"].includes(host.value)
+    ["walkers", "thecyclinggk"].includes(host.value)
   );
 
   const colorTheme = useLocalStorage(
@@ -24,8 +24,9 @@ export function provideWhiteLabel(app) {
       if (isWhiteLabel.value) {
         return `${host.value}-${colorTheme.value}`;
       }
-
-      return `${profile?.club ? `${profile.club}-` : ""}${colorTheme.value}`;
+      return `${profile.value?.club ? `${profile.value.club}-` : ""}${
+        colorTheme.value
+      }`;
     },
   });
 

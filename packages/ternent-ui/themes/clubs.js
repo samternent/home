@@ -87,4 +87,8 @@ export const clubColors = {
     primary: "#2671BD",
     secondary: "#FFD700",
   },
+  thecyclinggk: {
+    primary: "#66BC20",
+    secondary: "#000000",
+  },
 };

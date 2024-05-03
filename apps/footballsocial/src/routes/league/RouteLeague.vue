@@ -13,6 +13,7 @@ import { usePredictionService } from "../../composables/usePredictionService";
 import { useCurrentUser } from "../../composables/useCurrentUser";
 import { competitions } from "../../utils/competitions";
 import FSLogo from "../../module/brand/FSLogo.vue";
+import { useWhiteLabel } from "../../module/brand/useWhiteLabel";
 import { SHeader, STabs } from "ternent-ui/components";
 
 const props = defineProps({
@@ -34,6 +35,7 @@ const { competitionCode } = toRefs(props);
 const title = useTitle();
 const colorMode = useColorMode();
 const { profile } = useCurrentUser();
+const { isWhiteLabel } = useWhiteLabel();
 const router = useRouter();
 const route = useRoute();
 
@@ -305,7 +307,7 @@ const dismissEurosBanner = useLocalStorage(
         <p>{{ error.config.url }}</p>
       </div>
     </div>
-    <p class="text-2xl font-light my-12 text-center">
+    <p class="text-2xl font-light my-12 text-center" v-if="!isWhiteLabel">
       With
       <span
         v-if="predictionsCount"
