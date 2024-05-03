@@ -91,4 +91,8 @@ export const clubColors = {
     primary: "#66BC20",
     secondary: "#000000",
   },
+  teamwork: {
+    primary: "#6438E0",
+    secondary: "#FF22B1",
+  },
 };

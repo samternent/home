@@ -8,7 +8,7 @@ export function provideWhiteLabel(app) {
   const { profile } = useCurrentUser();
   const host = shallowRef(window.location.hostname.split(".")[0]);
   const isWhiteLabel = computed(() =>
-    ["walkers", "thecyclinggk"].includes(host.value)
+    ["walkers", "thecyclinggk", "teamwork"].includes(host.value)
   );
 
   const colorTheme = useLocalStorage(
