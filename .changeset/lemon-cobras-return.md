@@ -1,5 +1,0 @@
----
-"footballsocial": patch
----
-
-Header positioning
