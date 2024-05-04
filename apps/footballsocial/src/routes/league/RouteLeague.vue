@@ -170,14 +170,14 @@ const dismissEurosBanner = useLocalStorage(
 </script>
 <template>
   <div class="md:px-2 lg:px-4 flex-1 max-w-4xl mx-auto pt-0 w-full h-screen">
-    <SHeader class="md:my-4">
+    <SHeader>
       <div
         class="px-1 p-2 font-light rounded-lg flex-1 flex flex-col justify-between"
       >
-        <FSLogo class="flex" />
+        <FSLogo class="flex my-4" />
         <!-- ads -->
         <div
-          class="flex flex-row lg:flex-row justify-start lg:items-center w-full"
+          class="flex flex-row lg:flex-row justify-start items-center lg:items-end w-full"
           v-if="competition"
         >
           <div
@@ -225,7 +225,7 @@ const dismissEurosBanner = useLocalStorage(
             >
               <ul class="item">
                 <li
-                  class="flex font-medium"
+                  class="flex font-light"
                   v-for="gw in competitions"
                   :key="`startWeek${gw.code}`"
                 >
