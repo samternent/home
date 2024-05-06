@@ -34,7 +34,7 @@ function selectItem(item) {
 </script>
 <template>
   <div class="relative" ref="dropdownRef">
-    <SButton @click="showMenu = !showMenu" class="btn-xs font-light">
+    <SButton @click="showMenu = !showMenu" class="btn-xs text-sm font-light">
       {{ buttonText }}
 
       <svg
@@ -55,17 +55,20 @@ function selectItem(item) {
 
     <div
       v-if="showMenu"
-      class="absolute bg-base-100 z-20 left-0 top-12 flex flex-col text-left shadow-lg w-64 h-96 overflow-auto"
+      class="absolute bg-base-100 text-base-content z-20 left-0 top-12 flex flex-col text-left shadow-lg w-64 max-h-96 overflow-auto"
     >
       <ul class="item p-2">
         <li
           class="flex font-light p-2 hover:bg-base-200 cursor-pointer"
+          :class="{
+            'bg-primary bg-opacity-10': item.value === modelValue,
+          }"
           v-for="item in items"
-          :key="`theme-${item}`"
+          :key="`theme-${item.value}`"
           @click="selectItem(item)"
         >
           <slot name="item" :item="item">
-            {{ item }}
+            {{ item.name }}
           </slot>
         </li>
       </ul>

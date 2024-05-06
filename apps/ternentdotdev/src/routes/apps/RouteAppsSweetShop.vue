@@ -143,6 +143,7 @@ export const order = (amount, packets) => {
 </script>
 <template>
   <div class="p-2 w-full flex lg:flex-row flex-col flex-1">
+    
     <div class="w-full lg:w-1/2 flex-1 p-4">
     <SBrandHeader class="tracking-tightest mb-4">Sweet Shop</SBrandHeader>
 

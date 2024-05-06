@@ -2,7 +2,7 @@
 import { computed, watch, shallowRef } from "vue";
 import { SThemeToggle } from "ternent-ui/components";
 import { useLocalStorage } from "@vueuse/core";
-import { SBrandHeader } from "ternent-ui/components";
+import { SBrandHeader, SButton } from "ternent-ui/components";
 import { useWhiteLabel } from "@/module/brand/useWhiteLabel";
 import Logo from "@/module/brand/Logo.vue";
 
@@ -14,7 +14,25 @@ const themeVariation = useLocalStorage("app/themeVariation", null);
   <div
     class="flex h-screen flex-col justify-end flex-1 p-4 w-full max-w-7xl relative mx-auto"
   >
-    <div class="flex justify-end">
+    <div class="flex justify-between h-10">
+      <SButton v-if="$route.path !== '/'" type="accent" class="w-32" to="/">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="w-6 h-6"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
+          />
+        </svg>
+        back
+      </SButton>
+      <div v-else />
       <SThemeToggle v-model="themeVariation" size="sm" />
     </div>
     <div

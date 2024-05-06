@@ -16,36 +16,29 @@ const host = window.location.host;
 const version = window.__APP_VERSION__;
 // const theme = useLocalStorage("app/theme", null);
 
+const themes = shallowRef([
+  { name: "TERNENTDOTDEV", value: "ternentdotdev" },
+  //   { name: "Football Social", value: "footballsocial" },
+  { name: "Concords.", value: "concords" },
+  { name: "Liverpool FC", value: "liverpoolfc" },
+  { name: "Teamwork.com", value: "teamwork" },
+]);
+
 const themeVariation = useLocalStorage("app/themeVariation", null);
 const theme = useLocalStorage("app/theme");
-const themes = shallowRef([
-  "ternentdotdev",
-  "concords",
-  "arsenal",
-  "astonvilla",
-  "afcbournemouth",
-  "brighton",
-  "brentford",
-  "burnley",
-  "chelsea",
-  "crystalpalace",
-  "everton",
-  "fulham",
-  "liverpoolfc",
-  "luton",
-  "mancity",
-  "manutd",
-  "newcastle",
-  "nottmforest",
-  "sheffieldutd",
-  "spurs",
-  "westham",
-  "wolves",
-  "birmingham",
-  "walkers",
-  "thecyclinggk",
-  "teamwork",
-]);
+const themeName = shallowRef(
+  themes.value.find(({ value }) => value === theme.value)?.name
+);
+
+const themeConfig = computed({
+  get() {
+    return theme.value;
+  },
+  set({ name, value }) {
+    themeName.value = name;
+    theme.value = value;
+  },
+});
 </script>
 <template>
   <ul class="p-4 font-mono text-accent">
@@ -53,16 +46,21 @@ const themes = shallowRef([
     <li><span class="text-primary">version:</span> "{{ appVersion }}",</li>
     <li class="flex">
       <span class="text-primary">theme:</span>
-      <SMenu v-model="theme" :button-text="theme" :items="themes" />
+      <SMenu
+        v-model="themeConfig"
+        class="text-secondary"
+        :button-text="themeName"
+        :items="themes"
+      />
     </li>
     <li class="text-base-content">---</li>
     <li><span class="text-primary">name:</span> "Ternent Dot Dev Ltd.",</li>
+    <!-- <li>
+      <span class="text-primary">description:</span> "Software development and
+      solutions",
+    </li> -->
     <li>
-      <span class="text-primary">description:</span> "A software solutions
-      company",
-    </li>
-    <li>
-      <span class="text-primary">location:</span> "Birmingham, England, UK.",
+      <span class="text-primary">location:</span> "Birmingham, England. UK",
     </li>
     <li>
       <span class="text-primary">email:</span>
@@ -70,32 +68,84 @@ const themes = shallowRef([
         >hello@ternent.dev</a
       >"
     </li>
-    <li>
+    <li class="flex gap-2">
       <span class="text-primary">linkedin:</span>
-      "<a
-        href="https://www.linkedin.com/in/samternent/"
-        target="_blank"
-        class="link link-secondary"
-        >linkedin.com/in/samternent/</a
-      >"
+      <span class="flex"
+        >"<a
+          href="https://www.linkedin.com/in/samternent/"
+          target="_blank"
+          class="link link-secondary flex items-center"
+          shrink
+          >linkedin.com/in/samternent
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-4 h-4 ml-2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
+            />
+          </svg> </a
+        >"</span
+      >
     </li>
-    <li>
+    <li class="flex gap-2">
       <span class="text-primary">github:</span>
-      "<a
-        href="https://www.github.com/samternent/"
-        target="_blank"
-        class="link link-secondary"
-        >github.com/samternent/</a
-      >"
+      <span class="flex"
+        >"<a
+          href="https://www.github.com/samternent/"
+          target="_blank"
+          class="link link-secondary flex items-center"
+          shrink
+          >github.com/samternent
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-4 h-4 ml-2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
+            />
+          </svg> </a
+        >"</span
+      >
     </li>
     <li class="text-base-content">---</li>
-    <li>
-      <span class="text-primary">apps:</span> ["<a
-        href="https://footballsocial.app"
-        target="_blank"
-        class="link link-secondary"
-        >footballsocial.app</a
-      >"]
+    <li class="flex gap-2">
+      <span class="text-primary">apps:</span>
+      <span class="flex"
+        >["<a
+          href="https://footballsocial.app"
+          target="_blank"
+          class="link link-secondary flex items-center"
+          shrink
+          >footballsocial.app
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-4 h-4 ml-2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
+            />
+          </svg> </a
+        >"]</span
+      >
     </li>
     <li>
       <span class="text-primary">portfolio:</span> ["<RouterLink
