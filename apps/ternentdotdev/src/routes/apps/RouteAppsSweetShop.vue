@@ -198,7 +198,7 @@ export const order = (amount, packets) => {
         </p>
       </div>
     </div>
-    <div class="lg:w-1/2 p-4 font-thin">
+    <div class="lg:w-1/2 p-4 font-thin bg-base-100 rounded-r">
       <p class="my-4 p-2">
         <SBrandHeader size="md" class="font-light mb-2">Background</SBrandHeader>
         Simon’s Sweet Shop (SSS) is a confectionery wholesalerthat sells sweets in
