@@ -1,10 +1,14 @@
-import { onMounted, provide, inject, watch } from "vue";
+import { onMounted, provide, inject, watch, shallowRef } from "vue";
 import { useLocalStorage, useWindowSize } from "@vueuse/core";
 
 const useAppShellSymbol = Symbol("useAppShell");
 
 export function provideAppShell() {
   const { width } = useWindowSize();
+
+  const appVersion = shallowRef(
+    document.querySelector("html").dataset.appVersion
+  );
 
   const isBottomPanelExpanded = useLocalStorage("isBottomPanelExpanded", false);
   const isLeftPanelExpanded = useLocalStorage("isLeftPanelExpanded", false);
@@ -39,6 +43,7 @@ export function provideAppShell() {
     isLeftPanelExpanded,
     isRightPanelExpanded,
     bottomPanelHeight,
+    appVersion,
   };
 
   provide(useAppShellSymbol, appShellInterface);

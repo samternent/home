@@ -14,8 +14,9 @@ export function provideWhiteLabel(app) {
     whiteLabel.value = {
       ...whiteLabel.value,
       name: ["ternent", "dot", "local"],
-      description: "Front End & Platform Engineer.",
-      themeName: "greener",
+      description: "Solving problems, with Software.",
+      tag: "Made in England, UK.",
+      themeName: "ternentdotdev",
       domain: "localhost:5173",
     };
   }
@@ -23,8 +24,8 @@ export function provideWhiteLabel(app) {
     whiteLabel.value = {
       ...whiteLabel.value,
       name: ["ternent", "dot", "dev"],
-      description: "Front End & Platform Engineer.",
-      themeName: "greener",
+      description: "Software Solutions.",
+      themeName: "ternentdotdev",
       domain: "ternent.dev",
     };
   }

@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, shallowRef } from "vue";
+import { onMounted, computed } from "vue";
 import { useLocalStorage } from "@vueuse/core";
 import { provideBreadcrumbs } from "./module/breadcrumbs/useBreadcrumbs";
 import { provideDrawerRoute } from "./module/drawer-route/useDrawerRoute";
@@ -23,24 +23,21 @@ const { handleSessionLogin } = provideSolid();
 
 const whiteLabel = useWhiteLabel();
 
-// const themeName = shallowRef(`${whiteLabel.value.themeName}-light`);
-const themeName = useLocalStorage(
-  "app/theme",
-  `${whiteLabel.value.themeName}-${
-    localStorage.getItem("app/themeVariation") ||
-    window.matchMedia?.("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light"
-  }`
+const themeVariation = useLocalStorage(
+  "app/themeVariation",
+  window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light"
 );
-
+const themeName = useLocalStorage("app/theme", whiteLabel.value.themeName);
+const fullTheme = computed(() => `${themeName.value}-${themeVariation.value}`);
 onMounted(handleSessionLogin);
 </script>
 
 <template>
   <div
     class="min-h-screen max-h-screen h-screen flex flex-col"
-    :data-theme="themeName"
+    :data-theme="fullTheme"
   >
     <Concords>
       <div class="flex-1 flex bg-base-100 w-full mx-auto">

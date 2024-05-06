@@ -15,10 +15,7 @@ const themeVariation = useLocalStorage(
     ? "dark"
     : "light"
 );
-const themeName = useLocalStorage(
-  "app/theme",
-  `${whiteLabel.value.themeName}-${themeVariation.value}`
-);
+const themeName = useLocalStorage("app/theme", `${whiteLabel.value.themeName}`);
 
 const links = [
   {
@@ -32,7 +29,7 @@ const links = [
 ];
 
 watch(themeVariation, (_themeVariation) => {
-  themeName.value = `${whiteLabel.value.themeName}-${_themeVariation}`;
+  themeName.value = `${whiteLabel.value.themeName}`;
 });
 </script>
 <template>

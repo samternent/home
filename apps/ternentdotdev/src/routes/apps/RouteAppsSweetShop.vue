@@ -229,6 +229,6 @@ export const order = (amount, packets) => {
   </div>
   <div>
     <SBrandHeader size="md" class="font-light mb-2 ml-4 lg:ml-4">Code</SBrandHeader>
-    <pre class="lg:m-4 m-2 p-4 bg-base-100 overflow-auto"><code class="language-html" v-html="codeSample" /></pre>
+    <pre class="lg:m-4 m-2 p-4 bg-base-100 overflow-auto"><code class="language-javascript" v-html="codeSample" /></pre>
   </div>
 </template>

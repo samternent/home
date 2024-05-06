@@ -14,7 +14,7 @@ export default [
     children: [
       {
         path: "",
-        component: () => import("./apps/RouteAppsGame.vue"),
+        component: () => import("./home/RouteHome.vue"),
       },
       {
         path: "game",
@@ -50,5 +50,11 @@ export default [
     //     component: () => import("./RouteTest.vue"),
     //   },
     // ],
+  },
+  {
+    path: "/:path(.*)*",
+    redirect() {
+      return "/";
+    },
   },
 ];

@@ -8,7 +8,6 @@ import "highlight.js/styles/base16/spacemacs.css";
 import App from "./App.vue";
 import router from "./router";
 import registerSW from "./utils/registerSW";
-
 import { provideWhiteLabel } from "./module/brand/useWhiteLabel";
 
 import "./input.css";

@@ -8,26 +8,7 @@ import Logo from "@/module/brand/Logo.vue";
 
 const whiteLabel = useWhiteLabel();
 
-const themeVariation = useLocalStorage(
-  "app/themeVariation",
-  window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "dark"
-    : "light"
-);
-// const themeName = shallowRef(`${whiteLabel.value.themeName}-light`);
-const themeName = useLocalStorage(
-  "app/theme",
-  `${whiteLabel.value.themeName}-${
-    localStorage.getItem("app/themeVariation") ||
-    window.matchMedia?.("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light"
-  }`
-);
-
-watch(themeVariation, (_themeVariation) => {
-  themeName.value = `${whiteLabel.value.themeName}-${_themeVariation}`;
-});
+const themeVariation = useLocalStorage("app/themeVariation", null);
 </script>
 <template>
   <div
@@ -42,19 +23,25 @@ watch(themeVariation, (_themeVariation) => {
       <RouterView />
     </div>
     <div class="flex items-center justify-between flex-1 max-h-20 w-full">
-      <div class="flex items-center">
+      <RouterLink to="/" class="flex items-center">
         <Logo class="h-auto w-16 lg:w-20 mr-2" />
         <div class="flex flex-0 flex-col justify-center">
           <SBrandHeader
             >{{ whiteLabel.name[0]
-            }}<span class="font-light">{{ whiteLabel.name[1] }}</span
+            }}<span class="font-light text-primary">{{
+              whiteLabel.name[1]
+            }}</span
             >{{ whiteLabel.name[2] }}</SBrandHeader
           >
-          <p class="text-xl font-light px-1 flex flex-col justify-start">
-            {{ whiteLabel.description }}
+          <p class="text-xl font-light px-1 flex items-center">
+            <!-- {{ whiteLabel.description }}÷ -->
+            <span class="text-lg bg-secondary px-1 text-base-100">{{
+              whiteLabel.tag
+            }}</span>
           </p>
+          <span class="text-sm font-light"> </span>
         </div>
-      </div>
+      </RouterLink>
       <div class="flex items-center">
         <a
           href="https://github.com/samternent"
