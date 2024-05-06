@@ -40,7 +40,7 @@ const showSidebar = computed(() => mdAndLarger.value || openSideBar.value);
   >
     <div
       v-if="showSidebar"
-      class="flex flex-col shrink-0 bg-base-200 items-center justify-between min-h-screen max-h-screen duration-100 h-screen"
+      class="flex flex-col bg-base-200 border-r border-base-300 items-center justify-between duration-100 h-full"
       style="transition: width 200ms"
       :class="{
         'w-20 relative': (mdAndLarger && smallerThanLg) || collapsedSideBar,
@@ -92,14 +92,14 @@ const showSidebar = computed(() => mdAndLarger.value || openSideBar.value);
         </svg>
       </SButton>
       <header class="p-2 flex md:justify-center sm:py-2">
-        <RouterLink to="/" class="btn btn-ghost text-base"
+        <RouterLink to="/app" class="btn btn-ghost text-base"
           ><SBrandHeader
             v-if="(lgAndLarger || smallerThanMd) && !collapsedSideBar"
             size="md"
             >{{ whiteLabel.name[0]
             }}<span class="font-light">{{ whiteLabel.name[1] }}</span
             >{{ whiteLabel.name[2] }}</SBrandHeader
-          ><SBrandHeader v-else size="lg" class="font-light">{{
+          ><SBrandHeader v-else size="lg" class="font-bold">{{
             whiteLabel.name[0][0]
           }}</SBrandHeader></RouterLink
         >
@@ -108,12 +108,12 @@ const showSidebar = computed(() => mdAndLarger.value || openSideBar.value);
         :collapsed="!(lgAndLarger || smallerThanMd) || collapsedSideBar"
       />
       <footer class="flex flex-col justify-end relative">
-        <Logo
+        <!-- <Logo
           class="mx-auto h-auto mb-6 w-24 transition-all opacity-80"
           :class="{
             '!w-12 !mb-4': (mdAndLarger && smallerThanLg) || collapsedSideBar,
           }"
-        />
+        /> -->
       </footer>
     </div>
   </transition>

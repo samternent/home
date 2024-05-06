@@ -24,32 +24,40 @@ export default [
         path: "sweet-shop",
         component: () => import("./apps/RouteAppsSweetShop.vue"),
       },
-    ],
-  },
-  {
-    path: "/app",
-    component: () => import("./RouteLayout.vue"),
-    children: [
       {
-        path: "test",
-        component: () => import("./RouteTest.vue"),
+        path: "app",
+        component: () => import("./RouteLayout.vue"),
+        children: [
+          {
+            path: "",
+            component: () => import("./RouteTest.vue"),
+          },
+          {
+            path: "profile",
+            component: () => import("./profile/RouteProfile.vue"),
+          },
+          {
+            path: "settings",
+            component: () => import("./settings/RouteSettings.vue"),
+          },
+          ...ledgerRoutes,
+        ],
+        // children: [
+        //   ...aboutRoutes,
+        //   ...appsRoutes,
+        //   ...ledgerRoutes,
+        //   ...legalRoutes,
+        //   ...profileRoutes,
+        //   ...settingsRoutes,
+        //   ...solidRoutes,
+        //   ...workRoutes,
+        //   {
+        //     path: "/test",
+        //     component: () => import("./RouteTest.vue"),
+        //   },
+        // ],
       },
-      ...ledgerRoutes,
     ],
-    // children: [
-    //   ...aboutRoutes,
-    //   ...appsRoutes,
-    //   ...ledgerRoutes,
-    //   ...legalRoutes,
-    //   ...profileRoutes,
-    //   ...settingsRoutes,
-    //   ...solidRoutes,
-    //   ...workRoutes,
-    //   {
-    //     path: "/test",
-    //     component: () => import("./RouteTest.vue"),
-    //   },
-    // ],
   },
   {
     path: "/:path(.*)*",

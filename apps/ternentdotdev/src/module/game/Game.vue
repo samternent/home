@@ -253,7 +253,7 @@ const percentageCompleted = computed(() =>
       }"
     />
     <div
-      class="absolute top-0 h-6 text-xs left-0 w-full bg-base-100 border-r-2 border-primary flex-1 z-30 flex justify-end items-center"
+      class="absolute top-2 h-4 opacity-50 text-xs left-0 w-full bg-base-100 border-r-2 border-primary flex-1 z-30 flex justify-end items-center"
       :style="{
         width: `${((cameraX * -1) / (sceneWidth - size.width)) * 100}%`,
       }"

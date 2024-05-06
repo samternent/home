@@ -18,7 +18,7 @@ const { publicKeyPEM } = useIdentity();
   <div
     class="flex flex-col flex-1 w-full items-center justify-between py-4 px-2"
   >
-    <SButton
+    <!-- <SButton
       type="primary"
       @click="setDrawerRoutePath('contact')"
       class="w-full"
@@ -39,7 +39,7 @@ const { publicKeyPEM } = useIdentity();
       </svg>
 
       <span v-if="!collapsed">Contact</span></SButton
-    >
+    > -->
     <div class="my-4 flex flex-1 w-full flex-col">
       <!-- <SButton type="ghost" to="/about" class="w-full my-1">
       <svg
@@ -99,7 +99,7 @@ const { publicKeyPEM } = useIdentity();
       > -->
     </div>
     <div class="w-full flex flex-col gap-8">
-      <SButton type="secondary" to="/solid" class="my-1">
+      <!-- <SButton type="secondary" to="/solid" class="my-1">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -116,9 +116,11 @@ const { publicKeyPEM } = useIdentity();
         </svg>
 
         <span v-if="!collapsed">Solid</span></SButton
-      >
-      <SButton type="ghost" to="/profile" class="flex-1 my-1">
-        <IdentityAvatar :identity="publicKeyPEM" size="xs" />
+      > -->
+      <SButton type="ghost" to="/app/profile" class="flex-1 my-1">
+        <div class="bg-base-300">
+          <IdentityAvatar :identity="publicKeyPEM" size="sm" class="p-1" />
+        </div>
 
         <div v-if="!collapsed" class="ml-1">Profile</div></SButton
       >

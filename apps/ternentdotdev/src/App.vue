@@ -30,17 +30,19 @@ const themeVariation = useLocalStorage(
     : "light"
 );
 const themeName = useLocalStorage("app/theme", whiteLabel.value.themeName);
-const fullTheme = computed(() => `${themeName.value}-${themeVariation.value}`);
+const fullTheme = computed(
+  () =>
+    `${themeName.value !== "default" ? `${themeName.value}-` : ""}${
+      themeVariation.value
+    }`
+);
 onMounted(handleSessionLogin);
 </script>
 
 <template>
-  <div
-    class="min-h-screen max-h-screen h-screen flex flex-col"
-    :data-theme="fullTheme"
-  >
+  <div class="flex flex-col h-screen overflow-y-scroll" :data-theme="fullTheme">
     <Concords>
-      <div class="flex-1 flex bg-base-100 w-full mx-auto">
+      <div class="flex-1 flex w-full mx-auto">
         <!-- <SideNav /> -->
         <RouterView />
       </div>

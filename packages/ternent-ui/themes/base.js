@@ -23,10 +23,10 @@ export const darkBase = {
 };
 
 export const lightColors = {
-  primary: "#3744A2",
-  secondary: "#ffcc00",
+  primary: "#0057B7", // This blue also contrasts effectively against a dark grey.
+  secondary: "#FFA500",
 };
 export const darkColors = {
-  primary: "#3744A2",
-  secondary: "#ffcc00",
+  primary: "#0057B7", // This blue also contrasts effectively against a dark grey.
+  secondary: "#FFA500",
 };

@@ -37,4 +37,44 @@ export const ternentDotDev = {
     "--tab-border": "2px",
     "--tab-radius": "0.7rem",
   },
+
+  "vibrant-light": {
+    primary: "#28527a", // Navy Blue
+    secondary: "#ff8303", // Bright Orange
+    accent: "#12cad6", // Cyan
+    neutral: "#ffffff", // White
+    info: "#ff6700", // Deep Orange
+    success: "#198754", // Forest Green
+    warning: "#ffe400", // Lemon Yellow
+    error: "#dc3545", // Strong Red
+    "base-100": "#fafafa", // Very Light Gray (background)
+    "base-200": "#f0f0f0", // Lighter Gray (secondary background)
+    "base-300": "#e0e0e0", // Light Gray (tertiary background)
+    "base-content": "#343a40", // Dark Gray (text color)
+    "--rounded-box": "0.2em",
+    "--rounded-btn": "0.2em",
+    "--rounded-badge": "0.2em",
+    "--tab-radius": "0.2em",
+    "color-scheme": "light",
+  },
+
+  "vibrant-dark": {
+    primary: "#ff922b", // Mango Orange
+    secondary: "#12cad6", // Cyan
+    accent: "#ff3838", // Bright Red
+    neutral: "#212529", // Almost Black
+    info: "#ffc107", // Amber
+    success: "#28a745", // Shamrock Green
+    warning: "#fd7e14", // Pumpkin Orange
+    error: "#dc3545", // Strong Red
+    "base-100": "#323232", // Dark Charcoal (background)
+    "base-200": "#383838", // Slightly Darker Gray (secondary background)
+    "base-300": "#404040", // Even Darker Gray (tertiary background)
+    "base-content": "#f8f9fa", // Very Light Gray (text color)
+    "--rounded-box": "0.2em",
+    "--rounded-btn": "0.2em",
+    "--rounded-badge": "0.2em",
+    "--tab-radius": "0.2em",
+    "color-scheme": "dark",
+  },
 };

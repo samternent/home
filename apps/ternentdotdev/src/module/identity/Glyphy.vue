@@ -47,8 +47,8 @@ function svgGlyph() {
   const rects = glyph.value.map((row, i) =>
     row.map((sq, j) =>
       h("rect", {
-        x: i * sqSize.value + borderSize.value,
-        y: j * sqSize.value + borderSize.value,
+        x: i * sqSize.value + borderSize.value / 2,
+        y: j * sqSize.value + borderSize.value / 2,
         width: sqSize.value - borderSize.value,
         height: sqSize.value - borderSize.value,
         rx: getRadius(sq),

@@ -2,4 +2,8 @@
 import Game from "@/module/game/Game.vue";
 </script>
 
-<template><Game /></template>
+<template>
+  <div class="relative rounded overflow-hidden shadow-xl w-full h-full flex-1">
+    <Game />
+  </div>
+</template>

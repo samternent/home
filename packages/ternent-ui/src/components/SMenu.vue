@@ -61,14 +61,14 @@ function selectItem(item) {
         <li
           class="flex font-light p-2 hover:bg-base-200 cursor-pointer"
           :class="{
-            'bg-primary bg-opacity-10': item.value === modelValue,
+            'bg-primary bg-opacity-10': (item.value || item) === modelValue,
           }"
           v-for="item in items"
-          :key="`theme-${item.value}`"
+          :key="`theme-${item.value || item}`"
           @click="selectItem(item)"
         >
           <slot name="item" :item="item">
-            {{ item.name }}
+            {{ item.name || item }}
           </slot>
         </li>
       </ul>

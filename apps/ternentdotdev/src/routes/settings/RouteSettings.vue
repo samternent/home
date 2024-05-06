@@ -35,8 +35,7 @@ watch(themeVariation, (_themeVariation) => {
 <template>
   <div class="p-2">
     <div class="flex justify-start">
-      <span>Theme</span>
-      <SThemeToggle v-model="themeVariation" size="sm" class="mx-auto my-2" />
+      <h1>Settings</h1>
     </div>
   </div>
 </template>
