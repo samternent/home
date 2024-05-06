@@ -1,5 +1,14 @@
 # ternentdotdev
 
+## 0.2.11
+
+### Patch Changes
+
+- [`60286f07aaab9fd281e61c3f98260d3589e1eaf6`](https://github.com/samternent/home/commit/60286f07aaab9fd281e61c3f98260d3589e1eaf6) Thanks [@samternent](https://github.com/samternent)! - Updates ternentdotdev content
+
+- Updated dependencies [[`60286f07aaab9fd281e61c3f98260d3589e1eaf6`](https://github.com/samternent/home/commit/60286f07aaab9fd281e61c3f98260d3589e1eaf6)]:
+  - ternent-ui@0.1.9
+
 ## 0.2.10
 
 ### Patch Changes
