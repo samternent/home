@@ -1,5 +1,11 @@
 # ternent-ui
 
+## 0.1.7
+
+### Patch Changes
+
+- [`20cf93fc3e2fd25b7463cc5bd66e42d74413fc92`](https://github.com/samternent/home/commit/20cf93fc3e2fd25b7463cc5bd66e42d74413fc92) Thanks [@samternent](https://github.com/samternent)! - Adds themes and landing page
+
 ## 0.1.6
 
 ### Patch Changes
