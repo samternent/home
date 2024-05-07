@@ -1,11 +1,11 @@
 {
   "rewrites": [
     {
-      "source": "/slides//:name((?!assets/).*",
+      "source": "/slides/:name((?!assets/).*)",
       "destination": "/slides/:name.html"
     },
     {
-      "source": "/slides/:name((?!assets/).*/:slide*",
+      "source": "/slides/:name((?!assets/).*)/:slide*",
       "destination": "/slides/:name.html"
     },
     { "source": "/(.*)", "destination": "/index.html" }
