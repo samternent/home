@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.2.17
+
+### Patch Changes
+
+- [`14a68a72c0940a53a84400fad2e3346f05d01cba`](https://github.com/samternent/home/commit/14a68a72c0940a53a84400fad2e3346f05d01cba) Thanks [@samternent](https://github.com/samternent)! - Replace index location
+
 ## 0.2.16
 
 ### Patch Changes
