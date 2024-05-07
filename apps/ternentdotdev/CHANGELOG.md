@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.2.19
+
+### Patch Changes
+
+- [`d271a76039479d6dd15ed3696904ff416706209b`](https://github.com/samternent/home/commit/d271a76039479d6dd15ed3696904ff416706209b) Thanks [@samternent](https://github.com/samternent)! - Fix vercel config again
+
 ## 0.2.18
 
 ### Patch Changes
