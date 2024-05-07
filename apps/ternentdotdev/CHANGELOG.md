@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.2.18
+
+### Patch Changes
+
+- [`5a52b6eda3d9dcbde3f7b6d6b74c4aca60f34c85`](https://github.com/samternent/home/commit/5a52b6eda3d9dcbde3f7b6d6b74c4aca60f34c85) Thanks [@samternent](https://github.com/samternent)! - trying toplace the slides correctly
+
 ## 0.2.17
 
 ### Patch Changes
