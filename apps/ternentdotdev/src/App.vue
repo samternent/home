@@ -40,7 +40,7 @@ onMounted(handleSessionLogin);
 </script>
 
 <template>
-  <div class="flex flex-col h-screen overflow-y-scroll" :data-theme="fullTheme">
+  <div class="flex flex-col h-screen" :data-theme="fullTheme">
     <Concords>
       <div class="flex-1 flex w-full mx-auto">
         <!-- <SideNav /> -->
