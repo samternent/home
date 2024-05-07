@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
-    "build:slides": "slidev build ./slides/*.md --out ../dist/slides --download true",
+    "build:slides": "slidev build ./slides/*.md --out ../../../.vercel/output/static/slides --download true",
     "preview": "vite preview"
   },
   "dependencies": {
