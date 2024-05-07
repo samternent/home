@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
-    "build:slides": "slidev build ./slides/*.md --out ../../../.vercel/output/static/slides --download true",
+    "build:slides": "slidev build ./slides/*.md --download true --base /slides/ && node slides/build/format-slides.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

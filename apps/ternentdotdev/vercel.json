@@ -5,8 +5,12 @@
       "destination": "/slides/:name/index.html"
     },
     {
-      "source": "/slides/:name/:slide*",
+      "source": "/slides/:name/:slide",
       "destination": "/slides/:name/index.html"
+    },
+    {
+      "source": "/slides/assets/:anything*",
+      "destination": "/slides/assets/:anything*"
     },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
@@ -25,7 +29,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'unsafe-inline' 'unsafe-eval' 'self' *.ternent.dev *.concords.app;font-src fonts.gstatic.com;style-src 'unsafe-inline' 'self' *.ternent.dev *.concords.app fonts.googleapis.com; object-src 'none'; base-uri 'self';"
+          "value": "default-src 'unsafe-inline' 'unsafe-eval' 'self' *.ternent.dev *.concords.app;font-src fonts.gstatic.com;style-src 'unsafe-inline' 'self' *.ternent.dev *.concords.app fonts.googleapis.com; object-src 'none'; base-uri 'self'; img-src cdn.jsdelivr.net"
         },
         {
           "key": "X-Content-Type-Options",
