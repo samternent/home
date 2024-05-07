@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.2.15
+
+### Patch Changes
+
+- [`f936828e213f58393297182c4ad5a119bc4115fd`](https://github.com/samternent/home/commit/f936828e213f58393297182c4ad5a119bc4115fd) Thanks [@samternent](https://github.com/samternent)! - Switch vercel rewrite rules around
+
 ## 0.2.14
 
 ### Patch Changes
