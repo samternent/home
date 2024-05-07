@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.2.12
+
+### Patch Changes
+
+- [`ba7f878a1e5a74bd13b96094ed5e08dfa6cdbebc`](https://github.com/samternent/home/commit/ba7f878a1e5a74bd13b96094ed5e08dfa6cdbebc) Thanks [@samternent](https://github.com/samternent)! - Test slides
+
 ## 0.2.11
 
 ### Patch Changes
