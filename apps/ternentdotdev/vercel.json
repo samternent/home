@@ -1,17 +1,14 @@
 {
   "rewrites": [
-    { "source": "/:name", "destination": "/:name/index.html" },
-    { "source": "/:name/", "destination": "/:name/index.html" },
-    { "source": "/slides/:name", "destination": "/slides/:name/index.html" },
-    { "source": "/slides/:name/", "destination": "/slides/:name/index.html" },
     {
-      "source": "/slides/:name/:slide",
+      "source": "/slides/:name",
       "destination": "/slides/:name/index.html"
     },
     {
-      "source": "/slides/:name/:slide/",
+      "source": "/slides/:name/:slide*",
       "destination": "/slides/:name/index.html"
-    }
+    },
+    { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
     {
