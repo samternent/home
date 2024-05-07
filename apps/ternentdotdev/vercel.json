@@ -1,16 +1,16 @@
 {
   "rewrites": [
     {
+      "source": "/slides/assets/:anything*",
+      "destination": "/slides/assets/:anything*"
+    },
+    {
       "source": "/slides/:name",
-      "destination": "/slides/:name/index.html"
+      "destination": "/slides/:name.html"
     },
     {
       "source": "/slides/:name/:slide",
-      "destination": "/slides/:name/index.html"
-    },
-    {
-      "source": "/slides/assets/:anything*",
-      "destination": "/slides/assets/:anything*"
+      "destination": "/slides/:name.html"
     },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
