@@ -7,6 +7,7 @@
     "dev": "vite --host",
     "build": "vite build",
     "build:slides": "slidev build ./slides/*.md --download true && node slides/build/format-slides.mjs",
+    "dev:slides-twa": "slidev ./slides/twa.md",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -18,6 +19,7 @@
     "@slidev/theme-seriph": "latest",
     "@vueform/vueform": "^1.7.3",
     "@vueuse/core": "^10.5.0",
+    "@vueuse/shared": "^10.9.0",
     "axios": "^1.5.1",
     "blockchain": "workspace:*",
     "concords-encrypt": "workspace:*",
