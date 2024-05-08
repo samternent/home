@@ -2,11 +2,11 @@
   "rewrites": [
     {
       "source": "/slides/:name*",
-      "destination": "/assets/slides/:name.html"
+      "destination": "/slides/:name.html"
     },
     {
       "source": "/slides/:name*/:slide*",
-      "destination": "/assets/slides/:name.html"
+      "destination": "/slides/:name.html"
     },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
