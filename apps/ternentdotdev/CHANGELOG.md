@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.2.25
+
+### Patch Changes
+
+- [`39f113ab668e3f3d40d93c61bb9c220c690d3c84`](https://github.com/samternent/home/commit/39f113ab668e3f3d40d93c61bb9c220c690d3c84) Thanks [@samternent](https://github.com/samternent)! - bump node
+
 ## 0.2.24
 
 ### Patch Changes
