@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.2.24
+
+### Patch Changes
+
+- [`0baf158b1c6e71fa356ae86b9c780b2908bfecd6`](https://github.com/samternent/home/commit/0baf158b1c6e71fa356ae86b9c780b2908bfecd6) Thanks [@samternent](https://github.com/samternent)! - Tweak async logic
+
 ## 0.2.23
 
 ### Patch Changes
