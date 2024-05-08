@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.2.29
+
+### Patch Changes
+
+- [`606b8f9b11be9ea367c1540311e50883a31dead1`](https://github.com/samternent/home/commit/606b8f9b11be9ea367c1540311e50883a31dead1) Thanks [@samternent](https://github.com/samternent)! - Actions in the wrong order
+
 ## 0.2.28
 
 ### Patch Changes
