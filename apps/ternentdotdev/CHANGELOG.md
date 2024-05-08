@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.2.22
+
+### Patch Changes
+
+- [`177a2a67fc5bffc2570d38fa89e5edd33da6732e`](https://github.com/samternent/home/commit/177a2a67fc5bffc2570d38fa89e5edd33da6732e) Thanks [@samternent](https://github.com/samternent)! - hack for mime type
+
 ## 0.2.21
 
 ### Patch Changes
