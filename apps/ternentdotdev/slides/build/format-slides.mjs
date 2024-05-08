@@ -15,7 +15,7 @@ for (const file of files) {
 
   await cp(
     `./slides/dist/${file}/index.html`,
-    `../../.vercel/output/static/${file}.html`,
+    `../../.vercel/output/static/slides/${file}.html`,
     {},
     (err) => {}
   );
