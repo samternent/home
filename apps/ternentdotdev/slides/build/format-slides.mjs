@@ -1,5 +1,4 @@
-import { cp, readdir, readFileSync, writeFileSync } from "fs";
-import * as cheerio from "cheerio";
+import { cp, readdir } from "fs";
 
 readdir("./slides/dist", async (err, files) => {
   for (const file of files) {
@@ -13,18 +12,19 @@ readdir("./slides/dist", async (err, files) => {
       (err) => {}
     );
 
-    const indexFile = readFileSync(`./slides/dist/${file}/index.html`, "utf8");
-    const $ = cheerio.load(indexFile);
-
-    $("link").attr("type", "text/css");
-    const html = $.html();
-
-    writeFileSync(`./dist/${file}.html`, html);
+    await cp(
+      `./slides/dist/${file}/index.html`,
+      `./dist/slides/${file}.html`,
+      {
+        recursive: true,
+      },
+      (err) => {}
+    );
   }
 
   await cp(
     `./dist`,
-    `../../.vercel/output/static/slides`,
+    `../../.vercel/output/static`,
     { recursive: true },
     (err) => {}
   );
