@@ -1,5 +1,0 @@
----
-"ternentdotdev": patch
----
-
-bump node
