@@ -23,8 +23,14 @@ for (const file of files) {
 }
 console.log(`Completing`);
 await cp(
-  `./dist`,
-  `../../.vercel/output/static`,
-  { recursive: true, force: false },
+  `./dist/assets`,
+  `../../.vercel/output/static/assets`,
+  { recursive: true },
+  (err) => {}
+);
+await cp(
+  `./dist/slides`,
+  `../../.vercel/output/static/slides`,
+  { recursive: true },
   (err) => {}
 );
