@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.2.27
+
+### Patch Changes
+
+- [`f3ed7138c83ff5f42db8b59cafe7acfa463cf610`](https://github.com/samternent/home/commit/f3ed7138c83ff5f42db8b59cafe7acfa463cf610) Thanks [@samternent](https://github.com/samternent)! - Last thing
+
 ## 0.2.26
 
 ### Patch Changes
