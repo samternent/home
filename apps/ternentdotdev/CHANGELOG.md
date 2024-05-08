@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.2.30
+
+### Patch Changes
+
+- [`9dd1fe8705f0db59319494c3562cd9d920b53d42`](https://github.com/samternent/home/commit/9dd1fe8705f0db59319494c3562cd9d920b53d42) Thanks [@samternent](https://github.com/samternent)! - vercel cvhange
+
 ## 0.2.29
 
 ### Patch Changes
