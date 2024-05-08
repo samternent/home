@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.2.23
+
+### Patch Changes
+
+- [`0bd616efb871a820930aa76024c8cc314dba9f30`](https://github.com/samternent/home/commit/0bd616efb871a820930aa76024c8cc314dba9f30) Thanks [@samternent](https://github.com/samternent)! - Try a new approach
+
 ## 0.2.22
 
 ### Patch Changes
