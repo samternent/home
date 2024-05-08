@@ -25,6 +25,6 @@ console.log(`Completing`);
 await cp(
   `./dist`,
   `../../.vercel/output/static`,
-  { recursive: true },
+  { recursive: true, force: false },
   (err) => {}
 );
