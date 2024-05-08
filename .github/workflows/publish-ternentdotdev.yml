@@ -58,11 +58,11 @@ jobs:
       - name: Link Vercel project to root
         run: cp -r ${{ github.workspace }}/apps/ternentdotdev/.vercel ${{ github.workspace }}/
 
-      - name: Build Vercel Environment Information
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-
       - name: Build slides
         run: pnpm --filter ternentdotdev build:slides
+
+      - name: Build Vercel Environment Information
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
