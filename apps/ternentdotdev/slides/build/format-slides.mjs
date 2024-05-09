@@ -7,7 +7,7 @@ for (const file of files) {
 
   await cp(
     "./slides/dist/assets",
-    "../../.vercel/output/static/assets",
+    `../../.vercel/output/static/slides/${file}/assets`,
     {
       recursive: true,
     },
@@ -15,7 +15,7 @@ for (const file of files) {
   );
 
   await cp(
-    "./slides/dist/index.html",
+    `./slides/dist/${file}/index.html`,
     `../../.vercel/output/static/slides/${file}.html`,
     {},
     (err) => {}
