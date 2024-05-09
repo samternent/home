@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.2.38
+
+### Patch Changes
+
+- [`882c01a6a15e37272ee4dc625c04e89f163aa834`](https://github.com/samternent/home/commit/882c01a6a15e37272ee4dc625c04e89f163aa834) Thanks [@samternent](https://github.com/samternent)! - fix asset path
+
 ## 0.2.37
 
 ### Patch Changes
