@@ -6,7 +6,7 @@ for (const file of files) {
   console.log(`Processing: ${file}`);
 
   await cp(
-    "./slides/dist/assets",
+    `./slides/dist/${file}/assets`,
     `../../.vercel/output/static/slides/${file}/assets`,
     {
       recursive: true,
