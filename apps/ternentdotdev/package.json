@@ -6,8 +6,9 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
-    "build:slides": "slidev build ./slides/*.md --download true && node slides/build/format-slides.mjs",
-    "dev:slides-twa": "slidev ./slides/twa.md",
+    "build:slides:twa": "slidev build ./slides/twa.md --download true --base /slides/twa",
+    "build:slides:router-drawers": "slidev build ./slides/router-drawers.md --download true --base /slides/router-drawers",
+    "build:slides:copy": "node ./slides/build/format-slides.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

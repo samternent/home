@@ -1,12 +1,13 @@
 import { cp, readdir, copyFile } from "fs/promises";
 
-const files = await readdir("./slides/dist");
+const files = ["twa", "router-drawers"];
 
 for (const file of files) {
   console.log(`Processing: ${file}`);
+
   await cp(
-    `./slides/dist/${file}/assets`,
-    `../../.vercel/output/static/assets`,
+    "./slides/dist/assets",
+    "../../.vercel/output/static/assets",
     {
       recursive: true,
     },
@@ -14,7 +15,7 @@ for (const file of files) {
   );
 
   await cp(
-    `./slides/dist/${file}/index.html`,
+    "./slides/dist/index.html",
     `../../.vercel/output/static/slides/${file}.html`,
     {},
     (err) => {}
