@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.2.36
+
+### Patch Changes
+
+- [`f8d872b6f35abf7ee4d84d921106b193d7f8ca2a`](https://github.com/samternent/home/commit/f8d872b6f35abf7ee4d84d921106b193d7f8ca2a) Thanks [@samternent](https://github.com/samternent)! - Remove index
+
 ## 0.2.35
 
 ### Patch Changes
