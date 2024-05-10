@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.2.41
+
+### Patch Changes
+
+- [`54085c7db00743ce2dd4ca5557aedf8fe848b210`](https://github.com/samternent/home/commit/54085c7db00743ce2dd4ca5557aedf8fe848b210) Thanks [@samternent](https://github.com/samternent)! - allow frames
+
 ## 0.2.40
 
 ### Patch Changes
