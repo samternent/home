@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.2.40
+
+### Patch Changes
+
+- [`be4fa311a86f240f1dd8a0cf2f97ff91a3707516`](https://github.com/samternent/home/commit/be4fa311a86f240f1dd8a0cf2f97ff91a3707516) Thanks [@samternent](https://github.com/samternent)! - update slide name
+
 ## 0.2.39
 
 ### Patch Changes
