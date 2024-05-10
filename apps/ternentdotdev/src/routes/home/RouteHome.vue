@@ -203,9 +203,9 @@ const themeConfig = computed({
     </li>
     <li>
       <span class="text-primary">slides:</span> [<RouterLink
-        to="/s/welcome"
+        to="/s/teamwork-frontend"
         class="link link-secondary"
-        >Welcome</RouterLink
+        >Teamwork Front End</RouterLink
       >,
       <RouterLink to="/s/router-drawers" class="link link-secondary"
         >Router Drawers</RouterLink
