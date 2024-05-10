@@ -201,5 +201,15 @@ const themeConfig = computed({
       >,
       <RouterLink to="/app" class="link link-secondary">App Layout</RouterLink>]
     </li>
+    <li>
+      <span class="text-primary">slides:</span> [<RouterLink
+        to="/s/welcome"
+        class="link link-secondary"
+        >Welcome</RouterLink
+      >,
+      <RouterLink to="/s/router-drawers" class="link link-secondary"
+        >Router Drawers</RouterLink
+      >]
+    </li>
   </ul>
 </template>

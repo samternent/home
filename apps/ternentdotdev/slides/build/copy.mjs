@@ -1,6 +1,6 @@
 import { cp, readdir, copyFile } from "fs/promises";
 
-const files = ["twa", "router-drawers"];
+const files = ["teamwork-frontend", "router-drawers"];
 
 for (const file of files) {
   console.log(`Processing: ${file}`);

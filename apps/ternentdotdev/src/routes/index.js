@@ -1,11 +1,4 @@
-import { aboutRoutes } from "./about";
-import { appsRoutes } from "./apps";
 import { ledgerRoutes } from "./ledger";
-import { legalRoutes } from "./legal";
-import { settingsRoutes } from "./settings";
-import { solidRoutes } from "./solid";
-import { profileRoutes } from "./profile";
-import { workRoutes } from "./work";
 
 export default [
   {
@@ -25,6 +18,17 @@ export default [
         component: () => import("./apps/RouteAppsSweetShop.vue"),
       },
       {
+        path: "s",
+        component: () => import("./slides/RouteSlides.vue"),
+        children: [
+          {
+            path: ":slideName",
+            component: () => import("./slides/RouteSlidesView.vue"),
+            props: true,
+          },
+        ],
+      },
+      {
         path: "app",
         component: () => import("./RouteLayout.vue"),
         children: [
@@ -42,20 +46,6 @@ export default [
           },
           ...ledgerRoutes,
         ],
-        // children: [
-        //   ...aboutRoutes,
-        //   ...appsRoutes,
-        //   ...ledgerRoutes,
-        //   ...legalRoutes,
-        //   ...profileRoutes,
-        //   ...settingsRoutes,
-        //   ...solidRoutes,
-        //   ...workRoutes,
-        //   {
-        //     path: "/test",
-        //     component: () => import("./RouteTest.vue"),
-        //   },
-        // ],
       },
     ],
   },

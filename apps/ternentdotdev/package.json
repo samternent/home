@@ -6,9 +6,9 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
-    "build:slides:twa": "slidev build ./slides/twa.md --download true --base /slides/twa --out ./dist/twa",
+    "build:slides:teamwork-frontend": "slidev build ./slides/teamwork-frontend.md --download true --base /slides/teamwork-frontend --out ./dist/teamwork-frontend",
     "build:slides:router-drawers": "slidev build ./slides/router-drawers.md --download true --base /slides/router-drawers --out ./dist/router-drawers",
-    "build:slides:copy": "node ./slides/build/format-slides.mjs",
+    "build:slides:copy": "node ./slides/build/copy.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

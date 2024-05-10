@@ -20,7 +20,7 @@ monaco: true
 monacoTypesSource: local # or cdn or none
 ---
 
-# A technical tour of the Teamwork Web App.
+# VueJS - A second router
 
 Presentation slides for developers
 
