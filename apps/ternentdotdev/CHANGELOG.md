@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.2.39
+
+### Patch Changes
+
+- [`2202ac8b7a46486d0f1cdb1a845c0a9395d1016d`](https://github.com/samternent/home/commit/2202ac8b7a46486d0f1cdb1a845c0a9395d1016d) Thanks [@samternent](https://github.com/samternent)! - Adds slides page
+
 ## 0.2.38
 
 ### Patch Changes
