@@ -13,13 +13,20 @@ export default function useAuth() {
     return supabaseClient.auth.signInWithOAuth(
       {
         provider: "google",
+        options: {
+          redirectTo: window.location.origin,
+        },
       },
       { data: { username } }
     );
   }
   async function loginWithGoogle() {
+    console.log("redirect to: ", window.location.href);
     return supabaseClient.auth.signInWithOAuth({
       provider: "google",
+      options: {
+        redirectTo: window.location.origin,
+      },
     });
   }
 

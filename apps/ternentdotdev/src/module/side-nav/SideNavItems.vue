@@ -118,7 +118,7 @@ const { publicKeyPEM } = useIdentity();
         <span v-if="!collapsed">Solid</span></SButton
       > -->
       <SButton type="ghost" to="/app/profile" class="flex-1 my-1">
-        <div class="bg-base-300">
+        <div>
           <IdentityAvatar :identity="publicKeyPEM" size="sm" class="p-1" />
         </div>
 

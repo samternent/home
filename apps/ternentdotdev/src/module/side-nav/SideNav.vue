@@ -94,10 +94,13 @@ const showSidebar = computed(() => mdAndLarger.value || openSideBar.value);
       <header class="p-2 flex md:justify-center sm:py-2">
         <RouterLink to="/app" class="btn btn-ghost text-base"
           ><SBrandHeader
+            class="!text-2xl"
             v-if="(lgAndLarger || smallerThanMd) && !collapsedSideBar"
             size="md"
             >{{ whiteLabel.name[0]
-            }}<span class="font-light">{{ whiteLabel.name[1] }}</span
+            }}<span class="font-light text-secondary text-xl">{{
+              whiteLabel.name[1]
+            }}</span
             >{{ whiteLabel.name[2] }}</SBrandHeader
           ><SBrandHeader v-else size="lg" class="font-bold">{{
             whiteLabel.name[0][0]
