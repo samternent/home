@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.13.20
+
+### Patch Changes
+
+- [`a28263f8e6d4977f3b436b282a7ddbc891f860fc`](https://github.com/samternent/home/commit/a28263f8e6d4977f3b436b282a7ddbc891f860fc) Thanks [@samternent](https://github.com/samternent)! - Fix login from other domains
+
 ## 0.13.19
 
 ### Patch Changes
