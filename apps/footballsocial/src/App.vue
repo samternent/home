@@ -73,10 +73,10 @@ const links = [
       <div
         class="flex justify-between w-full max-w-6xl border-b pb-2 items-center"
       >
-        <RouterLink to="/" class="btn btn-ghost btn-sm" v-if="!isWhiteLabel"
+        <RouterLink to="/" class="btn btn-ghost text-lg" v-if="!isWhiteLabel"
           >FS</RouterLink
         >
-        <RouterLink to="/" class="btn btn-ghost btn-sm" v-else
+        <RouterLink to="/" class="btn btn-ghost" v-else
           ><svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"

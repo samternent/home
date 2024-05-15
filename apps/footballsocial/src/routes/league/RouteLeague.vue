@@ -186,7 +186,7 @@ const dismissEurosBanner = useLocalStorage(
             <p class="text-lg md:text-2xl mt-0">
               {{ competition?.name }}
               <span
-                class="px-2 py-1 mx-2 lg:my-2 hidden md:inline-block md:text-2xl lg:text-3xl transition-color font-bold bg-primary tracking-tighter header text-base-100"
+                class="px-2 py-1 mx-2 lg:my-2 hidden md:inline-block md:text-2xl lg:text-3xl text-secondary transition-color font-bold bg-primary tracking-tighter header text-base-100"
               >
                 {{ competition?.area?.name }}.
               </span>
@@ -277,13 +277,13 @@ const dismissEurosBanner = useLocalStorage(
           <RouterLink
             v-if="competitionCode === 'EC'"
             to="/leagues/PL/predictions"
-            class="btn btn-primary w-full"
+            class="btn btn-secondary w-full"
             >Premier League predictions</RouterLink
           >
           <RouterLink
             v-else
             to="/leagues/EC/predictions"
-            class="btn btn-primary w-full"
+            class="btn btn-secondary w-full"
             >Place Euros predictions</RouterLink
           >
         </div>

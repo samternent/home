@@ -79,7 +79,7 @@ watch(profile, (_profile) => {
         >
       </p>
 
-      <div class="form-control w-full max-w-xs" v-if="!isWhiteLabel">
+      <!-- <div class="form-control w-full max-w-xs" v-if="!isWhiteLabel">
         <label class="label">
           <span class="label-text">Pick your team</span>
         </label>
@@ -93,7 +93,7 @@ watch(profile, (_profile) => {
             {{ _club.name }}
           </option>
         </select>
-      </div>
+      </div> -->
 <div class="divider divider-end my-8">Admin</div>
 <div class="flex justify-end w-full">
   
