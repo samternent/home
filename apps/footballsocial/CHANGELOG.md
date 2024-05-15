@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.13.21
+
+### Patch Changes
+
+- [`ca427a95672a300e6de44d26708f405c92ade711`](https://github.com/samternent/home/commit/ca427a95672a300e6de44d26708f405c92ade711) Thanks [@samternent](https://github.com/samternent)! - Surface team picker
+
 ## 0.13.20
 
 ### Patch Changes
