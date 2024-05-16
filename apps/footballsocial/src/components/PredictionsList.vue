@@ -277,7 +277,7 @@ function isSameDay(date1, date2) {
         >
           <div
             v-if="!isSameDay(fixture.utcDate, predictionsList[i - 1]?.utcDate)"
-            class="p-2 px-2 md:px-4 md:text-xl font-light my-4 bg-base-content text-base-100 inline-block"
+            class="p-2 px-2 font-light my-4 bg-primary text-primary-content inline-block border-b-2 border-secondary"
           >
             {{ formatKickOff(fixture.utcDate) }}
           </div>

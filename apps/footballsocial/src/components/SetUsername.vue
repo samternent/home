@@ -17,7 +17,8 @@ watch(
 );
 </script>
 <template>
-  <div class="w-full mx-auto max-w-2xl py-8">
+  <div class="w-full mx-auto max-w-2xl py-8 text-left">
+    <p class="my-2">Please pick a username to play.</p>
     <input
       type="text"
       v-model="username"

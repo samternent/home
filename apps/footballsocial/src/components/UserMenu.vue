@@ -104,12 +104,27 @@ watch(
       >
         <div class="flex items-center rounded-full">
           <img
+            v-if="clubBadgeId"
             :src="`https://crests.football-data.org/${clubBadgeId}.${
               ['wolves', 'brighton'].includes(club) ? 'svg' : 'png'
             }`"
             class="w-8 h-8"
             alt="User avatar"
           />
+          <div v-else class="p-1 rounded-full bg-secondary">
+            <svg
+              viewBox="0 0 100 100"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              stroke-width="0"
+              class="w-6 h-6 inline"
+            >
+              <path
+                class="fill-primary"
+                d="M49.746,3.244L13.644,9.884v51.803c0,3.987,1.786,8.293,5.318,12.804c3.131,3.99,7.564,8.076,13.174,12.146  c7.004,5.063,14.144,8.834,17.61,10.551c3.472-1.717,10.612-5.487,17.614-10.551c5.614-4.069,10.039-8.155,13.168-12.146  c3.535-4.516,5.327-8.816,5.327-12.804V9.884L49.746,3.244z"
+              />
+            </svg>
+          </div>
         </div>
 
         <svg
