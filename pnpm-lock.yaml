@@ -664,6 +664,9 @@ importers:
       luxon:
         specifier: ^3.4.3
         version: 3.4.3
+      ragejs:
+        specifier: workspace:*
+        version: link:../../packages/ragejs/pkg
       sams-game-kit:
         specifier: workspace:*
         version: link:../../packages/game-kit
@@ -816,6 +819,8 @@ importers:
       vite-plugin-dts:
         specifier: ^1.7.1
         version: 1.7.3(vite@2.9.15)
+
+  packages/ragejs/pkg: {}
 
   packages/ternent-ui:
     dependencies:

@@ -29,6 +29,7 @@
     "concords-utils": "workspace:*",
     "highlight.js": "^11.9.0",
     "luxon": "^3.4.3",
+    "ragejs": "workspace:*",
     "sams-game-kit": "workspace:*",
     "ternent-ui": "workspace:*",
     "vite-plugin-ejs": "^1.6.4",

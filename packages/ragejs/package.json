@@ -1,0 +1,15 @@
+{
+  "name": "wasm-ragejs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "wasm-pack build --target bundler"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "wasm-pack": "^0.12.1"
+  }
+}

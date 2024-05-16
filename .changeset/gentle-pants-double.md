@@ -1,0 +1,5 @@
+---
+"ragejs": patch
+---
+
+Releasing rage
