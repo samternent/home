@@ -4,5 +4,4 @@ packages:
   - "packages/*"
   - "!packages/blockchain"
   - "packages/blockchain/pkg"
-  - "!packages/ragejs"
   - "packages/ragejs/pkg"

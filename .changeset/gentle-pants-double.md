@@ -1,5 +1,5 @@
 ---
-"ragejs": patch
+"wasm-ragejs": patch
 ---
 
 Releasing rage

@@ -8,7 +8,7 @@ env:
 on:
   push:
     tags:
-      - "ragejs-*.*.*"
+      - "wasm-ragejs-*.*.*"
 
 jobs:
   Deploy-Production:
