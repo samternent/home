@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.13.24
+
+### Patch Changes
+
+- [`c87dca9e6ac62118cebc9455abfe706f4d2c25cb`](https://github.com/samternent/home/commit/c87dca9e6ac62118cebc9455abfe706f4d2c25cb) Thanks [@samternent](https://github.com/samternent)! - Adds winners banner
+
 ## 0.13.23
 
 ### Patch Changes
