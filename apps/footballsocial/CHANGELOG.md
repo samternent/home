@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.13.23
+
+### Patch Changes
+
+- [`b58e20426e689b4b22136b5c0ffe6ba77ed11ea9`](https://github.com/samternent/home/commit/b58e20426e689b4b22136b5c0ffe6ba77ed11ea9) Thanks [@samternent](https://github.com/samternent)! - default team picker
+
 ## 0.13.22
 
 ### Patch Changes
