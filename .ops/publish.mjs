@@ -14,7 +14,7 @@ const packagesToPublish = [
   "../packages/proof-of-work",
   "../packages/game-kit",
   "../packages/ternent-ui",
-  "../packages/ragejs/pkg",
+  "../packages/ragejs",
 ];
 
 const toPublish = [...appsToPublish, ...packagesToPublish];
