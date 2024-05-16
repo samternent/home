@@ -2,6 +2,7 @@
 import { toRefs, watch, computed, shallowRef, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { DateTime } from "luxon";
+import {confetti} from '@tsparticles/confetti'
 import {
   useTitle,
   useLocalStorage,
@@ -42,12 +43,62 @@ const route = useRoute();
 const players = shallowRef(0);
 const predictionsCount = shallowRef(0);
 const table = shallowRef([]);
+const winnerCanvas = shallowRef();
 
+let interval;
+
+async function createConfetti() {
+  if (!winnerCanvas.value) {
+    return;
+  }
+
+  clearInterval(interval);
+  // you should  only initialize a canvas once, so save this function
+  // we'll save it to the canvas itself for the purpose of this demo
+  winnerCanvas.value.confetti =
+    winnerCanvas.value.confetti ||
+    (await confetti.create(winnerCanvas.value, { resize: true }));
+
+  const duration = 60 * 1000,
+    animationEnd = Date.now() + duration,
+    defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+  function randomInRange(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+
+  interval = setInterval(function () {
+    const timeLeft = animationEnd - Date.now();
+
+    if (timeLeft <= 0) {
+      return clearInterval(interval);
+    }
+
+    const particleCount = 50 * (timeLeft / duration);
+
+    // since particles fall down, start a bit higher than random
+    winnerCanvas.value?.confetti?.(
+      Object.assign({}, defaults, {
+        particleCount,
+        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+      })
+    );
+    winnerCanvas.value?.confetti?.(
+      Object.assign({}, defaults, {
+        particleCount,
+        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+      })
+    );
+  }, 250);
+
+}
 onMounted(async () => {
   const { data } = await fetchLandingStats();
   players.value = data?.users;
   predictionsCount.value = data?.predictions;
   table.value = data?.table;
+  createConfetti();
+  
 });
 
 const {
@@ -55,7 +106,7 @@ const {
   error,
   loading,
 } = provideCompetitionLoader(competitionCode);
-const { fetchLandingStats } = usePredictionService();
+const { fetchLandingStats, fetchPredictionTable } = usePredictionService();
 
 const lastLeague = useLocalStorage("lastLeague", "PL");
 
@@ -91,6 +142,7 @@ watch(
         _competition.currentSeason.startDate,
         _competition.currentSeason.endDate
       );
+      createConfetti();
     }
   },
   { immediate: true }
@@ -145,12 +197,19 @@ const tabs = computed(() => [
   { title: "Tables", path: `/leagues/${competitionCode.value}/table` },
   // { title: "Leagues", path: `/leagues/${competitionCode.value}/leagues` },
 ]);
-
+const topThree = shallowRef([]);
 watch(
   competition,
-  (_competition) => {
+  async (_competition) => {
     if (_competition?.name) {
       title.value = `${_competition.name} - Football Social`;
+      topThree.value = []
+
+      const {
+        data: { table },
+      } = await fetchPredictionTable(_competition.code);
+
+      topThree.value = table.slice(0, 3);
     }
   },
   { immediate: true }
@@ -167,6 +226,13 @@ const dismissEurosBanner = useLocalStorage(
   "footballsocial/dissmissEurosBanner",
   false
 );
+
+const hasSeasonFinished = computed(() => {
+  return (
+    competition.value?.currentSeason?.endDate &&
+    DateTime.now() > DateTime.fromISO(competition.value.currentSeason.endDate)
+  );
+});
 </script>
 <template>
   <div class="md:px-2 lg:px-4 flex-1 max-w-4xl mx-auto pt-0 w-full h-screen">
@@ -289,8 +355,25 @@ const dismissEurosBanner = useLocalStorage(
         </div>
       </div>
     </div>
+    <div
+      v-show="hasSeasonFinished && topThree[0]"
+      class="p-2 relative bg-base-300 h-32 mb-4"
+    >
+      <canvas ref="winnerCanvas" class="absolute top-0 w-full left-0 h-full" />
+
+      
+      <div class="flex flex-col justify-between items-center h-full" v-if="hasSeasonFinished && topThree[0]">
+        <p class="flex flex-col items-center">
+          <p class="text-sm font-light">{{ competition?.name }} {{ currentSeasonFormat }}</p>
+          <p class="font-medium">WINNER</p></p>
+        <p class="text-3xl font-bold">{{ topThree[0].username }}</p>
+        <p class="font-light">
+          <p class="text-sm">{{ topThree[0].points}} points</p>
+        </p>
+      </div>
+    </div>
     <STabs :items="tabs" :path="route.path" />
-    <div class="flex mb-16 w-full mt-4">
+    <div class="flex-col mb-16 w-full mt-4">
       <RouterView
         v-if="!loading"
         :competitionCode="competitionCode"

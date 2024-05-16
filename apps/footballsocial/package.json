@@ -21,6 +21,7 @@
     "@tiptap/starter-kit": "2.1.11",
     "@tiptap/suggestion": "2.1.11",
     "@tiptap/vue-3": "2.1.11",
+    "@tsparticles/confetti": "^3.4.0",
     "@vercel/og": "^0.5.17",
     "@vitejs/plugin-basic-ssl": "^1.0.1",
     "@vueuse/components": "^10.5.0",
