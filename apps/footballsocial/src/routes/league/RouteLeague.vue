@@ -277,13 +277,13 @@ const dismissEurosBanner = useLocalStorage(
           <RouterLink
             v-if="competitionCode === 'EC'"
             to="/leagues/PL/predictions"
-            class="btn btn-secondary w-full"
+            class="btn btn-primary w-full"
             >Premier League predictions</RouterLink
           >
           <RouterLink
             v-else
             to="/leagues/EC/predictions"
-            class="btn btn-secondary w-full"
+            class="btn btn-primary w-full"
             >Place Euros predictions</RouterLink
           >
         </div>
