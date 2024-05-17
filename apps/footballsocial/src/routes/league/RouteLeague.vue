@@ -74,7 +74,7 @@ async function createConfetti() {
       return clearInterval(interval);
     }
 
-    const particleCount = 50 * (timeLeft / duration);
+    const particleCount = 20 * (timeLeft / duration);
 
     // since particles fall down, start a bit higher than random
     winnerCanvas.value?.confetti?.(
@@ -243,13 +243,13 @@ const hasSeasonFinished = computed(() => {
         <FSLogo class="flex my-4" />
         <!-- ads -->
         <div
-          class="flex flex-row lg:flex-row justify-start items-center lg:items-end w-full"
+          class="flex flex-row lg:flex-row justify-start items-center lg:items-end w-full mb-4"
           v-if="competition"
         >
           <div
             class="tracking-tightest font-light flex items-end lg:items-center group w-full"
           >
-            <p class="text-lg md:text-2xl mt-0">
+            <p class="text-lg md:text-2xl mt-0 ml-2">
               {{ competition?.name }}
               <span
                 class="px-2 py-1 mx-2 lg:my-2 hidden md:inline-block md:text-2xl lg:text-3xl transition-color font-bold bg-primary tracking-tighter header text-primary-content border-b-2 border-secondary"
@@ -313,9 +313,11 @@ const hasSeasonFinished = computed(() => {
     </SHeader>
 
     <div
-      class="bg-base-content text-base-100 w-full mb-8 p-8 flex flex-col relative border-t-2 border-primary"
+      class="bg-base-content text-base-100 w-full mb-8 p-8 lg:flex flex-col relative border-t-2 border-primary hidden"
+      v-if="!dismissEurosBanner"
     >
       <div class="justify-between flex flex-col lg:flex-row items-bottom">
+        <SButton class="absolute top-0 right-0" @click="dismissEurosBanner = true">X</SButton>
         <div class="text-xl font-light p-b flex-1">
           <span v-if="competitionCode === 'EC'">
             Fan of the
