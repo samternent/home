@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.14.0
+
+### Minor Changes
+
+- [`604e11fb3ad36e7031bdede142e9fa00db9db4cf`](https://github.com/samternent/home/commit/604e11fb3ad36e7031bdede142e9fa00db9db4cf) Thanks [@samternent](https://github.com/samternent)! - Accept league filter for table endpoints and support whitelabel leagues
+
 ## 0.13.25
 
 ### Patch Changes

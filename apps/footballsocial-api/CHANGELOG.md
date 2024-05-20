@@ -1,5 +1,11 @@
 # footballsocial-api
 
+## 0.2.4
+
+### Patch Changes
+
+- [`604e11fb3ad36e7031bdede142e9fa00db9db4cf`](https://github.com/samternent/home/commit/604e11fb3ad36e7031bdede142e9fa00db9db4cf) Thanks [@samternent](https://github.com/samternent)! - Accept league filter for table endpoints and support whitelabel leagues
+
 ## 0.2.3
 
 ### Patch Changes
