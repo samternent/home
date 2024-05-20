@@ -3,6 +3,7 @@ import { shallowRef, watch } from "vue";
 import { DateTime, Interval } from "luxon";
 import { usePredictionService } from "../composables/usePredictionService";
 import { useCurrentUser } from "../composables/useCurrentUser";
+import { useWhiteLabel } from "../module/brand/useWhiteLabel";
 
 const props = defineProps({
   competitionCode: {
@@ -26,13 +27,18 @@ const props = defineProps({
 const predictionsLoaded = shallowRef(false);
 const lastUpdated = shallowRef(null);
 const table = shallowRef([]);
+const { isWhiteLabel, host } = useWhiteLabel();
 
 const { fetchPredictionTable } = usePredictionService();
 
 async function loadPredictions() {
   const {
     data: { table: _data, lastUpdated: _lastUpdated },
-  } = await fetchPredictionTable(props.competitionCode, props.gameweek);
+  } = await fetchPredictionTable(
+    props.competitionCode,
+    props.gameweek,
+    isWhiteLabel.value ? host.value : null
+  );
   lastUpdated.value = DateTime.fromMillis(_lastUpdated).toFormat("DD hh:mm:ss");
 
   table.value = props.limit ? _data.slice(0, props.limit) : _data;

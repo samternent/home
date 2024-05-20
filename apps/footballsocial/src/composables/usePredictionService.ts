@@ -2,7 +2,7 @@ import { provide, inject } from "vue";
 import { useAxios } from "./useAxios";
 import { supabaseClient } from "../service/supabase";
 
-const usePredictionServiceSymbol = Symbol('usePredictionService');
+const usePredictionServiceSymbol = Symbol("usePredictionService");
 
 export function providePredictionService() {
   const api = useAxios();
@@ -55,12 +55,17 @@ export function providePredictionService() {
 
   async function fetchPredictionTable(
     competitionCode: string,
-    gameweek: Number
+    gameweek: Number,
+    league: string
   ) {
     if (gameweek) {
-      return api.get(`/predict/${competitionCode}/table/${gameweek}`);
+      return api.get(`/predict/${competitionCode}/table/${gameweek}`, {
+        params: { league },
+      });
     }
-    return api.get(`/predict/${competitionCode}/table`);
+    return api.get(`/predict/${competitionCode}/table`, {
+      params: { league },
+    });
   }
 
   async function calculatePredictionTable(
@@ -83,10 +88,10 @@ export function providePredictionService() {
     getPredictionsCount,
     fetchPredictionTable,
     calculatePredictionTable,
-    fetchLandingStats
+    fetchLandingStats,
   };
 
-  provide(usePredictionServiceSymbol, predictionService)
+  provide(usePredictionServiceSymbol, predictionService);
   return predictionService;
 }
 export function usePredictionService() {

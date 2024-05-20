@@ -36,7 +36,7 @@ const { competitionCode } = toRefs(props);
 const title = useTitle();
 const colorMode = useColorMode();
 const { profile } = useCurrentUser();
-const { isWhiteLabel } = useWhiteLabel();
+const { isWhiteLabel, host } = useWhiteLabel();
 const router = useRouter();
 const route = useRoute();
 
@@ -148,42 +148,6 @@ watch(
   { immediate: true }
 );
 
-const lookups = {
-  arsenal: 1,
-  astonvilla: 1,
-  afcbournemouth: 1,
-  brighton: 1,
-  brentford: 1,
-  burnley: 1,
-  chelsea: 1,
-  crystalpalace: 1,
-  everton: 1,
-  fulham: 1,
-  liverpoolfc: 1,
-  luton: 1,
-  mancity: 65,
-  manutd: 1,
-  newcastle: 1,
-  nottmforest: 351,
-  sheffieldutd: 1,
-  spurs: 1,
-  wolves: 1,
-  westham: 1,
-  birmingham: 332,
-};
-const clubBadgeId = computed(() => {
-  return lookups[profile.value?.club];
-});
-
-const currentCompetition = computed({
-  get() {
-    return competitionCode.value;
-  },
-  set(value) {
-    router.push(`/leagues/${value}`);
-    editCompetition.value = false;
-  },
-});
 const editCompetition = shallowRef(false);
 const editCompetitionTarget = shallowRef(null);
 
@@ -207,7 +171,7 @@ watch(
 
       const {
         data: { table },
-      } = await fetchPredictionTable(_competition.code);
+      } = await fetchPredictionTable(_competition.code, null, isWhiteLabel.value ? host.value : null);
 
       topThree.value = table.slice(0, 3);
     }
@@ -227,12 +191,10 @@ const dismissEurosBanner = useLocalStorage(
   false
 );
 
-const hasSeasonFinished = computed(() => {
-  return (
+const hasSeasonFinished = computed(() => (
     competition.value?.currentSeason?.endDate &&
-    DateTime.now() > DateTime.fromISO(competition.value.currentSeason.endDate)
-  );
-});
+    DateTime.now().startOf('day') >= DateTime.fromISO(competition.value.currentSeason.endDate).startOf('day')
+));
 </script>
 <template>
   <div class="md:px-2 lg:px-4 flex-1 max-w-4xl mx-auto pt-0 w-full h-screen">
@@ -359,7 +321,7 @@ const hasSeasonFinished = computed(() => {
     </div>
     <div
       v-show="hasSeasonFinished && topThree[0]"
-      class="p-2 relative bg-base-300 h-32 mb-4"
+      class="p-2 relative bg-base-300 h-32 mb-4  border-t-2 border-success"
     >
       <canvas ref="winnerCanvas" class="absolute top-0 w-full left-0 h-full" />
 

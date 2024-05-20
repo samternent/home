@@ -1,12 +1,14 @@
 services:
   ternent-api:
     image: "samternent/ternent-api"
+    platform: linux/amd64
     command: "pnpm --filter ternent-api start:dev"
     volumes:
       - ../:/app
 
   footballsocial-api:
     image: "samternent/footballsocial-api"
+    platform: linux/amd64
     command: "pnpm --filter footballsocial-api dev"
     volumes:
       - ../:/app

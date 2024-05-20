@@ -261,7 +261,11 @@ function isSameDay(date1, date2) {
       <div v-else class="skeleton h-14 w-64"></div>
     </div>
 
-    <SAlert v-if="hasPredictions || gameweekPoints" :message="alertMessage">
+    <SAlert
+      v-if="hasPredictions || gameweekPoints"
+      class="!bg-base-200 border-t-2 border-success italic"
+      :message="alertMessage"
+    >
       <template #icon>🎉</template>
     </SAlert>
 

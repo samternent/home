@@ -24,39 +24,58 @@ function sortTable(a, b) {
 export default function predictRoutes(router) {
   // this gets the table
   router.get(
-    "/predict/:competitionCode/table/:gameweek?",
+    "/predict/:competitionCode/table/:gameweek?/:members?",
     async function (req, res) {
       const { competitionCode, gameweek } = req.params;
+      const { league } = req.query;
 
       const isLoggedIn = isAuthenticated(req);
       let lastUpdated = 0;
 
       const cacheResults = await redisClient.get(
-        `${req.url}- ${isLoggedIn ? "loggedIn" : "loggedOut"}`
+        `${req.url}${league ? `-${league}` : ""}- ${
+          isLoggedIn ? "loggedIn" : "loggedOut"
+        }`
       );
       if (cacheResults) {
         return res.send(JSON.parse(cacheResults));
       }
 
-      let returnData = null;
+      let members = [];
+      if (league) {
+        console.log(league);
+        const { data: leagueData } = await supabaseClient
+          .from("leagues")
+          .select()
+          .eq("league_code", league);
+
+        console.log(leagueData);
+        if (leagueData?.length) {
+          const { data: membersData } = await supabaseClient
+            .from("league_members")
+            .select()
+            .eq("league_id", leagueData[0].id);
+
+          members = membersData.map((member) => member.username);
+        }
+      }
+
+      const query = supabaseClient
+        .from("gameweek_results")
+        .select()
+        .eq("competitionCode", competitionCode);
 
       if (gameweek) {
-        const { data } = await supabaseClient
-          .from("gameweek_results")
-          .select()
-          .eq("competitionCode", competitionCode)
-          .eq("gameweek", gameweek);
+        query.eq("gameweek", gameweek);
+      }
 
-        returnData = data;
-      } else {
-        const { data, error } = await supabaseClient
-          .from("gameweek_results")
-          .select()
-          .eq("competitionCode", competitionCode);
-        if (error) {
-          res.status(500).json(error);
-        }
-        returnData = data || [];
+      if (league) {
+        query.in("username", members);
+      }
+      const { data: returnData, error } = await query;
+
+      if (error) {
+        res.status(500).json(error);
       }
 
       lastUpdated = Date.now();
@@ -155,7 +174,7 @@ export default function predictRoutes(router) {
               ...row,
               username: isLoggedIn
                 ? row.username
-                : `${row.username[0]}******${
+                : `${row.username[0]}***${
                     row.username[row.username.length - 1]
                   }`,
             };
@@ -163,7 +182,9 @@ export default function predictRoutes(router) {
 
         res.setHeader("Cache-Control", "max-age=1, stale-while-revalidate");
         await redisClient.set(
-          `${req.url}- ${isLoggedIn ? "loggedIn" : "loggedOut"}`,
+          `${req.url}${league ? `-${league}` : ""}- ${
+            isLoggedIn ? "loggedIn" : "loggedOut"
+          }`,
           JSON.stringify({ table: combinedResults, lastUpdated }),
           {
             EX: 300,

@@ -21,9 +21,7 @@ const { isWhiteLabel, host, colorTheme } = useWhiteLabel();
     </div>
   </div>
   <div class="flex mx-2 group h-full" v-else>
-    <div
-      class="flex justify-center anton-regular items-center my-6 lg:pb-4 mx-auto"
-    >
+    <div class="flex justify-center anton-regular items-center mx-auto">
       <img
         v-if="host === 'walkers'"
         src="../../assets/walkers__logo.jpg"
@@ -41,10 +39,10 @@ const { isWhiteLabel, host, colorTheme } = useWhiteLabel();
         src="../../assets/teamwork-logo-1color-2023.png"
       />
     </div>
-    <!-- <div
-      class="flex items-center font-bold text-base-content text-6xl md:text-7xl lg:text-9xl uppercase anton-regular"
-    >
-      {{ host }}
-    </div> -->
+  </div>
+  <div
+    class="flex mb-5 items-center font-light tracking-wider text-base-content text-xl md:text-2xl lg:text-3xl [transform:translateY(-10px)] md:[transform:translateY(-20px)] lg:[transform:translateY(-30px)] px-1 md:px-2 lg:px-4"
+  >
+    The friendly football score predictions game.
   </div>
 </template>

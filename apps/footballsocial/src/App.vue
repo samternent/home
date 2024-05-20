@@ -73,9 +73,9 @@ const links = [
       <div
         class="flex justify-between w-full max-w-6xl border-b pb-2 items-center"
       >
-        <RouterLink to="/" class="btn btn-ghost text-lg" v-if="!isWhiteLabel"
-          >FS</RouterLink
-        >
+        <RouterLink to="/" class="btn btn-ghost text-lg" v-if="!isWhiteLabel">
+          <img src="/android-chrome-192x192.png" class="w-8 h-8" />
+        </RouterLink>
         <RouterLink to="/" class="btn btn-ghost" v-else
           ><svg
             xmlns="http://www.w3.org/2000/svg"
