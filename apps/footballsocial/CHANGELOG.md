@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.13.25
+
+### Patch Changes
+
+- [`408a2c2e6551fa21735d09efb337f9337d5d0675`](https://github.com/samternent/home/commit/408a2c2e6551fa21735d09efb337f9337d5d0675) Thanks [@samternent](https://github.com/samternent)! - Hide banner
+
 ## 0.13.24
 
 ### Patch Changes
