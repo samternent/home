@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.14.2
+
+### Patch Changes
+
+- [`c214cc33868d21a34b83cb47e37475c57e8949ff`](https://github.com/samternent/home/commit/c214cc33868d21a34b83cb47e37475c57e8949ff) Thanks [@samternent](https://github.com/samternent)! - fix pwa
+
 ## 0.14.1
 
 ### Patch Changes
