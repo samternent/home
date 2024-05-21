@@ -204,8 +204,9 @@ const hasSeasonFinished = computed(() => (
 const league = shallowRef(null);
 const canJoinLeague = shallowRef(false);
 
-async function findLeague() {
-  if (!isWhiteLabel.value || !host.value) return;
+
+watch([isWhiteLabel, host, profile], async () => {
+  if (!isWhiteLabel.value || !host.value || !profile.value) return;
 
   const { data, error } = await supabaseClient
     .from("leagues")
@@ -216,15 +217,17 @@ async function findLeague() {
     .from("league_members")
     .select()
     .eq("league_id", data[0].id)
-    .eq("username", profile.value?.username);
+    .eq("username", profile.value.username);
 
+  
   league.value = data[0];
   canJoinLeague.value = !membersData.length;
-}
+}, { immediate: true })
+
 async function joinLeague() {
   if (!league.value) return;
 
-  const { error } = await supabaseClient.from("league_members").insert([
+  const { error } = await supabaseClient.from("league_members").upsert([
     {
       league_id: league.value.id,
       username: profile.value.username,
@@ -233,8 +236,6 @@ async function joinLeague() {
 
   window.location.reload();
 }
-
-findLeague();
 </script>
 <template>
   <div class="md:px-2 lg:px-4 flex-1 max-w-4xl mx-auto pt-0 w-full ">
