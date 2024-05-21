@@ -69,7 +69,7 @@ const { profile } = useCurrentUser();
     </div>
     <div class="flex flex-col w-full overflow-x-auto">
       <table class="rounded-tl-lg text-xs lg:text-base">
-        <thead class="rounded-none p-2">
+        <thead class="p-2">
           <tr class="border-0 text-base border-b bg-base-content text-base-100">
             <th scope="col" class="w-12 p-2 tracking-tight font-medium">
               <abbr title="Position">POS</abbr>

@@ -197,11 +197,19 @@ const hasSeasonFinished = computed(() => (
 ));
 </script>
 <template>
-  <div class="md:px-2 lg:px-4 flex-1 max-w-4xl mx-auto pt-0 w-full h-screen">
+  <div class="md:px-2 lg:px-4 flex-1 max-w-4xl mx-auto pt-0 w-full ">
     <SHeader>
       <div
         class="px-1 p-2 font-light rounded-lg flex-1 flex flex-col justify-between"
       >
+        <div v-if="isWhiteLabel" class="alert rounded-none flex justify-between max-w-4xl w-full my-3">
+          <span>You are not part of this community.</span>
+          <div class="sticky top-0">
+            <SButton type="secondary" class="btn btn-outline" >
+              Request to Join
+            </SButton>
+        </div>
+      </div>
         <FSLogo class="flex my-4" />
         <!-- ads -->
         <div

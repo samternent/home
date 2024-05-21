@@ -9,11 +9,7 @@ router.push({
 });
 </script>
 <template>
-  <div
-    class="w-screen h-screen"
-  >
-    
-  </div>
+  <div class="w-screen h-screen overflow-auto max-h-screen"></div>
 </template>
 <style>
 .animate-gradient {
