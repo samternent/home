@@ -205,7 +205,7 @@ const hasSeasonFinished = computed(() => (
         <div v-if="isWhiteLabel" class="alert rounded-none flex justify-between max-w-4xl w-full my-3">
           <span>You are not part of this community.</span>
           <div class="sticky top-0">
-            <SButton type="secondary" class="btn btn-outline" >
+            <SButton type="secondary" class="btn" >
               Request to Join
             </SButton>
         </div>
