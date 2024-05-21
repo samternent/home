@@ -16,6 +16,7 @@ import { competitions } from "../../utils/competitions";
 import FSLogo from "../../module/brand/FSLogo.vue";
 import { useWhiteLabel } from "../../module/brand/useWhiteLabel";
 import { SHeader, STabs, SButton } from "ternent-ui/components";
+import { supabaseClient } from "../../service/supabase";
 
 const props = defineProps({
   competitionCode: {
@@ -179,6 +180,8 @@ watch(
   { immediate: true }
 );
 
+
+
 const showMenu = shallowRef(false);
 const dropdownRef = shallowRef(null);
 
@@ -195,6 +198,43 @@ const hasSeasonFinished = computed(() => (
     competition.value?.currentSeason?.endDate &&
     DateTime.now().startOf('day') >= DateTime.fromISO(competition.value.currentSeason.endDate).startOf('day')
 ));
+
+
+
+const league = shallowRef(null);
+const canJoinLeague = shallowRef(false);
+
+async function findLeague() {
+  if (!isWhiteLabel.value || !host.value) return;
+
+  const { data, error } = await supabaseClient
+    .from("leagues")
+    .select()
+    .eq("league_code", host.value);
+
+  const { data: membersData } = await supabaseClient
+    .from("league_members")
+    .select()
+    .eq("league_id", data[0].id)
+    .eq("username", profile.value?.username);
+
+  league.value = data[0];
+  canJoinLeague.value = !membersData.length;
+}
+async function joinLeague() {
+  if (!league.value) return;
+
+  const { error } = await supabaseClient.from("league_members").insert([
+    {
+      league_id: league.value.id,
+      username: profile.value.username,
+    },
+  ]);
+
+  window.location.reload();
+}
+
+findLeague();
 </script>
 <template>
   <div class="md:px-2 lg:px-4 flex-1 max-w-4xl mx-auto pt-0 w-full ">
@@ -202,11 +242,11 @@ const hasSeasonFinished = computed(() => (
       <div
         class="px-1 p-2 font-light rounded-lg flex-1 flex flex-col justify-between"
       >
-        <div v-if="isWhiteLabel" class="alert rounded-none flex justify-between max-w-4xl w-full my-3">
+        <div v-if="isWhiteLabel && profile?.username && canJoinLeague" class="alert rounded-none flex justify-between max-w-4xl w-full my-3">
           <span>You are not part of this community.</span>
           <div class="sticky top-0">
-            <SButton type="secondary" class="btn" >
-              Request to Join
+            <SButton type="secondary" class="btn" @click="joinLeague">
+              Join
             </SButton>
         </div>
       </div>
