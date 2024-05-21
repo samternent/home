@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.14.3
+
+### Patch Changes
+
+- [`32ac4b8303b2e37bc6c56cf6d7119a7900044fb2`](https://github.com/samternent/home/commit/32ac4b8303b2e37bc6c56cf6d7119a7900044fb2) Thanks [@samternent](https://github.com/samternent)! - Join whitelabel league
+
 ## 0.14.2
 
 ### Patch Changes
