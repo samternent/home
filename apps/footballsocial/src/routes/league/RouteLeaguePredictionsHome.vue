@@ -52,6 +52,7 @@ const backPath = window.localStorage.getItem("lastLeagueTablePath");
       :username="username"
       :competitionCode="competition.code"
       :currentGameweek="competition.currentSeason?.currentMatchday"
+      :currentSeason="competition.currentSeason?.id"
       @selected="
         (fixture) =>
           $router.push(

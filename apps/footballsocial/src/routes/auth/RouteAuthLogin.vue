@@ -46,6 +46,7 @@ async function googleLogin() {
           class="input input-bordered my-2"
           name="email"
           placeholder="Email"
+          @keydown.enter.prevent="login"
         />
 
         <input
@@ -54,6 +55,7 @@ async function googleLogin() {
           class="input input-bordered my-2"
           name="password"
           placeholder="Password"
+          @keydown.enter.prevent="login"
         />
 
         <div class="mx-2 my-4 flex flex-col items-end">
@@ -69,7 +71,11 @@ async function googleLogin() {
 
       <div class="my-6">
         Don't have an account yet?
-        <RouterLink to="/auth/signup" class="underline hover:text-primary transition-colors"> Sign up </RouterLink
+        <RouterLink
+          to="/auth/signup"
+          class="underline hover:text-primary transition-colors"
+        >
+          Sign up </RouterLink
         >.
       </div>
     </div>

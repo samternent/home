@@ -68,6 +68,7 @@ async function googleLogin() {
           class="input input-bordered my-2"
           name="email"
           placeholder="Email"
+          @keydown.enter.prevent="signup"
         />
 
         <input
@@ -76,6 +77,7 @@ async function googleLogin() {
           class="input input-bordered my-2"
           name="password"
           placeholder="Password"
+          @keydown.enter.prevent="signup"
         />
         <input
           type="password"
@@ -83,6 +85,7 @@ async function googleLogin() {
           class="input input-bordered my-2"
           name="confirm_password"
           placeholder="Confirm Password"
+          @keydown.enter.prevent="signup"
         />
 
         <div class="mx-2 my-4 flex flex-col items-end">
