@@ -16,7 +16,7 @@ const errorMessage = shallowRef(null);
 async function signup() {
   errorMessage.value = null;
   if (!email.value) {
-    errorMessage.value = "Please enter you email address.";
+    errorMessage.value = "Please enter your email address.";
     return;
   }
   if (password.value.length < 8) {
@@ -86,7 +86,7 @@ async function googleLogin() {
         />
 
         <div class="mx-2 my-4 flex flex-col items-end">
-          <button type="submit" @click="login" class="btn btn-secondary">
+          <button type="submit" @click="signup" class="btn btn-secondary">
             Create Account
           </button>
           <div class="my-4 justify-end">OR</div>
@@ -97,18 +97,29 @@ async function googleLogin() {
 
         <div class="text-center text-sm mt-8">
           By signing up, you agree to the
-          <RouterLink to="/legal/terms" class="underline hover:text-primary transition-colors">
+          <RouterLink
+            to="/legal/terms"
+            class="underline hover:text-primary transition-colors"
+          >
             Terms of Service
           </RouterLink>
           and
-          <RouterLink to="/legal/privacy" class="underline hover:text-primary transition-colors">
+          <RouterLink
+            to="/legal/privacy"
+            class="underline hover:text-primary transition-colors"
+          >
             Privacy Policy
           </RouterLink>
         </div>
       </div>
       <div class="text-grey-dark my-6">
         Already have an account?
-        <RouterLink to="/auth/login" class="underline hover:text-primary transition-colors"> Log in </RouterLink>.
+        <RouterLink
+          to="/auth/login"
+          class="underline hover:text-primary transition-colors"
+        >
+          Log in </RouterLink
+        >.
       </div>
     </div>
   </div>
