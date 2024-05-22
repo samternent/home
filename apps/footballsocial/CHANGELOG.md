@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.14.6
+
+### Patch Changes
+
+- [`a0063a754cc216a2a5d7627ed8f3b514b2fb5b00`](https://github.com/samternent/home/commit/a0063a754cc216a2a5d7627ed8f3b514b2fb5b00) Thanks [@samternent](https://github.com/samternent)! - Default to Euros
+
 ## 0.14.5
 
 ### Patch Changes
