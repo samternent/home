@@ -18,6 +18,10 @@ const props = defineProps({
     type: Number,
     default: null,
   },
+  currentSeason: {
+    type: Number,
+    default: null,
+  },
   stage: {
     type: String,
     default: null,
@@ -35,6 +39,7 @@ const props = defineProps({
 const { addPrediction, getPredictions } = usePredictionService();
 const competitionCode = computed(() => props.competitionCode);
 const currentGameweek = computed(() => props.currentGameweek);
+const currentSeason = computed(() => props.currentSeason);
 const stage = computed(() => props.stage);
 const username = computed(() => props.username);
 const overrideGameweek = shallowRef(currentGameweek.value);
@@ -106,7 +111,8 @@ async function savePredictions() {
     profile.value.username,
     unref(predictionsToUpdate),
     unref(competitionCode),
-    unref(gameweek)
+    unref(gameweek),
+    unref(currentSeason)
   );
   loadPredictions();
 }

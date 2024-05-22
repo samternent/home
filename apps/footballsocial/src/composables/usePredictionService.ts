@@ -11,28 +11,15 @@ export function providePredictionService() {
     username: string,
     predictions: any,
     competitionCode: string,
-    gameweek: Number
+    gameweek: Number,
+    season: string
   ) {
-    return supabaseClient
-      .from("predictions")
-      .upsert(
-        Object.keys(predictions)
-          .map((fixtureId) => ({
-            id: `${username}_${fixtureId}_${gameweek}`,
-            username,
-            fixtureId,
-            homeScore: predictions[fixtureId].homeScore,
-            awayScore: predictions[fixtureId].awayScore,
-            competitionCode,
-            gameweek,
-          }))
-          .filter(
-            ({ homeScore, awayScore }) =>
-              homeScore !== undefined && awayScore !== undefined
-          ),
-        { onConflict: "id" }
-      )
-      .select();
+    const resp = await api.put(
+      `/predict/${username}/${competitionCode}/${gameweek}/${season}`,
+      { predictions }
+    );
+
+    return resp;
   }
 
   async function getPredictions(
