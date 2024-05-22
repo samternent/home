@@ -3,9 +3,9 @@ import { useRouter } from "vue-router";
 import { useLocalStorage } from "@vueuse/core";
 
 const router = useRouter();
-const lastLeague = useLocalStorage("lastLeague", "PL");
+const lastLeague = useLocalStorage("lastLeague", "EC");
 router.push({
-  path: `/leagues/${!lastLeague.value ? "PL" : lastLeague.value}`,
+  path: `/leagues/${!lastLeague.value ? "EC" : lastLeague.value}`,
 });
 </script>
 <template>
