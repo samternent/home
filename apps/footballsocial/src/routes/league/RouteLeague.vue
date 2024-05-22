@@ -392,6 +392,15 @@ async function joinLeague() {
         :competitionCode="competitionCode"
         :key="competitionCode"
       />
+      <div
+        v-else-if="error"
+        class="flex-1 mx-auto max-w-6xl w-full flex flex-col lg:justify-center lg:items-center p-4 lg:p-8 my-6"
+      >
+        <h1 class="text-5xl font-bold text-error">Whoops, something went wrong!</h1>
+        <p class="my-4">Please refresh or try again later.</p>
+        
+      </div>
+    
       <div v-else class="flex justify-center items-center w-full">
         <div
           class="p-4 bg-gradient-to-tr animate-spin from-[#ff5757] to-[#8c52ff] rounded-full my-32"
@@ -400,16 +409,6 @@ async function joinLeague() {
             <div class="w-24 h-24 rounded-full"></div>
           </div>
         </div>
-      </div>
-      <div
-        v-if="error"
-        class="absolute min-h-screen flex-1 h-screen mx-auto max-w-6xl w-full"
-      >
-        <h1 class="text-4xl font-bold">{{ error.message }}</h1>
-        <p>Sorry, we messed up.</p>
-        <p>{{ error.config.baseURL }}</p>
-        <p>{{ error.config.method }}</p>
-        <p>{{ error.config.url }}</p>
       </div>
     </div>
     <p class="text-2xl font-light my-12 text-center" v-if="!isWhiteLabel">
