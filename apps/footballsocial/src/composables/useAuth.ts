@@ -14,18 +14,17 @@ export default function useAuth() {
       {
         provider: "google",
         options: {
-          redirectTo: window.location.origin,
+          redirectTo: window.location.href,
         },
       },
       { data: { username } }
     );
   }
   async function loginWithGoogle() {
-    console.log("redirect to: ", window.location.href);
     return supabaseClient.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: window.location.origin,
+        redirectTo: window.location.href,
       },
     });
   }

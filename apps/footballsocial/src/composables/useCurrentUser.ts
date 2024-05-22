@@ -44,6 +44,7 @@ export function provideCurrentUser() {
     if (error) {
       return { error };
     }
+    window.localStorage.removeItem("sb-zvlzrjykwmznchhodntc-auth-token");
     await getSession();
     return true;
   }

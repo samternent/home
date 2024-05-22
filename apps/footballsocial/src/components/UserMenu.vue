@@ -203,7 +203,7 @@ watch(
             <RouterLink
               @click="showMenu = false"
               to="/auth/profile"
-              class="p-2 bg-base-100 border-b hover:bg-base-200 w-full"
+              class="p-2 bg-base-100 border-base-300 border-b hover:bg-base-200 w-full"
               >Profile</RouterLink
             >
           </li>
