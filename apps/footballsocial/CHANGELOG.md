@@ -1,5 +1,13 @@
 # concords-footballsocial
 
+## 0.14.9
+
+### Patch Changes
+
+- [#327](https://github.com/samternent/home/pull/327) [`344cbfb1df8d690779dba909c5c95ed7e2edc44e`](https://github.com/samternent/home/commit/344cbfb1df8d690779dba909c5c95ed7e2edc44e) Thanks [@samternent](https://github.com/samternent)! - Adds new API endpoit for protected predictions
+
+- [`ff9e37ecadbd3db33b19908642caa966299c00ff`](https://github.com/samternent/home/commit/ff9e37ecadbd3db33b19908642caa966299c00ff) Thanks [@samternent](https://github.com/samternent)! - Fix signout
+
 ## 0.14.8
 
 ### Patch Changes
