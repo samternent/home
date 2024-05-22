@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.14.7
+
+### Patch Changes
+
+- [`c19b8daebcfc505623f750264f97ad0b7991d59c`](https://github.com/samternent/home/commit/c19b8daebcfc505623f750264f97ad0b7991d59c) Thanks [@samternent](https://github.com/samternent)! - fix whitelabel
+
 ## 0.14.6
 
 ### Patch Changes
