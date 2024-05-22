@@ -41,9 +41,6 @@ export function provideCurrentUser() {
   }
   async function signOut() {
     const { error } = await authSignOut();
-    if (error) {
-      return { error };
-    }
     window.localStorage.removeItem("sb-zvlzrjykwmznchhodntc-auth-token");
     await getSession();
     return true;
