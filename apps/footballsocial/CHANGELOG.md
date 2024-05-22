@@ -1,5 +1,11 @@
 # concords-footballsocial
 
+## 0.14.8
+
+### Patch Changes
+
+- [`9bf808502bfe59e530b2d1e4bde26b66ed70bf71`](https://github.com/samternent/home/commit/9bf808502bfe59e530b2d1e4bde26b66ed70bf71) Thanks [@samternent](https://github.com/samternent)! - Fix signout
+
 ## 0.14.7
 
 ### Patch Changes
