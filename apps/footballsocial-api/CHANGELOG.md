@@ -1,5 +1,11 @@
 # footballsocial-api
 
+## 0.2.5
+
+### Patch Changes
+
+- [#327](https://github.com/samternent/home/pull/327) [`344cbfb1df8d690779dba909c5c95ed7e2edc44e`](https://github.com/samternent/home/commit/344cbfb1df8d690779dba909c5c95ed7e2edc44e) Thanks [@samternent](https://github.com/samternent)! - Adds new API endpoit for protected predictions
+
 ## 0.2.4
 
 ### Patch Changes

@@ -1,7 +1,7 @@
 {
   "name": "footballsocial-api",
   "private": true,
-  "version": "0.2.4",
+  "version": "0.2.5",
   "type": "module",
   "scripts": {
     "build": "docker build -f ./Dockerfile ../../ -t samternent/footballsocial-api",
