@@ -15,14 +15,21 @@
         margin: 0;
         padding: 0;
       }
+      :root {
+        --scrollPos: 100%;
+        --mouse-x: 0;
+        --mouse-y: 0;
+      }
+
       /* System Fonts as used by GitHub */
       body {
-        font-family: ui-monospace, Menlo, Monaco, "Cascadia Mono",
-          "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace",
-          "Source Code Pro", "Fira Mono", "Droid Sans Mono", "Courier New",
-          monospace;
+        font-family: Georgia, serif;
         font-size: calc(15px + 0.390625vw);
         margin: 0;
+        min-height: 100vh;
+        background-origin: content-box;
+        text-align: justify;
+        padding: 1em;
       }
 
       h1 {
@@ -39,44 +46,57 @@
 
       h3 {
         position: sticky;
-        top: 5.7em;
-        background-color: #fff;
-        padding: 0.5em;
+        top: 5.6em;
+        background-color: #efeae7;
+        padding: 0.5em 1em;
         margin: 1em 0;
         text-transform: uppercase;
-        border-left: 0.4em solid pink;
+        border-left: 0.1em solid #fd575a;
+        /* border-left: 0.2em solid #9753ef; */
       }
 
       .content {
         max-width: 1080px;
         margin: 0 auto;
         padding: 0 1em;
-        background: #fff;
+      }
+      .subcontent {
+        padding: 0 1em;
+      }
+
+      a {
+        color: #9753ef;
+        transition: color;
+      }
+      a:hover {
+        color: #fd575a;
+      }
+
+      .header {
+        position: sticky;
+        top: 0;
+        padding: 2em 1em 1em;
+        margin: 0 0 1em;
+        z-index: 10;
       }
     </style>
-    <link rel="stylesheet" type="text/css" href="styles.css" media="screen" />
     <title>api.footballsocial.app</title>
   </head>
 
   <body>
     <div class="content">
       <header class="header">
-        <h1>
-          <span class="pagescroll"
-            >ternent[dot]dev<span style="color: pink">.</span></span
-          >
-        </h1>
-        <h2><span>api.footballsocial.app</span></h2>
+        <h1>API: FootballSocial</h1>
+        <h2>The friendly Football score prediction game.</h2>
       </header>
-      <div>
-        <h3>Welcome</h3>
-        <p>
-          This is the API for
-          <a href="https://footballsocial.app">footballsocial.app</a>.
-        </p>
-      </div>
-      <div>
-        <h3>rest API</h3>
+      <h3>Welcome</h3>
+      <p class="subcontent">
+        This is the API for
+        <a href="https://footballsocial.app">footballsocial.app</a>.
+      </p>
+
+      <h3>API</h3>
+      <div class="subcontent">
         <div>
           <a href="/predict/PL/table"
             >GET: /predict/:competitionCode/table/:gameweek?</a
@@ -96,11 +116,6 @@
           <p>Get gameweek user predictions</p>
         </div>
       </div>
-
-      <footer style="background-color: pink; padding: 2em 1em; height: 10em">
-        <p>This is a safe space.</p>
-        <p>There are no cookies, intrusive analytics or other nasties here.</p>
-      </footer>
     </div>
 
     <script type="module" src="js/main.js"></script>

@@ -9,13 +9,13 @@ import {
   useColorMode,
   onClickOutside,
 } from "@vueuse/core";
+import { SHeader, STabs, SButton } from "ternent-ui/components";
 import { provideCompetitionLoader } from "../../api/football-data/useCompetitionLoader";
 import { usePredictionService } from "../../composables/usePredictionService";
 import { useCurrentUser } from "../../composables/useCurrentUser";
 import { competitions } from "../../utils/competitions";
 import FSLogo from "../../module/brand/FSLogo.vue";
 import { useWhiteLabel } from "../../module/brand/useWhiteLabel";
-import { SHeader, STabs, SButton } from "ternent-ui/components";
 import { supabaseClient } from "../../service/supabase";
 
 const props = defineProps({
@@ -251,7 +251,7 @@ async function joinLeague() {
             </SButton>
         </div>
       </div>
-        <FSLogo class="flex my-4" />
+        <FSLogo />
         <!-- ads -->
         <div
           class="flex flex-row lg:flex-row justify-start items-center lg:items-end w-full mb-4"

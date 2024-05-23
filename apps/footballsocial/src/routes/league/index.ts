@@ -18,13 +18,6 @@ export const leagueRoutes = [
         },
       },
       {
-        path: "discussions",
-        component: () => import("./RouteLeagueDiscussions.vue"),
-        beforeEnter(to: RouteLocation) {
-          window.localStorage.setItem("lastLeaguePath", "discussions");
-        },
-      },
-      {
         path: "standings",
         redirect(to: any) {
           return `/leagues/${to.params.competitionCode || "PL"}/table`;
@@ -76,74 +69,12 @@ export const leagueRoutes = [
         ],
       },
       {
-        path: "leagues",
-        component: () => import("./RouteLeagueLeagues.vue"),
-        beforeEnter(to: RouteLocation) {
-          window.localStorage.setItem("lastLeaguePath", "leagues");
-        },
-        props: true,
-        children: [
-          {
-            path: "",
-            component: () => import("./RouteLeagueLeaguesMyLeagues.vue"),
-            props: true,
-          },
-          {
-            path: "browse",
-            component: () => import("./RouteLeagueLeaguesBrowse.vue"),
-            props: true,
-          },
-          {
-            path: "create",
-            component: () => import("./RouteLeagueLeaguesCreate.vue"),
-            beforeEnter(to: RouteLocation) {
-              window.localStorage.setItem("lastLeaguePath", "leagues");
-            },
-            props: true,
-          },
-          {
-            path: "join/:leagueCode?",
-            component: () => import("./RouteLeagueLeaguesJoin.vue"),
-            beforeEnter(to: RouteLocation) {
-              window.localStorage.setItem("lastLeaguePath", "leagues");
-            },
-            props: true,
-          },
-          {
-            path: ":id",
-            component: () => import("./RouteLeaguePredictionsLeague.vue"),
-            beforeEnter(to: RouteLocation) {
-              window.localStorage.setItem("lastLeaguePath", "leagues");
-            },
-            props: true,
-          },
-        ],
-      },
-
-      // {
-      //   path: "fixtures",
-      //   component: RouteLeagueFixtures,
-      //   beforeEnter(to: RouteLocation) {
-      //     window.localStorage.setItem("lastLeaguePath", "fixtures");
-      //   },
-      // },
-      {
         path: "predictions/:username?",
-        component: () => import("./RouteLeaguePredictionsHome.vue"),
+        component: () => import("./RouteLeaguePredictions.vue"),
         beforeEnter(to: RouteLocation) {
           window.localStorage.setItem("lastLeaguePath", "predictions");
         },
         props: true,
-      },
-      {
-        path: "discussions/:discussionId",
-        props: true,
-        component: () => import("./RouteLeagueDiscussion.vue"),
-      },
-      {
-        path: "discussions/new",
-        props: true,
-        component: () => import("./RouteLeagueDiscussionNew.vue"),
       },
       {
         path: "*",

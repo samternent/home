@@ -2,7 +2,6 @@ import { resolve } from "path";
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import { VitePWA } from "vite-plugin-pwa";
-import Markdown from "vite-plugin-md";
 import { ViteEjsPlugin } from "vite-plugin-ejs";
 import { version } from "./package.json";
 
@@ -28,6 +27,5 @@ export default defineConfig({
         navigateFallbackDenylist: [/^\/api/],
       },
     }),
-    Markdown(),
   ],
 });

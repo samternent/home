@@ -28,33 +28,35 @@ const gameweeks = computed(() =>
 );
 </script>
 <template>
-  <div class="flex justify-between py-2">
-    <select
-      v-model="overrideGameweek"
-      aria-label="Gameweek"
-      class="select select-bordered select-sm mr-4"
-    >
-      <option
-        v-for="gw in gameweeks"
-        :key="`gameweek_${competitionCode}_${gw}`"
-        :value="gw"
+  <div>
+    <div class="flex justify-between py-2">
+      <select
+        v-model="overrideGameweek"
+        aria-label="Gameweek"
+        class="select select-bordered select-sm mr-4"
       >
-        Gameweek {{ gw }}
-      </option>
-    </select>
-    <SButton
-      @click="overrideGameweek = competition?.currentSeason.currentMatchday"
-      class="btn-sm"
-      type="secondary"
-      >Current gameweek ({{
-        competition?.currentSeason.currentMatchday
-      }})</SButton
-    >
+        <option
+          v-for="gw in gameweeks"
+          :key="`gameweek_${competitionCode}_${gw}`"
+          :value="gw"
+        >
+          Gameweek {{ gw }}
+        </option>
+      </select>
+      <SButton
+        @click="overrideGameweek = competition?.currentSeason.currentMatchday"
+        class="btn-sm"
+        type="secondary"
+        >Current gameweek ({{
+          competition?.currentSeason.currentMatchday
+        }})</SButton
+      >
+    </div>
+    <PredictionsResults
+      :competitionCode="competitionCode"
+      :private="!user"
+      :gameweek="gameweek"
+      :key="gameweek"
+    />
   </div>
-  <PredictionsResults
-    :competitionCode="competitionCode"
-    :private="!user"
-    :gameweek="gameweek"
-    :key="gameweek"
-  />
 </template>

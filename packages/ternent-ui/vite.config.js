@@ -9,11 +9,10 @@ export default defineConfig({
   },
   build: {
     lib: {
-      // Could also be a dictionary or array of multiple entry points
-      entry: resolve(__dirname, "src/components/index.js"),
-      name: "ternent-ui",
-      // the proper extensions will be added
-      fileName: "ternent-ui",
+      entry: {
+        components: resolve(__dirname, "src/components/index.js"),
+        use: resolve(__dirname, "src/use/index.js"),
+      },
     },
 
     rollupOptions: {

@@ -1,6 +1,5 @@
 import { provide, inject } from "vue";
 import { useAxios } from "./useAxios";
-import { supabaseClient } from "../service/supabase";
 
 const usePredictionServiceSymbol = Symbol("usePredictionService");
 
@@ -28,16 +27,6 @@ export function providePredictionService() {
     gameweek: Number
   ) {
     return api.get(`/predict/${username}/${competitionCode}/${gameweek}`);
-  }
-
-  async function getPredictionsCount(
-    username: string,
-    competitionCode: string,
-    gameweek: Number
-  ) {
-    return supabaseClient
-      .from("predictions")
-      .select("*", { count: "exact", head: true });
   }
 
   async function fetchPredictionTable(
@@ -72,7 +61,6 @@ export function providePredictionService() {
   const predictionService = {
     getPredictions,
     addPrediction,
-    getPredictionsCount,
     fetchPredictionTable,
     calculatePredictionTable,
     fetchLandingStats,

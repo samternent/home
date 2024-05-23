@@ -23,7 +23,10 @@ app.use(
   })
 );
 app.use(function (req, res, next) {
-  res.setHeader("Content-Security-Policy", "default-src 'self';");
+  res.setHeader(
+    "Content-Security-Policy",
+    "default-src 'self' unsafe-inline; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline';"
+  );
   res.setHeader("X-XSS-Protection", "0");
   res.setHeader("X-Frame-Options", "DENY");
   res.setHeader("Referrer-Policy", "same-origin");
@@ -39,11 +42,12 @@ app.use(function (req, res, next) {
 const port = "3000";
 app.set("port", port);
 
-const unauthenticatedRoutes = [
-  /\/landing-stats/,
-  /\/football-data\//,
-  /\/predict\/[A-Z]*\/calculate/,
-  /\/predict\/[A-Z]*\/table/,
+const authenticatedRoutes = [
+  // /\/$/,
+  // /\/landing-stats/,
+  // /\/football-data\//,
+  // /\/predict\/[A-Z]*\/calculate/,
+  // /\/predict\/[A-Z]*\/table/,
 ];
 
 app.use(async function (req, res, next) {
@@ -52,7 +56,7 @@ app.use(async function (req, res, next) {
   );
   res.setHeader("x-api-version", apiVersion);
 
-  const isAuthorizedRoute = unauthenticatedRoutes.some((route) => {
+  const isAuthorizedRoute = !authenticatedRoutes.some((route) => {
     return route.test(req.url);
   });
   if (isAuthorizedRoute) {

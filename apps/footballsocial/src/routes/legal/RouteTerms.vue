@@ -23,8 +23,8 @@ import { SBrandHeader } from "ternent-ui/components";
             </ul>
         </p>
 
-        <h2 class="text-xl font-semibold mb-2">Intellectual Property</h2>
-        <p class="mb-4">All content and materials available on FootballSocial.app, including but not limited to text, graphics, logos, images, and software, are the property of FootballSocial.app and are protected by copyright and intellectual property laws.</p>
+        <!-- <h2 class="text-xl font-semibold mb-2">Intellectual Property</h2>
+        <p class="mb-4">All content and materials available on FootballSocial.app, including but not limited to text, graphics, logos, images, and software, are the property of FootballSocial.app and are protected by copyright and intellectual property laws.</p> -->
 
         <h2 class="text-xl font-semibold mb-2">Limitation of Liability</h2>
         <p class="mb-4">FootballSocial.app and its affiliates, directors, employees, or agents shall not be liable for any direct, indirect, incidental, special, or consequential damages arising out of or in any way connected with the use or inability to use the App.</p>

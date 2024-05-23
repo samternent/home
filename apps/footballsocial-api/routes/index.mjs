@@ -1,5 +1,5 @@
 import express from "express";
-import predictRoutes from "./predictRoutes.mjs";
+import predictRoutes from "./predict/index.mjs";
 import footballDataProxy from "../services/footballDataProxy.mjs";
 import { supabaseClient } from "../services/supabase.mjs";
 
@@ -17,6 +17,7 @@ router.get("/football-data/*", async function (req, res) {
   return res.send(data);
 });
 
+// Stats
 router.get("/landing-stats", async function (req, res) {
   const { count: predictionCount } = await supabaseClient
     .from("predictions")
