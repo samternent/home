@@ -69,8 +69,16 @@ const links = [
       <div
         class="flex justify-between w-full max-w-6xl border-b border-base-300 pb-2 items-center"
       >
-        <RouterLink to="/" class="btn btn-ghost text-lg">
-          <img src="/android-chrome-192x192.png" class="w-8 h-8" />
+        <RouterLink
+          to="/"
+          class="btn btn-ghost text-lg"
+          aria-label="Fooball Social"
+        >
+          <img
+            src="/android-chrome-192x192.png"
+            class="w-8 h-8"
+            alt="Football Social"
+          />
         </RouterLink>
         <UserMenu v-if="profile" />
         <div v-else-if="!user">
