@@ -45,11 +45,11 @@ watch(
 const tabs = computed(() => [
   {
     title: "Season",
-    path: `/leagues/${props.competitionCode}/table/season`,
+    path: `/l/${props.competitionCode}/table/season`,
   },
   {
     title: "Gameweek",
-    path: `/leagues/${props.competitionCode}/table/gameweek`,
+    path: `/l/${props.competitionCode}/table/gameweek`,
   },
 ]);
 </script>

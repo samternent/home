@@ -13,7 +13,13 @@ export default [
     component: () => import("./RouteHome.vue"),
   },
   {
-    path: '/:path(.*)*',
+    path: "/:path(.*)*",
     redirect: "/",
+  },
+  {
+    path: "/leagues/:part*",
+    redirect(from) {
+      return `/l/${from.params.part.join("/")}`;
+    },
   },
 ];

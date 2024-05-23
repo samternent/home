@@ -1,8 +1,6 @@
-import { RouteLocation } from "vue-router";
-
 export const leagueRoutes = [
   {
-    path: "/leagues/:competitionCode",
+    path: "/l/:competitionCode",
     props: true,
     component: () => import("./RouteLeague.vue"),
     meta: {
@@ -11,22 +9,22 @@ export const leagueRoutes = [
     children: [
       {
         path: "",
-        redirect(to: any) {
-          return `/leagues/${to.params.competitionCode || "PL"}/${
+        redirect(to) {
+          return `/l/${to.params.competitionCode || "PL"}/${
             window.localStorage.getItem("lastLeaguePath") || "predictions"
           }`;
         },
       },
       {
         path: "standings",
-        redirect(to: any) {
-          return `/leagues/${to.params.competitionCode || "PL"}/table`;
+        redirect(to) {
+          return `/l/${to.params.competitionCode || "PL"}/table`;
         },
       },
       {
         path: "table",
         component: () => import("./RouteLeagueTable.vue"),
-        beforeEnter(to: RouteLocation) {
+        beforeEnter(to) {
           window.localStorage.setItem("lastLeaguePath", "table");
           window.localStorage.setItem("lastLeagueTablePath", "season");
         },
@@ -34,19 +32,17 @@ export const leagueRoutes = [
         children: [
           {
             path: "",
-            redirect(to: any) {
-              return `/leagues/${
-                to.params.competitionCode || "PL"
-              }/table/season`;
+            redirect(to) {
+              return `/l/${to.params.competitionCode || "PL"}/table/season`;
             },
           },
           {
             path: "season",
             component: () => import("./RouteLeagueTableSeason.vue"),
-            beforeEnter(to: RouteLocation) {
+            beforeEnter(to) {
               window.localStorage.setItem("lastLeagueTablePath", "gameweek");
             },
-            props(route: any) {
+            props(route) {
               return {
                 ...route.params,
                 showGameweekResults: true,
@@ -56,10 +52,10 @@ export const leagueRoutes = [
           {
             path: "gameweek",
             component: () => import("./RouteLeagueTableGameweek.vue"),
-            beforeEnter(to: RouteLocation) {
+            beforeEnter(to) {
               window.localStorage.setItem("lastLeagueTablePath", "gameweek");
             },
-            props(route: any) {
+            props(route) {
               return {
                 ...route.params,
                 showGameweekResults: true,
@@ -71,15 +67,15 @@ export const leagueRoutes = [
       {
         path: "predictions/:username?",
         component: () => import("./RouteLeaguePredictions.vue"),
-        beforeEnter(to: RouteLocation) {
+        beforeEnter(to) {
           window.localStorage.setItem("lastLeaguePath", "predictions");
         },
         props: true,
       },
       {
         path: "*",
-        redirect(to: any) {
-          return `/leagues/${to.params.competitionCode || "PL"}/${
+        redirect(to) {
+          return `/l/${to.params.competitionCode || "PL"}/${
             window.localStorage.getItem("lastLeaguePath") || "predictions"
           }`;
         },

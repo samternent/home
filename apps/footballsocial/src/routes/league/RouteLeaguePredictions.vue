@@ -24,9 +24,7 @@ const backPath = window.localStorage.getItem("lastLeagueTablePath");
   <div class="flex flex-col w-full">
     <div v-if="username" class="my-1">
       <RouterLink
-        :to="`/leagues/${competitionCode}/table${
-          backPath ? `/${backPath}` : ''
-        }`"
+        :to="`/l/${competitionCode}/table${backPath ? `/${backPath}` : ''}`"
         class="btn btn-ghost btn-sm"
       >
         <svg
@@ -56,7 +54,7 @@ const backPath = window.localStorage.getItem("lastLeagueTablePath");
       @selected="
         (fixture) =>
           $router.push(
-            `/leagues/${competition?.code}/discussions/new?fixture=${fixture?.id}`
+            `/l/${competition?.code}/discussions/new?fixture=${fixture?.id}`
           )
       "
     />

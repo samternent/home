@@ -35,10 +35,8 @@ const props = defineProps({
 
 const { competitionCode } = toRefs(props);
 const title = useTitle();
-const colorMode = useColorMode();
 const { profile } = useCurrentUser();
 const { isWhiteLabel, host } = useWhiteLabel();
-const router = useRouter();
 const route = useRoute();
 
 const players = shallowRef(0);
@@ -157,10 +155,9 @@ onClickOutside(editCompetitionTarget, () => (editCompetition.value = false));
 const tabs = computed(() => [
   {
     title: "Predictions",
-    path: `/leagues/${competitionCode.value}/predictions`,
+    path: `/l/${competitionCode.value}/predictions`,
   },
-  { title: "Tables", path: `/leagues/${competitionCode.value}/table` },
-  // { title: "Leagues", path: `/leagues/${competitionCode.value}/leagues` },
+  { title: "Tables", path: `/l/${competitionCode.value}/table` },
 ]);
 const topThree = shallowRef([]);
 watch(
@@ -307,7 +304,7 @@ async function joinLeague() {
                   :key="`startWeek${gw.code}`"
                 >
                   <RouterLink
-                    :to="`/leagues/${gw.code}/predictions`"
+                    :to="`/l/${gw.code}/predictions`"
                     class="p-2 bg-base-100 border-b border-base-300 hover:bg-primary hover:bg-opacity-10 w-full"
                     @click="showMenu = !showMenu"
                     :class="{
@@ -355,13 +352,13 @@ async function joinLeague() {
         >
           <RouterLink
             v-if="competitionCode === 'EC'"
-            to="/leagues/PL/predictions"
+            to="/l/PL/predictions"
             class="btn btn-secondary w-full"
             >Premier League predictions</RouterLink
           >
           <RouterLink
             v-else
-            to="/leagues/EC/predictions"
+            to="/l/EC/predictions"
             class="btn btn-secondary w-full"
             >Place Euros predictions</RouterLink
           >

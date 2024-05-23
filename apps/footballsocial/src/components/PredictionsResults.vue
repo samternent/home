@@ -130,7 +130,7 @@ const { profile } = useCurrentUser();
               <RouterLink
                 class="league-link"
                 v-if="!private"
-                :to="`/leagues/${competitionCode}/predictions/${row.username}`"
+                :to="`/l/${competitionCode}/predictions/${row.username}`"
                 >{{ row.username }}</RouterLink
               >
               <p v-else>{{ row.username }}</p>

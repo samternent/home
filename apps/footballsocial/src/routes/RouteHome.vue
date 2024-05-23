@@ -5,7 +5,7 @@ import { useLocalStorage } from "@vueuse/core";
 const router = useRouter();
 const lastLeague = useLocalStorage("lastLeague", "EC");
 router.push({
-  path: `/leagues/${!lastLeague.value ? "EC" : lastLeague.value}`,
+  path: `/l/${!lastLeague.value ? "EC" : lastLeague.value}`,
 });
 </script>
 <template>
