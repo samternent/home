@@ -1,5 +1,11 @@
 # footballsocial
 
+## 0.14.11
+
+### Patch Changes
+
+- [`055c56f95cbfd7da23a5644678e2a0f4de43b5b2`](https://github.com/samternent/home/commit/055c56f95cbfd7da23a5644678e2a0f4de43b5b2) Thanks [@samternent](https://github.com/samternent)! - fix some lighthouse
+
 ## 0.14.10
 
 ### Patch Changes
