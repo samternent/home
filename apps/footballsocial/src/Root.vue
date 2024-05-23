@@ -1,8 +1,13 @@
 <script setup>
-import AppSetup from "./AppSetup.vue";
-import App from "./App.vue";
+import AppSetup from "@/module/app/AppSetup.vue";
+import ApiSetup from "@/module/app/ApiSetup.vue";
+import AppShell from "@/module/app/AppShell.vue";
 </script>
 
 <template>
-  <AppSetup><App /></AppSetup>
+  <AppSetup>
+    <ApiSetup>
+      <AppShell />
+    </ApiSetup>
+  </AppSetup>
 </template>

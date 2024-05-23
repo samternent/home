@@ -1,4 +1,4 @@
-# concords-footballsocial
+# footballsocial
 
 ## 0.14.9
 

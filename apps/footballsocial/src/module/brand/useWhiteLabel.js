@@ -1,5 +1,5 @@
 import { inject, shallowRef, computed, provide } from "vue";
-import { useCurrentUser } from "../../composables/useCurrentUser";
+import { useCurrentUser } from "../auth/useCurrentUser";
 import { useLocalStorage } from "@vueuse/core";
 
 const useWhiteLabelSymbol = Symbol("useWhiteLabel");

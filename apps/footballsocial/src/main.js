@@ -1,12 +1,12 @@
 import "ternent-ui/tailwind";
 import "ternent-ui/styles";
-import "./style.css";
+import "@/style.css";
 
 import { createApp } from "vue";
 
-import Root from "./Root.vue";
-import router from "./router";
-import registerSW from "./utils/registerSW";
+import Root from "@/Root.vue";
+import router from "@/route/router";
+import registerSW from "@/utils/registerSW";
 
 const app = createApp(Root);
 
