@@ -1,4 +1,3 @@
-import "ternent-ui/tailwind";
 import "ternent-ui/styles";
 import "@/style.css";
 

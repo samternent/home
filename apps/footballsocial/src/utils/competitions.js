@@ -31,10 +31,10 @@ export const competitions = [
     code: "SA",
     name: "Serie A",
   },
-  {
-    code: "FL1",
-    name: "Ligue 1",
-  },
+  // {
+  //   code: "FL1",
+  //   name: "Ligue 1",
+  // },
   {
     code: "DED",
     name: "Eredivisie",

@@ -145,11 +145,11 @@ watch(
 
       <div
         v-if="showClubMenu"
-        class="absolute bg-base-100 z-20 right-2 top-12 p-2 rounded flex flex-col overflow-hidden text-left shadow-lg w-64"
+        class="absolute bg-base-100 z-20 right-0 top-12 p-2 flex flex-col text-left shadow-lg w-64 max-h-96 overflow-auto"
       >
         <ul class="item">
           <li
-            class="flex font-light px-2 py-1 cursor-pointer hover:bg-base-200"
+            class="p-2 bg-base-100 border-b border-base-300 hover:bg-primary hover:bg-opacity-10 w-full cursor-pointer"
             v-for="_club in clubs"
             :key="`club${_club}`"
             @click="
@@ -196,14 +196,14 @@ watch(
 
       <div
         v-if="showMenu"
-        class="absolute bg-base-200 z-20 right-2 top-12 flex flex-col overflow-hidden text-left shadow-lg w-64"
+        class="absolute bg-base-100 z-20 right-0 top-12 flex flex-col overflow-hidden text-left shadow-lg w-64"
       >
         <ul class="item m-1">
           <li class="flex">
             <RouterLink
               @click="showMenu = false"
               to="/auth/profile"
-              class="p-2 bg-base-100 border-base-300 border-b hover:bg-base-200 w-full"
+              class="p-2 bg-base-100 border-b border-base-300 hover:bg-primary hover:bg-opacity-10 w-full cursor-pointer"
               >Profile</RouterLink
             >
           </li>

@@ -4,6 +4,7 @@ import { useLocalStorage, onClickOutside } from "@vueuse/core";
 import semverGt from "semver/functions/gt";
 import { useCurrentUser } from "../auth/useCurrentUser";
 import { useAppVersion } from "./useAppVersion";
+import AppLayout from "./AppLayout.vue";
 import { provideWhiteLabel } from "../brand/useWhiteLabel";
 import UserMenu from "../auth/UserMenu.vue";
 import Logo from "../brand/Logo.vue";
@@ -55,8 +56,8 @@ const links = [
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col" :data-theme="theme">
-    <div class="sticky top-0 z-10">
+  <AppLayout :data-theme="theme">
+    <template #banner>
       <SBanner
         v-if="hasNewVersion"
         @click="reloadPage"
@@ -64,48 +65,43 @@ const links = [
         message="A new version of the app is available."
         class="rounded-none"
       />
-    </div>
-    <div
-      class="flex-1 flex flex-col pt-2 bg-base-100 max-w-4xl w-full mx-auto min-h-screen"
-    >
-      <div
-        class="flex justify-between w-full max-w-6xl border-b border-base-300 pb-2 items-center"
+    </template>
+    <template #header>
+      <RouterLink
+        to="/"
+        class="btn btn-ghost text-lg"
+        aria-label="Fooball Social"
       >
-        <RouterLink
-          to="/"
-          class="btn btn-ghost text-lg"
-          aria-label="Fooball Social"
-        >
-          <img
-            src="/android-chrome-192x192.png"
-            class="w-8 h-8"
-            alt="Football Social"
-          />
-        </RouterLink>
-        <UserMenu v-if="profile" />
-        <div v-else-if="!user">
-          <div class="flex justify-center items-center">
-            <SButton
-              aria-label="Login"
-              to="/auth/login"
-              class="font-medium btn-sm"
-              type="primary"
-            >
-              Login
-            </SButton>
-            <span class="font-light mx-2">or</span>
-            <SButton
-              aria-label="Join"
-              to="/auth/signup"
-              class="btn-sm font-light"
-              type="secondary"
-            >
-              Join
-            </SButton>
-          </div>
+        <img
+          src="/android-chrome-192x192.png"
+          class="w-8 h-8"
+          alt="Football Social"
+        />
+      </RouterLink>
+      <UserMenu v-if="profile" />
+      <div v-else-if="!user">
+        <div class="flex justify-center items-center px-4">
+          <SButton
+            aria-label="Login"
+            to="/auth/login"
+            class="font-medium btn-sm"
+            type="primary"
+          >
+            Login
+          </SButton>
+          <span class="font-light mx-2">or</span>
+          <SButton
+            aria-label="Join"
+            to="/auth/signup"
+            class="btn-sm font-light"
+            type="secondary"
+          >
+            Join
+          </SButton>
         </div>
       </div>
-
+    </template>
+    <template #content>
       <div
         v-if="user && !profile?.username && ready"
         class="fixed top-0 left-0 bottom-0 right-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
@@ -115,43 +111,45 @@ const links = [
         </div>
       </div>
       <RouterView />
-    </div>
-    <SFooter :links="links">
-      <template #top>
-        <p class="text-sm font-light text-center">
-          Football data provided by the
-          <a
-            href="https://www.football-data.org/"
-            target="_blank"
-            referrerpolicy="noreferrer"
-            class="league-link font-bold"
-            >Football-Data.org</a
-          >
-          API.
-        </p>
-        <p class="text-sm font-light mb-4 text-center">
-          <a href="https://www.footballsocial.app/" class="font-bold mr-1"
-            >FootballSocial</a
-          >is independent, hand-crafted and open-source, by
-          <a
-            href="https://ternent.dev"
-            target="_blank"
-            referrerpolicy="noreferrer"
-            class="font-light hover:text-primary transition-colors group"
-          >
-            <span class="font-bold"
-              >ternent<span
-                class="font-light text-base-content border-b-2 transition-all border-transparent group-hover:border-primary"
-                >dot</span
-              >dev</span
-            ></a
-          >.
-        </p>
-        <Logo class="mx-auto h-auto w-12" />
-      </template>
-      <template #bottom>
-        <SThemeToggle v-model="colorTheme" class="mt-4" />
-      </template>
-    </SFooter>
-  </div>
+    </template>
+    <template #footer>
+      <SFooter :links="links">
+        <template #top>
+          <p class="text-sm font-light text-center">
+            Football data provided by the
+            <a
+              href="https://www.football-data.org/"
+              target="_blank"
+              referrerpolicy="noreferrer"
+              class="league-link font-bold"
+              >Football-Data.org</a
+            >
+            API.
+          </p>
+          <p class="text-sm font-light mb-4 text-center">
+            <a href="https://www.footballsocial.app/" class="font-bold mr-1"
+              >FootballSocial</a
+            >is independent, hand-crafted and open-source, by
+            <a
+              href="https://ternent.dev"
+              target="_blank"
+              referrerpolicy="noreferrer"
+              class="font-light hover:text-primary transition-colors group"
+            >
+              <span class="font-bold"
+                >ternent<span
+                  class="font-light text-base-content border-b-2 transition-all border-transparent group-hover:border-primary"
+                  >dot</span
+                >dev</span
+              ></a
+            >.
+          </p>
+          <Logo class="mx-auto h-auto w-12" />
+        </template>
+        <template #bottom>
+          <SThemeToggle v-model="colorTheme" class="mt-4" />
+        </template>
+      </SFooter>
+    </template>
+  </AppLayout>
 </template>
