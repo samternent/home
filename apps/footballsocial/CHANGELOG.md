@@ -1,5 +1,11 @@
 # footballsocial
 
+## 0.14.12
+
+### Patch Changes
+
+- [`6327ac108b5de821dc31f454c25e503ee3eb939e`](https://github.com/samternent/home/commit/6327ac108b5de821dc31f454c25e503ee3eb939e) Thanks [@samternent](https://github.com/samternent)! - fix font
+
 ## 0.14.11
 
 ### Patch Changes
