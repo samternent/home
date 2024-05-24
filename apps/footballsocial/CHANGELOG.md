@@ -1,5 +1,11 @@
 # footballsocial
 
+## 0.14.14
+
+### Patch Changes
+
+- [`77116898900ee6e25e2ff2bf7b56dfe9f52c5559`](https://github.com/samternent/home/commit/77116898900ee6e25e2ff2bf7b56dfe9f52c5559) Thanks [@samternent](https://github.com/samternent)! - I don't like the async module
+
 ## 0.14.13
 
 ### Patch Changes
