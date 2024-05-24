@@ -112,7 +112,7 @@ const links = [
           <SetUsername />
         </div>
       </div>
-      <RouterView />
+      <RouterView v-if="ready" />
     </div>
     <SFooter :links="links">
       <template #top>
