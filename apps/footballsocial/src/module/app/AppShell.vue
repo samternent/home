@@ -65,7 +65,9 @@ const links = [
         class="rounded-none"
       />
     </div>
-    <div class="flex-1 flex flex-col pt-2 bg-base-100 max-w-4xl w-full mx-auto">
+    <div
+      class="flex-1 flex flex-col pt-2 bg-base-100 max-w-4xl w-full mx-auto min-h-screen"
+    >
       <div
         class="flex justify-between w-full max-w-6xl border-b border-base-300 pb-2 items-center"
       >
@@ -112,7 +114,7 @@ const links = [
           <SetUsername />
         </div>
       </div>
-      <RouterView v-if="ready" />
+      <RouterView />
     </div>
     <SFooter :links="links">
       <template #top>

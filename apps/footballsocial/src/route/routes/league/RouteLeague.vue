@@ -2,7 +2,7 @@
 import { toRefs, watch, computed, shallowRef, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { DateTime } from "luxon";
-import {confetti} from '@tsparticles/confetti'
+import { confetti } from "@tsparticles/confetti";
 import {
   useTitle,
   useLocalStorage,
@@ -73,7 +73,7 @@ async function createConfetti() {
       return clearInterval(interval);
     }
 
-    const particleCount = 20 * (timeLeft / duration);
+    const particleCount = 5 * (timeLeft / duration);
 
     // since particles fall down, start a bit higher than random
     winnerCanvas.value?.confetti?.(
@@ -89,7 +89,6 @@ async function createConfetti() {
       })
     );
   }, 250);
-
 }
 onMounted(async () => {
   const { data } = await fetchLandingStats();
@@ -97,7 +96,6 @@ onMounted(async () => {
   predictionsCount.value = data?.predictions;
   table.value = data?.table;
   createConfetti();
-  
 });
 
 const {
@@ -165,19 +163,21 @@ watch(
   async (_competition) => {
     if (_competition?.name) {
       title.value = `${_competition.name} - Football Social`;
-      topThree.value = []
+      topThree.value = [];
 
       const {
         data: { table },
-      } = await fetchPredictionTable(_competition.code, null, isWhiteLabel.value ? host.value : null);
+      } = await fetchPredictionTable(
+        _competition.code,
+        null,
+        isWhiteLabel.value ? host.value : null
+      );
 
       topThree.value = table.slice(0, 3);
     }
   },
   { immediate: true }
 );
-
-
 
 const showMenu = shallowRef(false);
 const dropdownRef = shallowRef(null);
@@ -191,35 +191,37 @@ const dismissEurosBanner = useLocalStorage(
   false
 );
 
-const hasSeasonFinished = computed(() => (
+const hasSeasonFinished = computed(
+  () =>
     competition.value?.currentSeason?.endDate &&
-    DateTime.now().startOf('day') >= DateTime.fromISO(competition.value.currentSeason.endDate).startOf('day')
-));
-
-
+    DateTime.now().startOf("day") >=
+      DateTime.fromISO(competition.value.currentSeason.endDate).startOf("day")
+);
 
 const league = shallowRef(null);
 const canJoinLeague = shallowRef(false);
 
+watch(
+  [isWhiteLabel, host, profile],
+  async () => {
+    if (!isWhiteLabel.value || !host.value || !profile.value) return;
 
-watch([isWhiteLabel, host, profile], async () => {
-  if (!isWhiteLabel.value || !host.value || !profile.value) return;
+    const { data, error } = await supabaseClient
+      .from("leagues")
+      .select()
+      .eq("league_code", host.value);
 
-  const { data, error } = await supabaseClient
-    .from("leagues")
-    .select()
-    .eq("league_code", host.value);
+    const { data: membersData } = await supabaseClient
+      .from("league_members")
+      .select()
+      .eq("league_id", data[0].id)
+      .eq("username", profile.value.username);
 
-  const { data: membersData } = await supabaseClient
-    .from("league_members")
-    .select()
-    .eq("league_id", data[0].id)
-    .eq("username", profile.value.username);
-
-  
-  league.value = data[0];
-  canJoinLeague.value = !membersData.length;
-}, { immediate: true })
+    league.value = data[0];
+    canJoinLeague.value = !membersData.length;
+  },
+  { immediate: true }
+);
 
 async function joinLeague() {
   if (!league.value) return;
@@ -233,33 +235,58 @@ async function joinLeague() {
 
   window.location.reload();
 }
+const weekdays = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
+];
+
+const seasonEnds = computed(
+  () =>
+    `${
+      weekdays[
+        DateTime.fromISO(competition.value?.currentSeason.endDate).weekday - 1
+      ]
+    }, ${DateTime.fromISO(
+      competition.value?.currentSeason.endDate
+    ).toLocaleString(DateTime.DATE_MED)}`
+);
 </script>
 <template>
-  <div class="md:px-2 lg:px-4 flex-1 max-w-4xl mx-auto pt-0 w-full ">
+  <div
+    class="md:px-2 lg:px-4 flex-1 max-w-4xl mx-auto pt-0 w-full min-h-screen"
+  >
     <SHeader>
       <div
         class="px-1 p-2 font-light rounded-lg flex-1 flex flex-col justify-between"
       >
-        <div v-if="isWhiteLabel && profile?.username && canJoinLeague" class="alert rounded-none flex justify-between max-w-4xl w-full my-3">
+        <div
+          v-if="isWhiteLabel && profile?.username && canJoinLeague"
+          class="alert rounded-none flex justify-between max-w-4xl w-full my-3"
+        >
           <span>You are not part of this community.</span>
           <div class="sticky top-0">
             <SButton type="secondary" class="btn" @click="joinLeague">
               Join
             </SButton>
+          </div>
         </div>
-      </div>
         <FSLogo />
         <!-- ads -->
         <div
           class="flex flex-row lg:flex-row justify-start items-center lg:items-end w-full mb-4"
-          v-if="competition"
         >
           <div
             class="tracking-tightest font-light flex items-end lg:items-center group w-full"
           >
-            <p class="text-lg md:text-2xl mt-0 ml-2">
+            <p v-if="competition?.name" class="text-lg md:text-2xl mt-0 ml-2">
               {{ competition?.name }}
               <span
+                v-if="competition?.area?.name"
                 class="px-2 py-1 mx-2 lg:my-2 hidden md:inline-block md:text-2xl lg:text-3xl transition-color font-bold bg-primary tracking-tighter header text-primary-content border-b-2 border-secondary"
               >
                 {{ competition?.area?.name }}.
@@ -320,13 +347,42 @@ async function joinLeague() {
       </div>
     </SHeader>
 
-    <div
-      class="bg-base-content text-base-100 w-full mb-8 p-8 lg:flex flex-col relative border-t-2 border-primary hidden"
-      v-if="!dismissEurosBanner"
-    >
-      <div class="justify-between flex flex-col lg:flex-row items-bottom">
-        <SButton class="absolute top-0 right-0" @click="dismissEurosBanner = true">X</SButton>
-        <div class="text-xl font-light p-b flex-1">
+    <div class="p-2 relative bg-base-300 mb-4 flex my-2 items-center">
+      <div
+        class="flex relative w-full xs:w-1/3 flex-1 flex-col gap-1 h-full truncate px-2 mr-4 border-r-2 border-base-100"
+        v-if="competition && hasSeasonFinished && topThree[0]"
+      >
+        <canvas
+          ref="winnerCanvas"
+          class="absolute top-0 w-full left-0 h-full"
+        />
+        <p class="text-sm font-light truncate">
+          {{ competition?.name }} {{ currentSeasonFormat }}
+        </p>
+        <p class="text-3xl font-bold truncate">🏆 {{ topThree[0].username }}</p>
+        <p class="text-sm font-light truncate">
+          {{ topThree[0].points }} points
+        </p>
+      </div>
+      <div
+        class="flex relative w-full xs:w-1/3 flex-1 flex-col gap-1 h-full truncate mr-4 border-r-2 border-base-100"
+        v-else-if="competition"
+      >
+        <p class="text-sm font-light truncate">
+          {{ competition?.name }} {{ currentSeasonFormat }}
+        </p>
+        <p class="text-xl font-light truncate">{{ seasonEnds }}</p>
+        <p class="text-sm font-light truncate">Winner announced</p>
+      </div>
+      <div
+        class="flex relative w-full xs:w-1/3 flex-1 flex-col gap-1 h-full truncate mr-4 border-r-2 border-base-100"
+        v-else
+      ></div>
+
+      <div
+        class="w-2/3 flex justify-center flex-col lg:flex-row items-center px-4"
+      >
+        <div class="text-xl font-light p-b flex-1 hidden sm:flex">
           <span v-if="competitionCode === 'EC'">
             Fan of the
             <span class="transition-all font-bold tracking-tighter">
@@ -341,10 +397,6 @@ async function joinLeague() {
             >
             are coming!
           </span>
-          <p class="text-sm font-light tracing-tight mt-4">
-            TIP: We support 8 competitions. You can change competition at any
-            time by clicking the league name in the header.
-          </p>
         </div>
 
         <div
@@ -365,25 +417,8 @@ async function joinLeague() {
         </div>
       </div>
     </div>
-    <div
-      v-show="hasSeasonFinished && topThree[0]"
-      class="p-2 relative bg-base-300 h-32 mb-4  border-t-2 border-success"
-    >
-      <canvas ref="winnerCanvas" class="absolute top-0 w-full left-0 h-full" />
-
-      
-      <div class="flex flex-col justify-between items-center h-full" v-if="hasSeasonFinished && topThree[0]">
-        <p class="flex flex-col items-center">
-          <p class="text-sm font-light">{{ competition?.name }} {{ currentSeasonFormat }}</p>
-          <p class="font-medium">WINNER</p></p>
-        <p class="text-3xl font-bold">{{ topThree[0].username }}</p>
-        <p class="font-light">
-          <p class="text-sm">{{ topThree[0].points}} points</p>
-        </p>
-      </div>
-    </div>
     <STabs :items="tabs" :path="route.path" />
-    <div class="flex-col mb-16 w-full mt-4">
+    <div class="flex-col mb-16 w-full mt-4 min-h-screen">
       <RouterView
         v-if="!loading"
         :competitionCode="competitionCode"
@@ -393,12 +428,13 @@ async function joinLeague() {
         v-else-if="error"
         class="flex-1 mx-auto max-w-6xl w-full flex flex-col lg:justify-center lg:items-center p-4 lg:p-8 my-6"
       >
-        <h1 class="text-5xl font-bold text-error">Whoops, something went wrong!</h1>
+        <h1 class="text-5xl font-bold text-error">
+          Whoops, something went wrong!
+        </h1>
         <p class="my-4">Please refresh or try again later.</p>
-        
       </div>
-    
-      <div v-else class="flex justify-center items-center w-full">
+
+      <div v-else class="flex justify-center items-center w-full min-h-screen">
         <div
           class="p-4 bg-gradient-to-tr animate-spin from-[#ff5757] to-[#8c52ff] rounded-full my-32"
         >
