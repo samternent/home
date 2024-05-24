@@ -1,5 +1,11 @@
 # footballsocial
 
+## 0.14.15
+
+### Patch Changes
+
+- [`7f35e6d447197d888a304fd46d41aae630abc548`](https://github.com/samternent/home/commit/7f35e6d447197d888a304fd46d41aae630abc548) Thanks [@samternent](https://github.com/samternent)! - Header styles
+
 ## 0.14.14
 
 ### Patch Changes
