@@ -95,7 +95,6 @@ onMounted(async () => {
   players.value = data?.users;
   predictionsCount.value = data?.predictions;
   table.value = data?.table;
-  createConfetti();
 });
 
 const {
@@ -129,22 +128,6 @@ function formatYearRange(dateStr1, dateStr2) {
 }
 
 const currentSeasonFormat = shallowRef();
-watch(
-  competition,
-  (_competition) => {
-    if (_competition) {
-      title.value = `${_competition?.name} - Football Social`;
-      lastLeague.value = _competition?.code;
-      currentSeasonFormat.value = formatYearRange(
-        _competition.currentSeason.startDate,
-        _competition.currentSeason.endDate
-      );
-      createConfetti();
-    }
-  },
-  { immediate: true }
-);
-
 const editCompetition = shallowRef(false);
 const editCompetitionTarget = shallowRef(null);
 
@@ -161,8 +144,8 @@ const topThree = shallowRef([]);
 watch(
   competition,
   async (_competition) => {
-    if (_competition?.name) {
-      title.value = `${_competition.name} - Football Social`;
+    if (_competition) {
+      title.value = `${_competition?.name} - Football Social`;
       topThree.value = [];
 
       const {
@@ -174,10 +157,17 @@ watch(
       );
 
       topThree.value = table.slice(0, 3);
+      lastLeague.value = _competition?.code;
+      currentSeasonFormat.value = formatYearRange(
+        _competition.currentSeason.startDate,
+        _competition.currentSeason.endDate
+      );
     }
   },
   { immediate: true }
 );
+
+watch(winnerCanvas, createConfetti, { immediate: true });
 
 const showMenu = shallowRef(false);
 const dropdownRef = shallowRef(null);
@@ -210,6 +200,13 @@ watch(
       .from("leagues")
       .select()
       .eq("league_code", host.value);
+
+    if (!data.length || error) {
+      canJoinLeague.value = false;
+      league.value = null;
+
+      return;
+    }
 
     const { data: membersData } = await supabaseClient
       .from("league_members")
@@ -347,7 +344,7 @@ const seasonEnds = computed(
       </div>
     </SHeader>
 
-    <div class="p-2 relative bg-base-300 mb-4 flex my-2 items-center">
+    <div class="p-2 relative bg-base-300 mb-8 flex my-2 items-center">
       <div
         class="flex relative w-full xs:w-1/3 flex-1 flex-col gap-1 h-full truncate px-2 mr-4 border-r-2 border-base-100"
         v-if="competition && hasSeasonFinished && topThree[0]"
@@ -356,7 +353,7 @@ const seasonEnds = computed(
           ref="winnerCanvas"
           class="absolute top-0 w-full left-0 h-full"
         />
-        <p class="text-sm font-light truncate">
+        <p class="text-sm font-base truncate">
           {{ competition?.name }} {{ currentSeasonFormat }}
         </p>
         <p class="text-3xl font-bold truncate">🏆 {{ topThree[0].username }}</p>
@@ -365,14 +362,14 @@ const seasonEnds = computed(
         </p>
       </div>
       <div
-        class="flex relative w-full xs:w-1/3 flex-1 flex-col gap-1 h-full truncate mr-4 border-r-2 border-base-100"
+        class="flex relative w-full xs:w-1/3 flex-1 flex-col gap-1 h-full truncate mr-4 border-r-2 border-base-100 px-2"
         v-else-if="competition"
       >
-        <p class="text-sm font-light truncate">
+        <p class="text-sm font-base truncate">
           {{ competition?.name }} {{ currentSeasonFormat }}
         </p>
+        <p class="text-sm font-light truncate">Winner announced:</p>
         <p class="text-xl font-light truncate">{{ seasonEnds }}</p>
-        <p class="text-sm font-light truncate">Winner announced</p>
       </div>
       <div
         class="flex relative w-full xs:w-1/3 flex-1 flex-col gap-1 h-full truncate mr-4 border-r-2 border-base-100"
