@@ -1,5 +1,11 @@
 # footballsocial
 
+## 0.14.17
+
+### Patch Changes
+
+- [`a66f713819fb17cf4a924761d571bcf79b8a44f1`](https://github.com/samternent/home/commit/a66f713819fb17cf4a924761d571bcf79b8a44f1) Thanks [@samternent](https://github.com/samternent)! - fix loading
+
 ## 0.14.16
 
 ### Patch Changes
