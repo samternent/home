@@ -14,12 +14,12 @@ const { x, y } = useWindowScroll();
 </script>
 <template>
   <div>
-    <div class="sticky top-0 z-10">
+    <div class="sticky top-0 z-20">
       <slot name="banner" />
     </div>
     <div class="bg-base-100 max-w-4xl w-full mx-auto min-h-screen">
       <div
-        class="flex border-b border-base-300 items-center sticky top-0 z-20 bg-base-100 justify-between transition-shadow duration-300"
+        class="flex border-b border-base-300 items-center sticky top-0 z-30 bg-base-100 justify-between transition-shadow duration-300"
         :class="{ 'shadow-md': y > 0 }"
       >
         <!-- <div

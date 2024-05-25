@@ -319,7 +319,7 @@ const seasonEnds = computed(
 
             <div
               v-if="showMenu"
-              class="absolute bg-base-100 z-10 right-0 top-12 flex flex-col overflow-hidden text-left shadow-lg w-64"
+              class="absolute bg-base-100 z-20 right-0 top-12 flex flex-col overflow-hidden text-left shadow-lg w-64"
             >
               <ul class="item">
                 <li
