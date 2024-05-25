@@ -1,5 +1,11 @@
 # footballsocial
 
+## 0.14.18
+
+### Patch Changes
+
+- [`f3a23bcc3200a3cc41d632e6b2bd1978c1fc0af4`](https://github.com/samternent/home/commit/f3a23bcc3200a3cc41d632e6b2bd1978c1fc0af4) Thanks [@samternent](https://github.com/samternent)! - Fix zidnex
+
 ## 0.14.17
 
 ### Patch Changes
