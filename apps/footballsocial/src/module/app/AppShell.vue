@@ -56,7 +56,7 @@ const links = [
 </script>
 
 <template>
-  <AppLayout :data-theme="theme">
+  <AppLayout :data-theme="theme" v-if="ready">
     <template #banner>
       <SBanner
         v-if="hasNewVersion"

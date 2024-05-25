@@ -234,15 +234,28 @@ function formatKickOff(utcDate) {
   )}`;
 }
 
-const alertMessage = computed(() =>
-  gameweekPoints.value
-    ? `${gameweekPoints.value} points scored.`
-    : `${username.value ? `${username.value}s` : "Your"} predictions are in!`
-);
+const alertMessage = computed(() => {
+  if (!serverPredictions.value) {
+    return ``;
+  }
+  if (!hasPredictions.value) {
+    return `No predictions made`;
+  }
+  if (gameweekPoints.value) {
+    return `🎉 ${gameweekPoints.value} points scored.`;
+  }
+});
 
 function isSameDay(date1, date2) {
   return DateTime.fromISO(date1).hasSame(DateTime.fromISO(date2), "day");
 }
+
+const firstKickOff = computed(() => {
+  return DateTime.fromISO(fixtures.value[0]?.utcDate);
+});
+const hasKickOffStarted = computed(() => {
+  return DateTime.fromISO(firstKickOff.value) < DateTime.now();
+});
 </script>
 <template>
   <div class="w-full flex flex-col mx-auto max-w-6xl">
@@ -263,17 +276,17 @@ function isSameDay(date1, date2) {
           Gameweek {{ gw }}
         </option>
       </select>
-      <SCountdown v-if="fixtures" :time="fixtures[0]?.utcDate" />
-      <div v-else class="skeleton h-14 w-64"></div>
-    </div>
+      <div class="flex items-center gap-8">
+        <div v-if="hasKickOffStarted">{{ alertMessage }}</div>
+        <div class="text-3xl" v-if="hasPredictions">✅</div>
 
-    <SAlert
-      v-if="hasPredictions || gameweekPoints"
-      class="!bg-base-200 border-t-2 border-success italic"
-      :message="alertMessage"
-    >
-      <template #icon>🎉</template>
-    </SAlert>
+        <SCountdown
+          v-if="fixtures[0]?.utcDate && !hasKickOffStarted"
+          :time="fixtures[0]?.utcDate"
+        />
+        <div v-else-if="!fixtures" class="skeleton h-14 w-64"></div>
+      </div>
+    </div>
 
     <div class="flex flex-col w-full">
       <div
@@ -362,15 +375,3 @@ function isSameDay(date1, date2) {
     </div>
   </div>
 </template>
-<style scoped>
-.v-enter-active,
-.v-leave-active {
-  transition: opacity 0.9s ease;
-  transition-duration: 0.2s;
-}
-
-.v-enter-from,
-.v-leave-to {
-  opacity: 1;
-}
-</style>
