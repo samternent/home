@@ -1,5 +1,5 @@
 # Football Social
 
-> The friendly football score prediction game.
+> The weekly football score prediction game.
 
 - https://footballsocial.app

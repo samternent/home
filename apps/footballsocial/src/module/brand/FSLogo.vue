@@ -44,6 +44,6 @@ const { isWhiteLabel, host, colorTheme } = useWhiteLabel();
     v-if="!isWhiteLabel"
     class="flex mb-5 items-center font-light tracking-wider text-base-content text-xl md:text-2xl lg:text-3xl [transform:translateY(-10px)] md:[transform:translateY(-20px)] lg:[transform:translateY(-30px)] px-1 md:px-2 lg:px-4"
   >
-    The friendly football score prediction game.
+    The weekly football score prediction game.
   </div>
 </template>
