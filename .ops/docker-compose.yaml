@@ -4,6 +4,10 @@ services:
     restart: always
     ports:
       - "8001:3000"
+      - "8003:3001"
+      - "1935:1935"
+    networks:
+      - ternent-api
     env_file:
       - "./ternent-api/.env"
 
@@ -14,3 +18,8 @@ services:
       - "8002:3000"
     env_file:
       - "./footballsocial-api/.env"
+
+networks:
+  ternent-api:
+    driver: bridge
+    name: ternent-api
