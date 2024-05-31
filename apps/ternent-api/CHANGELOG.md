@@ -1,5 +1,11 @@
 # ternent-api
 
+## 0.1.1
+
+### Patch Changes
+
+- [`60f1766530663ed1d1458b8cc23c24f33c97ec13`](https://github.com/samternent/home/commit/60f1766530663ed1d1458b8cc23c24f33c97ec13) Thanks [@samternent](https://github.com/samternent)! - Fix docker build
+
 ## 0.1.0
 
 ### Minor Changes
