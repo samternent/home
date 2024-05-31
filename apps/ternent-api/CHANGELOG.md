@@ -1,5 +1,11 @@
 # ternent-api
 
+## 0.1.0
+
+### Minor Changes
+
+- [`0dadc643ac4070dd29d04dd8afc682d6099764ff`](https://github.com/samternent/home/commit/0dadc643ac4070dd29d04dd8afc682d6099764ff) Thanks [@samternent](https://github.com/samternent)! - New docker image to support media server
+
 ## 0.0.24
 
 ### Patch Changes
