@@ -10,18 +10,15 @@ kubectl create ns backend
 ```
 
 ```bash
-kubectl apply -f .ops/ternent-api/deployment.yaml
-kubectl apply -f .ops/ternent-api/service.yaml
+kubectl apply -f .ops/ternent-api/deployment.yaml,.ops/ternent-api/service.yaml
 ```
 
 ```bash
-kubectl apply -f .ops/concords-api/deployment.yaml
-kubectl apply -f .ops/concords-api/service.yaml
+kubectl apply -f .ops/concords-api/deployment.yaml,.ops/concords-api/service.yaml
 ```
 
 ```bash
-kubectl apply -f .ops/footballsocial-api/deployment.yaml
-kubectl apply -f .ops/footballsocial-api/service.yaml
+kubectl apply -f .ops/footballsocial-api/deployment.yaml,.ops/footballsocial-api/service.yaml
 ```
 
 ```bash
@@ -43,3 +40,7 @@ kubectl apply -f .ops/ternent-api/host.yaml
 kubectl apply -f .ops/concords-api/host.yaml
 kubectl apply -f .ops/footballsocial-api/host.yaml
 ```
+
+kubectl patch deployment ingress-nginx-controller -n ingress-nginx --patch "$(cat .ops/manifests/nginx-ingress-controller-patch.yaml)"
+
+kubectl patch service ingress-nginx-controller -n ingress-nginx --patch "$(cat .ops/manifests/nginx-ingress-svc-controller-patch.yaml)"

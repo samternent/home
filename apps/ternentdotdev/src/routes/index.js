@@ -18,6 +18,10 @@ export default [
         component: () => import("./apps/RouteAppsSweetShop.vue"),
       },
       {
+        path: "stream",
+        component: () => import("./stream/RouteStream.vue"),
+      },
+      {
         path: "s",
         component: () => import("./slides/RouteSlides.vue"),
         children: [

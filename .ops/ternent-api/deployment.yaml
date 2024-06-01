@@ -17,8 +17,15 @@ spec:
           image: samternent/ternent-api:latest
           imagePullPolicy: Always
           ports:
-            - name: http
-              containerPort: 3000
+            - containerPort: 3000
+              hostPort: 80
+              protocol: TCP
+            - containerPort: 3001
+              hostPort: 3001
+              protocol: TCP
+            - containerPort: 1935
+              hostPort: 1935
+              protocol: TCP
           env:
             - name: DIGITALOCEAN_TOKEN
               valueFrom:
