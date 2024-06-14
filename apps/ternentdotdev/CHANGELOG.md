@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.2.44
+
+### Patch Changes
+
+- [`65dbd16452e135a4ec6ed48be54e8a67e145c6bd`](https://github.com/samternent/home/commit/65dbd16452e135a4ec6ed48be54e8a67e145c6bd) Thanks [@samternent](https://github.com/samternent)! - Updates emails and a bit of nav
+
 ## 0.2.43
 
 ### Patch Changes
