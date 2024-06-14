@@ -201,7 +201,7 @@ const themeConfig = computed({
       >,
       <RouterLink to="/app" class="link link-secondary">App Layout</RouterLink>]
     </li>
-    <li>
+    <!-- <li>
       <span class="text-primary">slides:</span> [<RouterLink
         to="/s/teamwork-frontend"
         class="link link-secondary"
@@ -210,6 +210,14 @@ const themeConfig = computed({
       <RouterLink to="/s/router-drawers" class="link link-secondary"
         >Router Drawers</RouterLink
       >]
+    </li> -->
+    <li>
+      <span class="text-primary">packages:</span> [<a
+        href="https://github.com/samternent/home/packages/ternent-ui"
+        target="_blank"
+        class="link link-secondary"
+        >Teamwork Front End</a
+      >, ]
     </li>
   </ul>
 </template>

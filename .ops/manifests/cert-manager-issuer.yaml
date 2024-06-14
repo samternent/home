@@ -5,7 +5,7 @@ metadata:
   namespace: backend
 spec:
   acme:
-    email: sam.ternent@gmail.com
+    email: hello@ternent.dev
     server: https://acme-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
       name: letsencrypt-nginx-private-key

@@ -53,7 +53,7 @@ const appLegalName = import.meta.env.VITE_APP_LEGAL_NAME;
     <h2 class="text-xl font-semibold my-2">User Rights</h2>
     <p class="mb-4">
       Users have the right to contact {{ appLegalName }} via email at
-      sam.ternent@gmail.com for any queries or concerns regarding their data.
+      hello@ternent.dev for any queries or concerns regarding their data.
       Account deletion requests can be initiated directly through the User's
       profile page. To ensure security, identity verification may be necessary
       before completing deletion requests.
@@ -86,7 +86,7 @@ const appLegalName = import.meta.env.VITE_APP_LEGAL_NAME;
     <p class="mb-4">
       For any inquiries or clarifications regarding this Privacy Policy or the
       practices of {{ appLegalName }}, please contact us at
-      <a href="mailto:sam.ternent@gmail.com">sam.ternent@gmail.com</a>.
+      <a href="mailto:hello@ternent.dev">hello@ternent.dev</a>.
     </p>
   </div>
 </template>

@@ -37,6 +37,6 @@ const appLegalName = import.meta.env.VITE_APP_LEGAL_NAME;
         <p class="mb-4">These Terms are governed by and construed in accordance with the laws of [Your Country], without regard to its conflict of law principles.</p>
 
         <h2 class="text-xl font-semibold mb-2">Contact Us</h2>
-        <p class="mb-4">For any inquiries or clarifications regarding these Terms and Conditions or the practices of {{ appLegalName }}, please contact us at <a href="mailto:sam.ternent@gmail.com">sam.ternent@gmail.com</a>.</p>
+        <p class="mb-4">For any inquiries or clarifications regarding these Terms and Conditions or the practices of {{ appLegalName }}, please contact us at <a href="mailto:hello@ternent.dev">hello@ternent.dev</a>.</p>
   </div>
 </template>

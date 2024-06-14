@@ -4,7 +4,7 @@
 
 **DO NOT** report security vulnerabilities directly on the public repository. Instead, please follow our responsible disclosure policy.
 
-If you discover a security vulnerability in this project, we kindly request you to notify us immediately by sending an email to [sam.ternent@gmail.com](mailto:sam.ternent@gmail.com). We will acknowledge your email within 72 hours and work to address the issue as soon as possible.
+If you discover a security vulnerability in this project, we kindly request you to notify us immediately by sending an email to [hello@ternent.dev](mailto:hello@ternent.dev). We will acknowledge your email within 72 hours and work to address the issue as soon as possible.
 
 Please provide the following details in your report:
 
@@ -36,6 +36,6 @@ When reporting a vulnerability, you may classify its severity based on the follo
 
 ## Contact
 
-If you have any questions or need further assistance, feel free to reach out to us at [sam.ternent@gmail.com](mailto:sam.ternent@gmail.com).
+If you have any questions or need further assistance, feel free to reach out to us at [hello@ternent.dev](mailto:hello@ternent.dev).
 
 Thank you for your contribution to the security of our project.

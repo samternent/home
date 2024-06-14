@@ -205,5 +205,5 @@ These Terms of Use and any policies or operating rules posted by us on the Site 
 
 In order to resolve a complaint regarding the Site or to receive further information regarding use of the Site, please contact us at:
 
-- sam.ternent@gmail.com
+- hello@ternent.dev
 - 07960173656

@@ -23,10 +23,7 @@ const props = defineProps({
     type: String,
     required: true,
   },
-  gameweek: {
-    type: Number,
-    default: null,
-  },
+
   season: {
     type: String,
     default: null,
@@ -344,9 +341,11 @@ const seasonEnds = computed(
       </div>
     </SHeader>
 
-    <div class="p-2 relative bg-base-300 mb-8 flex my-2 items-center">
+    <div
+      class="p-2 relative bg-base-300 mb-8 flex flex-col md:flex-row my-2 items-center"
+    >
       <div
-        class="flex relative w-full xs:w-1/3 flex-1 flex-col gap-1 h-full truncate px-2 mr-4 border-r-2 border-base-100"
+        class="flex relative w-full xs:w-1/3 flex-1 flex-col gap-1 h-full items-center truncate px-2 mr-4 border-r-2 border-base-100"
         v-if="competition && hasSeasonFinished && topThree[0]"
       >
         <canvas
@@ -362,7 +361,7 @@ const seasonEnds = computed(
         </p>
       </div>
       <div
-        class="flex relative w-full xs:w-1/3 flex-1 flex-col gap-1 h-full truncate mr-4 border-r-2 border-base-100 px-2"
+        class="flex relative w-full xs:w-1/3 flex-1 flex-col gap-1 h-full items-center truncate mr-4 md:border-r-2 border-base-100 px-2"
         v-else-if="competition"
       >
         <p class="text-sm font-base truncate">
@@ -376,42 +375,19 @@ const seasonEnds = computed(
         v-else
       ></div>
 
-      <div
-        class="w-2/3 flex justify-center flex-col lg:flex-row items-center px-4"
-      >
-        <div class="text-xl font-light p-b flex-1 hidden sm:flex">
-          <span v-if="competitionCode === 'EC'">
-            Fan of the
-            <span class="transition-all font-bold tracking-tighter">
-              Premier League</span
-            >
-            ?
-          </span>
-          <span v-else>
-            The
-            <span class="transition-all font-bold tracking-tighter">
-              European Championships</span
-            >
-            are coming!
-          </span>
-        </div>
-
-        <div
-          class="w-full lg:w-64 flex justify-center items-center lg:mx-4 mx-auto my-4"
+      <div class="w-64 flex justify-center items-center lg:mx-4 mx-auto my-4">
+        <RouterLink
+          v-if="competitionCode === 'EC'"
+          to="/l/PL/predictions"
+          class="btn btn-secondary w-full"
+          >Premier League predictions</RouterLink
         >
-          <RouterLink
-            v-if="competitionCode === 'EC'"
-            to="/l/PL/predictions"
-            class="btn btn-secondary w-full"
-            >Premier League predictions</RouterLink
-          >
-          <RouterLink
-            v-else
-            to="/l/EC/predictions"
-            class="btn btn-secondary w-full"
-            >Place Euros predictions</RouterLink
-          >
-        </div>
+        <RouterLink
+          v-else
+          to="/l/EC/predictions"
+          class="btn btn-secondary w-full"
+          >Place Euros predictions</RouterLink
+        >
       </div>
     </div>
     <STabs :items="tabs" :path="route.path" />

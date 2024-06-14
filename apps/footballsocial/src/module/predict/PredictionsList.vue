@@ -8,6 +8,7 @@ import PredictionCard from "../predict/PredictionCard.vue";
 import { getCompetitionGameweeks } from "@/utils/competitions";
 
 import { SCountdown, SButton, SAlert } from "ternent-ui/components";
+import { useCompetitionLoader } from "@/module/football-data/useCompetitionLoader";
 
 const props = defineProps({
   competitionCode: {
@@ -37,15 +38,13 @@ const props = defineProps({
 });
 
 const { addPrediction, getPredictions } = usePredictionService();
+const { items: competition } = useCompetitionLoader();
+
 const competitionCode = computed(() => props.competitionCode);
-const currentGameweek = computed(() => props.currentGameweek);
 const currentSeason = computed(() => props.currentSeason);
 const stage = computed(() => props.stage);
 const username = computed(() => props.username);
-const overrideGameweek = shallowRef(currentGameweek.value);
-const gameweek = computed(
-  () => overrideGameweek.value || currentGameweek.value
-);
+const gameweek = computed(() => props.currentGameweek);
 
 const gameweeks = computed(() =>
   getCompetitionGameweeks(props.competitionCode)
@@ -239,7 +238,7 @@ const alertMessage = computed(() => {
     return ``;
   }
   if (!hasPredictions.value) {
-    return `No predictions made`;
+    return `Predictions not made`;
   }
   if (gameweekPoints.value) {
     return `🎉 ${gameweekPoints.value} points scored.`;
@@ -256,35 +255,82 @@ const firstKickOff = computed(() => {
 const hasKickOffStarted = computed(() => {
   return DateTime.fromISO(firstKickOff.value) < DateTime.now();
 });
+const hasNextWeekPredictions = computed(() => {
+  return gameweeks.value.includes(gameweek.value + 1);
+});
+const hasLastWeekPredictions = computed(() => {
+  return gameweeks.value.includes(gameweek.value - 1);
+});
 </script>
 <template>
   <div class="w-full flex flex-col mx-auto max-w-6xl">
+    <div v-if="username" class="my-4 p-2 text-xl">
+      {{ username }}s predictions are {{ hasPredictions ? "in" : "not in" }}.
+    </div>
     <div
-      class="my-1 flex items-center justify-between px-2 md:px-0 font-light"
-      v-if="gameweekPoints > -1"
+      class="flex items-center justify-between px-2 md:px-0 font-light my-4"
+      v-else-if="gameweekPoints > -1 && !username"
     >
-      <select
-        v-model="overrideGameweek"
-        aria-label="Gameweek"
-        class="select select-bordered select-sm mr-4"
-      >
-        <option
-          v-for="gw in gameweeks"
-          :key="`gameweek_${competitionCode}_${gw}`"
-          :value="gw"
+      <div class="flex items-center">
+        <select
+          :value="gameweek"
+          aria-label="Gameweek"
+          class="select select-bordered select-sm mr-4"
+          @change="
+            (a) =>
+              $router.push(
+                `/l/${competitionCode}/predictions/${a.target.value}`
+              )
+          "
         >
-          Gameweek {{ gw }}
-        </option>
-      </select>
-      <div class="flex items-center gap-8">
-        <div v-if="hasKickOffStarted">{{ alertMessage }}</div>
-        <div class="text-3xl" v-if="hasPredictions">✅</div>
-
+          <option
+            v-for="gw in gameweeks"
+            :key="`gameweek_${competitionCode}_${gw}`"
+            :value="gw"
+          >
+            Gameweek {{ gw }}
+          </option>
+        </select>
+      </div>
+      <div class="flex justify-center flex-col gap-2">
         <SCountdown
           v-if="fixtures[0]?.utcDate && !hasKickOffStarted"
           :time="fixtures[0]?.utcDate"
         />
-        <div v-else-if="!fixtures" class="skeleton h-14 w-64"></div>
+        <div class="text-xl">{{ alertMessage }}</div>
+
+        <div v-if="hasNextWeekPredictions">
+          <SButton
+            v-if="
+              hasPredictions &&
+              gameweek === competition.currentSeason?.currentMatchday
+            "
+            :to="`/l/${competitionCode}/predictions/${gameweek + 1}`"
+            type="primary"
+            class="w-full btn-sm"
+            >Play next week</SButton
+          >
+        </div>
+        <!-- <SButton
+          v-if="hasNextWeekPredictions"
+          :to="`/l/${competitionCode}/predictions/${gameweek + 1}`"
+          type="ghost"
+          class="rounded-full btn-sm mr-4"
+          ><svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-4 h-4"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="m8.25 4.5 7.5 7.5-7.5 7.5"
+            />
+          </svg>
+        </SButton> -->
       </div>
     </div>
 
@@ -300,7 +346,7 @@ const hasKickOffStarted = computed(() => {
         >
           <div
             v-if="!isSameDay(fixture.utcDate, predictionsList[i - 1]?.utcDate)"
-            class="px-2 md:py-2 text-sm md:text-base font-light my-4 bg-primary text-primary-content inline-block border-b-2 border-secondary"
+            class="px-2 md:py-2 text-sm md:text-base font-medium my-4 inline-block border-b-2 border-primary"
           >
             {{ formatKickOff(fixture.utcDate) }}
           </div>

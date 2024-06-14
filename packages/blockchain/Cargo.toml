@@ -1,7 +1,7 @@
 [package]
 name = "blockchain"
 version = "0.1.0"
-authors = ["Sam Ternent <sam.ternent@gmail.com>"]
+authors = ["Sam Ternent <hello@ternent.dev>"]
 description = "A blockchain"
 license = "MIT/Apache-2.0"
 repository = "https://github.com/samternent/packages/blockchain"

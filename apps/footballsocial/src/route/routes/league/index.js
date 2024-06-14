@@ -65,12 +65,37 @@ export const leagueRoutes = [
         ],
       },
       {
-        path: "predictions/:username?",
+        path: "predictions",
         component: () => import("./RouteLeaguePredictions.vue"),
         beforeEnter(to) {
           window.localStorage.setItem("lastLeaguePath", "predictions");
         },
         props: true,
+        children: [
+          {
+            path: "",
+            component: () => import("./RouteLeaguePredictionsRedirect.vue"),
+          },
+          {
+            path: ":gameweek(\\d+)",
+            component: () => import("./RouteLeaguePredictionsGameweek.vue"),
+            beforeEnter(to) {
+              window.localStorage.setItem(
+                "lastLeaguePath",
+                `predictions/${to.params.gameweek}`
+              );
+            },
+            props: true,
+          },
+          {
+            path: ":username",
+            component: () => import("./RouteLeaguePredictionsUser.vue"),
+            beforeEnter(to) {
+              window.localStorage.setItem("lastLeaguePath", "predictions");
+            },
+            props: true,
+          },
+        ],
       },
       {
         path: "*",

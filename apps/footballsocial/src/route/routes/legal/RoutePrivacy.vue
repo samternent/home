@@ -32,6 +32,16 @@ import { SBrandHeader } from "ternent-ui/components";
       parties. The data is exclusively utilized for facilitating user
       authentication and access to the App.
     </p>
+    <h2 class="text-xl font-semibold my-2">Notifications and Reminders</h2>
+    <p class="mb-4">
+      FootballSocial.app may send users email notifications and reminders
+      related to their account and app activities, such as reminders to make
+      predictions for upcoming games. These communications are intended to
+      enhance user experience and engagement with the app's core
+      functionalities. Users can opt out of such notifications by updating their
+      email preferences in their account settings or by following the
+      unsubscribe link provided in the emails.
+    </p>
 
     <h2 class="text-xl font-semibold my-2">Security Measures</h2>
     <p class="mb-4">
@@ -52,10 +62,10 @@ import { SBrandHeader } from "ternent-ui/components";
     <h2 class="text-xl font-semibold my-2">User Rights</h2>
     <p class="mb-4">
       Users have the right to contact FootballSocial.app via email at
-      sam.ternent@gmail.com for any queries or concerns regarding their data.
-      Account deletion requests can be initiated directly through the User's
-      profile page. To ensure security, identity verification may be necessary
-      before completing deletion requests.
+      footballsocial@ternent.dev for any queries or concerns regarding their
+      data. Account deletion requests can be initiated directly through the
+      User's profile page. To ensure security, identity verification may be
+      necessary before completing deletion requests.
     </p>
 
     <h2 class="text-xl font-semibold my-2">
@@ -85,7 +95,8 @@ import { SBrandHeader } from "ternent-ui/components";
     <p class="mb-4">
       For any inquiries or clarifications regarding this Privacy Policy or the
       practices of FootballSocial.app, please contact us at
-      <a href="mailto:sam.ternent@gmail.com">sam.ternent@gmail.com</a>.
+      <a href="mailto:footballsocial@ternent.dev">footballsocial@ternent.dev</a
+      >.
     </p>
   </div>
 </template>

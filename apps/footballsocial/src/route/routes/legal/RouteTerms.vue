@@ -36,6 +36,6 @@ import { SBrandHeader } from "ternent-ui/components";
         <p class="mb-4">These Terms are governed by and construed in accordance with the laws of [Your Country], without regard to its conflict of law principles.</p>
 
         <h2 class="text-xl font-semibold mb-2">Contact Us</h2>
-        <p class="mb-4">For any inquiries or clarifications regarding these Terms and Conditions or the practices of FootballSocial.app, please contact us at <a href="mailto:sam.ternent@gmail.com">sam.ternent@gmail.com</a>.</p>
+        <p class="mb-4">For any inquiries or clarifications regarding these Terms and Conditions or the practices of FootballSocial.app, please contact us at <a href="mailto:footballsocial@ternent.dev">footballsocial@ternent.dev</a>.</p>
   </div>
 </template>
