@@ -272,6 +272,26 @@ const hasLastWeekPredictions = computed(() => {
       v-else-if="gameweekPoints > -1 && !username"
     >
       <div class="flex items-center">
+        <SButton
+          v-if="hasLastWeekPredictions"
+          :to="`/l/${competitionCode}/predictions/${gameweek - 1}`"
+          type="ghost"
+          class="rounded-full btn-sm mr-4 hidden md:flex"
+          ><svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-4 h-4"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M15.75 19.5 8.25 12l7.5-7.5"
+            />
+          </svg>
+        </SButton>
         <select
           :value="gameweek"
           aria-label="Gameweek"
@@ -311,26 +331,6 @@ const hasLastWeekPredictions = computed(() => {
             >Play next week</SButton
           >
         </div>
-        <!-- <SButton
-          v-if="hasNextWeekPredictions"
-          :to="`/l/${competitionCode}/predictions/${gameweek + 1}`"
-          type="ghost"
-          class="rounded-full btn-sm mr-4"
-          ><svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="w-4 h-4"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="m8.25 4.5 7.5 7.5-7.5 7.5"
-            />
-          </svg>
-        </SButton> -->
       </div>
     </div>
 
