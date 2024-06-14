@@ -1,5 +1,11 @@
 # footballsocial
 
+## 0.14.19
+
+### Patch Changes
+
+- [`65dbd16452e135a4ec6ed48be54e8a67e145c6bd`](https://github.com/samternent/home/commit/65dbd16452e135a4ec6ed48be54e8a67e145c6bd) Thanks [@samternent](https://github.com/samternent)! - Updates emails and a bit of nav
+
 ## 0.14.18
 
 ### Patch Changes
