@@ -238,10 +238,13 @@ const alertMessage = computed(() => {
     return ``;
   }
   if (!hasPredictions.value) {
-    return `Predictions not made`;
+    return "Predictions not made";
   }
   if (gameweekPoints.value) {
-    return `🎉 ${gameweekPoints.value} points scored.`;
+    return `🎉 ${gameweekPoints.value} points scored`;
+  }
+  if (hasPredictions.value) {
+    return "Your predictions are in 🙌";
   }
 });
 
@@ -312,7 +315,7 @@ const hasLastWeekPredictions = computed(() => {
           </option>
         </select>
       </div>
-      <div class="flex justify-center flex-col gap-2">
+      <div class="flex justify-center items-end flex-col gap-2">
         <SCountdown
           v-if="fixtures[0]?.utcDate && !hasKickOffStarted"
           :time="fixtures[0]?.utcDate"
