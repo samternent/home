@@ -1,5 +1,11 @@
 # footballsocial
 
+## 0.14.21
+
+### Patch Changes
+
+- [`f8ceb7c9cd36e76e8a44180bf49ebec83a07a5ab`](https://github.com/samternent/home/commit/f8ceb7c9cd36e76e8a44180bf49ebec83a07a5ab) Thanks [@samternent](https://github.com/samternent)! - fix google login
+
 ## 0.14.20
 
 ### Patch Changes
