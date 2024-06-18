@@ -213,11 +213,11 @@ const themeConfig = computed({
     </li> -->
     <li>
       <span class="text-primary">packages:</span> [<a
-        href="https://github.com/samternent/home/packages/ternent-ui"
+        href="https://github.com/samternent/home/tree/main/packages/ternent-ui"
         target="_blank"
         class="link link-secondary"
-        >Teamwork Front End</a
-      >, ]
+        >ternent-ui </a
+      >]
     </li>
   </ul>
 </template>

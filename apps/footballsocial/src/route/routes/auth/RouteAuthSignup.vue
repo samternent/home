@@ -1,10 +1,10 @@
 <script setup>
-import { shallowRef } from "vue";
+import { shallowRef, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useCurrentUser } from "@/module/auth/useCurrentUser";
 import SignInWithGoogle from "@/module/auth/SignInWithGoogle.vue";
 
-const { signUp, signupWithGoogle, refresh } = useCurrentUser();
+const { signUp, signupWithGoogle, refresh, user } = useCurrentUser();
 const router = useRouter();
 
 const email = shallowRef("");
@@ -47,6 +47,16 @@ async function googleLogin() {
     return;
   }
 }
+
+watch(
+  user,
+  (user) => {
+    if (user) {
+      router.push("/");
+    }
+  },
+  { immediate: true }
+);
 </script>
 <template>
   <div class="mx-auto flex max-w-3xl w-full">

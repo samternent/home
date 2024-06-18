@@ -320,14 +320,10 @@ const hasLastWeekPredictions = computed(() => {
           v-if="fixtures[0]?.utcDate && !hasKickOffStarted"
           :time="fixtures[0]?.utcDate"
         />
-        <div class="text-xl">{{ alertMessage }}</div>
-
-        <div v-if="hasNextWeekPredictions">
+        <div>
+          <div class="text-xl py-2">{{ alertMessage }}</div>
           <SButton
-            v-if="
-              hasPredictions &&
-              gameweek === competition.currentSeason?.currentMatchday
-            "
+            v-if="hasNextWeekPredictions && hasPredictions"
             :to="`/l/${competitionCode}/predictions/${gameweek + 1}`"
             type="primary"
             class="w-full btn-sm"
