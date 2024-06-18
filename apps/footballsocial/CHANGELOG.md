@@ -1,5 +1,11 @@
 # footballsocial
 
+## 0.14.20
+
+### Patch Changes
+
+- [`b93a1ce1ee18f193466463ececfd32dc96b5d824`](https://github.com/samternent/home/commit/b93a1ce1ee18f193466463ececfd32dc96b5d824) Thanks [@samternent](https://github.com/samternent)! - Adds prediction indicator to next week
+
 ## 0.14.19
 
 ### Patch Changes
