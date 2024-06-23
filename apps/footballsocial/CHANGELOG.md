@@ -1,5 +1,11 @@
 # footballsocial
 
+## 0.14.24
+
+### Patch Changes
+
+- [`932f3bf02175430e9f7a35818d81893fd0718142`](https://github.com/samternent/home/commit/932f3bf02175430e9f7a35818d81893fd0718142) Thanks [@samternent](https://github.com/samternent)! - Fix seasons
+
 ## 0.14.23
 
 ### Patch Changes
