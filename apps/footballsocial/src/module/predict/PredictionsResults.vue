@@ -1,9 +1,10 @@
 <script setup>
-import { shallowRef, watch } from "vue";
+import { shallowRef, watch, unref, computed } from "vue";
 import { DateTime, Interval } from "luxon";
 import { usePredictionService } from "./usePredictionService";
 import { useCurrentUser } from "../auth/useCurrentUser";
 import { useWhiteLabel } from "../brand/useWhiteLabel";
+import { useCompetitionLoader } from "@/module/football-data/useCompetitionLoader";
 
 const props = defineProps({
   competitionCode: {
@@ -30,12 +31,16 @@ const table = shallowRef([]);
 const { isWhiteLabel, host } = useWhiteLabel();
 
 const { fetchPredictionTable } = usePredictionService();
+const { items: competition } = useCompetitionLoader();
+
+const season = computed(() => competition.value?.currentSeason.id);
 
 async function loadPredictions() {
   const {
     data: { table: _data, lastUpdated: _lastUpdated },
   } = await fetchPredictionTable(
     props.competitionCode,
+    unref(season),
     props.gameweek,
     isWhiteLabel.value ? host.value : null
   );

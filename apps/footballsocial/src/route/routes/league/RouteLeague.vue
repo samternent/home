@@ -149,7 +149,7 @@ watch(
         data: { table },
       } = await fetchPredictionTable(
         _competition.code,
-        null,
+        _competition.currentSeason.id,
         isWhiteLabel.value ? host.value : null
       );
 

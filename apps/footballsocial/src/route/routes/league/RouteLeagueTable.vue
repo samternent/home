@@ -33,6 +33,7 @@ watch(
       predictionsReady.value = false;
       await calculatePredictionTable(
         _competition.code,
+        _competition.currentSeason.id,
         _competition.currentSeason.currentMatchday
       );
 

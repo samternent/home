@@ -3,7 +3,7 @@ import { redisClient } from "../../services/redis.mjs";
 import { supabaseClient } from "../../services/supabase.mjs";
 
 export default async function postPredictionTable(req, res) {
-  const { competitionCode, gameweek } = req.params;
+  const { competitionCode, season, gameweek } = req.params;
 
   const cacheResults = await redisClient.get(req.url);
   if (cacheResults) {
@@ -11,7 +11,7 @@ export default async function postPredictionTable(req, res) {
   }
 
   console.log(
-    `calculating results for ${competitionCode} gameweek ${gameweek}.`
+    `calculating results for ${competitionCode} (${season}) gameweek ${gameweek}.`
   );
 
   const { data } = await footballDataProxy(
@@ -28,6 +28,7 @@ export default async function postPredictionTable(req, res) {
     .from("predictions")
     .select()
     .eq("competitionCode", competitionCode)
+    .eq("season", season)
     .eq("gameweek", gameweek);
 
   const userScores = {};
@@ -108,10 +109,11 @@ export default async function postPredictionTable(req, res) {
     .upsert(
       Object.entries(userScores).map(([key, val]) => {
         return {
-          id: `${key}_${competitionCode}_${gameweek}`,
+          id: `${key}_${competitionCode}_${season}_${gameweek}`,
           username: key,
           ...val,
           competitionCode,
+          season,
           gameweek,
         };
       }),
