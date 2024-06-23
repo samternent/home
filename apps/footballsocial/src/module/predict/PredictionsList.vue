@@ -90,6 +90,7 @@ async function loadPredictions() {
     const { data } = await getPredictions(
       username.value || profile.value?.username,
       competitionCode.value,
+      unref(currentSeason),
       gameweek.value
     );
 
@@ -122,8 +123,8 @@ async function savePredictions() {
     profile.value.username,
     unref(predictionsToUpdate),
     unref(competitionCode),
-    unref(gameweek),
-    unref(currentSeason)
+    unref(currentSeason),
+    unref(gameweek)
   );
   loadPredictions();
 }

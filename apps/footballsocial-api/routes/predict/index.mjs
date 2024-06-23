@@ -5,19 +5,22 @@ import submitPredictions from "./submitPredictions.mjs";
 
 export default function predictRoutes(router) {
   router.put(
-    "/predict/:username/:competitionCode/:gameweek/:season",
+    "/predict/:username/:competitionCode/:season/:gameweek/",
     submitPredictions
   );
 
   router.get(
-    "/predict/:competitionCode/table/:gameweek?/:members?",
+    "/predict/:competitionCode/:season/table/:gameweek?/:members?",
     getPredictionTable
   );
 
-  router.get("/predict/:username/:competitionCode/:gameweek", getPredictions);
+  router.get(
+    "/predict/:username/:competitionCode/:season/:gameweek",
+    getPredictions
+  );
 
   router.post(
-    "/predict/:competitionCode/calculate/:gameweek",
+    "/predict/:competitionCode/:season/calculate/:gameweek",
     postPredictionTable
   );
 }

@@ -19,6 +19,8 @@ const { items: competition } = useCompetitionLoader();
 const overrideGameweek = shallowRef(
   competition.value?.currentSeason.currentMatchday
 );
+
+const season = computed(() => competition.value?.currentSeason.currentMatchday);
 const gameweek = computed(
   () =>
     overrideGameweek.value || competition.value?.currentSeason.currentMatchday
@@ -56,6 +58,7 @@ const gameweeks = computed(() =>
       :competitionCode="competitionCode"
       :private="!user"
       :gameweek="gameweek"
+      :season="season"
       :key="gameweek"
     />
   </div>

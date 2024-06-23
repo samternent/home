@@ -16,7 +16,7 @@ function sortTable(a, b) {
 }
 
 export default async function getPredictionTable(req, res) {
-  const { competitionCode, gameweek } = req.params;
+  const { competitionCode, season, gameweek } = req.params;
   const { league } = req.query;
 
   const isLoggedIn = isAuthenticated(req);
@@ -33,13 +33,11 @@ export default async function getPredictionTable(req, res) {
 
   let members = [];
   if (league) {
-    console.log(league);
     const { data: leagueData } = await supabaseClient
       .from("leagues")
       .select()
       .eq("league_code", league);
 
-    console.log(leagueData);
     if (leagueData?.length) {
       const { data: membersData } = await supabaseClient
         .from("league_members")
@@ -55,6 +53,9 @@ export default async function getPredictionTable(req, res) {
     .select()
     .eq("competitionCode", competitionCode);
 
+  if (season) {
+    query.eq("season", season);
+  }
   if (gameweek) {
     query.eq("gameweek", gameweek);
   }
