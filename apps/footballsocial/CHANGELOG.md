@@ -1,5 +1,11 @@
 # footballsocial
 
+## 0.14.22
+
+### Patch Changes
+
+- [`4e4d421faf4c125a90021c8feff1fa11c1233de6`](https://github.com/samternent/home/commit/4e4d421faf4c125a90021c8feff1fa11c1233de6) Thanks [@samternent](https://github.com/samternent)! - Adds support for group stages
+
 ## 0.14.21
 
 ### Patch Changes
