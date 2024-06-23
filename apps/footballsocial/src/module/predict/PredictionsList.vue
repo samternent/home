@@ -40,11 +40,23 @@ const props = defineProps({
 const { addPrediction, getPredictions } = usePredictionService();
 const { items: competition } = useCompetitionLoader();
 
+const stages = {
+  EC: {
+    1: null,
+    2: null,
+    3: null,
+    4: "LAST_16",
+    5: "QUARTER_FINALS",
+    6: "SEMI_FINALS",
+    7: "FINAL",
+  },
+};
+
 const competitionCode = computed(() => props.competitionCode);
 const currentSeason = computed(() => props.currentSeason);
-const stage = computed(() => props.stage);
 const username = computed(() => props.username);
 const gameweek = computed(() => props.currentGameweek);
+const stage = computed(() => stages[props.competitionCode][gameweek.value]);
 
 const gameweeks = computed(() =>
   getCompetitionGameweeks(props.competitionCode)
@@ -264,6 +276,16 @@ const hasNextWeekPredictions = computed(() => {
 const hasLastWeekPredictions = computed(() => {
   return gameweeks.value.includes(gameweek.value - 1);
 });
+
+function formatStage(stage) {
+  const stages = {
+    LAST_16: "Last 16",
+    QUARTER_FINALS: "Quarter Finals",
+    SEMI_FINALS: "Semi Finals",
+    FINAL: "Final",
+  };
+  return stages[stage];
+}
 </script>
 <template>
   <div class="w-full flex flex-col mx-auto max-w-6xl">
@@ -311,7 +333,9 @@ const hasLastWeekPredictions = computed(() => {
             :key="`gameweek_${competitionCode}_${gw}`"
             :value="gw"
           >
-            Gameweek {{ gw }}
+            <span class="uppercase">{{
+              formatStage(stages[competitionCode][gw]) || `Gameweek ${gw}`
+            }}</span>
           </option>
         </select>
       </div>

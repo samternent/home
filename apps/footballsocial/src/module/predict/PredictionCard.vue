@@ -166,13 +166,26 @@ function formatKickOffTime(utcDate) {
             class="bg-white flex justify-center items-center p-2 mr-4 lg:mr-8 rounded-full overflow-hidden"
           >
             <img
-              v-if="!hideCrests"
+              v-if="!hideCrests && fixture.homeTeam.crest"
               width="60"
               height="60"
               :alt="fixture.homeTeam.name"
               :src="fixture.homeTeam.crest || '/blank.png'"
               class="w-10 h-10 sm:w-14 sm:h-14"
             />
+            <svg
+              v-else
+              viewBox="0 0 100 100"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              stroke-width="0"
+              class="w-12 h-12 sm:w-14 sm:h-14"
+            >
+              <path
+                class="fill-primary"
+                d="M49.746,3.244L13.644,9.884v51.803c0,3.987,1.786,8.293,5.318,12.804c3.131,3.99,7.564,8.076,13.174,12.146  c7.004,5.063,14.144,8.834,17.61,10.551c3.472-1.717,10.612-5.487,17.614-10.551c5.614-4.069,10.039-8.155,13.168-12.146  c3.535-4.516,5.327-8.816,5.327-12.804V9.884L49.746,3.244z"
+              />
+            </svg>
           </div>
           <span class="md:!inline hidden truncate">{{
             fixture.homeTeam.name
@@ -215,13 +228,26 @@ function formatKickOffTime(utcDate) {
             class="bg-white flex justify-center items-center p-2 mr-4 lg:mr-8 rounded-full overflow-hidden"
           >
             <img
-              v-if="!hideCrests"
+              v-if="!hideCrests && fixture.awayTeam.crest"
               :alt="fixture.awayTeam.name"
               :src="fixture.awayTeam.crest || '/blank.png'"
               width="60"
               height="60"
               class="w-12 h-12 sm:w-14 sm:h-14"
             />
+            <svg
+              v-else
+              viewBox="0 0 100 100"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              stroke-width="0"
+              class="w-12 h-12 sm:w-14 sm:h-14"
+            >
+              <path
+                class="fill-secondary"
+                d="M49.746,3.244L13.644,9.884v51.803c0,3.987,1.786,8.293,5.318,12.804c3.131,3.99,7.564,8.076,13.174,12.146  c7.004,5.063,14.144,8.834,17.61,10.551c3.472-1.717,10.612-5.487,17.614-10.551c5.614-4.069,10.039-8.155,13.168-12.146  c3.535-4.516,5.327-8.816,5.327-12.804V9.884L49.746,3.244z"
+              />
+            </svg>
           </div>
           <span class="hidden md:!block truncate">{{
             fixture.awayTeam.name

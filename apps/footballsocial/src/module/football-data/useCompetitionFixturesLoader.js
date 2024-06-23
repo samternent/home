@@ -25,12 +25,12 @@ export default function useFixturesLoader(competitionCode, stage, matchday) {
     if (!_competitionCode) return;
     loading.value = true;
     const params = {};
-    if (_matchday) {
-      params.matchday = _matchday;
-    }
     if (_stage) {
       params.stage = _stage;
+    } else if (_matchday) {
+      params.matchday = _matchday;
     }
+
     const queryString = Object.keys(params)
       .map((key) => key + "=" + params[key])
       .join("&");
