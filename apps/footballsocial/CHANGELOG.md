@@ -1,5 +1,11 @@
 # footballsocial
 
+## 0.14.23
+
+### Patch Changes
+
+- [`f8e180e7a99a1287e94f7d24af18d8fea65c120d`](https://github.com/samternent/home/commit/f8e180e7a99a1287e94f7d24af18d8fea65c120d) Thanks [@samternent](https://github.com/samternent)! - Dim crest colour
+
 ## 0.14.22
 
 ### Patch Changes
