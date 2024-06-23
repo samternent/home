@@ -1,5 +1,11 @@
 # footballsocial
 
+## 0.15.0
+
+### Minor Changes
+
+- [#346](https://github.com/samternent/home/pull/346) [`5888d33e5ae7971a6c6e7da839ca1d3477456f34`](https://github.com/samternent/home/commit/5888d33e5ae7971a6c6e7da839ca1d3477456f34) Thanks [@samternent](https://github.com/samternent)! - Support multiple seasons per league
+
 ## 0.14.24
 
 ### Patch Changes
