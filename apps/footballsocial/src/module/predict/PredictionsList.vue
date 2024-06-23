@@ -56,7 +56,7 @@ const competitionCode = computed(() => props.competitionCode);
 const currentSeason = computed(() => props.currentSeason);
 const username = computed(() => props.username);
 const gameweek = computed(() => props.currentGameweek);
-const stage = computed(() => stages[props.competitionCode][gameweek.value]);
+const stage = computed(() => stages[props.competitionCode]?.[gameweek.value]);
 
 const gameweeks = computed(() =>
   getCompetitionGameweeks(props.competitionCode)
@@ -334,7 +334,7 @@ function formatStage(stage) {
             :value="gw"
           >
             <span class="uppercase">{{
-              formatStage(stages[competitionCode][gw]) || `Gameweek ${gw}`
+              formatStage(stages[competitionCode]?.[gw]) || `Gameweek ${gw}`
             }}</span>
           </option>
         </select>
