@@ -1,5 +1,11 @@
 # footballsocial
 
+## 0.15.1
+
+### Patch Changes
+
+- [`e3d00a7d584698b6605ae85302391173a0b6a9ae`](https://github.com/samternent/home/commit/e3d00a7d584698b6605ae85302391173a0b6a9ae) Thanks [@samternent](https://github.com/samternent)! - Adds banner
+
 ## 0.15.0
 
 ### Minor Changes
