@@ -254,9 +254,14 @@ const alertMessage = computed(() => {
     return "Predictions not made";
   }
   if (gameweekPoints.value) {
-    return `🎉 ${gameweekPoints.value} points scored`;
+    return `${!props.username ? "You" : props.username} scored ${
+      gameweekPoints.value
+    } points 🎉 `;
   }
   if (hasPredictions.value) {
+    if (props.username) {
+      return `${props.username} has made their predictions`;
+    }
     return "Your predictions are in 🙌";
   }
 });
@@ -290,12 +295,9 @@ function formatStage(stage) {
 </script>
 <template>
   <div class="w-full flex flex-col mx-auto max-w-6xl">
-    <div v-if="username" class="my-4 p-2 text-xl">
-      {{ username }}s predictions are {{ hasPredictions ? "in" : "not in" }}.
-    </div>
     <div
       class="flex items-center justify-between px-2 md:px-0 font-light my-4"
-      v-else-if="gameweekPoints > -1 && !username"
+      v-if="gameweekPoints > -1 && !username"
     >
       <div class="flex items-center">
         <SButton
@@ -339,25 +341,49 @@ function formatStage(stage) {
             }}</span>
           </option>
         </select>
+        <SButton
+          v-if="hasNextWeekPredictions"
+          :to="`/l/${competitionCode}/predictions/${gameweek + 1}`"
+          type="ghost"
+          class="rounded-full btn-sm mr-4 hidden md:flex"
+          ><svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-4 h-4"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="m8.25 4.5 7.5 7.5-7.5 7.5"
+            />
+          </svg>
+        </SButton>
       </div>
       <div class="flex justify-center items-end flex-col gap-2">
         <SCountdown
           v-if="fixtures[0]?.utcDate && !hasKickOffStarted"
           :time="fixtures[0]?.utcDate"
         />
-        <div>
-          <div class="text-xl py-2">{{ alertMessage }}</div>
-          <SButton
-            v-if="hasNextWeekPredictions && hasPredictions"
-            :to="`/l/${competitionCode}/predictions/${gameweek + 1}`"
-            type="primary"
-            class="w-full btn-sm"
-            >Play next week</SButton
-          >
-        </div>
       </div>
     </div>
-
+    <div
+      role="alert"
+      class="flex h-16 bg-base-300 !rounded-0 p-4 justify-between items-center my-6"
+    >
+      <span class="text-xl font-light tracking-tighter">{{
+        alertMessage
+      }}</span>
+      <SButton
+        v-if="hasNextWeekPredictions && hasPredictions && !username"
+        :to="`/l/${competitionCode}/predictions/${gameweek + 1}`"
+        type="primary"
+        class="btn-sm"
+        >Play next week</SButton
+      >
+    </div>
     <div class="flex flex-col w-full">
       <div
         v-for="(fixture, i) in predictionsList"

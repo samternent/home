@@ -1,4 +1,5 @@
 import { ledgerRoutes } from "./ledger";
+import changelogRoutes from "./changelog";
 
 export default [
   {
@@ -51,6 +52,7 @@ export default [
           ...ledgerRoutes,
         ],
       },
+      ...changelogRoutes,
     ],
   },
   {

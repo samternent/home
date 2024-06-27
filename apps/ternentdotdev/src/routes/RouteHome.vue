@@ -15,7 +15,7 @@ const themeVariation = useLocalStorage("app/themeVariation", null);
     class="flex flex-col justify-end flex-1 w-full max-w-7xl relative mx-auto"
   >
     <div
-      class="flex justify-between h-14 p-2 items-center sticky top-0 z-10 bg-base-100"
+      class="flex justify-between h-14 p-2 items-center sticky top-0 z-10 bg-base-100 px-4"
     >
       <SButton
         v-if="$route.path !== '/'"
@@ -43,12 +43,12 @@ const themeVariation = useLocalStorage("app/themeVariation", null);
       <SThemeToggle v-model="themeVariation" size="sm" />
     </div>
     <div
-      class="flex-1 w-full mb-12 mt-6 mx-auto max-w-6xl relative h-full flex overeflow-hidden"
+      class="flex-1 w-full mb-12 mt-6 mx-auto max-w-6xl relative h-full flex"
     >
       <RouterView />
     </div>
     <div
-      class="sticky bottom-0 flex items-center justify-between flex-1 p-4 max-h-24 w-full"
+      class="sticky bottom-0 flex items-center justify-between flex-1 p-4 max-h-24 w-full bg-base-100"
     >
       <RouterLink to="/" class="flex items-center">
         <Logo class="h-auto w-16 lg:w-18 mr-2" />
