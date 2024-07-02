@@ -10,8 +10,6 @@ const props = defineProps({
 });
 
 const { items: competition } = useCompetitionLoader();
-
-const backPath = window.localStorage.getItem("lastLeagueTablePath");
 </script>
 <template>
   <div class="flex flex-col w-full">

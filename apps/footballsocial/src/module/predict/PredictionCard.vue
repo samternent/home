@@ -11,6 +11,14 @@ const props = defineProps({
     type: String,
     default: "md",
   },
+  homeScoreResult: {
+    type: Number,
+    default: 0,
+  },
+  awayScoreResult: {
+    type: Number,
+    default: 0,
+  },
   hideCrests: {
     type: Boolean,
     default: false,
@@ -31,7 +39,25 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  stage: {
+    type: String,
+    default: null,
+  },
 });
+
+const homeScoreResult = computed(() =>
+  props.fixture?.score.extraTime
+    ? props.fixture?.score.regularTime.home +
+      props.fixture?.score.extraTime.home
+    : props.fixture?.score.fullTime.home
+);
+
+const awayScoreResult = computed(() =>
+  props.fixture?.score.extraTime
+    ? props.fixture?.score.regularTime.away +
+      props.fixture?.score.extraTime.away
+    : props.fixture?.score.fullTime.away
+);
 
 const emit = defineEmits(["click", "update:prediction"]);
 
@@ -68,49 +94,57 @@ watch([homeScore, awayScore], ([_homeScore, _awayScore]) => {
 });
 
 const homeScorePrediction = computed(() => {
-  if (props.prediction?.homeScore === props.fixture?.score.fullTime.home) {
+  if (props.prediction?.homeScore === homeScoreResult.value) {
     return true;
   }
 });
 const awayScorePrediction = computed(() => {
-  if (props.prediction?.awayScore === props.fixture?.score.fullTime.away) {
+  if (props.prediction?.awayScore === awayScoreResult.value) {
     return true;
   }
 });
 const scorePrediction = computed(() => {
   if (
-    props.prediction?.homeScore === props.fixture?.score.fullTime.home &&
-    props.prediction?.awayScore === props.fixture?.score.fullTime.away
+    props.prediction?.homeScore === homeScoreResult.value &&
+    props.prediction?.awayScore === awayScoreResult.value
   ) {
     return true;
   }
 });
 const resultPrediction = computed(() => {
   if (
+    props.prediction?.awayScore === props.prediction?.homeScore &&
+    (props.fixture?.score.winner === "DRAW" ||
+      props.fixture.score.duration === "PENALTY_SHOOTOUT")
+  ) {
+    return true;
+  }
+  if (
     props.prediction?.homeScore > props.prediction?.awayScore &&
-    props.fixture?.score.winner === "HOME_TEAM"
+    props.fixture?.score.winner === "HOME_TEAM" &&
+    props.fixture?.score.duration !== "PENALTY_SHOOTOUT"
   ) {
     return true;
   }
   if (
     props.prediction?.awayScore > props.prediction?.homeScore &&
-    props.fixture?.score.winner === "AWAY_TEAM"
+    props.fixture?.score.winner === "AWAY_TEAM" &&
+    props.fixture?.score.duration !== "PENALTY_SHOOTOUT"
   ) {
     return true;
   }
-  if (
-    props.prediction?.awayScore === props.prediction?.homeScore &&
-    props.fixture?.score.winner === "DRAW"
-  ) {
-    return true;
-  }
-
   return false;
 });
 
 function formatKickOffTime(utcDate) {
   return DateTime.fromISO(utcDate).toLocaleString(DateTime.TIME_SIMPLE);
 }
+
+const resultText = {
+  PENALTY_SHOOTOUT: "after a penalty shootout",
+  EXTRA_TIME: "after extra-time",
+  REGULAR: "",
+};
 </script>
 <template>
   <div class="bg-base-200 overflow-hidden my-2 border-base-300 border-t">
@@ -120,12 +154,24 @@ function formatKickOffTime(utcDate) {
       <div class="flex text-base tracking-tighter uppercase font-light">
         <span v-if="fixture.status === 'IN_PLAY'">In play</span>
         <span v-else-if="fixture.status === 'PAUSED'">Half time</span>
-        <span v-else-if="!!fixture.score?.winner">Finished</span>
         <span v-else-if="fixture.status === 'POSTPONED'">POSTPONED</span>
         <span v-else-if="fixture.status === 'TIMED'"
           >Scheduled @ {{ formatKickOffTime(fixture.utcDate) }}</span
         >
+        <span
+          v-else-if="fixture.status === 'FINISHED' && fixture.score?.winner"
+          class="font-light normal-case"
+          >{{
+            fixture.score?.winner === "HOME_TEAM"
+              ? fixture.homeTeam.name
+              : fixture.awayTeam.name
+          }}
+          win {{ fixture.score.fullTime.home }} -
+          {{ fixture.score.fullTime.away }}
+          {{ resultText[fixture.score.duration] }}</span
+        >
       </div>
+
       <div class="flex text-sm" v-if="hasStarted && prediction">
         <div
           v-if="scorePrediction"
@@ -212,10 +258,15 @@ function formatKickOffTime(utcDate) {
             v-if="hasStarted"
             class="text-xl rounded font-medium mx-2 w-10"
             :class="{
-              '': fixture.score?.fullTime?.home != homeScore,
-              '': fixture.score?.fullTime?.home == homeScore,
+              '': homeScoreResult != homeScore,
+              '': homeScoreResult == homeScore,
             }"
-            >{{ fixture.score?.fullTime?.home }}</span
+            >{{ homeScoreResult }}</span
+          >
+          <span
+            v-if="fixture.score.penalties"
+            class="text-xl rounded font-light"
+            >({{ fixture.score.penalties.home }})</span
           >
         </div>
       </div>
@@ -274,10 +325,15 @@ function formatKickOffTime(utcDate) {
             v-if="hasStarted"
             class="text-xl rounded font-medium mx-2 w-10"
             :class="{
-              '': fixture.score?.fullTime?.away != awayScore,
-              '': fixture.score?.fullTime?.away == awayScore,
+              '': awayScoreResult != awayScore,
+              '': awayScoreResult == awayScore,
             }"
-            >{{ fixture.score?.fullTime?.away }}</span
+            >{{ awayScoreResult }}</span
+          >
+          <span
+            v-if="fixture.score.penalties"
+            class="text-xl rounded font-light"
+            >({{ fixture.score.penalties.away }})</span
           >
         </div>
       </div>

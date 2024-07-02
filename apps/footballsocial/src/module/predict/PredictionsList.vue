@@ -38,7 +38,6 @@ const props = defineProps({
 });
 
 const { addPrediction, getPredictions } = usePredictionService();
-const { items: competition } = useCompetitionLoader();
 
 const stages = {
   EC: {
@@ -187,44 +186,54 @@ const gameweekPoints = computed(() => {
       DateTime.fromISO(fixture.utcDate)
     ).length();
 
+    const homeScoreResult = fixture?.score.extraTime
+      ? fixture?.score.regularTime.home + fixture?.score.extraTime.home
+      : fixture?.score.fullTime.home;
+
+    const awayScoreResult = fixture?.score.extraTime
+      ? fixture?.score.regularTime.away + fixture?.score.extraTime.away
+      : fixture?.score.fullTime.away;
+
     if (!isNaN(timeDiff) || timeDiff < 1 || !fixture.prediction) {
       return acc;
     }
 
     let points = 0;
-    if (fixture.prediction?.homeScore === fixture.score.fullTime.home) {
+    if (fixture.prediction?.homeScore === homeScoreResult) {
       points += 1;
     }
 
-    if (fixture.prediction?.awayScore === fixture?.score.fullTime.away) {
+    if (fixture.prediction?.awayScore === awayScoreResult) {
       points += 1;
     }
 
     if (
-      fixture.prediction?.homeScore === fixture?.score.fullTime.home &&
-      fixture.prediction?.awayScore === fixture?.score.fullTime.away
+      fixture.prediction?.homeScore === homeScoreResult &&
+      fixture.prediction?.awayScore === awayScoreResult
     ) {
       points += 3;
     }
 
     if (
-      fixture.prediction?.homeScore > fixture.prediction?.awayScore &&
-      fixture?.score.winner === "HOME_TEAM"
-    ) {
-      points += 2;
-    }
-    if (
-      fixture.prediction?.awayScore > fixture.prediction?.homeScore &&
-      fixture?.score.winner === "AWAY_TEAM"
-    ) {
-      points += 2;
-    }
-    if (
       fixture.prediction?.awayScore === fixture.prediction?.homeScore &&
-      fixture?.score.winner === "DRAW"
+      (fixture?.score.winner === "DRAW" ||
+        fixture?.score.duration === "PENALTY_SHOOTOUT")
+    ) {
+      points += 2;
+    } else if (
+      fixture.prediction?.homeScore > fixture.prediction?.awayScore &&
+      fixture?.score.winner === "HOME_TEAM" &&
+      fixture?.score.duration !== "PENALTY_SHOOTOUT"
+    ) {
+      points += 2;
+    } else if (
+      fixture.prediction?.awayScore > fixture.prediction?.homeScore &&
+      fixture?.score.winner === "AWAY_TEAM" &&
+      fixture?.score.duration !== "PENALTY_SHOOTOUT"
     ) {
       points += 2;
     }
+
     return points + acc;
   }, 0);
 });

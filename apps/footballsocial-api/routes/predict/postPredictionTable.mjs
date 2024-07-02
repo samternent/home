@@ -57,18 +57,26 @@ export default async function postPredictionTable(req, res) {
       let awayGoals = false;
       let result = false;
 
-      if (match.score.fullTime.home === prediction.homeScore) {
+      const homeScoreResult = match.score.extraTime
+        ? match.score.regularTime.home + match.score.extraTime.home
+        : match.score.fullTime.home;
+
+      const awayScoreResult = match.score.extraTime
+        ? match.score.regularTime.away + match.score.extraTime.away
+        : match.score.fullTime.away;
+
+      if (homeScoreResult === prediction.homeScore) {
         homeGoals = true;
       }
-      if (match.score.fullTime.away === prediction.awayScore) {
+      if (awayScoreResult === prediction.awayScore) {
         awayGoals = true;
       }
       if (
-        (match.score.fullTime.home > match.score.fullTime.away &&
+        (homeScoreResult > awayScoreResult &&
           prediction.homeScore > prediction.awayScore) ||
-        (match.score.fullTime.away > match.score.fullTime.home &&
+        (awayScoreResult > homeScoreResult &&
           prediction.awayScore > prediction.homeScore) ||
-        (match.score.fullTime.home === match.score.fullTime.away &&
+        (homeScoreResult === awayScoreResult &&
           prediction.homeScore === prediction.awayScore)
       ) {
         // correct result

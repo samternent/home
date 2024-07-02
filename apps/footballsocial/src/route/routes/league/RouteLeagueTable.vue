@@ -81,6 +81,10 @@ const tabs = computed(() => [
           <li>- 2 points for a correct result (W/L/D)</li>
           <li>- 3 points for a correct score</li>
         </ul>
+        <p class="text-lg font-light mt-4 mb-2">
+          In the event of a extra-time and penalties, the final extra-time score
+          will be used to calculate prediction scores.
+        </p>
         <p class="text-lg font-thin mt-4 mb-2">
           *Rules and point system are subject to change.
         </p>

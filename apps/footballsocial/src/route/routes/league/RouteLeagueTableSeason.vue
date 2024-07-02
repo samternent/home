@@ -7,17 +7,9 @@ const props = defineProps({
     type: String,
     required: true,
   },
-  season: {
-    type: String,
-    required: true,
-  },
 });
 const { user } = useCurrentUser();
 </script>
 <template>
-  <PredictionsResults
-    :competitionCode="competitionCode"
-    :private="!user"
-    :season="season"
-  />
+  <PredictionsResults :competitionCode="competitionCode" :private="!user" />
 </template>
