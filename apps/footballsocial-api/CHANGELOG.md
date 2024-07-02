@@ -1,5 +1,11 @@
 # footballsocial-api
 
+## 0.3.1
+
+### Patch Changes
+
+- [`465e2ddcf68cfbf1b98494bd5a346f2c063d8c55`](https://github.com/samternent/home/commit/465e2ddcf68cfbf1b98494bd5a346f2c063d8c55) Thanks [@samternent](https://github.com/samternent)! - Fix score calculations when in a penalty shootout
+
 ## 0.3.0
 
 ### Minor Changes
