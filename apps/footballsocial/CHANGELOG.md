@@ -1,5 +1,11 @@
 # footballsocial
 
+## 0.15.3
+
+### Patch Changes
+
+- [`fffdd189b03caf834ed07852bf7e13f5f23961a4`](https://github.com/samternent/home/commit/fffdd189b03caf834ed07852bf7e13f5f23961a4) Thanks [@samternent](https://github.com/samternent)! - fix penos text
+
 ## 0.15.2
 
 ### Patch Changes
