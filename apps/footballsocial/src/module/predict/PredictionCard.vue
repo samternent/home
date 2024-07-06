@@ -166,8 +166,11 @@ const resultText = {
               ? fixture.homeTeam.name
               : fixture.awayTeam.name
           }}
-          win {{ fixture.score.fullTime.home }} -
-          {{ fixture.score.fullTime.away }}
+          win
+          <span v-if="fixture.score.duration !== 'PENALTY_SHOOTOUT'"
+            >{{ fixture.score.fullTime.home }} -
+            {{ fixture.score.fullTime.away }}</span
+          >
           {{ resultText[fixture.score.duration] }}</span
         >
       </div>
