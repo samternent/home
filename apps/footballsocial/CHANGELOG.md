@@ -1,5 +1,11 @@
 # footballsocial
 
+## 0.15.4
+
+### Patch Changes
+
+- [`214d2c8af15d5a5df57e38628cb4e72812c633bf`](https://github.com/samternent/home/commit/214d2c8af15d5a5df57e38628cb4e72812c633bf) Thanks [@samternent](https://github.com/samternent)! - Fix winner display logic
+
 ## 0.15.3
 
 ### Patch Changes
