@@ -178,12 +178,9 @@ const dismissEurosBanner = useLocalStorage(
   false
 );
 
-const hasSeasonFinished = computed(
-  () =>
-    competition.value?.currentSeason?.endDate &&
-    DateTime.now().startOf("day") >=
-      DateTime.fromISO(competition.value.currentSeason.endDate).startOf("day")
-);
+const hasSeasonFinished = computed(() => {
+  return competition.value?.currentSeason?.winner?.id;
+});
 
 const league = shallowRef(null);
 const canJoinLeague = shallowRef(false);
