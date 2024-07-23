@@ -32,3 +32,5 @@ app.use(
 
 registerSW();
 app.mount("#app");
+
+console.log("hii");
