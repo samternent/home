@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.2.46
+
+### Patch Changes
+
+- [`1f2c149f3a279eefc9a1eb0785851ccccc13b687`](https://github.com/samternent/home/commit/1f2c149f3a279eefc9a1eb0785851ccccc13b687) Thanks [@samternent](https://github.com/samternent)! - Adding demo log
+
 ## 0.2.45
 
 ### Patch Changes
