@@ -17,13 +17,13 @@ const version = window.__APP_VERSION__;
 // const theme = useLocalStorage("app/theme", null);
 
 const themes = shallowRef([
-  // { name: "default", value: "default" },
+  { name: "default", value: "default" },
   { name: "TERNENTDOTDEV", value: "ternentdotdev" },
-  //   { name: "Football Social", value: "footballsocial" },
+  { name: "Football Social", value: "footballsocial" },
   { name: "CONCORDS", value: "concords" },
-  // { name: "Vibrant", value: "vibrant" },
-  // { name: "Liverpool FC", value: "liverpoolfc" },
-  // { name: "Teamwork.com", value: "teamwork" },
+  { name: "Vibrant", value: "vibrant" },
+  { name: "Liverpool FC", value: "liverpoolfc" },
+  { name: "Teamwork.com", value: "teamwork" },
 ]);
 
 const themeVariation = useLocalStorage("app/themeVariation", null);
@@ -44,7 +44,7 @@ const themeConfig = computed({
 </script>
 <template>
   <ul class="p-4 font-mono text-accent flex flex-col h-full justify-center">
-    <!-- <li class="opacity-70 my-2 text-base-content"># {{ host }}</li> -->
+    <li class="opacity-70 my-2 text-base-content"># {{ host }}</li>
     <li class="flex items-center">
       <span class="text-primary">version:</span>
       <a

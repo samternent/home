@@ -1,4 +1,4 @@
-import { shallowRef, computed, provide, inject } from "vue";
+import { shallowRef, provide, inject } from "vue";
 import {
   login,
   handleIncomingRedirect,
@@ -7,16 +7,18 @@ import {
   logout,
 } from "@inrupt/solid-client-authn-browser";
 import {
-  getFile,
-  getSolidDataset,
   getThing,
-  overwriteFile,
-  deleteFile,
-  getStringNoLocale,
+  getProfileAll,
+  setUrl,
+  setThing,
+  buildThing,
+  getSourceUrl,
+  saveSolidDatasetAt,
 } from "@inrupt/solid-client";
-import { FOAF } from "@inrupt/vocab-common-rdf";
-import { useWhiteLabel } from "../brand/useWhiteLabel";
+import { SCHEMA_INRUPT, RDF } from "@inrupt/vocab-common-rdf";
+import { useIdentity } from "../identity/useIdentity";
 
+// some default providers... must access free text also
 const providers = [
   "https://login.inrupt.com",
   "https://inrupt.net",
@@ -31,62 +33,22 @@ function Solid() {
   const webId = shallowRef(null);
   const profile = shallowRef({});
   const oidcIssuer = shallowRef(providers[0]);
-  const activeWorkspace = shallowRef();
-  const whiteLabel = useWhiteLabel();
 
-  const workspace = computed(() => {
-    return profile.value.workspace && profile.value.workspace.length
-      ? profile.value.workspace[activeWorkspace.value]
-      : null;
-  });
+  const { publicKeyPEM } = useIdentity();
+
+  console.log(publicKeyPEM.value);
 
   function solidLogin() {
+    // leaves our domain.
     login({
       redirectUrl: new URL("/solid/redirect", window.location.href).toString(),
       oidcIssuer: oidcIssuer.value,
-      clientName: whiteLabel.value.domain,
     });
   }
 
-  async function solidFetch(name, id) {
-    try {
-      const file = await getFile(`${workspace.value}concords/${name}/${id}`, {
-        fetch: fetch,
-      });
-
-      return new Promise((res, rej) => {
-        async function onLoadFileHandler(e) {
-          //   store[name] = {
-          //     ...store[name],
-          //     [id]: e.target.result,
-          //   };
-
-          const arr = id.split("");
-          res(e.target.result);
-        }
-        let fr = new FileReader();
-        fr.onload = onLoadFileHandler;
-        fr.readAsText(file);
-      });
-    } catch (e) {
-      throw e;
-    }
-  }
-
-  async function solidWrite(name, type = "ledger", details) {
-    const file = new File([details], `${name}`, {
-      type: "application/json",
-    });
-    await overwriteFile(`${workspace.value}concords/${type}/${name}`, file, {
-      contentType: file.type,
-      fetch: fetch,
-    });
-  }
-
-  async function solidDelete(name, type = "ledger") {
-    await deleteFile(`${workspace.value}concords/${type}/${name}`, {
-      fetch: fetch,
-    });
+  async function solidLogout() {
+    await logout();
+    hasSolidSession.value = false;
   }
 
   async function handleSessionLogin() {
@@ -99,45 +61,44 @@ function Solid() {
     if (hasSolidSession.value) {
       webId.value = session.info.webId;
 
-      const myDataset = await getSolidDataset(webId.value.split("#")[0], {
+      const profiles = await getProfileAll(webId, {
         fetch: fetch,
       });
 
-      const myProfile = getThing(myDataset, webId.value);
-      profile.value = {
-        name: getStringNoLocale(myProfile, FOAF.name),
-        url: myProfile.url,
-        workspace:
-          myProfile.predicates["http://www.w3.org/ns/pim/space#storage"]
-            .namedNodes,
-      };
-    }
-  }
+      let userDataThing = buildThing(getThing(profiles.altProfileAll[0], webId))
+        .addStringNoLocale(SCHEMA_INRUPT.name, "ABC123 of Example Literature")
+        .addUrl(RDF.type, "https://schema.org/Book")
+        .build();
 
-  function getDataSet(name) {
-    if (!workspace.value) return;
-    return getSolidDataset(`${workspace.value}concords/${name}`, {
-      fetch: fetch,
-    });
+      console.log(userDataThing);
+
+      await saveSolidDatasetAt(
+        getSourceUrl(userDataThing),
+        userDataThing,
+        { fetch: fetch } // fetch from authenticated Session
+      );
+
+      // extendedProfilesSolidDatasets.forEach((extendedProfileSolidDataset) => {
+      //   console.log(getSourceUrl(extendedProfileSolidDataset));
+      //   const thingsInExtendedProfile = getThingAll(
+      //     extendedProfileSolidDataset
+      //   );
+      //   thingsInExtendedProfile.forEach((thing) => {
+      //     console.log(thing);
+      //   });
+      // });
+    }
   }
 
   return {
     login: solidLogin,
     hasSolidSession,
-    fetch: solidFetch,
-    write: solidWrite,
-    deleteLedger: solidDelete,
-    getDataSet,
     webId,
     handleSessionLogin,
     profile,
-    workspace,
     oidcIssuer,
     providers,
-    logout: async () => {
-      await logout();
-      hasSolidSession.value = false;
-    },
+    logout: solidLogout,
   };
 }
 

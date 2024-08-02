@@ -35,7 +35,7 @@ const showSidebar = computed(() => mdAndLarger.value || openSideBar.value);
   <transition
     enter-from-class="translate-x-[-100%]"
     leave-to-class="translate-x-[-100%]"
-    enter-active-class="transition duration-3000"
+    enter-active-class="transition duration-1000"
     leave-active-class=""
   >
     <div
@@ -44,12 +44,12 @@ const showSidebar = computed(() => mdAndLarger.value || openSideBar.value);
       style="transition: width 200ms"
       :class="{
         'w-20 relative': (mdAndLarger && smallerThanLg) || collapsedSideBar,
-        'w-64 relative': lgAndLarger && !collapsedSideBar,
-        'w-64 absolute z-30 shadow-lg': smallerThanMd && openSideBar,
+        'w-56 relative': lgAndLarger && !collapsedSideBar,
+        'w-48 absolute z-30 shadow-lg': smallerThanMd && openSideBar,
       }"
     >
       <SButton
-        class="btn btn-circle btn-primary btn-xs -right-4 z-30 bottom-16 shadow absolute transition-transform duration-1000"
+        class="btn btn-circle btn-primary btn-xs -right-4 z-30 bottom-16 shadow absolute transition-transform duration-300"
         type="neutral"
         :class="{
           'rotate-180': collapsedSideBar,
@@ -92,19 +92,32 @@ const showSidebar = computed(() => mdAndLarger.value || openSideBar.value);
         </svg>
       </SButton>
       <header class="p-2 flex md:justify-center sm:py-2">
-        <RouterLink to="/app" class="btn btn-ghost text-base"
-          ><SBrandHeader
-            class="!text-2xl"
-            v-if="(lgAndLarger || smallerThanMd) && !collapsedSideBar"
-            size="md"
-            >{{ whiteLabel.name[0]
-            }}<span class="font-light text-secondary text-xl">{{
-              whiteLabel.name[1]
-            }}</span
-            >{{ whiteLabel.name[2] }}</SBrandHeader
-          ><SBrandHeader v-else size="lg" class="font-bold">{{
-            whiteLabel.name[0][0]
-          }}</SBrandHeader></RouterLink
+        <RouterLink to="/app" class="btn btn-ghost text-base">
+          <Transition
+            enterFromClass="opacity-0"
+            enterActiveClass="transition-opacity duration-300"
+            enterToClass="opacity-100"
+            leaveFromClass="opacity-100"
+            leaveActiveClass="absolute transition-opacity duration-300"
+            leaveToClass="opacity-0"
+          >
+            <SBrandHeader
+              class="!text-xl"
+              v-if="(lgAndLarger || smallerThanMd) && !collapsedSideBar"
+              size="md"
+              >{{ whiteLabel.name[0]
+              }}<span class="font-light text-secondary text-lg">{{
+                whiteLabel.name[1]
+              }}</span
+              >{{ whiteLabel.name[2] }}</SBrandHeader
+            ><SBrandHeader v-else size="xs" class="font-medium text-lg"
+              >{{ whiteLabel.name[0][0] }}
+              <span class="text-secondary text-base text-light">{{
+                whiteLabel.name[1][0]
+              }}</span>
+              <span class="text-base">{{ whiteLabel.name[2][0] }}</span>
+            </SBrandHeader></Transition
+          ></RouterLink
         >
       </header>
       <SideNavItems
