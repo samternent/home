@@ -1,4 +1,4 @@
-import { ledgerRoutes } from "./ledger";
+import { appRoutes } from "./app";
 import changelogRoutes from "./changelog";
 
 export default [
@@ -33,28 +33,15 @@ export default [
           },
         ],
       },
-      {
-        path: "app",
-        component: () => import("./RouteLayout.vue"),
-        children: [
-          {
-            path: "",
-            component: () => import("./RouteTest.vue"),
-          },
-          {
-            path: "profile",
-            component: () => import("./profile/RouteProfile.vue"),
-          },
-          {
-            path: "settings",
-            component: () => import("./settings/RouteSettings.vue"),
-          },
-          ...ledgerRoutes,
-        ],
-      },
       ...changelogRoutes,
     ],
   },
+
+  {
+    path: "/solid/redirect",
+    component: () => import("./solid/RouteSolidRedirect.vue"),
+  },
+  ...appRoutes,
   {
     path: "/:path(.*)*",
     redirect() {

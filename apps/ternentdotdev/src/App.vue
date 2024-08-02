@@ -7,7 +7,6 @@ import DrawerRouterView from "./module/drawer-route/DrawerRoute.vue";
 import { provideAxios } from "./module/api/useAxios";
 
 import { provideAppShell } from "./module/app-shell/useAppShell";
-import { provideSolid } from "./module/solid/useSolid";
 import { useWhiteLabel } from "./module/brand/useWhiteLabel";
 import Concords from "./module/concords/Concords.vue";
 
@@ -19,7 +18,6 @@ provideAxios();
 provideBreadcrumbs();
 provideDrawerRoute();
 provideAppShell();
-const { handleSessionLogin } = provideSolid();
 
 const whiteLabel = useWhiteLabel();
 
@@ -36,14 +34,12 @@ const fullTheme = computed(
       themeVariation.value
     }`
 );
-onMounted(handleSessionLogin);
 </script>
 
 <template>
   <div class="flex flex-col min-h-screen bg-base-100" :data-theme="fullTheme">
     <Concords>
-      <div class="flex-1 flex w-full mx-auto">
-        <!-- <SideNav /> -->
+      <div class="flex-1 flex w-full items-stretch">
         <RouterView />
       </div>
     </Concords>

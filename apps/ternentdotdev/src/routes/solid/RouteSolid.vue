@@ -1,11 +1,9 @@
 <script setup>
-import { onMounted } from "vue";
 import { SButton } from "ternent-ui/components";
 import { useSolid } from "@/module/solid/useSolid";
 import Solid from "@/module/solid/Solid.vue";
 
-const { handleSessionLogin, hasSolidSession, providers, oidcIssuer, login } =
-  useSolid();
+const { hasSolidSession, providers, oidcIssuer, login } = useSolid();
 </script>
 <template>
   <div class="flex justify-start">

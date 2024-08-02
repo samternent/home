@@ -7,7 +7,7 @@ onMounted(() => {
   const lastPath = window.localStorage.getItem("app/lastPath");
   if (lastPath) {
     setTimeout(() => {
-      router.push(lastPath);
+      router.replace(lastPath);
     }, 500);
   }
 });
