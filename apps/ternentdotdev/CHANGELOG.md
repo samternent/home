@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.2.47
+
+### Patch Changes
+
+- [#353](https://github.com/samternent/home/pull/353) [`3ecb8a903b06f31b6b287f57b6eacd6b8861dc19`](https://github.com/samternent/home/commit/3ecb8a903b06f31b6b287f57b6eacd6b8861dc19) Thanks [@samternent](https://github.com/samternent)! - aSolid
+
 ## 0.2.46
 
 ### Patch Changes
