@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.3.0
+
+### Minor Changes
+
+- 186b8e7: layout a IA changes
+
 ## 0.2.48
 
 ### Patch Changes
