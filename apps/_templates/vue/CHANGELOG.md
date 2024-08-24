@@ -1,5 +1,12 @@
 # vue-template
 
+## 0.0.26
+
+### Patch Changes
+
+- Updated dependencies [98ce971]
+  - ternent-ui@0.1.11
+
 ## 0.0.25
 
 ### Patch Changes

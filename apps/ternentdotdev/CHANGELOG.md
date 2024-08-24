@@ -1,5 +1,14 @@
 # ternentdotdev
 
+## 0.2.48
+
+### Patch Changes
+
+- 9caeedc: Update security policy
+- 6c22c11: Changes all of the things
+- Updated dependencies [98ce971]
+  - ternent-ui@0.1.11
+
 ## 0.2.47
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # ternent-ui
 
+## 0.1.11
+
+### Patch Changes
+
+- 98ce971: Updates many styles
+
 ## 0.1.10
 
 ### Patch Changes
