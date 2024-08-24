@@ -2,9 +2,15 @@
 import { useIdentity } from "@/module/identity/useIdentity";
 import { useEncryption } from "@/module/encryption/useEncryption";
 import IdentityAvatar from "@/module/identity/IdentityAvatar.vue";
+import { useBreadcrumbs } from "@/module/breadcrumbs/useBreadcrumbs";
 
 const { publicKeyPEM, privateKeyPEM } = useIdentity();
 const { publicKey, privateKey } = useEncryption();
+
+useBreadcrumbs({
+  path: "/app/profile",
+  name: "Profile",
+});
 </script>
 <template>
   <div class="p-2">

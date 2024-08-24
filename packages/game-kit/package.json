@@ -21,11 +21,11 @@
   "license": "ISC",
   "browserslist": "last 2 versions",
   "dependencies": {
-    "@swc/helpers": "^0.4.3",
-    "regenerator-runtime": "^0.13.9"
+    "@swc/helpers": "^0.4.36",
+    "regenerator-runtime": "^0.13.11"
   },
   "devDependencies": {
-    "vite": "^2.9.9",
-    "vite-plugin-dts": "^1.7.1"
+    "vite": "^2.9.18",
+    "vite-plugin-dts": "^1.7.3"
   }
 }

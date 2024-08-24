@@ -1,5 +1,11 @@
 import { appRoutes } from "./app";
-import changelogRoutes from "./changelog";
+import { ledgerRoutes } from "./ledger";
+import { solidRoutes } from "./solid";
+import { toolsRoutes } from "./tools";
+import changelog from "./changelog";
+import readme from "./readme";
+import portfolio from "./portfolio";
+import arcade from "./arcade";
 
 export default [
   {
@@ -10,14 +16,7 @@ export default [
         path: "",
         component: () => import("./home/RouteHome.vue"),
       },
-      {
-        path: "game",
-        component: () => import("./apps/RouteAppsGame.vue"),
-      },
-      {
-        path: "sweet-shop",
-        component: () => import("./apps/RouteAppsSweetShop.vue"),
-      },
+
       {
         path: "stream",
         component: () => import("./stream/RouteStream.vue"),
@@ -33,7 +32,14 @@ export default [
           },
         ],
       },
-      ...changelogRoutes,
+      ...arcade,
+      ...changelog,
+      ...portfolio,
+      ...readme,
+      ...toolsRoutes,
+      ...appRoutes,
+      ...solidRoutes,
+      ...ledgerRoutes,
     ],
   },
 
@@ -41,7 +47,6 @@ export default [
     path: "/solid/redirect",
     component: () => import("./solid/RouteSolidRedirect.vue"),
   },
-  ...appRoutes,
   {
     path: "/:path(.*)*",
     redirect() {

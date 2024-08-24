@@ -6,6 +6,7 @@ import javascript from "highlight.js/lib/languages/javascript";
 import { SMenu } from "ternent-ui/components";
 import { useAppShell } from "@/module/app-shell/useAppShell";
 import { useWhiteLabel } from "@/module/brand/useWhiteLabel";
+import ternentUIThemes from "ternent-ui/themes";
 
 hljs.registerLanguage("javascript", javascript);
 
@@ -14,43 +15,37 @@ const whiteLabel = useWhiteLabel();
 
 const host = window.location.host;
 const version = window.__APP_VERSION__;
-// const theme = useLocalStorage("app/theme", null);
 
-const themes = shallowRef([
-  { name: "default", value: "default" },
-  { name: "TERNENTDOTDEV", value: "ternentdotdev" },
-  { name: "Football Social", value: "footballsocial" },
-  { name: "CONCORDS", value: "concords" },
-  { name: "Vibrant", value: "vibrant" },
-  { name: "Liverpool FC", value: "liverpoolfc" },
-  { name: "Teamwork.com", value: "teamwork" },
-]);
-
-const themeVariation = useLocalStorage("app/themeVariation", null);
 const theme = useLocalStorage("app/theme");
-const themeName = shallowRef(
-  themes.value.find(({ value }) => value === theme.value)?.name
-);
-
+const themeName = shallowRef(theme.value);
 const themeConfig = computed({
   get() {
     return theme.value;
   },
-  set({ name, value }) {
+  set({ name }) {
     themeName.value = name;
-    theme.value = value;
+    theme.value = name;
   },
 });
+
+const themes = computed(() =>
+  Object.entries(ternentUIThemes).map(([name, theme]) => ({
+    name,
+    value: theme,
+  }))
+);
 </script>
 <template>
-  <ul class="p-4 font-mono text-accent flex flex-col h-full justify-center">
+  <ul
+    class="p-4 font-mono w-full text-base-content flex flex-col h-full justify-center mx-auto max-w-6xl bg-base-100"
+  >
     <li class="opacity-70 my-2 text-base-content"># {{ host }}</li>
     <li class="flex items-center">
       <span class="text-primary">version:</span>
       <a
         :href="`https://github.com/samternent/home/releases/tag/ternentdotdev-${appVersion}`"
         target="_blank"
-        class="link link-secondary flex items-center ml-2"
+        class="link flex items-center ml-2"
         >{{ appVersion }}
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -69,12 +64,7 @@ const themeConfig = computed({
     </li>
     <li class="flex">
       <span class="text-primary">theme:</span>
-      <SMenu
-        v-model="themeConfig"
-        class="text-secondary"
-        :button-text="themeName"
-        :items="themes"
-      />
+      <SMenu v-model="themeConfig" :button-text="themeName" :items="themes" />
     </li>
     <li class="text-base-content">---</li>
     <li><span class="text-primary">name:</span> TERNENT DOT DEV LTD</li>
@@ -88,7 +78,7 @@ const themeConfig = computed({
         ><a
           href="https://www.google.com/maps/@52.4973492,-1.8636315,11z"
           target="_blank"
-          class="link link-secondary flex items-center"
+          class="link flex items-center"
           shrink
           >Birmingham, UK.
           <svg
@@ -109,9 +99,7 @@ const themeConfig = computed({
     </li>
     <li>
       <span class="text-primary">email:</span>
-      <a href="mailto:hello@ternent.dev" class="link link-secondary ml-2"
-        >hello@ternent.dev</a
-      >
+      <a href="mailto:hello@ternent.dev" class="link ml-2">hello@ternent.dev</a>
     </li>
     <li class="flex gap-2">
       <span class="text-primary">linkedin:</span>
@@ -119,7 +107,7 @@ const themeConfig = computed({
         ><a
           href="https://www.linkedin.com/in/samternent/"
           target="_blank"
-          class="link link-secondary flex items-center"
+          class="link flex items-center"
           shrink
           >linkedin.com/in/samternent
           <svg
@@ -144,7 +132,7 @@ const themeConfig = computed({
         ><a
           href="https://www.github.com/samternent/"
           target="_blank"
-          class="link link-secondary flex items-center"
+          class="link flex items-center"
           shrink
           >github.com/samternent
           <svg
@@ -170,7 +158,7 @@ const themeConfig = computed({
         >[<a
           href="https://footballsocial.app"
           target="_blank"
-          class="link link-secondary flex items-center"
+          class="link flex items-center"
           shrink
           >footballsocial.app
           <svg
@@ -193,21 +181,18 @@ const themeConfig = computed({
     <li>
       <span class="text-primary">portfolio:</span> [<RouterLink
         to="/game"
-        class="link link-secondary"
+        class="link"
         >Game</RouterLink
-      >,
-      <RouterLink to="/sweet-shop" class="link link-secondary"
-        >Sweet Shop</RouterLink
-      >,
-      <RouterLink to="/app" class="link link-secondary">App Layout</RouterLink>]
+      >, <RouterLink to="/sweet-shop" class="link">Sweet Shop</RouterLink>,
+      <RouterLink to="/app" class="link">App Layout</RouterLink>]
     </li>
     <!-- <li>
       <span class="text-primary">slides:</span> [<RouterLink
         to="/s/teamwork-frontend"
-        class="link link-secondary"
+        class="link "
         >Teamwork Front End</RouterLink
       >,
-      <RouterLink to="/s/router-drawers" class="link link-secondary"
+      <RouterLink to="/s/router-drawers" class="link "
         >Router Drawers</RouterLink
       >]
     </li> -->
@@ -215,7 +200,7 @@ const themeConfig = computed({
       <span class="text-primary">packages:</span> [<a
         href="https://github.com/samternent/home/tree/main/packages/ternent-ui"
         target="_blank"
-        class="link link-secondary"
+        class="link"
         >ternent-ui </a
       >]
     </li>

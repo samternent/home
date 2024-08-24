@@ -1,27 +1,42 @@
 <script setup>
-import { computed, watch, shallowRef } from "vue";
-import { SThemeToggle } from "ternent-ui/components";
-import { useLocalStorage } from "@vueuse/core";
-import { SBrandHeader, SButton } from "ternent-ui/components";
+import { computed } from "vue";
+import {
+  useLocalStorage,
+  breakpointsTailwind,
+  useBreakpoints,
+} from "@vueuse/core";
+import ternentUIThemes from "ternent-ui/themes";
+import { SBrandHeader, SBreadcrumbs, SButton } from "ternent-ui/components";
 import { useWhiteLabel } from "@/module/brand/useWhiteLabel";
 import Logo from "@/module/brand/Logo.vue";
+import { useBreadcrumbs } from "@/module/breadcrumbs/useBreadcrumbs";
+import AppLayout from "@/module/app/AppLayout.vue";
 
 const whiteLabel = useWhiteLabel();
-
-const themeVariation = useLocalStorage("app/themeVariation", null);
+const themeName = useLocalStorage("app/theme", null);
+const themeVariation = computed(
+  () => ternentUIThemes[themeName.value]?.["color-scheme"] || "light"
+);
+const breakpoints = useBreakpoints(breakpointsTailwind);
+const smallerThanMd = breakpoints.smaller("md");
+const openSideBar = useLocalStorage("ternentdotdev/openSideBar", false);
+const breadcrumbs = useBreadcrumbs({
+  path: "/",
+  name: "Home",
+});
 </script>
 <template>
   <div
-    class="flex flex-col justify-end flex-1 w-full max-w-7xl relative mx-auto"
+    class="flex flex-col justify-end flex-1 w-full relative mx-auto h-screen max-h-screen overflow-hidden"
   >
     <div
-      class="flex justify-between h-14 p-2 items-center sticky top-0 z-10 bg-base-100 px-4"
+      class="flex z-30 mx-auto w-full bg-base-300 gap-4 h-14 p-2 items-center sticky top-0 px-4"
     >
       <SButton
-        v-if="$route.path !== '/'"
-        type="secondary"
-        class="btn-sm justify-left"
-        to="/"
+        v-if="smallerThanMd"
+        type="primary"
+        class="btn btn-ghost btn-circle btn-sm"
+        @click="openSideBar = !openSideBar"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -29,26 +44,29 @@ const themeVariation = useLocalStorage("app/themeVariation", null);
           viewBox="0 0 24 24"
           stroke-width="1.5"
           stroke="currentColor"
+          data-slot="icon"
           class="w-6 h-6"
         >
           <path
             stroke-linecap="round"
             stroke-linejoin="round"
-            d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
+            d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
           />
         </svg>
-        back
       </SButton>
-      <div v-else />
-      <SThemeToggle v-model="themeVariation" size="sm" />
+      <SBreadcrumbs :breadcrumbs="breadcrumbs" />
+      <div></div>
     </div>
+    <AppLayout>
+      <RouterView v-slot="{ Component }">
+        <Transition name="fade">
+          <component :is="Component" />
+        </Transition>
+      </RouterView>
+    </AppLayout>
+
     <div
-      class="flex-1 w-full mb-12 mt-6 mx-auto max-w-6xl relative h-full flex"
-    >
-      <RouterView />
-    </div>
-    <div
-      class="sticky bottom-0 flex items-center justify-between flex-1 p-4 max-h-24 w-full bg-base-100"
+      class="flex z-30 items-center justify-between flex-1 p-4 max-h-24 w-full bg-base-300"
     >
       <RouterLink to="/" class="flex items-center">
         <Logo class="h-auto w-16 lg:w-18 mr-2" />
@@ -62,10 +80,9 @@ const themeVariation = useLocalStorage("app/themeVariation", null);
           >
           <p class="text-xl font-light px-1 flex items-center">
             <!-- {{ whiteLabel.description }}÷ -->
-            <span
-              class="text-xs md:!text-sm lg:!text-lg bg-primary px-2 text-base-100"
-              >{{ whiteLabel.tag }}</span
-            >
+            <span class="text-xs bg-primary px-2 text-base-100">{{
+              whiteLabel.tag
+            }}</span>
           </p>
           <span class="text-sm font-light"> </span>
         </div>

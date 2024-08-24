@@ -246,7 +246,7 @@ const percentageCompleted = computed(() =>
 
     <!-- character shadow -->
     <div
-      class="absolute bottom-1 h-6 rounded-full z-10 bg-black opacity-20 shadow-lg transition-opacity transition-duration-300"
+      class="absolute bottom-0.5 h-6 rounded-xl z-10 bg-black opacity-20"
       :style="{
         left: `${size.width / 2 + cameraY / 20 - 40}px`,
         width: `${120 - cameraY / 10}px`,
@@ -263,7 +263,7 @@ const percentageCompleted = computed(() =>
       >
     </div>
     <div
-      class="text-xs font-light absolute w-full bg-base-200 bottom-0 flex justify-between items-center px-4"
+      class="text-xs font-light absolute w-full bg-base-100 bottom-0 flex justify-between items-center px-4"
       :style="`height: 30px`"
     >
       <select v-model="characterType" class="z-20 bg-transparent">

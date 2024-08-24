@@ -1,4 +1,4 @@
-:root,
+/* :root,
 ::backdrop {
   --sans-font: -apple-system, BlinkMacSystemFont, "Avenir Next", Avenir,
     "Nimbus Sans L", Roboto, "Noto Sans", "Segoe UI", Arial, Helvetica,
@@ -17,8 +17,8 @@
   --preformatted: #444;
   --marked: #fd3;
   --disabled: #efefef;
-}
-@media (prefers-color-scheme: dark) {
+} */
+/* @media (prefers-color-scheme: dark) {
   :root,
   ::backdrop {
     color-scheme: dark;
@@ -32,7 +32,7 @@
     --code: #f06292;
     --preformatted: #ccc;
     --disabled: #111;
-  }
+  } */
   img,
   video {
     opacity: 0.8;

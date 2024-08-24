@@ -1,6 +1,6 @@
-<script setup lang="ts">
+<script setup>
 import { shallowRef, watch, computed } from "vue";
-import { useLocalStorage } from "@vueuse/core";
+import { SButton } from "ternent-ui/components";
 
 const props = defineProps(["modelValue", "filename"]);
 const emit = defineEmits(["update:modelValue", "update:filename"]);
@@ -33,21 +33,20 @@ const filename = computed({
 <template>
   <div class="flex justify-between flex-col px-4">
     <div class="flex flex-col items-center mb-8">
-      <div v-if="filename" class="text-xl mb-8">{{ filename }}</div>
-      <v-text-field
-        v-else
+      <div class="text-xl mb-8">{{ filename }}</div>
+      <input
         density="compact"
         v-model="filename"
         class="w-full"
         placeholder="filename.extension"
       />
-      <VBtn
+      <SButton
         :disabled="!props.modelValue"
         variant="tonal"
         size="large"
         color="secondary"
         @click="openFile"
-        >Download gzip file</VBtn
+        >Download gzip file</SButton
       >
     </div>
     <div

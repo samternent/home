@@ -14,6 +14,7 @@ import {
   buildThing,
   getSourceUrl,
   saveSolidDatasetAt,
+  getSolidDataset,
 } from "@inrupt/solid-client";
 import { SCHEMA_INRUPT, RDF } from "@inrupt/vocab-common-rdf";
 import { useIdentity } from "../identity/useIdentity";
@@ -51,43 +52,24 @@ function Solid() {
     hasSolidSession.value = false;
   }
 
-  async function handleSessionLogin() {
-    await handleIncomingRedirect({
-      restorePreviousSession: true,
+  function getProfile(profileUrl) {
+    console.log("profileUrl", profileUrl);
+    return getSolidDataset(profileUrl, {
+      fetch: fetch,
     });
+  }
 
-    const session = getDefaultSession();
-    hasSolidSession.value = session.info.isLoggedIn;
-    if (hasSolidSession.value) {
-      webId.value = session.info.webId;
-
-      const profiles = await getProfileAll(webId, {
-        fetch: fetch,
-      });
-
-      let userDataThing = buildThing(getThing(profiles.altProfileAll[0], webId))
-        .addStringNoLocale(SCHEMA_INRUPT.name, "ABC123 of Example Literature")
-        .addUrl(RDF.type, "https://schema.org/Book")
-        .build();
-
-      console.log(userDataThing);
-
-      await saveSolidDatasetAt(
-        getSourceUrl(userDataThing),
-        userDataThing,
-        { fetch: fetch } // fetch from authenticated Session
-      );
-
-      // extendedProfilesSolidDatasets.forEach((extendedProfileSolidDataset) => {
-      //   console.log(getSourceUrl(extendedProfileSolidDataset));
-      //   const thingsInExtendedProfile = getThingAll(
-      //     extendedProfileSolidDataset
-      //   );
-      //   thingsInExtendedProfile.forEach((thing) => {
-      //     console.log(thing);
-      //   });
-      // });
-    }
+  async function handleSessionLogin() {
+    // await handleIncomingRedirect({
+    //   restorePreviousSession: true,
+    // });
+    // const session = getDefaultSession();
+    // hasSolidSession.value = session.info.isLoggedIn;
+    // if (hasSolidSession.value) {
+    //   webId.value = session.info.webId;
+    //   const profile = await getProfile(webId);
+    //   console.log(profile);
+    // }
   }
 
   return {

@@ -1,4 +1,4 @@
-# concords-encrypt
+# encrypt
 
 ## 0.0.4
 

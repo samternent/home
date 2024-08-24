@@ -12,11 +12,11 @@
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.4.8",
-    "@changesets/cli": "^2.27.1",
+    "@changesets/cli": "^2.27.7",
     "encoding": "0.1.13"
   },
   "dependencies": {
-    "redis": "^4.6.11",
+    "redis": "^4.7.0",
     "shelljs": "^0.8.5"
   },
   "scripts": {
@@ -33,10 +33,7 @@
     "dev:docker": "cd .ops && docker-compose up -d"
   },
   "pnpm": {
-    "patchedDependencies": {
-      "@supabase/gotrue-js@2.55.0": "patches/@supabase__gotrue-js@2.55.0.patch",
-      "@supabase/supabase-js@2.38.0": "patches/@supabase__supabase-js@2.38.0.patch"
-    }
+    "patchedDependencies": {}
   },
   "packageManager": "pnpm@8.15.5+sha1.a58c038faac410c947dbdb93eb30994037d0fce2"
 }

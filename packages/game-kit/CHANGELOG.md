@@ -1,4 +1,4 @@
-# sams-game-kit
+# game-kit
 
 ## 1.0.3
 

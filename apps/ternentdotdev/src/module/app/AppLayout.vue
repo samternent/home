@@ -1,16 +1,16 @@
 <script setup>
 import { shallowRef, onMounted, onBeforeUnmount } from "vue";
-import { useLocalStorage } from "@vueuse/core";
 import {
-  SNavBar,
-  SBreadcrumbs,
-  SButton,
-  SBrandHeader,
-} from "ternent-ui/components";
-import { useBreadcrumbs } from "../breadcrumbs/useBreadcrumbs";
+  useLocalStorage,
+  breakpointsTailwind,
+  useBreakpoints,
+} from "@vueuse/core";
 import { useAppShell } from "../app-shell/useAppShell";
-// import ConcordsLog from "../module/concords/ConcordsLog.vue";
 import SideNav from "../side-nav/SideNav.vue";
+import { SButton } from "ternent-ui/components";
+
+const breakpoints = useBreakpoints(breakpointsTailwind);
+const smallerThanMd = breakpoints.smaller("md");
 
 const { isBottomPanelExpanded, bottomPanelHeight } = useAppShell();
 
@@ -55,17 +55,15 @@ onBeforeUnmount(() => {
 });
 </script>
 <template>
-  <div class="flex flex-1 bg-base-100 border border-base-300 shadow-lg w-full">
+  <div
+    class="flex-1 w-full relative bg-base-100 mx-auto h-full flex overflow-hidden z-10"
+  >
     <SideNav />
-    <div class="flex flex-col flex-1 h-full w-full overflow-hidden">
-      <SNavBar>
-        <template #nav> <slot name="nav" /> </template>
-        <template #start> <slot name="navStart" /> </template>
-        <template #end> <slot name="navEnd" /> </template>
-      </SNavBar>
-      <slot>
-        <RouterView />
-      </slot>
+
+    <slot name="drawer" />
+    <div class="flex flex-col flex-1 h-full w-full overflow-auto">
+      <slot name="nav" />
+      <slot />
     </div>
   </div>
 </template>
