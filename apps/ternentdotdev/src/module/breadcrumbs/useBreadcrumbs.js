@@ -1,9 +1,20 @@
-import { provide, inject, shallowRef, onUnmounted } from "vue";
+import { provide, inject, shallowRef, onUnmounted, computed } from "vue";
+import { useTitle } from "@vueuse/core";
 
 const useBreadcrumbsSymbol = Symbol("useBreadcrumbs");
 
 function Breadcrumbs() {
   const breadcrumbs = shallowRef([]);
+
+  const title = computed(
+    () =>
+      `${breadcrumbs.value
+        .map(({ name }) => name)
+        .reverse()
+        .join(" | ")} | ternent.dev`
+  );
+
+  useTitle(title);
 
   return {
     breadcrumbs,
@@ -12,6 +23,7 @@ function Breadcrumbs() {
 
 export function provideBreadcrumbs() {
   const breadcrumbs = Breadcrumbs();
+
   provide(useBreadcrumbsSymbol, breadcrumbs);
   return breadcrumbs;
 }
