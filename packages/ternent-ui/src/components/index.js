@@ -22,3 +22,4 @@ export { default as SBrowserMockup } from "./SBrowserMockup.vue";
 export { default as STimeline } from "./STimeline.vue";
 export { default as SDropdown } from "./SDropdown.vue";
 export { default as SMenu } from "./SMenu.vue";
+export { default as SFileInput } from "./SFileInput.vue";

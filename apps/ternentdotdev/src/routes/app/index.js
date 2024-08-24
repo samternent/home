@@ -6,10 +6,6 @@ export const appRoutes = [
     component: () => import("./RouteApp.vue"),
     children: [
       {
-        path: "solid",
-        component: () => import("../solid/RouteSolid.vue"),
-      },
-      {
         path: "profile",
         component: () => import("../profile/RouteProfile.vue"),
       },

@@ -1,12 +1,9 @@
 <script setup>
-import {
-  useLocalStorage,
-  breakpointsTailwind,
-  useBreakpoints,
-} from "@vueuse/core";
-import { computed, watch, shallowRef } from "vue";
-import { SThemeToggle } from "ternent-ui/components";
+import { useLocalStorage } from "@vueuse/core";
+import { watch } from "vue";
 import { useWhiteLabel } from "@/module/brand/useWhiteLabel";
+
+import { useBreadcrumbs } from "@/module/breadcrumbs/useBreadcrumbs";
 
 const whiteLabel = useWhiteLabel();
 const themeVariation = useLocalStorage(
@@ -17,19 +14,13 @@ const themeVariation = useLocalStorage(
 );
 const themeName = useLocalStorage("app/theme", `${whiteLabel.value.themeName}`);
 
-const links = [
-  {
-    title: "Privacy",
-    to: "/legal/privacy",
-  },
-  {
-    title: "Terms",
-    to: "/legal/terms",
-  },
-];
-
 watch(themeVariation, (_themeVariation) => {
   themeName.value = `${whiteLabel.value.themeName}`;
+});
+
+useBreadcrumbs({
+  path: "/app/settings",
+  name: "Settings",
 });
 </script>
 <template>

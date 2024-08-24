@@ -1,4 +1,4 @@
-# concords-identity
+# identity
 
 ## 0.0.10
 

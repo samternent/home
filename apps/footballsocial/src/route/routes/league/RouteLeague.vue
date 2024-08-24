@@ -130,13 +130,21 @@ const editCompetitionTarget = shallowRef(null);
 
 onClickOutside(editCompetitionTarget, () => (editCompetition.value = false));
 
-const tabs = computed(() => [
-  {
-    title: "Predictions",
-    path: `/l/${competitionCode.value}/predictions`,
-  },
-  { title: "Tables", path: `/l/${competitionCode.value}/table` },
-]);
+const tabs = computed(() => {
+  if (!competition.value?.currentSeason?.currentMatchday) {
+    return [];
+  }
+  return [
+    {
+      title: "Predictions",
+      path: `/l/${competitionCode.value}/predictions`,
+    },
+    {
+      title: "Tables",
+      path: `/l/${competitionCode.value}/table`,
+    },
+  ];
+});
 const topThree = shallowRef([]);
 watch(
   competition,
@@ -374,16 +382,16 @@ const seasonEnds = computed(
 
       <div class="w-64 flex justify-center items-center lg:mx-4 mx-auto my-4">
         <RouterLink
-          v-if="competitionCode === 'EC'"
+          v-if="competitionCode === 'CL'"
           to="/l/PL/predictions"
           class="btn btn-secondary w-full"
           >Premier League predictions</RouterLink
         >
         <RouterLink
           v-else
-          to="/l/EC/predictions"
+          to="/l/CL/predictions"
           class="btn btn-secondary w-full"
-          >Place Euros predictions</RouterLink
+          >Champions League predictions</RouterLink
         >
       </div>
     </div>

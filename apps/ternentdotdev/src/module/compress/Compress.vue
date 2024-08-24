@@ -1,41 +1,14 @@
 <script setup>
 import { shallowRef, watch, computed } from "vue";
 import { useLocalStorage } from "@vueuse/core";
+import { SFileInput } from "ternent-ui/components";
 
-const props = defineProps(["modelValue", "filename"]);
+const compressedFile = defineModel({ type: File, required: true });
+const filename = defineModel("filename", { type: String, required: "" });
+
 const emit = defineEmits(["update:modelValue", "update:filename"]);
 
 const activeCompressView = useLocalStorage("activeCompressView", "url");
-
-const files = shallowRef([]);
-
-function readFileAsync(file) {
-  return new Promise((resolve, reject) => {
-    let reader = new FileReader();
-
-    reader.onload = () => {
-      resolve(reader.result);
-    };
-
-    reader.onerror = reject;
-
-    reader.readAsArrayBuffer(file);
-  });
-}
-
-watch(files, async (_files) => {
-  if (!_files.length) return;
-  const fileBuffer = await readFileAsync(_files[0]);
-  const stream = new Blob([fileBuffer], { type: _files[0].type }).stream();
-
-  const compressedReadableStream = stream.pipeThrough(
-    new CompressionStream("gzip")
-  );
-  const compressedFiles = await new Response(compressedReadableStream).blob();
-
-  emit("update:modelValue", compressedFiles);
-  emit("update:filename", _files[0].name);
-});
 
 const textInput = shallowRef("");
 watch(textInput, async (_textInput) => {
@@ -106,7 +79,7 @@ async function fetchUrl() {
 <template>
   <div class="flex flex-col">
     <div class="flex flex-1 justify-center items-center">
-      <input type="file" />
+      <SFileInput v-model="compressedFile" v-model:filename="filename" />
     </div>
   </div>
 </template>

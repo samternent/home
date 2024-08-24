@@ -3,18 +3,18 @@ export const competitions = [
   //   code: "WC",
   //   name: "FIFA World Cup",
   // },
-  {
-    code: "EC",
-    name: "European Championship",
-  },
+  // {
+  //   code: "EC",
+  //   name: "European Championship",
+  // },
   {
     code: "PL",
     name: "Premier League",
   },
-  // {
-  //   code: "CL",
-  //   name: "UEFA Champions League",
-  // },
+  {
+    code: "CL",
+    name: "UEFA Champions League",
+  },
   {
     code: "ELC",
     name: "Championship",
@@ -31,10 +31,10 @@ export const competitions = [
     code: "SA",
     name: "Serie A",
   },
-  // {
-  //   code: "FL1",
-  //   name: "Ligue 1",
-  // },
+  {
+    code: "FL1",
+    name: "Ligue 1",
+  },
   {
     code: "DED",
     name: "Eredivisie",

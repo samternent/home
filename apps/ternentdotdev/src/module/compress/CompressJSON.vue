@@ -62,19 +62,19 @@ const sizeInMb = computed(() => sizeInKb.value / 1024);
 </script>
 <template>
   <div class="flex flex-col">
-    <VTabs v-model="activeCompressView" class="sticky top-0 bg-zinc-800 z-20">
+    <!-- <VTabs v-model="activeCompressView" class="sticky top-0 bg-zinc-800 z-20">
       <VTab value="url">URL</VTab>
       <VTab value="json">JSON</VTab>
       <VTab value="file">File</VTab>
       <VTab value="text">Text</VTab>
-    </VTabs>
+    </VTabs> -->
 
     <div class="flex flex-1 justify-between flex-col">
       <div
         class="flex flex-1 justify-center items-center"
         v-if="activeCompressView === 'url'"
       >
-        <v-text-field
+        <input
           v-model="files"
           color="primary"
           placeholder="https://gzip.app/api/sample.json"

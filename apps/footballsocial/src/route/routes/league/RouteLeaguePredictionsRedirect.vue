@@ -18,4 +18,11 @@ watch(
   { immediate: true }
 );
 </script>
-<template><div>redirecting...</div></template>
+<template>
+  <div
+    class="flex flex-col gap-4 flex-1 justify-center font-bold items-center text-4xl my-12"
+  >
+    THE SEASON HAS NOT YET STARTED.
+    <p class="text-2xl">PLEASE CHECK BACK LATER.</p>
+  </div>
+</template>
