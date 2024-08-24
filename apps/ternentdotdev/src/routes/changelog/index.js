@@ -1,11 +1,11 @@
 export default [
   {
-    path: "/changelogs",
+    path: "/changelog",
     component: () => import("./RouteChangelogs.vue"),
     children: [
       {
         path: "",
-        component: () => import("./RouteChangelogsList.vue"),
+        redirect: "/changelog/apps/ternentdotdev",
       },
       {
         path: ":type/:name",

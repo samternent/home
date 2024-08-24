@@ -59,7 +59,7 @@ const breadcrumbs = useBreadcrumbs({
     </div>
     <AppLayout>
       <RouterView v-slot="{ Component }">
-        <Transition name="fade">
+        <Transition name="fade" duration="50" mode="out-in">
           <component :is="Component" />
         </Transition>
       </RouterView>
@@ -104,3 +104,14 @@ const breadcrumbs = useBreadcrumbs({
     </div>
   </div>
 </template>
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

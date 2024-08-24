@@ -84,24 +84,24 @@ function formatTime(time) {
 }
 </script>
 <template>
-  <div class="md:px-[1em]">
-    <div class="my-4 flex justify-between">
-      <div class="text-lg">
-        <span>{{ ledger.id.slice(0, 6) }}.concord</span>
-      </div>
-      <div class="mr-2 flex text-xs items-end">
-        Created
-        {{ formatTime(ledger.chain[0].timestamp) }} by
-        <IdentityAvatar
-          size="xs"
-          class="ml-2"
-          :identity="ledger.chain[0].records[0].identity"
-        />
-      </div>
-    </div>
-    <STabs :items="tabs" type="lifted" :path="$route.path" />
-  </div>
   <div class="flex flex-col flex-1 overflow-auto relative">
+    <div class="md:px-[1em]">
+      <div class="my-4 flex justify-between">
+        <div class="text-lg">
+          <span>{{ ledger.id.slice(0, 6) }}.concord</span>
+        </div>
+        <div class="mr-2 flex text-xs items-end">
+          Created
+          {{ formatTime(ledger.chain[0].timestamp) }} by
+          <IdentityAvatar
+            size="xs"
+            class="ml-2"
+            :identity="ledger.chain[0].records[0].identity"
+          />
+        </div>
+      </div>
+      <STabs :items="tabs" type="lifted" :path="$route.path" />
+    </div>
     <div class="flex-1 overflow-auto w-full">
       <div class="flex flex-col h-full flex-1">
         <div class="flex mx-[1em] bg-base-200 border-x border-base-300">

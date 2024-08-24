@@ -60,19 +60,13 @@ const topItems = computed(() => [
         name: "Sweet Shop",
         to: "/portfolio/sweet-shop",
       },
-    ],
-  },
-  {
-    name: "ARCADE",
-    to: "/arcade",
-    d: "M14.25 6.087c0-.355.186-.676.401-.959.221-.29.349-.634.349-1.003 0-1.036-1.007-1.875-2.25-1.875s-2.25.84-2.25 1.875c0 .369.128.713.349 1.003.215.283.401.604.401.959v0a.64.64 0 0 1-.657.643 48.39 48.39 0 0 1-4.163-.3c.186 1.613.293 3.25.315 4.907a.656.656 0 0 1-.658.663v0c-.355 0-.676-.186-.959-.401a1.647 1.647 0 0 0-1.003-.349c-1.036 0-1.875 1.007-1.875 2.25s.84 2.25 1.875 2.25c.369 0 .713-.128 1.003-.349.283-.215.604-.401.959-.401v0c.31 0 .555.26.532.57a48.039 48.039 0 0 1-.642 5.056c1.518.19 3.058.309 4.616.354a.64.64 0 0 0 .657-.643v0c0-.355-.186-.676-.401-.959a1.647 1.647 0 0 1-.349-1.003c0-1.035 1.008-1.875 2.25-1.875 1.243 0 2.25.84 2.25 1.875 0 .369-.128.713-.349 1.003-.215.283-.4.604-.4.959v0c0 .333.277.599.61.58a48.1 48.1 0 0 0 5.427-.63 48.05 48.05 0 0 0 .582-4.717.532.532 0 0 0-.533-.57v0c-.355 0-.676.186-.959.401-.29.221-.634.349-1.003.349-1.035 0-1.875-1.007-1.875-2.25s.84-2.25 1.875-2.25c.37 0 .713.128 1.003.349.283.215.604.401.96.401v0a.656.656 0 0 0 .658-.663 48.422 48.422 0 0 0-.37-5.36c-1.886.342-3.81.574-5.766.689a.578.578 0 0 1-.61-.58v0Z",
-    children: [
       {
-        name: "Test Game",
-        to: "/arcade/game",
+        name: "Game Enginee",
+        to: "/portfolio/game",
       },
     ],
   },
+
   {
     name: "LEDGER",
     to: "/ledger",
@@ -138,56 +132,56 @@ const bottomItems = computed(() => [
   },
   {
     name: "CHANGELOGS",
-    to: "/changelogs",
+    to: "/changelog",
     d: "M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z",
     children: [
       {
         name: "ternentdotdev",
-        to: "/changelogs/apps/ternentdotdev",
+        to: "/changelog/apps/ternentdotdev",
       },
       {
         name: "ternent-api",
-        to: "/changelogs/apps/ternent-api",
+        to: "/changelog/apps/ternent-api",
       },
       {
         name: "footballsocial",
-        to: "/changelogs/apps/footballsocial",
+        to: "/changelog/apps/footballsocial",
       },
       {
         name: "footballsocial-api",
-        to: "/changelogs/apps/footballsocial-api",
+        to: "/changelog/apps/footballsocial-api",
       },
       {
         name: "ternent-ui",
-        to: "/changelogs/packages/ternent-ui",
+        to: "/changelog/packages/ternent-ui",
       },
       {
         name: "encrypt",
-        to: "/changelogs/packages/encrypt",
+        to: "/changelog/packages/encrypt",
       },
       {
         name: "game-kit",
-        to: "/changelogs/packages/game-kit",
+        to: "/changelog/packages/game-kit",
       },
       {
         name: "identity",
-        to: "/changelogs/packages/identity",
+        to: "/changelog/packages/identity",
       },
       {
         name: "ledger",
-        to: "/changelogs/packages/ledger",
+        to: "/changelog/packages/ledger",
       },
       {
         name: "proof-of-work",
-        to: "/changelogs/packages/proof-of-work",
+        to: "/changelog/packages/proof-of-work",
       },
       {
         name: "ragejs",
-        to: "/changelogs/packages/ragejs",
+        to: "/changelog/packages/ragejs",
       },
       {
         name: "utils",
-        to: "/changelogs/packages/utils",
+        to: "/changelog/packages/utils",
       },
     ],
   },
@@ -199,8 +193,8 @@ const bottomItems = computed(() => [
     class="flex flex-col bg-base-200 border-r-2 border-base-200 items-center justify-between duration-100"
     style="transition: width 200ms"
     :class="{
-      'w-20 relative': (mdAndLarger && smallerThanLg) || collapsedSideBar,
-      'w-60 relative': lgAndLarger && !collapsedSideBar,
+      'w-20 relative': collapsedSideBar,
+      'w-60 relative': mdAndLarger && !collapsedSideBar,
       'w-60 absolute z-10 shadow-lg top-0 bottom-0':
         smallerThanMd && openSideBar,
     }"
@@ -211,7 +205,7 @@ const bottomItems = computed(() => [
       :class="{
         'rotate-180': collapsedSideBar,
       }"
-      v-if="lgAndLarger"
+      v-if="mdAndLarger"
       @click="collapsedSideBar = !collapsedSideBar"
       ><svg
         xmlns="http://www.w3.org/2000/svg"
@@ -250,14 +244,8 @@ const bottomItems = computed(() => [
     </SButton>
     <header class="p-2 flex"></header>
     <div class="flex flex-col flex-1 gap-10 w-full">
-      <SideNavItems
-        :items="topItems"
-        :collapsed="!(lgAndLarger || smallerThanMd) || collapsedSideBar"
-      />
-      <SideNavItems
-        :items="bottomItems"
-        :collapsed="!(lgAndLarger || smallerThanMd) || collapsedSideBar"
-      />
+      <SideNavItems :items="topItems" :collapsed="collapsedSideBar" />
+      <SideNavItems :items="bottomItems" :collapsed="collapsedSideBar" />
     </div>
 
     <footer class="flex flex-col justify-end relative">

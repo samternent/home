@@ -33,7 +33,7 @@ const changelog = computed(() =>
     : "loading..."
 );
 useBreadcrumbs({
-  path: `/changelogs/${props.type}/${props.name}`,
+  path: `/changelog/${props.type}/${props.name}`,
   name: props.name,
 });
 

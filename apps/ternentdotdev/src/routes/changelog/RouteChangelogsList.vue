@@ -6,54 +6,54 @@ import { useBreadcrumbs } from "@/module/breadcrumbs/useBreadcrumbs";
     <h2>Apps</h2>
     <ul>
       <li>
-        <RouterLink to="/changelogs/apps/ternentdotdev"
+        <RouterLink to="/changelog/apps/ternentdotdev"
           >ternentdotdev</RouterLink
         >
       </li>
       <li>
-        <RouterLink to="/changelogs/apps/ternent-api">ternent-api</RouterLink>
+        <RouterLink to="/changelog/apps/ternent-api">ternent-api</RouterLink>
       </li>
       <li>
-        <RouterLink to="/changelogs/apps/footballsocial"
+        <RouterLink to="/changelog/apps/footballsocial"
           >footabllsocial</RouterLink
         >
       </li>
       <li>
-        <RouterLink to="/changelogs/apps/footballsocial-api"
+        <RouterLink to="/changelog/apps/footballsocial-api"
           >footabllsocial-api</RouterLink
         >
       </li>
       <li>
-        <RouterLink to="/changelogs/apps/concords">concords</RouterLink>
+        <RouterLink to="/changelog/apps/concords">concords</RouterLink>
       </li>
     </ul>
     <h2>Packages</h2>
     <ul>
       <li>
-        <RouterLink to="/changelogs/packages/encrypt">encrypt</RouterLink>
+        <RouterLink to="/changelog/packages/encrypt">encrypt</RouterLink>
       </li>
       <li>
-        <RouterLink to="/changelogs/packages/game-kit">game-kit</RouterLink>
+        <RouterLink to="/changelog/packages/game-kit">game-kit</RouterLink>
       </li>
       <li>
-        <RouterLink to="/changelogs/packages/identity">identity</RouterLink>
+        <RouterLink to="/changelog/packages/identity">identity</RouterLink>
       </li>
       <li>
-        <RouterLink to="/changelogs/packages/ledger">ledger</RouterLink>
+        <RouterLink to="/changelog/packages/ledger">ledger</RouterLink>
       </li>
       <li>
-        <RouterLink to="/changelogs/packages/proof-of-work"
+        <RouterLink to="/changelog/packages/proof-of-work"
           >proof-of-work</RouterLink
         >
       </li>
       <li>
-        <RouterLink to="/changelogs/packages/ragejs">ragejs</RouterLink>
+        <RouterLink to="/changelog/packages/ragejs">ragejs</RouterLink>
       </li>
       <li>
-        <RouterLink to="/changelogs/packages/ternent-ui">ternent-ui</RouterLink>
+        <RouterLink to="/changelog/packages/ternent-ui">ternent-ui</RouterLink>
       </li>
       <li>
-        <RouterLink to="/changelogs/packages/utils">utils</RouterLink>
+        <RouterLink to="/changelog/packages/utils">utils</RouterLink>
       </li>
     </ul>
   </div>

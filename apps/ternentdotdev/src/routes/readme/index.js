@@ -5,7 +5,7 @@ export default [
     children: [
       {
         path: "",
-        component: () => import("./RouteReadmesList.vue"),
+        redirect: "/readme/apps/ternentdotdev",
       },
       {
         path: ":type/:name",

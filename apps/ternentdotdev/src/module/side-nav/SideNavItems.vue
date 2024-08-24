@@ -22,7 +22,7 @@ defineProps({
         <li v-for="item in items" :key="`path_${item.to}`">
           <RouterLink
             :to="item.to"
-            class="link hover:link-active font-medium line-clamp-1 break-all py-2 flex gap-2 items-center h-14 text-base transition-all"
+            class="link hover:link-active font-medium line-clamp-1 break-all py-2 flex gap-2 items-center h-14 text-base transition-all uppercase"
             :class="{ 'justify-center': collapsed }"
             active-class="link-active"
           >
@@ -56,14 +56,15 @@ defineProps({
             <ul
               v-if="
                 $route.matched.some(({ path }) => path.startsWith(item.to)) &&
-                !collapsed
+                !collapsed &&
+                item.children?.length
               "
               class="flex flex-col h-44 overflow-auto bg-base-200 p-2 m-2"
             >
               <li v-for="child in item.children" :key="`path1_${child.to}`">
                 <RouterLink
                   :to="child.to"
-                  class="font-base line-clamp-1 break-all text-base pb-2 transition-all"
+                  class="font-base text-sm line-clamp-1 break-all pb-2 transition-all uppercase"
                   :class="{ 'justify-center': collapsed }"
                   active-class="font-medium italic scale-105 text-primary"
                 >

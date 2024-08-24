@@ -1,6 +1,6 @@
 <script setup>
-import { shallowRef, computed } from "vue";
-import { tryOnBeforeMount } from "@vueuse/core";
+import { shallowRef, computed, watch } from "vue";
+
 import { marked } from "marked";
 import DOMPurify from "dompurify";
 import { useBreadcrumbs } from "@/module/breadcrumbs/useBreadcrumbs";
@@ -19,14 +19,13 @@ const props = defineProps({
 
 const clean = DOMPurify.sanitize("<b>hello there</b>");
 
-const changelogMarkdown = shallowRef();
-
-tryOnBeforeMount(async () => {
+async function loadMarkdown() {
   const changelogs = await fetch(
     `https://raw.githubusercontent.com/samternent/home/main/${props.type}/${props.name}/README.md`
   );
   changelogMarkdown.value = await changelogs.text();
-});
+}
+const changelogMarkdown = shallowRef();
 
 const changelog = computed(() =>
   changelogMarkdown.value
@@ -37,6 +36,8 @@ useBreadcrumbs({
   path: `/readme/${props.type}/${props.name}`,
   name: props.name,
 });
+
+watch([() => props.type, () => props.name], loadMarkdown, { immediate: true });
 </script>
 <template>
   <div class="flex-1 flex w-full p-4 bg-base-100">

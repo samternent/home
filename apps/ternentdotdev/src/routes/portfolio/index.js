@@ -15,6 +15,10 @@ export default [
         path: "footballsocial",
         component: () => import("./RoutePortfolioFootballSocial.vue"),
       },
+      {
+        path: "game",
+        component: () => import("./RoutePortfolioGame.vue"),
+      },
     ],
   },
 ];

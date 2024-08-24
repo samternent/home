@@ -2,7 +2,7 @@
 import { useBreadcrumbs } from "@/module/breadcrumbs/useBreadcrumbs";
 
 useBreadcrumbs({
-  path: "/changelogs",
+  path: "/changelog",
   name: "Changelogs",
 });
 </script>
