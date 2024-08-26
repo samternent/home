@@ -14,7 +14,6 @@ export function provideWhiteLabel(app) {
     whiteLabel.value = {
       ...whiteLabel.value,
       name: ["ternent", "dot", "local"],
-      description: "Solving problems, with Software.",
       tag: "Hand-crafted Software. Birmingham, UK.",
       themeName: "azureBloom",
       domain: "localhost:5173",
@@ -24,9 +23,8 @@ export function provideWhiteLabel(app) {
     whiteLabel.value = {
       ...whiteLabel.value,
       name: ["ternent", "dot", "dev"],
-      description: "Software Solutions.",
-      tag: "Made in Birmingham, UK.",
-      themeName: "ternentdotdev-light",
+      tag: "Hand-crafted Software. Birmingham, UK.",
+      themeName: "azureBloom",
       domain: "ternent.dev",
     };
   }
@@ -34,9 +32,8 @@ export function provideWhiteLabel(app) {
     whiteLabel.value = {
       ...whiteLabel.value,
       name: ["concords", "ledger", ""],
-      description: "Concords is a white labelled version of ternent.dev",
-      tag: "Made in Birmingham, UK.",
-      themeName: "concords",
+      tag: "Encrypted, storage agnostic & tamper-proof.",
+      themeName: "corporateProfessional",
       domain: "concords.app",
     };
   }
