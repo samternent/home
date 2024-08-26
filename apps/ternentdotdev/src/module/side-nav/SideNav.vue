@@ -49,10 +49,12 @@ const topItems = computed(() => [
       {
         name: "Gzip",
         to: "/tools/gzip",
+        tag: "wip",
       },
       {
         name: "Encryption",
         to: "/tools/encryption",
+        tag: "wip",
       },
     ],
   },
@@ -64,14 +66,17 @@ const topItems = computed(() => [
       {
         name: "Football Social",
         to: "/portfolio/footballsocial",
+        tag: "beta",
       },
       {
         name: "Gummy Bear Store",
         to: "/portfolio/sweet-shop",
+        tag: "alpha",
       },
       {
         name: "Game Engine",
         to: "/portfolio/game",
+        tag: "wip",
       },
     ],
   },

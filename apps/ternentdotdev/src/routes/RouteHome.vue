@@ -143,7 +143,7 @@ const breadcrumbs = useBreadcrumbs({
         </div>
       </RouterLink>
       <div class="items-end gap-4 flex">
-        <div class="hidden md:flex">
+        <div class="hidden md:flex items-end gap-4">
           <SButton size="lg" type="primary">Contact</SButton>
           <ul class="text-xs">
             <li class="flex gap-2">
