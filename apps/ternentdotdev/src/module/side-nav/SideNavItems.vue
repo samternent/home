@@ -56,7 +56,7 @@ defineProps({
             <ul
               class="flex flex-col max-h-44 overflow-auto bg-base-200 p-2 m-2 opacity-100"
               :class="{
-                'opacity-0 max-h-0 !p-0 !m-0 overflow-hidden':
+                '!opacity-0 !max-h-0 !p-0 !m-0 !overflow-hidden':
                   !$route.matched.some(({ path }) =>
                     path.startsWith(item.to)
                   ) ||

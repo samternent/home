@@ -204,7 +204,7 @@ const bottomItems = computed(() => [
     :class="{
       '!w-20 relative': collapsedSideBar,
       'w-60 relative': mdAndLarger && !collapsedSideBar,
-      'w-60 absolute z-10 shadow-lg top-0 bottom-0':
+      'w-60 absolute z-30 shadow-lg top-0 bottom-0':
         smallerThanMd && openSideBar,
     }"
   >

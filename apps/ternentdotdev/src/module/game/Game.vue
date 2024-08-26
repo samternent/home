@@ -235,8 +235,8 @@ watch(percentageCompleted, () => {
     :cameraY="cameraY"
     :layerMultiplier="sceneLayerMultiplier"
   />
-  <div class="absolute flex top-0 left-0 overflow-hidden bottom-0 right-0 z-20">
-    <canvas ref="canvas" class="flex-1 z-20"></canvas>
+  <div class="absolute flex top-0 left-0 overflow-hidden bottom-0 right-0 z-10">
+    <canvas ref="canvas" class="flex-1 z-10"></canvas>
 
     <!-- character shadow -->
     <div
@@ -247,7 +247,7 @@ watch(percentageCompleted, () => {
       }"
     />
     <div
-      class="absolute top-2 h-4 opacity-50 text-xs left-0 w-full bg-base-100 border-r-2 border-primary flex-1 z-30 flex justify-end items-center"
+      class="absolute top-2 h-4 opacity-50 text-xs left-0 w-full bg-base-100 border-r-2 border-primary flex-1 z-10 flex justify-end items-center"
       :style="{
         width: `${((cameraX * -1) / (sceneWidth - size.width)) * 100}%`,
       }"
@@ -260,7 +260,7 @@ watch(percentageCompleted, () => {
       class="text-xs font-light absolute w-full bg-base-100 bottom-0 flex justify-between items-center px-4"
       :style="`height: 30px`"
     >
-      <select v-model="characterType" class="z-20 bg-transparent">
+      <select v-model="characterType" class="z-10 bg-transparent">
         <option value="boy">Boy</option>
         <option value="dino">Dino</option>
       </select>
