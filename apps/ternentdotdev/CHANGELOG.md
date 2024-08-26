@@ -1,5 +1,16 @@
 # ternentdotdev
 
+## 0.3.1
+
+### Patch Changes
+
+- [`05447a4477f0e25ce5d540b72aa4f7b619b1baea`](https://github.com/samternent/home/commit/05447a4477f0e25ce5d540b72aa4f7b619b1baea) Thanks [@samternent](https://github.com/samternent)! - Adds documnet title
+
+- [`39e4521fa018b7706ac00b8d1dd8fb3eebf63395`](https://github.com/samternent/home/commit/39e4521fa018b7706ac00b8d1dd8fb3eebf63395) Thanks [@samternent](https://github.com/samternent)! - Theme and layout changes
+
+- Updated dependencies [[`39e4521fa018b7706ac00b8d1dd8fb3eebf63395`](https://github.com/samternent/home/commit/39e4521fa018b7706ac00b8d1dd8fb3eebf63395)]:
+  - ternent-ui@0.1.12
+
 ## 0.3.0
 
 ### Minor Changes
