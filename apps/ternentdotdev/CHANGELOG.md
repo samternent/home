@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.3.2
+
+### Patch Changes
+
+- [`8c90bef7918a3d603d570cb8c7332df5573adbd0`](https://github.com/samternent/home/commit/8c90bef7918a3d603d570cb8c7332df5573adbd0) Thanks [@samternent](https://github.com/samternent)! - Fix sidenav collapse
+
 ## 0.3.1
 
 ### Patch Changes
