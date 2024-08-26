@@ -1,4 +1,4 @@
-export const settingsRoutes = [
+export default [
   {
     path: "/settings",
     component: () => import("./RouteSettings.vue"),

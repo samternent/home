@@ -7,10 +7,10 @@ export default [
         path: "",
         redirect: "/arcade/game",
       },
-      {
-        path: "murder",
-        component: () => import("./RouteAppsMurder.vue"),
-      },
+      // {
+      //   path: "murder",
+      //   component: () => import("./RouteAppsMurder.vue"),
+      // },
       {
         path: "game",
         component: () => import("./RouteAppsGame.vue"),

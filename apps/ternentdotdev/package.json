@@ -24,6 +24,7 @@
     "@vueuse/shared": "^10.11.1",
     "axios": "^1.7.5",
     "blockchain": "workspace:*",
+    "colorjs.io": "^0.5.2",
     "concords-encrypt": "workspace:*",
     "concords-identity": "workspace:*",
     "concords-ledger": "workspace:*",

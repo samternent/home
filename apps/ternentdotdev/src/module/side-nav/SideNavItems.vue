@@ -22,7 +22,7 @@ defineProps({
         <li v-for="item in items" :key="`path_${item.to}`">
           <RouterLink
             :to="item.to"
-            class="link hover:link-active font-medium line-clamp-1 break-all py-2 flex gap-2 items-center h-14 text-base transition-all uppercase"
+            class="link hover:link-active font-light line-clamp-1 break-all py-2 flex gap-2 items-center text-base transition-all"
             :class="{ 'justify-center': collapsed }"
             active-class="link-active"
           >
@@ -30,7 +30,7 @@ defineProps({
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
-              stroke-width="1"
+              stroke-width="1.3"
               stroke="currentColor"
               class="w-6 h-6"
             >
@@ -54,19 +54,22 @@ defineProps({
           >
           <Transition name="fade">
             <ul
-              v-if="
-                $route.matched.some(({ path }) => path.startsWith(item.to)) &&
-                !collapsed &&
-                item.children?.length
-              "
-              class="flex flex-col h-44 overflow-auto bg-base-200 p-2 m-2"
+              class="flex flex-col max-h-44 overflow-auto bg-base-200 p-2 m-2 opacity-100"
+              :class="{
+                'opacity-0 max-h-0 !p-0 !m-0 overflow-hidden':
+                  !$route.matched.some(({ path }) =>
+                    path.startsWith(item.to)
+                  ) ||
+                  collapsed ||
+                  !item.children?.length,
+              }"
             >
               <li v-for="child in item.children" :key="`path1_${child.to}`">
                 <RouterLink
                   :to="child.to"
-                  class="font-base text-sm line-clamp-1 break-all pb-2 transition-all uppercase"
+                  class="font-base text-sm line-clamp-1 break-all pb-2 transition-all"
                   :class="{ 'justify-center': collapsed }"
-                  active-class="font-medium italic scale-105 text-primary"
+                  active-class="font-medium underline"
                 >
                   {{ child.name }}</RouterLink
                 >
@@ -85,17 +88,8 @@ defineProps({
 }
 
 .link {
-  background: linear-gradient(
-      to right,
-      rgba(100, 200, 200, 0.2),
-      rgba(100, 200, 200, 0.2)
-    ),
-    linear-gradient(
-      to right,
-      rgba(255, 0, 0, 1),
-      rgba(255, 0, 180, 1),
-      rgba(0, 100, 200, 1)
-    );
+  background: linear-gradient(to right, oklch(var(--b1)), oklch(var(--b1))),
+    linear-gradient(to right, oklch(var(--p)), oklch(var(--s)), oklch(var(--s)));
   background-size: 100% 3px, 0 3px;
   background-position: 100% 100%, 0 100%;
   background-repeat: no-repeat;

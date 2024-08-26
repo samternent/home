@@ -8,7 +8,5 @@ useBreadcrumbs({
 </script>
 
 <template>
-  <div class="relative overflow-hidden shadow-xl w-full h-full flex-1">
-    Encryption
-  </div>
+  <div class="flex w-full h-full flex-1 bg-base-100">Encryption</div>
 </template>

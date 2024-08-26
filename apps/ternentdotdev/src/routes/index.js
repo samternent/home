@@ -6,6 +6,7 @@ import changelog from "./changelog";
 import readme from "./readme";
 import portfolio from "./portfolio";
 import arcade from "./arcade";
+import settings from "./settings";
 
 export default [
   {
@@ -36,6 +37,7 @@ export default [
       ...changelog,
       ...portfolio,
       ...readme,
+      ...settings,
       ...toolsRoutes,
       ...appRoutes,
       ...solidRoutes,

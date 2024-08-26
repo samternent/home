@@ -7,38 +7,47 @@ import {
 import { computed, watch } from "vue";
 import { useRoute } from "vue-router";
 import SideNavItems from "../side-nav/SideNavItems.vue";
-import Logo from "../brand/Logo.vue";
 import { useWhiteLabel } from "../brand/useWhiteLabel";
 
-import { SBrandHeader, SButton } from "ternent-ui/components";
+import { SButton } from "ternent-ui/components";
 
 const breakpoints = useBreakpoints(breakpointsTailwind);
 const route = useRoute();
 const mdAndLarger = breakpoints.greaterOrEqual("md");
-const lgAndLarger = breakpoints.greaterOrEqual("lg");
 const smallerThanMd = breakpoints.smaller("md");
 const smallerThanLg = breakpoints.smaller("lg");
 
-const collapsedSideBar = useLocalStorage("app/collapsedSideBar", false);
+const collapsedSideBar = useLocalStorage("app/collapsedSideBar", true);
 const whiteLabel = useWhiteLabel();
 
 watch(route, () => {
   openSideBar.value = false;
 });
-watch(smallerThanMd, () => {
-  collapsedSideBar.value = false;
+watch(smallerThanLg, (val) => {
+  if (val) {
+    collapsedSideBar.value = true;
+  }
 });
+
 const openSideBar = useLocalStorage("ternentdotdev/openSideBar", false);
 const showSidebar = computed(() => mdAndLarger.value || openSideBar.value);
 
+watch([smallerThanMd, openSideBar], () => {
+  if (smallerThanMd.value && openSideBar.value) {
+    collapsedSideBar.value = false;
+  } else if (smallerThanMd.value && !openSideBar.value) {
+    collapsedSideBar.value = true;
+  }
+});
+
 const topItems = computed(() => [
   {
-    name: "TOOLS",
+    name: "Tools",
     to: "/tools",
     d: "M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336l-3.276 3.277a3.004 3.004 0 0 1-2.25-2.25l3.276-3.276a4.5 4.5 0 0 0-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437 1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008Z",
     children: [
       {
-        name: "GZIP",
+        name: "Gzip",
         to: "/tools/gzip",
       },
       {
@@ -48,27 +57,27 @@ const topItems = computed(() => [
     ],
   },
   {
-    name: "PORTFOLIO",
+    name: "Portfolio",
     to: "/portfolio",
     d: "M14.25 9.75 16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z",
     children: [
       {
-        name: "FootballSocial",
+        name: "Football Social",
         to: "/portfolio/footballsocial",
       },
       {
-        name: "Sweet Shop",
+        name: "Gummy Bear Store",
         to: "/portfolio/sweet-shop",
       },
       {
-        name: "Game Enginee",
+        name: "Game Engine",
         to: "/portfolio/game",
       },
     ],
   },
 
   {
-    name: "LEDGER",
+    name: "Ledger",
     to: "/ledger",
     d: "m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10",
   },
@@ -193,7 +202,7 @@ const bottomItems = computed(() => [
     class="flex flex-col bg-base-200 border-r-2 border-base-200 items-center justify-between duration-100"
     style="transition: width 200ms"
     :class="{
-      'w-20 relative': collapsedSideBar,
+      '!w-20 relative': collapsedSideBar,
       'w-60 relative': mdAndLarger && !collapsedSideBar,
       'w-60 absolute z-10 shadow-lg top-0 bottom-0':
         smallerThanMd && openSideBar,

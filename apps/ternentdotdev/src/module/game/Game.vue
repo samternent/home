@@ -56,7 +56,7 @@ function resizeScene() {
 onMounted(resizeScene);
 watch(size, resizeScene);
 
-const characterDirection = shallowRef(0);
+const characterDirection = shallowRef(1);
 const sceneWidth = shallowRef(30000);
 
 let oldTimeStamp;
@@ -65,7 +65,7 @@ const punchFrames = shallowRef(0);
 const rollFrames = shallowRef(0);
 
 const isCrouching = shallowRef(false);
-const isMoving = shallowRef(false);
+const isMoving = shallowRef(true);
 
 // walk 1.42 metre per second
 // 1 metre === 100px
@@ -177,14 +177,7 @@ const speed = computed(() => {
 
 const running = shallowRef(false);
 function onKeydown(e) {
-  if (e.key === "d" || e.key === "ArrowRight") {
-    characterDirection.value = 1;
-    isMoving.value = true;
-  } else if (e.key === "a" || e.key === "ArrowLeft") {
-    characterDirection.value = -1;
-    isMoving.value = true;
-  }
-  if (e.key === "w" || e.key === "ArrowUp") {
+  if (e.key === " ") {
     if (cameraY.value === 0) {
       velocityY.value = e.shiftKey ? 2 : 1.7;
     }
@@ -195,14 +188,6 @@ function onKeydown(e) {
   }
 }
 function onKeyup(e) {
-  if (
-    ((e.key === "d" || e.key === "ArrowRight") &&
-      characterDirection.value > 0) ||
-    ((e.key === "a" || e.key === "ArrowLeft") && characterDirection.value < 0)
-  ) {
-    isMoving.value = false;
-  }
-
   if (e.key === "s" || e.key === "ArrowDown") {
     isCrouching.value = false;
   }
@@ -230,6 +215,15 @@ const sceneLayerMultiplier = computed(() => {
 const percentageCompleted = computed(() =>
   Math.round(((cameraX.value * -1) / (sceneWidth.value - size.width)) * 100)
 );
+
+watch(percentageCompleted, () => {
+  if (percentageCompleted.value === 100 && characterDirection.value === 1) {
+    characterDirection.value = -1;
+  }
+  if (percentageCompleted.value === 0 && characterDirection.value === -1) {
+    characterDirection.value = 1;
+  }
+});
 </script>
 
 <template>

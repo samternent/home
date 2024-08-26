@@ -1,5 +1,5 @@
 <script setup>
-import { SBrandHeader, SBrowserMockup } from "ternent-ui/components";
+import { SBrandHeader, SResizablePanels } from "ternent-ui/components";
 import { useBreadcrumbs } from "../../module/breadcrumbs/useBreadcrumbs";
 
 useBreadcrumbs({
@@ -8,13 +8,15 @@ useBreadcrumbs({
 });
 </script>
 <template>
-  <div class="flex flex-col flex-1 rounded bg-base-100 w-full">
-    <div class="flex lg:flex-row flex-col h-full">
-      <iframe src="https://footballsocial.app" class="w-full" />
-
-      <div class="max-w-xl p-4 font-base bg-base-200">
+  <div class="flex flex-col flex-1 rounded bg-base-100 w-full overflow-hidden">
+    <SResizablePanels>
+      <iframe
+        src="https://footballsocial.app"
+        class="w-full h-full min-h-[700px]"
+      />
+      <template #sidebar>
         <div class="my-4 p-2">
-          <SBrandHeader size="md" class="mb-2"
+          <SBrandHeader size="md" class="mb-2 truncate"
             >https://www.footballsocial.app</SBrandHeader
           >
           <a
@@ -32,7 +34,7 @@ useBreadcrumbs({
             them again in future depending on demand.
           </p>
         </div>
-      </div>
-    </div>
+      </template>
+    </SResizablePanels>
   </div>
 </template>

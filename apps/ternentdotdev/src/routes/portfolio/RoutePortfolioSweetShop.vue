@@ -1,14 +1,11 @@
 <script setup>
-import { computed, shallowRef } from "vue";
+import { useLocalStorage } from "@vueuse/core";
+import { computed, shallowRef, onMounted, onBeforeUnmount } from "vue";
 import { order } from "@/module/sweet-shop";
-import { SBrandHeader, SButton } from "ternent-ui/components";
+import { SBrandHeader, SButton, SResizablePanels } from "ternent-ui/components";
 import { useBreadcrumbs } from "../../module/breadcrumbs/useBreadcrumbs";
-// Using ES6 import syntax
-import hljs from "highlight.js/lib/core";
-import javascript from "highlight.js/lib/languages/javascript";
 
-// Then register the languages you need
-hljs.registerLanguage("javascript", javascript);
+
 useBreadcrumbs({
   path: "/portfolio/sweet-shop",
   name: "Sweet Shop",
@@ -32,6 +29,7 @@ function add() {
   }
 }
 
+
 const results = computed(() => {
   const calc = order(parseInt(amount.value, 10), bags.value);
   if (calc.group) {
@@ -46,96 +44,118 @@ const results = computed(() => {
   return calc;
 });
 
-const codeSample = hljs.highlight(
-  "https://raw.githubusercontent.com/samternent/home/main/apps/ternentdotdev/src/module/sweet-shop/index.js",
-  { language: "javascript" }
-).value;
+const basket = computed(() =>
+  Object.entries(combinations.value).map(([key, value]) => ({
+    packet: key,
+    amount: value,
+  })).filter(({ amount }) => amount > 0)
+);
+
+function formatNumber(number) {
+  return new Intl.NumberFormat('en-GB', { }).format(
+    number,
+  )
+}
+function formatCurrency(number) {
+  return number.toLocaleString(
+    'en-GB',
+    { style: 'currency', currency: 'GBP' },
+  )
+}
 </script>
 <template>
-  <div class="flex flex-col flex-1 rounded bg-base-100 w-full overflow-hidden">
-    <div class="flex w-full h-full">
-      <div class="w-full max-w-xl mx-auto">
-        <SBrandHeader size="lg" class="my-8"
-            >Sweet Shop</SBrandHeader
-          >
-        <input
-          class="input input-bordered w-full"
-          v-model="amount"
-          type="number"
-          min="1"
-          max="50000"
-        />
-        <input
-          type="range"
-          min="1"
-          max="50000"
-          v-model="amount"
-          class="my-4 w-full"
-        />
-        <p class="pt-2 text-right">
-          <strong>Total Order:</strong> {{ results?.total }}
-        </p>
+  <div class="flex flex-1 rounded bg-base-100 w-full overflow-hidden">
+    <SResizablePanels>
+      <div class="max-w-2xl mx-auto p-4 h-full">
+        <SBrandHeader size="lg" class="mt-8">The Gummy Bear Store</SBrandHeader>
+        <p class="mb-8 text-sm italic">(but not really, it's a coding excercise using dynamic programming.)</p>
 
-        <section class="flex flex-wrap justify-start pt-6">
-          <p
-            v-for="packet in Object.keys(combinations)"
-            :key="packet"
-            class="border-secondary border font-normal flex rounded-full px-3 text-xs m-1 py-2"
-          >
-            <span class="mr-4 font-bold">{{ packet }}</span>
-            <span class="font-light"
-              ><span class="mr-2">🛍️ </span> x{{
-                combinations[packet] || 0
-              }}</span
-            >
-          </p>
-        </section>
-        <div class="py-4">
-          <section class="flex flex-wrap">
-            <p
-              v-for="bag in bags"
-              :key="`bag_${bag}`"
-              @click="remove(bag)"
-              class="bg-primary bg-opacity-10 group font-normal cursor-pointer flex rounded-full px-3 text-xs m-1 py-1"
-            >
-              <span class="mr-4">{{ bag }}</span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-4 h-4 group-hover:opacity-100 opacity-50 transition-opacity"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M6 18 18 6M6 6l12 12"
-                />
-              </svg>
-            </p>
-          </section>
-
-          <p class="font-normal flex m-2 py-4">
-            <input
-              class="input input-bordered"
-              type="number"
-              v-model="newBag"
+        <div class="flex  md:!flex-row flex-col w-full">
+          <!-- Image Section -->
+          <div class="max-w-96">
+            <img
+              class="rounded-xl shadow"
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Oursons_g%C3%A9latine_march%C3%A9_Rouffignac.jpg/2560px-Oursons_g%C3%A9latine_march%C3%A9_Rouffignac.jpg"
+              alt="Gummy Bears"
             />
-            <SButton @click="add" type="primary" class="btn-outline">
-              <span>Add packet</span>
-            </SButton>
-          </p>
+            <div class="text-xs mt-2">
+              Image by <a href="//commons.wikimedia.org/wiki/User:Jebulon" title="User:Jebulon" class="underline">Jebulon</a> - 
+              <span class="int-own-work" lang="en">Own work</span>, 
+              <a href="http://creativecommons.org/publicdomain/zero/1.0/deed.en" title="Creative Commons Zero, Public Domain Dedication" class="underline">CC0</a>, 
+              <a href="https://commons.wikimedia.org/w/index.php?curid=27753729" class="underline">Link</a>
+            </div>
+          </div>
+
+          <!-- Interaction Section -->
+          <div class="flex flex-col justify-between items-start py-4 md:px-4">
+            <div class="mb-4 w-full">
+              <p class="mb-2">Available packets:</p>
+              <ul class="max-h-32 overflow-auto w-full text-xs">
+                <li v-for="bag in bags" :key="`bag_${bag}`">
+                  <span>Packet of <strong>{{ formatNumber(bag) }}</strong> Gummy Bears.</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="flex my-4 mt-8 justify-center items-center w-full">
+              <SButton type="outline" @click="amount = amount-1">-</SButton>
+              <input
+                class="input input-bordered w-24 text-center mx-2 "
+                v-model="amount"
+                type="number"
+                min="1"
+                max="50000"
+              />
+              <SButton type="outline" @click="amount = amount+1">+</SButton>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="max-w-xl p-4 font-base bg-base-200 flex flex-1">
-        <div class=" p-2 flex flex-1 flex-col h-full">
-          <SBrandHeader size="md" class="mb-8"
-            >Coding Exercise: Simons Sweet Shop</SBrandHeader
+
+        <!-- Basket Section -->
+        <SBrandHeader size="md" class="my-2 font-medium">Basket</SBrandHeader>
+        <ul class="flex flex-col ">
+          <li
+            v-for="item in basket"
+            :key="item"
+            class="border-b font-normal flex text-xs py-2 items-center justify-between"
           >
-          <div class="bg-base-100 overflow-auto">
-          <p class="my-4 p-2 bg-">
-            <SBrandHeader size="md" class="font-medium mb-2">Background</SBrandHeader>
+            <span class="mr-4 flex-1 w-full">Packet of {{ formatNumber(item.packet) }} Gummy Bears.</span>
+            <p class="font-medium text-base">{{ formatNumber(item.amount) }}</p>
+          </li>
+        </ul>
+
+        <!-- Total Section -->
+        <p class="pt-2 text-right">
+          Total Gummy Bears: <strong>{{ formatNumber(results?.total) }}</strong>
+        </p>
+        <!-- Total Section -->
+        <p class="pt-2 text-right mt-4 align-bottom">
+          Total Cost: <strong class="text-lg font-bold">{{ formatCurrency(results?.total * 0.2) }}</strong>
+        </p>
+        <hr class="my-16" />
+
+        <SBrandHeader size="lg" >Admin</SBrandHeader>
+
+        <!-- Add New Packet Section -->
+        <!-- <div class="py-4 flex">
+          <input
+            class="input input-bordered w-full mr-2"
+            type="number"
+            v-model="newBag"
+          />
+          <SButton @click="add" type="primary" class="btn-outline">
+            Add packet
+          </SButton>
+        </div> -->
+      </div>
+      <template #sidebar>
+        <div class=" p-2 flex flex-1 flex-col h-full">
+          <SBrandHeader size="md" class="mb-2 font-medium"
+            >Coding Exercise</SBrandHeader
+          >
+          <div class="bg-base-100 overflow-auto text-sm">
+          <p class="my-4  bg-">
+            <SBrandHeader size="sm" class="font-medium mb-2">Background</SBrandHeader>
             Simon’s Sweet Shop (SSS) is a confectionery wholesalerthat sells sweets in
             a variety of pack sizes. They currently have 5 different size packs - 250,
             500, 1000, 2000 and 5000. Their customers can order any amount of sweets
@@ -144,7 +164,7 @@ const codeSample = hljs.highlight(
             demand.
           </p>
           <p class="my-4 p-2">
-            <SBrandHeader size="md" class="font-medium mb-2"
+            <SBrandHeader size="sm" class="font-medium mb-2"
               >Requirements</SBrandHeader
             >
             Build a solution that will enable SSS to send out packs of sweets with as
@@ -163,9 +183,8 @@ const codeSample = hljs.highlight(
             minimal adjustments to the program.
           </p>
         </div>
-      </div>
-      </div>
-    </div>
-    
+        </div>
+      </template>
+    </SResizablePanels>
   </div>
 </template>
