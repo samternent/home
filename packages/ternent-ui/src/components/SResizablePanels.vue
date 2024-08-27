@@ -1,5 +1,5 @@
 <script setup>
-import { shallowRef, computed } from "vue";
+import { shallowRef, computed, watch, onMounted } from "vue";
 import { useLocalStorage, useElementSize } from "@vueuse/core";
 import SResizer from "./SResizer.vue";
 
@@ -13,15 +13,39 @@ const props = defineProps({
     default: 400,
   },
 });
+
+const contentWidth = defineModel("contentWidth", {
+  type: Number,
+  default: 600,
+});
+const sidebarWidth = defineModel("sideBarWidth", {
+  type: Number,
+  default: 400,
+});
+
 const resizeContainer = shallowRef(null);
 const dragPosition = useLocalStorage(
   "routes/RoutePortfolioSweetShop/dragPosition",
   600
 );
 const isDragging = shallowRef(false);
+const contentEl = shallowRef(null);
+const sidebarEl = shallowRef(null);
 
 const { width: containerWidth } = useElementSize(resizeContainer);
+const { width: contentWidthEl } = useElementSize(contentEl);
+const { width: sidebarWidthEl } = useElementSize(sidebarEl);
 const width = computed(() => `${dragPosition.value}px`);
+
+watch([contentWidthEl, sidebarWidthEl], () => {
+  contentWidth.value = contentWidthEl.value;
+  sidebarWidth.value = sidebarWidthEl.value;
+});
+
+onMounted(() => {
+  contentWidth.value = contentWidthEl.value;
+  sidebarWidth.value = sidebarWidthEl.value;
+});
 
 const isResizable = computed(
   () => containerWidth.value > props.minContentWidth + props.minSidebarWidth
@@ -37,12 +61,14 @@ const isResizable = computed(
     }"
   >
     <div
+      ref="contentEl"
       :class="{ 'overflow-auto flex h-full w-full': isResizable }"
       :style="isResizable ? { width, minWidth: `${minContentWidth}px` } : {}"
     >
       <slot />
     </div>
     <div
+      ref="sidebarEl"
       class="flex flex-1 relative border-l border-base-200"
       :style="isResizable ? { minWidth: `${minSidebarWidth}px` } : {}"
     >

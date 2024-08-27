@@ -1,12 +1,12 @@
 export const ternentDotDev = {
   neonNoir: {
     "color-scheme": "dark",
-    primary: "#00FFAB", // Neon Green
-    "primary-focus": "#00D99A", // Slightly darker Neon Green
-    "primary-content": "#000000", // Black text on Neon Green
-    secondary: "#FF0078", // Neon Pink
-    "secondary-focus": "#E6006B", // Slightly darker Neon Pink
-    "secondary-content": "#000000", // Black text on Neon Pink
+    primary: "#FF0078", // Neon Pink
+    "primary-focus": "#E6006B", // Slightly darker Neon Pink
+    "primary-content": "#000000", // Black text on Neon Pink
+    secondary: "#00FFAB", // Neon Green
+    "secondary-focus": "#00D99A", // Slightly darker Neon Green
+    "secondary-content": "#000000", // Black text on Neon Green
     accent: "#00CFFF", // Neon Blue
     "accent-focus": "#00A1D6", // Slightly darker Neon Blue
     "accent-content": "#000000", // Black text on Neon Blue
@@ -43,135 +43,6 @@ export const ternentDotDev = {
     "--size-xl": "8rem",
   },
 
-  vaporwaveDream: {
-    "color-scheme": "light",
-    primary: "#FF9AA2", // Pastel Pink
-    "primary-focus": "#F07A9E", // Slightly darker Pink
-    "primary-content": "#000000", // Black text on Pink
-    secondary: "#A2C2E4", // Pastel Blue
-    "secondary-focus": "#8BB9D2", // Slightly darker Blue
-    "secondary-content": "#000000", // Black text on Blue
-    accent: "#B9FBC0", // Pastel Green
-    "accent-focus": "#9EF0A1", // Slightly darker Green
-    "accent-content": "#000000", // Black text on Green
-    neutral: "#F5F5F5", // Light Grey for neutral elements
-    "neutral-focus": "#E0E0E0", // Slightly darker Light Grey
-    "neutral-content": "#1F1F1F", // Dark Grey text on Light Grey
-    "base-100": "#FFFFFF", // White background
-    "base-200": "#F0F0F0", // Lighter shade for elements
-    "base-300": "#E0E0E0", // Medium light shade
-    "base-content": "#1F1F1F", // Dark Grey text on white background
-    info: "#A2C2E4", // Pastel Blue
-    "info-content": "#000000", // Black text on Blue
-    success: "#B9FBC0", // Pastel Green
-    "success-content": "#000000", // Black text on Green
-    warning: "#FF9AA2", // Pastel Pink
-    "warning-content": "#000000", // Black text on Pink
-    error: "#FF6B6B", // Pastel Red
-    "error-content": "#000000", // Black text on Red
-    "--rounded-box": "0.5rem",
-    "--rounded-btn": "0.25rem",
-    "--rounded-table": "0.375rem",
-    "--rounded-card": "0.5rem",
-    "--rounded-input": "0.25rem",
-    "--rounded-full": "9999px",
-    "--border-color": "#DDDDDD", // Light border color
-    "--shadow-color": "rgba(0, 0, 0, 0.2)", // Subtle shadow for light mode
-    "--spacing-sm": "0.5rem",
-    "--spacing-md": "1rem",
-    "--spacing-lg": "1.5rem",
-    "--spacing-xl": "2rem",
-    "--size-sm": "2rem",
-    "--size-md": "4rem",
-    "--size-lg": "6rem",
-    "--size-xl": "8rem",
-  },
-  tropicalSunset: {
-    "color-scheme": "light",
-    primary: "#FF6F61", // Sunset Orange
-    "primary-focus": "#E55B50", // Darker Orange
-    "primary-content": "#FFFFFF", // White text on Orange
-    secondary: "#FFD700", // Gold
-    "secondary-focus": "#F0C000", // Slightly darker Gold
-    "secondary-content": "#000000", // Black text on Gold
-    accent: "#00BFFF", // Deep Sky Blue
-    "accent-focus": "#009ACD", // Darker Blue
-    "accent-content": "#FFFFFF", // White text on Blue
-    neutral: "#FFE4B5", // Moccasin (Light Beige)
-    "neutral-focus": "#FFDAB9", // Peach Puff (Slightly darker Beige)
-    "neutral-content": "#1F1F1F", // Dark Grey text on Beige
-    "base-100": "#FFF5E4", // Light Cream background
-    "base-200": "#FFE4C4", // Bisque (Slightly darker Cream)
-    "base-300": "#F5DEB3", // Wheat (Medium Light Cream)
-    "base-content": "#1F1F1F", // Dark Grey text on Cream
-    info: "#00BFFF", // Deep Sky Blue
-    "info-content": "#000000", // Black text on Blue
-    success: "#FF6F61", // Sunset Orange
-    "success-content": "#000000", // Black text on Orange
-    warning: "#FFD700", // Gold
-    "warning-content": "#000000", // Black text on Gold
-    error: "#FF6347", // Tomato Red
-    "error-content": "#000000", // Black text on Red
-    "--rounded-box": "0.5rem",
-    "--rounded-btn": "0.25rem",
-    "--rounded-table": "0.375rem",
-    "--rounded-card": "0.5rem",
-    "--rounded-input": "0.25rem",
-    "--rounded-full": "9999px",
-    "--border-color": "#FFDAB9", // Peach Puff border color
-    "--shadow-color": "rgba(0, 0, 0, 0.2)", // Subtle shadow for light mode
-    "--spacing-sm": "0.5rem",
-    "--spacing-md": "1rem",
-    "--spacing-lg": "1.5rem",
-    "--spacing-xl": "2rem",
-    "--size-sm": "2rem",
-    "--size-md": "4rem",
-    "--size-lg": "6rem",
-    "--size-xl": "8rem",
-  },
-  netflix: {
-    "color-scheme": "dark",
-    primary: "#E50914", // Netflix Red
-    "primary-focus": "#B81D13", // Darker Netflix Red
-    "primary-content": "#FFFFFF", // White text on Netflix Red
-    secondary: "#333333", // Very Dark Grey (for contrast)
-    "secondary-focus": "#1C1C1C", // Darker Grey
-    "secondary-content": "#FFFFFF", // White text on Dark Grey
-    accent: "#B81D13", // Same as primary for consistent branding
-    "accent-focus": "#E50914", // Same as primary-focus
-    "accent-content": "#FFFFFF", // White text on Accent
-    neutral: "#0F0F0F", // Almost Black
-    "neutral-focus": "#1A1A1A", // Slightly lighter black
-    "neutral-content": "#E0E0E0", // Light Grey text on dark backgrounds
-    "base-100": "#141414", // Dark background for base
-    "base-200": "#1C1C1C", // Slightly lighter dark background
-    "base-300": "#2C2C2C", // Medium Dark Grey
-    "base-content": "#E0E0E0", // Light Grey text on dark base
-    info: "#E50914", // Netflix Red
-    "info-content": "#FFFFFF", // White text on Netflix Red
-    success: "#4CAF50", // Green for success
-    "success-content": "#FFFFFF", // White text on Green
-    warning: "#FFC107", // Amber for warnings
-    "warning-content": "#000000", // Black text on Amber
-    error: "#FF3D00", // Red-Orange for errors
-    "error-content": "#FFFFFF", // White text on Red-Orange
-    "--rounded-box": "0.5rem", // Rounded corners for boxes
-    "--rounded-btn": "0.25rem", // Smaller rounded corners for buttons
-    "--rounded-table": "0.375rem", // Slightly rounded corners for tables
-    "--rounded-card": "0.5rem", // Rounded corners for cards
-    "--rounded-input": "0.25rem", // Rounded corners for input fields
-    "--rounded-full": "9999px", // Fully rounded (circle) elements
-    "--border-color": "#333333", // Dark border color
-    "--shadow-color": "rgba(0, 0, 0, 0.5)", // Strong shadow for depth
-    "--spacing-sm": "0.5rem",
-    "--spacing-md": "1rem",
-    "--spacing-lg": "1.5rem",
-    "--spacing-xl": "2rem",
-    "--size-sm": "2rem",
-    "--size-md": "4rem",
-    "--size-lg": "6rem",
-    "--size-xl": "8rem",
-  },
   corporateProfessional: {
     "color-scheme": "light",
     primary: "#2F8C8C", // Muted Teal for primary elements
@@ -214,92 +85,6 @@ export const ternentDotDev = {
     "--size-md": "4rem", // Medium size for regular elements
     "--size-lg": "6rem", // Large size for prominent elements
     "--size-xl": "8rem", // Extra-large size for standout elements
-  },
-  hubspot: {
-    "color-scheme": "light",
-    primary: "#FF7A59", // HubSpot Orange
-    "primary-focus": "#FF6F4F", // Slightly darker HubSpot Orange
-    "primary-content": "#FFFFFF", // White text on HubSpot Orange
-    secondary: "#4A4A4A", // Medium Grey for secondary elements
-    "secondary-focus": "#333333", // Darker Grey for focus
-    "secondary-content": "#FFFFFF", // White text on Dark Grey
-    accent: "#F4F4F4", // Light Grey for accent elements
-    "accent-focus": "#E0E0E0", // Slightly darker Grey for focus
-    "accent-content": "#000000", // Black text on Light Grey
-    neutral: "#F9F9F9", // Very Light Grey for neutral elements
-    "neutral-focus": "#E0E0E0", // Light Grey for focus elements
-    "neutral-content": "#000000", // Black text on Light Grey
-    "base-100": "#FFFFFF", // White background for main content
-    "base-200": "#F4F4F4", // Light Grey for secondary backgrounds
-    "base-300": "#EAEAEA", // Very Light Grey for contrast
-    "base-content": "#333333", // Dark Grey text on light background
-    info: "#FF7A59", // HubSpot Orange for info
-    "info-content": "#FFFFFF", // White text on HubSpot Orange
-    success: "#28A745", // Success Green
-    "success-content": "#FFFFFF", // White text on Success Green
-    warning: "#FFC107", // Warning Yellow
-    "warning-content": "#000000", // Black text on Warning Yellow
-    error: "#DC3545", // Error Red
-    "error-content": "#FFFFFF", // White text on Error Red
-    "--rounded-box": "0.375rem", // Rounded corners for boxes
-    "--rounded-btn": "0.25rem", // Smaller radius for buttons
-    "--rounded-table": "0.25rem", // Slightly rounded corners for tables
-    "--rounded-card": "0.375rem", // Rounded corners for cards
-    "--rounded-input": "0.25rem", // Rounded corners for input fields
-    "--rounded-full": "9999px", // Fully rounded (circle) elements
-    "--border-color": "#DDDDDD", // Light Grey border color
-    "--shadow-color": "rgba(0, 0, 0, 0.1)", // Subtle shadow for depth
-    "--spacing-sm": "0.5rem",
-    "--spacing-md": "1rem",
-    "--spacing-lg": "1.5rem",
-    "--spacing-xl": "2rem",
-    "--size-sm": "2rem",
-    "--size-md": "4rem",
-    "--size-lg": "6rem",
-    "--size-xl": "8rem",
-  },
-  teamwork: {
-    "color-scheme": "light",
-    primary: "#0B0F1F", // Vibrant Blue (for primary actions)
-    "primary-focus": "#0056D2", // Darker Blue (for focus and hover states)
-    "primary-content": "#FFFFFF", // White text on Blue
-    secondary: "#F661C7", // Medium Grey (for secondary elements)
-    "secondary-focus": "#5A6268", // Darker Grey (for focus and hover states)
-    "secondary-content": "#FFFFFF", // White text on Grey
-    accent: "#F8F9FA", // Light Grey (for accents and backgrounds)
-    "accent-focus": "#E9ECEF", // Slightly darker Grey for focus
-    "accent-content": "#000000", // Black text on Light Grey
-    neutral: "#F1F3F5", // Very Light Grey (for neutral elements)
-    "neutral-focus": "#E9ECEF", // Light Grey (for focus elements)
-    "neutral-content": "#000000", // Black text on Light Grey
-    "base-100": "#FFFFFF", // White background for main content
-    "base-200": "#F8F9FA", // Light Grey for secondary backgrounds
-    "base-300": "#E9ECEF", // Very Light Grey for contrast
-    "base-content": "#212529", // Dark Grey text on light background
-    info: "#007BFF", // Vibrant Blue for info
-    "info-content": "#FFFFFF", // White text on Vibrant Blue
-    success: "#28A745", // Success Green
-    "success-content": "#FFFFFF", // White text on Success Green
-    warning: "#FFC107", // Warning Yellow
-    "warning-content": "#000000", // Black text on Warning Yellow
-    error: "#DC3545", // Error Red
-    "error-content": "#FFFFFF", // White text on Error Red
-    "--rounded-box": "0.375rem", // Rounded corners for boxes
-    "--rounded-btn": "0.25rem", // Smaller radius for buttons
-    "--rounded-table": "0.25rem", // Slightly rounded corners for tables
-    "--rounded-card": "0.375rem", // Rounded corners for cards
-    "--rounded-input": "0.25rem", // Rounded corners for input fields
-    "--rounded-full": "9999px", // Fully rounded (circle) elements
-    "--border-color": "#DEE2E6", // Light Grey border color
-    "--shadow-color": "rgba(0, 0, 0, 0.1)", // Subtle shadow for depth
-    "--spacing-sm": "0.5rem",
-    "--spacing-md": "1rem",
-    "--spacing-lg": "1.5rem",
-    "--spacing-xl": "2rem",
-    "--size-sm": "2rem",
-    "--size-md": "4rem",
-    "--size-lg": "6rem",
-    "--size-xl": "8rem",
   },
   azureBloom: {
     "color-scheme": "light",
@@ -558,5 +343,48 @@ export const ternentDotDev = {
     "--size-md": "5rem", // Medium size for regular elements
     "--size-lg": "7rem", // Large size for prominent elements
     "--size-xl": "9rem", // Extra-large size for standout elements
+  },
+  coffeeShop: {
+    "color-scheme": "light",
+    primary: "#6F4E37", // Coffee Brown for primary elements
+    "primary-focus": "#5A3E2D", // Darker Coffee Brown for focus
+    "primary-content": "#FFFFFF", // Creamy White text on Coffee Brown
+    secondary: "#C4A484", // Light Brown for secondary elements
+    "secondary-focus": "#A6806E", // Slightly darker Light Brown for focus
+    "secondary-content": "#2D2D2D", // Dark text on Light Brown
+    accent: "#D9B48F", // Caramel color for accent elements
+    "accent-focus": "#B8956F", // Darker Caramel for focus
+    "accent-content": "#2D2D2D", // Dark text on Caramel
+    neutral: "#ECE0D1", // Creamy neutral for background and neutral elements
+    "neutral-focus": "#DAC4B3", // Slightly darker Cream for focus
+    "neutral-content": "#2D2D2D", // Dark text on Cream
+    "base-100": "#FBF6F0", // Light Cream for base background
+    "base-200": "#F2E8DA", // Light Beige for contrast
+    "base-300": "#E8D8C0", // Medium Beige for additional contrast
+    "base-content": "#2D2D2D", // Dark text on light backgrounds
+    info: "#D9B48F", // Caramel for informational elements
+    "info-content": "#2D2D2D", // Dark text on Caramel
+    success: "#C4A484", // Light Brown for success messages
+    "success-content": "#2D2D2D", // Dark text on Light Brown
+    warning: "#A6806E", // Darker Brown for warnings
+    "warning-content": "#FFFFFF", // Creamy White text on Brown
+    error: "#874C3D", // Deep Coffee Red for errors
+    "error-content": "#FFFFFF", // Creamy White text on Deep Red
+    "--rounded-box": "0.5rem", // Rounded corners for a soft, welcoming feel
+    "--rounded-btn": "0.25rem", // Slightly rounded buttons
+    "--rounded-table": "0.375rem", // Rounded corners for tables
+    "--rounded-card": "0.5rem", // Rounded corners for cards
+    "--rounded-input": "0.25rem", // Slightly rounded inputs
+    "--rounded-full": "9999px", // Fully rounded for circular elements
+    "--border-color": "#DAC4B3", // Light Brown border color for subtle definition
+    "--shadow-color": "rgba(107, 78, 55, 0.3)", // Soft brown shadows for a cozy effect
+    "--spacing-sm": "0.5rem", // Small spacing for compact layouts
+    "--spacing-md": "1rem", // Medium spacing for balanced layouts
+    "--spacing-lg": "1.5rem", // Larger spacing for a more open layout
+    "--spacing-xl": "2rem", // Extra-large spacing for spacious design
+    "--size-sm": "2rem", // Small size for minimal elements
+    "--size-md": "4rem", // Medium size for standard elements
+    "--size-lg": "6rem", // Large size for prominent elements
+    "--size-xl": "8rem", // Extra-large size for standout elements
   },
 };

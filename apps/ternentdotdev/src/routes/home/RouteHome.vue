@@ -3,7 +3,6 @@ import { computed, shallowRef } from "vue";
 import { useLocalStorage } from "@vueuse/core";
 import hljs from "highlight.js/lib/core";
 import javascript from "highlight.js/lib/languages/javascript";
-import { SMenu, SResizer } from "ternent-ui/components";
 import { useAppShell } from "@/module/app-shell/useAppShell";
 import { useWhiteLabel } from "@/module/brand/useWhiteLabel";
 import ternentUIThemes from "ternent-ui/themes";

@@ -47,7 +47,7 @@ function closeMenu() {
 </script>
 <template>
   <div class="relative" ref="dropdownRef">
-    <slot name="activator" v-bind="{ openMenu }">
+    <slot name="activator" v-bind="{ openMenu, isMenuOpen: showMenu }">
       <SButton @click="showMenu = !showMenu" class="btn-xs text-sm font-light">
         {{ buttonText }}
 

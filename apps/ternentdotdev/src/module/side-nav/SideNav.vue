@@ -69,8 +69,8 @@ const topItems = computed(() => [
         tag: "beta",
       },
       {
-        name: "Gummy Bear Store",
-        to: "/portfolio/sweet-shop",
+        name: "Coffee Shop",
+        to: "/portfolio/coffee-shop",
         tag: "alpha",
       },
       {
@@ -214,8 +214,8 @@ const bottomItems = computed(() => [
     }"
   >
     <SButton
-      class="btn btn-circle btn-ghost bg-base-300 btn-xs -right-4 z-50 bottom-4 absolute transition-transform duration-100"
-      type="primary"
+      class="btn btn-circle btn-xs -right-4 z-50 bottom-4 absolute transition-transform duration-100"
+      type="accent"
       :class="{
         'rotate-180': collapsedSideBar,
       }"

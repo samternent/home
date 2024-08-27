@@ -5,11 +5,11 @@ export default [
     children: [
       {
         path: "",
-        redirect: "/portfolio/sweet-shop",
+        redirect: "/portfolio/coffee-shop",
       },
       {
-        path: "sweet-shop",
-        component: () => import("./RoutePortfolioSweetShop.vue"),
+        path: "coffee-shop",
+        component: () => import("./RoutePortfolioCoffeeShop.vue"),
       },
       {
         path: "footballsocial",

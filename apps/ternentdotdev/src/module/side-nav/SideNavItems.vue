@@ -45,7 +45,7 @@ const activeMenu = computed({
             :items="item.children"
             position="right"
           >
-            <template #activator="{ openMenu }">
+            <template #activator="{ openMenu, isMenuOpen }">
               <RouterLink
                 v-if="!collapsed"
                 :to="item.to"
@@ -70,13 +70,13 @@ const activeMenu = computed({
 
                 {{ item.name }}</RouterLink
               >
-              <SButton
+              <button
                 v-else
                 @click="openMenu"
-                class="link hover:link-active font-light line-clamp-1 break-all py-2 flex gap-2 items-center text-base transition-all"
+                class="link w-full hover:link-active font-light line-clamp-1 break-all py-2 flex gap-2 items-center text-base transition-all"
                 :class="{
                   'justify-center': collapsed,
-                  'link-active': $route.path.startsWith(item.to),
+                  'link-active': $route.path.startsWith(item.to) || isMenuOpen,
                 }"
               >
                 <svg
@@ -93,9 +93,7 @@ const activeMenu = computed({
                     :d="item.d"
                   />
                 </svg>
-
-                {{ item.name }}</SButton
-              >
+              </button>
             </template>
             <template #item="{ item, closeMenu }">
               <div class="flex justify-between gap-2 items-center">
