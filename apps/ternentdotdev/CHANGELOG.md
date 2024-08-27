@@ -1,5 +1,14 @@
 # ternentdotdev
 
+## 0.3.4
+
+### Patch Changes
+
+- [`edb639cff3654fdd3250f48ef05350154ab09ca0`](https://github.com/samternent/home/commit/edb639cff3654fdd3250f48ef05350154ab09ca0) Thanks [@samternent](https://github.com/samternent)! - A few more nice tweaks
+
+- Updated dependencies [[`edb639cff3654fdd3250f48ef05350154ab09ca0`](https://github.com/samternent/home/commit/edb639cff3654fdd3250f48ef05350154ab09ca0)]:
+  - ternent-ui@0.1.14
+
 ## 0.3.3
 
 ### Patch Changes

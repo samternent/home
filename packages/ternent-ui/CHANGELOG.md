@@ -1,5 +1,11 @@
 # ternent-ui
 
+## 0.1.14
+
+### Patch Changes
+
+- [`edb639cff3654fdd3250f48ef05350154ab09ca0`](https://github.com/samternent/home/commit/edb639cff3654fdd3250f48ef05350154ab09ca0) Thanks [@samternent](https://github.com/samternent)! - A few more nice tweaks
+
 ## 0.1.13
 
 ### Patch Changes
