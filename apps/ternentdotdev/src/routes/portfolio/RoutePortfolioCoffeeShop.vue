@@ -1,8 +1,9 @@
 <script setup>
+import { useClamp } from '@vueuse/math';
 import { useBreakpoints, breakpointsTailwind, useWindowSize } from "@vueuse/core";
-import { computed, shallowRef } from "vue";
-import { order } from "@/module/sweet-shop";
-import { SBrandHeader, SButton, SResizablePanels } from "ternent-ui/components";
+import { computed, shallowRef, watch } from "vue";
+import { order } from "@/module/coffee-shop/optimiseForWaste";
+import { SBrandHeader, SButton, SResizablePanels, SSwap } from "ternent-ui/components";
 import { useBreadcrumbs } from "../../module/breadcrumbs/useBreadcrumbs";
 
 
@@ -11,8 +12,22 @@ useBreadcrumbs({
   name: "Coffee Shop",
 });
 
+const min = shallowRef(0)
+const max = shallowRef(999999)
 const amount = shallowRef(12001);
-const bags = shallowRef([250, 500, 1000, 2000, 5000]);
+
+function updateAmount({ target }) {
+  const value = parseInt(target.value, 10)
+  if (value > max.value) {
+    amount.value = max.value;
+    return;
+  }
+  if (value < min.value) {
+    amount.value = min.value;
+    return;
+  }
+  amount.value = value;
+}
 const combinations = shallowRef({});
 const newBag = shallowRef(null);
 const breakpoints = useBreakpoints(breakpointsTailwind);
@@ -31,6 +46,20 @@ function add() {
     newBag.value = null;
   }
 }
+
+const costPerHundredGrams = computed(() => ({
+  250: 1.25,
+  500: 1.10,
+  1000: 0.98,
+  2000: 0.84,
+  5000: 0.72,
+  17856: 0.65,
+  23459: 0.62,
+  43197: 0.58,
+}));
+
+const bags = computed(() => Object.keys(costPerHundredGrams.value).map((item) => parseInt(item, 10)));
+const prices = computed(() => Object.entries(costPerHundredGrams.value).map(([amount, price]) => (parseInt(amount, 10)/100) * price));
 
 
 const results = computed(() => {
@@ -67,13 +96,7 @@ function formatCurrency(number) {
 }
 
 
-const costPerHundredGrams = computed(() => ({
-  250: 1.25,
-  500: 1.10,
-  1000: 0.98,
-  2000: 0.84,
-  5000: 0.72,
-}));
+
 
 const totalCost = computed(() => 
   formatCurrency(basket.value.reduce((acc, curr) => 
@@ -82,7 +105,7 @@ const totalCost = computed(() =>
 )
 
 const popularOrders = computed(() => ([
-  250, 420, 501, 1337, 7790, 12500, 20000, 25211
+  250,  501, 1337, 4020,7790, 12500, 20000, 25211, 76846
 ]));
 
 const contentWidth = shallowRef(600);
@@ -118,19 +141,21 @@ const isContentSmall = computed(() =>
               </div>
               <span class="my-2 text-sm">Quantity (g)</span>
               <div class="flex my-4 mt-2 justify-center items-center w-full">
-                <SButton type="outline" @click="amount = amount-1">-</SButton>
+                <SButton type="outline" @click="updateAmount({ target: { value: amount-1 }})">-</SButton>
                 <input
                   class="input input-bordered flex-1 text-center mx-2 "
-                  v-model="amount"
+                  :class="{ 'input-error': amount > max || amount < min }"
+                  :value="amount"
+                  @input="updateAmount"
                   type="number"
-                  min="1"
-                  max="50000"
+                  :min="min"
+                  :max="max"
                 />
-                <SButton type="outline" @click="amount = amount+1">+</SButton>
+                <SButton type="outline" @click="updateAmount({ target: {value: amount+1 } })">+</SButton>
               </div>
               <div class="">
-                Popular orders
-                <div class="flex flex-wrap gap-2 mt-2 ">
+                <span class="mb-2 text-sm">Popular orders</span>
+                <div class="flex flex-wrap gap-2 mt-4 ">
                   <SButton
                     v-for="order in popularOrders"
                     :key="`popularOrder_${order}`"
@@ -147,6 +172,7 @@ const isContentSmall = computed(() =>
 
           <!-- Basket Section -->
           <SBrandHeader size="md" class="my-2 font-medium">Basket</SBrandHeader>
+          <!-- <span class="flex items-center justify-end w-full gap-2 my-3 text-sm">Optimise for <SSwap v-model="optimiseForState" activeLabel="Wastage" inactiveLabel="Cost" /></span> -->
           <ul class="flex flex-col ">
             <li
               v-for="item in basket"

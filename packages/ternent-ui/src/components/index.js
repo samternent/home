@@ -25,3 +25,4 @@ export { default as SMenu } from "./SMenu.vue";
 export { default as SFileInput } from "./SFileInput.vue";
 export { default as SResizer } from "./SResizer.vue";
 export { default as SResizablePanels } from "./SResizablePanels.vue";
+export { default as SSwap } from "./SSwap.vue";

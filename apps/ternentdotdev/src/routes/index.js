@@ -23,7 +23,7 @@ export default [
         component: () => import("./stream/RouteStream.vue"),
       },
       {
-        path: "s",
+        path: "slide",
         component: () => import("./slides/RouteSlides.vue"),
         children: [
           {

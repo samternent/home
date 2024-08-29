@@ -21,6 +21,7 @@
     "@slidev/theme-seriph": "latest",
     "@vueform/vueform": "^1.10.3",
     "@vueuse/core": "^10.11.1",
+    "@vueuse/math": "^11.0.3",
     "@vueuse/shared": "^10.11.1",
     "axios": "^1.7.5",
     "blockchain": "workspace:*",
