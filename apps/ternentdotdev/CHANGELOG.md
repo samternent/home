@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.3.5
+
+### Patch Changes
+
+- [`377f4df895e265785abd66eaa5f22c601f9d2900`](https://github.com/samternent/home/commit/377f4df895e265785abd66eaa5f22c601f9d2900) Thanks [@samternent](https://github.com/samternent)! - Fix coffeeshop
+
 ## 0.3.4
 
 ### Patch Changes
