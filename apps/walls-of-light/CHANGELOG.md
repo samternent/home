@@ -1,5 +1,11 @@
 # walls-of-light
 
+## 0.0.4
+
+### Patch Changes
+
+- [`a2c5037b5b8067f6e78c9af6e56c3cef1719b233`](https://github.com/samternent/home/commit/a2c5037b5b8067f6e78c9af6e56c3cef1719b233) Thanks [@samternent](https://github.com/samternent)! - Adds all locations
+
 ## 0.0.3
 
 ### Patch Changes
