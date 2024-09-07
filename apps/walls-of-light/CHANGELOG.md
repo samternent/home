@@ -1,5 +1,11 @@
 # walls-of-light
 
+## 0.0.5
+
+### Patch Changes
+
+- [`7619e580e31e9b490201d252728fbe90ec025b4c`](https://github.com/samternent/home/commit/7619e580e31e9b490201d252728fbe90ec025b4c) Thanks [@samternent](https://github.com/samternent)! - Use leafletjs for free maps
+
 ## 0.0.4
 
 ### Patch Changes
