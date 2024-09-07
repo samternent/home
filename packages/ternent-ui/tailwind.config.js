@@ -18,7 +18,7 @@ module.exports = {
   safelist: [
     {
       pattern:
-        /(fill|bg|text|border|btn|link|input)-(accent|primary|secondary|neutral|error|info|success|base-(100|200|300)|sm|xs)|(bg|text|btn)-(info|green|base|red|orange)-(100|200|300|400|500|600|700|800|900|content)|skeleton|input|join-item|join|link|input-error/,
+        /(fill|bg|text|border|btn|link|input)-(accent|primary|secondary|neutral|error|info|success|base-(100|200|300)|sm|xs)|(bg|text|btn)-(info|green|base|red|orange)-(100|200|300|400|500|600|700|800|900|content)|skeleton|input|join-item|join|link|input-error|bg-opacity-(10|20|30|40|50|60|70|80|90|)/,
       variants: ["hover"],
     },
   ],

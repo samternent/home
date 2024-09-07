@@ -376,6 +376,9 @@ importers:
       axios:
         specifier: ^1.7.5
         version: 1.7.5(debug@4.3.6)
+      leaflet:
+        specifier: ^1.9.4
+        version: 1.9.4
       luxon:
         specifier: ^3.5.0
         version: 3.5.0
@@ -9047,6 +9050,10 @@ packages:
 
   /layout-base@1.0.2:
     resolution: {integrity: sha512-8h2oVEZNktL4BH2JCOI90iD1yXwL6iNW7KcCKT2QZgQJR2vbqDsldCTPRU9NifTCqHZci57XvQQ15YTu+sTYPg==}
+    dev: false
+
+  /leaflet@1.9.4:
+    resolution: {integrity: sha512-nxS1ynzJOmOlHp+iL3FyWqK89GtNL8U8rvlMOsQdTTssxZwCXh8N2NB3GDQOL+YR3XnWyZAxwQixURb+FA74PA==}
     dev: false
 
   /leven@3.1.0:

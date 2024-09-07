@@ -1,15 +1,19 @@
 <script setup>
-import { shallowRef, watch } from "vue";
-import mapboxgl from "mapbox-gl";
+import { shallowRef, watch, onMounted, computed } from "vue";
+import { useRouter } from "vue-router";
+import { onClickOutside, useGeolocation } from "@vueuse/core";
+import L from "leaflet";
 import bearwood from "@/module/locations/bearwood";
 
-defineProps({
+const props = defineProps({
   location: {
     type: String,
     required: true,
     validator: (value) => ["bearwood"].includes(value),
   },
 });
+
+const router = useRouter();
 
 const mapContainerEl = shallowRef();
 
@@ -30,60 +34,92 @@ const geojson = {
   })),
 };
 
-watch(mapContainerEl, () => {
-  if (mapContainerEl.value) {
-    const map = new mapboxgl.Map({
-      container: mapContainerEl.value,
-      accessToken:
-        "pk.eyJ1IjoidGVybmVudCIsImEiOiJjbTBxb2hyZDkwMDhlMmtzNW8yOGNuamN3In0.LQlq2QkbizsFAlkap-Swmw",
-      style: "mapbox://styles/mapbox/light-v11",
-      center: [-1.9780073244757168, 52.47465152103087],
-      zoom: 14,
-    });
+const { coords } = useGeolocation();
+const map = shallowRef();
+const meMarker = shallowRef();
 
-    map.on("load", () => {
-      for (const feature of geojson.features) {
-        const el = document.createElement("div");
-        el.className = `marker ${feature.properties.color}`;
+onMounted(() => {
+  map.value = L.map("MapContainer").setView(
+    [52.47465152103087, -1.9780073244757168],
+    16
+  );
+  L.tileLayer(
+    "https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.{ext}",
+    {
+      minZoom: 0,
+      maxZoom: 20,
+      ext: "png",
+    }
+  ).addTo(map.value);
 
-        const marker = new mapboxgl.Marker(el)
-          .setLngLat(feature.geometry.coordinates)
-          .addTo(map);
-
-        marker.getElement().addEventListener("click", () => {
-          // router.push(`/locations/${feature.properties.slug}`);
-        });
-      }
+  for (const feature of geojson.features) {
+    const marker = new L.Marker(feature.geometry.coordinates).addTo(map.value);
+    // marker.setIcon(
+    //   new L.Icon({
+    //     iconUrl: `/pin.png`,
+    //     iconSize: [30, 30],
+    //     iconAnchor: [15, 30],
+    //   })
+    // );
+    marker.addEventListener("click", () => {
+      router.push(`/bearwood/${feature.properties.slug}`);
     });
   }
 });
+
+watch(coords, () => {
+  if (meMarker.value) {
+    meMarker.value.remove();
+  }
+
+  if (coords.value && map.value) {
+    // const el = document.createElement("div");
+    // el.className = "marker-location";
+    // meMarker.value = new mapboxgl.Marker(el)
+    //   .setLngLat([coords.value.longitude, coords.value.latitude])
+    //   .addTo(map.value);
+  }
+});
+
+const drawerRef = shallowRef(null);
+
+onClickOutside(drawerRef, () => {
+  router.push(`/${props.location}`);
+});
 </script>
 <template>
-  <div class="flex flex-col flex-1 w-full">
-    <h1 class="text-xl py-2 px-4 absolute top-2 left-2 z-20 bg-base-100">
+  <div class="flex flex-col flex-1 overflow-hidden">
+    <h1
+      class="text-xl py-2 px-4 absolute top-2 right-2 z-30 bg-base-100 bg-secondary rounded-full bg-opacity-50"
+    >
       Walls of Light.
     </h1>
-    <div ref="mapContainerEl" class="flex-1" />
+    <div id="MapContainer" class="flex-1 z-10" />
 
     <RouterView v-slot="{ Component }">
-      <div
-        v-if="Component"
-        class="flex flex-col right-0 bg-base-200 border-r-2 border-base-200 items-center justify-between duration-100 max-w-xl w-full absolute z-50 shadow-lg top-0 bottom-0"
-        style="transition: width 200ms"
-      >
-        <component :is="Component" />
-      </div>
+      <Transition name="slide" duration="100" mode="out-in" class="flex flex-1">
+        <div
+          v-if="Component"
+          class="flex flex-col right-0 bg-base-200 border-r-2 border-base-200 items-center justify-between duration-100 max-w-4xl w-full absolute z-50 shadow-lg top-0 bottom-0"
+          ref="drawerRef"
+        >
+          <component :is="Component" />
+        </div>
+      </Transition>
     </RouterView>
-
-    <footer class="bg-base-100 p-4 bottom-0 absolute w-full z-30">
-      <p class="text-center text-sm text-primary">&hearts;</p>
-    </footer>
   </div>
 </template>
 <style>
 .marker {
   background-image: url("/pin.png");
   background-size: 80px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+.marker-location {
+  background-image: url("/location.png");
+  background-size: 100%;
   width: 30px;
   height: 30px;
   cursor: pointer;
@@ -113,5 +149,22 @@ watch(mapContainerEl, () => {
 }
 .marker.red {
   background-position: 0px -5px;
+}
+
+.slide-enter-active {
+  transition: all 0.7s ease;
+  transform: translateX(90%);
+  opacity: 1;
+}
+
+.slide-enter-to {
+  transition: all 0.7s ease;
+  transform: translateX(0%);
+}
+
+.slide-leave-active {
+  transition: all 0.7s ease;
+  transform: translateX(30%);
+  opacity: 0;
 }
 </style>

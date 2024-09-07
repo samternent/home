@@ -5,7 +5,7 @@ export default [
     props: true,
     children: [
       {
-        path: ":id",
+        path: ":slug",
         component: () => import("./RouteLocationInfo.vue"),
         props: true,
       },
