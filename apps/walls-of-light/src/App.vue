@@ -1,18 +1,4 @@
-<script setup>
-// DS components
-import { SFooter, SBrandHeader, SButton } from "ternent-ui/components";
-
-const links = [
-  {
-    title: "Privacy",
-    to: "/legal/privacy",
-  },
-  {
-    title: "Terms",
-    to: "/legal/terms",
-  },
-];
-</script>
+<script setup></script>
 
 <template>
   <div

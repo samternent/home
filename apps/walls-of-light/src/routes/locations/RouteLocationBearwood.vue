@@ -2,101 +2,25 @@
 import { shallowRef, watch } from "vue";
 import mapboxgl from "mapbox-gl";
 
+import bearwood from "@/module/locations/bearwood";
+
 const mapContainerEl = shallowRef();
 
-// 'red', 'yellow', , 'green', 'blue', pink', 'purple'
+const colors = ["red", "green", "blue", "yellow", "pink", "purple"];
+
 const geojson = {
   type: "FeatureCollection",
-  features: [
-    {
-      type: "Feature",
-      geometry: {
-        type: "Point",
-        coordinates: [-1.9782654591382351, 52.47491174671107],
-      },
-      properties: {
-        id: 1,
-        color: "pink",
-      },
+  features: bearwood.map((item, i) => ({
+    type: "Feature",
+    geometry: {
+      type: "Point",
+      coordinates: item.location,
     },
-    {
-      type: "Feature",
-      geometry: {
-        type: "Point",
-        coordinates: [-1.9781952751451815, 52.474977423144736],
-      },
-      properties: {
-        id: 2,
-        color: "blue",
-      },
+    properties: {
+      ...item,
+      color: colors[i % 6],
     },
-    {
-      type: "Feature",
-      geometry: {
-        type: "Point",
-        coordinates: [-1.9777391890885077, 52.474339720462304],
-      },
-      properties: {
-        id: 3,
-        color: "yellow",
-      },
-    },
-    {
-      type: "Feature",
-      geometry: {
-        type: "Point",
-        coordinates: [-1.978507803758466, 52.47608051495444],
-      },
-      properties: {
-        id: 4,
-        color: "green",
-      },
-    },
-    {
-      type: "Feature",
-      geometry: {
-        type: "Point",
-        coordinates: [-1.978325832706897, 52.47545202434873],
-      },
-      properties: {
-        id: 5,
-        color: "purple",
-      },
-    },
-    {
-      type: "Feature",
-      geometry: {
-        type: "Point",
-        coordinates: [-1.9791003228032855, 52.47727902635294],
-      },
-      properties: {
-        id: 6,
-        color: "red",
-      },
-    },
-    {
-      type: "Feature",
-      geometry: {
-        type: "Point",
-        coordinates: [-1.977520586389326, 52.47270038036344],
-      },
-      properties: {
-        id: 6,
-        color: "pink",
-      },
-    },
-    {
-      type: "Feature",
-      geometry: {
-        type: "Point",
-        coordinates: [-1.9755112469031892, 52.474880763982696],
-      },
-      properties: {
-        id: 6,
-        color: "green",
-      },
-    },
-  ],
+  })),
 };
 
 watch(mapContainerEl, () => {
