@@ -1,6 +1,6 @@
 import { legalRoutes } from "./legal";
 import artists from "./artists";
-import locations from "./locations";
+import location from "./location";
 
 export default [
   {
@@ -13,7 +13,7 @@ export default [
       },
       ...artists,
       ...legalRoutes,
-      ...locations,
+      ...location,
     ],
   },
 ];

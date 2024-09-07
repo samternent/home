@@ -1,8 +1,15 @@
 <script setup>
 import { shallowRef, watch } from "vue";
 import mapboxgl from "mapbox-gl";
-
 import bearwood from "@/module/locations/bearwood";
+
+defineProps({
+  location: {
+    type: String,
+    required: true,
+    validator: (value) => ["bearwood"].includes(value),
+  },
+});
 
 const mapContainerEl = shallowRef();
 
@@ -30,8 +37,8 @@ watch(mapContainerEl, () => {
       accessToken:
         "pk.eyJ1IjoidGVybmVudCIsImEiOiJjbTBxb2hyZDkwMDhlMmtzNW8yOGNuamN3In0.LQlq2QkbizsFAlkap-Swmw",
       style: "mapbox://styles/mapbox/light-v11",
-      center: [-1.9750553, 52.4745383],
-      zoom: 15,
+      center: [-1.9780073244757168, 52.47465152103087],
+      zoom: 14,
     });
 
     map.on("load", () => {
@@ -39,20 +46,13 @@ watch(mapContainerEl, () => {
         const el = document.createElement("div");
         el.className = `marker ${feature.properties.color}`;
 
-        new mapboxgl.Marker(el)
+        const marker = new mapboxgl.Marker(el)
           .setLngLat(feature.geometry.coordinates)
           .addTo(map);
 
-        // add click event to open drawer
-        new mapboxgl.Marker(el)
-          .setLngLat(feature.geometry.coordinates)
-          .setPopup(
-            new mapboxgl.Popup({ offset: 25 }) // add popups
-              .setHTML(
-                `<h3>${feature.properties.title}</h3><p>${feature.properties.description}</p>`
-              )
-          )
-          .addTo(map);
+        marker.getElement().addEventListener("click", () => {
+          // router.push(`/locations/${feature.properties.slug}`);
+        });
       }
     });
   }
@@ -60,14 +60,23 @@ watch(mapContainerEl, () => {
 </script>
 <template>
   <div class="flex flex-col flex-1 w-full">
-    <h1
-      class="font-bold text-4xl uppercase tracking-tighter py-2 px-4 absolute top-0 z-20 w-full"
-    >
-      Walls of Light: Bearwood
+    <h1 class="text-xl py-2 px-4 absolute top-2 left-2 z-20 bg-base-100">
+      Walls of Light.
     </h1>
     <div ref="mapContainerEl" class="flex-1" />
-    <footer class="bg-base-200 p-4 bottom-0 absolute w-full z-50">
-      <p class="text-center text-sm">yo</p>
+
+    <RouterView v-slot="{ Component }">
+      <div
+        v-if="Component"
+        class="flex flex-col right-0 bg-base-200 border-r-2 border-base-200 items-center justify-between duration-100 max-w-xl w-full absolute z-50 shadow-lg top-0 bottom-0"
+        style="transition: width 200ms"
+      >
+        <component :is="Component" />
+      </div>
+    </RouterView>
+
+    <footer class="bg-base-100 p-4 bottom-0 absolute w-full z-30">
+      <p class="text-center text-sm text-primary">&hearts;</p>
     </footer>
   </div>
 </template>
