@@ -387,4 +387,47 @@ export const ternentDotDev = {
     "--size-lg": "6rem", // Large size for prominent elements
     "--size-xl": "8rem", // Extra-large size for standout elements
   },
+  wallsOfLight: {
+    "color-scheme": "light",
+    primary: "#B78FD6", // Soft Purple, symbolizing creativity and kindness
+    "primary-focus": "#9A71B3", // Slightly darker shade for focus elements
+    "primary-content": "#FFFFFF", // White text on primary for contrast
+    secondary: "#FFC1E3", // Gentle Pink for secondary elements, evoking warmth and positivity
+    "secondary-focus": "#FFA4D0", // Slightly deeper Pink for focused elements
+    "secondary-content": "#2D2D2D", // Dark text on lighter secondary elements
+    accent: "#FFEB8F", // Warm Yellow accent, representing brightness and joy
+    "accent-focus": "#FFD966", // Slightly darker Yellow for focus
+    "accent-content": "#2D2D2D", // Dark text on Yellow accent
+    neutral: "#F6F3FB", // Very light neutral for a clean, uplifting background
+    "neutral-focus": "#E4E0F0", // Slightly darker neutral for focus elements
+    "neutral-content": "#2D2D2D", // Dark text for clarity on light backgrounds
+    "base-100": "#FFFFFF", // Pure white for base background to reflect light
+    "base-200": "#F3F1F7", // Soft light grey for contrast
+    "base-300": "#E8E5EF", // Light grey for deeper contrast in elements
+    "base-content": "#2D2D2D", // Dark text for accessibility
+    info: "#9FD7FF", // Soft Blue for informational elements
+    "info-content": "#2D2D2D", // Dark text on light blue
+    success: "#A8E6CF", // Soft Mint Green for success
+    "success-content": "#2D2D2D", // Dark text on success messages
+    warning: "#FFCC8F", // Warm Orange for warnings, remaining light and gentle
+    "warning-content": "#2D2D2D", // Dark text on warning
+    error: "#FF8F8F", // Light Red for errors, maintaining the gentle theme
+    "error-content": "#2D2D2D", // Dark text on error elements
+    "--rounded-box": "1rem", // Softer, more inviting rounded corners
+    "--rounded-btn": "9999px", // Fully rounded buttons for a bubbly, friendly feel
+    "--rounded-table": "0.5rem", // Rounded corners on tables for consistency
+    "--rounded-card": "1rem", // More rounded for cards, making them feel light and positive
+    "--rounded-input": "0.5rem", // Rounded inputs for friendliness and ease of use
+    "--rounded-full": "9999px", // Full circles for avatars or small elements
+    "--border-color": "#E4E0F0", // Soft border colors for definition without harshness
+    "--shadow-color": "rgba(183, 143, 214, 0.2)", // Light purple shadow for subtle emphasis
+    "--spacing-sm": "0.75rem", // Small spacing to keep things airy
+    "--spacing-md": "1.25rem", // Medium spacing for balance
+    "--spacing-lg": "2rem", // Larger spacing for an open, welcoming feel
+    "--spacing-xl": "3rem", // Extra-large for more emphasis in key areas
+    "--size-sm": "2rem",
+    "--size-md": "4rem",
+    "--size-lg": "6rem",
+    "--size-xl": "8rem",
+  },
 };
