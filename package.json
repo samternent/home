@@ -30,6 +30,7 @@
     "build:slides": "pnpm --filter ternentdotdev build:slides:teamwork-frontend && pnpm --filter ternentdotdev build:slides:router-drawers && pnpm --filter ternentdotdev build:slides:copy",
     "build:ternent-api": "docker build -f ./apps/ternent-api/Dockerfile . -t samternent/ternent-api",
     "build:libs": "pnpm --filter ternent-ui --filter sams-game-kit --filter concords-utils --filter concords-proof-of-work --filter concords-identity --filter concords-encrypt --filter concords-ledger build",
+    "build:ternent-ui": "pnpm --filter ternent-ui build",
     "dev:docker": "cd .ops && docker-compose up -d"
   },
   "pnpm": {

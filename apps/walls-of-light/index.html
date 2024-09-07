@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" data-app-version="<%= __APP_VERSION__ %>">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title><%= __APP_TITLE__ %></title>
+
+    <meta name="description" content="<%= __APP_DESCRIPTION__ %>" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+    <link rel="mask-icon" href="/mask-icon.svg" color="#fefefe" />
+    <meta name="theme-color" content="#fefefe" />
+
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: light)"
+      content="light"
+    />
+    <link rel="manifest" crossorigin="use-credentials" href="/manifest.json" />
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css"
+      rel="stylesheet"
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="app" class="light"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
