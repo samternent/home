@@ -43,14 +43,10 @@ onMounted(() => {
     [52.47465152103087, -1.9780073244757168],
     16
   );
-  L.tileLayer(
-    "https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.{ext}",
-    {
-      minZoom: 0,
-      maxZoom: 20,
-      ext: "png",
-    }
-  ).addTo(map.value);
+  L.tileLayer("https://b.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", {
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  }).addTo(map.value);
 
   for (const feature of geojson.features) {
     const marker = new L.Marker(feature.geometry.coordinates).addTo(map.value);
