@@ -159,7 +159,11 @@ const resultText = {
           >Scheduled @ {{ formatKickOffTime(fixture.utcDate) }}</span
         >
         <span
-          v-else-if="fixture.status === 'FINISHED' && fixture.score?.winner"
+          v-else-if="
+            fixture.status === 'FINISHED' &&
+            fixture.score?.winner &&
+            ['PENALTY_SHOOTOUT', 'EXTRA_TIME'].includes(fixture.score.duration)
+          "
           class="font-light normal-case"
           >{{
             fixture.score?.winner === "HOME_TEAM"
@@ -173,34 +177,49 @@ const resultText = {
           >
           {{ resultText[fixture.score.duration] }}</span
         >
+        <span v-else-if="fixture.status === 'FINISHED'">FINISHED</span>
       </div>
 
-      <div class="flex text-sm" v-if="hasStarted && prediction">
+      <div
+        class="flex text-xs md:text-sm items-center"
+        v-if="hasStarted && prediction"
+      >
         <div
           v-if="scorePrediction"
-          class="px-3 rounded mx-1 bg-green-600 text-green-300"
+          class="px-2 md:px-3 rounded mx-1 bg-green-600 text-green-300"
         >
           MS +3
         </div>
         <div
           v-if="resultPrediction"
-          class="mx-1 px-3 rounded bg-green-500 text-green-800"
+          class="mx-1 px-2 md:px-3 rounded bg-green-500 text-green-800"
         >
           MR +2
         </div>
         <div
           v-if="homeScorePrediction"
-          class="mx-1 px-3 rounded bg-green-400 text-green-700"
+          class="mx-1 px-2 md:px-3 rounded bg-green-400 text-green-700"
         >
           HS +1
         </div>
         <div
           v-if="awayScorePrediction"
-          class="mx-1 px-3 rounded bg-green-400 text-green-700"
+          class="mx-1 px-2 md:px-3 rounded bg-green-400 text-green-700"
         >
           AS +1
         </div>
         <div v-if="scorePrediction" class="ml-2">⭐</div>
+        <div
+          v-if="
+            !scorePrediction &&
+            !awayScorePrediction &&
+            !homeScorePrediction &&
+            !resultPrediction
+          "
+          class="ml-2"
+        >
+          😥
+        </div>
       </div>
     </div>
 

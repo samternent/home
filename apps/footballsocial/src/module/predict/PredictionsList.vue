@@ -330,6 +330,7 @@ function formatStage(stage) {
           </svg>
         </SButton>
         <select
+          v-if="gameweeks.length"
           :value="gameweek"
           aria-label="Gameweek"
           class="select select-bordered select-sm mr-4"
@@ -379,6 +380,7 @@ function formatStage(stage) {
       </div>
     </div>
     <div
+      v-if="alertMessage"
       role="alert"
       class="flex h-16 bg-base-300 !rounded-0 p-4 justify-between items-center my-6"
     >
