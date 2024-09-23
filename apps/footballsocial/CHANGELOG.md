@@ -1,5 +1,11 @@
 # footballsocial
 
+## 0.15.9
+
+### Patch Changes
+
+- [`f15348773e977600ba18270ee466fd416ede1e27`](https://github.com/samternent/home/commit/f15348773e977600ba18270ee466fd416ede1e27) Thanks [@samternent](https://github.com/samternent)! - Fix score issue
+
 ## 0.15.8
 
 ### Patch Changes

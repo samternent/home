@@ -1,5 +1,11 @@
 # walls-of-light
 
+## 0.0.6
+
+### Patch Changes
+
+- [`bea51595d652e8699796a2803e7ed70b0e9adafd`](https://github.com/samternent/home/commit/bea51595d652e8699796a2803e7ed70b0e9adafd) Thanks [@samternent](https://github.com/samternent)! - New map free?
+
 ## 0.0.5
 
 ### Patch Changes
