@@ -16,6 +16,7 @@ env:
 
 jobs:
   release:
+    if: ${{ startsWith(github.event.head_commit.message, 'changeset-release/') }}
     name: Deploy
     runs-on: ubuntu-latest
 
@@ -49,11 +50,9 @@ jobs:
           cache: "pnpm"
 
       - name: Install dependencies
-        if: ${{ !startsWith(github.head_ref, 'changeset-release/') }}
         run: pnpm install --frozen-lockfile
 
       - name: Publish Release
-        if: ${{ !startsWith(github.head_ref, 'changeset-release/') }}
         run: node .ops/publish.mjs
         shell: bash
         env:
