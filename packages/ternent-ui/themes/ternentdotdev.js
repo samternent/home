@@ -97,9 +97,9 @@ export const ternentDotDev = {
     accent: "#00C49A", // Vibrant Mint Green
     "accent-focus": "#00A67F", // Slightly darker Mint Green
     "accent-content": "#FFFFFF", // White text on Mint Green
-    neutral: "#37474F", // Slate Grey for neutral elements
-    "neutral-focus": "#263238", // Darker Slate Grey
-    "neutral-content": "#FFFFFF", // White text on Slate Grey
+    neutral: "#F5F5F5", // Light Grey for neutral elements
+    "neutral-focus": "#E0E0E0", // Slightly darker Grey for focus
+    "neutral-content": "#1A1A1A", // Dark text on Light Grey
     "base-100": "#FAFAFA", // Very Light Grey for background
     "base-200": "#F5F5F5", // Light Grey for secondary backgrounds
     "base-300": "#EEEEEE", // Medium Light Grey for contrast

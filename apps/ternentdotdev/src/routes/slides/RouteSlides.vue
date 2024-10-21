@@ -4,7 +4,6 @@ import { useLocalStorage } from "@vueuse/core";
 import { STabs, SButton, SIndicator } from "ternent-ui/components";
 import { useBreadcrumbs } from "../../module/breadcrumbs/useBreadcrumbs";
 import { useAppShell } from "../../module/app-shell/useAppShell";
-import ConcordsLog from "../../module/concords/ConcordsLog.vue";
 import IdentityAvatar from "../../module/identity/IdentityAvatar.vue";
 import { useLedger } from "../../module/ledger/useLedger";
 

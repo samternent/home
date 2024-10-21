@@ -27,7 +27,13 @@ const props = defineProps({
   direction: {
     type: String,
     default: "vertical",
-    validator: (value) => ["vertical"].includes(value),
+    validator: (value) => ["vertical", "horizontal"].includes(value),
+  },
+
+  type: {
+    type: String,
+    default: "primary",
+    validator: (value) => ["primary", "secondary", "accent"].includes(value),
   },
 });
 
@@ -47,32 +53,61 @@ const dragging = defineModel("dragging", { type: Boolean, default: false });
 const resizeHandle = shallowRef(null);
 const resizeHandleBtn = shallowRef(null);
 
-const { width: handleWidth } = useElementBounding(resizeHandle);
-const { width: handleBtnWidth } = useElementBounding(resizeHandleBtn);
-const { left: containerLeft, right: containerRight } = useElementBounding(
-  computed(() => props.container)
-);
+const { width: handleWidth, height: handleHeight } =
+  useElementBounding(resizeHandle);
+const { width: handleBtnWidth, height: handleBtnHeight } =
+  useElementBounding(resizeHandleBtn);
+const {
+  left: containerLeft,
+  right: containerRight,
+  top: containerTop,
+  height: containerHeight,
+} = useElementBounding(computed(() => props.container));
 
-const padding = computed(() => (handleWidth.value - handleBtnWidth.value) / 2);
+const paddingX = computed(() => (handleWidth.value - handleBtnWidth.value) / 2);
+const paddingY = computed(
+  () => (handleHeight.value - handleBtnHeight.value) / 2
+);
 
 const { isDragging } = useDraggable(resizeHandle, {
   onStart: () => emit("dragStart"),
   onEnd: () => emit("dragEnd"),
-  onMove({ x: pos }) {
+  onMove({ x: posX, y: posY }) {
     if (!props.container) {
       return;
     }
 
-    // When dragging, offset the handle padding and container and update with drag position.
-    // When dragging reaches right bounds, offset the handle padding and container and fix to the right side.
-    // When dragging reaches left bounds, offset the handle padding and container and fix to the left side.
-    if (pos > containerRight.value - (padding.value + handleBtnWidth.value)) {
+    if (props.direction === "vertical") {
+      // When dragging, offset the handle padding and container and update with drag position.
+      // When dragging reaches right bounds, offset the handle padding and container and fix to the right side.
+      // When dragging reaches left bounds, offset the handle padding and container and fix to the left side.
+      if (
+        posX >
+        containerRight.value - (paddingX.value + handleBtnWidth.value)
+      ) {
+        position.value =
+          containerRight.value - containerLeft.value - handleBtnWidth.value;
+      } else if (posX < containerLeft.value - paddingX.value) {
+        position.value = handleBtnWidth.value * -1;
+      } else {
+        position.value = posX - containerLeft.value + paddingX.value;
+      }
+    }
+
+    if (props.direction === "horizontal") {
+      const height = containerHeight.value - (posY - containerTop.value);
+
+      if (height < 0) {
+        position.value = 0;
+        return;
+      }
+      if (height > containerHeight.value) {
+        position.value = containerHeight.value - paddingY.value / 2;
+        return;
+      }
+
       position.value =
-        containerRight.value - containerLeft.value - handleBtnWidth.value;
-    } else if (pos < containerLeft.value - padding.value) {
-      position.value = handleBtnWidth.value * -1;
-    } else {
-      position.value = pos - containerLeft.value + padding.value;
+        containerHeight.value - (posY - containerTop.value + paddingY.value);
     }
   },
 });
@@ -84,18 +119,31 @@ watch(isDragging, (value) => {
 <template>
   <div
     ref="resizeHandle"
-    class="absolute -left-4 top-0 z-50 h-full cursor-ew-resize px-4 group"
-    :class="{ 'opacity-100': isDragging }"
+    class="absolute z-20 group"
+    :class="{
+      'opacity-100': isDragging,
+      '-left-4 top-0 cursor-ew-resize px-4 h-full': direction === 'vertical',
+      'left-0 -top-6 cursor-ns-resize py-2 w-full': direction === 'horizontal',
+    }"
   >
     <button
       ref="resizeHandleBtn"
       type="button"
       aria-label="Drag to resize"
       :class="{
-        'bg-secondary opacity-100': isDragging,
-        'w-1': size === 'default',
+        'opacity-100': isDragging,
+        '!w-1': isDragging && direction === 'vertical',
+        '!h-1': isDragging && direction === 'horizontal',
+        'opacity-40': size === 'default',
+        'w-0.5': size === 'default' && direction === 'vertical',
+        'h-0.5': size === 'default' && direction === 'horizontal',
+        'group-hover:w-1 cursor-ew-resize h-full': direction === 'vertical',
+        'group-hover:h-1 cursor-ns-resize w-full': direction === 'horizontal',
+        'bg-primary': type === 'primary',
+        'bg-secondary': type === 'secondary',
+        'bg-accent': type === 'accent',
       }"
-      class="h-full cursor-ew-resize opacity-0 transition-all group-hover:bg-secondary group-hover:opacity-40 duration-300"
+      class="opacity-0 transition-all group-hover:opacity-50 duration-300"
     />
   </div>
 </template>

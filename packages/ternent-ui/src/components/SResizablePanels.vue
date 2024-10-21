@@ -12,6 +12,15 @@ const props = defineProps({
     type: Number,
     default: 400,
   },
+  identifier: {
+    type: String,
+    default: "SResizablePanels",
+  },
+  type: {
+    type: String,
+    default: "primary",
+    validator: (value) => ["primary", "secondary", "accent"].includes(value),
+  },
 });
 
 const contentWidth = defineModel("contentWidth", {
@@ -25,7 +34,7 @@ const sidebarWidth = defineModel("sideBarWidth", {
 
 const resizeContainer = shallowRef(null);
 const dragPosition = useLocalStorage(
-  "routes/RoutePortfolioSweetShop/dragPosition",
+  `routes/${props.identifier}/dragPosition`,
   600
 );
 const isDragging = shallowRef(false);
@@ -53,7 +62,7 @@ const isResizable = computed(
 </script>
 <template>
   <div
-    class="flex h-full relative w-full"
+    class="flex relative w-full overflow-hidden"
     ref="resizeContainer"
     :class="{
       'pointer-events-none select-none': isDragging,
@@ -62,6 +71,7 @@ const isResizable = computed(
   >
     <div
       ref="contentEl"
+      class="z-10"
       :class="{ 'overflow-auto flex h-full w-full': isResizable }"
       :style="isResizable ? { width, minWidth: `${minContentWidth}px` } : {}"
     >
@@ -77,8 +87,9 @@ const isResizable = computed(
         v-model:position="dragPosition"
         v-model:dragging="isDragging"
         :container="resizeContainer"
+        :type="type"
       />
-      <div class="p-2 flex flex-col h-full w-full">
+      <div class="flex flex-col h-full w-full overflow-auto z-10">
         <slot name="sidebar" />
       </div>
     </div>
