@@ -1,7 +1,6 @@
 name: Create Release
 
 on:
-  push:
   schedule:
     - cron: "0 10 * * 1-4"
   workflow_dispatch:
