@@ -26,6 +26,11 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: Get branch name
+        id: branch
+        run: |
+          echo "branch_name=$(echo ${GITHUB_REF#refs/heads/} | tr / -)" >> $GITHUB_ENV
+
       - name: Get node version
         id: nvmrc
         run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
