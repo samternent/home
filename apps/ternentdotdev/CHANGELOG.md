@@ -1,11 +1,5 @@
 # ternentdotdev
 
-## 0.3.8
-
-### Patch Changes
-
-- [`8b6191ce1d4f2cfe74260d05aa35f358c1c52b14`](https://github.com/samternent/home/commit/8b6191ce1d4f2cfe74260d05aa35f358c1c52b14) Thanks [@samternent](https://github.com/samternent)! - Adds a fake change for the build
-
 ## 0.3.7
 
 ### Patch Changes
