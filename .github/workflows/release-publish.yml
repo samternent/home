@@ -1,9 +1,10 @@
-name: Create Release
+name: Publish Release
 
 on:
   push:
     branches:
       - main
+
 env:
   PNPM_CACHE_PATH: ~/.pnpm-store
   PNPM_CACHE_NAME: pnpm-store-cache
@@ -15,6 +16,7 @@ env:
 
 jobs:
   release:
+    if: ${{ contains(github.event.head_commit.message, 'changeset-release/') }}
     name: Deploy
     runs-on: ubuntu-latest
 
@@ -50,16 +52,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Create release pull request
-        id: changesets
-        uses: changesets/action@v1.4.1
-        with:
-          title: Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-
       - name: Publish Release
-        if: steps.changesets.outputs.hasChangesets == 'false'
         run: node .ops/publish.mjs
         shell: bash
         env:
