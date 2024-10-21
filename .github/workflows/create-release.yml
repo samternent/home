@@ -2,8 +2,10 @@ name: Create Release
 
 on:
   push:
-    branches:
-      - main
+  schedule:
+    - cron: "0 10 * * 1-4"
+  workflow_dispatch:
+
 env:
   PNPM_CACHE_PATH: ~/.pnpm-store
   PNPM_CACHE_NAME: pnpm-store-cache
