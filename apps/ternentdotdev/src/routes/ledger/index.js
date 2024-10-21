@@ -5,7 +5,7 @@ export const ledgerRoutes = [
     children: [
       {
         path: "",
-        redirect: "/ledger/add",
+        redirect: "/ledger/tasks",
       },
       {
         path: "permissions",
@@ -14,6 +14,11 @@ export const ledgerRoutes = [
       {
         path: ":sheetName",
         component: () => import("./RouteLedgerSheet.vue"),
+        props: true,
+      },
+      {
+        path: "tasks",
+        component: () => import("./RouteLedgerTasks.vue"),
         props: true,
       },
       {

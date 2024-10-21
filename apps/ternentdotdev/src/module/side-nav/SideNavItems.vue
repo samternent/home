@@ -68,7 +68,10 @@ const activeMenu = computed({
                   />
                 </svg>
 
-                {{ item.name }}</RouterLink
+                {{ item.name }}
+                <SIndicator v-if="item.tag">{{
+                  item.tag
+                }}</SIndicator></RouterLink
               >
               <button
                 v-else
@@ -110,35 +113,40 @@ const activeMenu = computed({
           <RouterLink
             v-else
             :to="item.to"
-            class="link hover:link-active font-light line-clamp-1 break-all py-2 flex gap-2 items-center text-base transition-all"
+            class="link hover:link-active font-light line-clamp-1 break-all py-2 flex gap-2 items-center text-base transition-all justify-between"
             :class="{ 'justify-center': collapsed }"
             active-class="link-active"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.3"
-              stroke="currentColor"
-              class="w-6 h-6"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                :d="item.d"
-              />
-            </svg>
+            <div class="flex justify-center gap-2 mx-1 items-center">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.3"
+                stroke="currentColor"
+                class="w-6 h-6"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  :d="item.d"
+                />
+              </svg>
 
-            <Transition
-              enterFromClass="opacity-0"
-              enterActiveClass="transition-opacity duration-300 delay-100"
-              enterToClass="opacity-100"
-              leaveFromClass="opacity-100"
-              leaveActiveClass="absolute transition-opacity duration-0"
-              leaveToClass="opacity-0"
-            >
-              <span v-if="!collapsed">{{ item.name }}</span></Transition
-            ></RouterLink
+              <Transition
+                enterFromClass="opacity-0"
+                enterActiveClass="transition-opacity duration-300 delay-100"
+                enterToClass="opacity-100"
+                leaveFromClass="opacity-100"
+                leaveActiveClass="absolute transition-opacity duration-0"
+                leaveToClass="opacity-0"
+              >
+                <span v-if="!collapsed">{{ item.name }}</span></Transition
+              >
+            </div>
+            <SIndicator v-if="item.tag && !collapsed">{{
+              item.tag
+            }}</SIndicator></RouterLink
           >
           <ul
             class="flex flex-col max-h-44 overflow-auto bg-base-200 p-2 m-2 opacity-100"
@@ -178,7 +186,7 @@ const activeMenu = computed({
 .link {
   background: linear-gradient(to right, oklch(var(--b1)), oklch(var(--b1))),
     linear-gradient(to right, oklch(var(--p)), oklch(var(--s)), oklch(var(--s)));
-  background-size: 100% 3px, 0 3px;
+  background-size: 100% 1px, 0 1px;
   background-position: 100% 100%, 0 100%;
   background-repeat: no-repeat;
   transition: background-size 400ms;
@@ -186,6 +194,6 @@ const activeMenu = computed({
 
 .link-active,
 .link:hover {
-  background-size: 0 3px, 100% 3px;
+  background-size: 0 1px, 100% 1px;
 }
 </style>

@@ -28,6 +28,7 @@ export function provideLedger() {
     getCollection,
     plugin: lokiPlugin,
     getCollections,
+    db,
   } = useLokiPlugin(
     "ledger",
     stripIdentityKey(publicKeyIdentityPEM.value),
@@ -140,6 +141,7 @@ export function provideLedger() {
   });
 
   provide(useLedgerSymbol, {
+    db,
     ledger,
     api: ledgerApi,
     createPermission,
