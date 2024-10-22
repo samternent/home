@@ -1,5 +1,14 @@
 # ternentdotdev
 
+## 0.3.9
+
+### Patch Changes
+
+- [#375](https://github.com/samternent/home/pull/375) [`5c75f078baa7bf3ea25d192a7d9f7174af5ed4f2`](https://github.com/samternent/home/commit/5c75f078baa7bf3ea25d192a7d9f7174af5ed4f2) Thanks [@samternent](https://github.com/samternent)! - Change IA and introduce ledger as a primary feature
+
+- Updated dependencies [[`4dbe5c228213d174b670a3faf544b89c51eb4e71`](https://github.com/samternent/home/commit/4dbe5c228213d174b670a3faf544b89c51eb4e71), [`906c84e95a7b82f6e124ba04a680990c3b1df14a`](https://github.com/samternent/home/commit/906c84e95a7b82f6e124ba04a680990c3b1df14a)]:
+  - ternent-ui@0.1.15
+
 ## 0.3.8
 
 ### Patch Changes
