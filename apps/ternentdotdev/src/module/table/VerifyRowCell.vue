@@ -35,6 +35,7 @@ const { collection, id, timestamp, data, signature, identity } = toRefs(props);
 
 watchEffect(async () => {
   const key = await importPublicKeyFromPem(identity?.value);
+
   isVerified.value = await verifyJson(
     signature?.value,
     {

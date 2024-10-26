@@ -1,46 +1,58 @@
 <script setup>
+import { shallowRef, computed } from "vue";
+import { useElementBounding } from "@vueuse/core";
+import SResizer from "./SResizer.vue";
 import SButton from "./SButton.vue";
 
-defineProps({
-  modelValue: {
-    type: Boolean,
-    default: false,
+const props = defineProps({
+  title: {
+    type: String,
+    default: "Drawer",
+  },
+  container: {
+    type: HTMLElement,
+    default: document.body,
   },
 });
-defineEmits(["update:modelValue"]);
+
+const isOpen = defineModel({
+  type: Boolean,
+  default: false,
+});
+
+const dragPosition = shallowRef();
+const isDragging = shallowRef(false);
+
+const { width: containerWidth } = useElementBounding(props.container);
+
+const width = computed(() => {
+  const width = containerWidth.value - dragPosition.value;
+
+  if (width > containerWidth.value - 100) {
+    return `${containerWidth.value - 80}px`;
+  }
+
+  return `${containerWidth.value - dragPosition.value}px`;
+});
 </script>
 <template>
-  <div class="drawer drawer-end">
-    <input
-      id="my-drawer-4"
-      type="checkbox"
-      :checked="modelValue"
-      @change="$emit('update:modelValue', !modelValue)"
-      class="drawer-toggle"
-    />
-    <div class="drawer-content">
-      <RouterView />
-    </div>
-    <div class="drawer-side overflow-x-hidden z-30">
-      <label
-        for="my-drawer-4"
-        aria-label="close sidebar"
-        class="drawer-overlay"
-      ></label>
-      <div
-        class="p-4 w-full max-w-4xl min-h-full bg-base-200 text-base-content"
-      >
-        <SButton
-          @click="$emit('update:modelValue', false)"
-          class="absolute right-2 top-2 btn-sm"
-          ><svg
+  <Transition name="slide-fade">
+    <div
+      v-if="isOpen"
+      class="absolute top-0 right-0 z-30 bg-base-100 border-l border-base-300 shadow-2xl bottom-0 min-w-[450px] p-4"
+      :style="{ width }"
+    >
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-bold">{{ title }}</h2>
+
+        <SButton class="btn-sm" @click="isOpen = false">
+          <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
             stroke-width="1.5"
             stroke="currentColor"
-            data-slot="icon"
-            class="w-6 h-6"
+            class="size-6"
           >
             <path
               stroke-linecap="round"
@@ -49,8 +61,31 @@ defineEmits(["update:modelValue"]);
             />
           </svg>
         </SButton>
+      </div>
+      <SResizer
+        v-model:position="dragPosition"
+        v-model:dragging="isDragging"
+        :container="container"
+        direction="vertical"
+      />
+      <div class="my-2">
         <slot />
       </div>
     </div>
-  </div>
+  </Transition>
 </template>
+<style scoped>
+/* Enter and leave animations can use different */
+/* durations and timing functions.              */
+.slide-fade-enter-active {
+  transition: all 0.3s ease;
+}
+.slide-fade-leave-active {
+  transition: all 0.1s cubic-bezier(1, 0.5, 0.8, 1);
+}
+.slide-fade-enter, .slide-fade-leave-to
+/* .slide-fade-leave-active below version 2.1.8 */ {
+  transform: translateX(10px);
+  opacity: 0;
+}
+</style>

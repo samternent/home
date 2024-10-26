@@ -18,16 +18,6 @@ export function provideAppShell() {
     width.value < 500 ? 620 : 320
   );
 
-  watch(
-    width,
-    () => {
-      if (width.value < 500) {
-        bottomPanelHeight.value = window.innerHeight - 54;
-      }
-    },
-    { immediate: true }
-  );
-
   function setViewHeight() {
     let vh = window.innerHeight * 0.01;
     document.documentElement.style.setProperty("--vh", `${vh}px`);

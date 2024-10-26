@@ -35,22 +35,25 @@ export function provideLedger() {
     privateKeyEncryption.value
   );
 
-  const ledgerApi = createLedger({
-    plugins: [
-      lokiPlugin,
-      {
-        onReady({ ledger: _ledger }) {
-          ledger.value = _ledger;
+  const ledgerApi = createLedger(
+    {
+      plugins: [
+        lokiPlugin,
+        {
+          onReady({ ledger: _ledger }) {
+            ledger.value = _ledger;
+          },
+          onUpdate({ ledger: _ledger }) {
+            ledger.value = _ledger;
+          },
+          onDestroy({ ledger: _ledger }) {
+            ledger.value = _ledger;
+          },
         },
-        onUpdate({ ledger: _ledger }) {
-          ledger.value = _ledger;
-        },
-        onDestroy({ ledger: _ledger }) {
-          ledger.value = _ledger;
-        },
-      },
-    ],
-  });
+      ],
+    },
+    0
+  );
 
   async function createPermission(title) {
     const [encryptionSecret, encryptionPublic] = await generateEncryptionKeys();
@@ -114,31 +117,27 @@ export function provideLedger() {
       });
 
     if (!permission) {
-      return ledgerApi.add(
+      await ledgerApi.add(
         { ...data, id: data?.id || generateId() },
+        collection
+      );
+    } else {
+      await ledgerApi.add(
+        {
+          permission: permissionTitle,
+          encrypted: stripEncryptionFile(
+            await encrypt(
+              permission.data.public || permission.data.encryption,
+              JSON.stringify({ ...data, id: generateId() })
+            )
+          ),
+        },
         collection
       );
     }
 
-    return ledgerApi.add(
-      {
-        permission: permissionTitle,
-        encrypted: stripEncryptionFile(
-          await encrypt(
-            permission.data.public || permission.data.encryption,
-            JSON.stringify({ ...data, id: generateId() })
-          )
-        ),
-      },
-      collection
-    );
+    ledgerApi.squashRecords();
   }
-
-  watchEffect(async () => {
-    if (ledger.value?.pending_records > 1) {
-      await ledgerApi.squashRecords();
-    }
-  });
 
   provide(useLedgerSymbol, {
     db,

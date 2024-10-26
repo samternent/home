@@ -78,26 +78,28 @@ export default function useLedger(
     await runHooks("onAuth");
   }
 
-  async function create(data = {}, difficulty = 1) {
+  async function create(data = {}, difficulty = 0) {
     if (!state.publicKey || !state.signingKey) return;
 
     const timestamp = Date.now();
-    const id = await hashData(`${timestamp}`);
+
     const record: IRecord = {
-      id,
+      id: "",
+      data,
       timestamp,
       identity: stripIdentityKey(await exportPublicKeyAsPem(state.publicKey)),
       collection: "users",
-      data,
     };
 
-    const signature = await sign(state.signingKey, JSON.stringify(record));
+    record.id = await hashData(record);
 
-    const signedRecord = {
-      signature,
-      ...record,
-    };
-    state.ledger = await createLedger(signedRecord, difficulty);
+    const signature = await sign(state.signingKey, record);
+
+    const signedRecord = { signature, ...record };
+
+    state.ledger = await createLedger(signedRecord, difficulty, {
+      identity: stripIdentityKey(await exportPublicKeyAsPem(state.publicKey)),
+    });
     await runHooks("onAdd", signedRecord);
     await runHooks("onCreate", state);
     await runHooks("onLoad", state);
@@ -215,8 +217,12 @@ export default function useLedger(
   }
 
   async function commit(message: string) {
-    if (!state.ledger) return;
-    state.ledger = await mine(state.ledger, { message });
+    if (!state.ledger || !state.publicKey || !state.signingKey) return;
+
+    state.ledger = await mine(state.ledger, {
+      message,
+      identity: stripIdentityKey(await exportPublicKeyAsPem(state.publicKey)),
+    });
     await runHooks("onCommit", state);
     await runHooks("onUpdate", state);
     return state.ledger;
@@ -240,6 +246,7 @@ export default function useLedger(
     const lookup: {
       [key: string]: any;
     } = {};
+
     for (let i = 0; i < state.ledger.pending_records.length; i++) {
       const record: IRecord = state.ledger.pending_records[i];
       if (!record.collection || !record.data) return;

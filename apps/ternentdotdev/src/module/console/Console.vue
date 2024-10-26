@@ -29,7 +29,7 @@ watch(dragPosition, (value) => {
 </script>
 <template>
   <section
-    class="flex flex-col z-20 relative"
+    class="flex flex-col z-40 relative"
     :class="{
       'h-8': !isBottomPanelExpanded,
       'transition-all': !isDragging,
@@ -42,7 +42,7 @@ watch(dragPosition, (value) => {
       v-model:position="dragPosition"
       v-model:dragging="isDragging"
       :container="container"
-      type="accent"
+      type="primary"
     />
 
     <!-- Panel Control + Indicator -->

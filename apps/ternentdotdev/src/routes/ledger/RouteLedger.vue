@@ -1,6 +1,7 @@
 <script setup>
-import { shallowRef, computed } from "vue";
-import { SResizablePanels, SIndicator, STabs } from "ternent-ui/components";
+import { shallowRef, computed, watch } from "vue";
+import { useElementBounding } from "@vueuse/core";
+import { SResizablePanels, SIndicator } from "ternent-ui/components";
 import { useBreadcrumbs } from "../../module/breadcrumbs/useBreadcrumbs";
 
 import { useLedger } from "../../module/ledger/useLedger";
@@ -8,6 +9,8 @@ import Worker from "./worker?worker";
 import Console from "@/module/console/Console.vue";
 import LedgerPendingRecords from "@/module/concords/LedgerPendingRecords.vue";
 import LedgerCommitHistory from "@/module/concords/LedgerCommitHistory.vue";
+import LedgerCommit from "@/module/concords/LedgerCommit.vue";
+import LedgerEncrypt from "@/module/concords/LedgerEncrypt.vue";
 import { useLocalStorage } from "@vueuse/core";
 
 new Worker();
@@ -16,6 +19,8 @@ const { ledger, getCollections } = useLedger();
 
 const contentArea = shallowRef();
 const contentWidth = shallowRef(600);
+
+const { width: viewWidth } = useElementBounding(contentArea);
 
 useBreadcrumbs({
   path: "/ledger",
@@ -34,35 +39,60 @@ const tabs = computed(() => [
     tab: "history",
   },
 ]);
+const subTabs = computed(() => [
+  {
+    title: "Commit",
+    tab: "commit",
+  },
+  {
+    title: "Encrypt",
+    tab: "encrypt",
+  },
+]);
 
 const activeTab = useLocalStorage(
   "ternentdotdev/RouteLedger/consoleTab",
-  "logs"
+  "pending"
 );
+const activeSubTab = useLocalStorage(
+  "ternentdotdev/RouteLedger/consoleSubTab",
+  "commit"
+);
+const activeLastTab = useLocalStorage(
+  "ternentdotdev/RouteLedger/consoleLastTab",
+  "pending"
+);
+
+watch(activeTab, () => {
+  activeLastTab.value = activeTab.value;
+});
+watch(activeSubTab, () => {
+  activeLastTab.value = activeSubTab.value;
+});
 </script>
 <template>
   <div
     ref="contentArea"
     class="flex flex-col flex-1 relative max-w-full overflow-hidden"
   >
-    <div class="flex-1 flex w-full overflow-hidden">
+    <div class="flex-1 flex w-full overflow-hidden relative">
       <RouterView />
     </div>
     <!-- Bottom expandable panel -->
     <Console :container="contentArea">
       <template #panel-control>
         <SIndicator>{{ pendingRecords }}</SIndicator>
-        <span class="text-xs ml-2">pending records</span>
       </template>
       <SResizablePanels
+        v-if="viewWidth > 1250"
         v-model:contentWidth="contentWidth"
-        :minContentWidth="550"
-        :minSidebarWidth="550"
+        :minContentWidth="750"
+        :minSidebarWidth="450"
         identifier="RouteLedgerConsole"
-        type="secondary"
+        type="primary"
       >
         <div class="flex flex-col flex-1 bg-base-200 overflow-hidden">
-          <div role="tablist" class="tabs tabs-lifted mt-2 mx-4">
+          <div role="tablist" class="tabs tabs-lifted mt-2 ml-4 mr-8">
             <a
               v-for="tab in tabs"
               :key="tab.tab"
@@ -73,14 +103,46 @@ const activeTab = useLocalStorage(
               >{{ tab.title }}</a
             >
           </div>
-          <TransitionGroup>
-            <LedgerPendingRecords v-if="activeTab === 'pending'" />
-            <LedgerCommitHistory v-if="activeTab === 'history'" />
-          </TransitionGroup>
+
+          <LedgerPendingRecords v-if="activeTab === 'pending'" />
+          <LedgerCommitHistory v-if="activeTab === 'history'" />
+        </div>
+        <template #sidebar>
+          <div class="flex flex-col flex-1 bg-base-200 overflow-hidden">
+            <div role="tablist" class="tabs tabs-lifted mt-2 ml-4 mr-8">
+              <a
+                v-for="tab in subTabs"
+                :key="tab.tab"
+                @click="activeSubTab = tab.tab"
+                role="tab"
+                class="tab"
+                :class="{ 'tab-active': activeSubTab === tab.tab }"
+                >{{ tab.title }}</a
+              >
+            </div>
+            <LedgerCommit v-if="activeSubTab === 'commit'" />
+            <LedgerEncrypt v-if="activeSubTab === 'encrypt'" />
+          </div>
+        </template>
+      </SResizablePanels>
+      <div v-else class="flex flex-col flex-1 bg-base-200 overflow-hidden">
+        <div role="tablist" class="tabs tabs-lifted mt-2 ml-4 mr-8">
+          <a
+            v-for="tab in [...tabs, ...subTabs]"
+            :key="tab.tab"
+            @click="activeLastTab = tab.tab"
+            role="tab"
+            class="tab"
+            :class="{ 'tab-active': activeLastTab === tab.tab }"
+            >{{ tab.title }}</a
+          >
         </div>
 
-        <template #sidebar> </template>
-      </SResizablePanels>
+        <LedgerPendingRecords v-if="activeLastTab === 'pending'" />
+        <LedgerCommitHistory v-if="activeLastTab === 'history'" />
+        <LedgerCommit v-if="activeLastTab === 'commit'" />
+        <LedgerEncrypt v-if="activeLastTab === 'encrypt'" />
+      </div>
     </Console>
   </div>
 </template>

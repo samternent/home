@@ -76,8 +76,8 @@ export async function mine(ledger: ILedger, extra: Object): Promise<ILedger> {
   const lastBlock = ledger.chain[ledger.chain.length - 1];
 
   const newBlock = createBlock(ledger.pending_records, lastBlock.hash, extra);
-  const { proof, nonce } = await proofOfWork(newBlock, ledger.difficulty);
-  const mined = await addBlock(ledger, { ...newBlock, nonce }, proof);
+  const { proof } = await proofOfWork(newBlock, ledger.difficulty);
+  const mined = await addBlock(ledger, { ...newBlock }, proof);
 
   return {
     ...mined,
@@ -134,21 +134,16 @@ function createBlock(
   };
 }
 
-async function createGenesisBlock(record: IRecord): Promise<IBlock> {
-  const timestamp = Date.now();
-  const hash = await hashData({ ...record, timestamp });
-  const block = createBlock(
-    [
-      {
-        ...record,
-        timestamp,
-      },
-    ],
-    "0"
-  );
+async function createGenesisBlock(
+  record: IRecord,
+  extra: Object = {}
+): Promise<IBlock> {
+  const hash = await hashData(record);
+  const block = createBlock([record], "0");
   return {
     ...block,
     hash,
+    ...extra,
   };
 }
 
@@ -169,9 +164,10 @@ export function consensus(ledgers: Array<ILedger>): ILedger {
 
 export async function createLedger(
   record: IRecord,
-  difficulty: number
+  difficulty: number,
+  extra: Object = {}
 ): Promise<ILedger> {
-  const genesisBlock = await createGenesisBlock(record);
+  const genesisBlock = await createGenesisBlock(record, extra);
 
   return {
     difficulty,

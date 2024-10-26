@@ -210,7 +210,7 @@ const bottomItems = computed(() => [
 <template>
   <div
     v-if="showSidebar"
-    class="flex flex-col bg-base-200 border-r items-center justify-between duration-100"
+    class="flex flex-col bg-base-200 border-r border-base-300 items-center justify-between duration-100"
     style="transition: width 200ms"
     :class="{
       '!w-20 relative': collapsedSideBar,

@@ -28,11 +28,14 @@ onMounted(async () => {
   if (ledgerStorage.value) {
     await load(JSON.parse(ledgerStorage.value));
   } else {
-    await create({
-      identity: stripIdentityKey(publicKeyIdentityPEM.value),
-      encryption: publicKeyEncryption.value,
-      id: generateId(),
-    });
+    await create(
+      {
+        identity: stripIdentityKey(publicKeyIdentityPEM.value),
+        encryption: publicKeyEncryption.value,
+        id: generateId(),
+      },
+      0
+    );
   }
 });
 </script>
