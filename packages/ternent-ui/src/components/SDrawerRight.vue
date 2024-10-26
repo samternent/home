@@ -36,11 +36,10 @@ const width = computed(() => {
 });
 </script>
 <template>
-  <Transition name="slide-fade">
+  <Transition name="fade" appear>
     <div
       v-if="isOpen"
       class="absolute top-0 right-0 z-30 bg-base-100 border-l border-base-300 shadow-2xl bottom-0 min-w-[450px] p-4"
-      :style="{ width }"
     >
       <div class="flex items-center justify-between">
         <h2 class="text-lg font-bold">{{ title }}</h2>
@@ -75,17 +74,11 @@ const width = computed(() => {
   </Transition>
 </template>
 <style scoped>
-/* Enter and leave animations can use different */
-/* durations and timing functions.              */
-.slide-fade-enter-active {
-  transition: all 0.3s ease;
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
 }
-.slide-fade-leave-active {
-  transition: all 0.1s cubic-bezier(1, 0.5, 0.8, 1);
-}
-.slide-fade-enter, .slide-fade-leave-to
-/* .slide-fade-leave-active below version 2.1.8 */ {
-  transform: translateX(10px);
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
 }
 </style>

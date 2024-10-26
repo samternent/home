@@ -1,9 +1,9 @@
 <script setup>
 import { computed } from "vue";
 import { useLedger } from "../ledger/useLedger";
-import LedgerRecordRow from "../ledger/LedgerRecordRow.vue";
+import LedgerRecords from "../ledger/LedgerRecords.vue";
 
-const { ledger } = useLedger();
+const { ledger, api } = useLedger();
 
 const records = computed(() => {
   return [...(ledger.value?.pending_records || [])].reverse();
@@ -13,7 +13,12 @@ const records = computed(() => {
   <div
     class="flex flex-col flex-1 overflow-y-scroll mx-4 bg-base-100 border-x border-base-300"
   >
-    <LedgerRecordRow v-if="records.length" :records="records" />
+    <LedgerRecords
+      v-if="records.length"
+      :records="records"
+      :canRemove="true"
+      @removeRecord="api.removePendingRecord"
+    />
     <div v-else class="flex flex-1 items-center justify-center">
       No pending records
     </div>

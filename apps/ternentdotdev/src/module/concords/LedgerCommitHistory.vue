@@ -5,7 +5,7 @@ import { DateTime } from "luxon";
 import { importPublicKeyFromPem, verifyJson } from "concords-identity";
 import { useLedger } from "../ledger/useLedger";
 import IdentityAvatar from "../identity/IdentityAvatar.vue";
-import LedgerRecordRow from "../ledger/LedgerRecordRow.vue";
+import LedgerRecords from "../ledger/LedgerRecords.vue";
 
 import { SButton } from "ternent-ui/components";
 
@@ -152,7 +152,7 @@ async function verifyBlock(block) {
           v-if="expandedMap[block.hash]"
           class="w-full bg-base-200 border border-base-300 my-2"
         >
-          <LedgerRecordRow :records="block.records" />
+          <LedgerRecords :records="block.records" />
         </div>
       </Transition>
     </div>

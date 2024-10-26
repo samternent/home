@@ -18,6 +18,7 @@ const classMap = {
   primary: "btn-primary",
   secondary: "btn-secondary",
   accent: "btn-accent",
+  error: "btn-error",
 };
 </script>
 <template>

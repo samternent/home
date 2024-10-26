@@ -2,13 +2,20 @@
 import { DateTime } from "luxon";
 import IdentityAvatar from "../identity/IdentityAvatar.vue";
 import VerifyRowCell from "../table/VerifyRowCell.vue";
+import { SButton } from "ternent-ui/components";
 
 defineProps({
   records: {
     type: Array,
     required: true,
   },
+  canRemove: {
+    type: Boolean,
+    default: false,
+  },
 });
+
+defineEmits(["removeRecord"]);
 
 function formatTime(time) {
   const date = DateTime.fromMillis(time);
@@ -24,6 +31,7 @@ function formatTime(time) {
         <th>Timestamp</th>
         <th>Verified</th>
         <th>Data</th>
+        <th v-if="canRemove">Remove</th>
       </tr>
     </thead>
     <tbody>
@@ -67,6 +75,29 @@ function formatTime(time) {
               </div>
             </div>
           </div>
+        </td>
+        <td v-if="canRemove">
+          <SButton
+            class="ma-2 btn-sm"
+            variant="error"
+            color="red-lighten-2"
+            @click="$emit('removeRecord', record)"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-6 h-6 text-error"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </SButton>
         </td>
       </tr>
     </tbody>
