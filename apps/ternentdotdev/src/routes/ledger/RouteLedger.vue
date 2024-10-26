@@ -11,6 +11,7 @@ import LedgerPendingRecords from "@/module/concords/LedgerPendingRecords.vue";
 import LedgerCommitHistory from "@/module/concords/LedgerCommitHistory.vue";
 import LedgerCommit from "@/module/concords/LedgerCommit.vue";
 import LedgerEncrypt from "@/module/concords/LedgerEncrypt.vue";
+import LedgerStorage from "@/module/concords/LedgerStorage.vue";
 import { useLocalStorage } from "@vueuse/core";
 
 new Worker();
@@ -45,8 +46,8 @@ const subTabs = computed(() => [
     tab: "commit",
   },
   {
-    title: "Encrypt",
-    tab: "encrypt",
+    title: "Storage",
+    tab: "storage",
   },
 ]);
 
@@ -122,6 +123,7 @@ watch(activeSubTab, () => {
             </div>
             <LedgerCommit v-if="activeSubTab === 'commit'" />
             <LedgerEncrypt v-if="activeSubTab === 'encrypt'" />
+            <LedgerStorage v-if="activeSubTab === 'storage'" />
           </div>
         </template>
       </SResizablePanels>
@@ -142,6 +144,7 @@ watch(activeSubTab, () => {
         <LedgerCommitHistory v-if="activeLastTab === 'history'" />
         <LedgerCommit v-if="activeLastTab === 'commit'" />
         <LedgerEncrypt v-if="activeLastTab === 'encrypt'" />
+        <LedgerStorage v-if="activeLastTab === 'storage'" />
       </div>
     </Console>
   </div>

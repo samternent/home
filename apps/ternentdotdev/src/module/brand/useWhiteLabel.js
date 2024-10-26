@@ -24,7 +24,7 @@ export function provideWhiteLabel(app) {
       ...whiteLabel.value,
       name: ["ternent", "dot", "dev"],
       tag: "Hand-crafted Software. Birmingham, UK.",
-      themeName: "azureBloom",
+      themeName: "lofi",
       domain: "ternent.dev",
     };
   }
@@ -33,7 +33,7 @@ export function provideWhiteLabel(app) {
       ...whiteLabel.value,
       name: ["concords", "ledger", ""],
       tag: "Encrypted, storage agnostic & tamper-proof.",
-      themeName: "corporateProfessional",
+      themeName: "cyberpunk",
       domain: "concords.app",
     };
   }
