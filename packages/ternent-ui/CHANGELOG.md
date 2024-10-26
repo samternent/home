@@ -1,5 +1,13 @@
 # ternent-ui
 
+## 0.1.15
+
+### Patch Changes
+
+- [#375](https://github.com/samternent/home/pull/375) [`4dbe5c228213d174b670a3faf544b89c51eb4e71`](https://github.com/samternent/home/commit/4dbe5c228213d174b670a3faf544b89c51eb4e71) Thanks [@samternent](https://github.com/samternent)! - Updates SResizers
+
+- [#375](https://github.com/samternent/home/pull/375) [`906c84e95a7b82f6e124ba04a680990c3b1df14a`](https://github.com/samternent/home/commit/906c84e95a7b82f6e124ba04a680990c3b1df14a) Thanks [@samternent](https://github.com/samternent)! - Adds new themes
+
 ## 0.1.14
 
 ### Patch Changes
