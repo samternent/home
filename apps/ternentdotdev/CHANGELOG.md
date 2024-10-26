@@ -1,5 +1,13 @@
 # ternentdotdev
 
+## 0.3.11
+
+### Patch Changes
+
+- [`7215fc8ae2b57e94d0476891b0574ebdd5c554ce`](https://github.com/samternent/home/commit/7215fc8ae2b57e94d0476891b0574ebdd5c554ce) Thanks [@samternent](https://github.com/samternent)! - Adds columns and task creation with titles
+
+- [`ae71f4feada66965f765974371359b74ddb5a491`](https://github.com/samternent/home/commit/ae71f4feada66965f765974371359b74ddb5a491) Thanks [@samternent](https://github.com/samternent)! - Fix remove button
+
 ## 0.3.10
 
 ### Patch Changes
