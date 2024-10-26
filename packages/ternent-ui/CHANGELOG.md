@@ -1,5 +1,11 @@
 # ternent-ui
 
+## 0.1.16
+
+### Patch Changes
+
+- [`5a88278372830d5f24e7fcc12cf430560f93ad13`](https://github.com/samternent/home/commit/5a88278372830d5f24e7fcc12cf430560f93ad13) Thanks [@samternent](https://github.com/samternent)! - Updates ledger and tabs
+
 ## 0.1.15
 
 ### Patch Changes
