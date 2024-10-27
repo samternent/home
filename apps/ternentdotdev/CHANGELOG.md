@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.3.14
+
+### Patch Changes
+
+- [`e99383cab786a7bb9d27350eab203efc1cfb7591`](https://github.com/samternent/home/commit/e99383cab786a7bb9d27350eab203efc1cfb7591) Thanks [@samternent](https://github.com/samternent)! - Adds ledger download and compression
+
 ## 0.3.13
 
 ### Patch Changes
