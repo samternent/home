@@ -60,6 +60,8 @@ export function provideLedger() {
   watch(
     ledger,
     async () => {
+      if (!ledger.value) return;
+
       const stream = new Blob([JSON.stringify(ledger.value)], {
         type: "application/gzip",
       }).stream();

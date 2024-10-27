@@ -6,8 +6,8 @@ import { useLedger } from "../../module/ledger/useLedger";
 import IdentityAvatar from "@/module/identity/IdentityAvatar.vue";
 
 useBreadcrumbs({
-  path: "/l/permissions",
-  name: "Permissions",
+  path: "/l/users",
+  name: "Users",
 });
 
 const { getCollection } = useLedger();

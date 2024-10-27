@@ -29,7 +29,7 @@ useBreadcrumbs({
   name: "Ledger",
 });
 
-const pendingRecords = computed(() => ledger.value.pending_records.length);
+const pendingRecords = computed(() => ledger.value?.pending_records.length);
 
 const tabs = computed(() => [
   {

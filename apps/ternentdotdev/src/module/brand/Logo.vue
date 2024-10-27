@@ -12,6 +12,9 @@ const themeColors = computed(() => ({
 }));
 
 const colors = computed(() => {
+  if (!themeColors.value.primary || !themeColors.value.secondary) {
+    return null;
+  }
   const primaryColor = new Color(themeColors.value.primary);
   const secondaryColor = new Color(themeColors.value.secondary);
 
@@ -54,6 +57,7 @@ const colors = computed(() => {
 </script>
 <template>
   <svg
+    v-if="colors"
     data-v-0e73e694=""
     xmlns="http://www.w3.org/2000/svg"
     xmlns:xlink="http://www.w3.org/1999/xlink"
