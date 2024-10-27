@@ -12,6 +12,10 @@ export const ledgerRoutes = [
         component: () => import("./RouteLedgerPermissions.vue"),
       },
       {
+        path: "users",
+        component: () => import("./RouteLedgerUsers.vue"),
+      },
+      {
         path: ":sheetName",
         component: () => import("./RouteLedgerSheet.vue"),
         props: true,

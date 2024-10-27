@@ -28,38 +28,7 @@ export interface IBlock {
 export interface ILedger {
   chain: Array<IBlock>;
   pending_records: Array<IRecord>;
-  difficulty: number;
   id: string;
-}
-
-async function proofOfWork(block: IBlock, difficulty: number): Promise<IProof> {
-  let nonce = 0;
-  const findHash = async (block: IBlock) => {
-    let hash: string = await hashData(block);
-    if (hash.substring(0, difficulty) !== Array(difficulty + 1).join("0")) {
-      nonce = nonce + 1;
-      hash = await findHash({
-        ...block,
-        nonce,
-      });
-    }
-    return hash;
-  };
-  const hash = await findHash(block);
-
-  return { proof: hash, nonce };
-}
-
-export async function isValidProof(
-  block: IBlock,
-  hash: string,
-  difficulty: number
-): Promise<boolean> {
-  const blockHash = await hashData(block);
-  return (
-    hash.substring(0, difficulty) === Array(difficulty + 1).join("0") &&
-    hash === blockHash
-  );
 }
 
 export function addRecord(record: IRecord, ledger: ILedger): ILedger {
@@ -76,7 +45,7 @@ export async function mine(ledger: ILedger, extra: Object): Promise<ILedger> {
   const lastBlock = ledger.chain[ledger.chain.length - 1];
 
   const newBlock = createBlock(ledger.pending_records, lastBlock.hash, extra);
-  const { proof } = await proofOfWork(newBlock, ledger.difficulty);
+  const proof = await hashData(newBlock);
   const mined = await addBlock(ledger, { ...newBlock }, proof);
 
   return {
@@ -101,10 +70,6 @@ function addBlock(ledger: ILedger, block: IBlock, proof: string): ILedger {
   const lastBlock = ledger.chain[ledger.chain.length - 1];
 
   if (lastBlock.hash !== block.last_hash) {
-    return ledger;
-  }
-
-  if (!isValidProof(block, proof, ledger.difficulty)) {
     return ledger;
   }
 
@@ -164,13 +129,11 @@ export function consensus(ledgers: Array<ILedger>): ILedger {
 
 export async function createLedger(
   record: IRecord,
-  difficulty: number,
   extra: Object = {}
 ): Promise<ILedger> {
   const genesisBlock = await createGenesisBlock(record, extra);
 
   return {
-    difficulty,
     pending_records: [],
     chain: [genesisBlock],
     id: genesisBlock.hash || "0",

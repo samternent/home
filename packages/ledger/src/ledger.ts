@@ -78,7 +78,7 @@ export default function useLedger(
     await runHooks("onAuth");
   }
 
-  async function create(data = {}, difficulty = 0) {
+  async function create(data = {}) {
     if (!state.publicKey || !state.signingKey) return;
 
     const timestamp = Date.now();
@@ -97,7 +97,7 @@ export default function useLedger(
 
     const signedRecord = { signature, ...record };
 
-    state.ledger = await createLedger(signedRecord, difficulty, {
+    state.ledger = await createLedger(signedRecord, {
       identity: stripIdentityKey(await exportPublicKeyAsPem(state.publicKey)),
     });
     await runHooks("onAdd", signedRecord);

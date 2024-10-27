@@ -1,7 +1,8 @@
 <script setup>
 import { shallowRef, computed, watch } from "vue";
+
 import { useElementBounding } from "@vueuse/core";
-import { SResizablePanels, SIndicator } from "ternent-ui/components";
+import { SResizablePanels, SIndicator, STabs } from "ternent-ui/components";
 import { useBreadcrumbs } from "../../module/breadcrumbs/useBreadcrumbs";
 
 import { useLedger } from "../../module/ledger/useLedger";
@@ -16,7 +17,7 @@ import { useLocalStorage } from "@vueuse/core";
 
 new Worker();
 
-const { ledger, getCollections } = useLedger();
+const { ledger } = useLedger();
 
 const contentArea = shallowRef();
 const contentWidth = shallowRef(600);
@@ -70,12 +71,32 @@ watch(activeTab, () => {
 watch(activeSubTab, () => {
   activeLastTab.value = activeSubTab.value;
 });
+
+const navTabs = computed(() => {
+  return [
+    {
+      title: "Tasks",
+      path: `/ledger/tasks`,
+    },
+    {
+      title: "Permissions",
+      path: `/ledger/permissions`,
+    },
+    {
+      title: "Users",
+      path: `/ledger/users`,
+    },
+  ];
+});
 </script>
 <template>
   <div
     ref="contentArea"
     class="flex flex-col flex-1 relative max-w-full overflow-hidden"
   >
+    <nav class="py-2 text-sm">
+      <STabs :items="navTabs" :path="$route.path" :exact="true" />
+    </nav>
     <div class="flex-1 flex w-full overflow-hidden relative">
       <RouterView />
     </div>
