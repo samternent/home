@@ -1,5 +1,17 @@
 # ternentdotdev
 
+## 0.3.13
+
+### Patch Changes
+
+- [`078d2f8585fed6fa13f587217c5cfbaa45357793`](https://github.com/samternent/home/commit/078d2f8585fed6fa13f587217c5cfbaa45357793) Thanks [@samternent](https://github.com/samternent)! - Remove proof of work, update some tabs and add new routes
+
+- [`5d223ce100ebae18eb580d7b6d6a005c74e68bfe`](https://github.com/samternent/home/commit/5d223ce100ebae18eb580d7b6d6a005c74e68bfe) Thanks [@samternent](https://github.com/samternent)! - Update font policy
+
+- Updated dependencies [[`078d2f8585fed6fa13f587217c5cfbaa45357793`](https://github.com/samternent/home/commit/078d2f8585fed6fa13f587217c5cfbaa45357793)]:
+  - ternent-ui@0.1.17
+  - concords-ledger@1.0.16
+
 ## 0.3.12
 
 ### Patch Changes

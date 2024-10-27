@@ -1,5 +1,11 @@
 # concords-proof-of-work
 
+## 0.0.10
+
+### Patch Changes
+
+- [`078d2f8585fed6fa13f587217c5cfbaa45357793`](https://github.com/samternent/home/commit/078d2f8585fed6fa13f587217c5cfbaa45357793) Thanks [@samternent](https://github.com/samternent)! - Remove proof of work, update some tabs and add new routes
+
 ## 0.0.9
 
 ### Patch Changes
