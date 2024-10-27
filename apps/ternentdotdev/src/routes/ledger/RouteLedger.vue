@@ -17,7 +17,7 @@ import { useLocalStorage } from "@vueuse/core";
 
 new Worker();
 
-const { ledger } = useLedger();
+const { ledger, compressedBlob } = useLedger();
 
 const contentArea = shallowRef();
 const contentWidth = shallowRef(600);
@@ -88,6 +88,35 @@ const navTabs = computed(() => {
     },
   ];
 });
+
+function formatBytes(bytes, decimals = 2) {
+  if (!+bytes) return "0 Bytes";
+
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = [
+    "Bytes",
+    "KiB",
+    "MiB",
+    "GiB",
+    "TiB",
+    "PiB",
+    "EiB",
+    "ZiB",
+    "YiB",
+  ];
+
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+}
+
+const sizeIndicator = computed(() => {
+  const originalSize = formatBytes(JSON.stringify(ledger.value).length);
+  const compressedSize = formatBytes(compressedBlob.value.size);
+
+  return `${originalSize} / ${compressedSize} (gz)`;
+});
 </script>
 <template>
   <div
@@ -104,6 +133,7 @@ const navTabs = computed(() => {
     <Console :container="contentArea">
       <template #panel-control>
         <SIndicator>{{ pendingRecords }}</SIndicator>
+        <SIndicator type="ghost">{{ sizeIndicator }}</SIndicator>
       </template>
       <SResizablePanels
         v-if="viewWidth > 1250"

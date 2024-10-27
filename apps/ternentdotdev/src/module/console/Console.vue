@@ -49,7 +49,7 @@ watch(dragPosition, (value) => {
     <div
       class="flex justify-between px-2 h-8 border-b border-base-300 bg-base-200 relative z-50 py-1"
     >
-      <div class="flex-1 items-center flex">
+      <div class="flex-1 items-center flex justify-between">
         <slot name="panel-control" />
       </div>
 

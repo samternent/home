@@ -1,8 +1,8 @@
 <script setup>
 import { provideEncryption } from "./useEncryption";
 
-provideEncryption();
+const { isReady } = provideEncryption();
 </script>
 <template>
-  <slot />
+  <slot v-if="isReady" />
 </template>

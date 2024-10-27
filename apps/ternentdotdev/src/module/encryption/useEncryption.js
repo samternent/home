@@ -8,7 +8,7 @@ function Encryption() {
   const publicKey = useLocalStorage("concords/encrypt/publicKey", "");
   const privateKey = useLocalStorage("concords/encrypt/privateKey", "");
 
-  const ready = shallowRef();
+  const isReady = shallowRef();
 
   async function init() {
     if (!publicKey.value || !privateKey.value) {
@@ -18,7 +18,7 @@ function Encryption() {
       privateKey.value = _privateEncryption;
     }
 
-    ready.value = true;
+    isReady.value = true;
   }
 
   init();
@@ -26,7 +26,7 @@ function Encryption() {
   return {
     publicKey,
     privateKey,
-    ready,
+    isReady,
   };
 }
 

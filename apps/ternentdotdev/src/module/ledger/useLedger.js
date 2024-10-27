@@ -1,4 +1,4 @@
-import { shallowRef, provide, inject, watchEffect } from "vue";
+import { shallowRef, provide, inject, watch } from "vue";
 import { createLedger, useLokiPlugin } from "concords-ledger";
 import {
   stripIdentityKey,
@@ -53,6 +53,24 @@ export function provideLedger() {
       ],
     },
     0
+  );
+
+  const compressedBlob = shallowRef();
+
+  watch(
+    ledger,
+    async () => {
+      const stream = new Blob([JSON.stringify(ledger.value)], {
+        type: "application/gzip",
+      }).stream();
+      const compressedReadableStream = stream.pipeThrough(
+        new CompressionStream("gzip")
+      );
+      compressedBlob.value = await new Response(
+        compressedReadableStream
+      ).blob();
+    },
+    { immediate: true }
   );
 
   async function createPermission(title) {
@@ -143,6 +161,7 @@ export function provideLedger() {
     db,
     ledger,
     api: ledgerApi,
+    compressedBlob,
     createPermission,
     addUserPermission,
     addItem,

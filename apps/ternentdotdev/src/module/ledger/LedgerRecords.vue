@@ -65,13 +65,7 @@ function formatTime(time) {
                 :key="key"
                 class="w-32 truncate"
               >
-                <IdentityAvatar
-                  v-if="key === 'identity'"
-                  :identity="record.data[key]"
-                  size="xs"
-                  class="mr-2"
-                />
-                <span v-else class="italic">{{ record.data[key] }}</span>
+                <span class="italic">{{ record.data[key] }}</span>
               </div>
             </div>
           </div>
