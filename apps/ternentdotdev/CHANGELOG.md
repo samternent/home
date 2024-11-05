@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.3.15
+
+### Patch Changes
+
+- [`927beeca1adb2f215a1576e8502459ccbecc1c44`](https://github.com/samternent/home/commit/927beeca1adb2f215a1576e8502459ccbecc1c44) Thanks [@samternent](https://github.com/samternent)! - Adds encryption and fix null issues
+
 ## 0.3.14
 
 ### Patch Changes
