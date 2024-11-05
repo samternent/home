@@ -1,60 +1,23 @@
 <script setup>
-const props = defineProps({
-  items: {
-    type: Array,
-    required: true,
-  },
-  path: {
-    type: String,
-    required: true,
-  },
-  exact: {
-    type: Boolean,
-    default: false,
-  },
-});
+import { shallowRef } from "vue";
+import { onClickOutside } from "@vueuse/core";
 
-function isActiveLink(t) {
-  return new RegExp(`${t.path}*`, "g").test(props.path);
-}
-function isExactActiveLink(t) {
-  return new RegExp(`^${t.path}$`, "g").test(props.path);
-}
+const dropdownRef = shallowRef();
+const showMenu = shallowRef(false);
+
+onClickOutside(dropdownRef, () => {
+  showMenu.value = false;
+});
 </script>
 <template>
-  <div class="dropdown dropdown-end">
-    <div tabindex="0" role="button" class="btn m-1 btn-ghost btn-sm">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke-width="1.5"
-        stroke="currentColor"
-        data-slot="icon"
-        class="w-6 h-6"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-        />
-      </svg>
-    </div>
-    <ul
-      tabindex="0"
-      class="dropdown-content z-[1] menu p-2 shadow bg-base-200 rounded-box w-52"
+  <div class="flex relative" ref="dropdownRef">
+    <slot name="activator" :showMenu="() => (showMenu = true)" />
+
+    <div
+      v-if="showMenu"
+      class="absolute bg-base-100 z-20 right-0 top-12 flex flex-col overflow-hidden text-left shadow-lg w-64"
     >
-      <li v-for="(item, i) in items" :key="`dropdown_${i}`">
-        <RouterLink
-          :to="item.path"
-          :class="{
-            '!text-primary':
-              (!exact && isActiveLink(item)) ||
-              (exact && isExactActiveLink(item)),
-          }"
-          >{{ item.title }}</RouterLink
-        >
-      </li>
-    </ul>
+      <slot />
+    </div>
   </div>
 </template>

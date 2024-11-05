@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from "vue";
-import SDropdown from "./SDropdown.vue";
+// import SDropdown from "./SDropdown.vue";
 import STabs from "./STabs.vue";
 import { breakpointsTailwind, useBreakpoints } from "@vueuse/core";
 
@@ -49,7 +49,6 @@ const currentPathTitle = computed(
       class="flex w-full justify-between flex-1 items-center"
     >
       <span class="px-4">{{ currentPathTitle }}</span>
-      <SDropdown :items="items" :path="path" :exact="true" class="mx-2" />
     </div>
   </div>
 </template>

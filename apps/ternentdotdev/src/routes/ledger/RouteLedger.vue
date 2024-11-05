@@ -123,9 +123,30 @@ const sizeIndicator = computed(() => {
     ref="contentArea"
     class="flex flex-col flex-1 relative max-w-full overflow-hidden"
   >
-    <nav class="py-2 text-sm">
+    <nav
+      class="text-sm flex items-center justify-between border-b border-base-300 pt-2"
+    >
       <STabs :items="navTabs" :path="$route.path" :exact="true" />
     </nav>
+    <section class="text-sm flex items-center justify-between p-2">
+      <div></div>
+      <label class="input input-bordered input-sm flex items-center gap-2">
+        <input type="text" class="grow" placeholder="Search" />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 16 16"
+          fill="currentColor"
+          class="h-4 w-4 opacity-70"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </label>
+    </section>
+
     <div class="flex-1 flex w-full overflow-hidden relative">
       <RouterView />
     </div>
@@ -136,10 +157,10 @@ const sizeIndicator = computed(() => {
         <SIndicator type="ghost">{{ sizeIndicator }}</SIndicator>
       </template>
       <SResizablePanels
-        v-if="viewWidth > 1250"
+        v-if="viewWidth > 1400"
         v-model:contentWidth="contentWidth"
         :minContentWidth="750"
-        :minSidebarWidth="450"
+        :minSidebarWidth="600"
         identifier="RouteLedgerConsole"
         type="primary"
       >

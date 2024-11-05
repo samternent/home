@@ -6,7 +6,7 @@ import {
   useBreakpoints,
 } from "@vueuse/core";
 import ternentUIThemes from "ternent-ui/themes";
-import { SBrandHeader, SBreadcrumbs, SButton } from "ternent-ui/components";
+import { SDropdown, SBreadcrumbs, SButton } from "ternent-ui/components";
 import { useWhiteLabel } from "@/module/brand/useWhiteLabel";
 import { useAppShell } from "@/module/app-shell/useAppShell";
 import Logo from "@/module/brand/Logo.vue";
@@ -68,11 +68,17 @@ const { publicKeyPEM } = useIdentity();
       </div>
       <div class="w-1/3"></div>
       <div class="flex">
-        <SButton
-          class="btn btn-ghost btn-circle bg-base-300 btn-sm hover:scale-105"
-        >
-          <IdentityAvatar :identity="publicKeyPEM" size="xs" />
-        </SButton>
+        <SDropdown>
+          <template #activator="{ showMenu }">
+            <SButton
+              class="btn btn-ghost btn-circle bg-base-300 btn-sm hover:scale-105"
+              @click="showMenu"
+            >
+              <IdentityAvatar :identity="publicKeyPEM" size="xs" />
+            </SButton>
+          </template>
+          hiiiiii
+        </SDropdown>
       </div>
     </div>
     <AppLayout>

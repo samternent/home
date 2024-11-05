@@ -5,7 +5,7 @@ import { useBreadcrumbs } from "../../module/breadcrumbs/useBreadcrumbs";
 import { useLedger } from "../../module/ledger/useLedger";
 
 useBreadcrumbs({
-  path: "/l/permissions",
+  path: "/ledger/permissions",
   name: "Permissions",
 });
 
