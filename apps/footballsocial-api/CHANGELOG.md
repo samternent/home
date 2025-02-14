@@ -1,5 +1,11 @@
 # footballsocial-api
 
+## 0.3.4
+
+### Patch Changes
+
+- [`3745f43cc7006159694ad022983a058cd698f07d`](https://github.com/samternent/home/commit/3745f43cc7006159694ad022983a058cd698f07d) Thanks [@samternent](https://github.com/samternent)! - node version again
+
 ## 0.3.3
 
 ### Patch Changes
