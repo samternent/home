@@ -1,5 +1,11 @@
 # footballsocial
 
+## 0.15.14
+
+### Patch Changes
+
+- [`3a4a88ffa349a619056777a83000001e2bb0b789`](https://github.com/samternent/home/commit/3a4a88ffa349a619056777a83000001e2bb0b789) Thanks [@samternent](https://github.com/samternent)! - Update node version for corepack issue
+
 ## 0.15.13
 
 ### Patch Changes
