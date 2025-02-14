@@ -8,14 +8,6 @@
     "dev": "vite build --watch",
     "serve": "http-server ./dist -p 5001 --cors='*'"
   },
-  "exports": {
-    "./tailwind": "./src/style.js",
-    "./styles": "./dist/style.css",
-    "./tailwind.config": "./tailwind.config.js",
-    "./components": "./dist/components.js",
-    "./themes": "./dist/themes.js",
-    "./use": "./dist/use.js"
-  },
   "dependencies": {
     "@tailwindcss/typography": "^0.5.14",
     "@vueuse/core": "^10.11.1",

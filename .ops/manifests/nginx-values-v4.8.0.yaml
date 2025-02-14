@@ -14,7 +14,6 @@ controller:
       service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
       # Specify whether the DigitalOcean Load Balancer should pass encrypted data to backend droplets
       service.beta.kubernetes.io/do-loadbalancer-tls-passthrough: "true"
-      service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: 'true'
       service.beta.kubernetes.io/do-loadbalancer-hostname: "k8s.ternent.dev"
     #     # You can keep your existing LB when migrating to a new DOKS cluster, or when reinstalling AES
     #     kubernetes.digitalocean.com/load-balancer-id: "<YOUR_DO_LB_ID_HERE>"
@@ -45,7 +44,4 @@ controller:
   #         servicePort: "9090"
   #   prometheus.io/port: "10254"
   #   prometheus.io/scrape: "true"
-
-tcp:
-  "1935": "backend/ternent-api:1935"
 

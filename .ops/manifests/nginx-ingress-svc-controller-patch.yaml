@@ -1,5 +1,0 @@
-spec:
-  ports:
-    - nodePort: 31100
-      port: 1935
-      name: ternent-api

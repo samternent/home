@@ -21,5 +21,5 @@ RUN cp /usr/bin/ffmpeg ./
 
 EXPOSE 3000
 EXPOSE 3001
-EXPOSE 1935
+
 CMD [ "pnpm", "--filter", "ternent-api", "start" ]
