@@ -1,5 +1,11 @@
 # footballsocial-api
 
+## 0.3.6
+
+### Patch Changes
+
+- [`a25a6aca4782ca8c28d41fca398840cd03818cf8`](https://github.com/samternent/home/commit/a25a6aca4782ca8c28d41fca398840cd03818cf8) Thanks [@samternent](https://github.com/samternent)! - Update node version in dfocker
+
 ## 0.3.5
 
 ### Patch Changes
