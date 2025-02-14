@@ -22,9 +22,7 @@ const toPublish = [...appsToPublish, ...packagesToPublish];
 let i = 0;
 for (; i < toPublish.length; i++) {
   const { version, name } = (
-    await import(`${toPublish[i]}/package.json`, {
-      assert: { type: "json" },
-    })
+    await import(`${toPublish[i]}/package.json`, { with: { type: "json" } })
   ).default;
 
   const fullChangelog = shell
