@@ -11,6 +11,12 @@ interface ILedgerConfig {
   identity?: string;
 }
 
+/**
+ * ILedgerAPI interface - TODO: Add description
+ */
+/**
+ * ILedgerAPI interface definition
+ */
 export interface ILedgerAPI {
   auth: Function;
   load: Function;

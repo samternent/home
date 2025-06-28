@@ -5,6 +5,11 @@ interface IPoints {
   y: string | undefined;
 }
 
+/**
+ * importPublicKey function - TODO: Add description
+ * @param TODO - Add parameters
+ * @returns TODO - Add return type description
+ */
 export function importPublicKey(points: IPoints): Promise<CryptoKey> {
   return crypto.subtle.importKey(
     "jwk",
@@ -23,6 +28,15 @@ export function importPublicKey(points: IPoints): Promise<CryptoKey> {
   );
 }
 
+/**
+ * Imports publickeyfrompem
+ * @param key - The key parameter
+ * @returns Promise that resolves to CryptoKey
+ * @example
+ * ```typescript
+ * const result = await importPublicKeyFromPem("example");
+ * ```
+ */
 export async function importPublicKeyFromPem(key: string): Promise<CryptoKey> {
   const b64key = key
     .replace("-----BEGIN PUBLIC KEY-----", "")

@@ -5,6 +5,11 @@ interface IPoints {
   y: string;
 }
 
+/**
+ * importPrivateKey function - TODO: Add description
+ * @param TODO - Add parameters
+ * @returns TODO - Add return type description
+ */
 export function importPrivateKey(
   points: IPoints,
   secret: string
@@ -27,6 +32,15 @@ export function importPrivateKey(
   );
 }
 
+/**
+ * Imports privatekeyfrompem
+ * @param key - The key parameter
+ * @returns Promise that resolves to CryptoKey
+ * @example
+ * ```typescript
+ * const result = await importPrivateKeyFromPem("example");
+ * ```
+ */
 export async function importPrivateKeyFromPem(key: string): Promise<CryptoKey> {
   const b64key = key
     .replace("-----BEGIN PRIVATE KEY-----", "")

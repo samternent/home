@@ -31,6 +31,9 @@
     "build:ternent-api": "docker build -f ./apps/ternent-api/Dockerfile . -t samternent/ternent-api",
     "build:libs": "pnpm --filter ternent-ui --filter sams-game-kit --filter concords-utils --filter concords-proof-of-work --filter concords-identity --filter concords-encrypt --filter concords-ledger build",
     "build:ternent-ui": "pnpm --filter ternent-ui build",
+    "generate-docs": "node scripts/generate-docs.js",
+    "enhance-docs": "node scripts/enhance-docs.js",
+    "docs": "npm run generate-docs && npm run enhance-docs",
     "dev:docker": "cd .ops && docker-compose up -d"
   },
   "pnpm": {

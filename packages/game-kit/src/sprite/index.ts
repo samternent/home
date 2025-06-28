@@ -2,6 +2,11 @@ interface IStates {
   [key: string]: string;
 }
 
+/**
+ * createSprite function - TODO: Add description
+ * @param TODO - Add parameters
+ * @returns TODO - Add return type description
+ */
 export function createSprite(
   states: IStates,
   {
