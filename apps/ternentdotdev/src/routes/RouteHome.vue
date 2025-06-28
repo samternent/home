@@ -77,7 +77,61 @@ const { publicKeyPEM } = useIdentity();
               <IdentityAvatar :identity="publicKeyPEM" size="xs" />
             </SButton>
           </template>
-          hiiiiii
+          <div class="menu bg-base-100 w-64 rounded-box shadow-lg border border-base-300">
+            <div class="menu-title px-4 py-2 border-b border-base-300">
+              <div class="flex items-center gap-3">
+                <IdentityAvatar :identity="publicKeyPEM" size="sm" />
+                <div>
+                  <div class="font-semibold">Your Identity</div>
+                  <div class="text-xs text-base-content/60">Cryptographic Profile</div>
+                </div>
+              </div>
+            </div>
+            
+            <ul class="p-2">
+              <li>
+                <router-link to="/app/profile" class="flex items-center gap-3 p-3 rounded-lg hover:bg-base-200">
+                  <span class="text-lg">👤</span>
+                  <div>
+                    <div class="font-medium">View Profile</div>
+                    <div class="text-xs text-base-content/60">Identity & keys overview</div>
+                  </div>
+                </router-link>
+              </li>
+              
+              <li>
+                <router-link to="/app/profile/management" class="flex items-center gap-3 p-3 rounded-lg hover:bg-base-200">
+                  <span class="text-lg">👥</span>
+                  <div>
+                    <div class="font-medium">Manage Profile</div>
+                    <div class="text-xs text-base-content/60">Edit, share & backup</div>
+                  </div>
+                </router-link>
+              </li>
+              
+              <div class="divider my-1"></div>
+              
+              <li>
+                <router-link to="/app/settings" class="flex items-center gap-3 p-3 rounded-lg hover:bg-base-200">
+                  <span class="text-lg">⚙️</span>
+                  <div>
+                    <div class="font-medium">Settings</div>
+                    <div class="text-xs text-base-content/60">App preferences</div>
+                  </div>
+                </router-link>
+              </li>
+              
+              <li>
+                <router-link to="/solid" class="flex items-center gap-3 p-3 rounded-lg hover:bg-base-200">
+                  <span class="text-lg">🌐</span>
+                  <div>
+                    <div class="font-medium">Solid Pod</div>
+                    <div class="text-xs text-base-content/60">Connect & sync</div>
+                  </div>
+                </router-link>
+              </li>
+            </ul>
+          </div>
         </SDropdown>
       </div>
     </div>

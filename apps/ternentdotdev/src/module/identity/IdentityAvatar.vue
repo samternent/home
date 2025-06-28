@@ -38,6 +38,18 @@ const sizeVariant = computed(() => {
       grid: 25,
     };
   }
+  if (props.size === "xl") {
+    return {
+      classes: "w-48 h-48",
+      grid: 36,
+    };
+  }
+  
+  // Default fallback for unsupported sizes
+  return {
+    classes: "w-8 h-8",
+    grid: 9,
+  };
 });
 </script>
 <template>

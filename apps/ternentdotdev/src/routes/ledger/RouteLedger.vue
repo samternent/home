@@ -11,14 +11,13 @@ import Console from "@/module/console/Console.vue";
 import LedgerPendingRecords from "@/module/concords/LedgerPendingRecords.vue";
 import LedgerCommitHistory from "@/module/concords/LedgerCommitHistory.vue";
 import LedgerCommit from "@/module/concords/LedgerCommit.vue";
-import LedgerEncrypt from "@/module/concords/LedgerEncrypt.vue";
-import LedgerImport from "@/module/concords/LedgerImport.vue";
-import LedgerExport from "@/module/concords/LedgerExport.vue";
+import { useSolid } from "@/module/solid/useSolid";
 import { useLocalStorage } from "@vueuse/core";
 
 new Worker();
 
 const { ledger, compressedBlob } = useLedger();
+const { hasSolidSession, webId } = useSolid();
 
 const contentArea = shallowRef();
 const contentWidth = shallowRef(600);
@@ -46,14 +45,6 @@ const subTabs = computed(() => [
   {
     title: "Commit",
     tab: "commit",
-  },
-  {
-    title: "Import",
-    tab: "import",
-  },
-  {
-    title: "Export",
-    tab: "export",
   },
 ]);
 
@@ -88,12 +79,20 @@ const navTabs = computed(() => {
       path: `/ledger/notes`,
     },
     {
+      title: "Users",
+      path: `/ledger/users`,
+    },
+    {
       title: "Permissions",
       path: `/ledger/permissions`,
     },
     {
-      title: "Users",
-      path: `/ledger/users`,
+      title: "Audit",
+      path: `/ledger/audit`,
+    },
+    {
+      title: "Settings",
+      path: `/ledger/settings`,
     },
   ];
 });
@@ -136,25 +135,32 @@ const sizeIndicator = computed(() => {
       class="text-sm flex items-center justify-between border-b border-base-300 pt-2"
     >
       <STabs :items="navTabs" :path="$route.path" :exact="true" />
+
+      <div v-if="hasSolidSession" class="flex items-center gap-2 px-4">
+        <div class="badge badge-success badge-sm">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="size-3 mr-1"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+            />
+          </svg>
+          Solid Pod Connected
+        </div>
+      </div>
+      <div v-else class="px-4">
+        <router-link to="/solid" class="link text-xs text-base-content/60">
+          Connect Solid Pod for sync
+        </router-link>
+      </div>
     </nav>
-    <section class="text-sm flex items-center justify-between p-2">
-      <div></div>
-      <label class="input input-bordered input-sm flex items-center gap-2">
-        <input type="text" class="grow" placeholder="Search" />
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 16 16"
-          fill="currentColor"
-          class="h-4 w-4 opacity-70"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
-            clip-rule="evenodd"
-          />
-        </svg>
-      </label>
-    </section>
 
     <div class="flex-1 flex w-full overflow-hidden relative">
       <RouterView />
@@ -203,31 +209,42 @@ const sizeIndicator = computed(() => {
               >
             </div>
             <LedgerCommit v-if="activeSubTab === 'commit'" />
-            <LedgerEncrypt v-if="activeSubTab === 'encrypt'" />
-            <LedgerImport v-if="activeSubTab === 'import'" />
-            <LedgerExport v-if="activeSubTab === 'export'" />
           </div>
         </template>
       </SResizablePanels>
       <div v-else class="flex flex-col flex-1 bg-base-200 overflow-hidden">
-        <div role="tablist" class="tabs tabs-lifted mt-2 ml-4 mr-8">
-          <a
-            v-for="tab in [...tabs, ...subTabs]"
-            :key="tab.tab"
-            @click="activeLastTab = tab.tab"
-            role="tab"
-            class="tab"
-            :class="{ 'tab-active': activeLastTab === tab.tab }"
-            >{{ tab.title }}</a
-          >
+        <!-- Show content for routes that don't need console -->
+        <div
+          v-if="
+            $route.path.includes('/audit') || $route.path.includes('/settings')
+          "
+          class="flex-1 flex items-center justify-center text-base-content/50"
+        >
+          <div class="text-center">
+            <div class="text-4xl mb-4">🔧</div>
+            <div class="text-lg">Console not needed</div>
+            <div class="text-sm">This page has its own interface</div>
+          </div>
         </div>
 
-        <LedgerPendingRecords v-if="activeLastTab === 'pending'" />
-        <LedgerCommitHistory v-if="activeLastTab === 'history'" />
-        <LedgerCommit v-if="activeLastTab === 'commit'" />
-        <LedgerEncrypt v-if="activeLastTab === 'encrypt'" />
-        <LedgerImport v-if="activeLastTab === 'import'" />
-        <LedgerExport v-if="activeLastTab === 'export'" />
+        <!-- Console for data management pages -->
+        <div v-else>
+          <div role="tablist" class="tabs tabs-lifted mt-2 ml-4 mr-8">
+            <a
+              v-for="tab in [...tabs, ...subTabs]"
+              :key="tab.tab"
+              @click="activeLastTab = tab.tab"
+              role="tab"
+              class="tab"
+              :class="{ 'tab-active': activeLastTab === tab.tab }"
+              >{{ tab.title }}</a
+            >
+          </div>
+
+          <LedgerPendingRecords v-if="activeLastTab === 'pending'" />
+          <LedgerCommitHistory v-if="activeLastTab === 'history'" />
+          <LedgerCommit v-if="activeLastTab === 'commit'" />
+        </div>
       </div>
     </Console>
   </div>

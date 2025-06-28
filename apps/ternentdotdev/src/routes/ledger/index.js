@@ -16,6 +16,14 @@ export const ledgerRoutes = [
         component: () => import("./RouteLedgerUsers.vue"),
       },
       {
+        path: "audit",
+        component: () => import("./RouteLedgerAudit.vue"),
+      },
+      {
+        path: "settings",
+        component: () => import("./RouteLedgerSettings.vue"),
+      },
+      {
         path: ":sheetName",
         component: () => import("./RouteLedgerSheet.vue"),
         props: true,

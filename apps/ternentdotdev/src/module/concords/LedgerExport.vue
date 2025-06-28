@@ -1,13 +1,43 @@
 <script setup>
-import { computed, shallowRef, nextTick } from "vue";
+import { computed, shallowRef, nextTick, defineEmits } from "vue";
 import { encrypt } from "concords-encrypt";
 import { SButton } from "ternent-ui/components";
 import { useLedger } from "../ledger/useLedger";
+import { useSolid } from "../solid/useSolid";
 import { compressStream } from "../compress";
 
+const emit = defineEmits(['ledger-exported']);
+
 const { ledger, compressedBlob } = useLedger();
+const { hasSolidSession, webId, saveLedgerToSolid } = useSolid();
 
 const ledgerFileName = computed(() => ledger.value.id.slice(0, 6));
+
+// Solid sync functionality
+const solidSyncLoading = shallowRef(false);
+const solidSyncSuccess = shallowRef("");
+const solidSyncError = shallowRef("");
+
+async function syncToSolid() {
+  solidSyncLoading.value = true;
+  solidSyncSuccess.value = "";
+  solidSyncError.value = "";
+
+  try {
+    const filename = `${ledgerFileName.value}.ledger.json`;
+    const fileUrl = await saveLedgerToSolid(ledger.value, filename);
+    solidSyncSuccess.value = `Ledger successfully synced to your Solid pod: ${filename}`;
+    
+    // Emit event to notify parent that a ledger was exported
+    emit('ledger-exported', { filename, fileUrl });
+    console.log("Ledger exported successfully, notifying import component to refresh");
+  } catch (error) {
+    console.error("Solid sync error:", error);
+    solidSyncError.value = error.message || "Failed to sync to Solid pod";
+  } finally {
+    solidSyncLoading.value = false;
+  }
+}
 
 async function download(filename, blob) {
   if (window.navigator.msSaveOrOpenBlob) {
@@ -91,6 +121,71 @@ async function downloadEncryptedLedger() {
               </div>
               <div class="badge badge-outline">
                 ID: {{ ledger.id?.slice(0, 8) }}...
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Solid Pod Sync -->
+        <div v-if="hasSolidSession">
+          <label class="block text-sm font-medium mb-3">
+            🌐 Sync to Solid Pod
+            <span class="text-xs font-normal text-base-content/60 ml-2">
+              (Connected as {{ webId?.split('/profile')[0] }})
+            </span>
+          </label>
+          
+          <div class="space-y-3">
+            <SButton
+              type="accent"
+              :disabled="solidSyncLoading"
+              class="w-full"
+              @click="syncToSolid"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="size-4 mr-2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+                />
+              </svg>
+              <template v-if="solidSyncLoading">Syncing to Pod...</template>
+              <template v-else>Sync to Solid Pod</template>
+            </SButton>
+            
+            <div v-if="solidSyncSuccess" class="alert alert-success">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <span class="text-sm">{{ solidSyncSuccess }}</span>
+            </div>
+            
+            <div v-else-if="solidSyncError" class="alert alert-error">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <span class="text-sm">{{ solidSyncError }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div v-else>
+          <div class="alert alert-info">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <div class="text-sm">
+              <div class="font-medium">Solid Pod Sync Available</div>
+              <div class="mt-1">
+                <router-link to="/solid" class="link">Connect to your Solid pod</router-link> 
+                to enable automatic ledger syncing and backup.
               </div>
             </div>
           </div>
