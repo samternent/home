@@ -69,7 +69,7 @@ const width = computed(() => {
       :container="container"
       direction="vertical"
     />
-    <div class="my-2">
+    <div class="my-2 h-full overflow-auto">
       <slot />
     </div>
   </div>

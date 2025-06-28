@@ -3,6 +3,14 @@
   "private": true,
   "version": "0.1.18",
   "type": "module",
+  "main": "./dist/components.js",
+  "exports": {
+    ".": "./dist/components.js",
+    "./components": "./dist/components.js",
+    "./styles": "./dist/style.css",
+    "./themes": "./dist/themes.js",
+    "./use": "./dist/use.js"
+  },
   "scripts": {
     "build": "vite build",
     "dev": "vite build --watch",

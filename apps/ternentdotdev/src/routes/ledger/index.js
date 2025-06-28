@@ -26,8 +26,8 @@ export const ledgerRoutes = [
         props: true,
       },
       {
-        path: "add",
-        component: () => import("./RouteLedgerAdd.vue"),
+        path: "notes",
+        component: () => import("./RouteLedgerNotes.vue"),
       },
     ],
   },
