@@ -7,7 +7,7 @@ defineProps({
 });
 </script>
 <template>
-  <div role="alert" class="my-6 font-light tracking-tight text-2xl bg-base-300 !rounded-0 p-4">
+  <div role="alert" class="alert my-6 font-light tracking-tight text-2xl">
     <div>
       <slot name="icon">
         <svg

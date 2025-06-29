@@ -1,5 +1,7 @@
 <script setup>
-defineProps({
+import { computed } from 'vue'
+
+const props = defineProps({
   to: {
     type: String,
     default: undefined,
@@ -8,7 +10,25 @@ defineProps({
     type: String,
     default: "ghost",
   },
+  size: {
+    type: String,
+    default: "md",
+    validator: (value) => ["xs", "sm", "md", "lg"].includes(value),
+  },
+  loading: {
+    type: Boolean,
+    default: false,
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
+  href: {
+    type: String,
+    default: undefined,
+  },
 });
+
 defineEmits(["click"]);
 
 const classMap = {
@@ -20,26 +40,47 @@ const classMap = {
   accent: "btn-accent",
   error: "btn-error",
 };
+
+const sizeMap = {
+  xs: "btn-xs",
+  sm: "btn-sm", 
+  md: "",
+  lg: "btn-lg",
+};
+
+const buttonClasses = computed(() => [
+  "btn",
+  "mx-1", 
+  "focus-ring",
+  classMap[props.type],
+  sizeMap[props.size],
+  {
+    "loading": props.loading,
+    "btn-disabled": props.disabled,
+  }
+]);
+
+const component = computed(() => {
+  if (props.to) return 'RouterLink'
+  if (props.href) return 'a'
+  return 'button'
+});
 </script>
 <template>
-  <RouterLink
-    v-if="to"
+  <component
+    :is="component"
     :to="to"
+    :href="href"
+    :disabled="disabled || loading"
     role="button"
     v-bind="$attrs"
-    class="btn mx-1 flex truncate flex-nowrap"
-    :class="classMap[type]"
-    activeClass="btn-active"
-    ><slot
-  /></RouterLink>
-  <button
-    v-else
+    :class="buttonClasses"
+    :activeClass="to ? 'btn-active' : undefined"
     @click="$emit('click')"
-    role="button"
-    v-bind="$attrs"
-    class="btn mx-1"
-    :class="classMap[type]"
   >
+    <span v-if="loading" class="loading loading-spinner loading-xs mr-2"></span>
+    <slot name="icon-left" />
     <slot />
-  </button>
+    <slot name="icon-right" />
+  </component>
 </template>
