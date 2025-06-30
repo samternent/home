@@ -19,8 +19,8 @@ const breadcrumbs = useBreadcrumbs({
   <SNavBar>
     <template #nav>
       <SButton
-        type="primary"
-        class="btn btn-ghost btn-sm"
+        variant="ghost-icon"
+        size="micro"
         @click="openSideBar = !openSideBar"
       >
         <svg
@@ -29,8 +29,7 @@ const breadcrumbs = useBreadcrumbs({
           viewBox="0 0 24 24"
           stroke-width="1.5"
           stroke="currentColor"
-          data-slot="icon"
-          class="w-6 h-6"
+          class="w-4 h-4"
         >
           <path
             stroke-linecap="round"
@@ -41,14 +40,13 @@ const breadcrumbs = useBreadcrumbs({
       </SButton>
     </template>
     <template #start>
-      <SBreadcrumbs :breadcrumbs="breadcrumbs" />
+      <SBreadcrumbs :breadcrumbs="breadcrumbs" size="micro" />
     </template>
     <template #end>
-      <!-- <SThemeToggle v-model="themeVariation" size="sm" /> -->
       <SButton
-        type=""
+        variant="ghost-icon"
+        size="micro"
         to="/app/settings"
-        class="btn btn-ghost btn-sm text-base"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -70,9 +68,30 @@ const breadcrumbs = useBreadcrumbs({
           />
         </svg>
       </SButton>
-      <RouterLink to="/app" class="btn btn-ghost btn-sm text-base md:!hidden"
-        ><SBrandHeader size="sm" class="font-bold">T</SBrandHeader></RouterLink
-      >
+      <RouterLink to="/app" class="nav-brand-link">
+        <SBrandHeader size="sm" class="font-bold">T</SBrandHeader>
+      </RouterLink>
     </template>
   </SNavBar>
 </template>
+
+<style scoped>
+.nav-brand-link {
+  display: none;
+  color: var(--text-primary);
+  text-decoration: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-md);
+  transition: all 0.12s ease;
+}
+
+.nav-brand-link:hover {
+  background: var(--bg-secondary);
+}
+
+@media (max-width: 768px) {
+  .nav-brand-link {
+    display: block;
+  }
+}
+</style>

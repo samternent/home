@@ -6,7 +6,7 @@ export function provideWhiteLabel(app) {
   const whiteLabel = shallowRef({
     name: ["ternent", "dot", "dev"],
     description: "Specialists in Frontend and Platform Engineering.",
-    themeName: "lofi",
+    themeName: "sleek",
     domain: "ternent.dev",
   });
 
@@ -15,7 +15,7 @@ export function provideWhiteLabel(app) {
       ...whiteLabel.value,
       name: ["ternent", "dot", "local"],
       tag: "Hand-crafted Software. Birmingham, UK.",
-      themeName: "azureBloom",
+      themeName: "sleek",
       domain: "localhost:5173",
     };
   }
@@ -24,7 +24,7 @@ export function provideWhiteLabel(app) {
       ...whiteLabel.value,
       name: ["ternent", "dot", "dev"],
       tag: "Hand-crafted Software. Birmingham, UK.",
-      themeName: "lofi",
+      themeName: "sleek",
       domain: "ternent.dev",
     };
   }

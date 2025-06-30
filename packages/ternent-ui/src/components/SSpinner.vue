@@ -1,5 +1,7 @@
 <script setup>
-defineProps({
+import { computed } from "vue";
+
+const props = defineProps({
   size: {
     type: String,
     default: "md",
@@ -8,24 +10,24 @@ defineProps({
   color: {
     type: String,
     default: "primary",
-    validator: (value) => ["primary", "secondary", "accent", "neutral"].includes(value),
+    validator: (value) => ["primary", "secondary", "slate", "white"].includes(value),
   },
 });
 
-const sizeClasses = {
+const sizeClasses = computed(() => ({
   xs: "w-4 h-4",
   sm: "w-5 h-5",
   md: "w-6 h-6", 
   lg: "w-8 h-8",
   xl: "w-10 h-10",
-};
+}));
 
-const colorClasses = {
-  primary: "text-primary",
-  secondary: "text-secondary",
-  accent: "text-accent",
-  neutral: "text-neutral",
-};
+const colorClasses = computed(() => ({
+  primary: "text-indigo-600",
+  secondary: "text-slate-600",
+  slate: "text-slate-400",
+  white: "text-white",
+}));
 </script>
 <template>
   <div class="inline-flex items-center justify-center">

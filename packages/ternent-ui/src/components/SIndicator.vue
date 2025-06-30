@@ -1,4 +1,6 @@
 <script setup>
+import { useSlots } from 'vue'
+
 defineProps({
   type: {
     type: String,
@@ -27,6 +29,8 @@ const sizeClasses = {
   md: "text-sm px-2.5 py-1 min-w-[1.5rem] h-6",
   lg: "text-sm px-3 py-1 min-w-[1.75rem] h-7",
 };
+
+const slots = useSlots();
 
 const typeClasses = {
   solid: {
@@ -70,7 +74,7 @@ const typeClasses = {
       {
         'animate-pulse': pulse,
         'shadow-sm': variant === 'solid',
-        'hover:scale-105': $slots.default,
+        'hover:scale-105': slots.default,
       }
     ]"
   >

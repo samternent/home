@@ -1,4 +1,6 @@
 <script setup>
+import { computed } from "vue";
+
 const props = defineProps({
   items: {
     type: Array,
@@ -15,12 +17,12 @@ const props = defineProps({
   type: {
     type: String,
     default: "underline",
-    validator: (value) => ["underline", "pills", "bordered", "lifted"].includes(value),
+    validator: (value) => ["underline", "pills", "bordered", "segmented"].includes(value),
   },
   size: {
     type: String,
-    default: "md",
-    validator: (value) => ["sm", "md", "lg"].includes(value),
+    default: "micro",
+    validator: (value) => ["nano", "micro", "tiny", "small", "medium"].includes(value),
   },
 });
 
@@ -31,32 +33,34 @@ function isExactActiveLink(t) {
   return new RegExp(`^${t.path}$`, "g").test(props.path);
 }
 
-const sizeClasses = {
-  sm: "text-sm px-3 py-2",
-  md: "text-base px-4 py-2.5", 
-  lg: "text-lg px-5 py-3",
-};
+const sizeClasses = computed(() => ({
+  nano: "text-sm px-3 py-1.5",
+  micro: "text-sm px-3.5 py-2", 
+  tiny: "text-base px-4 py-2",
+  small: "text-base px-4 py-2.5",
+  medium: "text-lg px-5 py-3",
+}));
 
-const typeClasses = {
-  underline: "border-b-2 border-transparent hover:border-primary/50 transition-all duration-200",
-  pills: "rounded-lg hover:bg-primary/10 transition-all duration-200",
-  bordered: "border border-base-300 hover:border-primary/50 transition-all duration-200",
-  lifted: "rounded-t-lg border-b-2 border-transparent hover:bg-base-200/50 transition-all duration-200",
-};
+const typeClasses = computed(() => ({
+  underline: "border-b border-transparent hover:border-slate-300/60 dark:hover:border-slate-400/60 transition-all duration-200",
+  pills: "rounded-md hover:bg-slate-100/80 dark:hover:bg-slate-700/40 transition-all duration-200",
+  bordered: "border border-slate-200/60 dark:border-slate-700/60 hover:border-indigo-300/60 dark:hover:border-indigo-400/60 transition-all duration-200",
+  segmented: "first:rounded-l-md last:rounded-r-md border-r border-slate-200/60 dark:border-slate-700/60 last:border-r-0 hover:bg-slate-50/50 dark:hover:bg-slate-700/30 transition-all duration-200",
+}));
 
-const activeClasses = {
-  underline: "border-primary text-primary font-medium",
-  pills: "bg-primary text-primary-content font-medium shadow-md",
-  bordered: "border-primary bg-primary/10 text-primary font-medium",
-  lifted: "bg-base-100 border-base-300 border-b-base-100 font-medium shadow-sm -mb-0.5",
-};
+const activeClasses = computed(() => ({
+  underline: "border-indigo-500 dark:border-indigo-400 text-indigo-600 dark:text-indigo-300 font-medium",
+  pills: "bg-indigo-100/80 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-200 font-medium shadow-sm",
+  bordered: "border-indigo-300/80 dark:border-indigo-500/80 bg-indigo-50/60 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-200 font-medium",
+  segmented: "bg-indigo-600 dark:bg-indigo-500 text-white font-medium shadow-sm z-10",
+}));
 </script>
 <template>
   <div class="relative">
     <!-- Background line for underline type -->
     <div 
       v-if="type === 'underline'" 
-      class="absolute bottom-0 left-0 right-0 h-0.5 bg-base-300"
+      class="absolute bottom-0 left-0 right-0 h-px bg-slate-200/60 dark:bg-slate-700/60"
     />
     
     <nav 
@@ -65,7 +69,7 @@ const activeClasses = {
       :class="{
         'space-x-1': type === 'pills',
         'space-x-0': type !== 'pills',
-        'border-b border-base-300': type === 'lifted',
+        'bg-slate-100 dark:bg-slate-800 rounded-xl p-1': type === 'segmented',
       }"
     >
       <RouterLink
@@ -73,7 +77,7 @@ const activeClasses = {
         :key="`tab-${t.path}`"
         :to="t.path"
         role="tab"
-        class="relative flex items-center gap-2 font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:ring-offset-2"
+        class="relative flex items-center gap-2 font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:ring-offset-1"
         :class="[
           sizeClasses[size],
           typeClasses[type],
@@ -84,14 +88,14 @@ const activeClasses = {
         ]"
       >
         <!-- Icon if provided -->
-        <span v-if="t.icon" class="w-4 h-4" v-html="t.icon" />
+        <span v-if="t.icon" class="w-4 h-4 flex-shrink-0" v-html="t.icon" />
         
-        {{ t.title }}
+        <span class="truncate">{{ t.title }}</span>
         
         <!-- Badge if provided -->
         <span 
           v-if="t.badge" 
-          class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/20 text-primary"
+          class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100/80 dark:bg-slate-700/60 text-slate-600 dark:text-slate-300"
         >
           {{ t.badge }}
         </span>
@@ -99,7 +103,7 @@ const activeClasses = {
         <!-- Active indicator for underline type -->
         <span 
           v-if="type === 'underline' && ((!exact && isActiveLink(t)) || (exact && isExactActiveLink(t)))"
-          class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"
+          class="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-500 rounded-full"
         />
       </RouterLink>
     </nav>

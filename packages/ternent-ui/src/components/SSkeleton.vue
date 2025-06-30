@@ -1,5 +1,7 @@
 <script setup>
-defineProps({
+import { computed } from "vue";
+
+const props = defineProps({
   variant: {
     type: String,
     default: "rect",
@@ -23,12 +25,12 @@ defineProps({
   },
 });
 
-const variantClasses = {
-  rect: "rounded-lg",
+const variantClasses = computed(() => ({
+  rect: "rounded-xl",
   circle: "rounded-full aspect-square",
-  text: "rounded-md h-4",
+  text: "rounded-lg h-4",
   avatar: "rounded-full aspect-square w-10 h-10",
-};
+}));
 
 const widthClass = computed(() => {
   if (props.width === "full") return "w-full";
@@ -57,21 +59,13 @@ const customStyles = computed(() => {
 });
 </script>
 
-<script>
-import { computed } from "vue";
-
-export default {
-  name: "SSkeleton",
-};
-</script>
-
 <template>
   <div class="space-y-2">
     <div 
       v-for="line in lines" 
       :key="line"
       :class="[
-        'bg-gradient-to-r from-base-200 via-base-300 to-base-200 bg-[length:200%_100%]',
+        'bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200 dark:from-slate-700 dark:via-slate-600 dark:to-slate-700 bg-[length:200%_100%]',
         variantClasses[variant],
         widthClass,
         heightClass,

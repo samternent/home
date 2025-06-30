@@ -1,10 +1,11 @@
 <script setup>
 import { breakpointsTailwind, useBreakpoints } from "@vueuse/core";
+import { computed } from "vue";
 
 const breakpoints = useBreakpoints(breakpointsTailwind);
 const smallerThanMd = breakpoints.smaller("md");
 
-defineProps({
+const props = defineProps({
   title: {
     type: String,
     default: null,
@@ -12,7 +13,7 @@ defineProps({
   variant: {
     type: String,
     default: "default",
-    validator: (value) => ["default", "glass", "glassmorphic", "minimal", "bordered"].includes(value),
+    validator: (value) => ["default", "minimal", "bordered", "blur"].includes(value),
   },
   sticky: {
     type: Boolean,
@@ -20,13 +21,12 @@ defineProps({
   },
 });
 
-const variantClasses = {
-  default: "bg-base-100 border-b border-base-200/60 shadow-sm",
-  glass: "bg-base-100/90 backdrop-blur-md border-b border-base-200/40",
-  glassmorphic: "bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border-b border-slate-200/40 dark:border-slate-700/40",
-  minimal: "bg-transparent border-b border-base-200/30",
-  bordered: "bg-base-100 border-b-4 border-primary shadow-sm",
-};
+const variantClasses = computed(() => ({
+  default: "bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 shadow-sm",
+  minimal: "bg-white/80 dark:bg-slate-950/80 backdrop-blur-sm border-b border-slate-200/50 dark:border-slate-800/50",
+  bordered: "bg-white dark:bg-slate-950 border-b-2 border-indigo-500 shadow-md",
+  blur: "bg-white/90 dark:bg-slate-950/90 backdrop-blur-md border-b border-slate-200/60 dark:border-slate-800/60",
+}));
 </script>
 <template>
   <header 
@@ -48,10 +48,10 @@ const variantClasses = {
             <slot name="start">
               <RouterLink
                 to="/"
-                class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-base-200/60 transition-all duration-200 font-bold text-lg group"
+                class="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 font-bold text-lg group"
               >
                 {{ title }}
-                <span class="text-primary transition-transform duration-200 group-hover:scale-110">
+                <span class="text-indigo-500 transition-transform duration-200 group-hover:scale-110">
                   .
                 </span>
               </RouterLink>
@@ -65,7 +65,7 @@ const variantClasses = {
         </div>
 
         <!-- Right section -->
-        <div class="flex items-center justify-end flex-1 gap-2">
+        <div class="flex items-center justify-end flex-1 gap-3">
           <slot name="end" />
         </div>
       </nav>

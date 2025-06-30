@@ -2,7 +2,7 @@
 import { shallowRef, computed, watch } from "vue";
 
 import { useElementBounding } from "@vueuse/core";
-import { SResizablePanels, SIndicator, STabs } from "ternent-ui/components";
+import { SResizablePanels, SIndicator, STabs, SCard, SButton } from "ternent-ui/components";
 import { useBreadcrumbs } from "../../module/breadcrumbs/useBreadcrumbs";
 
 import { useLedger } from "../../module/ledger/useLedger";
@@ -132,11 +132,11 @@ const sizeIndicator = computed(() => {
     class="flex flex-col flex-1 relative max-w-full overflow-hidden"
   >
     <nav
-      class="text-sm flex items-center justify-between border-b border-base-300 pt-2"
+      class="text-body-sm flex items-center justify-between border-b border-muted pt-micro"
     >
-      <STabs :items="navTabs" :path="$route.path" :exact="true" />
+      <STabs :items="navTabs" :path="$route.path" :exact="true" size="small" />
 
-      <div v-if="hasSolidSession" class="flex items-center gap-2 px-4">
+      <div v-if="hasSolidSession" class="flex items-center gap-micro px-micro">
         <div class="badge badge-success badge-sm">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -155,8 +155,8 @@ const sizeIndicator = computed(() => {
           Solid Pod Connected
         </div>
       </div>
-      <div v-else class="px-4">
-        <router-link to="/solid" class="link text-xs text-base-content/60">
+      <div v-else class="px-micro">
+        <router-link to="/solid" class="link text-xs text-subtle">
           Connect Solid Pod for sync
         </router-link>
       </div>

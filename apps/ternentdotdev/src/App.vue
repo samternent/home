@@ -1,5 +1,6 @@
 <script setup>
-import { useLocalStorage } from "@vueuse/core";
+import { useLocalStorage, useDark } from "@vueuse/core";
+import { computed } from "vue";
 import { provideBreadcrumbs } from "./module/breadcrumbs/useBreadcrumbs";
 import { provideDrawerRoute } from "./module/drawer-route/useDrawerRoute";
 import { provideAxios } from "./module/api/useAxios";
@@ -18,7 +19,14 @@ provideDrawerRoute();
 provideAppShell();
 
 const whiteLabel = useWhiteLabel();
-const themeName = useLocalStorage("app/theme", whiteLabel.value.themeName);
+const baseTheme = useLocalStorage("app/theme", whiteLabel.value.themeName);
+const isDark = useDark();
+
+// Auto-detect light/dark and use sleek theme variant
+const themeName = computed(() => {
+  const theme = baseTheme.value || 'sleek';
+  return isDark.value ? `${theme}Dark` : `${theme}Light`;
+});
 </script>
 
 <template>

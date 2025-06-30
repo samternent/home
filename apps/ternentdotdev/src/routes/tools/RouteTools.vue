@@ -23,7 +23,7 @@ const navTabs = computed(() => {
 <template>
   <div class="flex w-full flex-col flex-1">
     <nav class="py-2 text-sm">
-      <STabs :items="navTabs" :path="$route.path" :exact="true" />
+      <STabs :items="navTabs" :path="$route.path" :exact="true" size="small" />
     </nav>
     <RouterView />
   </div>

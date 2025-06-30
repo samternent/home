@@ -1,6 +1,6 @@
 <script setup>
 import { computed, shallowRef, watch } from "vue";
-import { SButton, SDrawerRight } from "ternent-ui/components";
+import { SButton, SDrawerRight, SCard, SInput } from "ternent-ui/components";
 import { useBreadcrumbs } from "../../module/breadcrumbs/useBreadcrumbs";
 import { useLedger } from "../../module/ledger/useLedger";
 import { useIdentity } from "../../module/identity/useIdentity";
@@ -117,22 +117,23 @@ function formatDate(dateString) {
   }
 }</script>
 <template>
-  <div class="p-4 max-w-6xl">
+  <div class="p-micro max-w-6xl">
     <!-- Header -->
-    <div class="flex justify-between items-center mb-6">
+    <div class="flex justify-between items-center mb-micro">
       <div>
-        <h1 class="text-2xl font-bold">👥 Users</h1>
-        <p class="text-base-content/70">Manage users and their permissions</p>
+        <h1 class="gradient-heading text-heading-lg">👥 Users</h1>
+        <p class="text-subtle text-body-sm mt-1">Manage users and their permissions</p>
       </div>
-      <div class="flex gap-2">
+      <div class="flex gap-micro">
         <SButton 
           v-if="!currentUser" 
           @click="registerCurrentUser" 
-          type="secondary"
+          variant="secondary"
+          size="small"
         >
           🔐 Register Me
         </SButton>
-        <SButton @click="isAddUserDrawerOpen = true" type="primary">
+        <SButton @click="isAddUserDrawerOpen = true" variant="primary" size="small">
           + Add User
         </SButton>
       </div>

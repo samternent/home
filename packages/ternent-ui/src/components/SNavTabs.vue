@@ -33,8 +33,8 @@ const currentPathTitle = computed(
 );
 </script>
 <template>
-  <div class="flex items-center p-2">
-    <h2 class="text-2xl font-light border-r border-base-300 px-4 sm:px-8">
+  <div class="flex items-center px-6 py-3 border-b border-slate-200/60 dark:border-slate-700/60">
+    <h2 class="text-xl font-medium text-slate-800 dark:text-slate-200 border-r border-slate-200/60 dark:border-slate-700/60 pr-6 mr-6">
       {{ title }}
     </h2>
     <STabs
@@ -42,7 +42,8 @@ const currentPathTitle = computed(
       :items="items"
       :path="path"
       :exact="true"
-      class="mx-2 hidden md:flex"
+      size="small"
+      class="flex-1"
     />
     <div
       v-if="smallerThanMd"

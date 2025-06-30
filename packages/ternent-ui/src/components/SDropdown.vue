@@ -57,17 +57,13 @@ function closeMenu() {
       <div
         v-if="showMenu"
         :class="[
-          'absolute bg-base-100 z-50 flex flex-col overflow-hidden text-left',
-          'shadow-xl border border-base-200/60 rounded-xl backdrop-blur-md',
-          'ring-1 ring-black/5',
+          'absolute bg-white dark:bg-slate-900 z-50 flex flex-col overflow-hidden text-left',
+          'shadow-xl border border-slate-200 dark:border-slate-700 rounded-2xl backdrop-blur-md',
+          'ring-1 ring-black/5 dark:ring-white/10',
           positionClasses,
           props.width
         ]"
-        style="background: rgba(255, 255, 255, 0.95);"
       >
-        <!-- Subtle gradient overlay for depth -->
-        <div class="absolute inset-0 bg-gradient-to-b from-white/50 to-transparent pointer-events-none rounded-xl"></div>
-        
         <!-- Content with relative positioning -->
         <div class="relative">
           <slot :closeMenu="closeMenu" />

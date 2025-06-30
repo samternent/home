@@ -1,7 +1,7 @@
 <script setup>
 import { watch, shallowRef } from "vue";
 import { useLedger } from "@/module/ledger/useLedger";
-import { SButton, SDrawerRight } from "ternent-ui/components";
+import { SButton, SDrawerRight, SInput } from "ternent-ui/components";
 import { useBreadcrumbs } from "@/module/breadcrumbs/useBreadcrumbs";
 import BoardColumn from "@/module/board/BoardColumn.vue";
 
@@ -60,38 +60,47 @@ const newColumn = shallowRef("");
 </script>
 
 <template>
-  <div class="flex gap-4 flex-1 w-full p-6" ref="contentContainer">
+  <div class="task-board-container" ref="contentContainer">
     <SDrawerRight
       v-if="contentContainer"
       v-model="isDrawerOpen"
       :container="contentContainer"
     >
-      hiya
+      <div class="p-4">
+        <h3>Task Details</h3>
+        <p>Coming soon...</p>
+      </div>
     </SDrawerRight>
-    <div class="flex gap-4 flex-1 w-full overflow-y-auto">
+
+    <div class="task-board-content">
       <BoardColumn
         v-for="column in columns"
         :key="column.data.id"
         :title="column.data.title"
         @addTask="(task) => addTask(column.data.id, task)"
       >
-        <div class="flex-1 flex flex-col gap-1 p-2 overflow-auto">
+        <div class="task-list">
           <div
-            class="bg-base-200 border border-base-300 p-2 flex gap-2 items-center justify-between overflow-auto min-h-16"
+            class="task-item"
             v-for="task in columnTasks(column.data.id)"
             :key="task.data.id"
           >
-            <SButton class="btn-sm" @click="completeTask(task.data)">
+            <SButton
+              variant="ghost-icon"
+              size="micro"
+              @click="completeTask(task.data)"
+              class="task-status-btn"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke-width="1.5"
                 stroke="currentColor"
-                class="size-6"
+                class="task-status-icon"
                 :class="{
-                  'text-success': task.data.completed,
-                  'text-info': !task.data.completed,
+                  'task-completed': task.data.completed,
+                  'task-pending': !task.data.completed,
                 }"
               >
                 <path
@@ -103,47 +112,130 @@ const newColumn = shallowRef("");
             </SButton>
 
             <span
-              class="text-sm flex-1"
-              :class="{ 'line-through': task.data.completed }"
-              >{{ task.data.title }}</span
+              class="task-title"
+              :class="{ 'task-title-completed': task.data.completed }"
             >
-            <!-- <SButton
-              class="btn-sm disabled"
-              @click="isDrawerOpen = true"
-              disabled
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="size-4"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125"
-                />
-              </svg>
-            </SButton> -->
+              {{ task.data.title }}
+            </span>
           </div>
         </div>
       </BoardColumn>
-      <div class="bg-base-200 p-2 flex flex-col gap-2 min-w-60 w-60">
-        <input
+
+      <!-- Add column section -->
+      <div class="add-column-section">
+        <SInput
           v-model="newColumn"
-          class="input w-full"
+          size="micro"
           placeholder="Column name"
+          class="add-column-input"
         />
         <SButton
-          type="primary"
+          variant="outline"
+          size="micro"
           :disabled="!newColumn"
-          class="btn-sm !font-thin btn-outline !m-2"
           @click="addColumn"
-          >Add Column</SButton
         >
+          Add Column
+        </SButton>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.task-board-container {
+  display: flex;
+  gap: 1rem;
+  flex: 1;
+  width: 100%;
+  padding: 1.5rem;
+  background: var(--bg-primary);
+  min-height: 100vh;
+}
+
+.task-board-content {
+  display: flex;
+  gap: 1rem;
+  flex: 1;
+  width: 100%;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+}
+
+.task-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  overflow-y: auto;
+  max-height: 70vh;
+}
+
+.task-item {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 0.75rem;
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  min-height: 3rem;
+  box-shadow: var(--shadow-micro);
+  transition: all 0.12s ease;
+}
+
+.task-item:hover {
+  box-shadow: var(--shadow-soft);
+  border-color: var(--text-tertiary);
+}
+
+.task-status-btn {
+  flex-shrink: 0;
+}
+
+.task-status-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  transition: color 0.12s ease;
+}
+
+.task-completed {
+  color: #10b981;
+}
+
+.task-pending {
+  color: #6b7280;
+}
+
+.task-title {
+  flex: 1;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  transition: all 0.12s ease;
+}
+
+.task-title-completed {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.add-column-section {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 15rem;
+  width: 15rem;
+  height: fit-content;
+  box-shadow: var(--shadow-micro);
+}
+
+.add-column-input {
+  width: 100%;
+}
+</style>

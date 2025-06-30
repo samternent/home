@@ -1,9 +1,9 @@
 <script setup>
-import { shallowRef } from "vue";
+import { shallowRef, computed } from "vue";
 import { onClickOutside } from "@vueuse/core";
 import SButton from "./SButton.vue";
 
-defineProps({
+const props = defineProps({
   buttonText: {
     type: String,
     default: undefined,
@@ -50,19 +50,27 @@ function closeMenu() {
   showMenu.value = false;
 }
 
-const sizeClasses = {
+const sizeClasses = computed(() => ({
   sm: "w-48 text-sm",
   md: "w-64 text-base", 
   lg: "w-80 text-lg",
-};
+}));
+
+const positionClasses = computed(() => ({
+  top: "bottom-full mb-2",
+  bottom: "top-full mt-2",
+  right: "left-full ml-2 top-0",
+  left: "right-full mr-2 top-0",
+}));
 </script>
 <template>
   <div class="relative" ref="dropdownRef">
     <slot name="activator" v-bind="{ openMenu, closeMenu, isMenuOpen: showMenu }">
       <SButton 
         @click="showMenu = !showMenu" 
-        class="gap-2 hover:scale-105 transition-all duration-200"
-        :class="{ 'bg-primary/10': showMenu }"
+        variant="outline"
+        class="gap-2"
+        :class="{ 'bg-indigo-50 dark:bg-indigo-950/50 border-indigo-200 dark:border-indigo-800': showMenu }"
       >
         {{ buttonText }}
         <svg
@@ -77,7 +85,7 @@ const sizeClasses = {
           <path
             stroke-linecap="round"
             stroke-linejoin="round"
-            d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+            d="M19.5 8.25l-7.5 7.5-7.5-7.5"
           />
         </svg>
       </SButton>
@@ -93,36 +101,29 @@ const sizeClasses = {
     >
       <div
         v-if="showMenu"
-        class="absolute z-50 bg-base-100 border border-base-200/60 rounded-xl shadow-lg backdrop-blur-md overflow-hidden"
+        class="absolute z-50 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl backdrop-blur-md overflow-hidden ring-1 ring-black/5 dark:ring-white/10"
         :class="[
           sizeClasses[size],
-          {
-            'bottom-full mb-2': position === 'top',
-            'top-full mt-2': position === 'bottom',
-            'left-full ml-2 top-0': position === 'right',
-            'right-full mr-2 top-0': position === 'left',
-          }
+          positionClasses[position]
         ]"
       >
-        <!-- Gradient overlay for depth -->
-        <div class="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
-        
-        <div class="relative max-h-96 overflow-auto">
-          <ul class="py-2">
-            <li v-for="item in items" :key="`menu-item-${item.value || item.name}`">
+        <div class="max-h-96 overflow-auto">
+          <div class="py-1">
+            <div v-for="item in items" :key="`menu-item-${item.value || item.name}`">
               <slot name="item" v-bind="{ item, closeMenu, selectItem }">
                 <RouterLink
                   v-if="item.to"
                   :to="item.to"
                   @click="selectItem(item)"
-                  class="flex items-center px-4 py-2.5 text-sm hover:bg-primary/10 transition-colors duration-200"
+                  class="flex items-center px-3 py-2.5 text-sm hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors duration-200"
                   :class="{
-                    'bg-primary/15 text-primary font-medium': item.value === modelValue || item.name === modelValue,
+                    'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 font-medium': item.value === modelValue || item.name === modelValue,
+                    'text-slate-700 dark:text-slate-300': item.value !== modelValue && item.name !== modelValue,
                   }"
                 >
-                  <span v-if="item.icon" class="mr-3 w-4 h-4" v-html="item.icon" />
-                  {{ item.name }}
-                  <span v-if="item.badge" class="ml-auto text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full">
+                  <span v-if="item.icon" class="mr-3 w-4 h-4 flex-shrink-0" v-html="item.icon" />
+                  <span class="flex-1 truncate">{{ item.name }}</span>
+                  <span v-if="item.badge" class="ml-2 text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded-full">
                     {{ item.badge }}
                   </span>
                 </RouterLink>
@@ -130,20 +131,21 @@ const sizeClasses = {
                 <button
                   v-else
                   @click="selectItem(item)"
-                  class="w-full flex items-center px-4 py-2.5 text-sm hover:bg-primary/10 transition-colors duration-200 text-left"
+                  class="w-full flex items-center px-3 py-2.5 text-sm hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors duration-200 text-left"
                   :class="{
-                    'bg-primary/15 text-primary font-medium': item.value === modelValue || item.name === modelValue,
+                    'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 font-medium': item.value === modelValue || item.name === modelValue,
+                    'text-slate-700 dark:text-slate-300': item.value !== modelValue && item.name !== modelValue,
                   }"
                 >
-                  <span v-if="item.icon" class="mr-3 w-4 h-4" v-html="item.icon" />
-                  {{ item.name }}
-                  <span v-if="item.badge" class="ml-auto text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full">
+                  <span v-if="item.icon" class="mr-3 w-4 h-4 flex-shrink-0" v-html="item.icon" />
+                  <span class="flex-1 truncate">{{ item.name }}</span>
+                  <span v-if="item.badge" class="ml-2 text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded-full">
                     {{ item.badge }}
                   </span>
                 </button>
               </slot>
-            </li>
-          </ul>
+            </div>
+          </div>
         </div>
       </div>
     </Transition>
