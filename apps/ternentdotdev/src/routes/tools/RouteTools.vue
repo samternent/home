@@ -11,7 +11,7 @@ const navTabs = computed(() => {
   return [
     {
       title: "Compression",
-      path: `/tools/compression`,
+      path: `/tools/gzip`,
     },
     {
       title: "Encryption",

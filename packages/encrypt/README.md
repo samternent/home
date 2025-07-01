@@ -1,12 +1,15 @@
-# Encrypt Package
+# Concords Encrypt
 
-A modern encryption library using the age encryption format with support for both passphrase and public key encryption.
-
-## Overview
-
-A modern encryption library using the age encryption format with support for both passphrase and public key encryption.
+A TypeScript encryption library built on top of the Rust [age](https://github.com/str4d/age) encryption tool with web worker support for asynchronous operations.
 
 ## Features
+
+- **Local WASM**: Uses a custom-built WASM package instead of external dependencies
+- **X25519 encryption**: Public key encryption using age X25519 keys
+- **Passphrase encryption**: Password-based encryption
+- **Async support**: Web worker integration for non-blocking encryption operations
+- **TypeScript**: Full TypeScript support with type definitions
+- **Browser ready**: Works in modern browsers with WASM support
 
 - ✅ **Age Encryption Standard**:  Modern, secure encryption using the age format
 - ✅ **Dual Encryption Methods**:  Support for both public key and passphrase encryption

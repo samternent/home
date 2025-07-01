@@ -1,14 +1,28 @@
 {
-  "name": "wasm-ragejs",
-  "version": "1.0.1",
-  "description": "",
-  "main": "index.js",
+  "name": "concords-rage-wasm",
+  "version": "0.1.0",
+  "description": "WASM bindings for the AGE encryption library",
+  "main": "pkg/ragejs.js",
+  "types": "pkg/ragejs.d.ts",
   "scripts": {
-    "build": "wasm-pack build --target bundler"
+    "build": "wasm-pack build --target web --out-dir pkg",
+    "dev": "wasm-pack build --target web --out-dir pkg --dev"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "files": [
+    "pkg/ragejs.js",
+    "pkg/ragejs_bg.js", 
+    "pkg/ragejs_bg.wasm",
+    "pkg/ragejs.d.ts",
+    "pkg/ragejs_bg.wasm.d.ts"
+  ],
+  "keywords": ["age", "encryption", "wasm", "cryptography"],
+  "author": "Sam Ternent <hello@ternent.dev>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/samternent/home",
+    "directory": "packages/ragejs"
+  },
   "devDependencies": {
     "wasm-pack": "^0.12.1"
   }

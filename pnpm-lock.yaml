@@ -372,12 +372,12 @@ importers:
 
   packages/encrypt:
     dependencies:
-      '@kanru/rage-wasm':
-        specifier: ^0.3.1
-        version: 0.3.1
       '@swc/helpers':
         specifier: ^0.4.36
         version: 0.4.36
+      concords-rage-wasm:
+        specifier: workspace:*
+        version: link:../ragejs
       regenerator-runtime:
         specifier: ^0.13.11
         version: 0.13.11
@@ -2761,10 +2761,6 @@ packages:
       cross-spawn: 7.0.3
       string-argv: 0.3.2
       type-detect: 4.1.0
-    dev: false
-
-  /@kanru/rage-wasm@0.3.1:
-    resolution: {integrity: sha512-lJOUf88rrV7BpEE/c+PRFkWjM/QV56jo5FLUyCyskeYSv16J+/yIskrU/1203TP3HVXbR2OCfHgHVfb9ftnpsw==}
     dev: false
 
   /@leichtgewicht/ip-codec@2.0.5:
