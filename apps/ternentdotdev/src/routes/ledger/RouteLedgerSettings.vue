@@ -14,7 +14,10 @@ useBreadcrumbs({
   name: "Settings",
 });
 
-const activeTab = useLocalStorage("ternentdotdev/LedgerSettings/activeTab", "import");
+const activeTab = useLocalStorage(
+  "ternentdotdev/LedgerSettings/activeTab",
+  "import"
+);
 
 const settingsTabs = [
   {
@@ -22,7 +25,7 @@ const settingsTabs = [
     path: "import",
   },
   {
-    title: "Export", 
+    title: "Export",
     path: "export",
   },
   {
@@ -61,13 +64,24 @@ function triggerImportRefresh() {
           </p>
         </div>
         <div v-if="hasSolidSession" class="badge badge-success">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-3 mr-1">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="size-3 mr-1"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+            />
           </svg>
           Solid Pod Connected
         </div>
       </div>
-      
+
       <!-- Tab Navigation -->
       <div class="flex gap-1 bg-base-200 p-1 rounded-lg w-fit">
         <button
@@ -75,9 +89,11 @@ function triggerImportRefresh() {
           :key="tab.path"
           @click="switchTab(tab.path)"
           class="px-4 py-2 rounded-md text-sm font-medium transition-colors"
-          :class="currentTab === tab.path 
-            ? 'bg-base-100 text-base-content shadow-sm' 
-            : 'text-base-content/70 hover:text-base-content hover:bg-base-100/50'"
+          :class="
+            currentTab === tab.path
+              ? 'bg-base-100 text-base-content shadow-sm'
+              : 'text-base-content/70 hover:text-base-content hover:bg-base-100/50'
+          "
         >
           {{ tab.title }}
         </button>
@@ -85,12 +101,21 @@ function triggerImportRefresh() {
     </div>
 
     <!-- Tab Content -->
-    <div class="flex-1 overflow-hidden">
-      <LedgerImport v-if="currentTab === 'import'" :refresh-trigger="importRefreshTrigger" />
-      <LedgerExport v-if="currentTab === 'export'" @ledger-exported="triggerImportRefresh" />
-      
+    <div class="flex-1 overflow-auto">
+      <LedgerImport
+        v-if="currentTab === 'import'"
+        :refresh-trigger="importRefreshTrigger"
+      />
+      <LedgerExport
+        v-if="currentTab === 'export'"
+        @ledger-exported="triggerImportRefresh"
+      />
+
       <!-- Sync Tab -->
-      <div v-if="currentTab === 'sync'" class="flex flex-col h-full bg-base-100">
+      <div
+        v-if="currentTab === 'sync'"
+        class="flex flex-col h-full bg-base-100"
+      >
         <div class="px-6 py-8 text-center">
           <div v-if="hasSolidSession" class="max-w-md mx-auto">
             <div class="text-6xl mb-6">🌐</div>
@@ -101,22 +126,21 @@ function triggerImportRefresh() {
             </div>
             <div class="space-y-3">
               <div class="text-sm text-base-content/60">
-                Your ledger can now sync with your Solid pod. Use the Import and Export tabs to manage synchronization.
+                Your ledger can now sync with your Solid pod. Use the Import and
+                Export tabs to manage synchronization.
               </div>
-              <button 
-                @click="logout"
-                class="btn btn-outline btn-sm"
-              >
+              <button @click="logout" class="btn btn-outline btn-sm">
                 Disconnect Pod
               </button>
             </div>
           </div>
-          
+
           <div v-else class="max-w-md mx-auto">
             <div class="text-6xl mb-6">🔗</div>
             <h3 class="text-xl font-semibold mb-4">Connect Your Solid Pod</h3>
             <div class="text-sm text-base-content/60 mb-6">
-              Connect to your personal Solid pod to enable secure, decentralized synchronization of your ledger data.
+              Connect to your personal Solid pod to enable secure, decentralized
+              synchronization of your ledger data.
             </div>
             <router-link to="/solid" class="btn btn-primary">
               Connect Solid Pod

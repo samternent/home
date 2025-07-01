@@ -24,8 +24,8 @@ const isDark = useDark();
 
 // Auto-detect light/dark and use sleek theme variant
 const themeName = computed(() => {
-  const theme = baseTheme.value || 'sleek';
-  return isDark.value ? `${theme}Dark` : `${theme}Light`;
+  const theme = baseTheme.value || "sleek";
+  return "sleekLight"; // isDark.value ? `${theme}Light` : `${theme}Light`;
 });
 </script>
 
