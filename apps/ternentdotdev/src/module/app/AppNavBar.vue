@@ -1,6 +1,6 @@
 <script setup>
+import { ref } from "vue";
 import { useLocalStorage } from "@vueuse/core";
-import { SThemeToggle } from "ternent-ui/components";
 import {
   SNavBar,
   SBreadcrumbs,
@@ -9,6 +9,7 @@ import {
 } from "ternent-ui/components";
 import { useBreadcrumbs } from "@/module/breadcrumbs/useBreadcrumbs";
 
+const openSideBar = ref(false);
 const themeVariation = useLocalStorage("app/themeVariation", null);
 const breadcrumbs = useBreadcrumbs({
   path: "/app",

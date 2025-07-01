@@ -11,6 +11,11 @@ const whiteLabel = useWhiteLabel();
 const theme = useLocalStorage("app/theme");
 
 const themes = computed(() => [
+  // Featured Sleek Themes
+  { name: "✨ Sleek Light", value: "sleekLight" },
+  { name: "🌟 Sleek Dark", value: "sleekDark" },
+  
+  // Custom Themes
   { name: "Azure Bloom", value: "azureBloom" },
   { name: "Azure Bloom Dark", value: "azureBloomDark" },
   { name: "Corporate Professional", value: "corporateProfessional" },
@@ -19,6 +24,8 @@ const themes = computed(() => [
   { name: "Neon Noir", value: "neonNoir" },
   { name: "Marshmallow", value: "marshmallowLight" },
   { name: "Marshmallow Dark", value: "marshmallowDark" },
+  
+  // DaisyUI Themes
   { name: "Light", value: "light" },
   { name: "Dark", value: "dark" },
   { name: "Cupcake", value: "cupcake" },

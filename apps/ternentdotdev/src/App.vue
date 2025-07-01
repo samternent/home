@@ -19,13 +19,12 @@ provideDrawerRoute();
 provideAppShell();
 
 const whiteLabel = useWhiteLabel();
-const baseTheme = useLocalStorage("app/theme", whiteLabel.value.themeName);
+const selectedTheme = useLocalStorage("app/theme", "sleekLight");
 const isDark = useDark();
 
-// Auto-detect light/dark and use sleek theme variant
+// Use the selected theme directly from localStorage
 const themeName = computed(() => {
-  const theme = baseTheme.value || "sleek";
-  return "sleekLight"; // isDark.value ? `${theme}Light` : `${theme}Light`;
+  return selectedTheme.value || "sleekLight";
 });
 </script>
 
