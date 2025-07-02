@@ -2,6 +2,7 @@ import { appRoutes } from "./app";
 import { ledgerRoutes } from "./ledger";
 import { solidRoutes } from "./solid";
 import { toolsRoutes } from "./tools";
+import { builderRoutes } from "./builder";
 import changelog from "./changelog";
 import readme from "./readme";
 import arcade from "./arcade";
@@ -40,6 +41,7 @@ export default [
       ...appRoutes,
       ...solidRoutes,
       ...ledgerRoutes,
+      ...builderRoutes,
     ],
   },
 

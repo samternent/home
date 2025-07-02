@@ -11,6 +11,8 @@ import {
 import { useBreadcrumbs } from "../../module/breadcrumbs/useBreadcrumbs";
 
 import { useLedger } from "../../module/ledger/useLedger";
+import { provideAppBuilder } from "../../module/builder/useAppBuilder";
+import { provideLedgerApps } from "../../module/ledger/useLedgerApps";
 import Worker from "./worker?worker";
 import Console from "@/module/console/Console.vue";
 import LedgerPendingRecords from "@/module/concords/LedgerPendingRecords.vue";
@@ -24,6 +26,8 @@ import SecurityProof from "@/module/demo/SecurityProof.vue";
 new Worker();
 
 const { ledger, compressedBlob } = useLedger();
+const appBuilder = provideAppBuilder(); // Provide app builder first and get the instance
+const { apps } = provideLedgerApps(appBuilder); // Pass the app builder instance
 const { hasSolidSession, webId } = useSolid();
 
 // Revolutionary welcome state
@@ -105,29 +109,21 @@ watch(activeSubTab, () => {
 });
 
 const navTabs = computed(() => {
-  return [
-    {
-      title: "Board",
-      path: `/ledger/board`,
-    },
-    {
-      title: "Task List",
-      path: `/ledger/task-list`,
-    },
-    {
-      title: "Task Table",
-      path: `/ledger/task-table`,
-    },
-    {
-      title: "Notes",
-      path: `/ledger/notes`,
-    },
+  // Dynamic app tabs
+  const appTabs = apps.value.map(app => ({
+    title: `${app.icon} ${app.name}`,
+    path: `/ledger/app/${app.id}`,
+    app: app
+  }));
+
+  // Core ledger tabs (keep these hardcoded)
+  const coreTabs = [
     {
       title: "Users",
       path: `/ledger/users`,
     },
     {
-      title: "Permissions",
+      title: "Permissions", 
       path: `/ledger/permissions`,
     },
     {
@@ -143,6 +139,19 @@ const navTabs = computed(() => {
       path: `/ledger/demo`,
     },
   ];
+
+  // Add app builder link if no apps exist
+  if (appTabs.length === 0) {
+    return [
+      {
+        title: "➕ Create App",
+        path: `/builder`,
+      },
+      ...coreTabs
+    ];
+  }
+
+  return [...appTabs, ...coreTabs];
 });
 
 function formatBytes(bytes, decimals = 2) {
@@ -260,7 +269,7 @@ const sizeIndicator = computed(() => {
         <SecurityProof />
       </div>
       <div class="flex flex-1" v-else>
-        <RouterView />
+        <RouterView :key="$route.fullPath" />
       </div>
     </div>
     <!-- Bottom expandable panel -->

@@ -5,7 +5,15 @@ export const ledgerRoutes = [
     children: [
       {
         path: "",
-        redirect: "/ledger/board",
+        redirect: (to) => {
+          // Redirect to first app if available, otherwise to users
+          return "/ledger/users";
+        },
+      },
+      {
+        path: "app/:appId",
+        component: () => import("./RouteLedgerApp.vue"),
+        props: true,
       },
       {
         path: "demo",
@@ -33,19 +41,6 @@ export const ledgerRoutes = [
         path: ":sheetName",
         component: () => import("./RouteLedgerSheet.vue"),
         props: true,
-      },
-      {
-        path: "board",
-        component: () => import("./RouteLedgerTasks.vue"),
-        props: true,
-      },
-      {
-        path: "task-list",
-        component: () => import("./RouteLedgerTaskList.vue"),
-      },
-      {
-        path: "task-table",
-        component: () => import("./RouteLedgerTaskTable.vue"),
       },
       {
         path: "notes",
