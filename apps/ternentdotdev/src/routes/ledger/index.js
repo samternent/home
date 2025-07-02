@@ -5,7 +5,13 @@ export const ledgerRoutes = [
     children: [
       {
         path: "",
-        redirect: "/ledger/tasks",
+        redirect: "/ledger/board",
+      },
+      {
+        path: "demo",
+        component: {
+          template: '<div />', // Placeholder, content rendered in parent
+        },
       },
       {
         path: "permissions",
@@ -29,9 +35,17 @@ export const ledgerRoutes = [
         props: true,
       },
       {
-        path: "tasks",
+        path: "board",
         component: () => import("./RouteLedgerTasks.vue"),
         props: true,
+      },
+      {
+        path: "task-list",
+        component: () => import("./RouteLedgerTaskList.vue"),
+      },
+      {
+        path: "task-table",
+        component: () => import("./RouteLedgerTaskTable.vue"),
       },
       {
         path: "notes",

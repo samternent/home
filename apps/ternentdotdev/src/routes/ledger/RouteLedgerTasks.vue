@@ -8,8 +8,8 @@ import BoardColumn from "@/module/board/BoardColumn.vue";
 const { ledger, addItem, getCollection } = useLedger();
 
 useBreadcrumbs({
-  path: "/ledger/tasks",
-  name: "Tasks",
+  path: "/ledger/board",
+  name: "Board",
 });
 
 function addTask(columnId, task) {
@@ -81,42 +81,69 @@ const newColumn = shallowRef("");
       >
         <div class="task-list">
           <div
-            class="task-item"
+            class="task-item group bg-white dark:bg-base-200 rounded-xl shadow border border-base-200 hover:shadow-lg transition flex flex-col gap-1 px-4 py-3 cursor-pointer"
             v-for="task in columnTasks(column.data.id)"
             :key="task.data.id"
           >
-            <SButton
-              variant="ghost-icon"
-              size="micro"
-              @click="completeTask(task.data)"
-              class="task-status-btn"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="task-status-icon"
-                :class="{
-                  'task-completed': task.data.completed,
-                  'task-pending': !task.data.completed,
-                }"
+            <div class="flex items-center gap-3 mb-1">
+              <SButton
+                variant="ghost-icon"
+                size="micro"
+                @click.stop="completeTask(task.data)"
+                class="task-status-btn"
               >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                />
-              </svg>
-            </SButton>
-
-            <span
-              class="task-title"
-              :class="{ 'task-title-completed': task.data.completed }"
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="task-status-icon"
+                  :class="{
+                    'task-completed': task.data.completed,
+                    'task-pending': !task.data.completed,
+                  }"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                  />
+                </svg>
+              </SButton>
+              <span
+                class="font-semibold text-base-content text-base group-hover:text-primary transition"
+                :class="{ 'line-through opacity-60': task.data.completed }"
+              >
+                {{ task.data.title || "Untitled Task" }}
+              </span>
+              <span
+                v-if="task.data.priority"
+                :class="{
+                  'badge badge-outline': task.data.priority === 'Normal',
+                  'badge badge-warning': task.data.priority === 'High',
+                  'badge badge-error': task.data.priority === 'Critical',
+                  'badge badge-success': task.data.priority === 'Low',
+                }"
+                >⚡ {{ task.data.priority }}</span
+              >
+              <span v-if="task.completed" class="badge badge-success ml-2"
+                >Completed</span
+              >
+            </div>
+            <div
+              class="flex flex-wrap items-center gap-3 text-xs text-base-content/60 mb-1"
             >
-              {{ task.data.title }}
-            </span>
+              <span v-if="task.data.assignee" class="badge badge-info"
+                >👤 {{ task.data.assignee }}</span
+              >
+              <span v-if="task.data.dueDate" class="badge badge-ghost"
+                >⏰ Due: {{ task.data.dueDate }}</span
+              >
+              <span v-if="task.data.description" class="truncate max-w-xs">{{
+                task.data.description
+              }}</span>
+            </div>
           </div>
         </div>
       </BoardColumn>
@@ -149,7 +176,7 @@ const newColumn = shallowRef("");
   flex: 1;
   width: 100%;
   padding: 1.5rem;
-  background: var(--bg-primary);
+  background: oklch(var(--b1));
   min-height: 100vh;
 }
 
@@ -173,21 +200,12 @@ const newColumn = shallowRef("");
 }
 
 .task-item {
-  background: var(--bg-primary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 0.75rem;
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-  min-height: 3rem;
-  box-shadow: var(--shadow-micro);
-  transition: all 0.12s ease;
+  /* @apply group bg-white dark:bg-base-200 rounded-xl shadow border border-base-200 hover:shadow-lg transition flex flex-col gap-1 px-4 py-3 cursor-pointer; */
 }
 
 .task-item:hover {
   box-shadow: var(--shadow-soft);
-  border-color: var(--text-tertiary);
+  border-color: oklch(var(--bc) / 0.3);
 }
 
 .task-status-btn {
@@ -211,7 +229,7 @@ const newColumn = shallowRef("");
 .task-title {
   flex: 1;
   font-size: 0.8125rem;
-  color: var(--text-secondary);
+  color: oklch(var(--bc) / 0.7);
   line-height: 1.4;
   transition: all 0.12s ease;
 }
@@ -222,8 +240,8 @@ const newColumn = shallowRef("");
 }
 
 .add-column-section {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
+  background: oklch(var(--b2));
+  border: 1px solid oklch(var(--b3));
   border-radius: var(--radius-lg);
   padding: 1rem;
   display: flex;

@@ -22,19 +22,19 @@ const tools = [
 
 <template>
   <div class="min-h-screen bg-base-100">
-    <div class="max-w-6xl mx-auto px-6 py-16">
+    <div class="w-full px-6 py-16">
       <!-- Header -->
       <div class="text-center mb-16">
         <h1 class="text-4xl md:text-5xl font-semibold tracking-tight text-base-content mb-4">
           Development Tools
         </h1>
-        <p class="text-lg text-base-content/70 max-w-2xl mx-auto">
+        <p class="text-lg text-base-content/70">
           Professional utilities designed to accelerate your development workflow
         </p>
       </div>
       
       <!-- Tools Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <router-link 
           v-for="tool in tools" 
           :key="tool.path"

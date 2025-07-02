@@ -26,20 +26,20 @@ const separatorIcons = {
 
 const sizeClasses = computed(() => ({
   nano: "breadcrumb-nano",
-  micro: "breadcrumb-micro", 
+  micro: "breadcrumb-micro",
   small: "breadcrumb-small",
 }));
 </script>
 
 <template>
-  <nav 
+  <nav
     class="breadcrumb-wrapper"
     :class="sizeClasses[size]"
     aria-label="Breadcrumb"
   >
     <ol class="breadcrumb-list">
-      <li 
-        v-for="(breadcrumb, index) in breadcrumbs" 
+      <li
+        v-for="(breadcrumb, index) in breadcrumbs"
         :key="breadcrumb.path"
         class="breadcrumb-item"
       >
@@ -48,29 +48,28 @@ const sizeClasses = computed(() => ({
           :to="breadcrumb.path"
           class="breadcrumb-link"
           :class="{
-            'breadcrumb-inactive': index < breadcrumbs.length - 1,
             'breadcrumb-active': index === breadcrumbs.length - 1,
           }"
           :aria-current="index === breadcrumbs.length - 1 ? 'page' : undefined"
         >
           <!-- Icon if provided -->
-          <span v-if="breadcrumb.icon" class="breadcrumb-icon" v-html="breadcrumb.icon" />
-          
+          <span
+            v-if="breadcrumb.icon"
+            class="breadcrumb-icon"
+            v-html="breadcrumb.icon"
+          />
+
           <span class="breadcrumb-text">{{ breadcrumb.name }}</span>
         </RouterLink>
-        
+
         <!-- Separator -->
-        <div 
-          v-if="index < breadcrumbs.length - 1"
-          class="breadcrumb-separator"
-        >
+        <div v-if="index < breadcrumbs.length - 1" class="breadcrumb-separator">
           <svg
             v-if="separator === 'chevron'"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
             stroke-width="2"
-            stroke="currentColor"
             class="breadcrumb-separator-icon"
           >
             <path
@@ -79,14 +78,13 @@ const sizeClasses = computed(() => ({
               :d="separatorIcons.chevron"
             />
           </svg>
-          
+
           <svg
             v-else-if="separator === 'arrow'"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
             stroke-width="2"
-            stroke="currentColor"
             class="breadcrumb-separator-icon"
           >
             <path
@@ -95,9 +93,17 @@ const sizeClasses = computed(() => ({
               :d="separatorIcons.arrow"
             />
           </svg>
-          
-          <span v-else-if="separator === 'slash'" class="breadcrumb-separator-text">/</span>
-          <span v-else-if="separator === 'dot'" class="breadcrumb-separator-text">•</span>
+
+          <span
+            v-else-if="separator === 'slash'"
+            class="breadcrumb-separator-text"
+            >/</span
+          >
+          <span
+            v-else-if="separator === 'dot'"
+            class="breadcrumb-separator-text"
+            >•</span
+          >
         </div>
       </li>
     </ol>
@@ -114,7 +120,7 @@ const sizeClasses = computed(() => ({
 .breadcrumb-list {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0;
 }
 
 .breadcrumb-item {
@@ -125,29 +131,23 @@ const sizeClasses = computed(() => ({
 .breadcrumb-link {
   display: flex;
   align-items: center;
-  gap: 0.375rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: var(--radius-md);
-  transition: all 0.12s ease;
+  gap: 0.25rem;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  transition: all 0.15s ease;
   text-decoration: none;
   font-size: 0.75rem;
   font-weight: 500;
   line-height: 1;
 }
 
-.breadcrumb-inactive {
-  color: var(--text-tertiary);
-}
-
-.breadcrumb-inactive:hover {
-  color: var(--text-secondary);
-  background: var(--bg-secondary);
+.breadcrumb-link:hover:not(.breadcrumb-active) {
+  background: rgba(99, 102, 241, 0.1);
 }
 
 .breadcrumb-active {
-  color: var(--text-primary);
-  font-weight: 600;
   pointer-events: none;
+  font-weight: 600;
 }
 
 .breadcrumb-icon {
@@ -168,18 +168,19 @@ const sizeClasses = computed(() => ({
   align-items: center;
   justify-content: center;
   margin: 0 0.25rem;
-  color: var(--text-tertiary);
-  opacity: 0.6;
+  opacity: 1;
 }
 
 .breadcrumb-separator-icon {
   width: 0.75rem;
   height: 0.75rem;
+  stroke: rgb(107, 114, 128);
 }
 
 .breadcrumb-separator-text {
   font-size: 0.75rem;
   font-weight: 400;
+  color: rgb(107, 114, 128);
 }
 
 /* Size variants */
@@ -187,6 +188,7 @@ const sizeClasses = computed(() => ({
   font-size: 0.6875rem;
   padding: 0.125rem 0.375rem;
   gap: 0.25rem;
+  border-radius: 0.375rem;
 }
 
 .breadcrumb-nano .breadcrumb-icon {
@@ -203,12 +205,14 @@ const sizeClasses = computed(() => ({
   font-size: 0.75rem;
   padding: 0.25rem 0.5rem;
   gap: 0.375rem;
+  border-radius: 0.5rem;
 }
 
 .breadcrumb-small .breadcrumb-link {
   font-size: 0.8125rem;
   padding: 0.375rem 0.625rem;
   gap: 0.5rem;
+  border-radius: 0.5rem;
 }
 
 .breadcrumb-small .breadcrumb-icon {
@@ -223,5 +227,26 @@ const sizeClasses = computed(() => ({
 
 .breadcrumb-small .breadcrumb-text {
   max-width: 10rem;
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+  .breadcrumb-link:hover:not(.breadcrumb-active) {
+    background: rgba(99, 102, 241, 0.1);
+    color: rgb(129, 140, 248);
+  }
+
+  .breadcrumb-active {
+    background: rgba(99, 102, 241, 0.15);
+    color: rgb(129, 140, 248);
+  }
+
+  .breadcrumb-separator-icon {
+    stroke: rgb(156, 163, 175);
+  }
+
+  .breadcrumb-separator-text {
+    color: rgb(156, 163, 175);
+  }
 }
 </style>

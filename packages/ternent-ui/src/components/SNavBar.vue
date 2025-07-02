@@ -1,6 +1,7 @@
 <script setup>
 import { breakpointsTailwind, useBreakpoints } from "@vueuse/core";
 import { computed } from "vue";
+import { designTokens, spacing, typography } from "../design-system/tokens.js";
 
 const breakpoints = useBreakpoints(breakpointsTailwind);
 const smallerThanMd = breakpoints.smaller("md");
@@ -13,7 +14,7 @@ const props = defineProps({
   variant: {
     type: String,
     default: "default",
-    validator: (value) => ["default", "minimal", "bordered", "blur"].includes(value),
+    validator: (value) => ["default", "minimal", "bordered", "blur", "glass"].includes(value),
   },
   sticky: {
     type: Boolean,
@@ -22,15 +23,23 @@ const props = defineProps({
 });
 
 const variantClasses = computed(() => ({
-  default: "bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 shadow-sm",
-  minimal: "bg-white/80 dark:bg-slate-950/80 backdrop-blur-sm border-b border-slate-200/50 dark:border-slate-800/50",
-  bordered: "bg-white dark:bg-slate-950 border-b-2 border-indigo-500 shadow-md",
-  blur: "bg-white/90 dark:bg-slate-950/90 backdrop-blur-md border-b border-slate-200/60 dark:border-slate-800/60",
+  default: `bg-base-100/95 backdrop-blur-sm 
+            border-b border-base-300/20 
+            shadow-sm hover:shadow-md transition-all duration-300`,
+  minimal: `bg-base-100/60 backdrop-blur-md 
+           border-b border-base-300/10`,
+  bordered: `bg-base-100 
+            border-b-2 border-primary/80 shadow-lg`,
+  blur: `bg-base-100/80 backdrop-blur-xl 
+        border-b border-base-300/30`,
+  glass: `bg-base-100/30 backdrop-blur-xl 
+         border-b border-base-100/20 
+         shadow-[0_8px_32px_rgba(0,0,0,0.08)]`,
 }));
 </script>
 <template>
   <header 
-    class="w-full z-40 transition-all duration-200"
+    class="w-full z-40 transition-all duration-300 ease-out"
     :class="[
       variantClasses[variant],
       {
@@ -38,8 +47,8 @@ const variantClasses = computed(() => ({
       }
     ]"
   >
-    <div class="container-modern">
-      <nav class="flex items-center justify-between h-16">
+    <div class="w-full px-3 lg:px-4">
+      <nav class="flex items-center justify-between h-12">
         <!-- Left section -->
         <div class="flex items-center flex-1">
           <slot name="nav" v-if="smallerThanMd" />
@@ -48,10 +57,14 @@ const variantClasses = computed(() => ({
             <slot name="start">
               <RouterLink
                 to="/"
-                class="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 font-bold text-lg group"
+                class="flex items-center gap-2 px-2 py-1 rounded-lg 
+                       hover:bg-neutral-100/50 
+                       transition-all duration-200 font-semibold text-base group 
+                       focus:outline-none focus:ring-2 focus:ring-primary/20"
               >
                 {{ title }}
-                <span class="text-indigo-500 transition-transform duration-200 group-hover:scale-110">
+                <span class="text-primary transition-transform duration-200 group-hover:scale-110 
+                           group-hover:rotate-12">
                   .
                 </span>
               </RouterLink>
@@ -65,7 +78,7 @@ const variantClasses = computed(() => ({
         </div>
 
         <!-- Right section -->
-        <div class="flex items-center justify-end flex-1 gap-3">
+        <div class="flex items-center justify-end flex-1 gap-2">
           <slot name="end" />
         </div>
       </nav>

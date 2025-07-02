@@ -1,15 +1,15 @@
 # Blockchain Package
 
-High-performance Rust/WebAssembly blockchain implementation with proof-of-work mining and encryption.
+High-performance Rust/WebAssembly blockchain implementation with basic block creation and encryption.
 
 ## Overview
 
-High-performance Rust/WebAssembly blockchain implementation with proof-of-work mining and encryption.
+High-performance Rust/WebAssembly blockchain implementation with basic block creation and encryption.
 
 ## Features
 
 - ✅ **WebAssembly Performance**:  Written in Rust and compiled to WASM
-- ✅ **Proof of Work Mining**:  Configurable difficulty proof-of-work algorithm
+- ✅ **Basic Block Creation**:  Block creation with nonce-based hashing
 - ✅ **Cryptographic Hashing**:  SHA-256 based data hashing
 - ✅ **Key Generation**:  X25519 public/private key pair generation
 - ✅ **Blockchain Creation**:  Genesis block creation and chain management

@@ -34,7 +34,7 @@
     "generate-docs": "node scripts/generate-docs.js",
     "enhance-docs": "node scripts/enhance-docs.js",
     "docs": "npm run generate-docs && npm run enhance-docs",
-    "dev:docker": "cd .ops && docker-compose up -d"
+    "dev:docker": "cd .ops && docker compose up -d"
   },
   "pnpm": {
     "patchedDependencies": {}

@@ -1,117 +1,154 @@
 <script setup>
-import { computed, shallowRef } from "vue";
-import { useLocalStorage } from "@vueuse/core";
-import hljs from "highlight.js/lib/core";
-import javascript from "highlight.js/lib/languages/javascript";
-import { useAppShell } from "@/module/app-shell/useAppShell";
-import { useWhiteLabel } from "@/module/brand/useWhiteLabel";
-import { SButton, SAlert, SIndicator, SCard, SInput } from "ternent-ui/components";
-import ternentUIThemes from "ternent-ui/themes";
+import { SButton } from "ternent-ui/components";
+import { useRouter } from "vue-router";
 
-hljs.registerLanguage("javascript", javascript);
+const router = useRouter();
 
-const { appVersion } = useAppShell();
-const whiteLabel = useWhiteLabel();
-
-const host = window.location.host;
-const version = window.__APP_VERSION__;
-
-const theme = useLocalStorage("app/theme");
-const themeName = shallowRef(theme.value);
-const themeConfig = computed({
-  get() {
-    return theme.value;
-  },
-  set({ name }) {
-    themeName.value = name;
-    theme.value = name;
-  },
-});
-
-const themes = computed(() =>
-  Object.entries(ternentUIThemes).map(([name, theme]) => ({
-    name,
-    value: theme,
-  }))
-);
+function startResistance() {
+  router.push("/app");
+}
 </script>
+
 <template>
-  <div class="min-h-screen bg-base-100">
-    <!-- Hero section -->
-    <div class="relative overflow-hidden">
-      <!-- Subtle gradient background -->
-      <div class="absolute inset-0 bg-gradient-to-br from-base-100 via-base-200 to-base-100"></div>
-      
-      <div class="relative max-w-4xl mx-auto px-6 py-24">
-        <div class="text-center space-y-8">
-          <!-- Company info -->
-          <div class="space-y-2">
-            <div class="text-xs font-mono text-base-content/60 tracking-widest uppercase">
-              # {{ host }}
+  <div class="h-screen bg-base-100 overflow-hidden">
+    <!-- Hero Section -->
+    <div
+      class="h-full w-full bg-gradient-to-br from-base-100 via-base-200 to-base-300 flex items-center justify-center relative"
+    >
+      <!-- Background Pattern -->
+      <div class="absolute inset-0 opacity-5">
+        <div
+          class="absolute inset-0"
+          style="
+            background-image: radial-gradient(
+              circle at 1px 1px,
+              rgba(255, 255, 255, 0.15) 1px,
+              transparent 0
+            );
+            background-size: 20px 20px;
+          "
+        ></div>
+      </div>
+
+      <!-- Content -->
+      <div class="relative z-10 text-center space-y-6 px-6 max-w-4xl mx-auto">
+        <!-- Rebellion Badge -->
+        <div
+          class="inline-flex items-center gap-2 bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-300 px-3 py-1 rounded-full text-sm font-medium"
+        >
+          <span class="text-lg">🔥</span>
+          <span>Encrypted Rebellion Against Corporate Surveillance</span>
+        </div>
+
+        <!-- Main Headline -->
+        <h1 class="text-4xl md:text-6xl font-thin tracking-tighter">
+          <span class="text-base-content">ternent</span>
+          <span class="text-primary">.dev</span>
+        </h1>
+
+        <!-- Revolutionary Value Proposition -->
+        <p
+          class="text-lg md:text-xl text-base-content/80 max-w-2xl mx-auto leading-relaxed"
+        >
+          <span class="text-primary font-bold">Your data, your rules.</span>
+          Organize without fear. Collaborate dangerously.
+        </p>
+
+        <p class="text-base text-base-content/70 max-w-xl mx-auto">
+          100% free, open-source decentralized collaboration platform built for
+          rebels, activists, and anyone who refuses to surrender their digital
+          sovereignty.
+        </p>
+
+        <!-- Resistance Features -->
+        <div class="grid md:grid-cols-3 gap-4 mt-8 mb-8 max-w-3xl mx-auto">
+          <div class="text-center space-y-2">
+            <div
+              class="w-14 h-14 bg-red-100 dark:bg-red-900/20 rounded-xl mx-auto flex items-center justify-center"
+            >
+              <span class="text-2xl">🔒</span>
             </div>
-            <h1 class="text-5xl md:text-6xl font-semibold tracking-tight text-base-content">
-              Ternent Dot Dev
-            </h1>
-            <p class="text-lg text-base-content/70 max-w-2xl mx-auto leading-relaxed">
-              Specialists in Frontend and Platform Engineering
+            <h3 class="font-bold text-sm">Cryptographically Secure</h3>
+            <p class="text-xs text-base-content/70">
+              Every action signed and verifiable - impossible to forge
             </p>
           </div>
-
-          <!-- Location -->
-          <div class="flex justify-center">
-            <a
-              href="https://www.google.com/maps/@52.4973492,-1.8636315,11z"
-              target="_blank"
-              class="inline-flex items-center gap-2 text-sm text-base-content/60 hover:text-primary 
-                     transition-colors duration-200 group"
+          <div class="text-center space-y-2">
+            <div
+              class="w-14 h-14 bg-blue-100 dark:bg-blue-900/20 rounded-xl mx-auto flex items-center justify-center"
             >
-              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
-              </svg>
-              Birmingham, UK
-              <svg class="w-3 h-3 opacity-40 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-              </svg>
-            </a>
+              <span class="text-2xl">🌐</span>
+            </div>
+            <h3 class="font-bold text-sm">Works Offline</h3>
+            <p class="text-xs text-base-content/70">
+              Organize anywhere - basements, protests, air-gapped environments
+            </p>
           </div>
+          <div class="text-center space-y-2">
+            <div
+              class="w-14 h-14 bg-green-100 dark:bg-green-900/20 rounded-xl mx-auto flex items-center justify-center"
+            >
+              <span class="text-2xl">🔥</span>
+            </div>
+            <h3 class="font-bold text-sm">No Surveillance</h3>
+            <p class="text-xs text-base-content/70">
+              No servers to raid, no data to steal, no corporate overlords
+            </p>
+          </div>
+        </div>
 
-          <!-- Navigation -->
-          <div class="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8">
-            <router-link 
-              to="/tools" 
-              class="inline-flex items-center gap-2 bg-primary text-primary-content px-6 py-3 
-                     rounded-full font-medium hover:scale-105 transition-transform duration-200
-                     shadow-sm hover:shadow-md"
+        <!-- Revolutionary CTA -->
+        <div class="space-y-4">
+          <SButton
+            size="lg"
+            class="btn-primary w-auto px-8 py-3 text-base font-semibold bg-red-600 hover:bg-red-700 border-red-600 hover:border-red-700"
+            @click="startResistance"
+          >
+            🚀 Start Your First Resistance Room
+          </SButton>
+          <p class="text-xs text-base-content/60">
+            No signup required • Works completely offline • Free forever
+          </p>
+        </div>
+
+        <!-- Revolutionary Actions -->
+        <div class="flex justify-center gap-4 pt-4">
+          <button
+            @click="$router.push('/app')"
+            class="text-sm text-base-content/70 hover:text-primary transition-colors"
+          >
+            Launch Platform
+          </button>
+          <span class="text-base-content/30">•</span>
+          <button
+            @click="$router.push('/solid')"
+            class="text-sm text-base-content/70 hover:text-primary transition-colors"
+          >
+            Connect Backup Storage
+          </button>
+        </div>
+
+        <!-- Resistance Proof -->
+        <div class="pt-8">
+          <p class="text-xs text-base-content/50 mb-3">
+            Built for digital sovereignty
+          </p>
+          <div class="flex justify-center items-center gap-6 opacity-60">
+            <div
+              class="w-20 h-8 bg-base-content/10 rounded flex items-center justify-center"
             >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-              </svg>
-              Development Tools
-            </router-link>
-            
-            <router-link 
-              to="/app/profile" 
-              class="inline-flex items-center gap-2 border border-base-300 text-base-content px-6 py-3 
-                     rounded-full font-medium hover:border-base-400 hover:bg-base-200/50 
-                     transition-all duration-200"
+              <span class="text-xs font-medium">OFFLINE</span>
+            </div>
+            <div
+              class="w-20 h-8 bg-base-content/10 rounded flex items-center justify-center"
             >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-              </svg>
-              Identity Profile
-            </router-link>
-            
-            <router-link 
-              to="/solid" 
-              class="inline-flex items-center gap-2 text-base-content/70 hover:text-base-content 
-                     px-6 py-3 font-medium transition-colors duration-200"
+              <span class="text-xs font-medium">ENCRYPTED</span>
+            </div>
+            <div
+              class="w-20 h-8 bg-base-content/10 rounded flex items-center justify-center"
             >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
-              </svg>
-              Solid Pod
-            </router-link>
+              <span class="text-xs font-medium">OPEN</span>
+            </div>
           </div>
         </div>
       </div>

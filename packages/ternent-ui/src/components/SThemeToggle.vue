@@ -57,7 +57,17 @@ const themes = [
   { name: "winter", label: "❄️ Winter", category: "Light" },
   { name: "dim", label: "🔅 Dim", category: "Dark" },
   { name: "nord", label: "🏔️ Nord", category: "Light" },
-  { name: "sunset", label: "🌅 Sunset", category: "Light" }
+  { name: "sunset", label: "🌅 Sunset", category: "Light" },
+  
+  // Custom ternent.dev themes
+  { name: "azureBloom", label: "🌸 Azure Bloom", category: "Light" },
+  { name: "azureBloomDark", label: "🌸 Azure Bloom Dark", category: "Dark" },
+  { name: "corporateProfessional", label: "🏢 Corporate Pro", category: "Light" },
+  { name: "corporateDark", label: "🏢 Corporate Dark", category: "Dark" },
+  { name: "neonBlanc", label: "⚪ Neon Blanc", category: "Light" },
+  { name: "neonNoir", label: "⚫ Neon Noir", category: "Dark" },
+  { name: "marshmallowLight", label: "🤍 Marshmallow", category: "Light" },
+  { name: "marshmallowDark", label: "🖤 Marshmallow Dark", category: "Dark" },
 ];
 
 const currentTheme = computed(() => {
@@ -194,7 +204,7 @@ const featuredThemes = computed(() => themes.filter(t => t.featured));
       >
         <div
           :class="[
-            'w-4 h-4 bg-white rounded-full shadow-md transform transition-transform duration-200 ease-in-out',
+            'w-4 h-4 bg-base-100 rounded-full shadow-md transform transition-transform duration-200 ease-in-out',
             isDark ? 'translate-x-5' : 'translate-x-0'
           ]"
         />

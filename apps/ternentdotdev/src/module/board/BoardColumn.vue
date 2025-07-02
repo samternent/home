@@ -53,8 +53,8 @@ function createTask() {
 .board-column {
   min-width: 20rem;
   width: 20rem;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
+  background: oklch(var(--b2));
+  border: 1px solid oklch(var(--b3));
   border-radius: var(--radius-lg);
   display: flex;
   flex-direction: column;
@@ -65,13 +65,13 @@ function createTask() {
 
 .board-column-header {
   padding: 1rem;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid oklch(var(--bc) / 0.1);
 }
 
 .board-column-title {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: oklch(var(--bc));
   text-align: center;
   margin: 0;
 }
@@ -84,8 +84,8 @@ function createTask() {
 
 .board-column-footer {
   padding: 1rem;
-  border-top: 1px solid var(--border-light);
-  background: var(--bg-tertiary);
+  border-top: 1px solid oklch(var(--bc) / 0.1);
+  background: oklch(var(--b3));
   border-bottom-left-radius: var(--radius-lg);
   border-bottom-right-radius: var(--radius-lg);
   display: flex;

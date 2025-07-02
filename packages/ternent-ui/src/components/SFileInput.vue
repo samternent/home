@@ -169,10 +169,10 @@ function handleDragLeave() {
     <label
       for="file-input"
       :class="[
-        'inline-flex items-center gap-2 border border-slate-300 dark:border-slate-600 rounded-xl',
-        'bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700',
-        'cursor-pointer transition-all duration-200 hover:border-indigo-400',
-        'text-slate-700 dark:text-slate-300 font-medium',
+        'inline-flex items-center gap-2 border border-base-300 rounded-xl',
+        'bg-base-100 hover:bg-base-200',
+        'cursor-pointer transition-all duration-200 hover:border-primary',
+        'text-base-content font-medium',
         sizeClasses[size]
       ]"
     >

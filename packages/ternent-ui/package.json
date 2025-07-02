@@ -11,7 +11,8 @@
     "./components": "./dist/components.js",
     "./styles": "./dist/style.css",
     "./themes": "./dist/themes.js",
-    "./use": "./dist/use.js"
+    "./use": "./dist/use.js",
+    "./tailwind.config": "./tailwind.config.js"
   },
   "scripts": {
     "build": "vite build",

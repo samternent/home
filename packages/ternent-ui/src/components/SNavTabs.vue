@@ -33,10 +33,11 @@ const currentPathTitle = computed(
 );
 </script>
 <template>
-  <div class="flex items-center px-6 py-3 border-b border-slate-200/60 dark:border-slate-700/60">
-    <h2 class="text-xl font-medium text-slate-800 dark:text-slate-200 border-r border-slate-200/60 dark:border-slate-700/60 pr-6 mr-6">
-      {{ title }}
-    </h2>
+  <div class="sticky top-0 z-40 bg-base-100/95 backdrop-blur-sm border-b border-base-300/60 shadow-sm">
+    <div class="flex items-center px-6 py-3">
+      <h2 class="text-xl font-medium text-base-content border-r border-base-300/60 pr-6 mr-6">
+        {{ title }}
+      </h2>
     <STabs
       v-if="mdAndLarger"
       :items="items"
@@ -50,6 +51,7 @@ const currentPathTitle = computed(
       class="flex w-full justify-between flex-1 items-center"
     >
       <span class="px-4">{{ currentPathTitle }}</span>
+    </div>
     </div>
   </div>
 </template>

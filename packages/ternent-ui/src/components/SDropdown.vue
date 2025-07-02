@@ -57,9 +57,9 @@ function closeMenu() {
       <div
         v-if="showMenu"
         :class="[
-          'absolute bg-white dark:bg-slate-900 z-50 flex flex-col overflow-hidden text-left',
-          'shadow-xl border border-slate-200 dark:border-slate-700 rounded-2xl backdrop-blur-md',
-          'ring-1 ring-black/5 dark:ring-white/10',
+          'absolute bg-base-100 z-50 flex flex-col overflow-hidden text-left',
+          'shadow-xl border border-base-300 rounded-2xl backdrop-blur-md',
+          'ring-1 ring-base-content/5',
           positionClasses,
           props.width
         ]"

@@ -1,23 +1,23 @@
 # Proof of Work Package
 
-A TypeScript implementation of a blockchain ledger system with proof-of-work mining capabilities.
+A TypeScript implementation of a blockchain ledger system with basic block creation and hashing capabilities.
 
 ## Overview
 
 This package provides a complete blockchain ledger system that includes:
 
 - Record management with digital signatures
-- Block creation and mining with proof-of-work
+- Block creation and hashing with SHA-256
 - Chain validation and consensus mechanisms
 - Encrypted data storage support
 
 ## Features
 
 - ✅ **Blockchain Ledger**: Create and manage a chain of blocks containing records
-- ✅ **Proof of Work Mining**: Mine blocks using cryptographic hashing
+- ✅ **Basic Block Mining**: Create blocks using cryptographic hashing (simplified approach)
 - ✅ **Record Management**: Add records with timestamps, signatures, and optional encryption
-- ✅ **Chain Validation**: Verify the integrity of the blockchain
-- ✅ **Consensus Algorithm**: Resolve conflicts between multiple ledgers
+- ✅ **Chain Validation**: Verify the integrity of the blockchain through hash linkage
+- ✅ **Consensus Algorithm**: Resolve conflicts between multiple ledgers using longest chain rule
 - ✅ **Flexible Data Storage**: Support for custom data structures and collections
 
 ## Installation

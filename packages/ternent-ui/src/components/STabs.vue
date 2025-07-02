@@ -17,12 +17,16 @@ const props = defineProps({
   type: {
     type: String,
     default: "underline",
-    validator: (value) => ["underline", "pills", "bordered", "segmented"].includes(value),
+    validator: (value) => ["underline", "pills", "bordered", "segmented", "stripe"].includes(value),
   },
   size: {
     type: String,
     default: "micro",
-    validator: (value) => ["nano", "micro", "tiny", "small", "medium"].includes(value),
+    validator: (value) => ["nano", "micro", "tiny", "small", "medium", "sm", "md", "lg"].includes(value),
+  },
+  sticky: {
+    type: Boolean,
+    default: false,
   },
 });
 
@@ -34,42 +38,48 @@ function isExactActiveLink(t) {
 }
 
 const sizeClasses = computed(() => ({
-  nano: "text-sm px-3 py-1.5",
-  micro: "text-sm px-3.5 py-2", 
-  tiny: "text-base px-4 py-2",
-  small: "text-base px-4 py-2.5",
-  medium: "text-lg px-5 py-3",
+  nano: "text-xs px-3 py-1.5",
+  micro: "text-sm px-4 py-2", 
+  tiny: "text-sm px-5 py-2.5",
+  small: "text-base px-6 py-3",
+  medium: "text-lg px-7 py-3.5",
+  // Legacy size mappings for compatibility
+  sm: "text-sm px-4 py-2",
+  md: "text-base px-5 py-2.5", 
+  lg: "text-lg px-6 py-3",
 }));
 
 const typeClasses = computed(() => ({
-  underline: "border-b border-transparent hover:border-slate-300/60 dark:hover:border-slate-400/60 transition-all duration-200",
-  pills: "rounded-md hover:bg-slate-100/80 dark:hover:bg-slate-700/40 transition-all duration-200",
-  bordered: "border border-slate-200/60 dark:border-slate-700/60 hover:border-indigo-300/60 dark:hover:border-indigo-400/60 transition-all duration-200",
-  segmented: "first:rounded-l-md last:rounded-r-md border-r border-slate-200/60 dark:border-slate-700/60 last:border-r-0 hover:bg-slate-50/50 dark:hover:bg-slate-700/30 transition-all duration-200",
+  underline: "relative transition-all duration-200 ease-out hover:text-base-content/80",
+  pills: "rounded-lg hover:bg-base-200/60 transition-all duration-200 ease-out border border-transparent hover:border-base-300/40",
+  bordered: "border border-base-300/40 hover:border-base-300/60 hover:bg-base-50/50 transition-all duration-200 ease-out rounded-lg",
+  segmented: "first:rounded-l-lg last:rounded-r-lg border-r border-base-300/30 last:border-r-0 hover:bg-base-100/80 transition-all duration-200 ease-out relative",
+  stripe: "relative text-base-content/60 hover:text-base-content",
 }));
 
 const activeClasses = computed(() => ({
-  underline: "border-indigo-500 dark:border-indigo-400 text-indigo-600 dark:text-indigo-300 font-medium",
-  pills: "bg-indigo-100/80 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-200 font-medium shadow-sm",
-  bordered: "border-indigo-300/80 dark:border-indigo-500/80 bg-indigo-50/60 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-200 font-medium",
-  segmented: "bg-indigo-600 dark:bg-indigo-500 text-white font-medium shadow-sm z-10",
+  underline: "text-primary font-medium after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-gradient-to-r after:from-primary after:to-secondary after:rounded-full",
+  pills: "bg-primary/10 text-primary font-medium border-primary/30 shadow-sm",
+  bordered: "border-primary/50 bg-primary/5 text-primary font-medium shadow-sm",
+  segmented: "bg-base-100 text-primary font-medium shadow-sm z-10",
+  stripe: "text-base-content font-semibold relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-gradient-to-r after:from-primary after:to-secondary",
 }));
 </script>
 <template>
-  <div class="relative">
-    <!-- Background line for underline type -->
-    <div 
-      v-if="type === 'underline'" 
-      class="absolute bottom-0 left-0 right-0 h-px bg-slate-200/60 dark:bg-slate-700/60"
-    />
-    
+  <div 
+    class="relative"
+    :class="{
+      'sticky top-0 z-40 bg-base-100/95 border-b border-base-300/40': sticky,
+      'border-b border-base-300/20': type === 'stripe'
+    }"
+  >
     <nav 
       role="tablist"
       class="flex relative"
       :class="{
         'space-x-1': type === 'pills',
         'space-x-0': type !== 'pills',
-        'bg-slate-100 dark:bg-slate-800 rounded-xl p-1': type === 'segmented',
+        'bg-gradient-to-r from-base-200/60 to-base-300/40 rounded-2xl p-1.5 border border-base-300/30': type === 'segmented',
       }"
     >
       <RouterLink
@@ -77,7 +87,7 @@ const activeClasses = computed(() => ({
         :key="`tab-${t.path}`"
         :to="t.path"
         role="tab"
-        class="relative flex items-center gap-2 font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:ring-offset-1"
+        class="relative flex items-center gap-2 font-medium focus:outline-none group text-base-content/70 flex-1 justify-center"
         :class="[
           sizeClasses[size],
           typeClasses[type],
@@ -90,22 +100,28 @@ const activeClasses = computed(() => ({
         <!-- Icon if provided -->
         <span v-if="t.icon" class="w-4 h-4 flex-shrink-0" v-html="t.icon" />
         
-        <span class="truncate">{{ t.title }}</span>
+        <span class="truncate relative z-10 text-sm">{{ t.title }}</span>
         
-        <!-- Badge if provided -->
+        <!-- Enhanced Badge -->
         <span 
           v-if="t.badge" 
-          class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100/80 dark:bg-slate-700/60 text-slate-600 dark:text-slate-300"
+          class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary"
         >
           {{ t.badge }}
         </span>
-        
-        <!-- Active indicator for underline type -->
-        <span 
-          v-if="type === 'underline' && ((!exact && isActiveLink(t)) || (exact && isExactActiveLink(t)))"
-          class="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-500 rounded-full"
-        />
       </RouterLink>
     </nav>
   </div>
 </template>
+
+<style scoped>
+/* Clean, minimal focus styles */
+a:focus {
+  outline: none;
+}
+
+a:focus-visible {
+  outline: 2px solid hsl(var(--primary) / 0.3);
+  outline-offset: 2px;
+}
+</style>

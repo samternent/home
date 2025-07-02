@@ -1,5 +1,5 @@
 <script setup>
-import { computed, useAttrs, useSlots } from "vue";
+import { computed, ref, nextTick } from "vue";
 
 const props = defineProps({
   modelValue: {
@@ -12,13 +12,13 @@ const props = defineProps({
   },
   size: {
     type: String,
-    default: "micro",
-    validator: (value) => ["nano", "micro", "small", "medium"].includes(value),
+    default: "base",
+    validator: (value) => ["sm", "base", "lg"].includes(value),
   },
   variant: {
     type: String,
     default: "default",
-    validator: (value) => ["default", "filled", "borderless"].includes(value),
+    validator: (value) => ["default", "filled", "borderless", "ghost"].includes(value),
   },
   label: {
     type: String,
@@ -44,237 +44,262 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  loading: {
+    type: Boolean,
+    default: false,
+  },
+  icon: {
+    type: String,
+    default: undefined,
+  },
+  iconPosition: {
+    type: String,
+    default: "left",
+    validator: (value) => ["left", "right"].includes(value),
+  },
 });
 
-const emit = defineEmits(["update:modelValue", "focus", "blur", "input"]);
+const emit = defineEmits(["update:modelValue", "focus", "blur", "input", "enter"]);
 
-const attrs = useAttrs();
-const slots = useSlots();
+const inputRef = ref(null);
+const isFocused = ref(false);
 
-const baseClasses = "input-micro";
+// Focus management
+const focus = async () => {
+  await nextTick();
+  inputRef.value?.focus();
+};
 
-const variantClasses = computed(() => ({
-  default: "",
-  filled: "input-filled",
-  borderless: "input-borderless",
-}));
+const blur = () => {
+  inputRef.value?.blur();
+};
 
-const sizeClasses = computed(() => ({
-  nano: "input-nano",
-  micro: "input-micro-size",
-  small: "input-small",
-  medium: "input-medium",
-}));
+defineExpose({ focus, blur });
 
-const inputClasses = computed(() => [
-  baseClasses,
-  variantClasses.value[props.variant],
-  sizeClasses.value[props.size],
-  {
-    "input-error": props.error,
-    "input-disabled": props.disabled,
-    "pl-8": slots.left,
-    "pr-8": slots.right,
-  },
-]);
+// Computed classes for the input wrapper
+const wrapperClasses = computed(() => {
+  const baseClasses = [
+    'relative group transition-all duration-200 ease-out',
+  ];
 
+  if (props.disabled) {
+    baseClasses.push('pointer-events-none opacity-50');
+  }
+
+  return baseClasses.join(' ');
+});
+
+// Computed classes for the input field
+const inputClasses = computed(() => {
+  const baseClasses = [
+    'w-full border transition-all duration-200 ease-out',
+    'focus:outline-none focus:ring-2 focus:ring-offset-0',
+    'placeholder-neutral-400 dark:placeholder-neutral-500',
+    'disabled:opacity-50 disabled:cursor-not-allowed',
+  ];
+
+  // Size classes
+  const sizeClasses = {
+    sm: 'px-3 py-2 text-sm rounded-lg',
+    base: 'px-4 py-3 text-base rounded-xl',
+    lg: 'px-5 py-4 text-lg rounded-xl',
+  };
+
+  // Variant classes
+  const variantClasses = {
+    default: [
+      'bg-base-100',
+      'border-base-300',
+      'hover:border-base-content/30',
+      'focus:border-primary-500 focus:ring-primary-500/20',
+    ],
+    filled: [
+      'bg-base-200',
+      'border-transparent',
+      'hover:bg-base-300',
+      'focus:bg-base-100',
+      'focus:border-primary-500 focus:ring-primary-500/20',
+    ],
+    borderless: [
+      'bg-transparent',
+      'border-transparent',
+      'hover:bg-base-200',
+      'focus:bg-base-100',
+      'focus:border-base-300',
+      'focus:ring-base-content/10',
+    ],
+    ghost: [
+      'bg-transparent',
+      'border-neutral-200 dark:border-neutral-700',
+      'hover:border-neutral-300 dark:hover:border-neutral-600',
+      'focus:border-primary-500 focus:ring-primary-500/20',
+    ],
+  };
+
+  const classes = [
+    ...baseClasses,
+    sizeClasses[props.size] || sizeClasses.base,
+    ...(variantClasses[props.variant] || variantClasses.default),
+  ];
+
+  // Error state
+  if (props.error) {
+    classes.push(
+      '!border-red-500 !ring-red-500/20',
+      'focus:!border-red-500 focus:!ring-red-500/20'
+    );
+  }
+
+  // Icon padding adjustments
+  if (props.icon && props.iconPosition === 'left') {
+    const iconPadding = {
+      sm: 'pl-9',
+      base: 'pl-11',
+      lg: 'pl-12',
+    };
+    classes.push(iconPadding[props.size] || iconPadding.base);
+  }
+  
+  if (props.icon && props.iconPosition === 'right') {
+    const iconPadding = {
+      sm: 'pr-9',
+      base: 'pr-11',
+      lg: 'pr-12',
+    };
+    classes.push(iconPadding[props.size] || iconPadding.base);
+  }
+
+  return classes.join(' ');
+});
+
+// Label classes
+const labelClasses = computed(() => [
+  'block text-sm font-medium mb-2',
+  'text-base-content',
+  props.error ? 'text-red-600 dark:text-red-400' : '',
+].filter(Boolean).join(' '));
+
+// Icon classes
+const iconClasses = computed(() => {
+  const baseClasses = [
+    'absolute top-1/2 -translate-y-1/2 pointer-events-none',
+    'text-base-content/50',
+  ];
+
+  const sizeClasses = {
+    sm: 'w-4 h-4',
+    base: 'w-5 h-5',
+    lg: 'w-6 h-6',
+  };
+
+  const positionClasses = {
+    left: {
+      sm: 'left-3',
+      base: 'left-3',
+      lg: 'left-4',
+    },
+    right: {
+      sm: 'right-3',
+      base: 'right-3',
+      lg: 'right-4',
+    },
+  };
+
+  return [
+    ...baseClasses,
+    sizeClasses[props.size] || sizeClasses.base,
+    positionClasses[props.iconPosition][props.size] || positionClasses[props.iconPosition].base,
+  ].join(' ');
+});
+
+// Event handlers
 const handleInput = (event) => {
   emit("update:modelValue", event.target.value);
   emit("input", event);
 };
+
+const handleFocus = (event) => {
+  isFocused.value = true;
+  emit("focus", event);
+};
+
+const handleBlur = (event) => {
+  isFocused.value = false;
+  emit("blur", event);
+};
+
+const handleKeydown = (event) => {
+  if (event.key === 'Enter') {
+    emit("enter", event);
+  }
+};
 </script>
 
 <template>
-  <div class="input-wrapper">
+  <div :class="wrapperClasses">
     <!-- Label -->
-    <label v-if="label" class="input-label">
+    <label v-if="label" :class="labelClasses">
       {{ label }}
-      <span v-if="required" class="input-required">*</span>
+      <span v-if="required" class="text-red-500 ml-1">*</span>
     </label>
 
     <!-- Input wrapper -->
-    <div class="input-container">
-      <!-- Left slot -->
-      <div v-if="slots.left" class="input-icon-left">
-        <slot name="left" />
+    <div class="relative">
+      <!-- Left icon -->
+      <div v-if="icon && iconPosition === 'left'" :class="iconClasses">
+        <slot name="icon">
+          <svg v-if="icon === 'search'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <svg v-else-if="icon === 'mail'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+          <svg v-else-if="icon === 'user'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+          <svg v-else-if="icon === 'lock'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+        </slot>
       </div>
 
-      <!-- Input -->
+      <!-- Input field -->
       <input
-        :type="type"
+        ref="inputRef"
         :value="modelValue"
+        :type="type"
         :placeholder="placeholder"
-        :disabled="disabled"
+        :disabled="disabled || loading"
         :class="inputClasses"
-        v-bind="attrs"
         @input="handleInput"
-        @focus="emit('focus', $event)"
-        @blur="emit('blur', $event)"
+        @focus="handleFocus"
+        @blur="handleBlur"
+        @keydown="handleKeydown"
       />
 
-      <!-- Right slot -->
-      <div v-if="slots.right" class="input-icon-right">
-        <slot name="right" />
+      <!-- Right icon or loading -->
+      <div v-if="(icon && iconPosition === 'right') || loading" :class="iconClasses">
+        <div v-if="loading" class="animate-spin">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+        </div>
+        <slot v-else name="icon">
+          <svg v-if="icon === 'search'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </slot>
       </div>
     </div>
 
     <!-- Error message -->
-    <p v-if="error" class="input-error-text">
+    <p v-if="error" class="mt-2 text-sm text-red-600 dark:text-red-400">
       {{ error }}
     </p>
 
-    <!-- Hint -->
-    <p v-else-if="hint" class="input-hint">
+    <!-- Hint message -->
+    <p v-if="hint && !error" class="mt-2 text-sm text-base-content/60">
       {{ hint }}
     </p>
   </div>
 </template>
-
-<style scoped>
-.input-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
-}
-
-.input-label {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--text-primary);
-  line-height: 1;
-}
-
-.input-required {
-  color: #ef4444;
-  margin-left: 0.25rem;
-}
-
-.input-container {
-  position: relative;
-}
-
-.input-micro {
-  width: 100%;
-  padding: 0.375rem 0.625rem;
-  font-size: 0.75rem;
-  background: var(--bg-primary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-micro);
-  transition: all 0.12s ease;
-  color: var(--text-primary);
-  outline: none;
-}
-
-.input-micro:focus {
-  border-color: #3b82f6;
-  box-shadow: var(--shadow-soft), 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.input-micro::placeholder {
-  color: var(--text-tertiary);
-}
-
-/* Variants */
-.input-filled {
-  background: var(--bg-secondary);
-  border: 1px solid transparent;
-}
-
-.input-filled:focus {
-  background: var(--bg-primary);
-  border-color: #3b82f6;
-}
-
-.input-borderless {
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid var(--border);
-  border-radius: 0;
-  box-shadow: none;
-}
-
-.input-borderless:focus {
-  border-bottom-color: #3b82f6;
-  box-shadow: 0 1px 0 0 #3b82f6;
-}
-
-/* Sizes */
-.input-nano {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.6875rem;
-}
-
-.input-micro-size {
-  padding: 0.375rem 0.625rem;
-  font-size: 0.75rem;
-}
-
-.input-small {
-  padding: 0.5rem 0.75rem;
-  font-size: 0.8125rem;
-}
-
-.input-medium {
-  padding: 0.625rem 1rem;
-  font-size: 0.875rem;
-}
-
-/* States */
-.input-error {
-  border-color: #ef4444;
-}
-
-.input-error:focus {
-  border-color: #ef4444;
-  box-shadow: var(--shadow-soft), 0 0 0 3px rgba(239, 68, 68, 0.1);
-}
-
-.input-disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
-/* Icons */
-.input-icon-left {
-  position: absolute;
-  left: 0.625rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text-tertiary);
-  font-size: 0.875rem;
-}
-
-.input-icon-right {
-  position: absolute;
-  right: 0.625rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text-tertiary);
-  font-size: 0.875rem;
-}
-
-.pl-8 {
-  padding-left: 2rem;
-}
-
-.pr-8 {
-  padding-right: 2rem;
-}
-
-/* Messages */
-.input-error-text {
-  font-size: 0.6875rem;
-  color: #ef4444;
-  margin: 0;
-  line-height: 1.3;
-}
-
-.input-hint {
-  font-size: 0.6875rem;
-  color: var(--text-tertiary);
-  margin: 0;
-  line-height: 1.3;
-}
-</style>
