@@ -37,7 +37,7 @@
 
 - Updated dependencies [[`078d2f8585fed6fa13f587217c5cfbaa45357793`](https://github.com/samternent/home/commit/078d2f8585fed6fa13f587217c5cfbaa45357793)]:
   - ternent-ui@0.1.17
-  - concords-ledger@1.0.16
+  - ternent-ledger@1.0.16
 
 ## 0.3.12
 
@@ -523,7 +523,7 @@
 
 - Updated dependencies [[`f80141b83a9cc857d0a9c7e7bccaac9b0fd04d70`](https://github.com/samternent/home/commit/f80141b83a9cc857d0a9c7e7bccaac9b0fd04d70), [`3aded1d6b06c3cdfef8ecad7b142d07f2d469553`](https://github.com/samternent/home/commit/3aded1d6b06c3cdfef8ecad7b142d07f2d469553)]:
   - ternent-ui@0.0.11
-  - concords-ledger@1.0.15
+  - ternent-ledger@1.0.15
 
 ## 0.1.39
 
@@ -571,10 +571,10 @@
 - [`3dd3728a3dbc1ee428672c6387911e131c5c2aeb`](https://github.com/samternent/home/commit/3dd3728a3dbc1ee428672c6387911e131c5c2aeb) Thanks [@samternent](https://github.com/samternent)! - Update styles and structure. Adds concords
 
 - Updated dependencies [[`90b078e2e6ac4adbbb97c571219e61ae6b8bd191`](https://github.com/samternent/home/commit/90b078e2e6ac4adbbb97c571219e61ae6b8bd191), [`d464a231ac93035bd252e67d1f278d1fb59f9e09`](https://github.com/samternent/home/commit/d464a231ac93035bd252e67d1f278d1fb59f9e09)]:
-  - concords-utils@1.0.8
+  - ternent-utils@1.0.8
   - ternent-ui@0.0.9
-  - concords-ledger@1.0.14
-  - concords-identity@0.0.10
+  - ternent-ledger@1.0.14
+  - ternent-identity@0.0.10
 
 ## 0.1.32
 

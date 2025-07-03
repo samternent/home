@@ -291,18 +291,6 @@ importers:
       colorjs.io:
         specifier: ^0.5.2
         version: 0.5.2
-      concords-encrypt:
-        specifier: workspace:*
-        version: link:../../packages/encrypt
-      concords-identity:
-        specifier: workspace:*
-        version: link:../../packages/identity
-      concords-ledger:
-        specifier: workspace:*
-        version: link:../../packages/ledger
-      concords-utils:
-        specifier: workspace:*
-        version: link:../../packages/utils
       dompurify:
         specifier: ^3.1.6
         version: 3.1.6
@@ -315,15 +303,27 @@ importers:
       marked:
         specifier: ^9.1.6
         version: 9.1.6
-      ragejs:
-        specifier: workspace:*
-        version: link:../../packages/ragejs/pkg
       sams-game-kit:
         specifier: workspace:*
         version: link:../../packages/game-kit
+      ternent-encrypt:
+        specifier: workspace:*
+        version: link:../../packages/encrypt
+      ternent-identity:
+        specifier: workspace:*
+        version: link:../../packages/identity
+      ternent-ledger:
+        specifier: workspace:*
+        version: link:../../packages/ledger
+      ternent-rage-wasm:
+        specifier: workspace:*
+        version: link:../../packages/ragejs/pkg
       ternent-ui:
         specifier: workspace:*
         version: link:../../packages/ternent-ui
+      ternent-utils:
+        specifier: workspace:*
+        version: link:../../packages/utils
       vite-plugin-ejs:
         specifier: ^1.7.0
         version: 1.7.0(vite@4.5.3)
@@ -372,15 +372,15 @@ importers:
 
   packages/encrypt:
     dependencies:
-      '@kanru/rage-wasm':
-        specifier: ^0.3.1
-        version: 0.3.1
       '@swc/helpers':
         specifier: ^0.4.36
         version: 0.4.36
       regenerator-runtime:
         specifier: ^0.13.11
         version: 0.13.11
+      ternent-rage-wasm:
+        specifier: workspace:*
+        version: link:../ragejs/pkg
     devDependencies:
       vite:
         specifier: ^2.9.18
@@ -410,12 +410,12 @@ importers:
       '@swc/helpers':
         specifier: ^0.4.36
         version: 0.4.36
-      concords-utils:
-        specifier: workspace:*
-        version: link:../utils
       regenerator-runtime:
         specifier: ^0.13.11
         version: 0.13.11
+      ternent-utils:
+        specifier: workspace:*
+        version: link:../utils
     devDependencies:
       vite:
         specifier: ^2.9.18
@@ -429,24 +429,24 @@ importers:
       '@swc/helpers':
         specifier: ^0.4.36
         version: 0.4.36
-      concords-encrypt:
-        specifier: workspace:*
-        version: link:../encrypt
-      concords-identity:
-        specifier: workspace:*
-        version: link:../identity
-      concords-proof-of-work:
-        specifier: workspace:*
-        version: link:../proof-of-work
-      concords-utils:
-        specifier: workspace:*
-        version: link:../utils
       lokijs:
         specifier: ^1.5.12
         version: 1.5.12
       regenerator-runtime:
         specifier: ^0.13.11
         version: 0.13.11
+      ternent-encrypt:
+        specifier: workspace:*
+        version: link:../encrypt
+      ternent-identity:
+        specifier: workspace:*
+        version: link:../identity
+      ternent-proof-of-work:
+        specifier: workspace:*
+        version: link:../proof-of-work
+      ternent-utils:
+        specifier: workspace:*
+        version: link:../utils
     devDependencies:
       '@types/lokijs':
         specifier: ^1.5.14
@@ -460,12 +460,12 @@ importers:
       '@swc/helpers':
         specifier: ^0.4.36
         version: 0.4.36
-      concords-utils:
-        specifier: workspace:*
-        version: link:../utils
       regenerator-runtime:
         specifier: ^0.13.11
         version: 0.13.11
+      ternent-utils:
+        specifier: workspace:*
+        version: link:../utils
       vitest:
         specifier: ^1.6.0
         version: 1.6.0
@@ -2761,10 +2761,6 @@ packages:
       cross-spawn: 7.0.3
       string-argv: 0.3.2
       type-detect: 4.1.0
-    dev: false
-
-  /@kanru/rage-wasm@0.3.1:
-    resolution: {integrity: sha512-lJOUf88rrV7BpEE/c+PRFkWjM/QV56jo5FLUyCyskeYSv16J+/yIskrU/1203TP3HVXbR2OCfHgHVfb9ftnpsw==}
     dev: false
 
   /@leichtgewicht/ip-codec@2.0.5:

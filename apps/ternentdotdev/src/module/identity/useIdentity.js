@@ -6,8 +6,8 @@ import {
   exportPublicKeyAsPem,
   importPrivateKeyFromPem,
   importPublicKeyFromPem,
-} from "concords-identity";
-import { stripIdentityKey } from "concords-utils";
+} from "ternent-identity";
+import { stripIdentityKey } from "ternent-utils";
 
 const useIdentitySymbol = Symbol("useIdentity");
 

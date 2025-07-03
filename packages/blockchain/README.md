@@ -1,111 +1,93 @@
-# blockchain
+# Blockchain Package
 
-A brief description of what your project does and why it’s useful.
+High-performance Rust/WebAssembly blockchain implementation with proof-of-work mining and encryption.
 
-## Table of Contents
+## Overview
 
-- [Installation](#installation)
-- [Usage](#usage)
-- [Features](#features)
-- [Configuration](#configuration)
-- [Examples](#examples)
-- [Contributing](#contributing)
-- [License](#license)
-
-## Installation
-
-### Prerequisites
-
-List any prerequisites, software, or tools that need to be installed before the application or package can be used.
-
-'bash
-
-# Example: Clone the repository
-
-git clone https://github.com/your-username/your-repo-name.git
-'
-
-### Install the dependencies
-
-Provide instructions on how to install dependencies.
-
-'bash
-
-# Example: Using npm or pip
-
-npm install
-'
-
-'bash
-
-# or
-
-pip install -r requirements.txt
-'
-
-## Usage
-
-Describe how to use the application or package. Include code snippets and examples as necessary.
-
-'bash
-
-# Example: Running the application
-
-npm start
-'
-
-'bash
-
-# or
-
-python main.py
-'
+High-performance Rust/WebAssembly blockchain implementation with proof-of-work mining and encryption.
 
 ## Features
 
-Highlight the key features of your project.
+- ✅ **WebAssembly Performance**:  Written in Rust and compiled to WASM
+- ✅ **Proof of Work Mining**:  Configurable difficulty proof-of-work algorithm
+- ✅ **Cryptographic Hashing**:  SHA-256 based data hashing
+- ✅ **Key Generation**:  X25519 public/private key pair generation
+- ✅ **Blockchain Creation**:  Genesis block creation and chain management
+- ✅ **Age Encryption**:  Modern encryption using the age library
 
-- **Feature 1**: Description
-- **Feature 2**: Description
-- **Feature 3**: Description
+## Installation
 
-## Configuration
+```bash
+npm install @your-org/blockchain
+```
 
-Explain any configuration options available and how to set them up.
+## Quick Start
 
-'json
-{
-"setting1": "value1",
-"setting2": "value2"
-}
-'
+```typescript
+import { createBlockchain, hashData, proofOfWork } from '@your-org/blockchain';
 
-## Examples
+// Example usage
+// TODO: Add specific examples for blockchain
+```
 
-Provide some examples of how to use your project effectively. This can include code snippets, command-line examples, or screenshots.
+## API Reference
 
-'python
+### Functions
 
-# Example: Python usage
+#### `createBlockchain()`
+// TODO: Add documentation for createBlockchain
 
-from yourpackage import yourmodule
+#### `hashData()`
+// TODO: Add documentation for hashData
 
-result = yourmodule.yourfunction()
-print(result)
-'
+#### `proofOfWork()`
+// TODO: Add documentation for proofOfWork
+
+#### `keygen()`
+// TODO: Add documentation for keygen
+
+
+
+## Usage Examples
+
+### Basic Example
+
+```typescript
+// TODO: Add comprehensive examples for blockchain
+```
+
+## Dependencies
+
+See `package.json` for current dependencies.
+
+
+## Building from Source
+
+```bash
+# Install Rust
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+# Install wasm-pack
+curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
+# Build the package
+wasm-pack build --target bundler
+```
+
 
 ## Contributing
 
-Explain how others can contribute to the project. Include details on how to report issues, submit pull requests, or contribute in other ways.
-
-1. Fork the project
-2. Create a new branch ('git checkout -b feature/your-feature')
-3. Commit your changes ('git commit -m 'Add some feature'')
-4. Push to the branch ('git push origin feature/your-feature')
-5. Open a pull request
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Run tests with `npm test`
+6. Submit a pull request
 
 ## License
 
-Include the license under which the project is distributed. If you’re using a standard license, you can just link to it.
+MIT License - see LICENSE file for details.
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## Changelog
+
+See [CHANGELOG.md](./CHANGELOG.md) for version history and updates.

@@ -1,8 +1,8 @@
-import { hashData } from "concords-utils";
-import { addRecord, createLedger, IRecord, mine } from "concords-proof-of-work";
-import { sign, exportPublicKeyAsPem } from "concords-identity";
-import type { ILedger } from "concords-proof-of-work";
-import { stripIdentityKey, generateId } from "concords-utils";
+import { hashData } from "ternent-utils";
+import { addRecord, createLedger, IRecord, mine } from "ternent-proof-of-work";
+import { sign, exportPublicKeyAsPem } from "ternent-identity";
+import type { ILedger } from "ternent-proof-of-work";
+import { stripIdentityKey, generateId } from "ternent-utils";
 
 interface ILedgerConfig {
   plugins: Array<Object>;
@@ -11,6 +11,12 @@ interface ILedgerConfig {
   identity?: string;
 }
 
+/**
+ * ILedgerAPI interface - TODO: Add description
+ */
+/**
+ * ILedgerAPI interface definition
+ */
 export interface ILedgerAPI {
   auth: Function;
   load: Function;

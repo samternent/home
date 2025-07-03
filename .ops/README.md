@@ -14,7 +14,7 @@ kubectl apply -f .ops/ternent-api/deployment.yaml,.ops/ternent-api/service.yaml
 ```
 
 ```bash
-kubectl apply -f .ops/concords-api/deployment.yaml,.ops/concords-api/service.yaml
+kubectl apply -f .ops/ternent-api/deployment.yaml,.ops/ternent-api/service.yaml
 ```
 
 ```bash
@@ -37,7 +37,7 @@ kubectl apply -f .ops/manifests/cert-manager-issuer.yaml
 
 ```bash
 kubectl apply -f .ops/ternent-api/host.yaml
-kubectl apply -f .ops/concords-api/host.yaml
+kubectl apply -f .ops/ternent-api/host.yaml
 kubectl apply -f .ops/footballsocial-api/host.yaml
 ```
 

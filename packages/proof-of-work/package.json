@@ -1,5 +1,5 @@
 {
-  "name": "concords-proof-of-work",
+  "name": "ternent-proof-of-work",
   "version": "0.0.10",
   "description": "",
   "main": "dist/proof-of-work.umd.js",
@@ -22,7 +22,7 @@
   "browserslist": "last 2 versions",
   "dependencies": {
     "@swc/helpers": "^0.4.36",
-    "concords-utils": "workspace:*",
+    "ternent-utils": "workspace:*",
     "regenerator-runtime": "^0.13.11",
     "vitest": "^1.6.0"
   },

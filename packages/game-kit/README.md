@@ -1,111 +1,77 @@
-# game-kit
+# Game-kit Package
 
-A brief description of what your project does and why it’s useful.
+A lightweight game engine toolkit with animation loop management, scene handling, and sprite utilities.
 
-## Table of Contents
+## Overview
 
-- [Installation](#installation)
-- [Usage](#usage)
-- [Features](#features)
-- [Configuration](#configuration)
-- [Examples](#examples)
-- [Contributing](#contributing)
-- [License](#license)
-
-## Installation
-
-### Prerequisites
-
-List any prerequisites, software, or tools that need to be installed before the application or package can be used.
-
-'bash
-
-# Example: Clone the repository
-
-git clone https://github.com/your-username/your-repo-name.git
-'
-
-### Install the dependencies
-
-Provide instructions on how to install dependencies.
-
-'bash
-
-# Example: Using npm or pip
-
-npm install
-'
-
-'bash
-
-# or
-
-pip install -r requirements.txt
-'
-
-## Usage
-
-Describe how to use the application or package. Include code snippets and examples as necessary.
-
-'bash
-
-# Example: Running the application
-
-npm start
-'
-
-'bash
-
-# or
-
-python main.py
-'
+A lightweight game engine toolkit with animation loop management, scene handling, and sprite utilities.
 
 ## Features
 
-Highlight the key features of your project.
+- ✅ **Animation Loop Management**:  Built on requestAnimationFrame for smooth 60fps gameplay
+- ✅ **Scene Management**:  Create and manage multiple game scenes
+- ✅ **Sprite System**:  Handle sprite rendering and animations
+- ✅ **Event System**:  Register and manage game loop callbacks
+- ✅ **Performance Optimized**:  Efficient rendering and memory management
+- ✅ **TypeScript Support**:  Full type safety and IntelliSense support
 
-- **Feature 1**: Description
-- **Feature 2**: Description
-- **Feature 3**: Description
+## Installation
 
-## Configuration
+```bash
+npm install @your-org/game-kit
+```
 
-Explain any configuration options available and how to set them up.
+## Quick Start
 
-'json
-{
-"setting1": "value1",
-"setting2": "value2"
-}
-'
+```typescript
+import { createEngine, createScene, createSprite } from '@your-org/game-kit';
 
-## Examples
+// Example usage
+// TODO: Add specific examples for game-kit
+```
 
-Provide some examples of how to use your project effectively. This can include code snippets, command-line examples, or screenshots.
+## API Reference
 
-'python
+### Functions
 
-# Example: Python usage
+#### `createEngine()`
+// TODO: Add documentation for createEngine
 
-from yourpackage import yourmodule
+#### `createScene()`
+// TODO: Add documentation for createScene
 
-result = yourmodule.yourfunction()
-print(result)
-'
+#### `createSprite()`
+// TODO: Add documentation for createSprite
+
+
+
+## Usage Examples
+
+### Basic Example
+
+```typescript
+// TODO: Add comprehensive examples for game-kit
+```
+
+## Dependencies
+
+See `package.json` for current dependencies.
+
+
 
 ## Contributing
 
-Explain how others can contribute to the project. Include details on how to report issues, submit pull requests, or contribute in other ways.
-
-1. Fork the project
-2. Create a new branch ('git checkout -b feature/your-feature')
-3. Commit your changes ('git commit -m 'Add some feature'')
-4. Push to the branch ('git push origin feature/your-feature')
-5. Open a pull request
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Run tests with `npm test`
+6. Submit a pull request
 
 ## License
 
-Include the license under which the project is distributed. If you’re using a standard license, you can just link to it.
+MIT License - see LICENSE file for details.
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## Changelog
+
+See [CHANGELOG.md](./CHANGELOG.md) for version history and updates.

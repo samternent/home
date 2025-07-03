@@ -1,3 +1,8 @@
+/**
+ * addNewLines function - TODO: Add description
+ * @param TODO - Add parameters
+ * @returns TODO - Add return type description
+ */
 export function addNewLines(str: string): string {
   let finalString = "";
   while (str.length > 0) {
@@ -8,35 +13,70 @@ export function addNewLines(str: string): string {
   return finalString;
 }
 
+/**
+ * removeLines function - TODO: Add description
+ * @param TODO - Add parameters
+ * @returns TODO - Add return type description
+ */
 export function removeLines(str: string): string {
   return str.replaceAll("\n", "");
 }
 
+/**
+ * stripIdentityKey function - TODO: Add description
+ * @param TODO - Add parameters
+ * @returns TODO - Add return type description
+ */
 export function stripIdentityKey(key: string) {
   return key
     .replace("-----BEGIN PUBLIC KEY-----\n", "")
     .replace("\n-----END PUBLIC KEY-----", "");
 }
 
+/**
+ * formatIdentityKey function - TODO: Add description
+ * @param TODO - Add parameters
+ * @returns TODO - Add return type description
+ */
 export function formatIdentityKey(key: string) {
   return `-----BEGIN PUBLIC KEY-----\n${key}\n-----END PUBLIC KEY-----`;
 }
 
+/**
+ * stripEncryptionFile function - TODO: Add description
+ * @param TODO - Add parameters
+ * @returns TODO - Add return type description
+ */
 export function stripEncryptionFile(file: string) {
   return file
     .replace("-----BEGIN AGE ENCRYPTED FILE-----\n", "")
     .replace("\n-----END AGE ENCRYPTED FILE-----\n", "");
 }
 
+/**
+ * formatEncryptionFile function - TODO: Add description
+ * @param TODO - Add parameters
+ * @returns TODO - Add return type description
+ */
 export function formatEncryptionFile(file: string) {
   return `-----BEGIN AGE ENCRYPTED FILE-----\n${file}\n-----END AGE ENCRYPTED FILE-----\n`;
 }
 
+/**
+ * generateId function - TODO: Add description
+ * @param TODO - Add parameters
+ * @returns TODO - Add return type description
+ */
 export function generateId() {
   const uint32 = window.crypto.getRandomValues(new Uint32Array(1))[0];
   return uint32.toString(16);
 }
 
+/**
+ * arrayBufferToBase64 function - TODO: Add description
+ * @param TODO - Add parameters
+ * @returns TODO - Add return type description
+ */
 export function arrayBufferToBase64(arrayBuffer: ArrayBuffer): string {
   const byteArray = new Uint8Array(arrayBuffer);
   let byteString = "";
@@ -46,6 +86,11 @@ export function arrayBufferToBase64(arrayBuffer: ArrayBuffer): string {
   return window.btoa(byteString);
 }
 
+/**
+ * base64ToArrayBuffer function - TODO: Add description
+ * @param TODO - Add parameters
+ * @returns TODO - Add return type description
+ */
 export function base64ToArrayBuffer(b64: string): ArrayBuffer {
   const byteString = window.atob(b64);
   const byteArray = new Uint8Array(byteString.length);
@@ -56,10 +101,20 @@ export function base64ToArrayBuffer(b64: string): ArrayBuffer {
   return byteArray;
 }
 
+/**
+ * b64encode function - TODO: Add description
+ * @param TODO - Add parameters
+ * @returns TODO - Add return type description
+ */
 export function b64encode(buf: ArrayBuffer): string {
   return btoa(String.fromCharCode(...new Uint8Array(buf)));
 }
 
+/**
+ * b64decode function - TODO: Add description
+ * @param TODO - Add parameters
+ * @returns TODO - Add return type description
+ */
 export function b64decode(str: string): ArrayBuffer {
   const binary_string = window.atob(str);
   const len = binary_string.length;
@@ -71,24 +126,49 @@ export function b64decode(str: string): ArrayBuffer {
 }
 
 // Encode JSON object to UTF-8 Buffer
+/**
+ * encode function - TODO: Add description
+ * @param TODO - Add parameters
+ * @returns TODO - Add return type description
+ */
 export function encode(data: string | object | number): Uint8Array {
   return new TextEncoder().encode(JSON.stringify(data));
 }
 
+/**
+ * decode function - TODO: Add description
+ * @param TODO - Add parameters
+ * @returns TODO - Add return type description
+ */
 export function decode(data: Uint8Array): string {
   return new TextDecoder("utf-8").decode(new Uint8Array(data));
 }
 
+/**
+ * getHashBuffer function - TODO: Add description
+ * @param TODO - Add parameters
+ * @returns TODO - Add return type description
+ */
 export function getHashBuffer(
   data: string | object | number
 ): Promise<ArrayBuffer> {
   return crypto.subtle.digest("SHA-256", encode(data));
 }
 
+/**
+ * getHashArray function - TODO: Add description
+ * @param TODO - Add parameters
+ * @returns TODO - Add return type description
+ */
 export function getHashArray(hash: ArrayBuffer): Array<number> {
   return Array.from(new Uint8Array(hash));
 }
 
+/**
+ * getHashHex function - TODO: Add description
+ * @param TODO - Add parameters
+ * @returns TODO - Add return type description
+ */
 export function getHashHex(hash: Array<number>): string {
   return hash.map((buf) => buf.toString(16)).join("");
 }
@@ -102,6 +182,11 @@ export async function hashData(
 }
 
 // utils/gradientUtils.js
+/**
+ * generateColorStops function - TODO: Add description
+ * @param TODO - Add parameters
+ * @returns TODO - Add return type description
+ */
 export function generateColorStops(
   primaryColor: string,
   secondaryColor: string,

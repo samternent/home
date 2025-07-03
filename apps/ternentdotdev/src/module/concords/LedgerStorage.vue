@@ -1,6 +1,6 @@
 <script setup>
 import { computed, shallowRef, nextTick } from "vue";
-import { encrypt } from "concords-encrypt";
+import { encrypt } from "ternent-encrypt";
 import { SButton } from "ternent-ui/components";
 import { useLedger } from "../ledger/useLedger";
 

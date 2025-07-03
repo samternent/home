@@ -1,11 +1,11 @@
 [package]
-name = "ragejs"
+name = "ternent-rage-wasm"
 version = "0.1.0"
 authors = ["Sam Ternent <hello@ternent.dev>"]
 description = "JS wrapper around the AGE encryption library"
 license = "MIT/Apache-2.0"
 repository = "https://github.com/samternent/home/packages/ragejs"
-edition = "2018"
+edition = "2021"
 
 [lib]
 crate-type = ["cdylib"]
@@ -13,15 +13,23 @@ crate-type = ["cdylib"]
 [dependencies]
 chrono = "0.4.37"
 wasm-bindgen = "0.2"
-serde = { version = "1.0", features = ["derive"] }
-serde-wasm-bindgen = "0.4"
 age = { version = "0.10.0", features = ["armor", "web-sys"] }
 # For key generation
 secrecy = "0.8.0"
 getrandom = { version = "0.2", features = ["js"] }
-sha2 = "0.10"
-serde_json = "1.0"
+js-sys = "0.3"
+console_error_panic_hook = "0.1.7"
+wasm-bindgen-futures = "0.4"
 
 [dependencies.web-sys]
 version = "0.3.69"
-features = [ "console", "Worker" ]
+features = [ "console" ]
+
+[profile.release]
+opt-level = "s"          # Optimize for size
+lto = true               # Enable link-time optimization
+codegen-units = 1        # Use single codegen unit for better optimization
+panic = "abort"          # Abort on panic (smaller code size)
+
+[profile.release.package."*"]
+opt-level = "s"

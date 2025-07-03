@@ -1,17 +1,17 @@
 import { shallowRef, provide, inject, watch } from "vue";
-import { createLedger, useLokiPlugin } from "concords-ledger";
+import { createLedger, useLokiPlugin } from "ternent-ledger";
 import {
   stripIdentityKey,
   stripEncryptionFile,
   formatEncryptionFile,
   generateId,
-} from "concords-utils";
+} from "ternent-utils";
 
 import {
   encrypt,
   decrypt,
   generate as generateEncryptionKeys,
-} from "concords-encrypt";
+} from "ternent-encrypt";
 import { useEncryption } from "../encryption/useEncryption";
 import { useIdentity } from "../identity/useIdentity";
 
