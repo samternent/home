@@ -1,14 +1,15 @@
 // Ledger Apps composable - for managing apps within the ledger
 import { computed, provide, inject } from "vue";
+import { provideAppBuilder } from "../builder/useAppBuilder";
 
 const useLedgerAppsSymbol = Symbol("useLedgerApps");
 
-export function provideLedgerApps(appBuilder) {
-  // Use the provided app builder's reactive data
-  const { apps: builderApps } = appBuilder;
-
-  // Computed properties that use the shared app builder data
-  const apps = computed(() => builderApps.value);
+export function provideLedgerApps() {
+  // Get the app builder which connects to the actual ledger
+  const appBuilder = provideAppBuilder();
+  
+  // Use the real apps from the ledger
+  const apps = computed(() => appBuilder.apps.value || []);
   const hasApps = computed(() => apps.value.length > 0);
 
   // Get apps by type
@@ -22,8 +23,8 @@ export function provideLedgerApps(appBuilder) {
   );
 
   const ledgerApps = {
-    // Data
-    apps,
+    // Data - return the actual array, not computed
+    apps: apps.value,
     hasApps,
     
     // Helpers

@@ -9,6 +9,7 @@ import ternentUIThemes from "ternent-ui/themes";
 import { useWhiteLabel } from "@/module/brand/useWhiteLabel";
 import { useAppShell } from "@/module/app-shell/useAppShell";
 import { useBreadcrumbs } from "@/module/breadcrumbs/useBreadcrumbs";
+import { provideAppBuilder } from "@/module/builder/useAppBuilder";
 import Logo from "@/module/brand/Logo.vue";
 import AppLayout from "@/module/app/AppLayout.vue";
 import AppNavBar from "@/module/app/AppNavBar.vue";
@@ -21,6 +22,9 @@ const themeVariation = computed(
 );
 const breakpoints = useBreakpoints(breakpointsTailwind);
 const openSideBar = useLocalStorage("ternentdotdev/openSideBar", false);
+
+// Provide app builder for all child routes
+provideAppBuilder();
 
 // Provide root breadcrumb for all routes
 useBreadcrumbs({ name: "Home", path: "/" });

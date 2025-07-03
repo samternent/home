@@ -300,6 +300,91 @@ export function provideAppBuilder() {
       });
     }
 
+    // Update linked schema references in all schemas
+    for (const schema of template.schemas) {
+      const newSchemaId = schemaIdMap[schema.id];
+      const updatedFields = schema.fields.map(field => {
+        if (field.type === 'link' && field.linkedSchema && schemaIdMap[field.linkedSchema]) {
+          return { ...field, linkedSchema: schemaIdMap[field.linkedSchema] };
+        }
+        return field;
+      });
+      
+      // Update the schema with corrected linked references
+      await updateSchema(newAppId, newSchemaId, { fields: updatedFields });
+    }
+
+    // Create sample data if provided
+    if (template.sampleData) {
+      const dataIdMap = {};
+      
+      // Create all sample data items
+      for (const [schemaId, items] of Object.entries(template.sampleData)) {
+        const newSchemaId = schemaIdMap[schemaId];
+        if (!newSchemaId) continue;
+        
+        dataIdMap[schemaId] = {};
+        
+        for (const item of items) {
+          const { id, ...itemData } = item;
+          
+          // For linked fields, we'll update them in a second pass
+          const cleanedData = { ...itemData };
+          const schema = template.schemas.find(s => s.id === schemaId);
+          const linkFields = schema?.fields?.filter(f => f.type === 'link') || [];
+          
+          // Temporarily remove linked field values
+          for (const linkField of linkFields) {
+            delete cleanedData[linkField.name];
+          }
+          
+          const newItem = await addSchemaData(newSchemaId, cleanedData);
+          
+          // Store the mapping for linked data references
+          if (id && newItem) {
+            dataIdMap[schemaId][id] = newItem.id || newItem;
+          }
+        }
+      }
+      
+      // Second pass: update linked data references
+      for (const [schemaId, items] of Object.entries(template.sampleData)) {
+        const newSchemaId = schemaIdMap[schemaId];
+        if (!newSchemaId) continue;
+        
+        const schema = template.schemas.find(s => s.id === schemaId);
+        const linkFields = schema?.fields?.filter(f => f.type === 'link') || [];
+        
+        if (linkFields.length > 0) {
+          const existingData = getSchemaData(newAppId, newSchemaId);
+          
+          for (let i = 0; i < items.length; i++) {
+            const originalItem = items[i];
+            const existingItem = existingData[i];
+            
+            if (!existingItem) continue;
+            
+            const updates = {};
+            let hasUpdates = false;
+            
+            for (const linkField of linkFields) {
+              const originalLinkedId = originalItem[linkField.name];
+              const linkedSchemaId = linkField.linkedSchema;
+              
+              if (originalLinkedId && dataIdMap[linkedSchemaId]?.[originalLinkedId]) {
+                updates[linkField.name] = dataIdMap[linkedSchemaId][originalLinkedId];
+                hasUpdates = true;
+              }
+            }
+            
+            if (hasUpdates) {
+              await updateSchemaData(newSchemaId, existingItem.id, updates);
+            }
+          }
+        }
+      }
+    }
+
     // Create views (update schema references)
     for (const view of template.views) {
       // Remove the old id and use a new one

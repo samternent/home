@@ -44,7 +44,7 @@ const { width: viewWidth } = useElementBounding(contentArea);
 
 useBreadcrumbs({
   path: "/ledger",
-  name: "Resistance Room",
+  name: "System Administration",
 });
 
 // Show onboarding for new users
@@ -109,15 +109,8 @@ watch(activeSubTab, () => {
 });
 
 const navTabs = computed(() => {
-  // Dynamic app tabs
-  const appTabs = apps.value.map(app => ({
-    title: `${app.icon} ${app.name}`,
-    path: `/ledger/app/${app.id}`,
-    app: app
-  }));
-
-  // Core ledger tabs (keep these hardcoded)
-  const coreTabs = [
+  // System administration tabs only (apps are now handled by /apps route)
+  const systemTabs = [
     {
       title: "Users",
       path: `/ledger/users`,
@@ -140,18 +133,7 @@ const navTabs = computed(() => {
     },
   ];
 
-  // Add app builder link if no apps exist
-  if (appTabs.length === 0) {
-    return [
-      {
-        title: "➕ Create App",
-        path: `/builder`,
-      },
-      ...coreTabs
-    ];
-  }
-
-  return [...appTabs, ...coreTabs];
+  return systemTabs;
 });
 
 function formatBytes(bytes, decimals = 2) {
@@ -197,8 +179,8 @@ const sizeIndicator = computed(() => {
           v-if="isFirstVisit"
           class="inline-flex items-center gap-1 bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-300 px-2 py-1 rounded text-xs font-medium"
         >
-          <span>🔥</span>
-          <span>Ready for Resistance</span>
+          <span>⚙️</span>
+          <span>System Administration</span>
         </div>
 
         <STabs
@@ -232,7 +214,7 @@ const sizeIndicator = computed(() => {
           </div>
         </div>
 
-        <!-- Connect to Resistance Network -->
+        <!-- Connect to System Storage -->
         <div v-else class="flex items-center">
           <SButton
             size="nano"
