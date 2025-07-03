@@ -1,13 +1,13 @@
 {
   "name": "concords-encrypt",
   "version": "0.0.4",
-  "description": "",
+  "description": "Encryption library using AGE with async web worker support",
   "main": "dist/encrypt.umd.js",
   "module": "dist/encrypt.es.js",
   "typings": "dist/index.d.ts",
   "scripts": {
     "dev": "vite build --watch",
-    "build": "vite build",
+    "build": "pnpm --filter concords-rage-wasm build && vite build",
     "preview": "vite preview"
   },
   "context": "browser",
@@ -16,12 +16,17 @@
       "context": "browser"
     }
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "encryption",
+    "age",
+    "wasm",
+    "worker"
+  ],
+  "author": "Sam Ternent <hello@ternent.dev>",
+  "license": "MIT",
   "browserslist": "last 2 versions",
   "dependencies": {
-    "@kanru/rage-wasm": "^0.3.1",
+    "concords-rage-wasm": "workspace:*",
     "@swc/helpers": "^0.4.36",
     "regenerator-runtime": "^0.13.11"
   },

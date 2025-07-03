@@ -1,10 +1,20 @@
-import {
-  encrypt_with_user_passphrase,
-  decrypt_with_user_passphrase,
-  encrypt_with_x25519,
-  decrypt_with_x25519,
-  keygen,
-} from "@kanru/rage-wasm";
+import init, {
+  keygen_async,
+  encrypt_async,
+  encrypt_passphrase_async,
+  decrypt_async,
+  decrypt_passphrase_async,
+} from "concords-rage-wasm/pkg/concords_rage_wasm.js";
+
+// Initialize the WASM module once
+let wasmReady: Promise<void> | null = null;
+
+async function ensureWasmReady(): Promise<void> {
+  if (!wasmReady) {
+    wasmReady = init().then(() => {});
+  }
+  return wasmReady;
+}
 
 /**
  * Generates a new X25519 key pair for age encryption
@@ -17,7 +27,8 @@ import {
  * ```
  */
 export async function generate(): Promise<string[]> {
-  return keygen();
+  await ensureWasmReady();
+  return keygen_async();
 }
 
 /**
@@ -37,22 +48,18 @@ export async function generate(): Promise<string[]> {
  * ```
  */
 export async function encrypt(secret: string, data: string): Promise<string> {
-  let encrypted;
+  await ensureWasmReady();
+  
+  const dataBytes = new TextEncoder().encode(data);
+  let encryptedBytes;
+  
   if (secret.startsWith("age1")) {
-    encrypted = await encrypt_with_x25519(
-      secret,
-      new TextEncoder().encode(data),
-      true
-    );
+    encryptedBytes = await encrypt_async(secret, dataBytes, true);
   } else {
-    encrypted = await encrypt_with_user_passphrase(
-      secret,
-      new TextEncoder().encode(data),
-      true
-    );
+    encryptedBytes = await encrypt_passphrase_async(secret, dataBytes, true);
   }
 
-  return new TextDecoder("utf-8").decode(encrypted);
+  return new TextDecoder("utf-8").decode(new Uint8Array(encryptedBytes));
 }
 
 /**
@@ -72,18 +79,19 @@ export async function encrypt(secret: string, data: string): Promise<string> {
  * ```
  */
 export async function decrypt(secret: string, data: string): Promise<string> {
-  let decrypted;
+  await ensureWasmReady();
+  
+  const dataBytes = new TextEncoder().encode(data);
+  let decryptedBytes;
+  
   if (secret.startsWith("AGE-SECRET-KEY-")) {
-    decrypted = await decrypt_with_x25519(
-      secret,
-      new TextEncoder().encode(data)
-    );
+    decryptedBytes = await decrypt_async(secret, dataBytes);
   } else {
-    decrypted = await decrypt_with_user_passphrase(
-      secret,
-      new TextEncoder().encode(data)
-    );
+    decryptedBytes = await decrypt_passphrase_async(secret, dataBytes);
   }
 
-  return new TextDecoder("utf-8").decode(decrypted);
+  return new TextDecoder("utf-8").decode(new Uint8Array(decryptedBytes));
 }
+
+// Export error types for better error handling
+export { EncryptionError, ValidationError } from './errors';
