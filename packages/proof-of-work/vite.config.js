@@ -11,7 +11,7 @@ export default defineConfig({
     lib: {
       // Could also be a dictionary or array of multiple entry points
       entry: resolve(__dirname, "src/index.ts"),
-      name: "concords-proof-of-work",
+      name: "ternent-proof-of-work",
       // the proper extensions will be added
       fileName: "proof-of-work",
     },

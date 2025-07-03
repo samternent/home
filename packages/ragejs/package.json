@@ -1,5 +1,5 @@
 {
-  "name": "concords-rage-wasm",
+  "name": "ternent-rage-wasm",
   "version": "0.1.0",
   "description": "WASM bindings for the AGE encryption library",
   "main": "pkg/ragejs.js",
@@ -10,12 +10,17 @@
   },
   "files": [
     "pkg/ragejs.js",
-    "pkg/ragejs_bg.js", 
+    "pkg/ragejs_bg.js",
     "pkg/ragejs_bg.wasm",
     "pkg/ragejs.d.ts",
     "pkg/ragejs_bg.wasm.d.ts"
   ],
-  "keywords": ["age", "encryption", "wasm", "cryptography"],
+  "keywords": [
+    "age",
+    "encryption",
+    "wasm",
+    "cryptography"
+  ],
   "author": "Sam Ternent <hello@ternent.dev>",
   "license": "MIT",
   "repository": {

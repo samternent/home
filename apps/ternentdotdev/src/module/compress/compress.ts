@@ -1,4 +1,4 @@
-import { b64encode, b64decode } from "concords-utils";
+import { b64encode, b64decode } from "ternent-utils";
 
 export function JSONtoStream(data: any) {
   return new Blob([JSON.stringify(data)], {

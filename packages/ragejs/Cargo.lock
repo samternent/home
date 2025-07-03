@@ -178,21 +178,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "concords-rage-wasm"
-version = "0.1.0"
-dependencies = [
- "age",
- "chrono",
- "console_error_panic_hook",
- "getrandom",
- "js-sys",
- "secrecy",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
-]
-
-[[package]]
 name = "console_error_panic_hook"
 version = "0.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1084,6 +1069,21 @@ dependencies = [
  "proc-macro2",
  "quote",
  "unicode-ident",
+]
+
+[[package]]
+name = "ternent-rage-wasm"
+version = "0.1.0"
+dependencies = [
+ "age",
+ "chrono",
+ "console_error_panic_hook",
+ "getrandom",
+ "js-sys",
+ "secrecy",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "web-sys",
 ]
 
 [[package]]

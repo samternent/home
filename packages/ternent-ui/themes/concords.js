@@ -1,5 +1,5 @@
 export const concords = {
-  "concords-dark": {
+  "ternent-dark": {
     primary: "#40E0D0", // Bright Turquoise
     secondary: "#FFA500", // Vivid Orange
     accent: "#DDA0DD", // Plum
@@ -18,7 +18,7 @@ export const concords = {
     "--tab-radius": "0.2em",
     "color-scheme": "dark",
   },
-  "concords-light": {
+  "ternent-light": {
     primary: "#0056b3", // Dark Blue
     secondary: "#804000", // Deep Brown
     accent: "#6a3d9a", // Deep Purple

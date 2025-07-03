@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, watch } from "vue";
-import { stripIdentityKey, generateId } from "concords-utils";
+import { stripIdentityKey, generateId } from "ternent-utils";
 import { useLocalStorage } from "@vueuse/core";
 import { useLedger } from "./useLedger";
 import { useIdentity } from "../identity/useIdentity";

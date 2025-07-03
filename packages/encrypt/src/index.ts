@@ -4,7 +4,7 @@ import init, {
   encrypt_passphrase_async,
   decrypt_async,
   decrypt_passphrase_async,
-} from "concords-rage-wasm/pkg/concords_rage_wasm.js";
+} from "ternent-rage-wasm";
 
 // Initialize the WASM module once
 let wasmReady: Promise<void> | null = null;
@@ -49,10 +49,10 @@ export async function generate(): Promise<string[]> {
  */
 export async function encrypt(secret: string, data: string): Promise<string> {
   await ensureWasmReady();
-  
+
   const dataBytes = new TextEncoder().encode(data);
   let encryptedBytes;
-  
+
   if (secret.startsWith("age1")) {
     encryptedBytes = await encrypt_async(secret, dataBytes, true);
   } else {
@@ -80,10 +80,10 @@ export async function encrypt(secret: string, data: string): Promise<string> {
  */
 export async function decrypt(secret: string, data: string): Promise<string> {
   await ensureWasmReady();
-  
+
   const dataBytes = new TextEncoder().encode(data);
   let decryptedBytes;
-  
+
   if (secret.startsWith("AGE-SECRET-KEY-")) {
     decryptedBytes = await decrypt_async(secret, dataBytes);
   } else {
@@ -94,4 +94,4 @@ export async function decrypt(secret: string, data: string): Promise<string> {
 }
 
 // Export error types for better error handling
-export { EncryptionError, ValidationError } from './errors';
+export { EncryptionError, ValidationError } from "./errors";

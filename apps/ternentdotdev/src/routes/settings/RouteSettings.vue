@@ -3,7 +3,6 @@ import { useLocalStorage } from "@vueuse/core";
 import { shallowRef, computed } from "vue";
 import { useWhiteLabel } from "@/module/brand/useWhiteLabel";
 import { SMenu } from "ternent-ui/components";
-import ternentUIThemes from "ternent-ui/themes";
 import { useBreadcrumbs } from "@/module/breadcrumbs/useBreadcrumbs";
 
 const whiteLabel = useWhiteLabel();

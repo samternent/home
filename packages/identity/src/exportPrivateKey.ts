@@ -1,4 +1,4 @@
-import { addNewLines, arrayBufferToBase64 } from "concords-utils";
+import { addNewLines, arrayBufferToBase64 } from "ternent-utils";
 
 export async function exportPrivateKey(
   privateKey: CryptoKey

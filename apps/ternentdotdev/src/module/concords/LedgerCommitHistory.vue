@@ -2,7 +2,7 @@
 import { shallowRef } from "vue";
 import { computedAsync } from "@vueuse/core";
 import { DateTime } from "luxon";
-import { importPublicKeyFromPem, verifyJson } from "concords-identity";
+import { importPublicKeyFromPem, verifyJson } from "ternent-identity";
 import { useLedger } from "../ledger/useLedger";
 import IdentityAvatar from "../identity/IdentityAvatar.vue";
 import LedgerRecords from "../ledger/LedgerRecords.vue";

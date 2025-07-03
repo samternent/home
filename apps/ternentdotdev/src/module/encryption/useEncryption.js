@@ -1,6 +1,6 @@
 import { provide, inject, shallowRef } from "vue";
 import { useLocalStorage } from "@vueuse/core";
-import { generate as generateEncryptionKeys } from "concords-encrypt";
+import { generate as generateEncryptionKeys } from "ternent-encrypt";
 
 const useEncryptionSymbol = Symbol("useEncryption");
 

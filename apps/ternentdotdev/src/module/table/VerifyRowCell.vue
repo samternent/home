@@ -1,6 +1,6 @@
 <script setup>
 import { shallowRef, toRefs, watchEffect } from "vue";
-import { importPublicKeyFromPem, verifyJson } from "concords-identity";
+import { importPublicKeyFromPem, verifyJson } from "ternent-identity";
 
 const props = defineProps({
   data: {

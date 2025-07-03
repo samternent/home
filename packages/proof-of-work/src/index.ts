@@ -1,4 +1,4 @@
-import { hashData } from "concords-utils";
+import { hashData } from "ternent-utils";
 
 /**
  * Represents the result of a proof-of-work computation

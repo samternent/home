@@ -1,8 +1,8 @@
 <script setup>
 import { computed } from "vue";
 import { useLocalStorage } from "@vueuse/core";
-import { generateColorStops } from "concords-utils";
-import ternentUIThemes from "ternent-ui/themes";
+import { generateColorStops } from "ternent-utils";
+import * as ternentUIThemes from "ternent-ui/themes";
 import Color from "colorjs.io";
 
 const themeName = useLocalStorage("app/theme", null);

@@ -5,7 +5,7 @@ import {
   breakpointsTailwind,
   useBreakpoints,
 } from "@vueuse/core";
-import ternentUIThemes from "ternent-ui/themes";
+import * as ternentUIThemes from "ternent-ui/themes";
 import { SDropdown, SBreadcrumbs, SButton } from "ternent-ui/components";
 import { useWhiteLabel } from "@/module/brand/useWhiteLabel";
 import { useAppShell } from "@/module/app-shell/useAppShell";

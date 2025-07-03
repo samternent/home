@@ -1,6 +1,6 @@
 ---
-"concords-encrypt": minor
-"concords-rage-wasm": minor
+"ternent-encrypt": minor
+"ternent-rage-wasm": minor
 ---
 
 Remove ragewasm library for local packages

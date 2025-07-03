@@ -1,4 +1,4 @@
-import { b64encode } from "concords-utils";
+import { b64encode } from "ternent-utils";
 
 /**
  * Signs data

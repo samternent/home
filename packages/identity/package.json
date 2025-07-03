@@ -1,5 +1,5 @@
 {
-  "name": "concords-identity",
+  "name": "ternent-identity",
   "version": "0.0.10",
   "description": "",
   "main": "dist/identity.umd.js",
@@ -22,7 +22,7 @@
   "browserslist": "last 2 versions",
   "dependencies": {
     "@swc/helpers": "^0.4.36",
-    "concords-utils": "workspace:*",
+    "ternent-utils": "workspace:*",
     "regenerator-runtime": "^0.13.11"
   },
   "devDependencies": {

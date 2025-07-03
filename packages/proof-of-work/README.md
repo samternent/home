@@ -239,7 +239,7 @@ console.log(
 
 This package requires:
 
-- `concords-utils` for cryptographic hashing functions
+- `ternent-utils` for cryptographic hashing functions
 
 ## Development
 

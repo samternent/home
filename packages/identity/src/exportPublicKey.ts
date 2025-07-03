@@ -1,4 +1,4 @@
-import { addNewLines, arrayBufferToBase64, b64encode } from "concords-utils";
+import { addNewLines, arrayBufferToBase64, b64encode } from "ternent-utils";
 
 /**
  * Exports publickey

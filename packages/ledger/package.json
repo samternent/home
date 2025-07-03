@@ -1,5 +1,5 @@
 {
-  "name": "concords-ledger",
+  "name": "ternent-ledger",
   "version": "1.0.16",
   "description": "",
   "main": "dist/ledger.umd.js",
@@ -25,10 +25,10 @@
   "browserslist": "last 2 versions",
   "dependencies": {
     "@swc/helpers": "^0.4.36",
-    "concords-encrypt": "workspace:*",
-    "concords-identity": "workspace:*",
-    "concords-proof-of-work": "workspace:*",
-    "concords-utils": "workspace:*",
+    "ternent-encrypt": "workspace:*",
+    "ternent-identity": "workspace:*",
+    "ternent-proof-of-work": "workspace:*",
+    "ternent-utils": "workspace:*",
     "lokijs": "^1.5.12",
     "regenerator-runtime": "^0.13.11"
   },

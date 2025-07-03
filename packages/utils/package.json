@@ -1,5 +1,5 @@
 {
-  "name": "concords-utils",
+  "name": "ternent-utils",
   "version": "1.0.8",
   "description": "",
   "main": "dist/utils.umd.js",

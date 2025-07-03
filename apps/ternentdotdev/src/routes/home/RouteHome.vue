@@ -5,7 +5,7 @@ import hljs from "highlight.js/lib/core";
 import javascript from "highlight.js/lib/languages/javascript";
 import { useAppShell } from "@/module/app-shell/useAppShell";
 import { useWhiteLabel } from "@/module/brand/useWhiteLabel";
-import ternentUIThemes from "ternent-ui/themes";
+import * as ternentUIThemes from "ternent-ui/themes";
 
 hljs.registerLanguage("javascript", javascript);
 
