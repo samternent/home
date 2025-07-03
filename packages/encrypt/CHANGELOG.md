@@ -1,5 +1,16 @@
 # encrypt
 
+## 0.1.0
+
+### Minor Changes
+
+- [#389](https://github.com/samternent/home/pull/389) [`f1d00f0380ef99fac61f5e91683ed98edb0d5322`](https://github.com/samternent/home/commit/f1d00f0380ef99fac61f5e91683ed98edb0d5322) Thanks [@samternent](https://github.com/samternent)! - Remove ragewasm library for local packages
+
+### Patch Changes
+
+- Updated dependencies [[`f1d00f0380ef99fac61f5e91683ed98edb0d5322`](https://github.com/samternent/home/commit/f1d00f0380ef99fac61f5e91683ed98edb0d5322)]:
+  - ternent-rage-wasm@0.2.0
+
 ## 0.0.4
 
 ### Patch Changes
