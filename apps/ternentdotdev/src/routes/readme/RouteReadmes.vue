@@ -7,7 +7,7 @@ useBreadcrumbs({
 });
 </script>
 <template>
-  <div class="flex-1 flex w-full p-4 bg-base-100">
+  <div class="flex-1 flex w-full p-micro bg-background">
     <RouterView />
   </div>
 </template>

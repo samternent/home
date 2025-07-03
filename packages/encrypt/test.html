@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Encrypt Test</title>
+</head>
+<body>
+    <h1>Encryption Test</h1>
+    <div id="status">Loading...</div>
+    <div id="results"></div>
+
+    <script type="module">
+        import { generate, encrypt, decrypt } from './dist/encrypt.es.js';
+
+        const statusEl = document.getElementById('status');
+        const resultsEl = document.getElementById('results');
+
+        function log(message) {
+            console.log(message);
+            resultsEl.innerHTML += '<p>' + message + '</p>';
+        }
+
+        async function testEncryption() {
+            try {
+                statusEl.textContent = 'Testing encryption...';
+                
+                // Test key generation
+                const [privateKey, publicKey] = await generate();
+                log('✅ Key generation successful');
+                log(`Private key: ${privateKey.slice(0, 20)}...`);
+                log(`Public key: ${publicKey.slice(0, 20)}...`);
+                
+                // Test encryption/decryption
+                const message = "Hello, secure world!";
+                const encrypted = await encrypt(publicKey, message);
+                log('✅ Encryption successful');
+                
+                const decrypted = await decrypt(privateKey, encrypted);
+                log('✅ Decryption successful');
+                log(`Decrypted: "${decrypted}"`);
+                
+                if (decrypted === message) {
+                    log('✅ Round-trip test PASSED');
+                } else {
+                    log('❌ Round-trip test FAILED');
+                }
+                
+                // Test passphrase encryption
+                const password = "test-password";
+                const passphraseEncrypted = await encrypt(password, message);
+                const passphraseDecrypted = await decrypt(password, passphraseEncrypted);
+                
+                if (passphraseDecrypted === message) {
+                    log('✅ Passphrase encryption test PASSED');
+                } else {
+                    log('❌ Passphrase encryption test FAILED');
+                }
+                
+                // Test async API (now all functions are async)
+                try {
+                    const [privKey, pubKey] = await generate();
+                    const encrypted = await encrypt(pubKey, "async test");
+                    const decrypted = await decrypt(privKey, encrypted);
+                    
+                    if (decrypted === "async test") {
+                        log('✅ Async API test PASSED');
+                    } else {
+                        log('❌ Async API test FAILED');
+                    }
+                } catch (asyncError) {
+                    log('❌ Async API test failed: ' + asyncError.message);
+                }
+                
+                statusEl.textContent = 'All tests completed!';
+                
+            } catch (error) {
+                log('❌ Test failed: ' + error.message);
+                statusEl.textContent = 'Tests failed!';
+                console.error(error);
+            }
+        }
+
+        testEncryption();
+    </script>
+</body>
+</html>

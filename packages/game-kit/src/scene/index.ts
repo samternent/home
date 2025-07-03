@@ -1,3 +1,8 @@
+/**
+ * createScene function - TODO: Add description
+ * @param TODO - Add parameters
+ * @returns TODO - Add return type description
+ */
 export function createScene(assetPath: string ) {
   const myImage = new Image();
   myImage.src = assetPath;

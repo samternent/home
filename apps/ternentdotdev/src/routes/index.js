@@ -2,9 +2,10 @@ import { appRoutes } from "./app";
 import { ledgerRoutes } from "./ledger";
 import { solidRoutes } from "./solid";
 import { toolsRoutes } from "./tools";
+import { builderRoutes } from "./builder";
+import { appsRoutes } from "./apps";
 import changelog from "./changelog";
 import readme from "./readme";
-import portfolio from "./portfolio";
 import arcade from "./arcade";
 import settings from "./settings";
 
@@ -35,13 +36,14 @@ export default [
       },
       ...arcade,
       ...changelog,
-      ...portfolio,
       ...readme,
       ...settings,
       ...toolsRoutes,
       ...appRoutes,
       ...solidRoutes,
+      ...appsRoutes,
       ...ledgerRoutes,
+      ...builderRoutes,
     ],
   },
 

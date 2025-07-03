@@ -1,4 +1,5 @@
 import { ledgerRoutes } from "../ledger";
+import { profileRoutes } from "../profile";
 
 export const appRoutes = [
   {
@@ -8,6 +9,12 @@ export const appRoutes = [
       {
         path: "profile",
         component: () => import("../profile/RouteProfile.vue"),
+        children: [
+          {
+            path: "management",
+            component: () => import("../profile/RouteProfileManagement.vue"),
+          },
+        ],
       },
       {
         path: "settings",

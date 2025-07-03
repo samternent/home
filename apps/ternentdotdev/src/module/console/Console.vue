@@ -47,7 +47,7 @@ watch(dragPosition, (value) => {
 
     <!-- Panel Control + Indicator -->
     <div
-      class="flex justify-between px-2 h-8 border-b border-base-300 bg-base-200 relative z-50 py-1"
+      class="flex justify-between px-micro h-8 border-b border-muted bg-surface relative z-50 py-1"
     >
       <div class="flex-1 items-center flex justify-between">
         <slot name="panel-control" />
@@ -58,8 +58,9 @@ watch(dragPosition, (value) => {
           aria-label="Toggle Bottom Panel"
           :aria-pressed="isBottomPanelExpanded"
           @click="isBottomPanelExpanded = !isBottomPanelExpanded"
-          type="ghost"
-          class="mr-2 btn-xs"
+          variant="ghost"
+          size="nano"
+          class="mr-micro"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

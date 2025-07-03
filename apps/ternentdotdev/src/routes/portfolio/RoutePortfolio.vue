@@ -1,5 +1,6 @@
 <script setup>
 import { useBreadcrumbs } from "@/module/breadcrumbs/useBreadcrumbs";
+
 useBreadcrumbs({
   path: "/portfolio",
   name: "Portfolio",

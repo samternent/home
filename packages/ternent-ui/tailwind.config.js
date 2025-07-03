@@ -1,10 +1,12 @@
-import { ternentDotDev, clubColors, concords } from "./themes";
+import { ternentDotDev, clubColors, concords, sleek } from "./themes";
 import { buildThemes } from "./themes/util";
 
 const themes = {
   ...buildThemes({ ...clubColors }),
   ...ternentDotDev,
   ...concords,
+  sleekLight: sleek.light,
+  sleekDark: sleek.dark,
 };
 
 /** @type {import('tailwindcss').Config} */
@@ -58,7 +60,13 @@ module.exports = {
       "dim",
       "nord",
       "sunset",
-      themes,
+      {
+        sleekLight: sleek.light,
+      },
+      {
+        sleekDark: sleek.dark,
+      },
+      ...Object.entries(themes).map(([name, theme]) => ({ [name]: theme })),
     ],
   },
 };
