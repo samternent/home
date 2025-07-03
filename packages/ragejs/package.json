@@ -1,6 +1,6 @@
 {
   "name": "ternent-rage-wasm",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "WASM bindings for the AGE encryption library",
   "main": "pkg/ragejs.js",
   "types": "pkg/ragejs.d.ts",
