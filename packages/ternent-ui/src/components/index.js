@@ -1,7 +1,9 @@
 import "../style.css";
 
+// Components
 export { default as SBrandHeader } from "./SBrandHeader.vue";
 export { default as SButton } from "./SButton.vue";
+export { default as SCard } from "./SCard.vue";
 export { default as SSpinner } from "./SSpinner.vue";
 export { default as STabs } from "./STabs.vue";
 export { default as SNavBar } from "./SNavBar.vue";
@@ -13,6 +15,7 @@ export { default as SCountdown } from "./SCountdown.vue";
 export { default as SAvatar } from "./SAvatar.vue";
 export { default as SFooter } from "./SFooter.vue";
 export { default as SIndicator } from "./SIndicator.vue";
+export { default as SInput } from "./SInput.vue";
 export { default as SAlert } from "./SAlert.vue";
 export { default as SThemeToggle } from "./SThemeToggle.vue";
 export { default as SBreadcrumbs } from "./SBreadcrumbs.vue";
@@ -22,7 +25,14 @@ export { default as SBrowserMockup } from "./SBrowserMockup.vue";
 export { default as STimeline } from "./STimeline.vue";
 export { default as SDropdown } from "./SDropdown.vue";
 export { default as SMenu } from "./SMenu.vue";
+export { default as SMenuItem } from "./SMenuItem.vue";
+export { default as SSidebar } from "./SSidebar.vue";
 export { default as SFileInput } from "./SFileInput.vue";
 export { default as SResizer } from "./SResizer.vue";
 export { default as SResizablePanels } from "./SResizablePanels.vue";
 export { default as SSwap } from "./SSwap.vue";
+
+// Design System
+export * from "../design-system/tokens.js";
+export * from "../design-system/utils.js";
+export * from "../design-system/foundation.js";

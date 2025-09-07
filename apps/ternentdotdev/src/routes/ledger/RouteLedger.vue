@@ -1,23 +1,39 @@
 <script setup>
-import { shallowRef, computed, watch } from "vue";
+import { shallowRef, computed, watch, onMounted } from "vue";
 
 import { useElementBounding } from "@vueuse/core";
-import { SResizablePanels, SIndicator, STabs } from "ternent-ui/components";
+import {
+  SResizablePanels,
+  SIndicator,
+  STabs,
+  SButton,
+} from "ternent-ui/components";
 import { useBreadcrumbs } from "../../module/breadcrumbs/useBreadcrumbs";
 
 import { useLedger } from "../../module/ledger/useLedger";
+import { provideAppBuilder } from "../../module/builder/useAppBuilder";
+import { provideLedgerApps } from "../../module/ledger/useLedgerApps";
 import Worker from "./worker?worker";
 import Console from "@/module/console/Console.vue";
 import LedgerPendingRecords from "@/module/concords/LedgerPendingRecords.vue";
 import LedgerCommitHistory from "@/module/concords/LedgerCommitHistory.vue";
 import LedgerCommit from "@/module/concords/LedgerCommit.vue";
-import LedgerEncrypt from "@/module/concords/LedgerEncrypt.vue";
-import LedgerStorage from "@/module/concords/LedgerStorage.vue";
+import { useSolid } from "@/module/solid/useSolid";
 import { useLocalStorage } from "@vueuse/core";
 
 new Worker();
 
 const { ledger, compressedBlob } = useLedger();
+const appBuilder = provideAppBuilder(); // Provide app builder first and get the instance
+const { apps } = provideLedgerApps(appBuilder); // Pass the app builder instance
+const { hasSolidSession, webId } = useSolid();
+
+// Revolutionary welcome state
+const showOnboarding = shallowRef(false);
+const hasSeenOnboarding = useLocalStorage("resistance-onboarding-seen", false);
+const isFirstVisit = computed(
+  () => !hasSeenOnboarding.value && (!ledger.value || ledger.value.length === 0)
+);
 
 const contentArea = shallowRef();
 const contentWidth = shallowRef(600);
@@ -26,8 +42,26 @@ const { width: viewWidth } = useElementBounding(contentArea);
 
 useBreadcrumbs({
   path: "/ledger",
-  name: "Ledger",
+  name: "System Administration",
 });
+
+// Show onboarding for new users
+onMounted(() => {
+  if (isFirstVisit.value) {
+    setTimeout(() => {
+      showOnboarding.value = true;
+    }, 1000);
+  }
+});
+
+function handleOnboardingComplete() {
+  hasSeenOnboarding.value = true;
+  showOnboarding.value = false;
+}
+
+function startRevolution() {
+  showOnboarding.value = true;
+}
 
 const pendingRecords = computed(() => ledger.value?.pending_records.length);
 
@@ -40,15 +74,15 @@ const tabs = computed(() => [
     title: "History",
     tab: "history",
   },
+  {
+    title: "Demo",
+    tab: "demo",
+  },
 ]);
 const subTabs = computed(() => [
   {
     title: "Commit",
     tab: "commit",
-  },
-  {
-    title: "Storage",
-    tab: "storage",
   },
 ]);
 
@@ -73,20 +107,31 @@ watch(activeSubTab, () => {
 });
 
 const navTabs = computed(() => {
-  return [
+  // System administration tabs only (apps are now handled by /apps route)
+  const systemTabs = [
     {
-      title: "Tasks",
-      path: `/ledger/tasks`,
+      title: "Users",
+      path: `/ledger/users`,
     },
     {
       title: "Permissions",
       path: `/ledger/permissions`,
     },
     {
-      title: "Users",
-      path: `/ledger/users`,
+      title: "Audit",
+      path: `/ledger/audit`,
+    },
+    {
+      title: "Settings",
+      path: `/ledger/settings`,
+    },
+    {
+      title: "Demo",
+      path: `/ledger/demo`,
     },
   ];
+
+  return systemTabs;
 });
 
 function formatBytes(bytes, decimals = 2) {
@@ -124,31 +169,87 @@ const sizeIndicator = computed(() => {
     class="flex flex-col flex-1 relative max-w-full overflow-hidden"
   >
     <nav
-      class="text-sm flex items-center justify-between border-b border-base-300 pt-2"
+      class="text-body-sm flex items-center justify-between pt-micro px-micro"
     >
-      <STabs :items="navTabs" :path="$route.path" :exact="true" />
-    </nav>
-    <section class="text-sm flex items-center justify-between p-2">
-      <div></div>
-      <label class="input input-bordered input-sm flex items-center gap-2">
-        <input type="text" class="grow" placeholder="Search" />
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 16 16"
-          fill="currentColor"
-          class="h-4 w-4 opacity-70"
+      <div class="flex items-center gap-micro">
+        <!-- Revolutionary Badge -->
+        <div
+          v-if="isFirstVisit"
+          class="inline-flex items-center gap-1 bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-300 px-2 py-1 rounded text-xs font-medium"
         >
-          <path
-            fill-rule="evenodd"
-            d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
-            clip-rule="evenodd"
-          />
-        </svg>
-      </label>
-    </section>
+          <span>⚙️</span>
+          <span>System Administration</span>
+        </div>
+
+        <STabs
+          :items="navTabs"
+          :path="$route.path"
+          :exact="true"
+          size="micro"
+          type="stripe"
+        />
+      </div>
+
+      <div class="flex items-center gap-micro">
+        <!-- Solid Pod Status -->
+        <div v-if="hasSolidSession" class="flex items-center gap-micro">
+          <div class="badge badge-success badge-sm">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="size-3 mr-1"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+              />
+            </svg>
+            Solid Connected
+          </div>
+        </div>
+
+        <!-- Connect to System Storage -->
+        <div v-else class="flex items-center">
+          <SButton
+            size="nano"
+            variant="outline"
+            @click="$router.push('/solid')"
+            class="rounded-sm border-base-300/50 hover:border-base-400 hover:bg-base-50 transition-colors"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-2.5 h-2.5 mr-1.5"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"
+              />
+            </svg>
+            Connect to solid
+          </SButton>
+        </div>
+      </div>
+    </nav>
 
     <div class="flex-1 flex w-full overflow-hidden relative">
-      <RouterView />
+      <div
+        v-if="$route.path === '/ledger/demo'"
+        class="flex flex-col w-full h-full p-4 gap-6"
+      >
+        <!-- todo -->
+      </div>
+      <div class="flex flex-1" v-else>
+        <RouterView :key="$route.fullPath" />
+      </div>
     </div>
     <!-- Bottom expandable panel -->
     <Console :container="contentArea">
@@ -194,30 +295,57 @@ const sizeIndicator = computed(() => {
               >
             </div>
             <LedgerCommit v-if="activeSubTab === 'commit'" />
-            <LedgerEncrypt v-if="activeSubTab === 'encrypt'" />
-            <LedgerStorage v-if="activeSubTab === 'storage'" />
           </div>
         </template>
       </SResizablePanels>
       <div v-else class="flex flex-col flex-1 bg-base-200 overflow-hidden">
-        <div role="tablist" class="tabs tabs-lifted mt-2 ml-4 mr-8">
-          <a
-            v-for="tab in [...tabs, ...subTabs]"
-            :key="tab.tab"
-            @click="activeLastTab = tab.tab"
-            role="tab"
-            class="tab"
-            :class="{ 'tab-active': activeLastTab === tab.tab }"
-            >{{ tab.title }}</a
-          >
+        <!-- Show content for routes that don't need console -->
+        <div
+          v-if="
+            $route.path.includes('/audit') || $route.path.includes('/settings')
+          "
+          class="flex-1 flex items-center justify-center text-base-content/50"
+        >
+          <div class="text-center">
+            <div class="text-4xl mb-4">🔧</div>
+            <div class="text-lg">Console not needed</div>
+            <div class="text-sm">This page has its own interface</div>
+          </div>
         </div>
 
-        <LedgerPendingRecords v-if="activeLastTab === 'pending'" />
-        <LedgerCommitHistory v-if="activeLastTab === 'history'" />
-        <LedgerCommit v-if="activeLastTab === 'commit'" />
-        <LedgerEncrypt v-if="activeLastTab === 'encrypt'" />
-        <LedgerStorage v-if="activeLastTab === 'storage'" />
+        <!-- Console for data management pages -->
+        <div v-else>
+          <div role="tablist" class="tabs tabs-lifted mt-2 ml-4 mr-8">
+            <a
+              v-for="tab in [...tabs, ...subTabs]"
+              :key="tab.tab"
+              @click="activeLastTab = tab.tab"
+              role="tab"
+              class="tab"
+              :class="{ 'tab-active': activeLastTab === tab.tab }"
+              >{{ tab.title }}</a
+            >
+          </div>
+
+          <LedgerPendingRecords v-if="activeLastTab === 'pending'" />
+          <LedgerCommitHistory v-if="activeLastTab === 'history'" />
+          <LedgerCommit v-if="activeLastTab === 'commit'" />
+          <div
+            v-if="activeLastTab === 'demo'"
+            class="flex flex-col w-full h-full p-4 gap-6"
+          >
+            <ResistanceOnboarding />
+            <SecurityProof />
+          </div>
+        </div>
       </div>
     </Console>
+
+    <!-- Onboarding Component -->
+    <ResistanceOnboarding
+      :open="showOnboarding"
+      @update:open="showOnboarding = $event"
+      @completed="handleOnboardingComplete"
+    />
   </div>
 </template>

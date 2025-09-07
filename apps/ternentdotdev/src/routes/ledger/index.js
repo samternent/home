@@ -5,7 +5,21 @@ export const ledgerRoutes = [
     children: [
       {
         path: "",
-        redirect: "/ledger/tasks",
+        redirect: (to) => {
+          // Redirect to first app if available, otherwise to users
+          return "/ledger/users";
+        },
+      },
+      {
+        path: "app/:appId",
+        component: () => import("./RouteLedgerApp.vue"),
+        props: true,
+      },
+      {
+        path: "demo",
+        component: {
+          template: '<div />', // Placeholder, content rendered in parent
+        },
       },
       {
         path: "permissions",
@@ -16,18 +30,21 @@ export const ledgerRoutes = [
         component: () => import("./RouteLedgerUsers.vue"),
       },
       {
+        path: "audit",
+        component: () => import("./RouteLedgerAudit.vue"),
+      },
+      {
+        path: "settings",
+        component: () => import("./RouteLedgerSettings.vue"),
+      },
+      {
         path: ":sheetName",
         component: () => import("./RouteLedgerSheet.vue"),
         props: true,
       },
       {
-        path: "tasks",
-        component: () => import("./RouteLedgerTasks.vue"),
-        props: true,
-      },
-      {
-        path: "add",
-        component: () => import("./RouteLedgerAdd.vue"),
+        path: "notes",
+        component: () => import("./RouteLedgerNotes.vue"),
       },
     ],
   },

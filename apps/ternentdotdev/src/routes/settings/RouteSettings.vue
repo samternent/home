@@ -2,82 +2,57 @@
 import { useLocalStorage } from "@vueuse/core";
 import { shallowRef, computed } from "vue";
 import { useWhiteLabel } from "@/module/brand/useWhiteLabel";
-import { SMenu } from "ternent-ui/components";
+import { SThemeToggle } from "ternent-ui/components";
 import { useBreadcrumbs } from "@/module/breadcrumbs/useBreadcrumbs";
 
 const whiteLabel = useWhiteLabel();
 
-const theme = useLocalStorage("app/theme");
-
-const themes = computed(() => [
-  { name: "Azure Bloom", value: "azureBloom" },
-  { name: "Azure Bloom Dark", value: "azureBloomDark" },
-  { name: "Corporate Professional", value: "corporateProfessional" },
-  { name: "Corporate Professional Dark", value: "corporateDark" },
-  { name: "Neon Blanc", value: "neonBlanc" },
-  { name: "Neon Noir", value: "neonNoir" },
-  { name: "Marshmallow", value: "marshmallowLight" },
-  { name: "Marshmallow Dark", value: "marshmallowDark" },
-  { name: "Light", value: "light" },
-  { name: "Dark", value: "dark" },
-  { name: "Cupcake", value: "cupcake" },
-  { name: "Bumblebee", value: "bumblebee" },
-  { name: "Emerald", value: "emerald" },
-  { name: "Corporate", value: "corporate" },
-  { name: "Synthwave", value: "synthwave" },
-  { name: "Retro", value: "retro" },
-  { name: "Cyberpunk", value: "cyberpunk" },
-  { name: "Valentine", value: "valentine" },
-  { name: "Halloween", value: "halloween" },
-  { name: "Garden", value: "garden" },
-  { name: "Forest", value: "forest" },
-  { name: "Aqua", value: "aqua" },
-  { name: "Lofi", value: "lofi" },
-  { name: "Pastel", value: "pastel" },
-  { name: "Fantasy", value: "fantasy" },
-  { name: "Wireframe", value: "wireframe" },
-  { name: "Black", value: "black" },
-  { name: "Luxury", value: "luxury" },
-  { name: "Dracula", value: "dracula" },
-  { name: "CMYK", value: "cmyk" },
-  { name: "Autumn", value: "autumn" },
-  { name: "Business", value: "business" },
-  { name: "Acid", value: "acid" },
-  { name: "Lemonade", value: "lemonade" },
-  { name: "Night", value: "night" },
-  { name: "Coffee", value: "coffee" },
-  { name: "Winter", value: "winter" },
-  { name: "Dim", value: "dim" },
-  { name: "Nord", value: "nord" },
-  { name: "Sunset", value: "sunset" },
-]);
-
-const themeName = shallowRef(
-  themes.value.find((t) => t.value === theme.value)?.name
-);
+const theme = useLocalStorage("app/theme", "sleekLight");
 
 useBreadcrumbs({
   path: "/app/settings",
   name: "Settings",
 });
-
-function setTheme({ name, value }) {
-  themeName.value = name;
-  theme.value = value;
-}
 </script>
 <template>
-  <div class="p-2 flex flex-col">
-    <ul class="flex flex-col">
-      <li class="flex gap-2">
-        <span class="text-medium">Theme:</span>
-        <SMenu
-          v-model="themeName"
-          @select="setTheme"
-          :button-text="themeName"
-          :items="themes"
-        />
-      </li>
-    </ul>
+  <div class="p-6 max-w-2xl mx-auto">
+    <div class="space-y-8">
+      <!-- Theme Settings Section -->
+      <div class="card bg-base-100 shadow-lg border border-base-300">
+        <div class="card-body">
+          <h2 class="card-title text-2xl mb-4">🎨 Theme Settings</h2>
+          <p class="text-base-content/70 mb-6">Choose your preferred theme for the application</p>
+          
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text font-medium">Current Theme</span>
+            </label>
+            <SThemeToggle 
+              v-model="theme" 
+              show-dropdown 
+              size="lg"
+              class="w-full"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- App Information -->
+      <div class="card bg-base-100 shadow-lg border border-base-300">
+        <div class="card-body">
+          <h2 class="card-title text-2xl mb-4">ℹ️ App Information</h2>
+          <div class="stats stats-vertical lg:stats-horizontal shadow">
+            <div class="stat">
+              <div class="stat-title">App Name</div>
+              <div class="stat-value text-lg">{{ whiteLabel.title }}</div>
+            </div>
+            <div class="stat">
+              <div class="stat-title">Current Theme</div>
+              <div class="stat-value text-lg">{{ theme }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>

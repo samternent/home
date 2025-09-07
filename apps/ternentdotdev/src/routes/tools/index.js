@@ -5,10 +5,10 @@ export const toolsRoutes = [
     children: [
       {
         path: "",
-        redirect: "/tools/compression",
+        redirect: "/tools/gzip",
       },
       {
-        path: "/tools/compression",
+        path: "/tools/gzip",
         component: () => import("./RouteToolsGzip.vue"),
       },
       {
