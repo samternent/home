@@ -1,5 +1,11 @@
 # ternent-ui
 
+## 0.3.1
+
+### Patch Changes
+
+- [`636f8a0491193a83166a2dd796cc351c57fe5cc5`](https://github.com/samternent/home/commit/636f8a0491193a83166a2dd796cc351c57fe5cc5) Thanks [@samternent](https://github.com/samternent)! - Fix some copy and vercel config
+
 ## 0.3.0
 
 ### Minor Changes
