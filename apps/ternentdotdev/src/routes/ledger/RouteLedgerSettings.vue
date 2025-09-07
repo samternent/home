@@ -1,9 +1,6 @@
 <script setup>
-import { shallowRef, ref, watch } from "vue";
+import { shallowRef } from "vue";
 import { useBreadcrumbs } from "@/module/breadcrumbs/useBreadcrumbs";
-import { STabs } from "ternent-ui/components";
-// import LedgerImport from "@/module/concords/LedgerImport.vue";
-// import LedgerExport from "@/module/concords/LedgerExport.vue";
 import { useSolid } from "@/module/solid/useSolid";
 import { useLocalStorage } from "@vueuse/core";
 
@@ -36,16 +33,10 @@ const settingsTabs = [
 
 // Simple tab switching for now
 const currentTab = shallowRef(activeTab.value);
-const importRefreshTrigger = ref(0);
 
 function switchTab(tabPath) {
   currentTab.value = tabPath;
   activeTab.value = tabPath;
-}
-
-// Function to trigger import refresh when export succeeds
-function triggerImportRefresh() {
-  importRefreshTrigger.value++;
 }
 </script>
 
@@ -102,15 +93,6 @@ function triggerImportRefresh() {
 
     <!-- Tab Content -->
     <div class="flex-1 overflow-auto">
-      <!-- <LedgerImport
-        v-if="currentTab === 'import'"
-        :refresh-trigger="importRefreshTrigger"
-      />
-      <LedgerExport
-        v-if="currentTab === 'export'"
-        @ledger-exported="triggerImportRefresh"
-      /> -->
-
       <!-- Sync Tab -->
       <div
         v-if="currentTab === 'sync'"
