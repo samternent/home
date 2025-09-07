@@ -32,12 +32,12 @@ function startResistance() {
 
       <!-- Content -->
       <div class="relative z-10 text-center space-y-6 px-6 max-w-4xl mx-auto">
-        <!-- Rebellion Badge -->
+        <!-- Context Badge -->
         <div
           class="inline-flex items-center gap-2 bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-300 px-3 py-1 rounded-full text-sm font-medium"
         >
-          <span class="text-lg">🔥</span>
-          <span>Encrypted Rebellion Against Corporate Surveillance</span>
+          <span class="text-lg">🔐</span>
+          <span>A local-first collaboration demo</span>
         </div>
 
         <!-- Main Headline -->
@@ -46,21 +46,23 @@ function startResistance() {
           <span class="text-primary">.dev</span>
         </h1>
 
-        <!-- Revolutionary Value Proposition -->
+        <!-- Explanation -->
         <p
           class="text-lg md:text-xl text-base-content/80 max-w-2xl mx-auto leading-relaxed"
         >
-          <span class="text-primary font-bold">Your data, your rules.</span>
-          Organize without fear. Collaborate dangerously.
+          This site is an experiment in building collaboration tools that work
+          entirely in your browser. Everything you do is stored locally,
+          cryptographically signed, and can be synced or backed up when you
+          decide.
         </p>
 
         <p class="text-base text-base-content/70 max-w-xl mx-auto">
-          100% free, open-source decentralized collaboration platform built for
-          rebels, activists, and anyone who refuses to surrender their digital
-          sovereignty.
+          You’re looking at a practical demonstration of decentralized,
+          open-source software: no central accounts, no hidden servers. Just
+          your device, your keys, and your data.
         </p>
 
-        <!-- Resistance Features -->
+        <!-- Key Features -->
         <div class="grid md:grid-cols-3 gap-4 mt-8 mb-8 max-w-3xl mx-auto">
           <div class="text-center space-y-2">
             <div
@@ -68,9 +70,10 @@ function startResistance() {
             >
               <span class="text-2xl">🔒</span>
             </div>
-            <h3 class="font-bold text-sm">Cryptographically Secure</h3>
+            <h3 class="font-bold text-sm">Signed & Encrypted</h3>
             <p class="text-xs text-base-content/70">
-              Every action signed and verifiable - impossible to forge
+              Actions are protected with cryptography so they can’t be altered
+              without detection.
             </p>
           </div>
           <div class="text-center space-y-2">
@@ -79,59 +82,61 @@ function startResistance() {
             >
               <span class="text-2xl">🌐</span>
             </div>
-            <h3 class="font-bold text-sm">Works Offline</h3>
+            <h3 class="font-bold text-sm">Offline First</h3>
             <p class="text-xs text-base-content/70">
-              Organize anywhere - basements, protests, air-gapped environments
+              The app works without a network; you can sync or export whenever
+              it’s useful.
             </p>
           </div>
           <div class="text-center space-y-2">
             <div
               class="w-14 h-14 bg-green-100 dark:bg-green-900/20 rounded-xl mx-auto flex items-center justify-center"
             >
-              <span class="text-2xl">🔥</span>
+              <span class="text-2xl">🏠</span>
             </div>
-            <h3 class="font-bold text-sm">No Surveillance</h3>
+            <h3 class="font-bold text-sm">No Central Service</h3>
             <p class="text-xs text-base-content/70">
-              No servers to raid, no data to steal, no corporate overlords
+              There’s no company server behind this. What you see here runs on
+              your machine.
             </p>
           </div>
         </div>
 
-        <!-- Revolutionary CTA -->
+        <!-- Primary CTA -->
         <div class="space-y-4">
           <SButton
             size="lg"
             class="btn-primary w-auto px-8 py-3 text-base font-semibold bg-red-600 hover:bg-red-700 border-red-600 hover:border-red-700"
             @click="startResistance"
           >
-            🚀 Start Your First Resistance Room
+            Try the Demo
           </SButton>
           <p class="text-xs text-base-content/60">
-            No signup required • Works completely offline • Free forever
+            No registration • Works offline • Free to explore
           </p>
         </div>
 
-        <!-- Revolutionary Actions -->
+        <!-- Navigation Actions -->
         <div class="flex justify-center gap-4 pt-4">
           <button
             @click="$router.push('/app')"
             class="text-sm text-base-content/70 hover:text-primary transition-colors"
           >
-            Launch Platform
+            Open Workspace
           </button>
           <span class="text-base-content/30">•</span>
           <button
             @click="$router.push('/solid')"
             class="text-sm text-base-content/70 hover:text-primary transition-colors"
           >
-            Connect Backup Storage
+            Configure Solid Backup
           </button>
         </div>
 
-        <!-- Resistance Proof -->
+        <!-- Product Values -->
         <div class="pt-8">
           <p class="text-xs text-base-content/50 mb-3">
-            Built for digital sovereignty
+            What you can expect here
           </p>
           <div class="flex justify-center items-center gap-6 opacity-60">
             <div

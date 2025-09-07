@@ -21,7 +21,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'unsafe-inline' 'unsafe-eval' 'self' *.ternent.dev *.concords.app;font-src 'self' *.ternent.dev *.concords.app fonts.gstatic.com;style-src 'unsafe-inline' 'self' *.ternent.dev *.concords.app fonts.googleapis.com; object-src 'none'; base-uri 'self'; img-src 'unsafe-inline' 'self' cdn.jsdelivr.net; frame-ancestors 'self' *.ternent.dev;"
+          "value": "default-src 'self' *.ternent.dev *.concords.app; script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval'; connect-src 'self' https: data: blob:; img-src 'self' https: data: blob: cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' *.ternent.dev *.concords.app fonts.googleapis.com; font-src 'self' data: *.ternent.dev *.concords.app fonts.gstatic.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'self' *.ternent.dev;"
         },
         {
           "key": "X-Content-Type-Options",
