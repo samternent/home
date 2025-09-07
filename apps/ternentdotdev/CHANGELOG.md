@@ -1,5 +1,18 @@
 # ternentdotdev
 
+## 0.4.0
+
+### Minor Changes
+
+- [`d8807ea4a3c40f2d58e4c9784c2374088b9dc745`](https://github.com/samternent/home/commit/d8807ea4a3c40f2d58e4c9784c2374088b9dc745) Thanks [@samternent](https://github.com/samternent)! - Complete rework of the app. AI driven
+
+### Patch Changes
+
+- Updated dependencies [[`5fe1ff12d188b022aa98e62bb6215409f1c9dbbf`](https://github.com/samternent/home/commit/5fe1ff12d188b022aa98e62bb6215409f1c9dbbf), [`d8807ea4a3c40f2d58e4c9784c2374088b9dc745`](https://github.com/samternent/home/commit/d8807ea4a3c40f2d58e4c9784c2374088b9dc745)]:
+  - ternent-encrypt@0.1.1
+  - ternent-ui@0.3.0
+  - ternent-ledger@1.0.18
+
 ## 0.3.18
 
 ### Patch Changes
