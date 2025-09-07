@@ -1,5 +1,12 @@
 # ternent-ledger
 
+## 1.0.17
+
+### Patch Changes
+
+- Updated dependencies [[`f1d00f0380ef99fac61f5e91683ed98edb0d5322`](https://github.com/samternent/home/commit/f1d00f0380ef99fac61f5e91683ed98edb0d5322)]:
+  - ternent-encrypt@0.1.0
+
 ## 1.0.16
 
 ### Patch Changes
