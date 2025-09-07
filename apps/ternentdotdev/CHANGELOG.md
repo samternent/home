@@ -1,5 +1,11 @@
 # ternentdotdev
 
+## 0.4.2
+
+### Patch Changes
+
+- [`00c3fdc2ee6e0998026831fb5edc22b5cc96b375`](https://github.com/samternent/home/commit/00c3fdc2ee6e0998026831fb5edc22b5cc96b375) Thanks [@samternent](https://github.com/samternent)! - Updates after AI carnage
+
 ## 0.4.1
 
 ### Patch Changes
