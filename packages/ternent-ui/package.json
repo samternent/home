@@ -1,10 +1,17 @@
 {
   "name": "ternent-ui",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
   "description": "A modern, comprehensive Vue 3 design system inspired by Slack and Stripe",
-  "keywords": ["vue", "ui", "components", "design-system", "tailwind", "modern"],
+  "keywords": [
+    "vue",
+    "ui",
+    "components",
+    "design-system",
+    "tailwind",
+    "modern"
+  ],
   "main": "./dist/components.js",
   "exports": {
     ".": "./dist/components.js",

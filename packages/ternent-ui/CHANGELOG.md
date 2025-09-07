@@ -1,5 +1,11 @@
 # ternent-ui
 
+## 0.3.0
+
+### Minor Changes
+
+- [`d8807ea4a3c40f2d58e4c9784c2374088b9dc745`](https://github.com/samternent/home/commit/d8807ea4a3c40f2d58e4c9784c2374088b9dc745) Thanks [@samternent](https://github.com/samternent)! - Complete rework of the app. AI driven
+
 ## 0.1.18
 
 ### Patch Changes
