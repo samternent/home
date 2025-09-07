@@ -7,7 +7,7 @@ import { useLocalStorage } from "@vueuse/core";
 const { hasSolidSession, webId, logout } = useSolid();
 
 useBreadcrumbs({
-  path: "/ledger/settings",
+  path: "/t/ledger/settings",
   name: "Settings",
 });
 

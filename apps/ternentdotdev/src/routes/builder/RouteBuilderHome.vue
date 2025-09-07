@@ -9,7 +9,7 @@ const router = useRouter();
 const { apps } = useAppBuilder();
 
 useBreadcrumbs({
-  path: "/builder",
+  path: "/t/builder",
   name: "App Builder",
 });
 
@@ -25,15 +25,15 @@ const recentApps = computed(() =>
 );
 
 function createNewApp() {
-  router.push("/builder/create");
+  router.push("/t/builder/create");
 }
 
 function goToTemplates() {
-  router.push("/builder/templates");
+  router.push("/t/builder/templates");
 }
 
 function viewAllApps() {
-  router.push("/builder/apps");
+  router.push("/t/builder/apps");
 }
 </script>
 
@@ -77,7 +77,7 @@ function viewAllApps() {
           v-for="app in recentApps"
           :key="app.id"
           class="hover:shadow-lg transition-shadow cursor-pointer"
-          @click="router.push(`/builder/app/${app.id}`)"
+          @click="router.push(`/t/builder/app/${app.id}`)"
         >
           <div class="flex items-start justify-between mb-4">
             <div class="text-3xl">{{ app.icon }}</div>

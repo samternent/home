@@ -27,7 +27,7 @@ const schemas = computed(() => getAppSchemas(props.appId));
 const views = computed(() => getAppViews(props.appId));
 
 useBreadcrumbs({
-  path: `/builder/app/${props.appId}`,
+  path: `/t/builder/app/${props.appId}`,
   name: app.value?.name || "App Editor",
 });
 
@@ -131,7 +131,7 @@ async function createListView(schema) {
 }
 
 function openRuntime() {
-  router.push(`/builder/runtime/${props.appId}`);
+  router.push(`/t/builder/runtime/${props.appId}`);
 }
 </script>
 
@@ -406,7 +406,7 @@ function openRuntime() {
       <p class="text-base-content/60">
         The requested app could not be found in your ledger.
       </p>
-      <RouterLink to="/builder" class="btn btn-outline mt-4">
+      <RouterLink to="/t/builder" class="btn btn-outline mt-4">
         Back to Builder
       </RouterLink>
     </div>

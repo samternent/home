@@ -2,11 +2,7 @@
 import { ref } from "vue";
 import { useLocalStorage } from "@vueuse/core";
 import { onClickOutside } from "@vueuse/core";
-import {
-  SNavBar,
-  SBreadcrumbs,
-  SButton,
-} from "ternent-ui/components";
+import { SNavBar, SBreadcrumbs, SButton } from "ternent-ui/components";
 import { useBreadcrumbs } from "@/module/breadcrumbs/useBreadcrumbs";
 import { useIdentity } from "@/module/identity/useIdentity";
 import IdentityAvatar from "@/module/identity/IdentityAvatar.vue";
@@ -33,28 +29,28 @@ const userMenuItems = [
     description: "Identity & keys overview",
     icon: "👤",
     to: "/app/profile",
-    gradient: "from-blue-500 to-blue-600"
+    gradient: "from-blue-500 to-blue-600",
   },
   {
-    label: "Manage Profile", 
+    label: "Manage Profile",
     description: "Edit, share & backup",
     icon: "👥",
     to: "/app/profile/management",
-    gradient: "from-green-500 to-green-600"
+    gradient: "from-green-500 to-green-600",
   },
   {
     label: "Settings",
     description: "App preferences",
     icon: "⚙️",
     to: "/app/settings",
-    gradient: "from-slate-500 to-slate-600"
+    gradient: "from-slate-500 to-slate-600",
   },
   {
     label: "Solid Pod",
     description: "Connect & sync",
     icon: "🌐",
     to: "/solid",
-    gradient: "from-purple-500 to-purple-600"
+    gradient: "from-purple-500 to-purple-600",
   },
 ];
 </script>
@@ -108,7 +104,7 @@ const userMenuItems = [
         >
           <IdentityAvatar
             :identity="publicKeyPEM"
-            size="sm"
+            size="xs"
             class="avatar-identity"
           />
           <svg
@@ -152,7 +148,10 @@ const userMenuItems = [
               class="dropdown-item"
               @click="userMenuOpen = false"
             >
-              <div class="item-icon-wrapper" :class="`bg-gradient-to-br ${item.gradient}`">
+              <div
+                class="item-icon-wrapper"
+                :class="`bg-gradient-to-br ${item.gradient}`"
+              >
                 <span class="item-emoji">{{ item.icon }}</span>
               </div>
               <div class="item-content">

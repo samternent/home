@@ -9,7 +9,7 @@ import { useBreadcrumbs } from "@/module/breadcrumbs/useBreadcrumbs";
 import LedgerAuditLog from "@/module/ledger/LedgerAuditLog.vue";
 
 useBreadcrumbs({
-  path: "/ledger/audit",
+  path: "/t/ledger/audit",
   name: "Audit Trail",
 });
 </script>

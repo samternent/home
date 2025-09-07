@@ -14,17 +14,17 @@ const props = defineProps({
 
 const router = useRouter();
 const route = useRoute();
-const { 
-  getApp, 
-  updateApp, 
-  getAppSchemas, 
-  createSchema, 
-  updateSchema, 
+const {
+  getApp,
+  updateApp,
+  getAppSchemas,
+  createSchema,
+  updateSchema,
   removeSchema,
   getAppViews,
   createView,
   updateView,
-  removeView
+  removeView,
 } = useAppBuilder();
 
 // Get app data
@@ -33,8 +33,8 @@ const schemas = computed(() => getAppSchemas(props.appId));
 const views = computed(() => getAppViews(props.appId));
 
 useBreadcrumbs({
-  path: `/builder/app/${props.appId}/design`,
-  name: computed(() => app.value ? `Design ${app.value.name}` : "Design App"),
+  path: `/t/builder/app/${props.appId}/design`,
+  name: computed(() => (app.value ? `Design ${app.value.name}` : "Design App")),
 });
 
 const activeTab = shallowRef("overview");
@@ -84,17 +84,21 @@ const viewTypes = [
 ];
 
 // Watch for app changes
-watch(() => app.value, (newApp) => {
-  if (newApp) {
-    appForm.value = {
-      name: newApp.name || "",
-      description: newApp.description || "",
-      icon: newApp.icon || "📱",
-      category: newApp.category || "custom",
-      color: newApp.color || "primary",
-    };
-  }
-}, { immediate: true });
+watch(
+  () => app.value,
+  (newApp) => {
+    if (newApp) {
+      appForm.value = {
+        name: newApp.name || "",
+        description: newApp.description || "",
+        icon: newApp.icon || "📱",
+        category: newApp.category || "custom",
+        color: newApp.color || "primary",
+      };
+    }
+  },
+  { immediate: true }
+);
 
 function startEditing() {
   isEditing.value = true;
@@ -102,13 +106,13 @@ function startEditing() {
 
 async function saveChanges() {
   if (!app.value) return;
-  
+
   try {
     await updateApp(props.appId, {
       ...appForm.value,
       updatedAt: new Date().toISOString(),
     });
-    
+
     isEditing.value = false;
   } catch (error) {
     console.error("Failed to save app changes:", error);
@@ -135,7 +139,7 @@ function addField() {
       ...newField.value,
       id: Date.now().toString(),
     });
-    
+
     // Reset form
     newField.value = {
       name: "",
@@ -146,7 +150,9 @@ function addField() {
 }
 
 function removeField(fieldId) {
-  schemaForm.value.fields = schemaForm.value.fields.filter(f => f.id !== fieldId);
+  schemaForm.value.fields = schemaForm.value.fields.filter(
+    (f) => f.id !== fieldId
+  );
 }
 
 async function addSchema() {
@@ -156,11 +162,11 @@ async function addSchema() {
         ...schemaForm.value,
         createdAt: new Date().toISOString(),
       });
-      
+
       // Reset form
       schemaForm.value = {
         name: "",
-        fields: []
+        fields: [],
       };
     } catch (error) {
       console.error("Failed to add schema:", error);
@@ -183,7 +189,7 @@ async function addView() {
         ...viewForm.value,
         createdAt: new Date().toISOString(),
       });
-      
+
       // Reset form
       viewForm.value = {
         name: "",
@@ -205,7 +211,7 @@ async function removeViewById(viewId) {
 }
 
 function viewApp() {
-  router.push(`/ledger/app/${props.appId}`);
+  router.push(`/t/ledger/app/${props.appId}`);
 }
 </script>
 
@@ -217,18 +223,20 @@ function viewApp() {
         <h1 class="text-3xl font-bold">
           {{ app?.icon || "📱" }} Design {{ app?.name || "App" }}
         </h1>
-        <p class="text-base-content/60">Configure your app structure and views</p>
+        <p class="text-base-content/60">
+          Configure your app structure and views
+        </p>
       </div>
       <div v-if="app" class="space-x-2">
         <SButton @click="viewApp" class="btn-primary">
           <span class="mr-2">🚀</span>
           View App
         </SButton>
-        <SButton :to="`/builder/app/${props.appId}`" class="btn-outline">
+        <SButton :to="`/t/builder/app/${props.appId}`" class="btn-outline">
           <span class="mr-2">📊</span>
           App Dashboard
         </SButton>
-        <SButton to="/builder/apps" class="btn-outline">
+        <SButton to="/t/builder/apps" class="btn-outline">
           <span class="mr-2">🏠</span>
           All Apps
         </SButton>
@@ -241,10 +249,7 @@ function viewApp() {
       <p class="text-base-content/60 mb-6">
         The requested app doesn't exist or couldn't be loaded.
       </p>
-      <SButton 
-        to="/builder/apps" 
-        class="btn-primary"
-      >
+      <SButton to="/t/builder/apps" class="btn-primary">
         View All Apps
       </SButton>
     </div>
@@ -275,8 +280,12 @@ function viewApp() {
             Edit
           </SButton>
           <div v-else class="space-x-2">
-            <SButton @click="saveChanges" class="btn-primary btn-sm">Save</SButton>
-            <SButton @click="cancelEditing" class="btn-outline btn-sm">Cancel</SButton>
+            <SButton @click="saveChanges" class="btn-primary btn-sm"
+              >Save</SButton
+            >
+            <SButton @click="cancelEditing" class="btn-outline btn-sm"
+              >Cancel</SButton
+            >
           </div>
         </div>
 
@@ -291,12 +300,12 @@ function viewApp() {
               <p class="text-2xl">{{ app.icon }}</p>
             </div>
           </div>
-          
+
           <div>
             <h3 class="font-medium text-base-content/70 mb-1">Description</h3>
             <p>{{ app.description }}</p>
           </div>
-          
+
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h3 class="font-medium text-base-content/70 mb-1">Category</h3>
@@ -307,7 +316,7 @@ function viewApp() {
               <p class="capitalize">{{ app.color }}</p>
             </div>
           </div>
-          
+
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h3 class="font-medium text-base-content/70 mb-1">Data Types</h3>
@@ -327,19 +336,15 @@ function viewApp() {
               label="App Name"
               placeholder="My Awesome App"
             />
-            <SInput
-              v-model="appForm.icon"
-              label="Icon"
-              placeholder="📱"
-            />
+            <SInput v-model="appForm.icon" label="Icon" placeholder="📱" />
           </div>
-          
+
           <SInput
             v-model="appForm.description"
             label="Description"
             placeholder="What does your app do?"
           />
-          
+
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <SInput
               v-model="appForm.category"
@@ -360,16 +365,16 @@ function viewApp() {
         <!-- Add New Schema -->
         <SCard class="space-y-4">
           <h2 class="text-xl font-semibold">Add Data Type</h2>
-          
+
           <SInput
             v-model="schemaForm.name"
             label="Data Type Name"
             placeholder="e.g., Tasks, Contacts, Products"
           />
-          
+
           <div class="space-y-3">
             <h3 class="font-medium">Fields</h3>
-            
+
             <!-- Add Field Form -->
             <div class="flex gap-2 items-end">
               <SInput
@@ -379,17 +384,27 @@ function viewApp() {
                 size="sm"
               />
               <select v-model="newField.type" class="select select-sm">
-                <option v-for="type in fieldTypes" :key="type.value" :value="type.value">
+                <option
+                  v-for="type in fieldTypes"
+                  :key="type.value"
+                  :value="type.value"
+                >
                   {{ type.label }}
                 </option>
               </select>
               <label class="flex items-center gap-1 text-sm">
-                <input type="checkbox" v-model="newField.required" class="checkbox checkbox-sm" />
+                <input
+                  type="checkbox"
+                  v-model="newField.required"
+                  class="checkbox checkbox-sm"
+                />
                 Required
               </label>
-              <SButton @click="addField" size="sm" class="btn-primary">Add Field</SButton>
+              <SButton @click="addField" size="sm" class="btn-primary"
+                >Add Field</SButton
+              >
             </div>
-            
+
             <!-- Current Fields -->
             <div class="space-y-2">
               <div
@@ -399,17 +414,28 @@ function viewApp() {
               >
                 <div class="flex items-center gap-2">
                   <span class="font-medium">{{ field.name }}</span>
-                  <span class="text-xs text-base-content/60">({{ field.type }})</span>
-                  <span v-if="field.required" class="text-xs text-error">Required</span>
+                  <span class="text-xs text-base-content/60"
+                    >({{ field.type }})</span
+                  >
+                  <span v-if="field.required" class="text-xs text-error"
+                    >Required</span
+                  >
                 </div>
-                <button @click="removeField(field.id)" class="btn btn-xs btn-error">Remove</button>
+                <button
+                  @click="removeField(field.id)"
+                  class="btn btn-xs btn-error"
+                >
+                  Remove
+                </button>
               </div>
             </div>
           </div>
-          
+
           <SButton
             @click="addSchema"
-            :disabled="!schemaForm.name.trim() || schemaForm.fields.length === 0"
+            :disabled="
+              !schemaForm.name.trim() || schemaForm.fields.length === 0
+            "
             class="btn-primary"
           >
             Add Data Type
@@ -427,7 +453,10 @@ function viewApp() {
             >
               <div class="flex items-center justify-between mb-2">
                 <h3 class="font-semibold">{{ schema.name }}</h3>
-                <SButton @click="removeSchemaById(schema.id)" class="btn-error btn-sm">
+                <SButton
+                  @click="removeSchemaById(schema.id)"
+                  class="btn-error btn-sm"
+                >
                   Remove
                 </SButton>
               </div>
@@ -437,7 +466,9 @@ function viewApp() {
                   :key="field.id"
                   class="text-sm text-base-content/70"
                 >
-                  {{ field.name }} ({{ field.type }}){{ field.required ? ' *' : '' }}
+                  {{ field.name }} ({{ field.type }}){{
+                    field.required ? " *" : ""
+                  }}
                 </div>
               </div>
             </div>
@@ -450,7 +481,7 @@ function viewApp() {
         <!-- Add New View -->
         <SCard class="space-y-4">
           <h2 class="text-xl font-semibold">Add View</h2>
-          
+
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <SInput
               v-model="viewForm.name"
@@ -461,14 +492,21 @@ function viewApp() {
               <label class="label">
                 <span class="label-text font-medium">View Type</span>
               </label>
-              <select v-model="viewForm.type" class="select select-bordered w-full">
-                <option v-for="type in viewTypes" :key="type.value" :value="type.value">
+              <select
+                v-model="viewForm.type"
+                class="select select-bordered w-full"
+              >
+                <option
+                  v-for="type in viewTypes"
+                  :key="type.value"
+                  :value="type.value"
+                >
                   {{ type.label }}
                 </option>
               </select>
             </div>
           </div>
-          
+
           <SButton
             @click="addView"
             :disabled="!viewForm.name.trim()"
@@ -490,9 +528,14 @@ function viewApp() {
               <div class="flex items-center justify-between mb-2">
                 <div>
                   <h3 class="font-semibold">{{ view.name }}</h3>
-                  <p class="text-sm text-base-content/60">{{ view.type }} view</p>
+                  <p class="text-sm text-base-content/60">
+                    {{ view.type }} view
+                  </p>
                 </div>
-                <SButton @click="removeViewById(view.id)" class="btn-error btn-sm">
+                <SButton
+                  @click="removeViewById(view.id)"
+                  class="btn-error btn-sm"
+                >
                   Remove
                 </SButton>
               </div>

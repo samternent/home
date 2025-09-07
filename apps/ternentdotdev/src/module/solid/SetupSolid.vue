@@ -3,7 +3,7 @@ import { onMounted } from "vue";
 import { provideSolid } from "./useSolid";
 
 const { handleSessionLogin } = provideSolid();
-onMounted(handleSessionLogin);
+// onMounted(handleSessionLogin);
 </script>
 <template>
   <slot />

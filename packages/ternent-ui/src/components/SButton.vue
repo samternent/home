@@ -1,156 +1,153 @@
 <script setup>
-import { computed } from 'vue';
+import { computed } from "vue";
 
 const props = defineProps({
   // Navigation
-  to: {
-    type: String,
-    default: undefined,
-  },
-  href: {
-    type: String,
-    default: undefined,
-  },
-  external: {
-    type: Boolean,
-    default: false,
-  },
+  to: { type: String, default: undefined },
+  href: { type: String, default: undefined },
+  external: { type: Boolean, default: false },
 
   // Appearance
   variant: {
     type: String,
     default: "primary",
-    validator: (value) => [
-      "primary", "secondary", "accent", "outline", "ghost", "ghost-icon", "link",
-      "success", "warning", "error"
-    ].includes(value),
+    validator: (v) =>
+      [
+        "primary",
+        "secondary",
+        "accent",
+        "outline",
+        "ghost",
+        "ghost-icon",
+        "link",
+        "success",
+        "warning",
+        "error",
+      ].includes(v),
   },
   size: {
     type: String,
     default: "base",
-    validator: (value) => ["micro", "xs", "sm", "base", "lg", "xl"].includes(value),
+    validator: (v) => ["micro", "xs", "sm", "base", "lg", "xl"].includes(v),
   },
 
   // States
-  loading: {
-    type: Boolean,
-    default: false,
-  },
-  disabled: {
-    type: Boolean,
-    default: false,
-  },
+  loading: { type: Boolean, default: false },
+  disabled: { type: Boolean, default: false },
 
   // Layout
-  fullWidth: {
-    type: Boolean,
-    default: false,
-  },
-  icon: {
-    type: Boolean,
-    default: false,
-  },
+  fullWidth: { type: Boolean, default: false },
+  icon: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(["click"]);
 
-// Premium button classes using DaisyUI + custom enhancements
+/** Premium DaisyUI button classes (calm, modern, accessible) */
 const buttonClasses = computed(() => {
-  const baseClasses = [
-    'btn',
-    'transition-all duration-200 ease-out',
-    'hover:scale-[1.02] active:scale-[0.98]',
-    'focus:outline-none focus:ring-2 focus:ring-offset-2',
-    'shadow-sm hover:shadow-lg active:shadow-sm',
-    'font-medium',
-    'border-0', // Remove default borders for cleaner look
+  const base = [
+    "btn",
+    "inline-flex items-center justify-center select-none",
+    "transition-colors duration-150 ease-out",
+    // Focus style that works on light/dark and respects your DS background
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-base-100",
+    // Softer elevation
+    "shadow-sm hover:shadow",
+    // Disable affordances
+    "disabled:opacity-60 disabled:cursor-not-allowed",
+    // Smooth press without layout jank
+    "active:scale-95",
+    // Remove default border noise unless variant needs it
+    "border-0",
   ];
 
-  // Size classes with better proportions
-  const sizeClasses = {
-    micro: 'btn-xs h-6 min-h-6 px-2 text-xs rounded-md',
-    xs: 'btn-xs h-7 min-h-7 px-3 text-xs rounded-lg',
-    sm: 'btn-sm h-8 min-h-8 px-4 text-sm rounded-lg',
-    base: 'btn-md h-10 min-h-10 px-6 text-sm rounded-xl',
-    lg: 'btn-lg h-12 min-h-12 px-8 text-base rounded-xl',
-    xl: 'h-14 min-h-14 px-10 text-lg rounded-2xl',
+  const size = {
+    micro: "btn-xs min-h-6 h-6 px-2 text-[11px] rounded-md",
+    xs: "btn-xs min-h-7 h-7 px-2.5 text-xs rounded-lg",
+    sm: "btn-sm min-h-8 h-8 px-3.5 text-sm rounded-lg",
+    base: "btn-md min-h-10 h-10 px-5 text-sm rounded-xl",
+    lg: "btn-lg min-h-12 h-12 px-6 text-base rounded-xl",
+    xl: "min-h-14 h-14 px-7 text-lg rounded-2xl",
   };
 
-  // Variant classes with enhanced styling
-  const variantClasses = {
-    primary: 'btn-primary bg-gradient-to-r from-primary to-primary hover:from-primary/90 hover:to-primary/90 focus:ring-primary/30 text-white border-0',
-    secondary: 'btn-secondary bg-base-100 hover:bg-base-200 text-base-content border border-base-300 focus:ring-primary/30',
-    accent: 'btn-accent bg-gradient-to-r from-accent to-accent hover:from-accent/90 hover:to-accent/90 focus:ring-accent/30 text-white border-0',
-    outline: 'bg-base-100 hover:bg-base-200 text-base-content border border-base-300 hover:border-base-content focus:ring-primary/30',
-    ghost: 'bg-transparent hover:bg-base-200 text-base-content hover:text-base-content focus:ring-primary/30 border-0',
-    'ghost-icon': 'bg-transparent hover:bg-base-200 text-base-content hover:text-base-content focus:ring-primary/30 border-0 aspect-square',
-    link: 'bg-transparent hover:bg-transparent text-primary hover:text-primary/80 focus:ring-primary/30 border-0 underline-offset-4 hover:underline',
-    success: 'btn-success bg-gradient-to-r from-success to-success hover:from-success/90 hover:to-success/90 focus:ring-success/30 text-white border-0',
-    warning: 'btn-warning bg-gradient-to-r from-warning to-warning hover:from-warning/90 hover:to-warning/90 focus:ring-warning/30 text-white border-0',
-    error: 'btn-error bg-gradient-to-r from-error to-error hover:from-error/90 hover:to-error/90 focus:ring-error/30 text-white border-0',
+  const variants = {
+    primary:
+      "btn-primary text-white bg-primary hover:bg-primary/90 active:bg-primary/80",
+    secondary:
+      "btn-secondary text-base-content bg-base-200 hover:bg-base-300 active:bg-base-300/80 border border-base-300",
+    accent:
+      "btn-accent text-white bg-accent hover:bg-accent/90 active:bg-accent/80",
+    outline:
+      "btn-outline text-base-content border border-base-300 hover:bg-base-200/60",
+    ghost:
+      "btn-ghost text-base-content/90 hover:bg-base-200/60 hover:text-base-content",
+    "ghost-icon":
+      "btn-ghost text-base-content/90 hover:bg-base-200/60 hover:text-base-content aspect-square p-0",
+    link: "btn-link bg-transparent px-1 py-1 h-auto min-h-0 text-primary underline-offset-4 hover:underline",
+    success:
+      "btn-success text-white bg-success hover:bg-success/90 active:bg-success/80",
+    warning:
+      "btn-warning text-white bg-warning hover:bg-warning/90 active:bg-warning/80",
+    error: "btn-error text-white bg-error hover:bg-error/90 active:bg-error/80",
   };
 
-  const classes = [
-    ...baseClasses,
-    sizeClasses[props.size] || sizeClasses.base,
-    variantClasses[props.variant] || variantClasses.primary,
+  const cls = [
+    ...base,
+    size[props.size] || size.base,
+    variants[props.variant] || variants.primary,
   ];
 
-  if (props.fullWidth) classes.push('w-full');
-  if (props.loading) classes.push('loading');
+  // Full width
+  if (props.fullWidth) cls.push("w-full", "btn-block");
 
-  return classes.join(' ');
+  // Icon-only mode (keeps API but improves appearance)
+  if (props.icon) cls.push("aspect-square !px-0 text-lg");
+
+  // DaisyUI built-in spinner (works with .btn.loading)
+  if (props.loading) cls.push("loading");
+
+  return cls.join(" ");
 });
 
-// Component selection logic
 const component = computed(() => {
-  if (props.to) return 'RouterLink';
-  if (props.href) return 'a';
-  return 'button';
+  if (props.to) return "RouterLink";
+  if (props.href) return "a";
+  return "button";
 });
 
-// Props for the dynamic component
 const componentProps = computed(() => {
-  const baseProps = {
+  const base = {
     class: buttonClasses.value,
     disabled: props.disabled || props.loading,
+    "aria-busy": props.loading ? "true" : undefined,
+    "aria-disabled": props.disabled || props.loading ? "true" : undefined,
+    "data-variant": props.variant,
+    "data-size": props.size,
   };
 
-  if (props.to) {
-    return { ...baseProps, to: props.to };
-  }
-  
+  if (props.to) return { ...base, to: props.to };
   if (props.href) {
     return {
-      ...baseProps,
+      ...base,
       href: props.href,
-      target: props.external ? '_blank' : undefined,
-      rel: props.external ? 'noopener noreferrer' : undefined,
+      target: props.external ? "_blank" : undefined,
+      rel: props.external ? "noopener noreferrer" : undefined,
+      role: "button",
     };
   }
-
-  return {
-    ...baseProps,
-    type: 'button',
-  };
+  return { ...base, type: "button" };
 });
 
-// Handle click events
-const handleClick = (event) => {
+const handleClick = (e) => {
   if (props.disabled || props.loading) {
-    event.preventDefault();
+    e.preventDefault();
     return;
   }
-  emit('click', event);
+  emit("click", e);
 };
 </script>
 
 <template>
-  <component
-    :is="component"
-    v-bind="componentProps"
-    @click="handleClick"
-  >
+  <component :is="component" v-bind="componentProps" @click="handleClick">
     <slot />
   </component>
 </template>

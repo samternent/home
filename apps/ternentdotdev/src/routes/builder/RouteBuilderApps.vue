@@ -16,19 +16,19 @@ useBreadcrumbs({
 const hasApps = computed(() => apps.value.length > 0);
 
 function createNewApp() {
-  router.push("/builder/create");
+  router.push("/t/builder/create");
 }
 
 function goToTemplates() {
-  router.push("/builder/templates");
+  router.push("/t/builder/templates");
 }
 
 function viewApp(app) {
-  router.push(`/ledger/app/${app.id}`);
+  router.push(`/t/ledger/app/${app.id}`);
 }
 
 function editApp(app) {
-  router.push(`/builder/app/${app.id}/design`);
+  router.push(`/t/builder/app/${app.id}/design`);
 }
 
 async function deleteApp(app) {

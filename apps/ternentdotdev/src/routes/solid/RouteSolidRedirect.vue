@@ -9,7 +9,7 @@ const { handleSessionLogin } = useSolid();
 onMounted(async () => {
   try {
     await handleSessionLogin();
-    const lastPath = window.localStorage.getItem("app/lastPath") || "/ledger";
+    const lastPath = window.localStorage.getItem("app/lastPath") || "/t/ledger";
     setTimeout(() => {
       router.replace(lastPath);
     }, 500);

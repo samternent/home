@@ -10,7 +10,7 @@ const router = useRouter();
 const { createApp, createSchema } = useAppBuilder();
 
 useBreadcrumbs({
-  path: "/builder/create",
+  path: "/t/builder/create",
   name: "Create New App",
 });
 
@@ -203,7 +203,7 @@ async function createNewApp() {
 
     // Redirect to the new app's design page after a short delay
     setTimeout(() => {
-      router.push(`/builder/app/${appId}/design`);
+      router.push(`/t/builder/app/${appId}/design`);
     }, 2000);
   } catch (error) {
     console.error("Failed to create app:", error);
@@ -515,11 +515,14 @@ async function createNewApp() {
       <div class="space-y-3">
         <p class="text-sm">Redirecting to the design interface...</p>
         <div class="flex gap-4 justify-center">
-          <SButton @click="router.push('/builder/design')" class="btn-primary">
+          <SButton
+            @click="router.push('/t/builder/design')"
+            class="btn-primary"
+          >
             <span class="mr-2">🎨</span>
             Go to Design
           </SButton>
-          <SButton @click="router.push('/builder/app')" class="btn-secondary">
+          <SButton @click="router.push('/t/builder/app')" class="btn-secondary">
             <span class="mr-2">🚀</span>
             View App
           </SButton>

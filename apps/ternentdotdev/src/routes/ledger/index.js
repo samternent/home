@@ -7,7 +7,7 @@ export const ledgerRoutes = [
         path: "",
         redirect: (to) => {
           // Redirect to first app if available, otherwise to users
-          return "/ledger/users";
+          return "/t/ledger/users";
         },
       },
       {
@@ -18,7 +18,7 @@ export const ledgerRoutes = [
       {
         path: "demo",
         component: {
-          template: '<div />', // Placeholder, content rendered in parent
+          template: "<div />", // Placeholder, content rendered in parent
         },
       },
       {

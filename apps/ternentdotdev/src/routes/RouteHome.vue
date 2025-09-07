@@ -1,30 +1,11 @@
 <script setup>
-import { computed } from "vue";
-import {
-  useLocalStorage,
-  breakpointsTailwind,
-  useBreakpoints,
-} from "@vueuse/core";
-import ternentUIThemes from "ternent-ui/themes";
-import { useWhiteLabel } from "@/module/brand/useWhiteLabel";
 import { useAppShell } from "@/module/app-shell/useAppShell";
 import { useBreadcrumbs } from "@/module/breadcrumbs/useBreadcrumbs";
-import { provideAppBuilder } from "@/module/builder/useAppBuilder";
 import Logo from "@/module/brand/Logo.vue";
 import AppLayout from "@/module/app/AppLayout.vue";
 import AppNavBar from "@/module/app/AppNavBar.vue";
 
-const whiteLabel = useWhiteLabel();
-const themeName = useLocalStorage("app/theme", null);
 const { appVersion } = useAppShell();
-const themeVariation = computed(
-  () => ternentUIThemes[themeName.value]?.["color-scheme"] || "light"
-);
-const breakpoints = useBreakpoints(breakpointsTailwind);
-const openSideBar = useLocalStorage("ternentdotdev/openSideBar", false);
-
-// Provide app builder for all child routes
-provideAppBuilder();
 
 // Provide root breadcrumb for all routes
 useBreadcrumbs({ name: "Home", path: "/" });
@@ -38,16 +19,7 @@ useBreadcrumbs({ name: "Home", path: "/" });
           <AppNavBar />
         </template>
 
-        <RouterView v-slot="{ Component }">
-          <Transition
-            name="fade"
-            duration="50"
-            mode="out-in"
-            class="flex flex-1 w-full"
-          >
-            <component :is="Component" />
-          </Transition>
-        </RouterView>
+        <RouterView />
       </AppLayout>
     </main>
 

@@ -60,6 +60,7 @@ watch(dragPosition, (value) => {
           @click="isBottomPanelExpanded = !isBottomPanelExpanded"
           type="ghost"
           class="mr-2 btn-xs"
+          size="micro"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

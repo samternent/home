@@ -5,18 +5,23 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 
 function startResistance() {
-  router.push("/app");
+  router.push("/t");
 }
 </script>
 
 <template>
-  <div class="h-screen bg-base-100 overflow-hidden">
+  <!-- Use main for page content and allow vertical scrolling -->
+  <main class="bg-base-100">
     <!-- Hero Section -->
-    <div
-      class="h-full w-full bg-gradient-to-br from-base-100 via-base-200 to-base-300 flex items-center justify-center relative"
+    <section
+      aria-labelledby="hero-title"
+      class="relative isolate w-full bg-gradient-to-br from-base-100 via-base-200 to-base-300 flex justify-center"
     >
       <!-- Background Pattern -->
-      <div class="absolute inset-0 opacity-5">
+      <div
+        class="pointer-events-none absolute inset-0 opacity-5"
+        aria-hidden="true"
+      >
         <div
           class="absolute inset-0"
           style="
@@ -31,17 +36,22 @@ function startResistance() {
       </div>
 
       <!-- Content -->
-      <div class="relative z-10 text-center space-y-6 px-6 max-w-4xl mx-auto">
+      <div
+        class="relative z-10 text-center space-y-6 px-6 max-w-4xl mx-auto py-8"
+      >
         <!-- Context Badge -->
-        <div
+        <p
           class="inline-flex items-center gap-2 bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-300 px-3 py-1 rounded-full text-sm font-medium"
         >
           <span class="text-lg">🔐</span>
           <span>A local-first collaboration demo</span>
-        </div>
+        </p>
 
         <!-- Main Headline -->
-        <h1 class="text-4xl md:text-6xl font-thin tracking-tighter">
+        <h1
+          id="hero-title"
+          class="text-4xl md:text-6xl font-thin tracking-tighter"
+        >
           <span class="text-base-content">ternent</span>
           <span class="text-primary">.dev</span>
         </h1>
@@ -63,44 +73,46 @@ function startResistance() {
         </p>
 
         <!-- Key Features -->
-        <div class="grid md:grid-cols-3 gap-4 mt-8 mb-8 max-w-3xl mx-auto">
-          <div class="text-center space-y-2">
+        <ul class="grid md:grid-cols-3 gap-4 mt-8 mb-8 max-w-3xl mx-auto">
+          <li class="text-center space-y-2">
             <div
               class="w-14 h-14 bg-red-100 dark:bg-red-900/20 rounded-xl mx-auto flex items-center justify-center"
             >
-              <span class="text-2xl">🔒</span>
+              <span class="text-2xl" aria-hidden="true">🔒</span>
             </div>
-            <h3 class="font-bold text-sm">Signed & Encrypted</h3>
+            <h2 class="font-bold text-sm">Signed &amp; Encrypted</h2>
             <p class="text-xs text-base-content/70">
               Actions are protected with cryptography so they can’t be altered
               without detection.
             </p>
-          </div>
-          <div class="text-center space-y-2">
+          </li>
+
+          <li class="text-center space-y-2">
             <div
               class="w-14 h-14 bg-blue-100 dark:bg-blue-900/20 rounded-xl mx-auto flex items-center justify-center"
             >
-              <span class="text-2xl">🌐</span>
+              <span class="text-2xl" aria-hidden="true">🌐</span>
             </div>
-            <h3 class="font-bold text-sm">Offline First</h3>
+            <h2 class="font-bold text-sm">Offline First</h2>
             <p class="text-xs text-base-content/70">
               The app works without a network; you can sync or export whenever
               it’s useful.
             </p>
-          </div>
-          <div class="text-center space-y-2">
+          </li>
+
+          <li class="text-center space-y-2">
             <div
               class="w-14 h-14 bg-green-100 dark:bg-green-900/20 rounded-xl mx-auto flex items-center justify-center"
             >
-              <span class="text-2xl">🏠</span>
+              <span class="text-2xl" aria-hidden="true">🏠</span>
             </div>
-            <h3 class="font-bold text-sm">No Central Service</h3>
+            <h2 class="font-bold text-sm">No Central Service</h2>
             <p class="text-xs text-base-content/70">
               There’s no company server behind this. What you see here runs on
               your machine.
             </p>
-          </div>
-        </div>
+          </li>
+        </ul>
 
         <!-- Primary CTA -->
         <div class="space-y-4">
@@ -117,24 +129,25 @@ function startResistance() {
         </div>
 
         <!-- Navigation Actions -->
-        <div class="flex justify-center gap-4 pt-4">
-          <button
-            @click="$router.push('/app')"
+        <nav aria-label="Quick actions" class="flex justify-center gap-4 pt-4">
+          <RouterLink
+            to="/t"
             class="text-sm text-base-content/70 hover:text-primary transition-colors"
           >
             Open Workspace
-          </button>
-          <span class="text-base-content/30">•</span>
-          <button
-            @click="$router.push('/solid')"
+          </RouterLink>
+          <span class="text-base-content/30" aria-hidden="true">•</span>
+          <RouterLink
+            to="/solid/setup"
             class="text-sm text-base-content/70 hover:text-primary transition-colors"
           >
             Configure Solid Backup
-          </button>
-        </div>
+          </RouterLink>
+        </nav>
 
         <!-- Product Values -->
-        <div class="pt-8">
+        <section aria-labelledby="values-title" class="pt-8">
+          <h2 id="values-title" class="sr-only">What you can expect here</h2>
           <p class="text-xs text-base-content/50 mb-3">
             What you can expect here
           </p>
@@ -155,8 +168,8 @@ function startResistance() {
               <span class="text-xs font-medium">OPEN</span>
             </div>
           </div>
-        </div>
+        </section>
       </div>
-    </div>
-  </div>
+    </section>
+  </main>
 </template>

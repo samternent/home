@@ -1,4 +1,3 @@
-import { appRoutes } from "./app";
 import { ledgerRoutes } from "./ledger";
 import { solidRoutes } from "./solid";
 import { toolsRoutes } from "./tools";
@@ -18,32 +17,26 @@ export default [
         path: "",
         component: () => import("./home/RouteHome.vue"),
       },
-
+      ...toolsRoutes,
+      ...arcade,
       {
-        path: "stream",
-        component: () => import("./stream/RouteStream.vue"),
-      },
-      {
-        path: "slide",
-        component: () => import("./slides/RouteSlides.vue"),
+        path: "t",
+        component: () => import("./app/RouteApp.vue"),
         children: [
           {
-            path: ":slideName",
-            component: () => import("./slides/RouteSlidesView.vue"),
-            props: true,
+            path: "",
+            redirect: "/t/apps",
           },
+          ...changelog,
+          ...readme,
+          ...settings,
+
+          ...solidRoutes,
+          ...appsRoutes,
+          ...builderRoutes,
+          ...ledgerRoutes,
         ],
       },
-      ...arcade,
-      ...changelog,
-      ...readme,
-      ...settings,
-      ...toolsRoutes,
-      ...appRoutes,
-      ...solidRoutes,
-      ...appsRoutes,
-      ...ledgerRoutes,
-      ...builderRoutes,
     ],
   },
 

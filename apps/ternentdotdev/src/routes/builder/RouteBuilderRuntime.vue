@@ -342,7 +342,7 @@ function getInputType(fieldType) {
       <div class="text-4xl mb-4">❌</div>
       <h2 class="text-xl font-bold mb-2">App Not Found</h2>
       <p class="text-base-content/60">The requested app could not be found.</p>
-      <RouterLink to="/builder" class="btn btn-outline mt-4">
+      <RouterLink to="/t/builder" class="btn btn-outline mt-4">
         Back to Builder
       </RouterLink>
     </div>
