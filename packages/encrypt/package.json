@@ -1,6 +1,6 @@
 {
   "name": "ternent-encrypt",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Encryption library using AGE with async web worker support",
   "main": "dist/encrypt.umd.js",
   "module": "dist/encrypt.es.js",
