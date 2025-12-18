@@ -24,7 +24,8 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite build --watch",
-    "serve": "http-server ./dist -p 5001 --cors='*'"
+    "serve": "http-server ./dist -p 5001 --cors='*'",
+    "lint:tokens": "node ./scripts/check-tokens.js"
   },
   "dependencies": {
     "@tailwindcss/typography": "^0.5.14",

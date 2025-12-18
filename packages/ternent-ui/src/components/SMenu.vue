@@ -76,14 +76,14 @@ const variantClasses = computed(() => ({
            border border-base-300 
            shadow-lg`,
   minimal: `bg-base-100/95 backdrop-blur-sm
-           border border-base-300/50 
+           border border-base-300/50
            shadow-md`,
   glass: `bg-base-100/80 backdrop-blur-xl
-         border border-base-100/20 
-         shadow-[0_16px_32px_rgba(0,0,0,0.1)]`,
-  premium: `bg-gradient-to-b from-base-100 to-base-200 
-           border border-base-300 
-           shadow-[0_20px_40px_rgba(0,0,0,0.15)] 
+         border border-base-100/20
+         shadow-xl`,
+  premium: `bg-gradient-to-b from-base-100 to-base-200
+           border border-base-300
+           shadow-2xl
            ring-1 ring-black/5`,
 }));
 </script>

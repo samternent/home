@@ -1,5 +1,6 @@
 import { ternentDotDev, clubColors, concords, sleek } from "./themes";
 import { buildThemes } from "./themes/util";
+import { designTokens } from "./src/design-system/tokens.js";
 
 const themes = {
   ...buildThemes({ ...clubColors }),
@@ -68,5 +69,30 @@ module.exports = {
       },
       ...Object.entries(themes).map(([name, theme]) => ({ [name]: theme })),
     ],
+  },
+  theme: {
+    extend: {
+      colors: {
+        ...designTokens.colors,
+      },
+      spacing: {
+        ...designTokens.spacing,
+      },
+      borderRadius: {
+        ...designTokens.borderRadius,
+      },
+      boxShadow: {
+        ...designTokens.shadow,
+      },
+      fontSize: {
+        ...designTokens.typography.fontSize,
+      },
+      fontFamily: {
+        ...designTokens.typography.fontFamily,
+      },
+      letterSpacing: {
+        ...designTokens.typography.letterSpacing,
+      },
+    },
   },
 };
