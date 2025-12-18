@@ -27,8 +27,8 @@ const props = defineProps({
   },
   size: {
     type: String,
-    default: "base",
-    validator: (v) => ["micro", "xs", "sm", "base", "lg", "xl"].includes(v),
+    default: "md",
+    validator: (v) => ["micro", "xs", "sm", "md", "lg", "xl", "base"].includes(v),
   },
 
   // States
@@ -38,9 +38,15 @@ const props = defineProps({
   // Layout
   fullWidth: { type: Boolean, default: false },
   icon: { type: Boolean, default: false },
+
+  // Accessibility
+  ariaLabel: { type: String, default: undefined },
+  ariaDescribedBy: { type: String, default: undefined },
 });
 
 const emit = defineEmits(["click"]);
+
+const normalizedSize = computed(() => (props.size === "base" ? "md" : props.size));
 
 /** Premium DaisyUI button classes (calm, modern, accessible) */
 const buttonClasses = computed(() => {
@@ -64,7 +70,7 @@ const buttonClasses = computed(() => {
     micro: "btn-xs min-h-6 h-6 px-2 text-[11px] rounded-md",
     xs: "btn-xs min-h-7 h-7 px-2.5 text-xs rounded-lg",
     sm: "btn-sm min-h-8 h-8 px-3.5 text-sm rounded-lg",
-    base: "btn-md min-h-10 h-10 px-5 text-sm rounded-xl",
+    md: "btn-md min-h-10 h-10 px-5 text-sm rounded-xl",
     lg: "btn-lg min-h-12 h-12 px-6 text-base rounded-xl",
     xl: "min-h-14 h-14 px-7 text-lg rounded-2xl",
   };
@@ -92,7 +98,7 @@ const buttonClasses = computed(() => {
 
   const cls = [
     ...base,
-    size[props.size] || size.base,
+    size[normalizedSize.value] || size.md,
     variants[props.variant] || variants.primary,
   ];
 
@@ -120,8 +126,10 @@ const componentProps = computed(() => {
     disabled: props.disabled || props.loading,
     "aria-busy": props.loading ? "true" : undefined,
     "aria-disabled": props.disabled || props.loading ? "true" : undefined,
+    "aria-label": props.ariaLabel,
+    "aria-describedby": props.ariaDescribedBy,
     "data-variant": props.variant,
-    "data-size": props.size,
+    "data-size": normalizedSize.value,
   };
 
   if (props.to) return { ...base, to: props.to };

@@ -29,6 +29,19 @@ import "ternent-ui/styles";
 
 ## 📦 Components
 
+### Canonical component APIs
+The library now ships a single polished implementation for each component, aligning prop names, sizes, and variants across controls:
+
+- **Shared sizing**: `xs`, `sm`, `md`, `lg`, `xl` (with backwards-compatible aliases like `base` → `md`).
+- **Shared color palette**: `primary`, `secondary`, `accent`, `info`, `success`, `warning`, `error`, `neutral`, plus optional premium/ghost tones where applicable.
+- **Data attributes**: each control surfaces `data-size` and `data-variant`/`data-tone` for consistent styling hooks.
+
+| Component | Key props | Variants & sizes |
+| --- | --- | --- |
+| `SButton` | `variant` (visual style), `size`, `loading`, `disabled`, `icon`, `fullWidth`, navigation props (`to`, `href`, `external`), a11y (`ariaLabel`, `ariaDescribedBy`) | Sizes `xs`-`xl` (+ `micro`), variants `primary`, `secondary`, `accent`, `outline`, `ghost`, `ghost-icon`, `link`, `success`, `warning`, `error` |
+| `SIndicator` | `variant` (style: `solid`, `outline`, `soft`, `glow`, `glass`), `type`/`color` (palette), `size`, animation flags (`pulse`, `animated`) | Sizes `xs`-`xl`; tone palette matches button variants |
+| `SInput` | `modelValue`, `type`, `size`, `variant` (`default`, `filled`, `borderless`, `ghost`), `label`, `placeholder`, `error`, `hint`, `icon` & `iconPosition`, `loading`, `disabled`, `required` | Sizes `xs`-`xl` with matching padding and icon spacing |
+
 ### Form Controls
 - **SButton** - Enhanced buttons with ripple effects, loading states, and multiple variants
 - **SInput** - Modern input fields with floating labels, icons, and validation states
