@@ -32,9 +32,9 @@ const variantClasses = computed(() => ({
             border-b-2 border-primary/80 shadow-lg`,
   blur: `bg-base-100/80 backdrop-blur-xl 
         border-b border-base-300/30`,
-  glass: `bg-base-100/30 backdrop-blur-xl 
-         border-b border-base-100/20 
-         shadow-[0_8px_32px_rgba(0,0,0,0.08)]`,
+  glass: `bg-base-100/30 backdrop-blur-xl
+         border-b border-base-100/20
+         shadow-xl`,
 }));
 </script>
 <template>

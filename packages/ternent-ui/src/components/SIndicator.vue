@@ -29,11 +29,11 @@ defineProps({
 });
 
 const sizeClasses = computed(() => ({
-  xs: "text-xs px-1.5 py-0.5 min-w-[1rem] h-4",
-  sm: "text-xs px-2 py-0.5 min-w-[1.25rem] h-5", 
-  md: "text-sm px-2.5 py-1 min-w-[1.5rem] h-6",
-  lg: "text-sm px-3 py-1 min-w-[1.75rem] h-7",
-  xl: "text-base px-4 py-1.5 min-w-[2rem] h-8",
+  xs: "text-xs px-1.5 py-0.5 min-w-4 h-4",
+  sm: "text-xs px-2 py-0.5 min-w-5 h-5",
+  md: "text-sm px-2.5 py-1 min-w-6 h-6",
+  lg: "text-sm px-3 py-1 min-w-7 h-7",
+  xl: "text-base px-4 py-1.5 min-w-8 h-8",
 }));
 
 const slots = useSlots();

@@ -61,7 +61,7 @@ const buttonClasses = computed(() => {
   ];
 
   const size = {
-    micro: "btn-xs min-h-6 h-6 px-2 text-[11px] rounded-md",
+    micro: "btn-xs min-h-6 h-6 px-2 text-xs rounded-md",
     xs: "btn-xs min-h-7 h-7 px-2.5 text-xs rounded-lg",
     sm: "btn-sm min-h-8 h-8 px-3.5 text-sm rounded-lg",
     base: "btn-md min-h-10 h-10 px-5 text-sm rounded-xl",

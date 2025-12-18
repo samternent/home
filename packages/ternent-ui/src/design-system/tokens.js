@@ -1,12 +1,19 @@
 /**
  * Design System Tokens
  * Inspired by Stripe and Airbnb design systems
- * 
+ *
  * This file defines the foundational design tokens that create
  * a cohesive, premium visual language across all components.
  */
 
+import { colors as foundationColors } from './foundation.js';
+
 export const designTokens = {
+  // === COLOR SYSTEM ===
+  colors: {
+    ...foundationColors,
+  },
+
   // === SPACING SCALE ===
   // Based on 4px base unit with strategic scaling
   spacing: {
@@ -240,4 +247,4 @@ export const designTokens = {
 };
 
 // Export individual token categories for easy imports
-export const { spacing, typography, borderRadius, shadow, transition, zIndex, size, layout } = designTokens;
+export const { colors, spacing, typography, borderRadius, shadow, transition, zIndex, size, layout } = designTokens;
