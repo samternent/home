@@ -24,6 +24,10 @@
   --radius-sm: theme('borderRadius.sm');
   --radius-md: theme('borderRadius.base');
   --radius-lg: theme('borderRadius.lg');
+
+  /* Elevation tokens */
+  --surface-shadow: var(--shadow-micro);
+  --surface-border: oklch(var(--bc) / 0.12);
 }
 
 @layer base {
@@ -44,40 +48,18 @@
   body {
     background: oklch(var(--b1));
     color: oklch(var(--bc) / 0.8);
-    letter-spacing: theme('letterSpacing.tight');
     @apply text-base leading-6 font-normal;
   }
 
-  /* Stunning gradient headings */
   h1,
   h2,
   h3,
   h4,
   h5,
   h6 {
-    background: linear-gradient(
-      135deg,
-      oklch(var(--p)) 0%,
-      oklch(var(--s)) 50%,
-      oklch(var(--a)) 100%
-    );
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-size: 200% 200%;
-    animation: gradient-shift 8s ease-in-out infinite;
+    color: inherit;
     letter-spacing: theme('letterSpacing.tight');
-    @apply font-medium leading-snug;
-  }
-
-  @keyframes gradient-shift {
-    0%,
-    100% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
+    @apply font-semibold leading-snug;
   }
 
   h1 {
@@ -131,6 +113,51 @@
 }
 
 @layer components {
+  /* Optional presets */
+  .preset-minimal {
+    --surface-shadow: var(--shadow-micro);
+    --surface-border: oklch(var(--bc) / 0.12);
+  }
+
+  .preset-premium {
+    --surface-shadow: var(--shadow-medium);
+    --surface-border: oklch(var(--bc) / 0.25);
+  }
+
+  /* Opt-in heading flair */
+  .premium-heading,
+  .preset-premium :is(h1, h2, h3, h4, h5, h6) {
+    background: linear-gradient(
+      135deg,
+      oklch(var(--p)) 0%,
+      oklch(var(--s)) 50%,
+      oklch(var(--a)) 100%
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200% 200%;
+    animation: gradient-shift 8s ease-in-out infinite;
+  }
+
+  @keyframes gradient-shift {
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  /* Opt-in elevated surfaces */
+  .surface-elevated {
+    background: oklch(var(--b1));
+    border: theme('borderWidth.DEFAULT') solid var(--surface-border);
+    box-shadow: var(--surface-shadow);
+    border-radius: var(--radius-lg);
+  }
+
   /* Ultra-tight containers */
   .container-micro {
     max-width: theme('maxWidth.4xl');
