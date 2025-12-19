@@ -193,12 +193,12 @@ export const designTokens = {
   // Consistent sizing for interactive elements
   size: {
     button: {
-      micro: { height: '20px', padding: '0 6px', fontSize: 'xs' },
-      xs: { height: '24px', padding: '0 8px', fontSize: 'xs' },
-      sm: { height: '32px', padding: '0 12px', fontSize: 'sm' },
-      base: { height: '40px', padding: '0 16px', fontSize: 'base' },
-      lg: { height: '48px', padding: '0 20px', fontSize: 'lg' },
-      xl: { height: '56px', padding: '0 24px', fontSize: 'xl' },
+      micro: { height: '28px', padding: '0 10px', fontSize: '12px' },
+      xs: { height: '32px', padding: '0 12px', fontSize: '12px' },
+      sm: { height: '36px', padding: '0 14px', fontSize: '13px' },
+      base: { height: '40px', padding: '0 16px', fontSize: '14px' },
+      lg: { height: '44px', padding: '0 18px', fontSize: '15px' },
+      xl: { height: '48px', padding: '0 20px', fontSize: '16px' },
     },
     input: {
       sm: { height: '32px', padding: '0 8px', fontSize: 'sm' },
