@@ -12,8 +12,8 @@ const props = defineProps({
   },
   size: {
     type: String,
-    default: "base",
-    validator: (value) => ["sm", "base", "lg"].includes(value),
+    default: "md",
+    validator: (value) => ["xs", "sm", "md", "lg", "xl", "base"].includes(value),
   },
   variant: {
     type: String,
@@ -63,6 +63,7 @@ const emit = defineEmits(["update:modelValue", "focus", "blur", "input", "enter"
 
 const inputRef = ref(null);
 const isFocused = ref(false);
+const normalizedSize = computed(() => (props.size === "base" ? "md" : props.size));
 
 // Focus management
 const focus = async () => {
@@ -100,9 +101,11 @@ const inputClasses = computed(() => {
 
   // Size classes
   const sizeClasses = {
+    xs: 'px-2.5 py-1.5 text-xs rounded-lg',
     sm: 'px-3 py-2 text-sm rounded-lg',
-    base: 'px-4 py-3 text-base rounded-xl',
+    md: 'px-4 py-3 text-base rounded-xl',
     lg: 'px-5 py-4 text-lg rounded-xl',
+    xl: 'px-6 py-4 text-lg rounded-2xl',
   };
 
   // Variant classes
@@ -138,7 +141,7 @@ const inputClasses = computed(() => {
 
   const classes = [
     ...baseClasses,
-    sizeClasses[props.size] || sizeClasses.base,
+    sizeClasses[normalizedSize.value] || sizeClasses.md,
     ...(variantClasses[props.variant] || variantClasses.default),
   ];
 
@@ -153,20 +156,24 @@ const inputClasses = computed(() => {
   // Icon padding adjustments
   if (props.icon && props.iconPosition === 'left') {
     const iconPadding = {
+      xs: 'pl-8',
       sm: 'pl-9',
-      base: 'pl-11',
+      md: 'pl-11',
       lg: 'pl-12',
+      xl: 'pl-14',
     };
-    classes.push(iconPadding[props.size] || iconPadding.base);
+    classes.push(iconPadding[normalizedSize.value] || iconPadding.md);
   }
-  
+
   if (props.icon && props.iconPosition === 'right') {
     const iconPadding = {
+      xs: 'pr-8',
       sm: 'pr-9',
-      base: 'pr-11',
+      md: 'pr-11',
       lg: 'pr-12',
+      xl: 'pr-14',
     };
-    classes.push(iconPadding[props.size] || iconPadding.base);
+    classes.push(iconPadding[normalizedSize.value] || iconPadding.md);
   }
 
   return classes.join(' ');
@@ -187,28 +194,34 @@ const iconClasses = computed(() => {
   ];
 
   const sizeClasses = {
+    xs: 'w-3.5 h-3.5',
     sm: 'w-4 h-4',
-    base: 'w-5 h-5',
+    md: 'w-5 h-5',
     lg: 'w-6 h-6',
+    xl: 'w-7 h-7',
   };
 
   const positionClasses = {
     left: {
+      xs: 'left-2.5',
       sm: 'left-3',
-      base: 'left-3',
+      md: 'left-3',
       lg: 'left-4',
+      xl: 'left-4',
     },
     right: {
+      xs: 'right-2.5',
       sm: 'right-3',
-      base: 'right-3',
+      md: 'right-3',
       lg: 'right-4',
+      xl: 'right-4',
     },
   };
 
   return [
     ...baseClasses,
-    sizeClasses[props.size] || sizeClasses.base,
-    positionClasses[props.iconPosition][props.size] || positionClasses[props.iconPosition].base,
+    sizeClasses[normalizedSize.value] || sizeClasses.md,
+    positionClasses[props.iconPosition][normalizedSize.value] || positionClasses[props.iconPosition].md,
   ].join(' ');
 });
 
@@ -271,6 +284,8 @@ const handleKeydown = (event) => {
         :placeholder="placeholder"
         :disabled="disabled || loading"
         :class="inputClasses"
+        :data-size="normalizedSize"
+        :data-variant="variant"
         @input="handleInput"
         @focus="handleFocus"
         @blur="handleBlur"

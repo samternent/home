@@ -1,16 +1,20 @@
 <script setup>
 import { useSlots, computed } from 'vue'
-import { designTokens, shadows } from "../design-system/tokens.js";
 
-defineProps({
+const props = defineProps({
   type: {
     type: String,
     default: "primary",
     validator: (value) => ["primary", "secondary", "accent", "info", "success", "warning", "error", "neutral", "ghost", "premium"].includes(value),
   },
+  color: {
+    type: String,
+    default: undefined,
+    validator: (value) => !value || ["primary", "secondary", "accent", "info", "success", "warning", "error", "neutral", "ghost", "premium"].includes(value),
+  },
   size: {
     type: String,
-    default: "sm", 
+    default: "md",
     validator: (value) => ["xs", "sm", "md", "lg", "xl"].includes(value),
   },
   variant: {
@@ -37,6 +41,7 @@ const sizeClasses = computed(() => ({
 }));
 
 const slots = useSlots();
+const tone = computed(() => props.color || props.type);
 
 const typeClasses = computed(() => ({
   solid: {
@@ -97,27 +102,30 @@ const typeClasses = computed(() => ({
 }));
 </script>
 <template>
-  <span 
+  <span
     class="inline-flex items-center justify-center rounded-full font-medium transition-all duration-300"
     :class="[
-      sizeClasses[size],
-      typeClasses[variant][type],
+      sizeClasses[props.size],
+      typeClasses[props.variant][tone],
       {
-        'animate-pulse': pulse,
-        'animate-bounce': animated,
+        'animate-pulse': props.pulse,
+        'animate-bounce': props.animated,
         'hover:scale-110 active:scale-95': slots.default,
         'cursor-pointer': slots.default,
-        'shadow-md hover:shadow-lg': variant === 'solid' || variant === 'glow',
-        'ring-2 ring-current/20': variant === 'glow',
+        'shadow-md hover:shadow-lg': props.variant === 'solid' || props.variant === 'glow',
+        'ring-2 ring-current/20': props.variant === 'glow',
       }
     ]"
+    :data-variant="props.variant"
+    :data-tone="tone"
+    :data-size="props.size"
   >
     <slot>
-      <span 
+      <span
         class="w-1.5 h-1.5 rounded-full bg-current transition-all duration-200"
         :class="{
-          'animate-ping': pulse && !slots.default,
-          'shadow-sm': variant === 'glow',
+          'animate-ping': props.pulse && !slots.default,
+          'shadow-sm': props.variant === 'glow',
         }"
       />
     </slot>
