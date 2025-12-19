@@ -48,52 +48,47 @@ const emit = defineEmits(["click"]);
 
 const normalizedSize = computed(() => (props.size === "base" ? "md" : props.size));
 
-/** Premium DaisyUI button classes (calm, modern, accessible) */
+/** Modern, Stripe/Slack-inspired buttons with theme awareness */
 const buttonClasses = computed(() => {
   const base = [
-    "btn",
-    "inline-flex items-center justify-center select-none",
-    "transition-colors duration-150 ease-out",
-    // Focus style that works on light/dark and respects your DS background
+    "inline-flex items-center justify-center select-none gap-2",
+    "font-medium tracking-tight ui-action",
+    "transition-all duration-200 ease-out",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-base-100",
-    // Softer elevation
-    "shadow-sm hover:shadow",
-    // Disable affordances
     "disabled:opacity-60 disabled:cursor-not-allowed",
-    // Smooth press without layout jank
-    "active:scale-95",
-    // Remove default border noise unless variant needs it
-    "border-0",
+    "active:scale-[0.98]",
+    "border border-transparent rounded-2xl",
   ];
 
   const size = {
-    micro: "btn-xs min-h-6 h-6 px-2 text-xs rounded-md",
-    xs: "btn-xs min-h-7 h-7 px-2.5 text-xs rounded-lg",
-    sm: "btn-sm min-h-8 h-8 px-3.5 text-sm rounded-lg",
-    md: "btn-md min-h-10 h-10 px-5 text-sm rounded-xl",
-    lg: "btn-lg min-h-12 h-12 px-6 text-base rounded-xl",
-    xl: "min-h-14 h-14 px-7 text-lg rounded-2xl",
+    micro: "min-h-6 h-6 px-2 text-xs rounded-lg",
+    xs: "min-h-7 h-7 px-2.5 text-xs rounded-lg",
+    sm: "min-h-8 h-8 px-3.5 text-sm rounded-xl",
+    md: "min-h-10 h-10 px-5 text-sm rounded-2xl",
+    lg: "min-h-12 h-12 px-6 text-base rounded-2xl",
+    xl: "min-h-14 h-14 px-7 text-lg rounded-3xl",
   };
 
   const variants = {
     primary:
-      "btn-primary text-white bg-primary hover:bg-primary/90 active:bg-primary/80",
+      "text-white bg-gradient-to-r from-primary via-primary/90 to-primary shadow-lg hover:shadow-xl",
     secondary:
-      "btn-secondary text-base-content bg-base-200 hover:bg-base-300 active:bg-base-300/80 border border-base-300",
+      "text-base-content bg-base-100 border border-base-300/70 shadow-sm hover:-translate-y-px hover:shadow-lg",
     accent:
-      "btn-accent text-white bg-accent hover:bg-accent/90 active:bg-accent/80",
+      "text-base-content bg-base-200/80 border border-base-300/70 hover:border-primary/50 hover:text-base-content/90",
     outline:
-      "btn-outline text-base-content border border-base-300 hover:bg-base-200/60",
+      "text-base-content border border-base-300/80 bg-transparent hover:border-primary/70 hover:text-primary",
     ghost:
-      "btn-ghost text-base-content/90 hover:bg-base-200/60 hover:text-base-content",
+      "text-base-content/80 bg-transparent hover:bg-base-200/70 hover:text-base-content",
     "ghost-icon":
-      "btn-ghost text-base-content/90 hover:bg-base-200/60 hover:text-base-content aspect-square p-0",
-    link: "btn-link bg-transparent px-1 py-1 h-auto min-h-0 text-primary underline-offset-4 hover:underline",
+      "text-base-content/80 bg-transparent hover:bg-base-200/70 hover:text-base-content aspect-square p-0",
+    link: "bg-transparent px-1 py-1 h-auto min-h-0 text-primary font-semibold underline-offset-4 hover:underline",
     success:
-      "btn-success text-white bg-success hover:bg-success/90 active:bg-success/80",
+      "text-success-content bg-success/90 hover:bg-success shadow-lg",
     warning:
-      "btn-warning text-white bg-warning hover:bg-warning/90 active:bg-warning/80",
-    error: "btn-error text-white bg-error hover:bg-error/90 active:bg-error/80",
+      "text-warning-content bg-warning/90 hover:bg-warning shadow-lg",
+    error:
+      "text-error-content bg-error/90 hover:bg-error shadow-lg",
   };
 
   const cls = [
@@ -102,13 +97,8 @@ const buttonClasses = computed(() => {
     variants[props.variant] || variants.primary,
   ];
 
-  // Full width
-  if (props.fullWidth) cls.push("w-full", "btn-block");
-
-  // Icon-only mode (keeps API but improves appearance)
+  if (props.fullWidth) cls.push("w-full");
   if (props.icon) cls.push("aspect-square !px-0 text-lg");
-
-  // DaisyUI built-in spinner (works with .btn.loading)
   if (props.loading) cls.push("loading");
 
   return cls.join(" ");

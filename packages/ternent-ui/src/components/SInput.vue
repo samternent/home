@@ -93,49 +93,51 @@ const wrapperClasses = computed(() => {
 // Computed classes for the input field
 const inputClasses = computed(() => {
   const baseClasses = [
-    'w-full border transition-all duration-200 ease-out',
+    'w-full transition-all duration-200 ease-out',
     'focus:outline-none focus:ring-2 focus:ring-offset-0',
     'placeholder-neutral-400 dark:placeholder-neutral-500',
     'disabled:opacity-50 disabled:cursor-not-allowed',
+    'border border-transparent bg-transparent',
   ];
 
   // Size classes
   const sizeClasses = {
-    xs: 'px-2.5 py-1.5 text-xs rounded-lg',
-    sm: 'px-3 py-2 text-sm rounded-lg',
-    md: 'px-4 py-3 text-base rounded-xl',
-    lg: 'px-5 py-4 text-lg rounded-xl',
-    xl: 'px-6 py-4 text-lg rounded-2xl',
+    xs: 'px-3 py-2 text-xs rounded-xl',
+    sm: 'px-3.5 py-2.5 text-sm rounded-xl',
+    md: 'px-4 py-3 text-base rounded-2xl',
+    lg: 'px-5 py-4 text-lg rounded-2xl',
+    xl: 'px-6 py-4 text-lg rounded-3xl',
   };
 
   // Variant classes
   const variantClasses = {
     default: [
-      'bg-base-100',
-      'border-base-300',
-      'hover:border-base-content/30',
-      'focus:border-primary-500 focus:ring-primary-500/20',
+      'bg-base-100/90',
+      'border-base-300/80',
+      'hover:border-base-content/25',
+      'shadow-inner',
+      'focus:border-primary/60 focus:ring-primary/15',
     ],
     filled: [
-      'bg-base-200',
-      'border-transparent',
-      'hover:bg-base-300',
+      'bg-base-200/90',
+      'border-base-300/40',
+      'hover:bg-base-200',
       'focus:bg-base-100',
-      'focus:border-primary-500 focus:ring-primary-500/20',
+      'focus:border-primary/60 focus:ring-primary/15',
     ],
     borderless: [
       'bg-transparent',
       'border-transparent',
       'hover:bg-base-200',
       'focus:bg-base-100',
-      'focus:border-base-300',
+      'focus:border-base-300/70',
       'focus:ring-base-content/10',
     ],
     ghost: [
       'bg-transparent',
-      'border-neutral-200 dark:border-neutral-700',
+      'border-neutral-200/70 dark:border-neutral-700/80',
       'hover:border-neutral-300 dark:hover:border-neutral-600',
-      'focus:border-primary-500 focus:ring-primary-500/20',
+      'focus:border-primary/60 focus:ring-primary/15',
     ],
   };
 
@@ -181,8 +183,7 @@ const inputClasses = computed(() => {
 
 // Label classes
 const labelClasses = computed(() => [
-  'block text-sm font-medium mb-2',
-  'text-base-content',
+  'ui-label text-xs uppercase tracking-[0.06em] mb-2',
   props.error ? 'text-red-600 dark:text-red-400' : '',
 ].filter(Boolean).join(' '));
 
@@ -190,7 +191,7 @@ const labelClasses = computed(() => [
 const iconClasses = computed(() => {
   const baseClasses = [
     'absolute top-1/2 -translate-y-1/2 pointer-events-none',
-    'text-base-content/50',
+    'text-base-content/60',
   ];
 
   const sizeClasses = {
@@ -257,7 +258,7 @@ const handleKeydown = (event) => {
     </label>
 
     <!-- Input wrapper -->
-    <div class="relative">
+    <div class="relative ui-field">
       <!-- Left icon -->
       <div v-if="icon && iconPosition === 'left'" :class="iconClasses">
         <slot name="icon">
