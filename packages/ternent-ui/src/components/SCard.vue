@@ -56,7 +56,7 @@ const emit = defineEmits(["click"]);
 // Premium card classes using our design system
 const cardClasses = computed(() => {
   const baseClasses = [
-    'relative overflow-hidden transition-all duration-200 ease-out ui-surface',
+    'relative overflow-hidden transition-all duration-200 ease-out ui-surface text-base-content/90',
     'focus-within:outline-none',
   ];
 
@@ -73,22 +73,22 @@ const cardClasses = computed(() => {
   const variantClasses = {
     default: [
       'border-base-300/50',
-      'shadow-md',
+      'shadow-sm',
     ],
     bordered: [
       'border-2 border-base-300/80',
-      'shadow-md',
+      'shadow-sm',
     ],
     elevated: [
       'border-base-300/40',
-      'shadow-lg',
-      'hover:-translate-y-1',
+      'shadow-md',
+      'hover:-translate-y-0.5 hover:shadow-lg/70',
     ],
     glass: [
       'bg-base-100/70',
       'backdrop-blur-xl border border-base-200/30',
-      'shadow-xl',
-      'hover:bg-base-100/80',
+      'shadow-md',
+      'hover:bg-base-100/85',
     ],
     outline: [
       'bg-transparent',
@@ -112,8 +112,8 @@ const cardClasses = computed(() => {
   if (props.interactive) {
     classes.push(
       'cursor-pointer',
-      'hover:-translate-y-1.5 active:translate-y-0',
-      'focus-within:ring-2 focus-within:ring-primary/20 focus-within:ring-offset-2'
+      'hover:-translate-y-0.5 active:translate-y-0',
+      'focus-within:ring-2 focus-within:ring-primary/15 focus-within:ring-offset-2'
     );
   }
 

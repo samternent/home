@@ -617,18 +617,20 @@
 
   /* Modern surface + field system */
   .ui-surface {
-    background: oklch(var(--b1) / 0.96);
-    border: theme("borderWidth.DEFAULT") solid oklch(var(--bc) / 0.12);
+    background: oklch(var(--b1) / 0.98);
+    color: oklch(var(--bc) / 0.85);
+    border: theme("borderWidth.DEFAULT") solid oklch(var(--bc) / 0.1);
     border-radius: theme("borderRadius.2xl");
-    box-shadow: var(--shadow-soft);
-    backdrop-filter: blur(theme("spacing.1"));
-    transition: transform theme("transitionDuration.200") ease, box-shadow theme("transitionDuration.200") ease, border-color theme("transitionDuration.200") ease;
+    box-shadow: var(--shadow-micro);
+    backdrop-filter: blur(theme("spacing.px"));
+    transition: transform theme("transitionDuration.200") ease, box-shadow theme("transitionDuration.200") ease, border-color theme("transitionDuration.200") ease, color theme("transitionDuration.200") ease;
   }
 
   .ui-surface:hover {
-    transform: translateY(calc(theme("spacing.px") * -2));
-    border-color: oklch(var(--bc) / 0.16);
-    box-shadow: var(--shadow-medium);
+    transform: translateY(calc(theme("spacing.px") * -1));
+    border-color: oklch(var(--bc) / 0.14);
+    box-shadow: var(--shadow-soft);
+    color: oklch(var(--bc) / 0.9);
   }
 
   .ui-surface[data-tone="muted"] {

@@ -74,7 +74,7 @@ const icons = {
     :class="[
       sizeClasses[size],
       variantStyles[variant].container,
-      'hover:-translate-y-0.5 hover:shadow-xl'
+      'hover:-translate-y-0.5 hover:shadow-lg'
     ]"
     :data-tone="variant === 'premium' ? 'prominent' : 'muted'"
   >
