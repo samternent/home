@@ -5,25 +5,29 @@
 
 :root {
   /* Modern font system */
-  --font-system: theme('fontFamily.sans');
+  --font-system: theme("fontFamily.sans");
 
   /* Micro spacing scale */
-  --space-xs: theme('spacing.0.5');
-  --space-sm: theme('spacing.1');
-  --space-md: theme('spacing.2');
-  --space-lg: theme('spacing.3');
-  --space-xl: theme('spacing.4');
+  --space-xs: theme("spacing.0");
+  --space-sm: theme("spacing.1");
+  --space-md: theme("spacing.2");
+  --space-lg: theme("spacing.3");
+  --space-xl: theme("spacing.4");
 
   /* Subtle shadows */
-  --shadow-micro: theme('boxShadow.xs');
-  --shadow-soft: theme('boxShadow.sm');
-  --shadow-medium: theme('boxShadow.md');
+  --shadow-micro: theme("boxShadow.xs");
+  --shadow-soft: theme("boxShadow.sm");
+  --shadow-medium: theme("boxShadow.md");
 
   /* Tight radius */
-  --radius-xs: theme('borderRadius.xs');
-  --radius-sm: theme('borderRadius.sm');
-  --radius-md: theme('borderRadius.base');
-  --radius-lg: theme('borderRadius.lg');
+  --radius-xs: theme("borderRadius.xs");
+  --radius-sm: theme("borderRadius.sm");
+  --radius-md: theme("borderRadius.base");
+  --radius-lg: theme("borderRadius.lg");
+
+  /* Elevation tokens */
+  --surface-shadow: var(--shadow-micro);
+  --surface-border: oklch(var(--bc) / 0.12);
 }
 
 @layer base {
@@ -44,65 +48,43 @@
   body {
     background: oklch(var(--b1));
     color: oklch(var(--bc) / 0.8);
-    letter-spacing: theme('letterSpacing.tight');
     @apply text-base leading-6 font-normal;
   }
 
-  /* Stunning gradient headings */
   h1,
   h2,
   h3,
   h4,
   h5,
   h6 {
-    background: linear-gradient(
-      135deg,
-      oklch(var(--p)) 0%,
-      oklch(var(--s)) 50%,
-      oklch(var(--a)) 100%
-    );
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-size: 200% 200%;
-    animation: gradient-shift 8s ease-in-out infinite;
-    letter-spacing: theme('letterSpacing.tight');
-    @apply font-medium leading-snug;
-  }
-
-  @keyframes gradient-shift {
-    0%,
-    100% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
+    color: inherit;
+    letter-spacing: theme("letterSpacing.tight");
+    @apply font-semibold leading-snug;
   }
 
   h1 {
-    font-size: theme('fontSize.3xl');
+    font-size: theme("fontSize.3xl");
   }
   h2 {
-    font-size: theme('fontSize.2xl');
+    font-size: theme("fontSize.2xl");
   }
   h3 {
-    font-size: theme('fontSize.xl');
+    font-size: theme("fontSize.xl");
   }
   h4 {
-    font-size: theme('fontSize.lg');
+    font-size: theme("fontSize.lg");
   }
   h5 {
-    font-size: theme('fontSize.base');
+    font-size: theme("fontSize.base");
   }
   h6 {
-    font-size: theme('fontSize.sm');
+    font-size: theme("fontSize.sm");
   }
 
   /* Clean scrollbars */
   ::-webkit-scrollbar {
-    width: theme('spacing.1.5');
-    height: theme('spacing.1.5');
+    width: theme("spacing.1.5");
+    height: theme("spacing.1.5");
   }
 
   ::-webkit-scrollbar-track {
@@ -131,15 +113,60 @@
 }
 
 @layer components {
+  /* Optional presets */
+  .preset-minimal {
+    --surface-shadow: var(--shadow-micro);
+    --surface-border: oklch(var(--bc) / 0.12);
+  }
+
+  .preset-premium {
+    --surface-shadow: var(--shadow-medium);
+    --surface-border: oklch(var(--bc) / 0.25);
+  }
+
+  /* Opt-in heading flair */
+  .premium-heading,
+  .preset-premium :is(h1, h2, h3, h4, h5, h6) {
+    background: linear-gradient(
+      135deg,
+      oklch(var(--p)) 0%,
+      oklch(var(--s)) 50%,
+      oklch(var(--a)) 100%
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200% 200%;
+    animation: gradient-shift 8s ease-in-out infinite;
+  }
+
+  @keyframes gradient-shift {
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  /* Opt-in elevated surfaces */
+  .surface-elevated {
+    background: oklch(var(--b1));
+    border: theme("borderWidth.DEFAULT") solid var(--surface-border);
+    box-shadow: var(--surface-shadow);
+    border-radius: var(--radius-lg);
+  }
+
   /* Ultra-tight containers */
   .container-micro {
-    max-width: theme('maxWidth.4xl');
+    max-width: theme("maxWidth.4xl");
     margin: 0 auto;
     padding: 0 var(--space-lg);
   }
 
   .container-tight {
-    max-width: theme('maxWidth.5xl');
+    max-width: theme("maxWidth.5xl");
     margin: 0 auto;
     padding: 0 var(--space-xl);
   }
@@ -147,17 +174,17 @@
   /* Ultra-sleek cards */
   .card-micro {
     background: oklch(var(--b1));
-    border: theme('borderWidth.DEFAULT') solid oklch(var(--bc) / 0.2);
+    border: theme("borderWidth.DEFAULT") solid oklch(var(--bc) / 0.2);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-micro);
     backdrop-filter: blur(var(--space-md));
-    transition: all theme('transitionDuration.150') ease;
+    transition: all theme("transitionDuration.150") ease;
   }
 
   .card-micro:hover {
     box-shadow: var(--shadow-soft);
     border-color: oklch(var(--bc) / 0.4);
-    transform: translateY(calc(theme('spacing.px') * -1));
+    transform: translateY(calc(theme("spacing.px") * -1));
   }
 
   /* Ultra-modern buttons */
@@ -166,19 +193,19 @@
     align-items: center;
     justify-content: center;
     font-weight: 500;
-    font-size: theme('fontSize.xs');
-    padding: theme('spacing.1.5') var(--space-lg);
+    font-size: theme("fontSize.xs");
+    padding: theme("spacing.1.5") var(--space-lg);
     border-radius: var(--radius-md);
-    transition: all theme('transitionDuration.150') ease;
+    transition: all theme("transitionDuration.150") ease;
     box-shadow: var(--shadow-micro);
-    letter-spacing: theme('letterSpacing.tight');
+    letter-spacing: theme("letterSpacing.tight");
     cursor: pointer;
     border: none;
     outline: none;
   }
 
   .btn-micro:hover {
-    transform: translateY(calc(theme('spacing.px') * -1)) scale(1.02);
+    transform: translateY(calc(theme("spacing.px") * -1)) scale(1.02);
     box-shadow: var(--shadow-soft);
   }
 
@@ -206,7 +233,7 @@
   .btn-secondary-micro {
     background: oklch(var(--b2));
     color: oklch(var(--bc) / 0.8);
-    border: theme('borderWidth.DEFAULT') solid oklch(var(--bc) / 0.2);
+    border: theme("borderWidth.DEFAULT") solid oklch(var(--bc) / 0.2);
   }
 
   .btn-secondary-micro:hover {
@@ -227,20 +254,21 @@
   /* Tiny inputs */
   .input-micro {
     width: 100%;
-    padding: theme('spacing.1.5') theme('spacing.2.5');
-    font-size: theme('fontSize.xs');
+    padding: theme("spacing.1.5") theme("spacing.2.5");
+    font-size: theme("fontSize.xs");
     background: oklch(var(--b1));
-    border: theme('borderWidth.DEFAULT') solid oklch(var(--bc) / 0.2);
+    border: theme("borderWidth.DEFAULT") solid oklch(var(--bc) / 0.2);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-micro);
-    transition: all theme('transitionDuration.150') ease;
+    transition: all theme("transitionDuration.150") ease;
     color: oklch(var(--bc));
   }
 
   .input-micro:focus {
     outline: none;
     border-color: oklch(var(--p));
-    box-shadow: var(--shadow-soft), 0 0 0 theme('spacing.1') oklch(var(--p) / 0.1);
+    box-shadow: var(--shadow-soft),
+      0 0 0 theme("spacing.1") oklch(var(--p) / 0.1);
   }
 
   .input-micro::placeholder {
@@ -251,11 +279,11 @@
   .badge-micro {
     display: inline-flex;
     align-items: center;
-    padding: theme('spacing.0.5') theme('spacing.1.5');
-    font-size: theme('fontSize.xs');
+    padding: theme("spacing.0.5") theme("spacing.1.5");
+    font-size: theme("fontSize.xs");
     font-weight: 500;
     border-radius: var(--radius-sm);
-    letter-spacing: theme('letterSpacing.tight');
+    letter-spacing: theme("letterSpacing.tight");
   }
 
   .badge-primary-micro {
@@ -280,10 +308,10 @@
 
   /* Micro alerts */
   .alert-micro {
-    padding: theme('spacing.2.5');
-    font-size: theme('fontSize.xs');
+    padding: theme("spacing.2.5");
+    font-size: theme("fontSize.xs");
     border-radius: var(--radius-lg);
-    border: theme('borderWidth.DEFAULT') solid;
+    border: theme("borderWidth.DEFAULT") solid;
     box-shadow: var(--shadow-micro);
   }
 
@@ -315,19 +343,19 @@
   .nav-micro {
     background: oklch(var(--b1) / 0.9);
     backdrop-filter: blur(var(--space-lg));
-    border-bottom: theme('borderWidth.DEFAULT') solid oklch(var(--bc) / 0.1);
+    border-bottom: theme("borderWidth.DEFAULT") solid oklch(var(--bc) / 0.1);
     box-shadow: var(--shadow-micro);
   }
 
   /* Micro menu items */
   .menu-micro li {
-    font-size: theme('fontSize.xs');
+    font-size: theme("fontSize.xs");
   }
 
   .menu-micro li > * {
-    padding: theme('spacing.1.5') theme('spacing.2.5');
+    padding: theme("spacing.1.5") theme("spacing.2.5");
     border-radius: var(--radius-md);
-    transition: all theme('transitionDuration.100') ease;
+    transition: all theme("transitionDuration.100") ease;
     color: oklch(var(--bc) / 0.8);
   }
 
@@ -374,16 +402,16 @@
   /* Micro tabs */
   .tabs-micro {
     display: flex;
-    font-size: theme('fontSize.xs');
-    border-bottom: theme('borderWidth.DEFAULT') solid oklch(var(--bc) / 0.2);
+    font-size: theme("fontSize.xs");
+    border-bottom: theme("borderWidth.DEFAULT") solid oklch(var(--bc) / 0.2);
   }
 
   .tab-micro {
-    padding: theme('spacing.2') var(--space-lg);
+    padding: theme("spacing.2") var(--space-lg);
     font-weight: 500;
     color: oklch(var(--bc) / 0.6);
-    border-bottom: theme('borderWidth.2') solid transparent;
-    transition: all theme('transitionDuration.150') ease;
+    border-bottom: theme("borderWidth.2") solid transparent;
+    transition: all theme("transitionDuration.150") ease;
     cursor: pointer;
   }
 
@@ -398,7 +426,7 @@
 
   /* Interactive states */
   .interactive-micro {
-    transition: all theme('transitionDuration.150') ease;
+    transition: all theme("transitionDuration.150") ease;
     cursor: pointer;
   }
 
@@ -414,47 +442,47 @@
   .glass-micro {
     background: oklch(var(--b1) / 0.6);
     backdrop-filter: blur(var(--space-lg));
-    border: theme('borderWidth.DEFAULT') solid oklch(var(--b1) / 0.2);
+    border: theme("borderWidth.DEFAULT") solid oklch(var(--b1) / 0.2);
   }
 }
 
 @layer utilities {
   /* Micro typography */
   .text-micro {
-    font-size: theme('fontSize.xs');
-    line-height: theme('lineHeight.5');
+    font-size: theme("fontSize.xs");
+    line-height: theme("lineHeight.5");
   }
 
   .text-tiny {
-    font-size: theme('fontSize.xs');
-    line-height: theme('lineHeight.5');
+    font-size: theme("fontSize.xs");
+    line-height: theme("lineHeight.5");
   }
 
   .text-compact {
-    font-size: theme('fontSize.sm');
-    line-height: theme('lineHeight.6');
+    font-size: theme("fontSize.sm");
+    line-height: theme("lineHeight.6");
   }
 
   /* Text size utilities */
   .text-2xs {
-    font-size: theme('fontSize.xs');
-    line-height: theme('lineHeight.5');
+    font-size: theme("fontSize.xs");
+    line-height: theme("lineHeight.5");
   }
   .text-xs {
-    font-size: theme('fontSize.sm');
-    line-height: theme('lineHeight.5');
+    font-size: theme("fontSize.sm");
+    line-height: theme("lineHeight.5");
   }
   .text-sm {
-    font-size: theme('fontSize.base');
-    line-height: theme('lineHeight.6');
+    font-size: theme("fontSize.base");
+    line-height: theme("lineHeight.6");
   }
   .text-base {
-    font-size: theme('fontSize.base');
-    line-height: theme('lineHeight.7');
+    font-size: theme("fontSize.base");
+    line-height: theme("lineHeight.7");
   }
   .text-lg {
-    font-size: theme('fontSize.lg');
-    line-height: theme('lineHeight.6');
+    font-size: theme("fontSize.lg");
+    line-height: theme("lineHeight.6");
   }
 
   /* Text weight utilities */
@@ -544,11 +572,12 @@
 
   /* Animation utilities */
   .animate-in-micro {
-    animation: animate-in-micro theme('transitionDuration.200') ease-out;
+    animation: animate-in-micro theme("transitionDuration.200") ease-out;
   }
 
   .animate-out-micro {
-    animation: animate-out-micro theme('transitionDuration.150') ease-in forwards;
+    animation: animate-out-micro theme("transitionDuration.150") ease-in
+      forwards;
   }
 
   @keyframes animate-in-micro {
@@ -589,10 +618,10 @@
   /* Utility for hiding elements */
   .sr-only {
     position: absolute;
-    width: theme('spacing.px');
-    height: theme('spacing.px');
+    width: theme("spacing.px");
+    height: theme("spacing.px");
     padding: 0;
-    margin: calc(theme('spacing.px') * -1);
+    margin: calc(theme("spacing.px") * -1);
     overflow: hidden;
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
