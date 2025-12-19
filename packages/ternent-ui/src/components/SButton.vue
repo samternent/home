@@ -52,43 +52,43 @@ const normalizedSize = computed(() => (props.size === "base" ? "md" : props.size
 const buttonClasses = computed(() => {
   const base = [
     "inline-flex items-center justify-center select-none gap-2",
-    "font-medium tracking-tight ui-action",
-    "transition-all duration-200 ease-out",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-base-100",
-    "disabled:opacity-60 disabled:cursor-not-allowed",
-    "active:scale-[0.98]",
-    "border border-transparent rounded-2xl",
+    "font-medium tracking-tight ui-action leading-none",
+    "transition-colors duration-200 ease-out",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 focus-visible:ring-offset-2 focus-visible:ring-offset-base-100",
+    "disabled:opacity-60 disabled:cursor-not-allowed disabled:shadow-none",
+    "border border-transparent rounded-xl",
   ];
 
   const size = {
-    micro: "min-h-6 h-6 px-2 text-xs rounded-lg",
-    xs: "min-h-7 h-7 px-2.5 text-xs rounded-lg",
-    sm: "min-h-8 h-8 px-3.5 text-sm rounded-xl",
-    md: "min-h-10 h-10 px-5 text-sm rounded-2xl",
-    lg: "min-h-12 h-12 px-6 text-base rounded-2xl",
-    xl: "min-h-14 h-14 px-7 text-lg rounded-3xl",
+    micro: "h-7 px-2.5 text-xs rounded-lg",
+    xs: "h-8 px-3 text-xs rounded-lg",
+    sm: "h-9 px-3.5 text-sm rounded-lg",
+    md: "h-10 px-4 text-sm rounded-xl",
+    lg: "h-11 px-5 text-base rounded-xl",
+    xl: "h-12 px-6 text-base rounded-2xl",
   };
 
   const variants = {
     primary:
-      "text-white bg-gradient-to-r from-primary via-primary/90 to-primary shadow-lg hover:shadow-xl",
+      "text-primary-content bg-primary shadow-sm hover:shadow-md hover:bg-primary/90 active:bg-primary/85",
     secondary:
-      "text-base-content bg-base-100 border border-base-300/70 shadow-sm hover:-translate-y-px hover:shadow-lg",
+      "text-base-content bg-base-200 border border-base-300 shadow-sm hover:bg-base-300 hover:border-base-400",
     accent:
-      "text-base-content bg-base-200/80 border border-base-300/70 hover:border-primary/50 hover:text-base-content/90",
+      "text-primary bg-base-100 border border-primary/25 shadow-sm hover:border-primary/40 hover:bg-primary/5",
     outline:
-      "text-base-content border border-base-300/80 bg-transparent hover:border-primary/70 hover:text-primary",
+      "text-primary border border-primary/50 bg-transparent shadow-none hover:bg-primary/10",
     ghost:
-      "text-base-content/80 bg-transparent hover:bg-base-200/70 hover:text-base-content",
+      "text-base-content/80 bg-transparent shadow-none hover:bg-base-200 hover:text-base-content",
     "ghost-icon":
-      "text-base-content/80 bg-transparent hover:bg-base-200/70 hover:text-base-content aspect-square p-0",
-    link: "bg-transparent px-1 py-1 h-auto min-h-0 text-primary font-semibold underline-offset-4 hover:underline",
+      "text-base-content/80 bg-transparent shadow-none hover:bg-base-200 hover:text-base-content aspect-square p-0",
+    link:
+      "bg-transparent px-1 py-1 h-auto min-h-0 text-primary font-semibold underline-offset-4 hover:underline",
     success:
-      "text-success-content bg-success/90 hover:bg-success shadow-lg",
+      "text-success-content bg-success/90 shadow-sm hover:bg-success",
     warning:
-      "text-warning-content bg-warning/90 hover:bg-warning shadow-lg",
+      "text-warning-content bg-warning/90 shadow-sm hover:bg-warning",
     error:
-      "text-error-content bg-error/90 hover:bg-error shadow-lg",
+      "text-error-content bg-error/90 shadow-sm hover:bg-error",
   };
 
   const cls = [
