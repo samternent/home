@@ -1,6 +1,5 @@
 <script setup>
 import { computed } from "vue";
-import { designTokens, shadows } from "../design-system/tokens.js";
 
 const props = defineProps({
   variant: {
@@ -25,37 +24,38 @@ const props = defineProps({
 
 const emit = defineEmits(['dismiss']);
 
-const variantClasses = computed(() => ({
-  info: `bg-gradient-to-r from-info/5 to-info/10 
-         border border-info/20 text-info-content 
-         shadow-sm hover:shadow-md transition-all duration-300`,
-  success: `bg-gradient-to-r from-success/5 to-success/10 
-           border border-success/20 text-success-content 
-           shadow-sm hover:shadow-md transition-all duration-300`, 
-  warning: `bg-gradient-to-r from-warning/5 to-warning/10 
-           border border-warning/20 text-warning-content 
-           shadow-sm hover:shadow-md transition-all duration-300`,
-  error: `bg-gradient-to-r from-error/5 to-error/10 
-         border border-error/20 text-error-content 
-         shadow-sm hover:shadow-md transition-all duration-300`,
-  premium: `bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 
-           border border-primary/20 text-primary-content 
-           shadow-lg hover:shadow-xl transition-all duration-300
-           ring-1 ring-primary/10`,
-}));
-
-const iconClasses = computed(() => ({
-  info: "text-info drop-shadow-sm",
-  success: "text-success drop-shadow-sm",
-  warning: "text-warning drop-shadow-sm", 
-  error: "text-error drop-shadow-sm",
-  premium: "text-primary drop-shadow-sm",
+const variantStyles = computed(() => ({
+  info: {
+    container: "border-info/25 text-info/90 bg-info/5",
+    accent: "from-info/60 to-info/15",
+    icon: "text-info",
+  },
+  success: {
+    container: "border-success/25 text-success/90 bg-success/5",
+    accent: "from-success/60 to-success/20",
+    icon: "text-success",
+  },
+  warning: {
+    container: "border-warning/30 text-warning/90 bg-warning/5",
+    accent: "from-warning/60 to-warning/20",
+    icon: "text-warning",
+  },
+  error: {
+    container: "border-error/25 text-error/90 bg-error/5",
+    accent: "from-error/60 to-error/20",
+    icon: "text-error",
+  },
+  premium: {
+    container: "border-primary/25 text-primary-content/80 bg-primary/5",
+    accent: "from-primary/60 via-primary/35 to-primary/15",
+    icon: "text-primary",
+  },
 }));
 
 const sizeClasses = computed(() => ({
-  sm: "p-3 text-sm",
-  md: "p-4 text-base",
-  lg: "p-6 text-lg",
+  sm: "px-4 py-3 text-sm",
+  md: "px-5 py-4 text-base",
+  lg: "px-6 py-5 text-lg",
 }));
 
 const icons = {
@@ -68,24 +68,31 @@ const icons = {
 </script>
 
 <template>
-  <div 
-    role="alert" 
-    class="rounded-xl transition-all duration-300 backdrop-blur-sm"
+  <div
+    role="alert"
+    class="relative overflow-hidden rounded-2xl transition-all duration-300 ui-surface"
     :class="[
-      variantClasses[variant],
-      sizeClasses[size]
+      sizeClasses[size],
+      variantStyles[variant].container,
+      'hover:-translate-y-0.5 hover:shadow-xl'
     ]"
+    :data-tone="variant === 'premium' ? 'prominent' : 'muted'"
   >
+    <span
+      class="absolute inset-y-3 left-3 w-1 rounded-full bg-gradient-to-b opacity-80"
+      :class="variantStyles[variant].accent"
+      aria-hidden="true"
+    ></span>
     <div class="flex items-start gap-4">
       <!-- Icon -->
-      <div class="flex-shrink-0 mt-1">
+      <div class="flex-shrink-0 mt-1 h-10 w-10 rounded-2xl border border-base-300/50 bg-base-200/60 backdrop-blur-sm grid place-items-center shadow-sm">
         <slot name="icon">
           <div class="relative">
-            <svg 
-              class="w-5 h-5 transition-transform duration-200 hover:scale-110" 
-              :class="iconClasses[variant]"
-              fill="none" 
-              stroke="currentColor" 
+            <svg
+              class="w-5 h-5 transition-transform duration-200 hover:scale-110"
+              :class="variantStyles[variant].icon"
+              fill="none"
+              stroke="currentColor"
               viewBox="0 0 24 24"
             >
               <path 
@@ -96,35 +103,33 @@ const icons = {
               />
             </svg>
             <!-- Subtle glow effect for premium variant -->
-            <div 
-              v-if="variant === 'premium'" 
+            <div
+              v-if="variant === 'premium'"
               class="absolute inset-0 w-5 h-5 bg-primary/20 rounded-full blur-sm -z-10"
             ></div>
           </div>
         </slot>
       </div>
-      
+
       <!-- Content -->
       <div class="flex-1 min-w-0">
         <!-- Title -->
-        <h4 v-if="title" class="font-semibold text-sm mb-2 tracking-wide">
+        <h4 v-if="title" class="font-semibold text-sm mb-2 tracking-tight">
           {{ title }}
         </h4>
-        
+
         <!-- Message -->
-        <div class="text-sm leading-relaxed">
+        <div class="text-sm leading-relaxed text-base-content/80">
           <slot />
         </div>
       </div>
-      
+
       <!-- Dismiss button -->
-      <button 
+      <button
         v-if="dismissible"
         @click="emit('dismiss')"
-        class="flex-shrink-0 p-2 hover:bg-black/10 
-               rounded-lg transition-all duration-200 
-               focus:outline-none focus:ring-2 focus:ring-current/20
-               hover:scale-105 active:scale-95"
+        class="flex-shrink-0 p-2 rounded-xl transition-all duration-200 text-base-content/70 hover:text-base-content
+               hover:bg-base-200/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-2"
         aria-label="Dismiss alert"
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
