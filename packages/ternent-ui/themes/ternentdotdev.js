@@ -42,6 +42,49 @@ export const ternentDotDev = {
     "--size-lg": "6rem",
     "--size-xl": "8rem",
   },
+  tailwindSql: {
+    "color-scheme": "dark",
+    primary: "#22D3EE", // Electric Cyan
+    "primary-focus": "#0FBAD2", // Slightly deeper Cyan
+    "primary-content": "#04151C", // Deep ink for contrast on cyan
+    secondary: "#A78BFA", // Soft Violet
+    "secondary-focus": "#8E6FF5", // Richer Violet
+    "secondary-content": "#160E2E", // Deep violet ink
+    accent: "#F472B6", // Neon Pink
+    "accent-focus": "#EC5AA8", // Hotter Pink
+    "accent-content": "#2A0C1D", // Dark ink on pink
+    neutral: "#12121A", // Dark neutral surface
+    "neutral-focus": "#0C0C12", // Deeper neutral
+    "neutral-content": "#E4E4EB", // Soft white text
+    "base-100": "#0A0A0F", // Inky background
+    "base-200": "#12121A", // Elevated surface
+    "base-300": "#1A1A24", // Card surface
+    "base-content": "#E4E4EB", // Primary text
+    info: "#22D3EE", // Cyan info
+    "info-content": "#04151C", // Dark ink on cyan
+    success: "#4ADE80", // Electric Green
+    "success-content": "#052014", // Deep green ink
+    warning: "#FB923C", // Amber Orange
+    "warning-content": "#241406", // Dark amber ink
+    error: "#F87171", // Soft Red
+    "error-content": "#2B0B0B", // Deep red ink
+    "--rounded-box": "1rem",
+    "--rounded-btn": "0.75rem",
+    "--rounded-table": "0.75rem",
+    "--rounded-card": "1rem",
+    "--rounded-input": "0.75rem",
+    "--rounded-full": "9999px",
+    "--border-color": "rgba(255, 255, 255, 0.08)",
+    "--shadow-color": "rgba(0, 0, 0, 0.5)",
+    "--spacing-sm": "0.5rem",
+    "--spacing-md": "1rem",
+    "--spacing-lg": "1.5rem",
+    "--spacing-xl": "2rem",
+    "--size-sm": "2rem",
+    "--size-md": "4rem",
+    "--size-lg": "6rem",
+    "--size-xl": "8rem",
+  },
 
   corporateProfessional: {
     "color-scheme": "light",

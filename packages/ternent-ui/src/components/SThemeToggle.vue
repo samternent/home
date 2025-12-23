@@ -24,6 +24,7 @@ const themes = [
   // Custom Themes (Featured)
   { name: "sleekLight", label: "✨ Sleek Light", category: "Custom", featured: true },
   { name: "sleekDark", label: "🌟 Sleek Dark", category: "Custom", featured: true },
+  { name: "tailwindSql", label: "💠 Tailwind SQL", category: "Custom", featured: true },
   
   // Standard DaisyUI Themes
   { name: "light", label: "☀️ Light", category: "Light" },

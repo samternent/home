@@ -48,15 +48,15 @@ function viewAllApps() {
       </p>
 
       <div class="flex justify-center gap-4">
-        <SButton @click="createNewApp" class="btn-primary btn-lg">
+        <SButton variant="primary" size="xs" @click="createNewApp">
           <span class="mr-2">✨</span>
           Create New App
         </SButton>
-        <SButton @click="goToTemplates" class="btn-secondary btn-lg">
+        <SButton variant="secondary" size="lg" @click="goToTemplates">
           <span class="mr-2">📋</span>
           Use Template
         </SButton>
-        <SButton v-if="hasApps" @click="viewAllApps" class="btn-outline btn-lg">
+        <SButton v-if="hasApps" variant="ghost" size="xl" @click="viewAllApps">
           <span class="mr-2">📱</span>
           View All Apps ({{ apps.length }})
         </SButton>
@@ -145,7 +145,7 @@ function viewAllApps() {
       <p class="text-base-content/60 mb-8">
         Create your first custom application to get started
       </p>
-      <SButton @click="createNewApp" class="btn-primary btn-lg">
+      <SButton @click="createNewApp" class="">
         <span class="mr-2">✨</span>
         Create Your First App
       </SButton>
