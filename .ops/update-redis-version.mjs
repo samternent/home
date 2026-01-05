@@ -29,9 +29,14 @@ const { version: ternentdotdevVersion } = JSON.parse(
   )
 );
 
+const { version: concordVersion } = JSON.parse(
+  await readFileSync(join(__dirname, "../apps/concord/package.json"), "utf8")
+);
+
 try {
   await redisClient.set("footballsocial-app-version", footballSocialVersion);
   await redisClient.set("ternentdotdev-app-version", ternentdotdevVersion);
+  await redisClient.set("concord-app-version", concordVersion);
 } catch (e) {
   console.error("unable to set redis");
 } finally {
