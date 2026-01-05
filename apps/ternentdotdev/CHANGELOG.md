@@ -1,5 +1,16 @@
 # ternentdotdev
 
+## 0.4.4
+
+### Patch Changes
+
+- [`1c660a02816bf117d61bb187729c4d89d80bd529`](https://github.com/samternent/home/commit/1c660a02816bf117d61bb187729c4d89d80bd529) Thanks [@samternent](https://github.com/samternent)! - fix libs
+
+- Updated dependencies [[`1c660a02816bf117d61bb187729c4d89d80bd529`](https://github.com/samternent/home/commit/1c660a02816bf117d61bb187729c4d89d80bd529)]:
+  - ternent-encrypt@0.1.2
+  - ternent-rage-wasm@0.2.1
+  - ternent-ledger@1.0.19
+
 ## 0.4.3
 
 ### Patch Changes
