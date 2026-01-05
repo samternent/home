@@ -1,5 +1,11 @@
 # concord
 
+## 0.0.6
+
+### Patch Changes
+
+- [`fa011aaee492dd16fd7968a95492d677cf06ca4a`](https://github.com/samternent/home/commit/fa011aaee492dd16fd7968a95492d677cf06ca4a) Thanks [@samternent](https://github.com/samternent)! - cannonical routes
+
 ## 0.0.5
 
 ### Patch Changes
