@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import { useRouter } from "vue-router";
 import { SButton, SCard } from "ternent-ui/components";
+import { Button } from "ternent-ui/primitives";
 import { useBreadcrumbs } from "@/module/breadcrumbs/useBreadcrumbs";
 import { useAppBuilder } from "@/module/builder/useAppBuilder";
 
@@ -48,18 +49,23 @@ function viewAllApps() {
       </p>
 
       <div class="flex justify-center gap-4">
-        <SButton variant="primary" size="xs" @click="createNewApp">
-          <span class="mr-2">✨</span>
+        <Button variant="primary" size="sm" @click="createNewApp">
+          <span>✨</span>
           Create New App
-        </SButton>
-        <SButton variant="secondary" size="lg" @click="goToTemplates">
+        </Button>
+        <Button variant="secondary" size="lg" @click="goToTemplates">
           <span class="mr-2">📋</span>
           Use Template
-        </SButton>
-        <SButton v-if="hasApps" variant="ghost" size="xl" @click="viewAllApps">
+        </Button>
+        <Button
+          v-if="hasApps"
+          variant="tertiary"
+          size="sm"
+          @click="viewAllApps"
+        >
           <span class="mr-2">📱</span>
           View All Apps ({{ apps.length }})
-        </SButton>
+        </Button>
       </div>
     </div>
 

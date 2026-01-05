@@ -1,0 +1,53 @@
+:root {
+  /* --- base colours --- */
+  --ui-bg: oklch(99% 0 0);
+  --ui-fg: oklch(18% 0 0);
+  --ui-fg-muted: oklch(45% 0 0);
+
+  /* --- surfaces --- */
+  --ui-surface: oklch(96% 0 0);
+  --ui-surface-hover: oklch(92% 0 0);
+  --ui-border: oklch(88% 0 0);
+
+  /* --- primary --- */
+  --ui-primary: oklch(63% 0.22 264);
+  --ui-primary-muted: oklch(63% 0.22 264 / 0.14);
+  --ui-on-primary: oklch(98% 0 0);
+
+  /* --- critical / danger --- */
+  --ui-critical: oklch(62% 0.23 25);
+  --ui-critical-muted: oklch(62% 0.23 25 / 0.16);
+  --ui-on-critical: oklch(98% 0 0);
+
+  /* --- focus --- */
+  --ui-ring: oklch(63% 0.22 264 / 0.4);
+
+  /* --- radii --- */
+  --ui-radius-md: 8px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* --- base colours --- */
+    --ui-bg: oklch(12% 0 0);
+    --ui-fg: oklch(90% 0 0);
+    --ui-fg-muted: oklch(65% 0 0);
+
+    /* --- surfaces --- */
+    --ui-surface: oklch(18% 0 0);
+    --ui-surface-hover: oklch(24% 0 0);
+    --ui-border: oklch(30% 0 0);
+
+    /* --- primary --- */
+    --ui-primary: oklch(70% 0.3 264);
+    --ui-primary-muted: oklch(70% 0.3 264 / 0.16);
+    --ui-on-primary: oklch(10% 0 0);
+
+    /* --- critical / danger --- */
+    --ui-critical: oklch(68% 0.3 25);
+    --ui-critical-muted: oklch(68% 0.3 25 / 0.18);
+    --ui-on-critical: oklch(10% 0 0);
+
+    /* --- focus --- */
+    --ui-ring: oklch(70% 0.3 264 / 0.5);
+  }
+}

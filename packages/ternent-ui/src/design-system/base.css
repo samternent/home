@@ -1,0 +1,8 @@
+:root {
+  color-scheme: light dark;
+}
+
+:focus-visible {
+  outline: var(--ui-focus-ring);
+  outline-offset: 2px;
+}
