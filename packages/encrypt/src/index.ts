@@ -4,7 +4,7 @@ import init, {
   encrypt_passphrase_async,
   decrypt_async,
   decrypt_passphrase_async,
-} from "ternent-rage-wasm";
+} from "ternent-ragejs";
 
 // Initialize the WASM module once
 let wasmReady: Promise<void> | null = null;

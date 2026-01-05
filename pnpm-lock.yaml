@@ -421,9 +421,9 @@ importers:
       regenerator-runtime:
         specifier: ^0.13.11
         version: 0.13.11
-      ternent-rage-wasm:
+      ternent-ragejs:
         specifier: workspace:*
-        version: link:../ragejs
+        version: link:../ragejs/pkg
     devDependencies:
       vite:
         specifier: ^2.9.18

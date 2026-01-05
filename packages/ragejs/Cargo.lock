@@ -1072,7 +1072,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "ternent-rage-wasm"
+name = "ternent-ragejs"
 version = "0.1.0"
 dependencies = [
  "age",

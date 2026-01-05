@@ -1,5 +1,5 @@
 [package]
-name = "ternent-rage-wasm"
+name = "ternent-ragejs"
 version = "0.1.0"
 authors = ["Sam Ternent <hello@ternent.dev>"]
 description = "JS wrapper around the AGE encryption library"
