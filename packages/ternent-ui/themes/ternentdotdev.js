@@ -1,5 +1,5 @@
 export const ternentDotDev = {
-  neonNoir: {
+  "neon-noir": {
     "color-scheme": "dark",
     primary: "#FF0078", // Neon Pink
     "primary-focus": "#E6006B", // Slightly darker Neon Pink
@@ -33,6 +33,49 @@ export const ternentDotDev = {
     "--rounded-full": "9999px",
     "--border-color": "#333333", // Dark border color
     "--shadow-color": "#000000", // Black shadow for neon glow effect
+    "--spacing-sm": "0.5rem",
+    "--spacing-md": "1rem",
+    "--spacing-lg": "1.5rem",
+    "--spacing-xl": "2rem",
+    "--size-sm": "2rem",
+    "--size-md": "4rem",
+    "--size-lg": "6rem",
+    "--size-xl": "8rem",
+  },
+  tailwindSql: {
+    "color-scheme": "dark",
+    primary: "#22D3EE", // Electric Cyan
+    "primary-focus": "#0FBAD2", // Slightly deeper Cyan
+    "primary-content": "#04151C", // Deep ink for contrast on cyan
+    secondary: "#A78BFA", // Soft Violet
+    "secondary-focus": "#8E6FF5", // Richer Violet
+    "secondary-content": "#160E2E", // Deep violet ink
+    accent: "#F472B6", // Neon Pink
+    "accent-focus": "#EC5AA8", // Hotter Pink
+    "accent-content": "#2A0C1D", // Dark ink on pink
+    neutral: "#12121A", // Dark neutral surface
+    "neutral-focus": "#0C0C12", // Deeper neutral
+    "neutral-content": "#E4E4EB", // Soft white text
+    "base-100": "#0A0A0F", // Inky background
+    "base-200": "#12121A", // Elevated surface
+    "base-300": "#1A1A24", // Card surface
+    "base-content": "#E4E4EB", // Primary text
+    info: "#22D3EE", // Cyan info
+    "info-content": "#04151C", // Dark ink on cyan
+    success: "#4ADE80", // Electric Green
+    "success-content": "#052014", // Deep green ink
+    warning: "#FB923C", // Amber Orange
+    "warning-content": "#241406", // Dark amber ink
+    error: "#F87171", // Soft Red
+    "error-content": "#2B0B0B", // Deep red ink
+    "--rounded-box": "1rem",
+    "--rounded-btn": "0.75rem",
+    "--rounded-table": "0.75rem",
+    "--rounded-card": "1rem",
+    "--rounded-input": "0.75rem",
+    "--rounded-full": "9999px",
+    "--border-color": "rgba(255, 255, 255, 0.08)",
+    "--shadow-color": "rgba(0, 0, 0, 0.5)",
     "--spacing-sm": "0.5rem",
     "--spacing-md": "1rem",
     "--spacing-lg": "1.5rem",
@@ -386,48 +429,5 @@ export const ternentDotDev = {
     "--size-md": "4rem", // Medium size for standard elements
     "--size-lg": "6rem", // Large size for prominent elements
     "--size-xl": "8rem", // Extra-large size for standout elements
-  },
-  wallsOfLight: {
-    "color-scheme": "light",
-    primary: "#B78FD6", // Soft Purple, symbolizing creativity and kindness
-    "primary-focus": "#9A71B3", // Slightly darker shade for focus elements
-    "primary-content": "#FFFFFF", // White text on primary for contrast
-    secondary: "#FFC1E3", // Gentle Pink for secondary elements, evoking warmth and positivity
-    "secondary-focus": "#FFA4D0", // Slightly deeper Pink for focused elements
-    "secondary-content": "#2D2D2D", // Dark text on lighter secondary elements
-    accent: "#FFEB8F", // Warm Yellow accent, representing brightness and joy
-    "accent-focus": "#FFD966", // Slightly darker Yellow for focus
-    "accent-content": "#2D2D2D", // Dark text on Yellow accent
-    neutral: "#F6F3FB", // Very light neutral for a clean, uplifting background
-    "neutral-focus": "#E4E0F0", // Slightly darker neutral for focus elements
-    "neutral-content": "#2D2D2D", // Dark text for clarity on light backgrounds
-    "base-100": "#FFFFFF", // Pure white for base background to reflect light
-    "base-200": "#F3F1F7", // Soft light grey for contrast
-    "base-300": "#E8E5EF", // Light grey for deeper contrast in elements
-    "base-content": "#2D2D2D", // Dark text for accessibility
-    info: "#9FD7FF", // Soft Blue for informational elements
-    "info-content": "#2D2D2D", // Dark text on light blue
-    success: "#A8E6CF", // Soft Mint Green for success
-    "success-content": "#2D2D2D", // Dark text on success messages
-    warning: "#FFCC8F", // Warm Orange for warnings, remaining light and gentle
-    "warning-content": "#2D2D2D", // Dark text on warning
-    error: "#FF8F8F", // Light Red for errors, maintaining the gentle theme
-    "error-content": "#2D2D2D", // Dark text on error elements
-    "--rounded-box": "1rem", // Softer, more inviting rounded corners
-    "--rounded-btn": "9999px", // Fully rounded buttons for a bubbly, friendly feel
-    "--rounded-table": "0.5rem", // Rounded corners on tables for consistency
-    "--rounded-card": "1rem", // More rounded for cards, making them feel light and positive
-    "--rounded-input": "0.5rem", // Rounded inputs for friendliness and ease of use
-    "--rounded-full": "9999px", // Full circles for avatars or small elements
-    "--border-color": "#E4E0F0", // Soft border colors for definition without harshness
-    "--shadow-color": "rgba(183, 143, 214, 0.2)", // Light purple shadow for subtle emphasis
-    "--spacing-sm": "0.75rem", // Small spacing to keep things airy
-    "--spacing-md": "1.25rem", // Medium spacing for balance
-    "--spacing-lg": "2rem", // Larger spacing for an open, welcoming feel
-    "--spacing-xl": "3rem", // Extra-large for more emphasis in key areas
-    "--size-sm": "2rem",
-    "--size-md": "4rem",
-    "--size-lg": "6rem",
-    "--size-xl": "8rem",
   },
 };

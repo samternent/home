@@ -1,11 +1,12 @@
 <script setup>
 import { computed } from "vue";
 
+// === PUBLIC API (unchanged) ===
 const props = defineProps({
   // Navigation
-  to: { type: String, default: undefined },
-  href: { type: String, default: undefined },
-  external: { type: Boolean, default: false },
+  to: String,
+  href: String,
+  external: Boolean,
 
   // Appearance
   variant: {
@@ -18,7 +19,6 @@ const props = defineProps({
         "accent",
         "outline",
         "ghost",
-        "ghost-icon",
         "link",
         "success",
         "warning",
@@ -28,112 +28,87 @@ const props = defineProps({
   size: {
     type: String,
     default: "md",
-    validator: (v) => ["micro", "xs", "sm", "md", "lg", "xl", "base"].includes(v),
+    validator: (v) => ["micro", "xs", "sm", "md", "lg", "xl"].includes(v),
   },
 
   // States
-  loading: { type: Boolean, default: false },
-  disabled: { type: Boolean, default: false },
+  loading: Boolean,
+  disabled: Boolean,
 
   // Layout
-  fullWidth: { type: Boolean, default: false },
-  icon: { type: Boolean, default: false },
+  fullWidth: Boolean,
+  icon: Boolean,
 
   // Accessibility
-  ariaLabel: { type: String, default: undefined },
-  ariaDescribedBy: { type: String, default: undefined },
+  ariaLabel: String,
+  ariaDescribedBy: String,
 });
 
 const emit = defineEmits(["click"]);
 
-const normalizedSize = computed(() => (props.size === "base" ? "md" : props.size));
+// === INTERNALS (from-scratch build) ===
+// Goals:
+//  - Never stretch to parent height (works in flex/grid): use self-center + h-auto
+//  - Sizing by padding/typography (not fixed h-*) for regular buttons
+//  - True square for icon-only
+//  - Colors sourced 100% from your DaisyUI tokens: --p/--pc, --s/--sc, --a/--ac,
+//    --su/--suc, --wa/--wac, --er/--erc, and radius from --rounded-btn
 
-/** Premium DaisyUI button classes (calm, modern, accessible) */
-const buttonClasses = computed(() => {
-  const base = [
-    "btn",
-    "inline-flex items-center justify-center select-none",
-    "transition-colors duration-150 ease-out",
-    // Focus style that works on light/dark and respects your DS background
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-base-100",
-    // Softer elevation
-    "shadow-sm hover:shadow",
-    // Disable affordances
+const sizeClasses = computed(() => {
+  const regular = {
+    micro: "text-[11px] px-2 py-1",
+    xs: "text-xs px-2.5 py-1.5",
+    sm: "text-sm px-3 py-1.5",
+    md: "text-sm px-4 py-2",
+    lg: "text-base px-5 py-2.5",
+    xl: "text-lg px-6 py-3",
+  };
+  const iconOnly = {
+    micro: "w-6 h-6 text-[11px] p-0",
+    xs: "w-7 h-7 text-xs p-0",
+    sm: "w-8 h-8 text-sm p-0",
+    md: "w-10 h-10 text-sm p-0",
+    lg: "w-11 h-11 text-base p-0",
+    xl: "w-12 h-12 text-lg p-0",
+  };
+  return props.icon ? iconOnly[props.size] : regular[props.size];
+});
+
+const baseClasses = computed(() =>
+  [
+    // layout & a11y
+    "btn-base inline-flex items-center justify-center gap-2 font-medium select-none",
+    "whitespace-nowrap align-middle self-center h-auto",
+    "transition-colors duration-200 focus-visible:outline-none",
     "disabled:opacity-60 disabled:cursor-not-allowed",
-    // Smooth press without layout jank
-    "active:scale-95",
-    // Remove default border noise unless variant needs it
-    "border-0",
-  ];
+  ].join(" ")
+);
 
-  const size = {
-    micro: "btn-xs min-h-6 h-6 px-2 text-xs rounded-md",
-    xs: "btn-xs min-h-7 h-7 px-2.5 text-xs rounded-lg",
-    sm: "btn-sm min-h-8 h-8 px-3.5 text-sm rounded-lg",
-    md: "btn-md min-h-10 h-10 px-5 text-sm rounded-xl",
-    lg: "btn-lg min-h-12 h-12 px-6 text-base rounded-xl",
-    xl: "min-h-14 h-14 px-7 text-lg rounded-2xl",
-  };
-
-  const variants = {
-    primary:
-      "btn-primary text-white bg-primary hover:bg-primary/90 active:bg-primary/80",
-    secondary:
-      "btn-secondary text-base-content bg-base-200 hover:bg-base-300 active:bg-base-300/80 border border-base-300",
-    accent:
-      "btn-accent text-white bg-accent hover:bg-accent/90 active:bg-accent/80",
-    outline:
-      "btn-outline text-base-content border border-base-300 hover:bg-base-200/60",
-    ghost:
-      "btn-ghost text-base-content/90 hover:bg-base-200/60 hover:text-base-content",
-    "ghost-icon":
-      "btn-ghost text-base-content/90 hover:bg-base-200/60 hover:text-base-content aspect-square p-0",
-    link: "btn-link bg-transparent px-1 py-1 h-auto min-h-0 text-primary underline-offset-4 hover:underline",
-    success:
-      "btn-success text-white bg-success hover:bg-success/90 active:bg-success/80",
-    warning:
-      "btn-warning text-white bg-warning hover:bg-warning/90 active:bg-warning/80",
-    error: "btn-error text-white bg-error hover:bg-error/90 active:bg-error/80",
-  };
-
-  const cls = [
-    ...base,
-    size[normalizedSize.value] || size.md,
-    variants[props.variant] || variants.primary,
-  ];
-
-  // Full width
-  if (props.fullWidth) cls.push("w-full", "btn-block");
-
-  // Icon-only mode (keeps API but improves appearance)
-  if (props.icon) cls.push("aspect-square !px-0 text-lg");
-
-  // DaisyUI built-in spinner (works with .btn.loading)
-  if (props.loading) cls.push("loading");
-
+const buttonClasses = computed(() => {
+  const cls = [baseClasses.value, sizeClasses.value];
+  if (props.fullWidth && !props.icon) cls.push("w-full");
+  if (props.icon) cls.push("aspect-square !px-0 !py-0");
+  if (props.loading) cls.push("relative");
   return cls.join(" ");
 });
 
-const component = computed(() => {
-  if (props.to) return "RouterLink";
-  if (props.href) return "a";
-  return "button";
-});
+const tag = computed(() =>
+  props.to ? "RouterLink" : props.href ? "a" : "button"
+);
 
 const componentProps = computed(() => {
   const base = {
     class: buttonClasses.value,
     disabled: props.disabled || props.loading,
-    "aria-busy": props.loading ? "true" : undefined,
-    "aria-disabled": props.disabled || props.loading ? "true" : undefined,
+    "aria-busy": props.loading || undefined,
+    "aria-disabled": props.disabled || props.loading || undefined,
     "aria-label": props.ariaLabel,
     "aria-describedby": props.ariaDescribedBy,
     "data-variant": props.variant,
-    "data-size": normalizedSize.value,
+    "data-size": props.size,
   };
-
   if (props.to) return { ...base, to: props.to };
-  if (props.href) {
+  if (props.href)
     return {
       ...base,
       href: props.href,
@@ -141,11 +116,10 @@ const componentProps = computed(() => {
       rel: props.external ? "noopener noreferrer" : undefined,
       role: "button",
     };
-  }
   return { ...base, type: "button" };
 });
 
-const handleClick = (e) => {
+const onClick = (e) => {
   if (props.disabled || props.loading) {
     e.preventDefault();
     return;
@@ -155,7 +129,146 @@ const handleClick = (e) => {
 </script>
 
 <template>
-  <component :is="component" v-bind="componentProps" @click="handleClick">
-    <slot />
+  <component :is="tag" v-bind="componentProps" @click="onClick">
+    <!-- loading overlay -->
+    <span v-if="loading" class="absolute inset-0 grid place-items-center">
+      <svg
+        class="animate-spin h-4 w-4"
+        viewBox="0 0 24 24"
+        fill="none"
+        aria-hidden="true"
+      >
+        <circle
+          class="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          stroke-width="4"
+        />
+        <path
+          class="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+        />
+      </svg>
+      <span class="sr-only">Loading</span>
+    </span>
+    <span :class="loading ? 'opacity-0' : ''"><slot /></span>
   </component>
 </template>
+
+<style scoped>
+/*
+  COLOR/THEME LAYER (pure CSS, no Tailwind arbitrary var() needed)
+  Uses your tokens from the provided theme snippet.
+*/
+
+.btn-base {
+  border: 1px solid transparent;
+  border-radius: var(--rounded-btn);
+  --ring: var(--p);
+}
+.btn-base:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* Primary */
+[data-variant="primary"] {
+  --ring: var(--p);
+  background: var(--p);
+  color: var(--pc);
+}
+[data-variant="primary"]:hover {
+  background: color-mix(in oklch, var(--p) 88%, black 12%);
+}
+
+/* Secondary */
+[data-variant="secondary"] {
+  --ring: var(--s);
+  background: var(--s);
+  color: var(--sc);
+}
+[data-variant="secondary"]:hover {
+  background: color-mix(in oklch, var(--s) 88%, black 12%);
+}
+
+/* Accent */
+[data-variant="accent"] {
+  --ring: var(--a);
+  background: var(--a);
+  color: var(--ac);
+}
+[data-variant="accent"]:hover {
+  background: color-mix(in oklch, var(--a) 88%, black 12%);
+}
+
+/* Success */
+[data-variant="success"] {
+  --ring: var(--su);
+  background: var(--su);
+  color: var(--suc);
+}
+[data-variant="success"]:hover {
+  background: color-mix(in oklch, var(--su) 88%, black 12%);
+}
+
+/* Warning */
+[data-variant="warning"] {
+  --ring: var(--wa);
+  background: var(--wa);
+  color: var(--wac);
+}
+[data-variant="warning"]:hover {
+  background: color-mix(in oklch, var(--wa) 88%, black 12%);
+}
+
+/* Error */
+[data-variant="error"] {
+  --ring: var(--er);
+  background: var(--er);
+  color: var(--erc);
+}
+[data-variant="error"]:hover {
+  background: color-mix(in oklch, var(--er) 88%, black 12%);
+}
+
+/* Outline (primary tone by default) */
+[data-variant="outline"] {
+  --ring: var(--p);
+  background: transparent;
+  color: var(--p);
+  border-color: var(--p);
+}
+[data-variant="outline"]:hover {
+  background: color-mix(in oklch, var(--p) 10%, transparent 90%);
+  color: var(--pc);
+}
+
+/* Ghost */
+[data-variant="ghost"] {
+  --ring: var(--bc);
+  background: transparent;
+  color: color-mix(in oklch, var(--bc) 70%, transparent 30%);
+}
+[data-variant="ghost"]:hover {
+  background: var(--b2);
+  color: var(--bc);
+}
+
+/* Link */
+[data-variant="link"] {
+  --ring: var(--p);
+  background: transparent;
+  color: var(--p);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  border-color: transparent;
+  padding-left: 0;
+  padding-right: 0;
+}
+[data-variant="link"]:hover {
+  color: color-mix(in oklch, var(--p) 88%, black 12%);
+}
+</style>

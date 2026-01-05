@@ -14,7 +14,7 @@ const props = defineProps({
   showDropdown: {
     type: Boolean,
     default: false,
-  }
+  },
 });
 
 const emit = defineEmits(["update:modelValue"]);
@@ -22,9 +22,25 @@ const emit = defineEmits(["update:modelValue"]);
 // All available DaisyUI themes + custom themes
 const themes = [
   // Custom Themes (Featured)
-  { name: "sleekLight", label: "✨ Sleek Light", category: "Custom", featured: true },
-  { name: "sleekDark", label: "🌟 Sleek Dark", category: "Custom", featured: true },
-  
+  {
+    name: "sleekLight",
+    label: "✨ Sleek Light",
+    category: "Custom",
+    featured: true,
+  },
+  {
+    name: "sleekDark",
+    label: "🌟 Sleek Dark",
+    category: "Custom",
+    featured: true,
+  },
+  {
+    name: "tailwindSql",
+    label: "💠 Tailwind SQL",
+    category: "Custom",
+    featured: true,
+  },
+
   // Standard DaisyUI Themes
   { name: "light", label: "☀️ Light", category: "Light" },
   { name: "dark", label: "🌙 Dark", category: "Dark" },
@@ -58,24 +74,28 @@ const themes = [
   { name: "dim", label: "🔅 Dim", category: "Dark" },
   { name: "nord", label: "🏔️ Nord", category: "Light" },
   { name: "sunset", label: "🌅 Sunset", category: "Light" },
-  
+
   // Custom ternent.dev themes
   { name: "azureBloom", label: "🌸 Azure Bloom", category: "Light" },
   { name: "azureBloomDark", label: "🌸 Azure Bloom Dark", category: "Dark" },
-  { name: "corporateProfessional", label: "🏢 Corporate Pro", category: "Light" },
+  {
+    name: "corporateProfessional",
+    label: "🏢 Corporate Pro",
+    category: "Light",
+  },
   { name: "corporateDark", label: "🏢 Corporate Dark", category: "Dark" },
   { name: "neonBlanc", label: "⚪ Neon Blanc", category: "Light" },
-  { name: "neonNoir", label: "⚫ Neon Noir", category: "Dark" },
+  { name: "neon-noir", label: "⚫ Neon Noir", category: "Dark" },
   { name: "marshmallowLight", label: "🤍 Marshmallow", category: "Light" },
   { name: "marshmallowDark", label: "🖤 Marshmallow Dark", category: "Dark" },
 ];
 
 const currentTheme = computed(() => {
-  const theme = themes.find(t => t.name === props.modelValue);
+  const theme = themes.find((t) => t.name === props.modelValue);
   return theme || themes[0];
 });
 
-const isDark = computed(() => currentTheme.value.category === 'Dark');
+const isDark = computed(() => currentTheme.value.category === "Dark");
 
 function updateTheme(themeName) {
   emit("update:modelValue", themeName);
@@ -92,10 +112,14 @@ const sizeClasses = computed(() => ({
   lg: { icon: "w-6 h-6", toggle: "toggle-lg" },
 }));
 
-const lightThemes = computed(() => themes.filter(t => t.category === 'Light'));
-const darkThemes = computed(() => themes.filter(t => t.category === 'Dark'));
-const customThemes = computed(() => themes.filter(t => t.category === 'Custom'));
-const featuredThemes = computed(() => themes.filter(t => t.featured));
+const lightThemes = computed(() =>
+  themes.filter((t) => t.category === "Light")
+);
+const darkThemes = computed(() => themes.filter((t) => t.category === "Dark"));
+const customThemes = computed(() =>
+  themes.filter((t) => t.category === "Custom")
+);
+const featuredThemes = computed(() => themes.filter((t) => t.featured));
 </script>
 
 <template>
@@ -103,15 +127,30 @@ const featuredThemes = computed(() => themes.filter(t => t.featured));
   <div v-if="showDropdown" class="dropdown dropdown-end">
     <div tabindex="0" role="button" class="btn btn-ghost gap-2">
       <span class="text-sm">{{ currentTheme.label }}</span>
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+      <svg
+        class="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M19 9l-7 7-7-7"
+        />
       </svg>
     </div>
-    <div tabindex="0" class="dropdown-content z-[1] p-2 shadow-2xl bg-base-100 rounded-box w-80 max-h-96 overflow-y-auto">
+    <div
+      tabindex="0"
+      class="dropdown-content z-[1] p-2 shadow-2xl bg-base-100 rounded-box w-80 max-h-96 overflow-y-auto"
+    >
       <div class="grid grid-cols-1 gap-1">
         <!-- Featured/Custom Themes Section -->
         <div v-if="featuredThemes.length > 0" class="mb-2">
-          <div class="text-xs font-semibold text-base-content/60 mb-2 px-2">✨ Featured Themes</div>
+          <div class="text-xs font-semibold text-base-content/60 mb-2 px-2">
+            ✨ Featured Themes
+          </div>
           <div class="grid grid-cols-1 gap-1">
             <button
               v-for="theme in featuredThemes"
@@ -125,10 +164,12 @@ const featuredThemes = computed(() => themes.filter(t => t.featured));
           </div>
           <div class="divider my-2"></div>
         </div>
-        
+
         <!-- Light Themes Section -->
         <div class="mb-2">
-          <div class="text-xs font-semibold text-base-content/60 mb-2 px-2">☀️ Light Themes</div>
+          <div class="text-xs font-semibold text-base-content/60 mb-2 px-2">
+            ☀️ Light Themes
+          </div>
           <div class="grid grid-cols-2 gap-1">
             <button
               v-for="theme in lightThemes"
@@ -141,10 +182,12 @@ const featuredThemes = computed(() => themes.filter(t => t.featured));
             </button>
           </div>
         </div>
-        
+
         <!-- Dark Themes Section -->
         <div>
-          <div class="text-xs font-semibold text-base-content/60 mb-2 px-2">🌙 Dark Themes</div>
+          <div class="text-xs font-semibold text-base-content/60 mb-2 px-2">
+            🌙 Dark Themes
+          </div>
           <div class="grid grid-cols-2 gap-1">
             <button
               v-for="theme in darkThemes"
@@ -162,14 +205,18 @@ const featuredThemes = computed(() => themes.filter(t => t.featured));
   </div>
 
   <!-- Simple Toggle (for backward compatibility) -->
-  <label v-else class="flex cursor-pointer gap-3 items-center" aria-label="Toggle dark mode">
+  <label
+    v-else
+    class="flex cursor-pointer gap-3 items-center"
+    aria-label="Toggle dark mode"
+  >
     <!-- Sun icon -->
     <svg
       v-if="size !== 'sm'"
       xmlns="http://www.w3.org/2000/svg"
       :class="[
         sizeClasses[size].icon,
-        isDark ? 'text-base-content/50' : 'text-warning'
+        isDark ? 'text-base-content/50' : 'text-warning',
       ]"
       viewBox="0 0 24 24"
       fill="none"
@@ -183,7 +230,7 @@ const featuredThemes = computed(() => themes.filter(t => t.featured));
         d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"
       />
     </svg>
-    
+
     <!-- Toggle switch -->
     <div class="relative">
       <input
@@ -196,28 +243,26 @@ const featuredThemes = computed(() => themes.filter(t => t.featured));
       <div
         :class="[
           'w-11 h-6 rounded-full p-1 transition-colors duration-200 ease-in-out',
-          isDark 
-            ? 'bg-primary' 
-            : 'bg-base-300'
+          isDark ? 'bg-primary' : 'bg-base-300',
         ]"
         @click="toggleDarkMode"
       >
         <div
           :class="[
             'w-4 h-4 bg-base-100 rounded-full shadow-md transform transition-transform duration-200 ease-in-out',
-            isDark ? 'translate-x-5' : 'translate-x-0'
+            isDark ? 'translate-x-5' : 'translate-x-0',
           ]"
         />
       </div>
     </div>
-    
+
     <!-- Moon icon -->
     <svg
       v-if="size !== 'sm'"
       xmlns="http://www.w3.org/2000/svg"
       :class="[
         sizeClasses[size].icon,
-        isDark ? 'text-primary' : 'text-base-content/50'
+        isDark ? 'text-primary' : 'text-base-content/50',
       ]"
       viewBox="0 0 24 24"
       fill="none"

@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import { useRouter } from "vue-router";
 import { SButton, SCard } from "ternent-ui/components";
+import { Button } from "ternent-ui/primitives";
 import { useBreadcrumbs } from "@/module/breadcrumbs/useBreadcrumbs";
 import { useAppBuilder } from "@/module/builder/useAppBuilder";
 
@@ -48,18 +49,23 @@ function viewAllApps() {
       </p>
 
       <div class="flex justify-center gap-4">
-        <SButton @click="createNewApp" class="btn-primary btn-lg">
-          <span class="mr-2">✨</span>
+        <Button variant="primary" size="sm" @click="createNewApp">
+          <span>✨</span>
           Create New App
-        </SButton>
-        <SButton @click="goToTemplates" class="btn-secondary btn-lg">
+        </Button>
+        <Button variant="secondary" size="lg" @click="goToTemplates">
           <span class="mr-2">📋</span>
           Use Template
-        </SButton>
-        <SButton v-if="hasApps" @click="viewAllApps" class="btn-outline btn-lg">
+        </Button>
+        <Button
+          v-if="hasApps"
+          variant="tertiary"
+          size="sm"
+          @click="viewAllApps"
+        >
           <span class="mr-2">📱</span>
           View All Apps ({{ apps.length }})
-        </SButton>
+        </Button>
       </div>
     </div>
 
@@ -145,7 +151,7 @@ function viewAllApps() {
       <p class="text-base-content/60 mb-8">
         Create your first custom application to get started
       </p>
-      <SButton @click="createNewApp" class="btn-primary btn-lg">
+      <SButton @click="createNewApp" class="">
         <span class="mr-2">✨</span>
         Create Your First App
       </SButton>

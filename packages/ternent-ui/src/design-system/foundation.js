@@ -179,8 +179,8 @@ export const components = {
       alignItems: 'center',
       justifyContent: 'center',
       fontWeight: '500',
-      transition: 'all 200ms cubic-bezier(0.4, 0, 0.2, 1)',
-      borderRadius: '0.5rem',
+      transition: 'color 180ms ease, background-color 180ms ease, box-shadow 180ms ease',
+      borderRadius: '0.75rem',
       border: '1px solid transparent',
       cursor: 'pointer',
       outline: 'none',
@@ -190,16 +190,16 @@ export const components = {
     
     sizes: {
       xs: {
-        height: '1.5rem', // 24px
-        padding: '0 0.5rem',
+        height: '1.75rem', // 28px
+        padding: '0 0.6rem',
         fontSize: '0.75rem',
         gap: '0.25rem',
       },
       sm: {
         height: '2rem', // 32px
-        padding: '0 0.75rem',
-        fontSize: '0.875rem',
-        gap: '0.375rem',
+        padding: '0 0.85rem',
+        fontSize: '0.8125rem',
+        gap: '0.35rem',
       },
       base: {
         height: '2.5rem', // 40px
@@ -208,16 +208,16 @@ export const components = {
         gap: '0.5rem',
       },
       lg: {
-        height: '3rem', // 48px
-        padding: '0 1.25rem',
-        fontSize: '1rem',
-        gap: '0.5rem',
+        height: '2.75rem', // 44px
+        padding: '0 1.15rem',
+        fontSize: '0.9375rem',
+        gap: '0.45rem',
       },
       xl: {
-        height: '3.5rem', // 56px
-        padding: '0 1.5rem',
-        fontSize: '1.125rem',
-        gap: '0.75rem',
+        height: '3rem', // 48px
+        padding: '0 1.35rem',
+        fontSize: '1rem',
+        gap: '0.6rem',
       },
     },
     
@@ -227,8 +227,7 @@ export const components = {
         color: 'white',
         hover: {
           backgroundColor: colors.primary[600],
-          transform: 'translateY(-1px)',
-          boxShadow: '0 4px 12px rgba(99, 91, 255, 0.25)',
+          boxShadow: '0 6px 18px rgba(99, 91, 255, 0.18)',
         },
         focus: {
           boxShadow: '0 0 0 3px rgba(99, 91, 255, 0.2)',
@@ -236,11 +235,12 @@ export const components = {
       },
       secondary: {
         backgroundColor: colors.gray[100],
-        color: colors.gray[900],
+        color: colors.gray[800],
         border: `1px solid ${colors.gray[300]}`,
         hover: {
           backgroundColor: colors.gray[200],
           borderColor: colors.gray[400],
+          boxShadow: '0 8px 20px rgba(52, 64, 84, 0.08)',
         },
       },
       outline: {
@@ -250,6 +250,7 @@ export const components = {
         hover: {
           backgroundColor: colors.primary[50],
           borderColor: colors.primary[400],
+          boxShadow: '0 0 0 1px rgba(99, 91, 255, 0.25)',
         },
       },
       ghost: {

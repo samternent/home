@@ -1,0 +1,81 @@
+[data-theme="neon-noir"] {
+  /* =========================
+     Base
+     ========================= */
+  --ui-bg: oklch(12% 0 0);
+  --ui-fg: oklch(92% 0 0);
+  --ui-fg-muted: oklch(70% 0 0);
+
+  /* =========================
+     Surfaces
+     ========================= */
+  --ui-surface: oklch(18% 0 0);
+  --ui-surface-hover: oklch(22% 0 0);
+  --ui-border: oklch(28% 0 0);
+
+  /* =========================
+     Primary (pink neon)
+     ========================= */
+  --ui-primary: oklch(65% 0.28 330);
+  --ui-on-primary: oklch(10% 0 0);
+
+  /* Tonal + hover/active tones (explicit, reliable) */
+  --ui-primary-muted: oklch(65% 0.28 330 / 0.14);
+  --ui-primary-hover: oklch(65% 0.28 330 / 0.22);
+  --ui-primary-active: oklch(65% 0.28 330 / 0.3);
+
+  /* =========================
+     Critical
+     ========================= */
+  --ui-critical: oklch(68% 0.3 25);
+  --ui-on-critical: oklch(10% 0 0);
+
+  --ui-critical-muted: oklch(68% 0.3 25 / 0.16);
+  --ui-critical-hover: oklch(68% 0.3 25 / 0.24);
+  --ui-critical-active: oklch(68% 0.3 25 / 0.32);
+
+  /* =========================
+     Secondary / Tertiary
+     ========================= */
+  --ui-tonal-secondary: oklch(92% 0 0 / 0.06);
+  --ui-tonal-secondary-hover: oklch(92% 0 0 / 0.1);
+
+  --ui-tonal-tertiary: oklch(92% 0 0 / 0.03);
+  --ui-tonal-tertiary-hover: oklch(92% 0 0 / 0.07);
+
+  /* =========================
+     Focus / Glow
+     ========================= */
+  --ui-ring: oklch(65% 0.28 330 / 0.5);
+  --ui-glow-primary: 0 0 0 1px oklch(65% 0.28 330 / 0.55),
+    0 0 18px oklch(65% 0.28 330 / 0.55);
+  --ui-glow-critical: 0 0 0 1px oklch(68% 0.3 25 / 0.55),
+    0 0 18px oklch(68% 0.3 25 / 0.55);
+
+  /* =========================
+     Shape
+     ========================= */
+  --ui-radius-sm: 8px;
+  --ui-radius-md: 12px;
+  --ui-radius-lg: 16px;
+
+  /* =========================
+     Motion
+     ========================= */
+  --ui-duration-fast: 120ms;
+  --ui-duration-normal: 200ms;
+  --ui-duration-slow: 300ms;
+  --ui-ease-out: cubic-bezier(0, 0, 0.2, 1);
+
+  /* =========================
+     Elevation
+     ========================= */
+  --ui-shadow-sm: 0 1px 2px oklch(0% 0 0 / 0.2);
+  --ui-shadow-md: 0 6px 18px oklch(0% 0 0 / 0.35);
+
+  /* =========================
+     Interaction offsets
+     ========================= */
+  --ui-lift-hover: -0.5px;
+  --ui-scale-active: 0.97;
+}

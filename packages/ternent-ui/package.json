@@ -15,6 +15,7 @@
   "main": "./dist/components.js",
   "exports": {
     ".": "./dist/components.js",
+    "./primitives": "./dist/primitives.js",
     "./components": "./dist/components.js",
     "./styles": "./dist/style.css",
     "./themes": "./dist/themes.js",
@@ -28,6 +29,7 @@
     "lint:tokens": "node ./scripts/check-tokens.js"
   },
   "dependencies": {
+    "@ark-ui/vue": "^5.30.0",
     "@tailwindcss/typography": "^0.5.14",
     "@vueuse/core": "^10.11.1",
     "autoprefixer": "^10.4.20",
@@ -37,6 +39,7 @@
     "tailwind-merge": "^1.14.0",
     "tailwindcss": "^3.4.10",
     "tailwindcss-animate": "^1.0.7",
+    "vite-plugin-dts": "^1.7.3",
     "vue": "^3.4.38"
   },
   "devDependencies": {

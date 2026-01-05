@@ -98,7 +98,7 @@ function formatBytes(bytes, decimals = 2) {
   <div ref="contentArea" class="flex-1 flex w-full overflow-hidden relative">
     <div class="flex flex-1 flex-col">
       <RouterView />
-      <Console :container="container">
+      <Console>
         <template #panel-control>
           <SIndicator>{{ pendingRecords }}</SIndicator>
           <SIndicator type="ghost">{{ sizeIndicator }}</SIndicator>
