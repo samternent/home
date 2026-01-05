@@ -1,19 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-
-  /**
-   * If your SSG outputs /route/index.html (directory pages),
-   * this makes Vercel redirect /route -> /route/ so the folder index.html is served.
-   */
   "trailingSlash": true,
-
-  /**
-   * Keep SSG pages working as static files.
-   * Only use SPA fallback under /playground/* (client-side router).
-   *
-   * This avoids the old "rewrite everything to index.html" that caused flicker
-   * and prevented SSG pages from being served.
-   */
   "rewrites": [
     { "source": "/playground/:path*", "destination": "/playground/" }
   ],
