@@ -1,5 +1,11 @@
 # concord
 
+## 0.0.5
+
+### Patch Changes
+
+- [`499848d9f980337b6898f3ace2a92fee47e09974`](https://github.com/samternent/home/commit/499848d9f980337b6898f3ace2a92fee47e09974) Thanks [@samternent](https://github.com/samternent)! - Update vercel redirection rule
+
 ## 0.0.4
 
 ### Patch Changes
