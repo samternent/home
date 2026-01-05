@@ -1,5 +1,11 @@
 # concord
 
+## 0.0.7
+
+### Patch Changes
+
+- [`74dcd078f89db98f7de4798b1a924d5a51bfcae8`](https://github.com/samternent/home/commit/74dcd078f89db98f7de4798b1a924d5a51bfcae8) Thanks [@samternent](https://github.com/samternent)! - new vercel file
+
 ## 0.0.6
 
 ### Patch Changes
