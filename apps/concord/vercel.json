@@ -1,4 +1,23 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+
+  /**
+   * If your SSG outputs /route/index.html (directory pages),
+   * this makes Vercel redirect /route -> /route/ so the folder index.html is served.
+   */
+  "trailingSlash": true,
+
+  /**
+   * Keep SSG pages working as static files.
+   * Only use SPA fallback under /playground/* (client-side router).
+   *
+   * This avoids the old "rewrite everything to index.html" that caused flicker
+   * and prevented SSG pages from being served.
+   */
+  "rewrites": [
+    { "source": "/playground/:path*", "destination": "/playground/" }
+  ],
+
   "headers": [
     {
       "source": "/service-worker.js",
@@ -14,20 +33,11 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' gc.zgo.at; connect-src *.ternent.dev concords.goatcounter.com; font-src fonts.gstatic.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; img-src 'self'"
+          "value": "default-src 'self'; script-src 'self' gc.zgo.at; connect-src 'self' *.ternent.dev concords.goatcounter.com; font-src 'self' fonts.gstatic.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; img-src 'self' data:; base-uri 'self'; frame-ancestors 'none'"
         },
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "X-XSS-Protection",
-          "value": "1; mode=block"
-        },
-        {
-          "key": "Referrer-Policy",
-          "value": "same-origin"
-        }
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-XSS-Protection", "value": "1; mode=block" },
+        { "key": "Referrer-Policy", "value": "same-origin" }
       ]
     }
   ]
