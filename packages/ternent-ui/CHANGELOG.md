@@ -1,5 +1,11 @@
 # ternent-ui
 
+## 0.3.2
+
+### Patch Changes
+
+- [#396](https://github.com/samternent/home/pull/396) [`9d0a9664d6d2e71fd9f31540d52fd3dc98c54307`](https://github.com/samternent/home/commit/9d0a9664d6d2e71fd9f31540d52fd3dc98c54307) Thanks [@samternent](https://github.com/samternent)! - Consolidate styles
+
 ## 0.3.1
 
 ### Patch Changes
