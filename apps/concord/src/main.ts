@@ -1,5 +1,5 @@
 import { ViteSSG } from "vite-ssg";
-// import "ternent-ui/styles";
+import "ternent-ui/styles";
 import App from "./App.vue";
 import { routes } from "./route/index";
 

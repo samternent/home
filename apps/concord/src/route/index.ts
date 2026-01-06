@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-import Home from "./home/Home.vue";
 import Docs from "./docs/Docs.vue";
 import Playground from "./playground/Playground.vue";
+import Home from "./home/Home.vue";
 
 type DocMeta = {
   title?: string;
@@ -27,7 +27,10 @@ function toRoutePath(filePath: string): string {
   // "./content/spec/v0/ledger-format.md" -> "/spec/v0/ledger-format"
   const withoutPrefix = filePath.replace(/^\..\/content/, "");
   const withoutExt = withoutPrefix.replace(/\.md$/, "");
-  return withoutExt;
+  const normalized = withoutExt
+    .replace(/\/README$/i, "")
+    .replace(/\/index$/i, "");
+  return normalized.length ? normalized : "/";
 }
 
 const docRoutes = Object.entries(mdModules).map(([file, mod]) => {
