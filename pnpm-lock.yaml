@@ -531,7 +531,7 @@ importers:
         specifier: ^5.30.0
         version: 5.30.0(vue@3.4.38)
       '@tailwindcss/typography':
-        specifier: ^0.5.19
+        specifier: ^0.5.14
         version: 0.5.19(tailwindcss@4.1.18)
       '@tailwindcss/vite':
         specifier: ^4.1.18
@@ -6140,7 +6140,7 @@ packages:
     dependencies:
       '@vue/compiler-ssr': 3.4.38
       '@vue/shared': 3.4.38
-      vue: 3.4.38(typescript@5.9.3)
+      vue: 3.4.38(typescript@5.5.4)
 
   /@vue/server-renderer@3.5.26(vue@3.5.26):
     resolution: {integrity: sha512-TYKLXmrwWKSodyVuO1WAubucd+1XlLg4set0YoV+Hu8Lo79mp/YMwWV5mC5FgtsDxX3qo1ONrxFaTP1OQgy1uA==}
@@ -15418,7 +15418,7 @@ packages:
       '@vue/composition-api':
         optional: true
     dependencies:
-      vue: 3.4.38(typescript@5.9.3)
+      vue: 3.4.38(typescript@5.5.4)
     dev: false
 
   /vue-demi@0.14.10(vue@3.5.26):
