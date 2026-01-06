@@ -14,7 +14,7 @@ import Logo from "./module/brand/Logo.vue";
     </div>
   </header>
 
-  <main class="page">
+  <main class="page px-4">
     <RouterView />
   </main>
 
@@ -25,7 +25,7 @@ import Logo from "./module/brand/Logo.vue";
           href="mailto:concord@ternent.dev"
           class="flex flex-col items-center justify-center gap-2"
         >
-          <Logo class="h-8 w-8 opacity-70" />
+          <Logo class="h-8 w-8 opacity-20" />
         </a>
       </div>
     </div>
@@ -65,42 +65,6 @@ import Logo from "./module/brand/Logo.vue";
   margin-left: auto;
 }
 
-.nav__link {
-  color: var(--muted);
-  text-decoration: none;
-  padding: 6px 2px;
-  border-bottom: 1px solid transparent;
-}
-
-.nav__link:hover {
-  color: var(--ink);
-  border-bottom-color: var(--rule);
-}
-
-.nav__link[aria-current="page"] {
-  color: var(--ink);
-  border-bottom-color: var(--ink);
-}
-
-.site-header__actions {
-  display: flex;
-  gap: 10px;
-  margin-left: 6px;
-}
-
-.icon-link {
-  color: var(--muted);
-  background: transparent;
-  border: 1px solid var(--rule);
-  border-radius: 999px;
-  padding: 6px 10px;
-  cursor: pointer;
-}
-.icon-link:hover {
-  color: var(--ink);
-  border-color: color-mix(in srgb, var(--rule) 40%, var(--ink));
-}
-
 .page {
   margin: 0 auto 30px;
   gap: 44px;
@@ -133,67 +97,5 @@ import Logo from "./module/brand/Logo.vue";
   color: var(--ink);
   text-decoration: underline;
   text-underline-offset: 3px;
-}
-
-.docs-sidebar {
-  position: sticky;
-  top: 82px; /* below your header */
-  align-self: start;
-  padding-right: 18px;
-  border-right: 1px solid var(--rule);
-}
-
-.docs-nav {
-  font-size: 0.95rem;
-}
-
-.docs-nav__group {
-  margin-bottom: 22px;
-}
-
-.docs-nav__title {
-  font-family: "Noto Serif", serif;
-  font-weight: 700;
-  font-size: 0.9rem;
-  color: var(--ink);
-  margin-bottom: 8px;
-}
-
-.docs-nav__group-link {
-  color: inherit;
-  text-decoration: none;
-}
-
-.docs-nav__group-link[aria-current="page"] {
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.docs-nav__list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.docs-nav__list li {
-  margin: 0;
-}
-
-.docs-nav__list a {
-  display: block;
-  color: var(--muted);
-  text-decoration: none;
-  padding: 6px 0 6px 10px;
-  margin-left: -10px;
-  border-left: 2px solid transparent;
-}
-
-.docs-nav__list a:hover {
-  color: var(--ink);
-}
-
-.docs-nav__list a[aria-current="page"] {
-  color: var(--ink);
-  border-left-color: var(--ink);
 }
 </style>

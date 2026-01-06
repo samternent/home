@@ -1,7 +1,7 @@
 import { resolve } from "path";
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
-import dts from "vite-plugin-dts";
+import tailwindcss from "@tailwindcss/vite";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -23,12 +23,7 @@ export default defineConfig({
     },
     target: "esnext",
   },
-  plugins: [
-    vue(),
-    // dts({
-    //   tsConfigFilePath: resolve("./tsconfig.json"),
-    // }),
-  ],
+  plugins: [vue(), tailwindcss()],
   resolve: {
     alias: {
       "@": resolve(__dirname, "./src"),

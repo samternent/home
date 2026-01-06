@@ -21,11 +21,11 @@ module.exports = {
   safelist: [
     {
       pattern:
-        /(fill|bg|text|border|btn|link|input|toggle)-(accent|primary|secondary|neutral|error|info|success|base-(100|200|300)|sm|xs)|(bg|text|btn)-(info|green|base|red|orange)-(100|200|300|400|500|600|700|800|900|content)|skeleton|input|join-item|join|link|input-error|bg-opacity-(10|20|30|40|50|60|70|80|90|)|tab|tabs-(boxed|lifted|bordered)|tablist|tab-active|glass|card|table|table-(sm|xs|zebra)/,
+        /(prose|fill|bg|text|border|btn|link|input|toggle)-(accent|primary|secondary|neutral|error|info|success|base-(100|200|300)|sm|xs)|(bg|text|btn)-(info|green|base|red|orange)-(100|200|300|400|500|600|700|800|900|content)|opacity-(10|20|30|40|50|60|70|80|90)|skeleton|input|join-item|join|link|input-error|bg-opacity-(10|20|30|40|50|60|70|80|90|)|tab|tabs-(boxed|lifted|bordered)|tablist|tab-active|glass|card|table|table-(sm|xs|zebra)/,
       variants: ["hover"],
     },
   ],
-  plugins: [require("@tailwindcss/typography"), require("daisyui")],
+  plugins: [require("daisyui")],
   darkMode: "false",
   daisyui: {
     themes: [
