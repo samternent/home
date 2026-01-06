@@ -1,5 +1,11 @@
 # concord
 
+## 0.0.9
+
+### Patch Changes
+
+- [`86f56ada23a77c41cf2319ed8ce4ca1144951d7f`](https://github.com/samternent/home/commit/86f56ada23a77c41cf2319ed8ce4ca1144951d7f) Thanks [@samternent](https://github.com/samternent)! - Adds new whitepaper
+
 ## 0.0.8
 
 ### Patch Changes
