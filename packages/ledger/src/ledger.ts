@@ -1,19 +1,22 @@
-import { hashData } from "ternent-utils";
-import { addRecord, createLedger, IRecord, mine } from "ternent-proof-of-work";
+import {
+  addEntry,
+  commitPending,
+  ConcordLedger,
+  createLedger,
+  deriveEntryId,
+  Entry,
+  RuntimeLedger,
+} from "ternent-proof-of-work";
 import { sign, exportPublicKeyAsPem } from "ternent-identity";
-import type { ILedger } from "ternent-proof-of-work";
 import { stripIdentityKey, generateId } from "ternent-utils";
 
 interface ILedgerConfig {
   plugins: Array<Object>;
-  ledger?: ILedger | null;
+  ledger?: RuntimeLedger | ConcordLedger | null;
   secret?: string;
   identity?: string;
 }
 
-/**
- * ILedgerAPI interface - TODO: Add description
- */
 /**
  * ILedgerAPI interface definition
  */
@@ -40,7 +43,7 @@ export default function useLedger(
   }
 ): ILedgerAPI {
   const state: {
-    ledger: ILedger | null;
+    ledger: RuntimeLedger | null;
     signingKey: CryptoKey | null;
     publicKey: CryptoKey | null;
   } = {
@@ -84,29 +87,30 @@ export default function useLedger(
     await runHooks("onAuth");
   }
 
-  async function create(data = {}) {
+  async function create(payload = {}) {
     if (!state.publicKey || !state.signingKey) return;
 
-    const timestamp = Date.now();
+    const time = Date.now();
+    const author = stripIdentityKey(await exportPublicKeyAsPem(state.publicKey));
 
-    const record: IRecord = {
-      id: "",
-      data,
-      timestamp,
-      identity: stripIdentityKey(await exportPublicKeyAsPem(state.publicKey)),
-      collection: "users",
+    const entryCore = {
+      kind: "concord/user/added",
+      time,
+      author,
+      payload,
     };
 
-    record.id = await hashData(record);
+    const entryId = await deriveEntryId(entryCore);
+    const sig = await sign(state.signingKey, entryId);
 
-    const signature = await sign(state.signingKey, record);
+    const entry: Entry = {
+      entryId,
+      sig,
+      ...entryCore,
+    };
 
-    const signedRecord = { signature, ...record };
-
-    state.ledger = await createLedger(signedRecord, {
-      identity: stripIdentityKey(await exportPublicKeyAsPem(state.publicKey)),
-    });
-    await runHooks("onAdd", signedRecord);
+    state.ledger = await createLedger(entry, { author, time });
+    await runHooks("onAdd", entry);
     await runHooks("onCreate", state);
     await runHooks("onLoad", state);
     await runHooks("onReady", state);
@@ -114,8 +118,14 @@ export default function useLedger(
     return state.ledger;
   }
 
-  async function load(ledger: ILedger, shouldReplay = true) {
-    state.ledger = ledger;
+  async function load(
+    ledger: RuntimeLedger | ConcordLedger,
+    shouldReplay = true
+  ) {
+    state.ledger = {
+      ...ledger,
+      pendingEntries: "pendingEntries" in ledger ? ledger.pendingEntries : [],
+    };
     await runHooks("onLoad", state);
     if (shouldReplay) {
       await replay();
@@ -126,52 +136,57 @@ export default function useLedger(
   }
 
   async function add(
-    data: Object,
-    collection: string,
+    payload: Object,
+    kind: string,
     { silent = false } = {}
-  ): Promise<IRecord | void> {
+  ): Promise<Entry | void> {
     if (!state.signingKey) {
-      console.warn("Cannot add record: signingKey not verified");
+      console.warn("Cannot add entry: signingKey not verified");
       return;
     }
 
     if (!state.publicKey) {
-      console.warn("Cannot add record: signingKey not verified");
+      console.warn("Cannot add entry: signingKey not verified");
       return;
     }
 
     if (!state.ledger) {
-      console.warn("Cannot add record: ledger not loaded");
+      console.warn("Cannot add entry: ledger not loaded");
       return;
     }
 
-    const timestamp = Date.now();
-
-    const record: IRecord = {
-      id: "",
-      data,
-      timestamp,
-      identity: stripIdentityKey(await exportPublicKeyAsPem(state.publicKey)),
-    };
-
-    if (collection) {
-      record.collection = collection;
+    if (!kind) {
+      console.warn("Cannot add entry: kind is required");
+      return;
     }
 
-    record.id = await hashData(record);
+    const time = Date.now();
+    const author = stripIdentityKey(await exportPublicKeyAsPem(state.publicKey));
 
-    const signature = await sign(state.signingKey, record);
+    const entryCore = {
+      kind,
+      time,
+      author,
+      payload,
+    };
 
-    const signedRecord = { signature, ...record };
+    const entryId = await deriveEntryId(entryCore);
+    const sig = await sign(state.signingKey, entryId);
 
-    state.ledger = await addRecord(signedRecord, { ...state.ledger });
+    const entry: Entry = {
+      entryId,
+      sig,
+      ...entryCore,
+    };
+
+    state.ledger = await addEntry(entry, { ...state.ledger });
 
     if (!silent) {
-      await runHooks("onAdd", signedRecord);
+      await runHooks("onAdd", entry);
       await runHooks("onUpdate", state);
     }
 
-    return signedRecord;
+    return entry;
   }
 
   async function replay(from?: string, to?: string) {
@@ -180,30 +195,38 @@ export default function useLedger(
       return;
     }
 
-    const { chain, pending_records } = state.ledger;
+    const { commits, pendingEntries } = state.ledger;
 
-    // we want to sort this out
-    //  get users forst
-    // then permissions
-    // then everything else in order.
-    const records = [
-      ...chain.map((block) => block.records).flat(),
-      ...pending_records.map((r) => ({ ...r })),
+    const entries = [
+      ...commits.flatMap((commit) => commit.entries),
+      ...pendingEntries.map((entry) => ({ ...entry })),
     ].sort((a, b) => {
-      if (a.collection === "users") {
-        return -1;
+      const aPriority =
+        a.kind === "concord/user/added"
+          ? 0
+          : a.kind.startsWith("concord/perm/")
+          ? 1
+          : 2;
+      const bPriority =
+        b.kind === "concord/user/added"
+          ? 0
+          : b.kind.startsWith("concord/perm/")
+          ? 1
+          : 2;
+      if (aPriority !== bPriority) {
+        return aPriority - bPriority;
       }
-      if (a.collection === "permissions") {
-        return -1;
+      if (a.time !== b.time) {
+        return a.time - b.time;
       }
-      return a.timestamp - b.timestamp;
+      return a.entryId.localeCompare(b.entryId);
     });
 
-    let i = from ? records.findIndex(({ id }) => id === from) : 0;
+    let i = from ? entries.findIndex(({ entryId }) => entryId === from) : 0;
 
     const len = to
-      ? records.findIndex(({ id }) => id === to) + 1
-      : records.length;
+      ? entries.findIndex(({ entryId }) => entryId === to) + 1
+      : entries.length;
 
     if (i < 0) {
       console.warn(`Cannot replay: transaction ${from} not found`);
@@ -213,7 +236,7 @@ export default function useLedger(
     await runHooks("onBeforeReplay", { from, to });
 
     for (; i < len; i++) {
-      await runHooks("onAdd", records[i]);
+      await runHooks("onAdd", entries[i]);
     }
     await runHooks("onReplay", { from, to, ...state });
   }
@@ -225,22 +248,26 @@ export default function useLedger(
   async function commit(message: string) {
     if (!state.ledger || !state.publicKey || !state.signingKey) return;
 
-    state.ledger = await mine(state.ledger, {
+    const author = stripIdentityKey(await exportPublicKeyAsPem(state.publicKey));
+    state.ledger = await commitPending(state.ledger, {
+      author,
       message,
-      identity: stripIdentityKey(await exportPublicKeyAsPem(state.publicKey)),
     });
     await runHooks("onCommit", state);
     await runHooks("onUpdate", state);
     return state.ledger;
   }
 
-  async function removePendingRecord(record: IRecord) {
+  async function removePendingRecord(entry: Entry) {
     if (!state.ledger) return;
-    const index = state.ledger.pending_records.findIndex(
-      (rec: IRecord) => rec.id === record.id
+    const index = state.ledger.pendingEntries.findIndex(
+      (pending) => pending.entryId === entry.entryId
     );
+    if (index < 0) {
+      return state.ledger;
+    }
 
-    state.ledger.pending_records.splice(index, 1);
+    state.ledger.pendingEntries.splice(index, 1);
     await destroy();
     await replay();
     await runHooks("onUpdate", state);
@@ -253,34 +280,36 @@ export default function useLedger(
       [key: string]: any;
     } = {};
 
-    for (let i = 0; i < state.ledger.pending_records.length; i++) {
-      const record: IRecord = state.ledger.pending_records[i];
-      if (!record.collection || !record.data) return;
-      lookup[`${record.data.id}_${record.collection}`] = {
-        data: {
-          ...(lookup[`${record.data.id}_${record.collection}`]?.data || {}),
-          ...record.data,
+    for (let i = 0; i < state.ledger.pendingEntries.length; i++) {
+      const entry: Entry = state.ledger.pendingEntries[i];
+      if (!entry.kind || !entry.payload) return;
+      const payload = entry.payload as { id?: string; [key: string]: any };
+      if (!payload.id) return;
+      lookup[`${payload.id}_${entry.kind}`] = {
+        payload: {
+          ...(lookup[`${payload.id}_${entry.kind}`]?.payload || {}),
+          ...payload,
         },
-        collection: record.collection,
+        kind: entry.kind,
       };
     }
 
-    state.ledger.pending_records = [];
+    state.ledger.pendingEntries = [];
 
-    const squashedRecords: Array<Promise<IRecord>> = Object.values(lookup).map(
-      (record) => {
+    const squashedEntries: Array<Promise<Entry>> = Object.values(lookup).map(
+      (entry) => {
         return new Promise(async (resolve, reject) => {
           try {
-            const _record = await add(
+            const _entry = await add(
               {
                 id: generateId(),
-                ...record.data,
+                ...entry.payload,
               },
-              record.collection,
+              entry.kind,
               { silent: true }
             );
-            if (_record) {
-              resolve(_record);
+            if (_entry) {
+              resolve(_entry);
             }
           } catch (e) {
             reject(e);
@@ -289,8 +318,8 @@ export default function useLedger(
       }
     );
 
-    const pending_records: Array<IRecord> = await Promise.all(squashedRecords);
-    state.ledger.pending_records = pending_records;
+    const pendingEntries: Array<Entry> = await Promise.all(squashedEntries);
+    state.ledger.pendingEntries = pendingEntries;
     await runHooks("onUpdate", state);
   }
 
