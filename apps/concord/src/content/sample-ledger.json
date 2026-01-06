@@ -1,0 +1,238 @@
+{
+  "pending_records": [],
+  "chain": [
+    {
+      "records": [
+        {
+          "signature": "aLdIhJJAZLqTsiM0V/AW8efiFS7XQCdEyKwWZDljMuMl5+ArYbuOdrN/Zl55KgLudeeaYfe9cNx3UFJhsOUqIw==",
+          "id": "6ebef7e6edb97dbd4b1c9fc6d661eb845ba83bfeaab2cac9f0ee13fbfa9b417c",
+          "data": {
+            "identity": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEBw9TFVpHm2ioswJEkh41/5ZjAJPP\nPQmdnvH0diifgI/prhxx0zecar4yKCcZZ3f101iM80ywKljLbKkSVVDWFQ==",
+            "encryption": "age1cwpuy35njnl6uxd7ne3jhm70luzrj8wxmnc2psz04ayfd959dv0suu56ph",
+            "id": "abe88e1d"
+          },
+          "timestamp": 1766099762990,
+          "identity": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEBw9TFVpHm2ioswJEkh41/5ZjAJPP\nPQmdnvH0diifgI/prhxx0zecar4yKCcZZ3f101iM80ywKljLbKkSVVDWFQ==",
+          "collection": "users"
+        }
+      ],
+      "timestamp": 1766099762990,
+      "last_hash": "0",
+      "hash": "4b6eda76d86d524f7fd2a5b91f6986d1829f88e3a1931d714e52949c90f135ce",
+      "identity": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEBw9TFVpHm2ioswJEkh41/5ZjAJPP\nPQmdnvH0diifgI/prhxx0zecar4yKCcZZ3f101iM80ywKljLbKkSVVDWFQ=="
+    },
+    {
+      "records": [
+        {
+          "signature": "wHiGh7rxH7ZGgpeSawNlSMKS3KxbuHD2pWp1KfZjKX5R6TVjb3xZwig1eDdjIQYsxP6I5OJItw909gp8dZA9vQ==",
+          "id": "4922aebb5e8dc1c9222bc36c0d4b1afca3d5b2269756a75c46e77d9af2383f",
+          "data": {
+            "id": "21c108ce",
+            "name": "Task Manager",
+            "description": "Manage your tasks and projects",
+            "icon": "📋",
+            "category": "productivity",
+            "color": "primary",
+            "type": "custom",
+            "createdAt": "2025-12-18T23:17:19.067Z",
+            "updatedAt": "2025-12-18T23:17:19.067Z"
+          },
+          "timestamp": 1766099877245,
+          "identity": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEBw9TFVpHm2ioswJEkh41/5ZjAJPP\nPQmdnvH0diifgI/prhxx0zecar4yKCcZZ3f101iM80ywKljLbKkSVVDWFQ==",
+          "collection": "ledger_apps"
+        },
+        {
+          "signature": "O802T+LIE20QHM09cFC1DS2GkfYHNWa/6QMKj7EOViFikl/kTpystl/EGEEfHNy1BDhyejw8gsQZni5Ktr1iIQ==",
+          "id": "fb7c9945dd2680f886894d6daf1aed315cedf7296e12923dcf7e6249b4124a",
+          "data": {
+            "id": "215de170",
+            "Title": "My first task",
+            "Description": "a description for the task",
+            "Status": "Todo",
+            "Priority": "Low",
+            "Due Date": "2025-12-19",
+            "createdAt": "2025-12-18T23:17:57.241Z"
+          },
+          "timestamp": 1766099877245,
+          "identity": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEBw9TFVpHm2ioswJEkh41/5ZjAJPP\nPQmdnvH0diifgI/prhxx0zecar4yKCcZZ3f101iM80ywKljLbKkSVVDWFQ==",
+          "collection": "schema_2882870c"
+        }
+      ],
+      "timestamp": 1766099907596,
+      "last_hash": "4b6eda76d86d524f7fd2a5b91f6986d1829f88e3a1931d714e52949c90f135ce",
+      "message": "create task manager",
+      "identity": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEBw9TFVpHm2ioswJEkh41/5ZjAJPP\nPQmdnvH0diifgI/prhxx0zecar4yKCcZZ3f101iM80ywKljLbKkSVVDWFQ==",
+      "hash": "449edf632efec9a146b21ab2586e31cbf089ebc48d8da577537a31283c49bc5"
+    },
+    {
+      "records": [
+        {
+          "signature": "8KJrt9g4CpBSKR9ccGm7K0IL+y0sdkiTYiZ7ebgMp8WyI5HyY3qfNyzIl0r17URDDjwhC58R7QwZM3JFPlImwQ==",
+          "id": "abcdb2a4b589cfb4dfbac5ade6843a896e53591e53f5c1b84bcf7c69b7dcef",
+          "data": {
+            "id": "8bd04f23",
+            "identity": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEfuMFdRISArEwcbSknFAgCWjbepdZ\n7xeFZkcMfnQiNhdrvKTKb+/GxLOOckTLekNv37oT3b2JatfZ5oRYyPguww==",
+            "encryption": "age1merqjg4p0jqngsn429kuvrl8z97quak9ut8qrs05kwyg740ngpys69r860",
+            "name": "Me",
+            "addedAt": "2025-12-18T23:28:23.446Z",
+            "addedBy": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEfuMFdRISArEwcbSknFAgCWjbepdZ\n7xeFZkcMfnQiNhdrvKTKb+/GxLOOckTLekNv37oT3b2JatfZ5oRYyPguww==",
+            "isSelf": true
+          },
+          "timestamp": 1767691911236,
+          "identity": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEfuMFdRISArEwcbSknFAgCWjbepdZ\n7xeFZkcMfnQiNhdrvKTKb+/GxLOOckTLekNv37oT3b2JatfZ5oRYyPguww==",
+          "collection": "users"
+        },
+        {
+          "signature": "h0A+5j9quvCRbeBkVAMaqCYmd4FW6GVBTZiJnE/Or7QdM+YJH9DZbfArpoY+pb/51wKhwZbFnSimNZWNueki8g==",
+          "id": "c861217685a533b6e9f46a5ae44f7d3d99f9f11e39a3ef5e759d7f2a7afdc8b",
+          "data": {
+            "id": "d35a90b6",
+            "name": "Project Manager",
+            "description": "Complete project management with linked teams, projects, and tasks",
+            "icon": "🎯",
+            "category": "productivity",
+            "color": "primary",
+            "type": "custom",
+            "createdAt": "2026-01-06T09:29:30.376Z",
+            "updatedAt": "2026-01-06T09:29:30.376Z"
+          },
+          "timestamp": 1767691911236,
+          "identity": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEfuMFdRISArEwcbSknFAgCWjbepdZ\n7xeFZkcMfnQiNhdrvKTKb+/GxLOOckTLekNv37oT3b2JatfZ5oRYyPguww==",
+          "collection": "ledger_apps"
+        },
+        {
+          "signature": "1J+Vs/nZmuCtslca7M40gQEtzFvoIBexnCouvH1c7kthZvsa0OGi5+88E9tfEaJRC9yhA/R5qHqKwVWXhEKMOg==",
+          "id": "b8337bfb8fb31a11bc70cf81ce9ef4bad92ffeac3db05a286b82fb6ceed2143",
+          "data": {
+            "id": "3074fd63",
+            "Team Name": "Engineering Team A",
+            "Description": "The core engineering team",
+            "Department": "engineering",
+            "Active": true,
+            "createdAt": "2026-01-06T09:29:53.795Z"
+          },
+          "timestamp": 1767691911236,
+          "identity": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEfuMFdRISArEwcbSknFAgCWjbepdZ\n7xeFZkcMfnQiNhdrvKTKb+/GxLOOckTLekNv37oT3b2JatfZ5oRYyPguww==",
+          "collection": "schema_e42ab380"
+        },
+        {
+          "signature": "nIq4clwng2/ox9bsTCFeg6WrKaUBRsO2UCjcx5QGF2BDef5soSTETBCCCgzgGDUGeq2FHfi+0KymPVi627V/nA==",
+          "id": "fc4f535b2448c3368c5927c74378beec052bbbf83e8e4d8d9897f940aa9e4e",
+          "data": {
+            "id": "de8f4ae3",
+            "Team Name": "Marketing Team",
+            "Description": "The marketing wizards",
+            "Department": "marketing",
+            "Active": true,
+            "createdAt": "2026-01-06T09:30:12.365Z"
+          },
+          "timestamp": 1767691911236,
+          "identity": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEfuMFdRISArEwcbSknFAgCWjbepdZ\n7xeFZkcMfnQiNhdrvKTKb+/GxLOOckTLekNv37oT3b2JatfZ5oRYyPguww==",
+          "collection": "schema_e42ab380"
+        },
+        {
+          "signature": "k3ntgO/HA8RfIgmfGuJPOfoNPbNIvkgO8uUNdFLgpjdDhpFQ3WA3bpCY+anbMpCMJjs7kNwZgGBfYo4L1QFKPg==",
+          "id": "c4b4f419a052be99e3426613e6573c795f937753163c6e5285a8e6227106dd6",
+          "data": {
+            "id": "18259a21",
+            "Team Name": "Engineering team B",
+            "Description": "The flare team",
+            "Department": "engineering",
+            "Active": true,
+            "createdAt": "2026-01-06T09:30:26.258Z"
+          },
+          "timestamp": 1767691911236,
+          "identity": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEfuMFdRISArEwcbSknFAgCWjbepdZ\n7xeFZkcMfnQiNhdrvKTKb+/GxLOOckTLekNv37oT3b2JatfZ5oRYyPguww==",
+          "collection": "schema_e42ab380"
+        },
+        {
+          "signature": "TWPsntuIQz7QqWw74vuqoL5sdbCy2how4HHC5yZYdEPvun4pwG5VHdkpPvE5bFjdAcHmiBDjR07bE2oBUVlalw==",
+          "id": "9c23c01d6b26e035b7f330cddd2cd6f13e8b351d49d11f80df71eb936fb28b",
+          "data": {
+            "id": "6226c22d",
+            "Full Name": "Sam T",
+            "Email": "sam@ternent.dev",
+            "Role": "developer",
+            "Team": "3074fd63",
+            "Start Date": "2026-01-01",
+            "Active": true,
+            "createdAt": "2026-01-06T09:30:50.099Z"
+          },
+          "timestamp": 1767691911236,
+          "identity": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEfuMFdRISArEwcbSknFAgCWjbepdZ\n7xeFZkcMfnQiNhdrvKTKb+/GxLOOckTLekNv37oT3b2JatfZ5oRYyPguww==",
+          "collection": "schema_fbb8a939"
+        },
+        {
+          "signature": "NWNQWY5w7aQf+A+tHdexnHUWtPyfPrTsB8TY6Dk0dWpfw/v4Evy8nwpXZlECVlrQD8GXbExdCPpUZkiEqHh7nQ==",
+          "id": "aec3ddf1818ebadd80391e8d5f9243b47a17a1beef405243f07a84f7fd8c",
+          "data": {
+            "id": "838c4511",
+            "Full Name": "Bobby B",
+            "Email": "bob@ternent.dev",
+            "Role": "admin",
+            "Team": "de8f4ae3",
+            "Start Date": "2022-06-08",
+            "Active": true,
+            "createdAt": "2026-01-06T09:31:18.245Z"
+          },
+          "timestamp": 1767691911236,
+          "identity": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEfuMFdRISArEwcbSknFAgCWjbepdZ\n7xeFZkcMfnQiNhdrvKTKb+/GxLOOckTLekNv37oT3b2JatfZ5oRYyPguww==",
+          "collection": "schema_fbb8a939"
+        },
+        {
+          "signature": "5NdiEbsDBdbZtGbRp1vuYjVIuvGgduhc4Xqgb/BVd9njH3fKbJGi65o6jbFhhYYUJRq/I/JrmFq0vvYh1rg5FQ==",
+          "id": "562f3ff9707be2b8a95c421dd636d93ad22c1bbfa83d3b3c3950b48e97a43bf",
+          "data": {
+            "id": "35c7c169",
+            "Project Name": "Concord Spec",
+            "Description": "The project to track the concord spec",
+            "Status": "planning",
+            "Team": "3074fd63",
+            "Project Lead": "6226c22d",
+            "Start Date": "2026-01-16",
+            "Due Date": "2026-01-31",
+            "Priority": "medium",
+            "createdAt": "2026-01-06T09:31:51.229Z"
+          },
+          "timestamp": 1767691911236,
+          "identity": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEfuMFdRISArEwcbSknFAgCWjbepdZ\n7xeFZkcMfnQiNhdrvKTKb+/GxLOOckTLekNv37oT3b2JatfZ5oRYyPguww==",
+          "collection": "schema_172026d1"
+        }
+      ],
+      "timestamp": 1767691941701,
+      "last_hash": "449edf632efec9a146b21ab2586e31cbf089ebc48d8da577537a31283c49bc5",
+      "message": "Adds basic project setup and project for concord",
+      "identity": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEfuMFdRISArEwcbSknFAgCWjbepdZ\n7xeFZkcMfnQiNhdrvKTKb+/GxLOOckTLekNv37oT3b2JatfZ5oRYyPguww==",
+      "hash": "74762356cdba7d11d3797f1a564b14bb497f75d23df3fb1ff6e6c43eb837ba"
+    },
+    {
+      "records": [
+        {
+          "signature": "LohGVDW7LsN8/hxYaKzTVQclYnuS2OQJufZDG/FMkX+YddvTG8Bkl2TskZLNRIVEnFlvkJs53+3XBMumBjTmGw==",
+          "id": "a28bcb5eba9049b186e2e2bb67ecd8e46d2f55ffe127a6bbae756e8b46235",
+          "data": {
+            "id": "dd68231",
+            "Task Title": "Get AI to do all the work",
+            "Description": "",
+            "Project": "35c7c169",
+            "Assignee": "6226c22d",
+            "Status": "in-progress",
+            "Priority": "high",
+            "Due Date": "2026-01-08",
+            "Completed": false,
+            "createdAt": "2026-01-06T09:32:50.032Z"
+          },
+          "timestamp": 1767691970040,
+          "identity": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEfuMFdRISArEwcbSknFAgCWjbepdZ\n7xeFZkcMfnQiNhdrvKTKb+/GxLOOckTLekNv37oT3b2JatfZ5oRYyPguww==",
+          "collection": "schema_2e50b167"
+        }
+      ],
+      "timestamp": 1767691976491,
+      "last_hash": "74762356cdba7d11d3797f1a564b14bb497f75d23df3fb1ff6e6c43eb837ba",
+      "message": "Adds first task",
+      "identity": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEfuMFdRISArEwcbSknFAgCWjbepdZ\n7xeFZkcMfnQiNhdrvKTKb+/GxLOOckTLekNv37oT3b2JatfZ5oRYyPguww==",
+      "hash": "8d3f8eb77384b1ef1b4c26e983e3b61203553a18525bc4af6a54a5985153f5"
+    }
+  ],
+  "id": "4b6eda76d86d524f7fd2a5b91f6986d1829f88e3a1931d714e52949c90f135ce"
+}
