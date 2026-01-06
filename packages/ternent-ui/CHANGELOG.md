@@ -1,5 +1,11 @@
 # ternent-ui
 
+## 0.3.3
+
+### Patch Changes
+
+- [`f32fc4ad99cdc4966b66956b4665ceba1d485698`](https://github.com/samternent/home/commit/f32fc4ad99cdc4966b66956b4665ceba1d485698) Thanks [@samternent](https://github.com/samternent)! - Update whitepaper
+
 ## 0.3.2
 
 ### Patch Changes
