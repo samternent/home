@@ -1,8 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "trailingSlash": true,
+  "cleanUrls": true,
+  "trailingSlash": false,
   "rewrites": [
-    { "source": "/playground/:path*", "destination": "/playground/" }
+    { "source": "/playground/:path*", "destination": "/playground" }
   ],
 
   "headers": [
