@@ -1,5 +1,12 @@
 # footballsocial
 
+## 0.15.18
+
+### Patch Changes
+
+- Updated dependencies [[`f32fc4ad99cdc4966b66956b4665ceba1d485698`](https://github.com/samternent/home/commit/f32fc4ad99cdc4966b66956b4665ceba1d485698)]:
+  - ternent-ui@0.3.3
+
 ## 0.15.17
 
 ### Patch Changes
