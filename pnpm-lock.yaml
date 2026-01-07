@@ -94,6 +94,15 @@ importers:
       tailwindcss:
         specifier: ^4.1.18
         version: 4.1.18
+      ternent-encrypt:
+        specifier: workspace:*
+        version: link:../../packages/encrypt
+      ternent-identity:
+        specifier: workspace:*
+        version: link:../../packages/identity
+      ternent-ledger:
+        specifier: workspace:*
+        version: link:../../packages/ledger
       ternent-ui:
         specifier: workspace:*
         version: link:../../packages/ternent-ui

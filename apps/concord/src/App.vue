@@ -58,15 +58,4 @@
   color: var(--muted);
   font-size: 0.92rem;
 }
-
-.site-footer__links a {
-  color: var(--muted);
-  text-decoration: none;
-  margin-left: 12px;
-}
-.site-footer__links a:hover {
-  color: var(--ink);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
 </style>

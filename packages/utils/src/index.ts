@@ -132,7 +132,8 @@ export function b64decode(str: string): ArrayBuffer {
  * @returns TODO - Add return type description
  */
 export function encode(data: string | object | number): Uint8Array {
-  return new TextEncoder().encode(JSON.stringify(data));
+  const payload = typeof data === "string" ? data : JSON.stringify(data);
+  return new TextEncoder().encode(payload);
 }
 
 /**
@@ -170,13 +171,71 @@ export function getHashArray(hash: ArrayBuffer): Array<number> {
  * @returns TODO - Add return type description
  */
 export function getHashHex(hash: Array<number>): string {
-  return hash.map((buf) => buf.toString(16)).join("");
+  return hash.map((buf) => buf.toString(16).padStart(2, "0")).join("");
+}
+
+function canonicalize(
+  value: unknown,
+  seen: WeakSet<object>
+): string | number | boolean | null | Array<unknown> | Record<string, unknown> {
+  if (value === undefined) {
+    throw new TypeError("Cannot hash undefined");
+  }
+  const valueType = typeof value;
+  if (valueType === "function" || valueType === "symbol") {
+    throw new TypeError(`Cannot hash ${valueType} values`);
+  }
+  if (
+    value === null ||
+    valueType === "string" ||
+    valueType === "number" ||
+    valueType === "boolean"
+  ) {
+    return value as string | number | boolean | null;
+  }
+  if (valueType === "bigint") {
+    throw new TypeError("Cannot hash bigint values");
+  }
+
+  if (typeof (value as { toJSON?: () => unknown }).toJSON === "function") {
+    return canonicalize(
+      (value as { toJSON: () => unknown }).toJSON(),
+      seen
+    );
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((item) => canonicalize(item, seen));
+  }
+
+  if (typeof value === "object") {
+    if (seen.has(value as object)) {
+      throw new TypeError("Cannot hash circular references");
+    }
+    seen.add(value as object);
+    const entries = Object.keys(value as Record<string, unknown>).sort();
+    const result: Record<string, unknown> = {};
+    for (const key of entries) {
+      result[key] = canonicalize(
+        (value as Record<string, unknown>)[key],
+        seen
+      );
+    }
+    seen.delete(value as object);
+    return result;
+  }
+
+  throw new TypeError(`Cannot hash unsupported value type: ${valueType}`);
+}
+
+export function canonicalStringify(data: string | object | number): string {
+  return JSON.stringify(canonicalize(data, new WeakSet()));
 }
 
 export async function hashData(
   data: string | object | number
 ): Promise<string> {
-  const hash_buffer = await getHashBuffer(data);
+  const hash_buffer = await getHashBuffer(canonicalStringify(data));
   const hash_array = getHashArray(hash_buffer);
   return getHashHex(hash_array);
 }

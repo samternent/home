@@ -1,7 +1,25 @@
 import loki from "lokijs";
 import { decrypt } from "ternent-encrypt";
 import { formatEncryptionFile, stripIdentityKey } from "ternent-utils";
-import type { ILedger, IRecord } from "ternent-proof-of-work";
+import type { Entry, RuntimeLedger } from "ternent-proof-of-work";
+
+type PayloadObject = {
+  [key: string]: any;
+};
+
+function isPayloadObject(payload: unknown): payload is PayloadObject {
+  return !!payload && typeof payload === "object" && !Array.isArray(payload);
+}
+
+function getEncryptedPayload(payload: PayloadObject): string | null {
+  if (payload.enc === "age" && typeof payload.ct === "string") {
+    return payload.ct;
+  }
+  if (typeof payload.encrypted === "string") {
+    return payload.encrypted;
+  }
+  return null;
+}
 
 export default function useLokiPlugin(
   name = "ledger",
@@ -13,9 +31,9 @@ export default function useLokiPlugin(
     [key: string]: Collection<any>;
   } = {};
 
-  function createCollection({ ledger }: { ledger: ILedger }): void {
-    collection = db.addCollection(ledger.id, { disableMeta: true });
-    collections.users = db.addCollection("users", {
+  function createCollection({ ledger }: { ledger: RuntimeLedger }): void {
+    collection = db.addCollection(ledger.ledgerId, { disableMeta: true });
+    collections["concord/user/added"] = db.addCollection("concord/user/added", {
       disableMeta: true,
     });
   }
@@ -29,6 +47,27 @@ export default function useLokiPlugin(
     });
   }
 
+  function findPermission(
+    permissionTitle: string,
+    identity: string
+  ): PayloadObject | undefined {
+    const permCollections = Object.keys(collections)
+      .filter((key) => key.startsWith("concord/perm/"))
+      .map((key) => collections[key]);
+
+    for (const permCollection of permCollections) {
+      const record = permCollection?.findOne({
+        "payload.title": permissionTitle,
+        "payload.identity": identity,
+      })?.payload;
+      if (record) {
+        return record;
+      }
+    }
+
+    return undefined;
+  }
+
   return {
     db,
     getCollection: (col: string) => collections[col] || collection,
@@ -36,22 +75,26 @@ export default function useLokiPlugin(
     plugin: {
       onLoad: createCollection,
       onDestroy: deleteDatabase,
-      async onAdd(record: IRecord) {
-        if (!record.data && !record.encrypted) return;
-        if (record.data?.permission) {
-          const permission = collections.permissions?.findOne({
-            "data.title": record.data.permission,
-            "data.identity": stripIdentityKey(myPublicIdentity),
-          })?.data;
+      async onAdd(entry: Entry) {
+        if (!isPayloadObject(entry.payload)) return;
+
+        if (entry.payload?.permission) {
+          const permission = findPermission(
+            entry.payload.permission,
+            stripIdentityKey(myPublicIdentity)
+          );
+
+          const encryptedPayload = getEncryptedPayload(entry.payload);
+          if (!encryptedPayload) return;
 
           if (!permission) {
             try {
-              record.data = {
-                ...record.data,
+              entry.payload = {
+                ...entry.payload,
                 ...JSON.parse(
                   await decrypt(
                     myPrivateEncryption,
-                    formatEncryptionFile(record.data.encrypted)
+                    formatEncryptionFile(encryptedPayload)
                   )
                 ),
               };
@@ -64,12 +107,12 @@ export default function useLokiPlugin(
                 myPrivateEncryption,
                 formatEncryptionFile(permission.secret)
               );
-              record.data = {
-                ...record.data,
+              entry.payload = {
+                ...entry.payload,
                 ...JSON.parse(
                   await decrypt(
                     decrypted,
-                    formatEncryptionFile(record.data.encrypted)
+                    formatEncryptionFile(encryptedPayload)
                   )
                 ),
               };
@@ -79,27 +122,22 @@ export default function useLokiPlugin(
           }
         }
 
-        if (record.collection && !collections[record.collection]) {
-          collections[record.collection] = db.addCollection(record.collection, {
+        if (entry.kind && !collections[entry.kind]) {
+          collections[entry.kind] = db.addCollection(entry.kind, {
             disableMeta: true,
           });
         }
 
-        // const user = collections.users.findOne({ identity: record.identity });
-        // if (!user) {
-        //   collections.users.insert({ identity: record.identity });
-        // }
+        const col = !entry.kind ? collection : collections[entry.kind];
 
-        const col = !record.collection
-          ? collection
-          : collections[record.collection];
-
-        const item = col.findOne({ "data.id": record.data?.id });
+        const item = entry.payload?.id
+          ? col.findOne({ "payload.id": entry.payload.id })
+          : null;
 
         if (item) {
-          col.update({ ...item, ...record });
+          col.update({ ...item, ...entry });
         } else {
-          col.insert(record);
+          col.insert(entry);
         }
       },
     },
