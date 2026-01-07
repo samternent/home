@@ -1,5 +1,0 @@
----
-"concord": patch
----
-
-Update spec
