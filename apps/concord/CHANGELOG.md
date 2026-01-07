@@ -1,5 +1,11 @@
 # concord
 
+## 0.0.13
+
+### Patch Changes
+
+- [`18a297cc93ce72faaf27c95a3a0a143c7cfbf63e`](https://github.com/samternent/home/commit/18a297cc93ce72faaf27c95a3a0a143c7cfbf63e) Thanks [@samternent](https://github.com/samternent)! - Exluce playground from ssg
+
 ## 0.0.12
 
 ### Patch Changes
