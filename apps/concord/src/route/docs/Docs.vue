@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useRoute } from "vue-router";
-
+import Logo from "../../module/brand/Logo.vue";
 import { buildSidebarNav } from "../../content/navigation";
 
 const nav = computed(() => buildSidebarNav());
@@ -18,37 +18,18 @@ const frontmatter = computed(() => (route.meta.frontmatter as any) ?? {});
 </script>
 
 <template>
-  <div class="docs">
-    <aside class="docs-sidebar" aria-label="Section navigation">
-      <nav class="docs-nav">
-        <section
-          v-for="group in nav"
-          :key="group.route"
-          class="docs-nav__group"
-        >
-          <h2 class="docs-nav__title">
-            <a
-              class="docs-nav__titleLink"
-              :aria-current="isActive(group.route) ? 'page' : undefined"
-            >
-              {{ group.title }}
-            </a>
-          </h2>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="brand" href="/">Concord</a>
 
-          <ul class="docs-nav__list">
-            <li v-for="page in group.children" :key="page.route">
-              <a
-                :href="page.route"
-                :aria-current="isActive(page.route) ? 'page' : undefined"
-              >
-                {{ page.title }}
-              </a>
-            </li>
-          </ul>
-        </section>
+      <nav class="nav">
+        <RouterLink to="/playground" class="">Try it</RouterLink>
       </nav>
-    </aside>
 
+      <div class="site-header__actions"></div>
+    </div>
+  </header>
+  <main class="page px-4 py-12">
     <article class="docs__content">
       <article v-if="docComponent" style="width: 780px; margin: 0 auto">
         <header style="margin-bottom: 16px">
@@ -70,65 +51,19 @@ const frontmatter = computed(() => (route.meta.frontmatter as any) ?? {});
       </div>
       <!-- markdown -->
     </article>
-  </div>
+  </main>
+  <footer class="flex justify-end items-center py-12 site-footer">
+    <div class="site-footer__inner w-full flex justify-end">
+      <div class="site-footer__links">
+        <a
+          href="mailto:concord@ternent.dev"
+          class="flex flex-col items-center justify-center gap-2"
+        >
+          <Logo
+            class="h-8 w-8 opacity-40 hover:opacity-60 hover:-rotate-6 transition-all duration-300"
+          />
+        </a>
+      </div>
+    </div>
+  </footer>
 </template>
-<style scoped>
-.docs {
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 240px minmax(0, 1fr);
-  gap: 44px;
-  align-items: start;
-}
-.docs-sidebar {
-  position: sticky;
-  top: 82px; /* below your header */
-  align-self: start;
-  padding-right: 18px;
-  border-right: 1px solid var(--rule);
-}
-
-.docs-nav {
-  font-size: 0.95rem;
-}
-
-.docs-nav__group {
-  margin-bottom: 22px;
-}
-
-.docs-nav__title {
-  font-family: "Noto Serif", serif;
-  font-weight: 700;
-  font-size: 0.9rem;
-  color: var(--ink);
-  margin-bottom: 8px;
-}
-
-.docs-nav__list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.docs-nav__list li {
-  margin: 0;
-}
-
-.docs-nav__list a {
-  display: block;
-  color: var(--muted);
-  text-decoration: none;
-  padding: 6px 0 6px 10px;
-  margin-left: -10px;
-  border-left: 2px solid transparent;
-}
-
-.docs-nav__list a:hover {
-  color: var(--ink);
-}
-
-.docs-nav__list a[aria-current="page"] {
-  color: var(--ink);
-  border-left-color: var(--ink);
-}
-</style>
