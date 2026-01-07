@@ -1,5 +1,12 @@
 # ternentdotdev
 
+## 0.4.6
+
+### Patch Changes
+
+- Updated dependencies []:
+  - ternent-ledger@1.0.20
+
 ## 0.4.5
 
 ### Patch Changes

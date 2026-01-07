@@ -1,5 +1,12 @@
 # concord
 
+## 0.0.18
+
+### Patch Changes
+
+- Updated dependencies []:
+  - ternent-ledger@1.0.20
+
 ## 0.0.17
 
 ### Patch Changes
