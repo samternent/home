@@ -1,5 +1,11 @@
 # concord
 
+## 0.0.12
+
+### Patch Changes
+
+- [`5a0ab3bcccaf2e59ac742ef46d11d3a05ca07f32`](https://github.com/samternent/home/commit/5a0ab3bcccaf2e59ac742ef46d11d3a05ca07f32) Thanks [@samternent](https://github.com/samternent)! - Breasking lib changes
+
 ## 0.0.11
 
 ### Patch Changes
