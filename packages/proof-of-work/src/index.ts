@@ -1,4 +1,4 @@
-import { hashData } from "ternent-utils";
+import { canonicalStringify, hashData } from "ternent-utils";
 
 export interface EncryptedPayload {
   enc: "age";
@@ -6,172 +6,170 @@ export interface EncryptedPayload {
 }
 
 export interface Entry {
-  entryId: string;
   kind: string;
-  time: number;
+  timestamp: string;
   author: string;
-  sig?: string;
-  payload?: object | EncryptedPayload;
+  payload?: object | EncryptedPayload | null;
+  signature?: string | null;
 }
 
 export interface Commit {
-  commitId: string;
   parent: string | null;
-  time: number;
-  author?: string;
-  message?: string;
-  entries: Entry[];
+  timestamp: string;
+  metadata?: Record<string, unknown> | null;
+  entries: string[];
 }
 
-export interface ConcordLedger {
+export interface LedgerContainer {
   format: "concord-ledger";
-  version: 0;
-  ledgerId: string;
+  version: "1.0";
+  commits: Record<string, Commit>;
+  entries: Record<string, Entry>;
   head: string;
-  commits: Commit[];
 }
 
-export interface RuntimeLedger extends ConcordLedger {
-  pendingEntries: Entry[];
+export interface EntryRecord {
+  entryId: string;
+  entry: Entry;
 }
 
-export interface EntryCore {
-  kind: string;
-  time: number;
-  author: string;
-  payload?: object | EncryptedPayload;
+export interface RuntimeLedger extends LedgerContainer {
+  pendingEntries: EntryRecord[];
 }
 
-export interface CommitCore {
-  parent: string | null;
-  time: number;
-  author?: string;
-  message?: string;
-  entryIds: string[];
+export interface CommitMetadata {
+  [key: string]: unknown;
 }
 
-export async function deriveEntryId(entryCore: EntryCore): Promise<string> {
-  return hashData(entryCore);
-}
+const PROTOCOL_SPEC = "concord-protocol@1.0";
 
-export async function deriveCommitId(commitCore: CommitCore): Promise<string> {
-  return hashData(commitCore);
-}
-
-export async function deriveLedgerId(
-  genesisCommitId: string
-): Promise<string> {
-  return hashData({
-    format: "concord-ledger",
-    version: 0,
-    genesis: genesisCommitId,
-  });
-}
-
-function getEntryCore(entry: Entry): EntryCore {
+export function getEntryCore(entry: Entry): Omit<Entry, "signature"> {
   return {
     kind: entry.kind,
-    time: entry.time,
+    timestamp: entry.timestamp,
     author: entry.author,
-    payload: entry.payload,
+    payload: entry.payload ?? null,
   };
 }
 
-async function normalizeEntry(entry: Entry): Promise<Entry> {
-  const entryCore = getEntryCore(entry);
-  const entryId = await deriveEntryId(entryCore);
-  if (entry.entryId && entry.entryId !== entryId) {
-    throw new Error("Entry ID does not match its canonical content");
-  }
+export function getEntrySigningPayload(entry: Entry): string {
+  return canonicalStringify(getEntryCore(entry));
+}
+
+export async function deriveEntryId(entry: Entry): Promise<string> {
+  return hashData(getEntryCore(entry));
+}
+
+export async function deriveCommitId(commit: Commit): Promise<string> {
+  return hashData(commit);
+}
+
+export async function createGenesisCommit(
+  meta: CommitMetadata = {},
+  timestamp = new Date().toISOString()
+): Promise<{ commitId: string; commit: Commit }> {
+  const commit: Commit = {
+    parent: null,
+    timestamp,
+    metadata: {
+      genesis: true,
+      spec: PROTOCOL_SPEC,
+      ...meta,
+    },
+    entries: [],
+  };
+  const commitId = await deriveCommitId(commit);
+  return { commitId, commit };
+}
+
+export async function createLedger(
+  meta: CommitMetadata = {},
+  timestamp = new Date().toISOString()
+): Promise<RuntimeLedger> {
+  const { commitId, commit } = await createGenesisCommit(meta, timestamp);
   return {
-    ...entry,
-    entryId,
+    format: "concord-ledger",
+    version: "1.0",
+    commits: { [commitId]: commit },
+    entries: {},
+    head: commitId,
+    pendingEntries: [],
   };
-}
-
-export function toCanonicalLedger(ledger: RuntimeLedger): ConcordLedger {
-  const { pendingEntries, ...canonical } = ledger;
-  return canonical;
 }
 
 export async function addEntry(
   entry: Entry,
   ledger: RuntimeLedger
 ): Promise<RuntimeLedger> {
-  const normalized = await normalizeEntry(entry);
+  const normalizedEntry: Entry = {
+    ...entry,
+    payload: entry.payload ?? null,
+  };
+  const entryId = await deriveEntryId(normalizedEntry);
   const hasEntry = ledger.pendingEntries.some(
-    (pending) => pending.entryId === normalized.entryId
+    (pending) => pending.entryId === entryId
   );
   if (hasEntry) {
     return ledger;
   }
   return {
     ...ledger,
-    pendingEntries: [...ledger.pendingEntries, normalized],
-  };
-}
-
-async function createCommit(
-  entries: Entry[],
-  parent: string | null,
-  meta: { author?: string; message?: string; time?: number } = {}
-): Promise<Commit> {
-  const normalized = await Promise.all(entries.map(normalizeEntry));
-  const entryIds = normalized.map((entry) => entry.entryId);
-  const time = meta.time ?? Date.now();
-  const commitCore: CommitCore = {
-    parent,
-    time,
-    author: meta.author,
-    message: meta.message,
-    entryIds,
-  };
-  const commitId = await deriveCommitId(commitCore);
-  return {
-    commitId,
-    parent,
-    time,
-    author: meta.author,
-    message: meta.message,
-    entries: normalized,
+    pendingEntries: [
+      ...ledger.pendingEntries,
+      { entryId, entry: normalizedEntry },
+    ],
   };
 }
 
 export async function commitPending(
   ledger: RuntimeLedger,
-  meta: { author?: string; message?: string; time?: number } = {}
+  metadata: CommitMetadata = {},
+  timestamp = new Date().toISOString()
 ): Promise<RuntimeLedger> {
   if (!ledger.pendingEntries.length) {
     return ledger;
   }
-  const commit = await createCommit(
-    ledger.pendingEntries,
-    ledger.head || null,
-    meta
-  );
+  const entryIds = ledger.pendingEntries.map((pending) => pending.entryId);
+  const commit: Commit = {
+    parent: ledger.head ?? null,
+    timestamp,
+    metadata: Object.keys(metadata).length ? metadata : null,
+    entries: entryIds,
+  };
+  const commitId = await deriveCommitId(commit);
+  const entries = { ...ledger.entries };
+  for (const pending of ledger.pendingEntries) {
+    entries[pending.entryId] = pending.entry;
+  }
   return {
     ...ledger,
-    commits: [...ledger.commits, commit],
-    head: commit.commitId,
+    commits: {
+      ...ledger.commits,
+      [commitId]: commit,
+    },
+    entries,
+    head: commitId,
     pendingEntries: [],
   };
 }
 
-export async function createLedger(
-  genesisEntry: Entry,
-  meta: { author?: string; message?: string; time?: number } = {}
-): Promise<RuntimeLedger> {
-  const commit = await createCommit([genesisEntry], null, {
-    ...meta,
-    time: meta.time ?? genesisEntry.time,
-  });
-  const ledgerId = await deriveLedgerId(commit.commitId);
-  return {
-    format: "concord-ledger",
-    version: 0,
-    ledgerId,
-    head: commit.commitId,
-    commits: [commit],
-    pendingEntries: [],
-  };
+export function getCommitChain(ledger: LedgerContainer): string[] {
+  const chain: string[] = [];
+  let current = ledger.head;
+  while (current) {
+    chain.push(current);
+    const commit = ledger.commits[current];
+    if (!commit) break;
+    current = commit.parent ?? "";
+  }
+  return chain.reverse();
+}
+
+export function isGenesisCommit(commit: Commit): boolean {
+  return !!commit.metadata && commit.metadata.genesis === true;
+}
+
+export function toCanonicalLedger(ledger: RuntimeLedger): LedgerContainer {
+  const { pendingEntries, ...canonical } = ledger;
+  return canonical;
 }

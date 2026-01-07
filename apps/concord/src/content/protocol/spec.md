@@ -157,7 +157,7 @@ The Ledger Container holds all commits, entries, and a head pointer.
 
 ```
 {
-"format": "concord‑ledger",
+"format": "concord-ledger",
 "version": "1.0",
 "commits": { "<CommitID>": { ... } },
 "entries": { "<EntryID>": { ... } },
@@ -165,7 +165,7 @@ The Ledger Container holds all commits, entries, and a head pointer.
 }
 ```
 
-- format: Literal "concord‑ledger"
+- format: Literal "concord-ledger"
 - version: Protocol version
 - commits: Map of commit IDs to commit structures
 - entries: Map of entry IDs to entry structures

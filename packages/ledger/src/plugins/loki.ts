@@ -11,12 +11,25 @@ function isPayloadObject(payload: unknown): payload is PayloadObject {
   return !!payload && typeof payload === "object" && !Array.isArray(payload);
 }
 
+function hasPermission(payload: PayloadObject): payload is PayloadObject & {
+  permission: string;
+} {
+  return typeof payload.permission === "string";
+}
+
 function getEncryptedPayload(payload: PayloadObject): string | null {
   if (payload.enc === "age" && typeof payload.ct === "string") {
     return payload.ct;
   }
   if (typeof payload.encrypted === "string") {
     return payload.encrypted;
+  }
+  return null;
+}
+
+function getPayloadId(payload: PayloadObject): string | null {
+  if ("id" in payload && typeof payload.id === "string") {
+    return payload.id;
   }
   return null;
 }
@@ -32,7 +45,8 @@ export default function useLokiPlugin(
   } = {};
 
   function createCollection({ ledger }: { ledger: RuntimeLedger }): void {
-    collection = db.addCollection(ledger.ledgerId, { disableMeta: true });
+    const rootCollection = ledger.head || "ledger";
+    collection = db.addCollection(rootCollection, { disableMeta: true });
     collections["concord/user/added"] = db.addCollection("concord/user/added", {
       disableMeta: true,
     });
@@ -75,22 +89,23 @@ export default function useLokiPlugin(
     plugin: {
       onLoad: createCollection,
       onDestroy: deleteDatabase,
-      async onAdd(entry: Entry) {
-        if (!isPayloadObject(entry.payload)) return;
+      async onAdd(record: Entry & { entryId?: string }) {
+        if (!isPayloadObject(record.payload)) return;
+        const payload = record.payload;
 
-        if (entry.payload?.permission) {
+        if (hasPermission(payload)) {
           const permission = findPermission(
-            entry.payload.permission,
+            payload.permission,
             stripIdentityKey(myPublicIdentity)
           );
 
-          const encryptedPayload = getEncryptedPayload(entry.payload);
+          const encryptedPayload = getEncryptedPayload(payload);
           if (!encryptedPayload) return;
 
           if (!permission) {
             try {
-              entry.payload = {
-                ...entry.payload,
+              record.payload = {
+                ...payload,
                 ...JSON.parse(
                   await decrypt(
                     myPrivateEncryption,
@@ -107,8 +122,8 @@ export default function useLokiPlugin(
                 myPrivateEncryption,
                 formatEncryptionFile(permission.secret)
               );
-              entry.payload = {
-                ...entry.payload,
+              record.payload = {
+                ...payload,
                 ...JSON.parse(
                   await decrypt(
                     decrypted,
@@ -122,22 +137,21 @@ export default function useLokiPlugin(
           }
         }
 
-        if (entry.kind && !collections[entry.kind]) {
-          collections[entry.kind] = db.addCollection(entry.kind, {
+        if (record.kind && !collections[record.kind]) {
+          collections[record.kind] = db.addCollection(record.kind, {
             disableMeta: true,
           });
         }
 
-        const col = !entry.kind ? collection : collections[entry.kind];
+        const col = !record.kind ? collection : collections[record.kind];
 
-        const item = entry.payload?.id
-          ? col.findOne({ "payload.id": entry.payload.id })
-          : null;
+        const payloadId = getPayloadId(payload);
+        const item = payloadId ? col.findOne({ "payload.id": payloadId }) : null;
 
         if (item) {
-          col.update({ ...item, ...entry });
+          col.update({ ...item, ...record });
         } else {
-          col.insert(entry);
+          col.insert(record);
         }
       },
     },

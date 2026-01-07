@@ -1,10 +1,10 @@
 import {
   Commit,
-  ConcordLedger,
   Entry,
+  LedgerContainer,
+  createGenesisCommit,
   deriveCommitId,
   deriveEntryId,
-  deriveLedgerId,
 } from "ternent-proof-of-work";
 
 type LegacyRecord = {
@@ -59,65 +59,61 @@ function mapLegacyPayload(record: LegacyRecord): object | undefined {
 
 async function mapLegacyEntry(record: LegacyRecord): Promise<Entry> {
   const payload = mapLegacyPayload(record);
-  const entryCore = {
+  return {
     kind: mapLegacyKind(record.collection),
-    time: record.timestamp,
+    timestamp: new Date(record.timestamp).toISOString(),
     author: record.identity,
     payload,
-  };
-  const entryId = await deriveEntryId(entryCore);
-  return {
-    entryId,
-    ...entryCore,
+    signature: record.signature ?? null,
   };
 }
 
 async function mapLegacyCommit(
   block: LegacyBlock,
-  parent: string | null
+  parent: string | null,
+  entryIds: string[]
 ): Promise<Commit> {
-  const entries = await Promise.all(block.records.map(mapLegacyEntry));
-  const entryIds = entries.map((entry) => entry.entryId);
-  const commitCore = {
-    parent,
-    time: block.timestamp,
-    author: block.identity,
-    message: block.message,
-    entryIds,
-  };
-  const commitId = await deriveCommitId(commitCore);
   return {
-    commitId,
     parent,
-    time: block.timestamp,
-    author: block.identity,
-    message: block.message,
-    entries,
+    timestamp: new Date(block.timestamp).toISOString(),
+    metadata: {
+      ...(block.identity ? { author: block.identity } : {}),
+      ...(block.message ? { message: block.message } : {}),
+    },
+    entries: entryIds,
   };
 }
 
 export async function migrateLegacyLedgerToConcord(
   legacyLedger: LegacyLedger
-): Promise<ConcordLedger> {
-  const commits: Commit[] = [];
-  let parent: string | null = null;
+): Promise<LedgerContainer> {
+  const entries: Record<string, Entry> = {};
+  const commits: Record<string, Commit> = {};
+
+  const genesis = await createGenesisCommit();
+  commits[genesis.commitId] = genesis.commit;
+  let parent: string | null = genesis.commitId;
 
   for (const block of legacyLedger.chain) {
-    const commit = await mapLegacyCommit(block, parent);
-    commits.push(commit);
-    parent = commit.commitId;
-  }
+    const entryIds: string[] = [];
+    for (const record of block.records) {
+      const entry = await mapLegacyEntry(record);
+      const entryId = await deriveEntryId(entry);
+      entries[entryId] = entry;
+      entryIds.push(entryId);
+    }
 
-  const head = commits.length ? commits[commits.length - 1].commitId : "";
-  const ledgerId = commits.length
-    ? await deriveLedgerId(commits[0].commitId)
-    : await deriveLedgerId("genesis");
+    const commit: Commit = await mapLegacyCommit(block, parent, entryIds);
+    const commitId: string = await deriveCommitId(commit);
+    commits[commitId] = commit;
+    parent = commitId;
+  }
 
   return {
     format: "concord-ledger",
-    version: 0,
-    ledgerId,
-    head,
+    version: "1.0",
     commits,
+    entries,
+    head: parent || genesis.commitId,
   };
 }

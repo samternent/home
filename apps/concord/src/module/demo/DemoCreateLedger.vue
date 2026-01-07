@@ -6,25 +6,17 @@ import { useEncryption } from "../../module/encryption/useEncryption";
 import Button from "../../../../../packages/ternent-ui/src/primitives/Button/Button.vue";
 
 const {
-  api: { auth, load, create },
+  api: { auth, create },
   ledger,
 } = useLedger();
 
-const {
-  publicKeyPEM: publicKeyIdentityPEM,
-  privateKey: privateKeyIdentity,
-  publicKey: publicKeyIdentity,
-} = useIdentity();
-const { publicKey: publicKeyEncryption } = useEncryption();
+const { privateKey: privateKeyIdentity, publicKey: publicKeyIdentity } =
+  useIdentity();
 
 async function createLedger() {
   await auth(privateKeyIdentity.value, publicKeyIdentity.value);
 
-  create({
-    identity: publicKeyIdentityPEM.value,
-    encryption: publicKeyEncryption.value,
-    id: generateId(),
-  });
+  const ledger = await create();
 }
 </script>
 <template>
