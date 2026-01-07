@@ -4,11 +4,14 @@
   "description": "Concord protocol core implemented in Rust and compiled to WebAssembly.",
   "main": "index.js",
   "scripts": {
-    "build": "wasm-pack build --target bundler"
+    "build": "wasm-pack build --target bundler --scope ternent && node scripts/patch-pkg.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
     "wasm-pack": "^0.12.1"
   }

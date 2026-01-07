@@ -2,6 +2,9 @@
   "name": "@ternent/concord-protocol",
   "version": "0.0.11",
   "description": "",
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "dist/concord-protocol.umd.js",
   "module": "dist/concord-protocol.es.js",
   "typings": "dist/index.d.ts",
