@@ -1,5 +1,11 @@
 # concord
 
+## 0.0.14
+
+### Patch Changes
+
+- [`2dc2b0658f360f50bd8d8d2230a8d665eac2537e`](https://github.com/samternent/home/commit/2dc2b0658f360f50bd8d8d2230a8d665eac2537e) Thanks [@samternent](https://github.com/samternent)! - Update protocol spec
+
 ## 0.0.13
 
 ### Patch Changes
