@@ -12,7 +12,7 @@ const packagesToPublish = [
   "../packages/encrypt",
   "../packages/identity",
   "../packages/utils",
-  "../packages/proof-of-work",
+  "../packages/concord-protocol",
   "../packages/game-kit",
   "../packages/ternent-ui",
   "../packages/ragejs",

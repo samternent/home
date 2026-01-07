@@ -1,9 +1,9 @@
 {
-  "name": "ternent-proof-of-work",
+  "name": "@ternent/concord-protocol",
   "version": "0.0.10",
   "description": "",
-  "main": "dist/proof-of-work.umd.js",
-  "module": "dist/proof-of-work.es.js",
+  "main": "dist/concord-protocol.umd.js",
+  "module": "dist/concord-protocol.es.js",
   "typings": "dist/index.d.ts",
   "scripts": {
     "dev": "vite build --watch",

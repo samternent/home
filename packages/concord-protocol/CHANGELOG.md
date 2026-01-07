@@ -1,4 +1,4 @@
-# ternent-proof-of-work
+# @ternent/concord-protocol
 
 ## 0.0.10
 

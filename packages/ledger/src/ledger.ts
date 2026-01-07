@@ -1,39 +1,44 @@
 import {
-  addEntry,
-  commitPending,
+  CommitMetadata,
   createLedger,
+  deriveCommitId,
   deriveEntryId,
   Entry,
-  EntryRecord,
   LedgerContainer,
-  RuntimeLedger,
   getCommitChain,
   getEntrySigningPayload,
   isGenesisCommit,
-} from "ternent-proof-of-work";
+} from "@ternent/concord-protocol";
 import { sign, exportPublicKeyAsPem } from "ternent-identity";
 import { stripIdentityKey, generateId } from "ternent-utils";
 
 interface ILedgerConfig {
-  plugins: Array<Object>;
-  ledger?: LedgerContainer | RuntimeLedger | null;
+  plugins: Array<Record<string, (...args: unknown[]) => unknown>>;
+  ledger?: LedgerContainer | LedgerWithPendingEntries | null;
   secret?: string;
   identity?: string;
 }
 
 /**
- * ILedgerAPI interface definition
+ * Ledger API surface returned by useLedger.
  */
 export interface ILedgerAPI {
-  auth: Function;
-  load: Function;
-  create: Function;
-  replay: Function;
-  commit: Function;
-  add: Function;
-  destroy: Function;
-  squashRecords: Function;
-  removePendingRecord: Function;
+  auth: (signKey: CryptoKey, verifyKey: CryptoKey) => Promise<void>;
+  load: (
+    ledger: LedgerContainer | LedgerWithPendingEntries,
+    shouldReplay?: boolean
+  ) => Promise<LedgerContainer | LedgerWithPendingEntries>;
+  create: () => Promise<LedgerContainer | undefined>;
+  replay: (from?: string, to?: string) => Promise<void>;
+  commit: (message: string) => Promise<LedgerContainer | undefined>;
+  add: (
+    payload: Entry["payload"],
+    kind: string,
+    options?: { silent?: boolean }
+  ) => Promise<EntryWithId | void>;
+  destroy: () => Promise<void>;
+  squashRecords: () => Promise<void>;
+  removePendingRecord: (record: EntryWithId) => Promise<LedgerContainer | void>;
 }
 
 interface IHooks {
@@ -42,33 +47,89 @@ interface IHooks {
 
 type EntryWithId = Entry & { entryId: string };
 
-function toEntryWithId(record: EntryRecord): EntryWithId {
+type PendingEntry = {
+  entryId: string;
+  entry: Entry;
+};
+
+type LedgerWithPendingEntries = LedgerContainer & {
+  pendingEntries?: PendingEntry[];
+};
+
+function toEntryWithId(record: PendingEntry): EntryWithId {
   return {
     entryId: record.entryId,
     ...record.entry,
   };
 }
 
-function withPendingEntries(
+function normalizeEntry(entry: Entry): Entry {
+  return {
+    ...entry,
+    payload: entry.payload ?? null,
+  };
+}
+
+/**
+ * Adds a staged entry if it is not already committed or staged.
+ */
+async function stagePendingEntry(
+  entry: Entry,
   ledger: LedgerContainer,
-  pendingEntries: EntryRecord[]
-): RuntimeLedger {
+  pendingEntries: PendingEntry[]
+): Promise<PendingEntry[] | null> {
+  const normalizedEntry = normalizeEntry(entry);
+  const entryId = await deriveEntryId(normalizedEntry);
+  const hasPending = pendingEntries.some(
+    (pending) => pending.entryId === entryId
+  );
+  if (hasPending) {
+    return null;
+  }
+  if (ledger.entries[entryId]) {
+    return null;
+  }
+  return [...pendingEntries, { entryId, entry: normalizedEntry }];
+}
+
+/**
+ * Creates a commit from staged entries and returns the updated ledger.
+ */
+async function commitStagedEntries(
+  ledger: LedgerContainer,
+  pendingEntries: PendingEntry[],
+  metadata: CommitMetadata = {},
+  timestamp = new Date().toISOString()
+): Promise<LedgerContainer> {
+  if (!pendingEntries.length) {
+    return ledger;
+  }
+  const entryIds = pendingEntries.map((pending) => pending.entryId);
+  const commit = {
+    parent: ledger.head ?? null,
+    timestamp,
+    metadata: Object.keys(metadata).length ? metadata : null,
+    entries: entryIds,
+  };
+  const commitId = await deriveCommitId(commit);
+  const entries = { ...ledger.entries };
+  for (const pending of pendingEntries) {
+    entries[pending.entryId] = pending.entry;
+  }
   return {
     ...ledger,
-    pendingEntries,
+    commits: {
+      ...ledger.commits,
+      [commitId]: commit,
+    },
+    entries,
+    head: commitId,
   };
 }
 
-function stripPendingEntries(ledger: LedgerContainer | RuntimeLedger) {
-  return {
-    format: ledger.format,
-    version: ledger.version,
-    commits: ledger.commits,
-    entries: ledger.entries,
-    head: ledger.head,
-  };
-}
-
+/**
+ * Stateful ledger wrapper with staging, signing, and replay hooks.
+ */
 export default function useLedger(
   config: ILedgerConfig = {
     plugins: [],
@@ -77,7 +138,7 @@ export default function useLedger(
 ): ILedgerAPI {
   const state: {
     ledger: LedgerContainer | null;
-    pendingEntries: EntryRecord[];
+    pendingEntries: PendingEntry[];
     signingKey: CryptoKey | null;
     publicKey: CryptoKey | null;
   } = {
@@ -126,8 +187,8 @@ export default function useLedger(
     if (!state.publicKey || !state.signingKey) return;
 
     const timestamp = new Date().toISOString();
-    const runtimeLedger = await createLedger({ created_at: timestamp });
-    state.ledger = stripPendingEntries(runtimeLedger);
+    const ledger = await createLedger({ created_at: timestamp });
+    state.ledger = ledger;
     state.pendingEntries = [];
 
     await runHooks("onCreate", state);
@@ -138,12 +199,20 @@ export default function useLedger(
   }
 
   async function load(
-    ledger: LedgerContainer | RuntimeLedger,
+    ledger: LedgerContainer | LedgerWithPendingEntries,
     shouldReplay = true
   ) {
-    state.ledger = stripPendingEntries(ledger);
+    state.ledger = {
+      format: ledger.format,
+      version: ledger.version,
+      commits: ledger.commits,
+      entries: ledger.entries,
+      head: ledger.head,
+    };
     state.pendingEntries =
-      "pendingEntries" in ledger ? ledger.pendingEntries : [];
+      "pendingEntries" in ledger && ledger.pendingEntries
+        ? ledger.pendingEntries
+        : [];
     await runHooks("onLoad", state);
     if (shouldReplay) {
       await replay();
@@ -154,7 +223,7 @@ export default function useLedger(
   }
 
   async function add(
-    payload: Object,
+    payload: Entry["payload"],
     kind: string,
     { silent = false } = {}
   ): Promise<EntryWithId | void> {
@@ -201,11 +270,15 @@ export default function useLedger(
       signature,
     };
 
-    const runtimeLedger = await addEntry(
+    const updatedPending = await stagePendingEntry(
       entry,
-      withPendingEntries(state.ledger, state.pendingEntries)
+      state.ledger,
+      state.pendingEntries
     );
-    state.pendingEntries = runtimeLedger.pendingEntries;
+    if (!updatedPending) {
+      return;
+    }
+    state.pendingEntries = updatedPending;
     const record = toEntryWithId({ entryId, entry });
 
     if (!silent) {
@@ -273,14 +346,15 @@ export default function useLedger(
     const author = stripIdentityKey(
       await exportPublicKeyAsPem(state.publicKey)
     );
-    const runtimeLedger = await commitPending(
-      withPendingEntries(state.ledger, state.pendingEntries),
+    const ledger = await commitStagedEntries(
+      state.ledger,
+      state.pendingEntries,
       {
         author,
         message,
       }
     );
-    state.ledger = stripPendingEntries(runtimeLedger);
+    state.ledger = ledger;
     state.pendingEntries = [];
     await runHooks("onCommit", state);
     await runHooks("onUpdate", state);

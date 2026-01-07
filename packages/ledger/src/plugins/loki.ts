@@ -1,7 +1,7 @@
 import loki from "lokijs";
 import { decrypt } from "ternent-encrypt";
 import { formatEncryptionFile, stripIdentityKey } from "ternent-utils";
-import type { Entry, RuntimeLedger } from "ternent-proof-of-work";
+import type { Entry, LedgerContainer } from "@ternent/concord-protocol";
 
 type PayloadObject = {
   [key: string]: any;
@@ -44,7 +44,7 @@ export default function useLokiPlugin(
     [key: string]: Collection<any>;
   } = {};
 
-  function createCollection({ ledger }: { ledger: RuntimeLedger }): void {
+  function createCollection({ ledger }: { ledger: LedgerContainer }): void {
     const rootCollection = ledger.head || "ledger";
     collection = db.addCollection(rootCollection, { disableMeta: true });
     collections["concord/user/added"] = db.addCollection("concord/user/added", {

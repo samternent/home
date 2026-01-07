@@ -8,7 +8,7 @@ env:
 on:
   push:
     tags:
-      - "ternent-proof-of-work-*.*.*"
+      - "@ternent/concord-protocol-*.*.*"
 
 jobs:
   Deploy-Production:
@@ -52,9 +52,9 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build libs
-        run: pnpm --filter ternent-utils --filter ternent-proof-of-work build
+        run: pnpm --filter ternent-utils --filter @ternent/concord-protocol build
 
       - name: Publish npm
-        run: pnpm --filter ternent-proof-of-work publish --no-git-checks --access public
+        run: pnpm --filter @ternent/concord-protocol publish --no-git-checks --access public
         env:
           NPM_TOKEN: ${{ env.NPM_TOKEN }}

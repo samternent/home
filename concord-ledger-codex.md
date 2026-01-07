@@ -20,7 +20,7 @@ Do **not** introduce new product features or speculative refactors.
 
 This task applies to:
 
-- Ledger core implementation (currently named `packages/proof-of-work` or equivalent)
+- Ledger core implementation (currently named `packages/concord-protocol` or equivalent)
 - Application-layer ledger API (`packages/ledger`)
 - Shared hashing utilities (`packages/utils`)
 

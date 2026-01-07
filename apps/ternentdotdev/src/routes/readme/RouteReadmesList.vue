@@ -40,7 +40,7 @@ import { SCard } from "ternent-ui/components";
           <RouterLink to="/readme/packages/ledger" class="link text-body-md hover:text-accent transition-colors">ledger</RouterLink>
         </li>
         <li>
-          <RouterLink to="/readme/packages/proof-of-work" class="link text-body-md hover:text-accent transition-colors">proof-of-work</RouterLink>
+          <RouterLink to="/readme/packages/concord-protocol" class="link text-body-md hover:text-accent transition-colors">concord-protocol</RouterLink>
         </li>
         <li>
           <RouterLink to="/readme/packages/ragejs" class="link text-body-md hover:text-accent transition-colors">ragejs</RouterLink>

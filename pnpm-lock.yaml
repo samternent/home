@@ -490,9 +490,9 @@ importers:
       ternent-identity:
         specifier: workspace:*
         version: link:../identity
-      ternent-proof-of-work:
+      '@ternent/concord-protocol':
         specifier: workspace:*
-        version: link:../proof-of-work
+        version: link:../concord-protocol
       ternent-utils:
         specifier: workspace:*
         version: link:../utils
@@ -504,7 +504,7 @@ importers:
         specifier: ^2.9.18
         version: 2.9.18
 
-  packages/proof-of-work:
+  packages/concord-protocol:
     dependencies:
       '@swc/helpers':
         specifier: ^0.4.36

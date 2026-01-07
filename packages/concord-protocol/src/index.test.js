@@ -1,7 +1,5 @@
 import { expect, test } from "vitest";
 import {
-  addEntry,
-  commitPending,
   createLedger,
   deriveCommitId,
   deriveEntryId,
@@ -34,18 +32,8 @@ test("commit ID depends on commit content only", async () => {
 });
 
 test("genesis commit is first in the chain", async () => {
-  let ledger = await createLedger();
-  ledger = await addEntry(
-    {
-      kind: "concord/user/added",
-      timestamp: "2026-01-01T00:02:00Z",
-      author: "author-1",
-      payload: { id: "user-1" },
-    },
-    ledger
-  );
-  ledger = await commitPending(ledger, { message: "first" });
+  const ledger = await createLedger();
   const chain = getCommitChain(ledger);
-  expect(chain.length).toBe(2);
+  expect(chain.length).toBe(1);
   expect(ledger.commits[chain[0]].parent).toBe(null);
 });

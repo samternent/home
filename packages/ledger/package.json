@@ -27,7 +27,7 @@
     "@swc/helpers": "^0.4.36",
     "ternent-encrypt": "workspace:*",
     "ternent-identity": "workspace:*",
-    "ternent-proof-of-work": "workspace:*",
+    "@ternent/concord-protocol": "workspace:*",
     "ternent-utils": "workspace:*",
     "lokijs": "^1.5.12",
     "regenerator-runtime": "^0.13.11"

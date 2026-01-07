@@ -12,19 +12,24 @@ const PACKAGES_DIR = path.join(__dirname, "../packages");
 
 // Package configurations
 const PACKAGE_CONFIGS = {
-  "proof-of-work": {
+  "concord-protocol": {
     type: "typescript",
     description:
-      "A TypeScript implementation of a blockchain ledger system with proof-of-work mining capabilities.",
+      "A TypeScript implementation of the Concord protocol core data structures and hashing rules.",
     features: [
-      "Blockchain Ledger: Create and manage a chain of blocks containing records",
-      "Proof of Work Mining: Mine blocks using cryptographic hashing",
-      "Record Management: Add records with timestamps, signatures, and optional encryption",
-      "Chain Validation: Verify the integrity of the blockchain",
-      "Consensus Algorithm: Resolve conflicts between multiple ledgers",
-      "Flexible Data Storage: Support for custom data structures and collections",
+      "Canonical Structures: Entry, Commit, and Ledger Container types",
+      "Deterministic Hashing: EntryID and CommitID derivation",
+      "Genesis Helpers: Create genesis commits with protocol metadata",
+      "Canonical Serialization: Stable JSON hashing helpers",
+      "Replay Support: Commit chain traversal utilities",
     ],
-    mainFunctions: ["createLedger", "addRecord", "mine", "consensus"],
+    mainFunctions: [
+      "createLedger",
+      "createGenesisCommit",
+      "deriveEntryId",
+      "deriveCommitId",
+      "getCommitChain",
+    ],
   },
   encrypt: {
     type: "typescript",

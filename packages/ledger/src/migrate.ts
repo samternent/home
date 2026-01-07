@@ -5,7 +5,7 @@ import {
   createGenesisCommit,
   deriveCommitId,
   deriveEntryId,
-} from "ternent-proof-of-work";
+} from "@ternent/concord-protocol";
 
 type LegacyRecord = {
   id: string;

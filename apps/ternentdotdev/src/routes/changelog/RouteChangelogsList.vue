@@ -42,8 +42,8 @@ import { useBreadcrumbs } from "@/module/breadcrumbs/useBreadcrumbs";
         <RouterLink to="/changelog/packages/ledger">ledger</RouterLink>
       </li>
       <li>
-        <RouterLink to="/changelog/packages/proof-of-work"
-          >proof-of-work</RouterLink
+        <RouterLink to="/changelog/packages/concord-protocol"
+          >concord-protocol</RouterLink
         >
       </li>
       <li>
