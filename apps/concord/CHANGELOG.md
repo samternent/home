@@ -1,5 +1,11 @@
 # concord
 
+## 0.0.16
+
+### Patch Changes
+
+- [`a55f2ef6c95a86b895267646201ae0e3292ab131`](https://github.com/samternent/home/commit/a55f2ef6c95a86b895267646201ae0e3292ab131) Thanks [@samternent](https://github.com/samternent)! - adds styles back
+
 ## 0.0.15
 
 ### Patch Changes
