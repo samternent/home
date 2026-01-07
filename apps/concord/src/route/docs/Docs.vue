@@ -18,39 +18,25 @@ const frontmatter = computed(() => (route.meta.frontmatter as any) ?? {});
 </script>
 
 <template>
-  <header class="site-header">
-    <div class="site-header__inner">
-      <a class="brand" href="/">Concord</a>
-
-      <nav class="nav">
-        <RouterLink to="/playground" class="">Try it</RouterLink>
-      </nav>
-
-      <div class="site-header__actions"></div>
-    </div>
-  </header>
   <main class="page px-4 py-12">
-    <article class="docs__content">
-      <article v-if="docComponent" style="width: 780px; margin: 0 auto">
-        <header style="margin-bottom: 16px">
-          <h1 style="margin: 0">{{ frontmatter.title ?? "" }}</h1>
-          <p
-            v-if="frontmatter.description"
-            style="margin: 8px 0 0; opacity: 0.75"
-          >
-            {{ frontmatter.description }}
-          </p>
-        </header>
+    <article v-if="docComponent">
+      <header style="margin-bottom: 16px">
+        <h1 style="margin: 0">{{ frontmatter.title ?? "" }}</h1>
+        <p
+          v-if="frontmatter.description"
+          style="margin: 8px 0 0; opacity: 0.75"
+        >
+          {{ frontmatter.description }}
+        </p>
+      </header>
 
-        <component :is="docComponent" />
-      </article>
-
-      <div v-else>
-        <h1>Missing doc</h1>
-        <p>This route has no bound markdown component.</p>
-      </div>
-      <!-- markdown -->
+      <component :is="docComponent" />
     </article>
+
+    <div v-else>
+      <h1>Missing doc</h1>
+      <p>This route has no bound markdown component.</p>
+    </div>
   </main>
   <footer class="flex justify-end items-center py-12 site-footer">
     <div class="site-footer__inner w-full flex justify-end">

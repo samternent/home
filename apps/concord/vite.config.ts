@@ -9,10 +9,5 @@ export default defineConfig({
     tailwindcss(),
     Markdown({ wrapperClasses: "prose" }),
   ],
-  ssgOptions: {
-    includedRoutes(paths, routes) {
-      // exclude all the route paths that contains 'playground'
-      return paths.filter((i) => !i.includes("playground"));
-    },
-  },
+  ssgOptions: {},
 });

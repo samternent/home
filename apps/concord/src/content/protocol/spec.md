@@ -5,6 +5,10 @@ version: 0.1
 date: 2026-01-06
 ---
 
+# Concord Protocol Specification
+
+---
+
 ## Table of Contents
 
 1. Introduction

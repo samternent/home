@@ -1,5 +1,21 @@
 <script lang="ts" setup></script>
 <template>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="brand" href="/">Concord</a>
+
+      <nav class="nav flex items-center gap-2">
+        <RouterLink to="/protocol/spec" class="">Protocol Spec</RouterLink>
+        <RouterLink
+          to="/playground"
+          class="py-1 px-3 rounded-md bg-[var(--ui-primary)] text-[var(--ui-on-primary)] hover:bg-[var(--ui-primary-hover)] active:bg-[var(--ui-primary-active)] hover:shadow-[var(--ui-glow-primary)]"
+          >Demo</RouterLink
+        >
+      </nav>
+
+      <div class="site-header__actions"></div>
+    </div>
+  </header>
   <RouterView />
 </template>
 <style>
