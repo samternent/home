@@ -1,3 +1,8 @@
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+/* @import "tailwindcss/preflight.css" layer(base); */
+@import "tailwindcss/utilities.css" layer(utilities);
+
 .prose {
   max-width: min(100%, var(--main-content-max-width));
   & > *:not(:first-child) {

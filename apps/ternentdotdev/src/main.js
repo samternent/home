@@ -11,7 +11,7 @@ import registerSW from "./utils/registerSW";
 import { provideWhiteLabel } from "./module/brand/useWhiteLabel";
 
 import "./input.css";
-import "ternent-ui/styles";
+import "ternent-ui/styles.css";
 
 // You might place these anywhere else in your project
 import "@vueform/vueform/dist/vueform.css";

@@ -85,6 +85,15 @@ importers:
 
   apps/concord:
     dependencies:
+      '@tailwindcss/vite':
+        specifier: ^4.1.18
+        version: 4.1.18(rolldown-vite@7.2.5)
+      '@vueuse/core':
+        specifier: ^10.11.1
+        version: 10.11.1(vue@3.5.26)
+      tailwindcss:
+        specifier: ^4.1.18
+        version: 4.1.18
       ternent-ui:
         specifier: workspace:*
         version: link:../../packages/ternent-ui
@@ -303,7 +312,7 @@ importers:
         version: 1.0.4
       '@slidev/cli':
         specifier: ^0.48.9
-        version: 0.48.9(@types/markdown-it@14.1.2)(playwright-chromium@1.46.1)(postcss@8.4.41)(rollup@2.79.1)
+        version: 0.48.9(@types/markdown-it@14.1.2)(playwright-chromium@1.46.1)(postcss@8.5.6)(rollup@2.79.1)
       '@slidev/theme-default':
         specifier: latest
         version: 0.25.0
@@ -379,22 +388,13 @@ importers:
         version: 4.6.2(vite@4.5.3)(vue@3.4.38)
       autoprefixer:
         specifier: ^10.4.20
-        version: 10.4.20(postcss@8.4.41)
+        version: 10.4.20(postcss@8.5.6)
       playwright-chromium:
         specifier: ^1.46.1
         version: 1.46.1
-      postcss:
-        specifier: ^8.4.41
-        version: 8.4.41
-      postcss-import:
-        specifier: ^16.1.0
-        version: 16.1.0(postcss@8.4.41)
-      postcss-nested:
-        specifier: ^6.2.0
-        version: 6.2.0(postcss@8.4.41)
       tailwindcss:
-        specifier: ^3.4.10
-        version: 3.4.10
+        specifier: ^4.1.18
+        version: 4.1.18
       vite:
         specifier: ^4.5.3
         version: 4.5.3(@types/node@14.18.33)
@@ -2386,7 +2386,6 @@ packages:
     dependencies:
       '@emnapi/wasi-threads': 1.1.0
       tslib: 2.8.1
-    dev: true
     optional: true
 
   /@emnapi/runtime@1.8.1:
@@ -2394,7 +2393,6 @@ packages:
     requiresBuild: true
     dependencies:
       tslib: 2.8.1
-    dev: true
     optional: true
 
   /@emnapi/wasi-threads@1.1.0:
@@ -2402,7 +2400,6 @@ packages:
     requiresBuild: true
     dependencies:
       tslib: 2.8.1
-    dev: true
     optional: true
 
   /@esbuild/aix-ppc64@0.21.5:
@@ -3402,7 +3399,6 @@ packages:
       '@emnapi/core': 1.8.1
       '@emnapi/runtime': 1.8.1
       '@tybys/wasm-util': 0.10.1
-    dev: true
     optional: true
 
   /@nodelib/fs.scandir@2.1.5:
@@ -3489,11 +3485,9 @@ packages:
   /@oxc-project/runtime@0.97.0:
     resolution: {integrity: sha512-yH0zw7z+jEws4dZ4IUKoix5Lh3yhqIJWF9Dc8PWvhpo7U7O+lJrv7ZZL4BeRO0la8LBQFwcCewtLBnVV7hPe/w==}
     engines: {node: ^20.19.0 || >=22.12.0}
-    dev: true
 
   /@oxc-project/types@0.97.0:
     resolution: {integrity: sha512-lxmZK4xFrdvU0yZiDwgVQTCvh2gHWBJCBk5ALsrtsBWhs0uDIi+FTOnXRQeQfs304imdvTdaakT/lqwQ8hkOXQ==}
-    dev: true
 
   /@pdf-lib/standard-fonts@1.0.0:
     resolution: {integrity: sha512-hU30BK9IUN/su0Mn9VdlVKsWBS6GyhVfqjwl1FjZN4TxP6cCw0jP2w7V3Hf5uX7M0AZJ16vey9yE0ny7Sa59ZA==}
@@ -3597,7 +3591,6 @@ packages:
     cpu: [arm64]
     os: [android]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@rolldown/binding-darwin-arm64@1.0.0-beta.50:
@@ -3606,7 +3599,6 @@ packages:
     cpu: [arm64]
     os: [darwin]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@rolldown/binding-darwin-x64@1.0.0-beta.50:
@@ -3615,7 +3607,6 @@ packages:
     cpu: [x64]
     os: [darwin]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@rolldown/binding-freebsd-x64@1.0.0-beta.50:
@@ -3624,7 +3615,6 @@ packages:
     cpu: [x64]
     os: [freebsd]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@rolldown/binding-linux-arm-gnueabihf@1.0.0-beta.50:
@@ -3633,7 +3623,6 @@ packages:
     cpu: [arm]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@rolldown/binding-linux-arm64-gnu@1.0.0-beta.50:
@@ -3642,7 +3631,6 @@ packages:
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@rolldown/binding-linux-arm64-musl@1.0.0-beta.50:
@@ -3651,7 +3639,6 @@ packages:
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@rolldown/binding-linux-x64-gnu@1.0.0-beta.50:
@@ -3660,7 +3647,6 @@ packages:
     cpu: [x64]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@rolldown/binding-linux-x64-musl@1.0.0-beta.50:
@@ -3669,7 +3655,6 @@ packages:
     cpu: [x64]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@rolldown/binding-openharmony-arm64@1.0.0-beta.50:
@@ -3678,7 +3663,6 @@ packages:
     cpu: [arm64]
     os: [openharmony]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@rolldown/binding-wasm32-wasi@1.0.0-beta.50:
@@ -3688,7 +3672,6 @@ packages:
     requiresBuild: true
     dependencies:
       '@napi-rs/wasm-runtime': 1.1.1
-    dev: true
     optional: true
 
   /@rolldown/binding-win32-arm64-msvc@1.0.0-beta.50:
@@ -3697,7 +3680,6 @@ packages:
     cpu: [arm64]
     os: [win32]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@rolldown/binding-win32-ia32-msvc@1.0.0-beta.50:
@@ -3706,7 +3688,6 @@ packages:
     cpu: [ia32]
     os: [win32]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@rolldown/binding-win32-x64-msvc@1.0.0-beta.50:
@@ -3715,12 +3696,10 @@ packages:
     cpu: [x64]
     os: [win32]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@rolldown/pluginutils@1.0.0-beta.50:
     resolution: {integrity: sha512-5e76wQiQVeL1ICOZVUg4LSOVYg9jyhGCin+icYozhsUzM+fHE7kddi1bdiE0jwVqTfkjba3jUFbEkoC9WkdvyA==}
-    dev: true
 
   /@rolldown/pluginutils@1.0.0-beta.53:
     resolution: {integrity: sha512-vENRlFU4YbrwVqNDZ7fLvy+JR1CRkyr01jhSiDpE1u6py3OMzQfztQU2jxykW3ALNxO4kSlqIDeYyD0Y9RcQeQ==}
@@ -4271,7 +4250,7 @@ packages:
     dev: false
     optional: true
 
-  /@slidev/cli@0.48.9(@types/markdown-it@14.1.2)(playwright-chromium@1.46.1)(postcss@8.4.41)(rollup@2.79.1):
+  /@slidev/cli@0.48.9(@types/markdown-it@14.1.2)(playwright-chromium@1.46.1)(postcss@8.5.6)(rollup@2.79.1):
     resolution: {integrity: sha512-qMGOULq374kYHKmKLeUcBu9z3GrD2D7cH65+lILKnM6vXKH4DRQnHsgDtsbnkDtOnZQJAL6RoQNnElOIA9Oq3g==}
     engines: {node: '>=18.0.0'}
     hasBin: true
@@ -4290,9 +4269,9 @@ packages:
       '@shikijs/markdown-it': 1.14.1
       '@shikijs/twoslash': 1.14.1(typescript@5.9.3)
       '@shikijs/vitepress-twoslash': 1.14.1(typescript@5.9.3)
-      '@slidev/client': 0.48.9(postcss@8.4.41)(rollup@2.79.1)(vite@5.4.2)
-      '@slidev/parser': 0.48.9(postcss@8.4.41)(rollup@2.79.1)(typescript@5.9.3)(vite@5.4.2)
-      '@slidev/types': 0.48.9(postcss@8.4.41)(rollup@2.79.1)(typescript@5.9.3)(vite@5.4.2)
+      '@slidev/client': 0.48.9(postcss@8.5.6)(rollup@2.79.1)(vite@5.4.2)
+      '@slidev/parser': 0.48.9(postcss@8.5.6)(rollup@2.79.1)(typescript@5.9.3)(vite@5.4.2)
+      '@slidev/types': 0.48.9(postcss@8.5.6)(rollup@2.79.1)(typescript@5.9.3)(vite@5.4.2)
       '@unocss/extractor-mdc': 0.58.9
       '@unocss/reset': 0.58.9
       '@vitejs/plugin-vue': 5.1.2(vite@5.4.2)(vue@3.5.26)
@@ -4325,7 +4304,7 @@ packages:
       pdf-lib: 1.17.1
       plantuml-encoder: 1.4.0
       playwright-chromium: 1.46.1
-      postcss-nested: 6.2.0(postcss@8.4.41)
+      postcss-nested: 6.2.0(postcss@8.5.6)
       prismjs: 1.29.0
       prompts: 2.4.2
       public-ip: 6.0.2
@@ -4336,7 +4315,7 @@ packages:
       shiki-magic-move: 0.3.7(shiki@1.14.1)(vue@3.5.26)
       sirv: 2.0.4
       typescript: 5.9.3
-      unocss: 0.58.9(postcss@8.4.41)(rollup@2.79.1)(vite@5.4.2)
+      unocss: 0.58.9(postcss@8.5.6)(rollup@2.79.1)(vite@5.4.2)
       unplugin-icons: 0.18.5
       unplugin-vue-components: 0.26.0(rollup@2.79.1)(vue@3.5.26)
       unplugin-vue-markdown: 0.26.2(rollup@2.79.1)(vite@5.4.2)
@@ -4376,7 +4355,7 @@ packages:
       - vue-template-es2015-compiler
     dev: false
 
-  /@slidev/client@0.48.9(postcss@8.4.41)(rollup@2.79.1)(vite@5.4.2):
+  /@slidev/client@0.48.9(postcss@8.5.6)(rollup@2.79.1)(vite@5.4.2):
     resolution: {integrity: sha512-f2QhdPAgq/97h/c+Uu/jqFKAlE+pOV3AY82nOQxPJLyvWGFXv5ZD2Do5wp5iJcL25xHQI8Bjdn2iXzxvtAu81g==}
     engines: {node: '>=18.0.0'}
     dependencies:
@@ -4386,9 +4365,9 @@ packages:
       '@iconify-json/svg-spinners': 1.1.3
       '@shikijs/monaco': 1.14.1
       '@shikijs/vitepress-twoslash': 1.14.1(typescript@5.9.3)
-      '@slidev/parser': 0.48.9(postcss@8.4.41)(rollup@2.79.1)(typescript@5.9.3)(vite@5.4.2)
+      '@slidev/parser': 0.48.9(postcss@8.5.6)(rollup@2.79.1)(typescript@5.9.3)(vite@5.4.2)
       '@slidev/rough-notation': 0.1.0
-      '@slidev/types': 0.48.9(postcss@8.4.41)(rollup@2.79.1)(typescript@5.9.3)(vite@5.4.2)
+      '@slidev/types': 0.48.9(postcss@8.5.6)(rollup@2.79.1)(typescript@5.9.3)(vite@5.4.2)
       '@typescript/ata': 0.9.7(typescript@5.9.3)
       '@unhead/vue': 1.10.0(vue@3.5.26)
       '@unocss/reset': 0.58.9
@@ -4410,7 +4389,7 @@ packages:
       shiki: 1.14.1
       shiki-magic-move: 0.3.7(shiki@1.14.1)(vue@3.5.26)
       typescript: 5.9.3
-      unocss: 0.58.9(postcss@8.4.41)(rollup@2.79.1)(vite@5.4.2)
+      unocss: 0.58.9(postcss@8.5.6)(rollup@2.79.1)(vite@5.4.2)
       vue: 3.5.26(typescript@5.9.3)
       vue-demi: 0.14.10(vue@3.5.26)
       vue-router: 4.4.3(vue@3.5.26)
@@ -4431,11 +4410,11 @@ packages:
       - vue-template-es2015-compiler
     dev: false
 
-  /@slidev/parser@0.48.9(postcss@8.4.41)(rollup@2.79.1)(typescript@5.9.3)(vite@5.4.2):
+  /@slidev/parser@0.48.9(postcss@8.5.6)(rollup@2.79.1)(typescript@5.9.3)(vite@5.4.2):
     resolution: {integrity: sha512-pcYmzIvxN7fVjSJw9kbJoTnf/MrEJmdYjEjGUZjR6IPd3oJdJY46yAOHYt98WFV5uZOEKsWlH0p98pY3ODYFyg==}
     engines: {node: '>=18.0.0'}
     dependencies:
-      '@slidev/types': 0.48.9(postcss@8.4.41)(rollup@2.79.1)(typescript@5.9.3)(vite@5.4.2)
+      '@slidev/types': 0.48.9(postcss@8.5.6)(rollup@2.79.1)(typescript@5.9.3)(vite@5.4.2)
       js-yaml: 4.1.0
     transitivePeerDependencies:
       - '@svgr/core'
@@ -4480,7 +4459,7 @@ packages:
     engines: {node: '>=18.0.0'}
     dev: false
 
-  /@slidev/types@0.48.9(postcss@8.4.41)(rollup@2.79.1)(typescript@5.9.3)(vite@5.4.2):
+  /@slidev/types@0.48.9(postcss@8.5.6)(rollup@2.79.1)(typescript@5.9.3)(vite@5.4.2):
     resolution: {integrity: sha512-r/RaSZjmL50g3+K29oYSCOVohDbJSfzLHlA05gBd1tiA4REWHGYRudMx4dM4xs27QvomPKqkvSK9zK+pKSTNtw==}
     engines: {node: '>=18.0.0'}
     dependencies:
@@ -4491,7 +4470,7 @@ packages:
       mermaid: 10.9.1
       monaco-editor: 0.47.0
       shiki: 1.14.1
-      unocss: 0.58.9(postcss@8.4.41)(rollup@2.79.1)(vite@5.4.2)
+      unocss: 0.58.9(postcss@8.5.6)(rollup@2.79.1)(vite@5.4.2)
       unplugin-icons: 0.18.5
       unplugin-vue-markdown: 0.26.2(rollup@2.79.1)(vite@5.4.2)
       vite-plugin-remote-assets: 0.4.1(vite@5.4.2)
@@ -4882,6 +4861,17 @@ packages:
       tailwindcss: 4.1.18
     dev: false
 
+  /@tailwindcss/vite@4.1.18(rolldown-vite@7.2.5):
+    resolution: {integrity: sha512-jVA+/UpKL1vRLg6Hkao5jldawNmRo7mQYrZtNHMIVpLfLhDml5nMRUo/8MwoX2vNXvnaXNNMedrMfMugAVX1nA==}
+    peerDependencies:
+      vite: ^5.2.0 || ^6 || ^7
+    dependencies:
+      '@tailwindcss/node': 4.1.18
+      '@tailwindcss/oxide': 4.1.18
+      tailwindcss: 4.1.18
+      vite: /rolldown-vite@7.2.5(@types/node@24.10.4)
+    dev: false
+
   /@tailwindcss/vite@4.1.18(vite@7.3.0):
     resolution: {integrity: sha512-jVA+/UpKL1vRLg6Hkao5jldawNmRo7mQYrZtNHMIVpLfLhDml5nMRUo/8MwoX2vNXvnaXNNMedrMfMugAVX1nA==}
     peerDependencies:
@@ -5094,7 +5084,6 @@ packages:
     requiresBuild: true
     dependencies:
       tslib: 2.8.1
-    dev: true
     optional: true
 
   /@types/argparse@1.0.38:
@@ -5424,7 +5413,7 @@ packages:
       sirv: 2.0.4
     dev: false
 
-  /@unocss/postcss@0.58.9(postcss@8.4.41):
+  /@unocss/postcss@0.58.9(postcss@8.5.6):
     resolution: {integrity: sha512-PnKmH6Qhimw35yO6u6yx9SHaX2NmvbRNPDvMDHA/1xr3M8L0o8U88tgKbWfm65NEGF3R1zJ9A8rjtZn/LPkgPA==}
     engines: {node: '>=14'}
     peerDependencies:
@@ -5436,7 +5425,7 @@ packages:
       css-tree: 2.3.1
       fast-glob: 3.3.2
       magic-string: 0.30.11
-      postcss: 8.4.41
+      postcss: 8.5.6
     dev: false
 
   /@unocss/preset-attributify@0.58.9:
@@ -5509,7 +5498,7 @@ packages:
     engines: {node: '>=14'}
     dependencies:
       '@unocss/core': 0.58.9
-      magic-string: 0.30.11
+      magic-string: 0.30.21
     dev: false
 
   /@unocss/scope@0.58.9:
@@ -8005,7 +7994,7 @@ packages:
     engines: {node: ^10 || ^12.20.0 || ^14.13.0 || >=15.0.0}
     dependencies:
       mdn-data: 2.0.30
-      source-map-js: 1.2.0
+      source-map-js: 1.2.1
     dev: false
 
   /css-tree@3.1.0:
@@ -12779,18 +12768,6 @@ packages:
       resolve: 1.22.8
     dev: true
 
-  /postcss-import@16.1.0(postcss@8.4.41):
-    resolution: {integrity: sha512-7hsAZ4xGXl4MW+OKEWCnF6T5jqBw80/EE9aXg1r2yyn1RsVEU8EtKXbijEODa+rg7iih4bKf7vlvTGYR4CnPNg==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      postcss: ^8.0.0
-    dependencies:
-      postcss: 8.4.41
-      postcss-value-parser: 4.2.0
-      read-cache: 1.0.0
-      resolve: 1.22.8
-    dev: true
-
   /postcss-js@4.0.1(postcss@8.4.41):
     resolution: {integrity: sha512-dDLF8pEO191hJMtlHFPRa8xsizHaM82MLfNkUHdUtVEV3tgTp5oj+8qbEqYM57SLfc74KSbw//4SeJma2LRVIw==}
     engines: {node: ^12 || ^14 || >= 16}
@@ -12836,6 +12813,17 @@ packages:
     dependencies:
       postcss: 8.4.41
       postcss-selector-parser: 6.1.2
+    dev: true
+
+  /postcss-nested@6.2.0(postcss@8.5.6):
+    resolution: {integrity: sha512-HQbt28KulC5AJzG+cZtj9kvKB93CFCdLvog1WFLf1D+xmMvPGlBstkpTEZfK5+AN9hfJocyBFCNiqyS48bpgzQ==}
+    engines: {node: '>=12.0'}
+    peerDependencies:
+      postcss: ^8.2.14
+    dependencies:
+      postcss: 8.5.6
+      postcss-selector-parser: 6.1.2
+    dev: false
 
   /postcss-selector-parser@6.0.10:
     resolution: {integrity: sha512-IQ7TZdoaqbT+LCpShg46jnZVlhWD2w6iQYAcYXfHARZ7X1t/UGhhceQDs5X0cGqKvYlHNOuv7Oa1xmb0oQuA3w==}
@@ -13315,7 +13303,6 @@ packages:
       tinyglobby: 0.2.15
     optionalDependencies:
       fsevents: 2.3.3
-    dev: true
 
   /rolldown@1.0.0-beta.50:
     resolution: {integrity: sha512-JFULvCNl/anKn99eKjOSEubi0lLmNqQDAjyEMME2T4CwezUDL0i6t1O9xZsu2OMehPnV2caNefWpGF+8TnzB6A==}
@@ -13339,7 +13326,6 @@ packages:
       '@rolldown/binding-win32-arm64-msvc': 1.0.0-beta.50
       '@rolldown/binding-win32-ia32-msvc': 1.0.0-beta.50
       '@rolldown/binding-win32-x64-msvc': 1.0.0-beta.50
-    dev: true
 
   /rollup@2.77.3:
     resolution: {integrity: sha512-/qxNTG7FbmefJWoeeYJFbHehJ2HNWnjkAFRKzWN/45eNBBF/r8lo992CwcJXEzyVxs5FmfId+vTSTQDb+bxA+g==}
@@ -14083,7 +14069,6 @@ packages:
 
   /tailwindcss@4.1.18:
     resolution: {integrity: sha512-4+Z+0yiYyEtUVCScyfHCxOYP06L5Ne+JiHhY2IjR2KWMIWhJOYZKLSGZaP5HkZ8+bY0cxfzwDE5uOmzFXyIwxw==}
-    dev: false
 
   /tapable@2.3.0:
     resolution: {integrity: sha512-g9ljZiwki/LfxmQADO3dEY1CbpmXT5Hm2fJ+QaGKwSXUylMybePR7/67YW7jOrrvjEgL1Fmz5kzyAjWVWLlucg==}
@@ -14529,7 +14514,7 @@ packages:
     dependencies:
       acorn: 8.12.1
       estree-walker: 3.0.3
-      magic-string: 0.30.11
+      magic-string: 0.30.21
       unplugin: 1.12.2
     dev: false
     optional: true
@@ -14612,7 +14597,7 @@ packages:
       estree-walker: 3.0.3
       fast-glob: 3.3.2
       local-pkg: 0.5.0
-      magic-string: 0.30.11
+      magic-string: 0.30.21
       mlly: 1.7.1
       pathe: 1.1.2
       pkg-types: 1.2.0
@@ -14685,7 +14670,7 @@ packages:
     resolution: {integrity: sha512-gptHNQghINnc/vTGIk0SOFGFNXw7JVrlRUtConJRlvaw6DuX0wO5Jeko9sWrMBhh+PsYAZ7oXAiOnf/UKogyiw==}
     engines: {node: '>= 10.0.0'}
 
-  /unocss@0.58.9(postcss@8.4.41)(rollup@2.79.1)(vite@5.4.2):
+  /unocss@0.58.9(postcss@8.5.6)(rollup@2.79.1)(vite@5.4.2):
     resolution: {integrity: sha512-aqANXXP0RrtN4kSaTLn/7I6wh8o45LUdVgPzGu7Fan2DfH2+wpIs6frlnlHlOymnb+52dp6kXluQinddaUKW1A==}
     engines: {node: '>=14'}
     peerDependencies:
@@ -14701,7 +14686,7 @@ packages:
       '@unocss/cli': 0.58.9(rollup@2.79.1)
       '@unocss/core': 0.58.9
       '@unocss/extractor-arbitrary-variants': 0.58.9
-      '@unocss/postcss': 0.58.9(postcss@8.4.41)
+      '@unocss/postcss': 0.58.9(postcss@8.5.6)
       '@unocss/preset-attributify': 0.58.9
       '@unocss/preset-icons': 0.58.9
       '@unocss/preset-mini': 0.58.9

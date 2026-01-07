@@ -1,6 +1,6 @@
 export const buttonVariants = {
   base:
-    "inline-flex items-center justify-center gap-2 " +
+    "inline-flex items-center justify-center gap-2 border-0 cursor-pointer " +
     "font-medium select-none whitespace-nowrap " +
     "rounded-[var(--ui-radius-md)] " +
     "transition-[transform,box-shadow,background-color,opacity,border-color] " +
