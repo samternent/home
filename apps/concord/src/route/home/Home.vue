@@ -8,13 +8,13 @@ import Logo from "../../module/brand/Logo.vue";
       <a class="brand" href="/">Concord</a>
 
       <nav class="nav">
-        <a href="/playground" class="">Try it</a>
+        <RouterLink to="/playground" class="">Try it</RouterLink>
       </nav>
 
       <div class="site-header__actions"></div>
     </div>
   </header>
-  <main class="page px-4">
+  <main class="page px-4 py-12">
     <Whitepaper />
   </main>
   <footer class="flex justify-end items-center py-12 site-footer">
@@ -24,7 +24,9 @@ import Logo from "../../module/brand/Logo.vue";
           href="mailto:concord@ternent.dev"
           class="flex flex-col items-center justify-center gap-2"
         >
-          <Logo class="h-8 w-8 opacity-20" />
+          <Logo
+            class="h-8 w-8 opacity-40 hover:opacity-60 hover:-rotate-6 transition-all duration-300"
+          />
         </a>
       </div>
     </div>
