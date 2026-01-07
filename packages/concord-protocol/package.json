@@ -5,6 +5,13 @@
   "main": "dist/concord-protocol.umd.js",
   "module": "dist/concord-protocol.es.js",
   "typings": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/concord-protocol.es.js",
+      "require": "./dist/concord-protocol.umd.js"
+    }
+  },
   "scripts": {
     "dev": "vite build --watch",
     "build": "vite build",

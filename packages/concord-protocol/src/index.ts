@@ -395,14 +395,14 @@ export function validateEntry(entry: Entry): { ok: boolean; errors: string[] } {
     errors.push("Entry must be an object");
     return { ok: false, errors };
   }
-  if (typeof entry.kind !== "string") {
-    errors.push("Entry.kind must be a string");
+  if (typeof entry.kind !== "string" || entry.kind.length === 0) {
+    errors.push("Entry.kind must be a non-empty string");
   }
-  if (typeof entry.timestamp !== "string") {
-    errors.push("Entry.timestamp must be a string");
+  if (typeof entry.timestamp !== "string" || entry.timestamp.length === 0) {
+    errors.push("Entry.timestamp must be a non-empty string");
   }
-  if (typeof entry.author !== "string") {
-    errors.push("Entry.author must be a string");
+  if (typeof entry.author !== "string" || entry.author.length === 0) {
+    errors.push("Entry.author must be a non-empty string");
   }
   if (
     entry.signature !== undefined &&
@@ -433,11 +433,13 @@ export function validateCommit(commit: Commit): {
     errors.push("Commit must be an object");
     return { ok: false, errors };
   }
-  if (commit.parent !== null && typeof commit.parent !== "string") {
-    errors.push("Commit.parent must be a string or null");
+  if (commit.parent === "") {
+    errors.push("Commit.parent must be a non-empty string or null");
+  } else if (commit.parent !== null && typeof commit.parent !== "string") {
+    errors.push("Commit.parent must be a non-empty string or null");
   }
-  if (typeof commit.timestamp !== "string") {
-    errors.push("Commit.timestamp must be a string");
+  if (typeof commit.timestamp !== "string" || commit.timestamp.length === 0) {
+    errors.push("Commit.timestamp must be a non-empty string");
   }
   if (!Array.isArray(commit.entries)) {
     errors.push("Commit.entries must be an array");

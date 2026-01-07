@@ -1,0 +1,135 @@
+[
+  {
+    "name": "entry-basic",
+    "type": "entry",
+    "input": {
+      "kind": "concord/user/added",
+      "timestamp": "2026-01-01T00:00:00Z",
+      "author": "author-1",
+      "payload": {
+        "a": 1,
+        "b": 2
+      }
+    },
+    "expect": {
+      "entryId": "6e3ffbf931a8a795b2572649ec861a305538fe6ceb6447e151b3781e249b3007",
+      "signingPayload": "{\"author\":\"author-1\",\"kind\":\"concord/user/added\",\"payload\":{\"a\":1,\"b\":2},\"timestamp\":\"2026-01-01T00:00:00Z\"}"
+    }
+  },
+  {
+    "name": "entry-signature-exclusion",
+    "type": "entry-signature-exclusion",
+    "input": {
+      "kind": "concord/user/added",
+      "timestamp": "2026-01-01T00:00:00Z",
+      "author": "author-1",
+      "payload": {
+        "a": 1,
+        "b": 2
+      }
+    },
+    "variants": [
+      { "signature": "sig-1" },
+      { "signature": "sig-2" }
+    ],
+    "expect": {
+      "entryId": "6e3ffbf931a8a795b2572649ec861a305538fe6ceb6447e151b3781e249b3007"
+    }
+  },
+  {
+    "name": "commit-basic",
+    "type": "commit",
+    "input": {
+      "parent": null,
+      "timestamp": "2026-01-01T00:01:00Z",
+      "metadata": {
+        "genesis": true,
+        "spec": "concord-protocol@1.0"
+      },
+      "entries": []
+    },
+    "expect": {
+      "commitId": "2d72634e11d0a177b35393d3ba200f6922c612663a885a809b7f09021249a3d6",
+      "canonicalCommit": "{\"entries\":[],\"metadata\":{\"genesis\":true,\"spec\":\"concord-protocol@1.0\"},\"parent\":null,\"timestamp\":\"2026-01-01T00:01:00Z\"}"
+    }
+  },
+  {
+    "name": "entry-unicode",
+    "type": "entry",
+    "input": {
+      "kind": "concord/user/added",
+      "timestamp": "2026-01-02T00:00:00Z",
+      "author": "author-1",
+      "payload": {
+        "message": "café",
+        "emoji": "🙂"
+      }
+    },
+    "expect": {
+      "entryId": "9248e405e5b14306c9ede81c26162d8873e9f9c1746755e85e3147b97f099ebe",
+      "signingPayload": "{\"author\":\"author-1\",\"kind\":\"concord/user/added\",\"payload\":{\"emoji\":\"🙂\",\"message\":\"café\"},\"timestamp\":\"2026-01-02T00:00:00Z\"}"
+    }
+  },
+  {
+    "name": "reject-undefined",
+    "type": "reject-entry",
+    "input": {
+      "kind": "concord/user/added",
+      "timestamp": "2026-01-03T00:00:00Z",
+      "author": "author-1",
+      "payload": {
+        "value": { "__concord_type": "undefined" }
+      }
+    },
+    "expect": {
+      "errorCode": "INVALID_ENTRY",
+      "messageIncludes": "Cannot canonicalize undefined"
+    }
+  },
+  {
+    "name": "reject-nan",
+    "type": "reject-entry",
+    "input": {
+      "kind": "concord/user/added",
+      "timestamp": "2026-01-03T00:00:00Z",
+      "author": "author-1",
+      "payload": {
+        "value": { "__concord_type": "nan" }
+      }
+    },
+    "expect": {
+      "errorCode": "INVALID_ENTRY",
+      "messageIncludes": "Cannot canonicalize non-finite number"
+    }
+  },
+  {
+    "name": "reject-infinity",
+    "type": "reject-entry",
+    "input": {
+      "kind": "concord/user/added",
+      "timestamp": "2026-01-03T00:00:00Z",
+      "author": "author-1",
+      "payload": {
+        "value": { "__concord_type": "infinity" }
+      }
+    },
+    "expect": {
+      "errorCode": "INVALID_ENTRY",
+      "messageIncludes": "Cannot canonicalize non-finite number"
+    }
+  },
+  {
+    "name": "reject-circular",
+    "type": "reject-entry",
+    "input": {
+      "kind": "concord/user/added",
+      "timestamp": "2026-01-03T00:00:00Z",
+      "author": "author-1",
+      "payload": { "__concord_type": "circular" }
+    },
+    "expect": {
+      "errorCode": "INVALID_ENTRY",
+      "messageIncludes": "Cannot canonicalize circular references"
+    }
+  }
+]

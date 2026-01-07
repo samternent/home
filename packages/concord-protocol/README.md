@@ -8,10 +8,12 @@ This package provides:
 
 - Canonical data structures for Concord ledgers
 - Deterministic hashing for EntryID and CommitID
+- Canonical signing payloads and bytes
 - Genesis commit creation
-- Commit chain traversal helpers
+- Commit chain traversal, replay helpers, and validation
 
 Pending entries and application state are intentionally out of scope.
+User management, access control, encryption policy, and networking are out of scope.
 
 ## Installation
 
@@ -52,3 +54,14 @@ console.log(entryId, signingPayload, chain);
 - `EntryID` excludes the `signature` field
 - `CommitID` hashes the full commit structure
 - Genesis commits are not replayed and contain no entries
+- Canonical JSON uses lexicographic key ordering with no whitespace
+- Inputs must be plain JSON values (no `toJSON`, no non-finite numbers)
+- Hashing is SHA-256 over UTF-8 bytes with lowercase hex output
+
+## Tests
+
+```bash
+pnpm --filter @ternent/concord-protocol test
+```
+
+Shared vectors live in `packages/concord-test-vectors`.

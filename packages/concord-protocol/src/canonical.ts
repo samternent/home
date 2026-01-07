@@ -3,7 +3,8 @@
  * - Object keys sorted lexicographically.
  * - Arrays preserved in order.
  * - No whitespace outside JSON structural characters.
- * - Rejects undefined, functions, symbols, and bigint values.
+ * - Rejects undefined, functions, symbols, bigint values, and non-finite numbers.
+ * - Does not honor toJSON; inputs must be plain JSON values.
  */
 export function canonicalStringify(value: unknown): string {
   return JSON.stringify(canonicalize(value, new WeakSet()));
@@ -33,17 +34,18 @@ function canonicalize(
   if (valueType === "bigint") {
     throw new TypeError("Cannot canonicalize bigint values");
   }
-  if (
-    value === null ||
-    valueType === "string" ||
-    valueType === "number" ||
-    valueType === "boolean"
-  ) {
+  if (valueType === "number") {
+    if (!Number.isFinite(value)) {
+      throw new TypeError("Cannot canonicalize non-finite number");
+    }
+    return value as CanonicalValue;
+  }
+  if (value === null || valueType === "string" || valueType === "boolean") {
     return value as CanonicalValue;
   }
 
   if (typeof (value as { toJSON?: () => unknown }).toJSON === "function") {
-    return canonicalize((value as { toJSON: () => unknown }).toJSON(), seen);
+    throw new TypeError("Cannot canonicalize toJSON values");
   }
 
   if (Array.isArray(value)) {

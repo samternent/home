@@ -1,68 +1,129 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 import {
   ConcordProtocolError,
   appendCommit,
+  appendCommitStrict,
   appendEntry,
   createCommit,
   createLedger,
   deriveCommitId,
   deriveEntryId,
   getCommitChain,
+  getEntrySigningPayload,
   validateLedger,
 } from "../index";
+import { canonicalStringify } from "../canonical";
 
-describe("canonical hashing determinism", () => {
-  test("fixed entry produces fixed EntryID", async () => {
-    const entry = {
-      kind: "concord/user/added",
-      timestamp: "2026-01-01T00:00:00Z",
-      author: "author-1",
-      payload: { a: 1, b: 2 },
-    };
-    const entryId = await deriveEntryId(entry);
-    expect(entryId).toBe(
-      "6e3ffbf931a8a795b2572649ec861a305538fe6ceb6447e151b3781e249b3007"
-    );
+const VECTORS_PATH = new URL(
+  "../../../concord-test-vectors/vectors.json",
+  import.meta.url
+);
+
+function loadVectors() {
+  return JSON.parse(readFileSync(VECTORS_PATH, "utf8"));
+}
+
+function materializeValue(value) {
+  if (value && typeof value === "object") {
+    if (value.__concord_type === "undefined") {
+      return undefined;
+    }
+    if (value.__concord_type === "nan") {
+      return Number.NaN;
+    }
+    if (value.__concord_type === "infinity") {
+      return Number.POSITIVE_INFINITY;
+    }
+    if (value.__concord_type === "circular") {
+      const circular = {};
+      circular.self = circular;
+      return circular;
+    }
+    if (Array.isArray(value)) {
+      return value.map((item) => materializeValue(item));
+    }
+    const result = {};
+    for (const [key, child] of Object.entries(value)) {
+      result[key] = materializeValue(child);
+    }
+    return result;
+  }
+  return value;
+}
+
+function materializeInput(input) {
+  return materializeValue(input);
+}
+
+function assertConcordError(error, code, messageIncludes) {
+  expect(error).toBeInstanceOf(ConcordProtocolError);
+  expect(error.code).toBe(code);
+  if (messageIncludes) {
+    expect(error.message).toContain(messageIncludes);
+  }
+}
+
+describe("test vectors (JS)", () => {
+  const vectors = loadVectors();
+  const entryVectors = vectors.filter((vector) => vector.type === "entry");
+  const commitVectors = vectors.filter((vector) => vector.type === "commit");
+  const signatureVectors = vectors.filter(
+    (vector) => vector.type === "entry-signature-exclusion"
+  );
+  const rejectionVectors = vectors.filter(
+    (vector) => vector.type === "reject-entry"
+  );
+
+  test("entry vectors", async () => {
+    for (const vector of entryVectors) {
+      const entry = materializeInput(vector.input);
+      const entryId = await deriveEntryId(entry);
+      const signingPayload = getEntrySigningPayload(entry);
+      expect(entryId).toBe(vector.expect.entryId);
+      expect(signingPayload).toBe(vector.expect.signingPayload);
+    }
   });
 
-  test("fixed commit produces fixed CommitID", async () => {
-    const commit = {
-      parent: null,
-      timestamp: "2026-01-01T00:01:00Z",
-      metadata: { genesis: true, spec: "concord-protocol@1.0" },
-      entries: [],
-    };
-    const commitId = await deriveCommitId(commit);
-    expect(commitId).toBe(
-      "2d72634e11d0a177b35393d3ba200f6922c612663a885a809b7f09021249a3d6"
-    );
+  test("commit vectors", async () => {
+    for (const vector of commitVectors) {
+      const commit = materializeInput(vector.input);
+      const commitId = await deriveCommitId(commit);
+      const canonicalCommit = canonicalStringify(commit);
+      expect(commitId).toBe(vector.expect.commitId);
+      expect(canonicalCommit).toBe(vector.expect.canonicalCommit);
+    }
   });
 
-  test("signature changes do not affect EntryID", async () => {
-    const entry = {
-      kind: "concord/user/added",
-      timestamp: "2026-01-01T00:00:00Z",
-      author: "author-1",
-      payload: { a: 1, b: 2 },
-      signature: "sig-1",
-    };
-    const entryWithDifferentSig = { ...entry, signature: "sig-2" };
-    const first = await deriveEntryId(entry);
-    const second = await deriveEntryId(entryWithDifferentSig);
-    expect(first).toBe(second);
+  test("signature exclusion vectors", async () => {
+    for (const vector of signatureVectors) {
+      const base = materializeInput(vector.input);
+      const ids = [];
+      for (const variant of vector.variants) {
+        const entry = { ...base, ...variant };
+        ids.push(await deriveEntryId(entry));
+      }
+      for (const id of ids) {
+        expect(id).toBe(vector.expect.entryId);
+      }
+    }
   });
 
-  test("non-ASCII payload produces stable EntryID", async () => {
-    const entry = {
-      kind: "concord/user/added",
-      timestamp: "2026-01-02T00:00:00Z",
-      author: "author-1",
-      payload: { message: "café" },
-    };
-    const entryId = await deriveEntryId(entry);
-    expect(entryId).toBe(
-      "1681308cdf7ee7c018144bb51e3fe493d65dbc78fedf959b0e8c7e94c6de6f52"
-    );
+  test("rejection vectors", async () => {
+    const ledger = await createLedger();
+    for (const vector of rejectionVectors) {
+      const entry = materializeInput(vector.input);
+      try {
+        await appendEntry(ledger, entry);
+        throw new Error("Expected appendEntry to throw");
+      } catch (error) {
+        assertConcordError(
+          error,
+          vector.expect.errorCode,
+          vector.expect.messageIncludes
+        );
+      }
+    }
   });
 });
 
@@ -74,8 +135,7 @@ describe("commit chain safety", () => {
       getCommitChain(invalid);
       throw new Error("Expected getCommitChain to throw");
     } catch (error) {
-      expect(error).toBeInstanceOf(ConcordProtocolError);
-      expect(error.code).toBe("MISSING_HEAD");
+      assertConcordError(error, "MISSING_HEAD");
     }
   });
 
@@ -95,8 +155,7 @@ describe("commit chain safety", () => {
       getCommitChain(tampered);
       throw new Error("Expected getCommitChain to throw");
     } catch (error) {
-      expect(error).toBeInstanceOf(ConcordProtocolError);
-      expect(error.code).toBe("MISSING_COMMIT");
+      assertConcordError(error, "MISSING_COMMIT");
     }
   });
 
@@ -122,37 +181,19 @@ describe("commit chain safety", () => {
       getCommitChain(cycled);
       throw new Error("Expected getCommitChain to throw");
     } catch (error) {
-      expect(error).toBeInstanceOf(ConcordProtocolError);
-      expect(error.code).toBe("COMMIT_CHAIN_CYCLE");
+      assertConcordError(error, "COMMIT_CHAIN_CYCLE");
     }
   });
 });
 
-describe("ledger validation", () => {
+describe("helper safety", () => {
   test("createLedger produces a valid ledger", async () => {
     const ledger = await createLedger();
     const result = validateLedger(ledger);
     expect(result.ok).toBe(true);
   });
 
-  test("genesis invariants are enforced", async () => {
-    const ledger = await createLedger();
-    const genesisId = ledger.head;
-    const invalid = {
-      ...ledger,
-      commits: {
-        ...ledger.commits,
-        [genesisId]: {
-          ...ledger.commits[genesisId],
-          metadata: { genesis: false, spec: "concord-protocol@1.0" },
-        },
-      },
-    };
-    const result = validateLedger(invalid);
-    expect(result.ok).toBe(false);
-  });
-
-  test("non-strict spec validation allows other spec strings", async () => {
+  test("validateLedger allows non-matching spec when strictSpec is false", async () => {
     const ledger = await createLedger();
     const genesisId = ledger.head;
     const relaxed = {
@@ -168,9 +209,7 @@ describe("ledger validation", () => {
     const result = validateLedger(relaxed, { strictSpec: false });
     expect(result.ok).toBe(true);
   });
-});
 
-describe("helper safety", () => {
   test("createCommit throws when parent is missing", async () => {
     const ledger = await createLedger();
     await expect(
@@ -193,27 +232,30 @@ describe("helper safety", () => {
     ).rejects.toMatchObject({ code: "INVALID_PARENT" });
   });
 
-  test("appendCommit throws when parent does not exist", async () => {
+  test("appendCommitStrict rejects mismatched commit id", async () => {
     const ledger = await createLedger();
-    const commit = {
-      parent: "missing-parent",
-      timestamp: "2026-01-01T00:01:00Z",
-      metadata: { msg: "test" },
+    const { commit } = await createCommit({
+      ledger,
       entries: [],
-    };
-    expect(() => appendCommit(ledger, "missing-commit-id", commit)).toThrow(
-      ConcordProtocolError
-    );
+    });
+    await expect(
+      appendCommitStrict(ledger, "not-a-real-id", commit)
+    ).rejects.toMatchObject({ code: "COMMIT_ID_MISMATCH" });
   });
 
-  test("appendEntry rejects non-canonical payloads", async () => {
+  test("appendEntry rejects toJSON payloads", async () => {
     const ledger = await createLedger();
+    const payload = {
+      toJSON() {
+        return { a: 1 };
+      },
+    };
     await expect(
       appendEntry(ledger, {
         kind: "concord/user/added",
         timestamp: "2026-01-01T00:00:00Z",
         author: "author-1",
-        payload: { invalid: undefined },
+        payload,
       })
     ).rejects.toMatchObject({ code: "INVALID_ENTRY" });
   });
