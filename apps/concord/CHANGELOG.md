@@ -1,5 +1,11 @@
 # concord
 
+## 0.0.15
+
+### Patch Changes
+
+- [`ed2c525e2c8f9446525a3cce40cc8939feaf2989`](https://github.com/samternent/home/commit/ed2c525e2c8f9446525a3cce40cc8939feaf2989) Thanks [@samternent](https://github.com/samternent)! - Update csp
+
 ## 0.0.14
 
 ### Patch Changes
