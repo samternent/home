@@ -328,6 +328,9 @@ importers:
       '@slidev/theme-seriph':
         specifier: latest
         version: 0.25.0
+      '@ternent/concord-protocol-wasm':
+        specifier: workspace:*
+        version: link:../../packages/concord-protocol-wasm
       '@vueform/vueform':
         specifier: ^1.10.3
         version: 1.10.3
@@ -343,9 +346,6 @@ importers:
       axios:
         specifier: ^1.7.5
         version: 1.7.5(debug@4.3.6)
-      blockchain:
-        specifier: workspace:*
-        version: link:../../packages/blockchain/pkg
       colorjs.io:
         specifier: ^0.5.2
         version: 0.5.2
@@ -417,7 +417,33 @@ importers:
         specifier: ^3.3.0
         version: 3.3.0(vite@4.5.3)
 
-  packages/blockchain/pkg: {}
+  packages/concord-protocol:
+    dependencies:
+      '@swc/helpers':
+        specifier: ^0.4.36
+        version: 0.4.36
+      regenerator-runtime:
+        specifier: ^0.13.11
+        version: 0.13.11
+      ternent-utils:
+        specifier: workspace:*
+        version: link:../utils
+      vitest:
+        specifier: ^1.6.0
+        version: 1.6.0
+    devDependencies:
+      vite:
+        specifier: ^2.9.18
+        version: 2.9.18
+      vite-plugin-dts:
+        specifier: ^1.7.3
+        version: 1.7.3(vite@2.9.18)
+
+  packages/concord-protocol-wasm:
+    devDependencies:
+      wasm-pack:
+        specifier: ^0.12.1
+        version: 0.12.1
 
   packages/encrypt:
     dependencies:
@@ -478,6 +504,9 @@ importers:
       '@swc/helpers':
         specifier: ^0.4.36
         version: 0.4.36
+      '@ternent/concord-protocol':
+        specifier: workspace:*
+        version: link:../concord-protocol
       lokijs:
         specifier: ^1.5.12
         version: 1.5.12
@@ -490,9 +519,6 @@ importers:
       ternent-identity:
         specifier: workspace:*
         version: link:../identity
-      '@ternent/concord-protocol':
-        specifier: workspace:*
-        version: link:../concord-protocol
       ternent-utils:
         specifier: workspace:*
         version: link:../utils
@@ -503,28 +529,6 @@ importers:
       vite:
         specifier: ^2.9.18
         version: 2.9.18
-
-  packages/concord-protocol:
-    dependencies:
-      '@swc/helpers':
-        specifier: ^0.4.36
-        version: 0.4.36
-      regenerator-runtime:
-        specifier: ^0.13.11
-        version: 0.13.11
-      ternent-utils:
-        specifier: workspace:*
-        version: link:../utils
-      vitest:
-        specifier: ^1.6.0
-        version: 1.6.0
-    devDependencies:
-      vite:
-        specifier: ^2.9.18
-        version: 2.9.18
-      vite-plugin-dts:
-        specifier: ^1.7.3
-        version: 1.7.3(vite@2.9.18)
 
   packages/ragejs:
     devDependencies:

@@ -115,16 +115,21 @@ const PACKAGE_CONFIGS = {
   blockchain: {
     type: "rust-wasm",
     description:
-      "High-performance Rust/WebAssembly blockchain implementation with proof-of-work mining and encryption.",
+      "Concord protocol core implemented in Rust and compiled to WebAssembly.",
     features: [
       "WebAssembly Performance: Written in Rust and compiled to WASM",
-      "Proof of Work Mining: Configurable difficulty proof-of-work algorithm",
-      "Cryptographic Hashing: SHA-256 based data hashing",
-      "Key Generation: X25519 public/private key pair generation",
-      "Blockchain Creation: Genesis block creation and chain management",
-      "Age Encryption: Modern encryption using the age library",
+      "Canonical Hashing: SHA-256 over canonical JSON",
+      "Entry and Commit IDs: Deterministic ID derivation helpers",
+      "Genesis Helpers: Create genesis commits and ledgers",
+      "Replay Support: Commit chain traversal utilities",
     ],
-    mainFunctions: ["createBlockchain", "hashData", "proofOfWork", "keygen"],
+    mainFunctions: [
+      "createLedger",
+      "createGenesisCommit",
+      "deriveEntryId",
+      "deriveCommitId",
+      "getCommitChain",
+    ],
   },
   ragejs: {
     type: "rust-wasm",

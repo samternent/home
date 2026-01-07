@@ -1,7 +1,7 @@
 {
-  "name": "wasm-blockchain",
+  "name": "@ternent/concord-protocol-wasm",
   "version": "1.0.0",
-  "description": "",
+  "description": "Concord protocol core implemented in Rust and compiled to WebAssembly.",
   "main": "index.js",
   "scripts": {
     "build": "wasm-pack build --target bundler"
