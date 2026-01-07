@@ -22,7 +22,6 @@
   "browserslist": "last 2 versions",
   "dependencies": {
     "@swc/helpers": "^0.4.36",
-    "ternent-utils": "workspace:*",
     "regenerator-runtime": "^0.13.11",
     "vitest": "^1.6.0"
   },

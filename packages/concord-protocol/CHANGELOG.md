@@ -1,5 +1,18 @@
 # @ternent/concord-protocol
 
+## Unreleased
+
+### Patch Changes
+
+- Harden canonical hashing/signing inputs and add validation/replay helpers.
+- Add commit/entry append helpers, strict commit appends, and protocol test vectors.
+- Inline canonical/crypto helpers to keep protocol-critical behavior local.
+
+### Breaking Changes
+
+- `getCommitChain` now throws on invalid ledgers instead of returning partial chains.
+- `EncryptedPayload` is no longer exported from this package.
+
 ## 0.0.10
 
 ### Patch Changes
