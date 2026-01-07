@@ -1,5 +1,12 @@
 # ternent-ledger
 
+## 1.0.20
+
+### Patch Changes
+
+- Updated dependencies [[`d0233454029bcc4b0ce10a7150f28d243d4847b8`](https://github.com/samternent/home/commit/d0233454029bcc4b0ce10a7150f28d243d4847b8)]:
+  - @ternent/concord-protocol@0.0.11
+
 ## 1.0.19
 
 ### Patch Changes

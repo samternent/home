@@ -1,5 +1,11 @@
 # @ternent/concord-protocol
 
+## 0.0.11
+
+### Patch Changes
+
+- [`d0233454029bcc4b0ce10a7150f28d243d4847b8`](https://github.com/samternent/home/commit/d0233454029bcc4b0ce10a7150f28d243d4847b8) Thanks [@samternent](https://github.com/samternent)! - Update concord protocol
+
 ## 0.0.10
 
 ### Patch Changes
