@@ -50,6 +50,23 @@
     />
 
     <style>
+      :root {
+        --paper: #fbf7f0; /* warm paper */
+        --paper2: #f5efe6; /* subtle panel */
+        --ink: #121212; /* ink */
+        --muted: #5a5a5a; /* secondary ink */
+        --rule: rgba(18, 18, 18, 0.12);
+        --accent: #6d28d9; /* your purple link vibe */
+      }
+      [data-theme="dark"] {
+        --paper: #0b0b0c;
+        --paper2: #111113;
+        --ink: #f2f2f2;
+        --muted: rgba(242, 242, 242, 0.72);
+        --rule: rgba(242, 242, 242, 0.12);
+        --accent: #c084fc;
+      }
+
       html,
       body {
         font-family: "Noto Serif", serif;
@@ -57,6 +74,11 @@
         font-weight: 300;
         font-style: normal;
         font-variation-settings: "wdth" 100;
+        font-size: 18px;
+        margin: 0;
+        padding: 0;
+        background-color: var(--paper);
+        color: var(--ink);
       }
 
       h1,
@@ -65,11 +87,11 @@
       h4,
       h5,
       h6 {
-        letter-spacing: -0.1em;
         font-family: "Noto Sans", sans-serif;
+        letter-spacing: -0.09em;
       }
       h1 {
-        font-size: 4em;
+        font-size: 3em;
         font-weight: 900;
       }
       h2 {

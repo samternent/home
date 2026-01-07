@@ -1,34 +1,31 @@
 {
   "name": "concord",
   "private": true,
-  "version": "0.0.8",
+  "version": "0.0.10",
   "type": "module",
-  "engines": {
-    "node": "20.x"
-  },
-  "packageManager": "pnpm@8.15.9",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc -b && vite-ssg build",
+    "build": "vite-ssg build",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.1.18",
+    "@vueuse/core": "^10.11.1",
+    "tailwindcss": "^4.1.18",
+    "ternent-ui": "workspace:*",
+    "ternent-utils": "workspace:*",
     "vue": "^3.5.24"
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
     "@unhead/vue": "^2.1.1",
     "@vitejs/plugin-vue": "^6.0.1",
-    "@vue/tsconfig": "^0.8.1",
     "gray-matter": "^4.0.3",
     "markdown-it": "^14.1.0",
-    "ternent-ui": "workspace:*",
-    "typescript": "~5.9.3",
     "vite": "npm:rolldown-vite@7.2.5",
     "vite-plugin-vue-markdown": "^0.23.8",
     "vite-ssg": "^28.2.2",
-    "vue-router": "^4.4.3",
-    "vue-tsc": "^3.1.4"
+    "vue-router": "^4.4.3"
   },
   "overrides": {
     "vite": "npm:rolldown-vite@7.2.5"

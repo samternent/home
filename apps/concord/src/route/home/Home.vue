@@ -1,29 +1,32 @@
+<script setup lang="ts">
+import Whitepaper from "../../content/whitepaper.md";
+import Logo from "../../module/brand/Logo.vue";
+</script>
 <template>
-  <section style="text-align: center">
-    <h1 style="">Concord.</h1>
-    <p>Client-side verifiable ledger system.</p>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="brand" href="/">Concord</a>
 
-    <ul
-      style="
-        display: flex;
-        justify-content: center;
-        gap: 2em;
-        padding: 0;
-        list-style: none;
-      "
-    >
-      <li>
-        <RouterLink to="/overview/what-is-concord">What is Concord?</RouterLink>
-      </li>
-      <li>
-        <RouterLink to="/overview/core-primitives">Core primitives</RouterLink>
-      </li>
-      <li>
-        <RouterLink to="/overview/scope-and-non-goals"
-          >Scope and non-goals</RouterLink
+      <nav class="nav">
+        <a href="/playground" class="">Try it</a>
+      </nav>
+
+      <div class="site-header__actions"></div>
+    </div>
+  </header>
+  <main class="page px-4">
+    <Whitepaper />
+  </main>
+  <footer class="flex justify-end items-center py-12 site-footer">
+    <div class="site-footer__inner w-full flex justify-end">
+      <div class="site-footer__links">
+        <a
+          href="mailto:concord@ternent.dev"
+          class="flex flex-col items-center justify-center gap-2"
         >
-      </li>
-      <li><RouterLink to="/playground">Playground</RouterLink></li>
-    </ul>
-  </section>
+          <Logo class="h-8 w-8 opacity-20" />
+        </a>
+      </div>
+    </div>
+  </footer>
 </template>
