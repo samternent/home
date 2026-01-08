@@ -1,0 +1,5 @@
+---
+"concord": patch
+---
+
+csp fix
