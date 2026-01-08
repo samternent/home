@@ -34,7 +34,6 @@
     "ternent-encrypt": "workspace:*",
     "ternent-identity": "workspace:*",
     "ternent-ledger": "workspace:*",
-    "ternent-rage-wasm": "workspace:*",
     "ternent-ui": "workspace:*",
     "ternent-utils": "workspace:*",
     "vite-plugin-ejs": "^1.7.0",

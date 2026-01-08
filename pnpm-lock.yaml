@@ -373,9 +373,6 @@ importers:
       ternent-ledger:
         specifier: workspace:*
         version: link:../../packages/ledger
-      ternent-rage-wasm:
-        specifier: workspace:*
-        version: link:../../packages/ragejs
       ternent-ui:
         specifier: workspace:*
         version: link:../../packages/ternent-ui
@@ -524,12 +521,6 @@ importers:
       vite:
         specifier: ^2.9.18
         version: 2.9.18
-
-  packages/ragejs:
-    devDependencies:
-      wasm-pack:
-        specifier: ^0.12.1
-        version: 0.12.1
 
   packages/ragejs/pkg: {}
 
@@ -7325,14 +7316,6 @@ packages:
       possible-typed-array-names: 1.0.0
     dev: true
 
-  /axios@0.26.1:
-    resolution: {integrity: sha512-fPwcX4EvnSHuInCMItEhAGnaSEXRBjtzh9fOtsE6E1G6p7vl7edEeZe11QHf18+6+9gR5PbKV/sGKNaD8YaMeA==}
-    dependencies:
-      follow-redirects: 1.15.6(debug@4.3.6)
-    transitivePeerDependencies:
-      - debug
-    dev: true
-
   /axios@0.27.2:
     resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
     dependencies:
@@ -7422,17 +7405,6 @@ packages:
   /binary-extensions@2.3.0:
     resolution: {integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==}
     engines: {node: '>=8'}
-
-  /binary-install@1.1.0:
-    resolution: {integrity: sha512-rkwNGW+3aQVSZoD0/o3mfPN6Yxh3Id0R/xzTVBVVpGNlVz8EGwusksxRlbk/A5iKTZt9zkMn3qIqmAt3vpfbzg==}
-    engines: {node: '>=10'}
-    dependencies:
-      axios: 0.26.1
-      rimraf: 3.0.2
-      tar: 6.2.1
-    transitivePeerDependencies:
-      - debug
-    dev: true
 
   /bindings@1.5.0:
     resolution: {integrity: sha512-p2q/t/mhvuOj/UeLlV6566GD/guowlr0hHxClI0W9m7MWYkL1F0hLo+0Aexs9HSPCtR1SXQ0TD3MMKrXZajbiQ==}
@@ -15539,16 +15511,6 @@ packages:
     engines: {node: '>=18'}
     dependencies:
       xml-name-validator: 5.0.0
-    dev: true
-
-  /wasm-pack@0.12.1:
-    resolution: {integrity: sha512-dIyKWUumPFsGohdndZjDXRFaokUT/kQS+SavbbiXVAvA/eN4riX5QNdB6AhXQx37zNxluxQkuixZUgJ8adKjOg==}
-    hasBin: true
-    requiresBuild: true
-    dependencies:
-      binary-install: 1.1.0
-    transitivePeerDependencies:
-      - debug
     dev: true
 
   /web-push@3.6.7:
