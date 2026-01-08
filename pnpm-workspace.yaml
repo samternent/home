@@ -4,5 +4,4 @@ packages:
   - "packages/*"
   - "!packages/concord-protocol-wasm"
   - "packages/concord-protocol-wasm/pkg"
-  - "!packages/ragejs"
   - "packages/ragejs/pkg"
