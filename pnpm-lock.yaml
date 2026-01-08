@@ -103,6 +103,9 @@ importers:
       ternent-ledger:
         specifier: workspace:*
         version: link:../../packages/ledger
+      ternent-ledger-vue:
+        specifier: workspace:*
+        version: link:../../packages/ternent-ledger-vue
       ternent-ui:
         specifier: workspace:*
         version: link:../../packages/ternent-ui
@@ -373,6 +376,9 @@ importers:
       ternent-ledger:
         specifier: workspace:*
         version: link:../../packages/ledger
+      ternent-ledger-vue:
+        specifier: workspace:*
+        version: link:../../packages/ternent-ledger-vue
       ternent-ui:
         specifier: workspace:*
         version: link:../../packages/ternent-ui
@@ -529,6 +535,15 @@ importers:
         version: 0.12.1
 
   packages/ragejs/pkg: {}
+
+  packages/ternent-ledger-vue:
+    dependencies:
+      ternent-ledger:
+        specifier: workspace:*
+        version: link:../ledger
+      vue:
+        specifier: ^3.4.0
+        version: 3.5.26(typescript@5.9.3)
 
   packages/ternent-ui:
     dependencies:
@@ -2006,7 +2021,7 @@ packages:
     engines: {node: '>=6.9.0'}
     dependencies:
       '@babel/code-frame': 7.24.7
-      '@babel/parser': 7.25.4
+      '@babel/parser': 7.28.5
       '@babel/types': 7.25.4
 
   /@babel/traverse@7.25.4:
@@ -2015,7 +2030,7 @@ packages:
     dependencies:
       '@babel/code-frame': 7.24.7
       '@babel/generator': 7.25.5
-      '@babel/parser': 7.25.4
+      '@babel/parser': 7.28.5
       '@babel/template': 7.25.0
       '@babel/types': 7.25.4
       debug: 4.3.6(supports-color@5.5.0)
@@ -5968,8 +5983,8 @@ packages:
       '@babel/core': 7.25.2
       '@babel/helper-module-imports': 7.22.15
       '@babel/helper-plugin-utils': 7.24.8
-      '@babel/parser': 7.25.4
-      '@vue/compiler-sfc': 3.4.38
+      '@babel/parser': 7.28.5
+      '@vue/compiler-sfc': 3.5.26
     dev: false
 
   /@vue/compiler-core@3.4.38:
@@ -6060,8 +6075,8 @@ packages:
     dependencies:
       '@volar/language-core': 1.11.1
       '@volar/source-map': 1.11.1
-      '@vue/compiler-dom': 3.4.38
-      '@vue/shared': 3.4.38
+      '@vue/compiler-dom': 3.5.26
+      '@vue/shared': 3.5.26
       computeds: 0.0.1
       minimatch: 9.0.5
       muggle-string: 0.3.1
@@ -6079,9 +6094,9 @@ packages:
         optional: true
     dependencies:
       '@volar/language-core': 2.4.0
-      '@vue/compiler-dom': 3.4.38
+      '@vue/compiler-dom': 3.5.26
       '@vue/compiler-vue2': 2.7.16
-      '@vue/shared': 3.4.38
+      '@vue/shared': 3.5.26
       computeds: 0.0.1
       minimatch: 9.0.5
       muggle-string: 0.4.1
@@ -8008,7 +8023,7 @@ packages:
     engines: {node: ^10 || ^12.20.0 || ^14.13.0 || >=15.0.0}
     dependencies:
       mdn-data: 2.12.2
-      source-map-js: 1.2.0
+      source-map-js: 1.2.1
     dev: true
 
   /cssesc@3.0.0:
@@ -14822,7 +14837,7 @@ packages:
     dependencies:
       '@babel/core': 7.25.2
       '@babel/standalone': 7.25.5
-      '@babel/types': 7.25.4
+      '@babel/types': 7.28.5
       defu: 6.1.4
       jiti: 1.21.6
       mri: 1.2.0
