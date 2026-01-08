@@ -1,0 +1,53 @@
+{
+  "format": "concord-ledger",
+  "version": "1.0",
+  "head": "commit-2",
+  "commits": {
+    "genesis": {
+      "parent": null,
+      "timestamp": "2024-03-01T00:00:00.000Z",
+      "metadata": {
+        "genesis": true,
+        "spec": "concord-protocol@1.0"
+      },
+      "entries": []
+    },
+    "commit-1": {
+      "parent": "genesis",
+      "timestamp": "2024-03-02T00:00:00.000Z",
+      "metadata": null,
+      "entries": ["entry-1"]
+    },
+    "commit-2": {
+      "parent": "commit-1",
+      "timestamp": "2024-03-03T00:00:00.000Z",
+      "metadata": null,
+      "entries": ["entry-2"]
+    }
+  },
+  "entries": {
+    "entry-1": {
+      "kind": "perm.grant",
+      "timestamp": "2024-03-02T01:00:00.000Z",
+      "author": "did:root",
+      "payload": {
+        "scope": "projects:alpha",
+        "cap": "read",
+        "target": { "type": "principal", "id": "did:bob" }
+      },
+      "signature": null
+    },
+    "entry-2": {
+      "kind": "perm.revoke",
+      "timestamp": "2024-03-03T01:00:00.000Z",
+      "author": "did:root",
+      "payload": {
+        "scope": "projects:alpha",
+        "cap": "read",
+        "target": { "type": "principal", "id": "did:bob" },
+        "reason": "revoked"
+      },
+      "signature": null
+    }
+  }
+}

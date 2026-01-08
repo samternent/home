@@ -1,0 +1,99 @@
+{
+  "format": "concord-ledger",
+  "version": "1.0",
+  "head": "commit-5",
+  "commits": {
+    "genesis": {
+      "parent": null,
+      "timestamp": "2024-06-01T00:00:00.000Z",
+      "metadata": {
+        "genesis": true,
+        "spec": "concord-protocol@1.0"
+      },
+      "entries": []
+    },
+    "commit-1": {
+      "parent": "genesis",
+      "timestamp": "2024-06-02T00:00:00.000Z",
+      "metadata": null,
+      "entries": ["entry-1"]
+    },
+    "commit-2": {
+      "parent": "commit-1",
+      "timestamp": "2024-06-03T00:00:00.000Z",
+      "metadata": null,
+      "entries": ["entry-2"]
+    },
+    "commit-3": {
+      "parent": "commit-2",
+      "timestamp": "2024-06-04T00:00:00.000Z",
+      "metadata": null,
+      "entries": ["entry-3"]
+    },
+    "commit-4": {
+      "parent": "commit-3",
+      "timestamp": "2024-06-05T00:00:00.000Z",
+      "metadata": null,
+      "entries": ["entry-4"]
+    },
+    "commit-5": {
+      "parent": "commit-4",
+      "timestamp": "2024-06-06T00:00:00.000Z",
+      "metadata": null,
+      "entries": ["entry-5"]
+    }
+  },
+  "entries": {
+    "entry-1": {
+      "kind": "group.upsert",
+      "timestamp": "2024-06-02T01:00:00.000Z",
+      "author": "did:root",
+      "payload": {
+        "groupId": "group:engineering",
+        "displayName": "Engineering"
+      },
+      "signature": null
+    },
+    "entry-2": {
+      "kind": "perm.grant",
+      "timestamp": "2024-06-03T01:00:00.000Z",
+      "author": "did:root",
+      "payload": {
+        "scope": "projects:alpha",
+        "cap": "read",
+        "target": { "type": "group", "id": "group:engineering" }
+      },
+      "signature": null
+    },
+    "entry-3": {
+      "kind": "group.member.add",
+      "timestamp": "2024-06-04T01:00:00.000Z",
+      "author": "did:root",
+      "payload": {
+        "groupId": "group:engineering",
+        "principalId": "did:alice"
+      },
+      "signature": null
+    },
+    "entry-4": {
+      "kind": "group.member.remove",
+      "timestamp": "2024-06-05T01:00:00.000Z",
+      "author": "did:root",
+      "payload": {
+        "groupId": "group:engineering",
+        "principalId": "did:alice"
+      },
+      "signature": null
+    },
+    "entry-5": {
+      "kind": "group.member.add",
+      "timestamp": "2024-06-06T01:00:00.000Z",
+      "author": "did:root",
+      "payload": {
+        "groupId": "group:engineering",
+        "principalId": "did:alice"
+      },
+      "signature": null
+    }
+  }
+}

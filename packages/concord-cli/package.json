@@ -1,0 +1,31 @@
+{
+  "name": "@concord/cli",
+  "version": "0.0.1",
+  "description": "Concord CLI tooling",
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": {
+    "concord": "dist/index.js"
+  },
+  "type": "module",
+  "main": "dist/index.js",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite build --watch"
+  },
+  "dependencies": {
+    "@ternent/concord-plugin-identity": "workspace:*",
+    "@ternent/concord-plugin-permissions": "workspace:*",
+    "@ternent/concord-plugin-encryption": "workspace:*",
+    "@ternent/concord-protocol": "workspace:*",
+    "@swc/helpers": "^0.4.36",
+    "regenerator-runtime": "^0.13.11"
+  },
+  "devDependencies": {
+    "vite": "^2.9.18"
+  }
+}
