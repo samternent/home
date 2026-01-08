@@ -1,5 +1,11 @@
 # concord
 
+## 0.0.23
+
+### Patch Changes
+
+- [`a0c4f4a56519561f2378c72e77288a86f451ab5c`](https://github.com/samternent/home/commit/a0c4f4a56519561f2378c72e77288a86f451ab5c) Thanks [@samternent](https://github.com/samternent)! - csp fix
+
 ## 0.0.22
 
 ### Patch Changes
