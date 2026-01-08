@@ -1,0 +1,80 @@
+{
+  "format": "concord-ledger",
+  "version": "1.0",
+  "head": "commit-2",
+  "commits": {
+    "genesis": {
+      "parent": null,
+      "timestamp": "2024-02-01T00:00:00.000Z",
+      "metadata": {
+        "genesis": true,
+        "spec": "concord-protocol@1.0"
+      },
+      "entries": []
+    },
+    "commit-1": {
+      "parent": "genesis",
+      "timestamp": "2024-02-02T00:00:00.000Z",
+      "metadata": null,
+      "entries": ["entry-1", "entry-2", "entry-3"]
+    },
+    "commit-2": {
+      "parent": "commit-1",
+      "timestamp": "2024-02-03T00:00:00.000Z",
+      "metadata": null,
+      "entries": ["entry-4"]
+    }
+  },
+  "entries": {
+    "entry-1": {
+      "kind": "identity.upsert",
+      "timestamp": "2024-02-02T01:00:00.000Z",
+      "author": "did:root",
+      "payload": {
+        "principalId": "did:alice",
+        "ageRecipients": ["age1alice"]
+      },
+      "signature": null
+    },
+    "entry-2": {
+      "kind": "perm.grant",
+      "timestamp": "2024-02-02T01:10:00.000Z",
+      "author": "did:root",
+      "payload": {
+        "scope": "projects:alpha",
+        "cap": "read",
+        "target": { "type": "principal", "id": "did:alice" }
+      },
+      "signature": null
+    },
+    "entry-3": {
+      "kind": "enc.epoch.rotate",
+      "timestamp": "2024-02-02T01:20:00.000Z",
+      "author": "did:root",
+      "payload": {
+        "scope": "projects:alpha",
+        "newEpoch": 2,
+        "wraps": [
+          {
+            "principalId": "did:alice",
+            "epoch": 2,
+            "wrap": { "to": ["age1alice"], "ct": "wrap-ct" }
+          }
+        ]
+      },
+      "signature": null
+    },
+    "entry-4": {
+      "kind": "enc.wrap.publish",
+      "timestamp": "2024-02-03T01:20:00.000Z",
+      "author": "did:root",
+      "payload": {
+        "scope": "projects:alpha",
+        "epoch": 2,
+        "principalId": "did:alice",
+        "wrap": { "to": ["age1alice"], "ct": "wrap-ct-2" }
+      },
+      "signature": null
+    }
+  }
+}

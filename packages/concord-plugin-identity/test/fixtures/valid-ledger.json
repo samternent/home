@@ -1,0 +1,58 @@
+{
+  "format": "concord-ledger",
+  "version": "1.0",
+  "head": "commit-2",
+  "commits": {
+    "genesis": {
+      "parent": null,
+      "timestamp": "2024-01-01T00:00:00.000Z",
+      "metadata": {
+        "genesis": true,
+        "spec": "concord-protocol@1.0"
+      },
+      "entries": []
+    },
+    "commit-1": {
+      "parent": "genesis",
+      "timestamp": "2024-01-02T00:00:00.000Z",
+      "metadata": null,
+      "entries": ["entry-1"]
+    },
+    "commit-2": {
+      "parent": "commit-1",
+      "timestamp": "2024-01-03T00:00:00.000Z",
+      "metadata": null,
+      "entries": ["entry-2"]
+    }
+  },
+  "entries": {
+    "entry-1": {
+      "kind": "identity.upsert",
+      "timestamp": "2024-01-02T01:00:00.000Z",
+      "author": "did:alice",
+      "payload": {
+        "principalId": "did:alice",
+        "displayName": "Alice",
+        "ageRecipients": ["age1alice", "age1alice-rotated"],
+        "metadata": {
+          "role": "builder"
+        }
+      },
+      "signature": null
+    },
+    "entry-2": {
+      "kind": "identity.upsert",
+      "timestamp": "2024-01-03T01:00:00.000Z",
+      "author": "did:alice",
+      "payload": {
+        "principalId": "did:alice",
+        "displayName": "Alice Updated",
+        "ageRecipients": ["age1alice-rotated"],
+        "metadata": {
+          "rotation": "2024-01-03"
+        }
+      },
+      "signature": null
+    }
+  }
+}

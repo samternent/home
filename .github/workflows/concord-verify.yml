@@ -1,0 +1,37 @@
+name: Concord Verify
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      LEDGER_PATH: ledger.json
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Build CLI
+        run: pnpm --filter @concord/cli build
+
+      - name: Protocol verify
+        run: node packages/concord-cli/dist/index.js verify --ledger $LEDGER_PATH
+
+      - name: Semantic replay verify
+        run: node packages/concord-cli/dist/index.js verify --ledger $LEDGER_PATH --semantic

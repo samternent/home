@@ -1,0 +1,63 @@
+import { readFileSync } from "node:fs";
+import { describe, expect, test } from "vitest";
+import {
+  getPrincipal,
+  replayIdentity,
+  resolveAgeRecipients,
+  resolveCurrentAgeRecipient,
+  IdentityRegistryError,
+} from "../../src";
+
+function loadFixture(name: string) {
+  const url = new URL(`./${name}`, import.meta.url);
+  return JSON.parse(readFileSync(url, "utf8"));
+}
+
+describe("identity registry replay", () => {
+  test("replays identity updates in commit order", () => {
+    const ledger = loadFixture("valid-ledger.json");
+
+    const state = replayIdentity(ledger);
+    const principal = getPrincipal(state, "did:alice");
+
+    expect(principal).toBeDefined();
+    expect(principal?.displayName).toBe("Alice Updated");
+    expect(principal?.updatedAt).toBe("2024-01-03T01:00:00.000Z");
+    expect(principal?.updatedBy).toBe("did:alice");
+    expect(resolveAgeRecipients(state, "did:alice")).toEqual([
+      "age1alice-rotated",
+    ]);
+    expect(resolveCurrentAgeRecipient(state, "did:alice")).toBe(
+      "age1alice-rotated"
+    );
+
+    const earlierState = replayIdentity(ledger, "commit-1");
+    const earlier = getPrincipal(earlierState, "did:alice");
+    expect(earlier?.displayName).toBe("Alice");
+    expect(earlier?.updatedAt).toBe("2024-01-02T01:00:00.000Z");
+  });
+
+  test("rejects identity.upsert with author mismatch", () => {
+    const ledger = loadFixture("invalid-author.json");
+    try {
+      replayIdentity(ledger);
+      throw new Error("Expected replayIdentity to throw");
+    } catch (error) {
+      expect(error).toBeInstanceOf(IdentityRegistryError);
+      expect((error as IdentityRegistryError).code).toBe("AUTHOR_MISMATCH");
+    }
+  });
+
+  test("rejects empty age recipients", () => {
+    const ledger = loadFixture("invalid-age-recipient.json");
+    try {
+      replayIdentity(ledger);
+      throw new Error("Expected replayIdentity to throw");
+    } catch (error) {
+      expect(error).toBeInstanceOf(IdentityRegistryError);
+      expect((error as IdentityRegistryError).code).toBe(
+        "INVALID_IDENTITY_UPSERT"
+      );
+    }
+  });
+});

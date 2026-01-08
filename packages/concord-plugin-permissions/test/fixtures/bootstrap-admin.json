@@ -1,0 +1,17 @@
+{
+  "format": "concord-ledger",
+  "version": "1.0",
+  "head": "genesis",
+  "commits": {
+    "genesis": {
+      "parent": null,
+      "timestamp": "2024-01-01T00:00:00.000Z",
+      "metadata": {
+        "genesis": true,
+        "spec": "concord-protocol@1.0"
+      },
+      "entries": []
+    }
+  },
+  "entries": {}
+}
