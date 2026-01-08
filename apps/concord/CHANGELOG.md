@@ -1,5 +1,13 @@
 # concord
 
+## 0.0.21
+
+### Patch Changes
+
+- [`07a0a4b58ff9c14e152bc60c7f3dce89166387d6`](https://github.com/samternent/home/commit/07a0a4b58ff9c14e152bc60c7f3dce89166387d6) Thanks [@samternent](https://github.com/samternent)! - AI refact
+
+- [`223632df926a9475b4c939dcac03ab81066a67ce`](https://github.com/samternent/home/commit/223632df926a9475b4c939dcac03ab81066a67ce) Thanks [@samternent](https://github.com/samternent)! - fix wasm
+
 ## 0.0.20
 
 ### Patch Changes
