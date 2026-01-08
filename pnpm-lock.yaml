@@ -330,7 +330,7 @@ importers:
         version: 0.25.0
       '@ternent/concord-protocol-wasm':
         specifier: workspace:*
-        version: link:../../packages/concord-protocol-wasm
+        version: link:../../packages/concord-protocol-wasm/pkg
       '@vueform/vueform':
         specifier: ^1.10.3
         version: 1.10.3
@@ -425,9 +425,6 @@ importers:
       regenerator-runtime:
         specifier: ^0.13.11
         version: 0.13.11
-      ternent-utils:
-        specifier: workspace:*
-        version: link:../utils
       vitest:
         specifier: ^1.6.0
         version: 1.6.0
@@ -439,11 +436,9 @@ importers:
         specifier: ^1.7.3
         version: 1.7.3(vite@2.9.18)
 
-  packages/concord-protocol-wasm:
-    devDependencies:
-      wasm-pack:
-        specifier: ^0.12.1
-        version: 0.12.1
+  packages/concord-protocol-wasm/pkg: {}
+
+  packages/concord-test-vectors: {}
 
   packages/encrypt:
     dependencies:
