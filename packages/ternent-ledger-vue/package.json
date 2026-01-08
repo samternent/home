@@ -1,0 +1,13 @@
+{
+  "name": "ternent-ledger-vue",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "ternent-ledger": "workspace:*",
+    "vue": "^3.4.0"
+  }
+}

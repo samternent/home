@@ -8,6 +8,14 @@ export default defineConfig({
   resolve: {
     alias: {
       fs: resolve(__dirname, "src/shims/fs.ts"),
+      "ternent-ledger": resolve(
+        __dirname,
+        "../../packages/ledger/src/index.ts"
+      ),
+      "ternent-ledger-vue": resolve(
+        __dirname,
+        "../../packages/ternent-ledger-vue/src/index.ts"
+      ),
     },
   },
   build: {

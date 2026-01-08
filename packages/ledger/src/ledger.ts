@@ -1,452 +1,511 @@
-import {
+import type {
   CommitMetadata,
+  Entry,
+  LedgerContainer,
+} from "@ternent/concord-protocol";
+import {
   createLedger,
   deriveCommitId,
   deriveEntryId,
-  Entry,
-  LedgerContainer,
   getCommitChain,
   getEntrySigningPayload,
   isGenesisCommit,
 } from "@ternent/concord-protocol";
-import { sign, exportPublicKeyAsPem } from "ternent-identity";
-import { stripIdentityKey, generateId } from "ternent-utils";
+import { squashByIdAndKindAndResign } from "./squash";
 
-interface ILedgerConfig {
-  plugins: Array<Record<string, (...args: unknown[]) => unknown>>;
-  ledger?: LedgerContainer | LedgerWithPendingEntries | null;
-  secret?: string;
-  identity?: string;
-}
+export type EntryWithId = Entry & { entryId: string };
 
-/**
- * Ledger API surface returned by useLedger.
- */
-export interface ILedgerAPI {
-  auth: (signKey: CryptoKey, verifyKey: CryptoKey) => Promise<void>;
-  load: (
-    ledger: LedgerContainer | LedgerWithPendingEntries,
-    shouldReplay?: boolean
-  ) => Promise<LedgerContainer | LedgerWithPendingEntries>;
-  create: () => Promise<LedgerContainer | undefined>;
-  replay: (from?: string, to?: string) => Promise<void>;
-  commit: (message: string) => Promise<LedgerContainer | undefined>;
-  add: (
-    payload: Entry["payload"],
-    kind: string,
-    options?: { silent?: boolean }
-  ) => Promise<EntryWithId | void>;
-  destroy: () => Promise<void>;
-  squashRecords: () => Promise<void>;
-  removePendingRecord: (record: EntryWithId) => Promise<LedgerContainer | void>;
-}
-
-interface IHooks {
-  [key: string]: Array<Function>;
-}
-
-type EntryWithId = Entry & { entryId: string };
-
-type PendingEntry = {
+export type PendingEntry = {
   entryId: string;
   entry: Entry;
 };
 
-type LedgerWithPendingEntries = LedgerContainer & {
-  pendingEntries?: PendingEntry[];
+export type LedgerState<P> = {
+  ledger: LedgerContainer | null;
+  pending: PendingEntry[];
+  signingKey: CryptoKey | null;
+  publicKey: CryptoKey | null;
+  projection: P;
 };
 
-function toEntryWithId(record: PendingEntry): EntryWithId {
-  return {
-    entryId: record.entryId,
-    ...record.entry,
-  };
+export type LedgerEvent<P> =
+  | {
+      type: "AUTH";
+      signingKey: CryptoKey;
+      publicKey: CryptoKey;
+      author: string;
+    }
+  | { type: "LOAD"; ledger: LedgerContainer; pending: PendingEntry[] }
+  | { type: "READY" }
+  | { type: "ADD_STAGED"; entry: EntryWithId; silent: boolean }
+  | { type: "PENDING_REPLACED"; pending: PendingEntry[] }
+  | {
+      type: "COMMIT";
+      ledger: LedgerContainer;
+      message: string;
+      metadata: CommitMetadata;
+    }
+  | { type: "REPLAY"; entries: EntryWithId[]; from?: string; to?: string }
+  | { type: "PROJECTION"; projection: P }
+  | { type: "DESTROY" };
+
+export type Reducer<P> = (projection: P, entry: EntryWithId) => P;
+
+export type EntryTransform = (
+  entry: EntryWithId
+) => Promise<EntryWithId | null> | (EntryWithId | null);
+
+export type BatchTransform = (
+  entries: EntryWithId[]
+) => Promise<EntryWithId[]> | EntryWithId[];
+
+export type StorageAdapter<P> = {
+  name: string;
+
+  /** Load persisted state (ledger+pending). Called by runtime.loadFromStorage(). */
+  load?: () => Promise<{
+    ledger: LedgerContainer;
+    pending?: PendingEntry[];
+  } | null>;
+
+  /** Persist state after material changes. */
+  save?: (snapshot: {
+    ledger: LedgerContainer | null;
+    pending: PendingEntry[];
+    projection: P;
+  }) => Promise<void>;
+
+  /** Optional: clear storage */
+  clear?: () => Promise<void>;
+};
+
+export type LedgerPlugin<P> = {
+  name: string;
+  priority?: number;
+
+  onEvent?: (ev: LedgerEvent<P>, api: LedgerApi<P>) => void | Promise<void>;
+  transformEntry?: EntryTransform;
+  transformReplayBatch?: BatchTransform;
+
+  storage?: StorageAdapter<P>;
+};
+
+export type SquashStrategy = {
+  name: string;
+  squash: (pending: PendingEntry[]) => Promise<PendingEntry[]> | PendingEntry[];
+};
+
+export type AuthorResolver = (publicKey: CryptoKey) => Promise<string> | string;
+export type Signer = (
+  signingKey: CryptoKey,
+  signingPayload: ReturnType<typeof getEntrySigningPayload>
+) => Promise<string> | string;
+
+export type LedgerApi<P> = {
+  getState(): Readonly<LedgerState<P>>;
+  subscribe(listener: (state: Readonly<LedgerState<P>>) => void): () => void;
+  recomputeProjection(): Promise<P>;
+  replacePending(next: PendingEntry[]): Promise<void>;
+  log: (...args: any[]) => void;
+};
+
+type RuntimeConfig<P> = {
+  plugins?: LedgerPlugin<P>[];
+  reducer: Reducer<P>;
+  initialProjection: P;
+  now?: () => string;
+
+  /** Injected identity/signing */
+  resolveAuthor: AuthorResolver;
+  sign: Signer;
+
+  /** Auto-persist after changes (default true if any plugin has storage.save) */
+  autoPersist?: boolean;
+};
+
+function sortPlugins<P>(plugins: LedgerPlugin<P>[]) {
+  return [...plugins].sort((a, b) => (a.priority ?? 0) - (b.priority ?? 0));
 }
 
 function normalizeEntry(entry: Entry): Entry {
-  return {
-    ...entry,
-    payload: entry.payload ?? null,
-  };
+  return { ...entry, payload: entry.payload ?? null };
 }
 
-/**
- * Adds a staged entry if it is not already committed or staged.
- */
-async function stagePendingEntry(
-  entry: Entry,
+async function stageEntry(
   ledger: LedgerContainer,
-  pendingEntries: PendingEntry[]
-): Promise<PendingEntry[] | null> {
-  const normalizedEntry = normalizeEntry(entry);
-  const entryId = await deriveEntryId(normalizedEntry);
-  const hasPending = pendingEntries.some(
-    (pending) => pending.entryId === entryId
-  );
-  if (hasPending) {
-    return null;
-  }
-  if (ledger.entries[entryId]) {
-    return null;
-  }
-  return [...pendingEntries, { entryId, entry: normalizedEntry }];
+  pending: PendingEntry[],
+  entry: Entry
+): Promise<{ pending: PendingEntry[]; entryId: string } | null> {
+  const normalized = normalizeEntry(entry);
+  const entryId = await deriveEntryId(normalized);
+
+  if (pending.some((p) => p.entryId === entryId)) return null;
+  if (ledger.entries[entryId]) return null;
+
+  return { pending: [...pending, { entryId, entry: normalized }], entryId };
 }
 
-/**
- * Creates a commit from staged entries and returns the updated ledger.
- */
-async function commitStagedEntries(
+async function commitPending(
   ledger: LedgerContainer,
-  pendingEntries: PendingEntry[],
-  metadata: CommitMetadata = {},
-  timestamp = new Date().toISOString()
+  pending: PendingEntry[],
+  metadata: CommitMetadata,
+  timestamp: string
 ): Promise<LedgerContainer> {
-  if (!pendingEntries.length) {
-    return ledger;
-  }
-  const entryIds = pendingEntries.map((pending) => pending.entryId);
+  if (!pending.length) return ledger;
+
+  const entryIds = pending.map((p) => p.entryId);
   const commit = {
     parent: ledger.head ?? null,
     timestamp,
     metadata: Object.keys(metadata).length ? metadata : null,
     entries: entryIds,
   };
+
   const commitId = await deriveCommitId(commit);
+
   const entries = { ...ledger.entries };
-  for (const pending of pendingEntries) {
-    entries[pending.entryId] = pending.entry;
-  }
+  for (const p of pending) entries[p.entryId] = p.entry;
+
   return {
     ...ledger,
-    commits: {
-      ...ledger.commits,
-      [commitId]: commit,
-    },
+    commits: { ...ledger.commits, [commitId]: commit },
     entries,
     head: commitId,
   };
 }
 
-/**
- * Stateful ledger wrapper with staging, signing, and replay hooks.
- */
-export default function useLedger(
-  config: ILedgerConfig = {
-    plugins: [],
-    ledger: null,
+function buildOrderedEntries(
+  ledger: LedgerContainer,
+  pending: PendingEntry[]
+): EntryWithId[] {
+  const chain = getCommitChain(ledger);
+  const ordered: EntryWithId[] = [];
+
+  for (const commitId of chain) {
+    const commit = ledger.commits[commitId];
+    if (!commit || isGenesisCommit(commit)) continue;
+    for (const entryId of commit.entries) {
+      const entry = ledger.entries[entryId];
+      if (!entry) continue;
+      ordered.push({ entryId, ...entry });
+    }
   }
-): ILedgerAPI {
-  const state: {
-    ledger: LedgerContainer | null;
-    pendingEntries: PendingEntry[];
-    signingKey: CryptoKey | null;
-    publicKey: CryptoKey | null;
-  } = {
+
+  for (const p of pending) {
+    ordered.push({ entryId: p.entryId, ...p.entry });
+  }
+
+  return ordered;
+}
+
+export function createLedgerRuntime<P>(config: RuntimeConfig<P>) {
+  const plugins = sortPlugins(config.plugins ?? []);
+  const now = config.now ?? (() => new Date().toISOString());
+
+  const storageAdapters = plugins
+    .map((p) => p.storage)
+    .filter(Boolean) as StorageAdapter<P>[];
+  const autoPersist =
+    config.autoPersist ?? storageAdapters.some((s) => !!s.save);
+
+  const state: LedgerState<P> = {
     ledger: null,
-    pendingEntries: [],
+    pending: [],
     signingKey: null,
     publicKey: null,
+    projection: config.initialProjection,
   };
 
-  const hooks: IHooks = {
-    onAuth: [],
-    onLoad: [],
-    onReady: [],
-    onCreate: [],
-    onUpdate: [],
-    onUnload: [],
-    onBeforeReplay: [],
-    onReplay: [],
-    onCommit: [],
-    onAdd: [],
-    onDestroy: [],
-  };
+  const listeners = new Set<(state: Readonly<LedgerState<P>>) => void>();
 
-  config.plugins.forEach((plugin) => {
-    Object.entries(plugin).forEach(([key, val]) => {
-      hooks[key].push(val);
-    });
-  });
-
-  async function runHooks(type: string, props = {}) {
-    let i = 0;
-    let len = hooks[type].length;
-    for (; i < len; i++) {
-      await hooks[type][i](JSON.parse(JSON.stringify(props)));
+  function notify() {
+    for (const listener of listeners) {
+      listener(state);
     }
   }
 
-  async function auth(signKey: CryptoKey, verifyKey: CryptoKey) {
-    state.signingKey = signKey;
-    state.publicKey = verifyKey;
-
-    await runHooks("onAuth");
+  async function emit(ev: LedgerEvent<P>) {
+    for (const p of plugins) {
+      await p.onEvent?.(ev, api);
+    }
   }
 
-  async function create() {
-    if (!state.publicKey || !state.signingKey) return;
+  async function persistIfNeeded() {
+    if (!autoPersist) return;
+    for (const s of storageAdapters) {
+      if (s.save) {
+        await s.save({
+          ledger: state.ledger,
+          pending: state.pending,
+          projection: state.projection,
+        });
+      }
+    }
+  }
 
-    const timestamp = new Date().toISOString();
-    const ledger = await createLedger({ created_at: timestamp });
+  async function applyEntryTransforms(
+    entry: EntryWithId
+  ): Promise<EntryWithId | null> {
+    let current: EntryWithId | null = entry;
+    for (const p of plugins) {
+      if (!current) break;
+      if (p.transformEntry) current = await p.transformEntry(current);
+    }
+    return current;
+  }
+
+  async function applyReplayBatchTransforms(
+    entries: EntryWithId[]
+  ): Promise<EntryWithId[]> {
+    let current = entries;
+    for (const p of plugins) {
+      if (p.transformReplayBatch)
+        current = await p.transformReplayBatch(current);
+    }
+    return current;
+  }
+
+  const api: LedgerApi<P> = {
+    getState() {
+      return state;
+    },
+    subscribe(listener) {
+      listeners.add(listener);
+      return () => {
+        listeners.delete(listener);
+      };
+    },
+    async recomputeProjection() {
+      if (!state.ledger) {
+        state.projection = config.initialProjection;
+        await emit({ type: "PROJECTION", projection: state.projection });
+        notify();
+        await persistIfNeeded();
+        return state.projection;
+      }
+
+      const ordered = buildOrderedEntries(state.ledger, state.pending);
+      const batch = await applyReplayBatchTransforms(ordered);
+
+      let proj = config.initialProjection;
+      for (const e of batch) {
+        const te = await applyEntryTransforms(e);
+        if (!te) continue;
+        proj = config.reducer(proj, te);
+      }
+
+      state.projection = proj;
+      await emit({ type: "PROJECTION", projection: proj });
+      notify();
+      await persistIfNeeded();
+      return proj;
+    },
+    async replacePending(next) {
+      state.pending = next;
+      await emit({ type: "PENDING_REPLACED", pending: next });
+      await api.recomputeProjection();
+      notify();
+      await persistIfNeeded();
+    },
+    log: (...args) => console.log("[ledger]", ...args),
+  };
+
+  async function auth(signingKey: CryptoKey, publicKey: CryptoKey) {
+    state.signingKey = signingKey;
+    state.publicKey = publicKey;
+
+    const author = await config.resolveAuthor(publicKey);
+    await emit({ type: "AUTH", signingKey, publicKey, author });
+    notify();
+  }
+
+  async function createLedgerInMemory(metadata: Record<string, unknown> = {}) {
+    const ledger = await createLedger({ created_at: now(), ...metadata });
     state.ledger = ledger;
-    state.pendingEntries = [];
-
-    await runHooks("onCreate", state);
-    await runHooks("onLoad", state);
-    await runHooks("onReady", state);
-
-    return state.ledger;
-  }
-
-  async function load(
-    ledger: LedgerContainer | LedgerWithPendingEntries,
-    shouldReplay = true
-  ) {
-    state.ledger = {
-      format: ledger.format,
-      version: ledger.version,
-      commits: ledger.commits,
-      entries: ledger.entries,
-      head: ledger.head,
-    };
-    state.pendingEntries =
-      "pendingEntries" in ledger && ledger.pendingEntries
-        ? ledger.pendingEntries
-        : [];
-    await runHooks("onLoad", state);
-    if (shouldReplay) {
-      await replay();
-    }
-    await runHooks("onReady", state);
-
+    state.pending = [];
+    await emit({ type: "LOAD", ledger, pending: [] });
+    await api.recomputeProjection();
+    await emit({ type: "READY" });
+    notify();
+    await persistIfNeeded();
     return ledger;
   }
 
-  async function add(
-    payload: Entry["payload"],
-    kind: string,
-    { silent = false } = {}
-  ): Promise<EntryWithId | void> {
-    if (!state.signingKey) {
-      console.warn("Cannot add entry: signingKey not verified");
-      return;
-    }
+  async function load(
+    ledger: LedgerContainer,
+    pending: PendingEntry[] = [],
+    shouldRecompute = true
+  ) {
+    state.ledger = ledger;
+    state.pending = pending;
 
-    if (!state.publicKey) {
-      console.warn("Cannot add entry: signingKey not verified");
-      return;
-    }
+    await emit({ type: "LOAD", ledger, pending });
+    if (shouldRecompute) await api.recomputeProjection();
+    await emit({ type: "READY" });
+    notify();
+    await persistIfNeeded();
 
-    if (!state.ledger) {
-      console.warn("Cannot add entry: ledger not loaded");
-      return;
-    }
+    return { ledger, pending, projection: state.projection };
+  }
 
-    if (!kind) {
-      console.warn("Cannot add entry: kind is required");
-      return;
+  async function loadFromStorage() {
+    // First adapter that returns a state wins.
+    for (const s of storageAdapters) {
+      if (!s.load) continue;
+      const res = await s.load();
+      if (res?.ledger) {
+        await load(res.ledger, res.pending ?? []);
+        return res;
+      }
     }
+    return null;
+  }
 
-    const timestamp = new Date().toISOString();
-    const author = stripIdentityKey(
-      await exportPublicKeyAsPem(state.publicKey)
-    );
+  async function addAndStage(opts: {
+    kind: string;
+    payload: Entry["payload"];
+    silent?: boolean;
+    /** Optional timestamp override */
+    timestamp?: string;
+  }): Promise<EntryWithId | null> {
+    if (!state.ledger) throw new Error("Ledger not loaded");
+    if (!state.signingKey || !state.publicKey) throw new Error("Not authed");
+    if (!opts.kind) throw new Error("kind is required");
+
+    const timestamp = opts.timestamp ?? now();
+    const author = await config.resolveAuthor(state.publicKey);
 
     const entryCore: Entry = {
-      kind,
+      kind: opts.kind,
       timestamp,
       author,
-      payload: payload ?? null,
+      payload: opts.payload ?? null,
     };
 
-    const entryId = await deriveEntryId(entryCore);
-    const signature = await sign(
+    const signature = await config.sign(
       state.signingKey,
       getEntrySigningPayload(entryCore)
     );
 
-    const entry: Entry = {
-      ...entryCore,
-      signature,
-    };
+    const entry: Entry = { ...entryCore, signature };
+    const staged = await stageEntry(state.ledger, state.pending, entry);
+    if (!staged) return null;
 
-    const updatedPending = await stagePendingEntry(
-      entry,
+    state.pending = staged.pending;
+    const entryWithId: EntryWithId = { entryId: staged.entryId, ...entry };
+
+    await emit({
+      type: "ADD_STAGED",
+      entry: entryWithId,
+      silent: !!opts.silent,
+    });
+    notify();
+
+    if (!opts.silent) {
+      await api.recomputeProjection();
+    }
+
+    await persistIfNeeded();
+    return entryWithId;
+  }
+
+  async function commit(message: string, metadata: CommitMetadata) {
+    if (!state.ledger) throw new Error("Ledger not loaded");
+
+    const ledger = await commitPending(
       state.ledger,
-      state.pendingEntries
+      state.pending,
+      metadata,
+      now()
     );
-    if (!updatedPending) {
-      return;
-    }
-    state.pendingEntries = updatedPending;
-    const record = toEntryWithId({ entryId, entry });
+    state.ledger = ledger;
+    state.pending = [];
 
-    if (!silent) {
-      await runHooks("onAdd", record);
-      await runHooks("onUpdate", state);
-    }
+    await emit({ type: "COMMIT", ledger, message, metadata });
+    await api.recomputeProjection();
+    notify();
+    await persistIfNeeded();
 
-    return record;
+    return ledger;
   }
 
   async function replay(from?: string, to?: string) {
-    if (!state.ledger) {
-      console.warn("Cannot replay: ledger not loaded");
-      return;
-    }
+    if (!state.ledger) return;
 
-    const { commits, entries } = state.ledger;
-    const chain = getCommitChain(state.ledger);
+    const ordered = buildOrderedEntries(state.ledger, state.pending);
 
-    const orderedEntries: EntryWithId[] = [];
-    for (const commitId of chain) {
-      const commit = commits[commitId];
-      if (!commit || isGenesisCommit(commit)) {
-        continue;
-      }
-      for (const entryId of commit.entries) {
-        const entry = entries[entryId];
-        if (!entry) continue;
-        orderedEntries.push({ entryId, ...entry });
-      }
-    }
+    const start = from ? ordered.findIndex((e) => e.entryId === from) : 0;
+    const endIndex = to
+      ? ordered.findIndex((e) => e.entryId === to)
+      : ordered.length - 1;
 
-    for (const pending of state.pendingEntries) {
-      orderedEntries.push(toEntryWithId(pending));
-    }
+    if (start < 0) throw new Error(`from entry not found: ${from}`);
+    if (to && endIndex < 0) throw new Error(`to entry not found: ${to}`);
 
-    let i = from
-      ? orderedEntries.findIndex(({ entryId }) => entryId === from)
-      : 0;
+    const slice = ordered.slice(start, endIndex + 1);
+    await emit({ type: "REPLAY", entries: slice, from, to });
 
-    const len = to
-      ? orderedEntries.findIndex(({ entryId }) => entryId === to) + 1
-      : orderedEntries.length;
+    await api.recomputeProjection();
+    notify();
+  }
 
-    if (i < 0) {
-      console.warn(`Cannot replay: transaction ${from} not found`);
-      return;
-    }
-
-    await runHooks("onBeforeReplay", { from, to });
-
-    for (; i < len; i++) {
-      await runHooks("onAdd", orderedEntries[i]);
-    }
-    await runHooks("onReplay", { from, to, ...state });
+  async function squash(strategy: SquashStrategy) {
+    const next = await strategy.squash(state.pending);
+    await api.replacePending(next);
   }
 
   async function destroy() {
-    await runHooks("onDestroy", state);
-  }
+    await emit({ type: "DESTROY" });
 
-  async function commit(message: string) {
-    if (!state.ledger || !state.publicKey || !state.signingKey) return;
+    state.ledger = null;
+    state.pending = [];
+    state.signingKey = null;
+    state.publicKey = null;
+    state.projection = config.initialProjection;
+    notify();
 
-    const author = stripIdentityKey(
-      await exportPublicKeyAsPem(state.publicKey)
-    );
-    const ledger = await commitStagedEntries(
-      state.ledger,
-      state.pendingEntries,
-      {
-        author,
-        message,
-      }
-    );
-    state.ledger = ledger;
-    state.pendingEntries = [];
-    await runHooks("onCommit", state);
-    await runHooks("onUpdate", state);
-    return state.ledger;
-  }
-
-  async function removePendingRecord(record: EntryWithId) {
-    if (!state.ledger) return;
-    const index = state.pendingEntries.findIndex(
-      (pending) => pending.entryId === record.entryId
-    );
-    if (index < 0) {
-      return state.ledger;
+    for (const s of storageAdapters) {
+      await s.clear?.();
     }
-
-    state.pendingEntries.splice(index, 1);
-    await destroy();
-    await replay();
-    await runHooks("onUpdate", state);
-    return state.ledger;
   }
 
-  async function squashRecords() {
-    if (!state.ledger) return;
-    const lookup: {
-      [key: string]: any;
-    } = {};
+  async function squashByIdAndKind(opts: { kinds?: string[] } = {}) {
+    if (!state.ledger) throw new Error("Ledger not loaded");
+    if (!state.signingKey || !state.publicKey) throw new Error("Not authed");
 
-    for (let i = 0; i < state.pendingEntries.length; i++) {
-      const record = state.pendingEntries[i];
-      const entry = record.entry;
-      if (!entry.kind || !entry.payload) return;
-      const payload = entry.payload as { id?: string; [key: string]: any };
-      if (!payload.id) return;
-      lookup[`${payload.id}_${entry.kind}`] = {
-        payload: {
-          ...(lookup[`${payload.id}_${entry.kind}`]?.payload || {}),
-          ...payload,
-        },
-        kind: entry.kind,
-      };
-    }
-
-    state.pendingEntries = [];
-
-    const squashedEntries: Array<Promise<EntryWithId>> = Object.values(
-      lookup
-    ).map((entry) => {
-      return new Promise(async (resolve, reject) => {
-        try {
-          const _entry = await add(
-            {
-              id: generateId(),
-              ...entry.payload,
-            },
-            entry.kind,
-            { silent: true }
-          );
-          if (_entry) {
-            resolve(_entry);
-          }
-        } catch (e) {
-          reject(e);
-        }
-      });
+    const next = await squashByIdAndKindAndResign(state.pending, {
+      kinds: opts.kinds,
+      signingKey: state.signingKey,
+      publicKey: state.publicKey,
+      resolveAuthor: config.resolveAuthor,
+      sign: config.sign,
+      now,
+      passthroughUnkeyed: true,
     });
 
-    const pendingEntries: Array<EntryWithId> = await Promise.all(
-      squashedEntries
-    );
-    state.pendingEntries = pendingEntries.map((record) => ({
-      entryId: record.entryId,
-      entry: {
-        kind: record.kind,
-        timestamp: record.timestamp,
-        author: record.author,
-        payload: record.payload,
-        signature: record.signature,
-      },
-    }));
-    await runHooks("onUpdate", state);
+    await api.replacePending(next);
   }
 
   return {
+    api,
+    subscribe: api.subscribe,
+
     auth,
+    create: createLedgerInMemory,
     load,
-    create,
-    replay,
+    loadFromStorage,
+
+    addAndStage,
+
     commit,
-    add,
+    replay,
+    squash,
+    squashByIdAndKind,
+
     destroy,
-    squashRecords,
-    removePendingRecord,
+
+    getLedger: () => state.ledger,
+    getPending: () => state.pending,
+    getProjection: () => state.projection,
   };
 }

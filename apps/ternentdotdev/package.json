@@ -33,6 +33,7 @@
     "sams-game-kit": "workspace:*",
     "ternent-encrypt": "workspace:*",
     "ternent-identity": "workspace:*",
+    "ternent-ledger-vue": "workspace:*",
     "ternent-ledger": "workspace:*",
     "ternent-ui": "workspace:*",
     "ternent-utils": "workspace:*",

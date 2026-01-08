@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 
 import Docs from "./docs/Docs.vue";
-import Playground from "./playground/Playground.vue";
 import Home from "./home/Home.vue";
 
 type DocMeta = {
@@ -55,12 +54,12 @@ export const routes = [
   // Playground: keep client-only routes under /playground
   {
     path: "/playground",
-    component: Playground,
+    component: () => import("./playground/Playground.vue"),
     children: [
       {
-        path: "",
-        name: "playground",
-        component: () => import("./playground/Playground.vue"),
+        path: "demo",
+        name: "playground-demo",
+        component: () => import("./playground/PlaygroundDemo.vue"),
       },
       // later: /playground/create, /playground/verify, etc.
     ],
