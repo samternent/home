@@ -16,6 +16,10 @@ export default defineConfig({
         __dirname,
         "../../packages/ternent-ledger-vue/src/index.ts"
       ),
+      "ternent-encrypt": resolve(
+        __dirname,
+        "../../packages/encrypt/src/index.ts"
+      ),
     },
   },
   build: {
