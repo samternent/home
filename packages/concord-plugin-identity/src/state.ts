@@ -37,5 +37,5 @@ export function resolveCurrentAgeRecipient(
   if (recipients.length === 0) {
     return undefined;
   }
-  return recipients[recipients.length - 1];
+  return recipients[0];
 }

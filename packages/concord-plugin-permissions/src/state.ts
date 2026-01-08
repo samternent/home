@@ -17,6 +17,7 @@ export type GrantRecord = {
   };
   grantedBy: string;
   grantedAt: string;
+  order: number;
 };
 
 export type RevokeRecord = {
@@ -26,6 +27,7 @@ export type RevokeRecord = {
   reason?: string;
   revokedBy: string;
   revokedAt: string;
+  order: number;
 };
 
 export type PermissionState = {

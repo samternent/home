@@ -1,0 +1,35 @@
+{
+  "format": "concord-ledger",
+  "version": "1.0",
+  "head": "commit-1",
+  "commits": {
+    "genesis": {
+      "parent": null,
+      "timestamp": "2024-07-01T00:00:00.000Z",
+      "metadata": {
+        "genesis": true,
+        "spec": "concord-protocol@1.0"
+      },
+      "entries": []
+    },
+    "commit-1": {
+      "parent": "genesis",
+      "timestamp": "2024-07-02T00:00:00.000Z",
+      "metadata": null,
+      "entries": ["entry-1"]
+    }
+  },
+  "entries": {
+    "entry-1": {
+      "kind": "identity.upsert",
+      "timestamp": "2024-07-02T01:00:00.000Z",
+      "author": "did:alice",
+      "payload": {
+        "principalId": "",
+        "displayName": "Alice",
+        "ageRecipients": ["age1alice"]
+      },
+      "signature": null
+    }
+  }
+}

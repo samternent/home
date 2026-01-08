@@ -77,28 +77,39 @@ export function getEffectiveCaps(
 
   const groupIds = collectGroupMemberships(state, principalId);
   const explicitCaps = new Set<Cap>();
+  const events: {
+    order: number;
+    kind: "grant" | "revoke";
+    record: typeof state.grants[number] | typeof state.revokes[number];
+  }[] = [];
 
   for (const grant of state.grants) {
-    if (grant.scope !== scope) {
-      continue;
-    }
-    if (!targetMatches(grant.target, principalId, groupIds)) {
-      continue;
-    }
-    if (isGrantExpired(grant.constraints?.expires, nowIso)) {
-      continue;
-    }
-    explicitCaps.add(grant.cap);
+    events.push({ order: grant.order, kind: "grant", record: grant });
+  }
+  for (const revoke of state.revokes) {
+    events.push({ order: revoke.order, kind: "revoke", record: revoke });
   }
 
-  for (const revoke of state.revokes) {
-    if (revoke.scope !== scope) {
+  events.sort((a, b) => a.order - b.order);
+
+  for (const event of events) {
+    const record = event.record;
+    if (record.scope !== scope) {
       continue;
     }
-    if (!targetMatches(revoke.target, principalId, groupIds)) {
+    if (!targetMatches(record.target, principalId, groupIds)) {
       continue;
     }
-    explicitCaps.delete(revoke.cap);
+    if (event.kind === "grant") {
+      const grant = record as typeof state.grants[number];
+      if (isGrantExpired(grant.constraints?.expires, nowIso)) {
+        continue;
+      }
+      explicitCaps.add(grant.cap);
+    } else {
+      const revoke = record as typeof state.revokes[number];
+      explicitCaps.delete(revoke.cap);
+    }
   }
 
   return expandCaps(explicitCaps);
