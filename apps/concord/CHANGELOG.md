@@ -1,5 +1,11 @@
 # concord
 
+## 0.0.22
+
+### Patch Changes
+
+- [`4fcdcbe8ff4d9f59d7936ca76497521dcfbf9514`](https://github.com/samternent/home/commit/4fcdcbe8ff4d9f59d7936ca76497521dcfbf9514) Thanks [@samternent](https://github.com/samternent)! - policy
+
 ## 0.0.21
 
 ### Patch Changes
