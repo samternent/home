@@ -1,6 +1,6 @@
 {
   "name": "@ternent/concord-plugin-encryption",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Concord encryption metadata semantic layer",
   "publishConfig": {
     "access": "public"
