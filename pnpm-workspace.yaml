@@ -2,6 +2,6 @@ packages:
   - "apps/*"
   - "apps/_templates/*"
   - "packages/*"
-  - "!packages/blockchain"
-  - "packages/blockchain/pkg"
+  - "!packages/concord-protocol-wasm"
+  - "packages/concord-protocol-wasm/pkg"
   - "packages/ragejs/pkg"
