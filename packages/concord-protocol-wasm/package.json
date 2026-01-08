@@ -1,5 +1,5 @@
 {
-  "name": "@ternent/concord-protocol-wasm",
+  "name": "concord-protocol-wasm",
   "version": "1.0.0",
   "description": "Concord protocol core implemented in Rust and compiled to WebAssembly.",
   "main": "index.js",
