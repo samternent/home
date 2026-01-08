@@ -42,13 +42,12 @@ export class EncryptionRegistryError extends Error {
 
 function parsePayload<T>(
   schema: { safeParse: (value: unknown) => any },
-  payload: unknown,
-  code: string
+  payload: unknown
 ): T {
   const result = schema.safeParse(payload);
   if (!result.success) {
     throw new EncryptionRegistryError(
-      code,
+      "INVALID_PAYLOAD",
       result.error.issues
         .map((issue: { message: string }) => issue.message)
         .join("; ")
@@ -93,7 +92,7 @@ function ensureReadable(
   const caps = getEffectiveCaps(permissionsState, principalId, scope);
   if (!caps.has("read")) {
     throw new EncryptionRegistryError(
-      "INELIGIBLE_PRINCIPAL",
+      "INELIGIBLE_TARGET",
       "wrap target must have read capability"
     );
   }
@@ -109,7 +108,7 @@ function ensureRecipientsMatch(
   const recipients = resolveAgeRecipients(identityState, principalId);
   if (recipients.length === 0) {
     return addWarning(state, {
-      code: "MISSING_RECIPIENT",
+      code: "MISSING_RECIPIENTS",
       message: "principal has no registered age recipients",
       scope,
       principalId,
@@ -119,7 +118,7 @@ function ensureRecipientsMatch(
   for (const recipient of recipients) {
     if (!toRecipients.includes(recipient)) {
       throw new EncryptionRegistryError(
-        "WRAP_RECIPIENT_MISMATCH",
+        "INVALID_PAYLOAD",
         "wrap recipients must include all registered age recipients"
       );
     }
@@ -179,7 +178,7 @@ function applyEpochRotate(
   const scopeState = getScopeState(state, payload.scope);
   if (payload.newEpoch !== scopeState.currentEpoch + 1) {
     throw new EncryptionRegistryError(
-      "INVALID_EPOCH",
+      "INVALID_EPOCH_TRANSITION",
       "newEpoch must equal currentEpoch + 1"
     );
   }
@@ -197,7 +196,7 @@ function applyEpochRotate(
   for (const wrap of payload.wraps) {
     if (wrap.epoch !== payload.newEpoch) {
       throw new EncryptionRegistryError(
-        "INVALID_WRAP_EPOCH",
+        "INVALID_PAYLOAD",
         "wrap.epoch must equal newEpoch"
       );
     }
@@ -303,8 +302,7 @@ export function replayEncryption(
       if (entry.kind === "enc.epoch.rotate") {
         const payload = parsePayload<EncEpochRotatePayload>(
           encEpochRotatePayloadSchema,
-          entry.payload,
-          "INVALID_ENC_ROTATE"
+          entry.payload
         );
         state = applyEpochRotate(
           state,
@@ -316,8 +314,7 @@ export function replayEncryption(
       } else if (entry.kind === "enc.wrap.publish") {
         const payload = parsePayload<EncWrapPublishPayload>(
           encWrapPublishPayloadSchema,
-          entry.payload,
-          "INVALID_ENC_WRAP"
+          entry.payload
         );
         state = applyWrapPublish(
           state,

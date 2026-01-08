@@ -1,0 +1,115 @@
+{
+  "format": "concord-ledger",
+  "version": "1.0",
+  "commits": {
+    "486815c42744da32f4efa8781b6d949c37e2a89633866ba59997c8ce721a9eff": {
+      "parent": null,
+      "timestamp": "2026-01-08T10:49:19.954Z",
+      "metadata": {
+        "genesis": true,
+        "spec": "concord-protocol@1.0",
+        "created_at": "2026-01-08T10:49:19.954Z"
+      },
+      "entries": []
+    },
+    "aae9c387d7aabcefe214b51c9fa730fb44f201e89cfca7628346f4901e6726b8": {
+      "parent": "486815c42744da32f4efa8781b6d949c37e2a89633866ba59997c8ce721a9eff",
+      "timestamp": "2026-01-08T10:49:25.266Z",
+      "metadata": {
+        "message": "UI edit session complete"
+      },
+      "entries": [
+        "8355251ced8c7196043a7d7de3a862e61e20e4011d7c81707fe22529772a1c33",
+        "2757751938400b6fb08d8644a027540921ecbe8c765d61e03e803943164f1731",
+        "785a9556ef3f51f9a273852726e0f1a7fd6535fbdf9442fe2c0e97030f0197d6"
+      ]
+    },
+    "b890909f9a208645197cec63b6e2cc7af7b6da5b5d1eb68faaeef9d59e7086bc": {
+      "parent": "aae9c387d7aabcefe214b51c9fa730fb44f201e89cfca7628346f4901e6726b8",
+      "timestamp": "2026-01-08T13:32:10.105Z",
+      "metadata": {
+        "message": "UI edit session complete"
+      },
+      "entries": [
+        "a0b141c9008383bd6e7341ce9d56484f3f9bc2cdce23e91f065650c61665732c",
+        "b307aed957b704bcac13b97b2e221ee7901ca8328bcc135f26a5da6477db682b",
+        "bff33e589970a4f74316d67e81b993ec23971c0e1e685b621d84cd85b5f98891"
+      ]
+    }
+  },
+  "entries": {
+    "8355251ced8c7196043a7d7de3a862e61e20e4011d7c81707fe22529772a1c33": {
+      "kind": "items",
+      "timestamp": "2026-01-08T10:49:25.260Z",
+      "author": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIxwo45HJQOxT7WoUzL8MZ4G+tuTt\nnuckg8GgZKgMiG4g+3YdX9wuNsltYR3zMxzPYV5rt0XleoIFNCj5/rWw5Q==",
+      "payload": {
+        "id": "120e6efa",
+        "title": "My Item",
+        "description": "Fragmented updates",
+        "updatedAt": "2026-01-08T10:49:24.472Z"
+      },
+      "signature": "j4c/wVGZqTwu3JOyUhlZ4eL4ddJAfL3fPazsyzfWBBvB7+0qW/dSp04LRIyo70zOosxuWoBwG5S3o7UCt+kz8w=="
+    },
+    "2757751938400b6fb08d8644a027540921ecbe8c765d61e03e803943164f1731": {
+      "kind": "items",
+      "timestamp": "2026-01-08T10:49:25.260Z",
+      "author": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIxwo45HJQOxT7WoUzL8MZ4G+tuTt\nnuckg8GgZKgMiG4g+3YdX9wuNsltYR3zMxzPYV5rt0XleoIFNCj5/rWw5Q==",
+      "payload": {
+        "id": "464fa661",
+        "title": "My Item",
+        "description": "Fragmented updates",
+        "updatedAt": "2026-01-08T10:49:24.833Z"
+      },
+      "signature": "RCchv9xW9Xl236V5ozkRXu2fSXBrv+SuP4IjrO78fHoFj0MMhIzBg6aG2bWwdspjEYGuwbhpWs9zpQlDl4qEHQ=="
+    },
+    "785a9556ef3f51f9a273852726e0f1a7fd6535fbdf9442fe2c0e97030f0197d6": {
+      "kind": "items",
+      "timestamp": "2026-01-08T10:49:25.260Z",
+      "author": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIxwo45HJQOxT7WoUzL8MZ4G+tuTt\nnuckg8GgZKgMiG4g+3YdX9wuNsltYR3zMxzPYV5rt0XleoIFNCj5/rWw5Q==",
+      "payload": {
+        "id": "696ff54e",
+        "title": "My Item",
+        "description": "Fragmented updates",
+        "updatedAt": "2026-01-08T10:49:24.655Z"
+      },
+      "signature": "w++r7uvVnYS/frZnOxl4GvbMUEI89+wQ6A8K1jv8QALeUSZjFCkmTvmJ0JBQcnHAcmZgbpfLco30loh7j2aBNw=="
+    },
+    "a0b141c9008383bd6e7341ce9d56484f3f9bc2cdce23e91f065650c61665732c": {
+      "kind": "items",
+      "timestamp": "2026-01-08T13:32:10.091Z",
+      "author": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIxwo45HJQOxT7WoUzL8MZ4G+tuTt\nnuckg8GgZKgMiG4g+3YdX9wuNsltYR3zMxzPYV5rt0XleoIFNCj5/rWw5Q==",
+      "payload": {
+        "id": "94b8b32a",
+        "title": "My Item",
+        "description": "Fragmented updates",
+        "updatedAt": "2026-01-08T13:32:09.327Z"
+      },
+      "signature": "KDVMVqs7MKnAZiavScWYGIG5f66fttuLsCfFEi004SRqsbreVkP8AHEiaO/gW7T5Z5FRDSIVTdoHDZgPFBYrug=="
+    },
+    "b307aed957b704bcac13b97b2e221ee7901ca8328bcc135f26a5da6477db682b": {
+      "kind": "items",
+      "timestamp": "2026-01-08T13:32:10.091Z",
+      "author": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIxwo45HJQOxT7WoUzL8MZ4G+tuTt\nnuckg8GgZKgMiG4g+3YdX9wuNsltYR3zMxzPYV5rt0XleoIFNCj5/rWw5Q==",
+      "payload": {
+        "id": "c61d9e9",
+        "title": "My Item",
+        "description": "Fragmented updates",
+        "updatedAt": "2026-01-08T13:32:09.464Z"
+      },
+      "signature": "JMbQNJI8PFOrLtSNIht3O+CiO7R7qnKfOEE6GaZ/8YxdqZt/U9mPpANI1epFD9+pCt6075rqSDqTAkdHjMFodg=="
+    },
+    "bff33e589970a4f74316d67e81b993ec23971c0e1e685b621d84cd85b5f98891": {
+      "kind": "items",
+      "timestamp": "2026-01-08T13:31:10.090Z",
+      "author": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIxwo45HJQOxT7WoUzL8MZ4G+tuTt\nnuckg8GgZKgMiG4g+3YdX9wuNsltYR3zMxzPYV5rt0XleoIFNCj5/rWw5Q==",
+      "payload": {
+        "id": "c7e9988c",
+        "title": "My Item",
+        "description": "Fragmented updates",
+        "updatedAt": "2026-01-08T13:32:09.153Z"
+      },
+      "signature": "De7ag50QeHICfLTs0nt0omS/9ifeM/P/oemPh5qNi7exZCP+NeTzDS39q61sEX6WkLIuXtUdq0o8lANie5rvzg=="
+    }
+  },
+  "head": "b890909f9a208645197cec63b6e2cc7af7b6da5b5d1eb68faaeef9d59e7086bc"
+}

@@ -1,0 +1,12 @@
+{
+  "kind": "app.secret",
+  "timestamp": "2026-01-08T16:20:22.3NZ",
+  "author": "did:alice",
+  "payload": {
+    "enc": "age",
+    "scope": "projects:alpha",
+    "epoch": 2,
+    "ct": "-----BEGIN AGE ENCRYPTED FILE-----\nDUMMY\n-----END AGE ENCRYPTED FILE-----"
+  },
+  "signature": null
+}

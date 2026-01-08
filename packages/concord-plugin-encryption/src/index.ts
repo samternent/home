@@ -1,8 +1,12 @@
 export { replayEncryption, EncryptionRegistryError } from "./replay";
 export {
   findWrapsForPrincipal,
+  findWrap,
   explainWhyCannotDecrypt,
+  explainDecryptability,
   type DecryptDiagnostics,
+  type DecryptabilityResult,
+  type DecryptabilityReason,
   type ResolutionContext,
 } from "./resolution";
 export {

@@ -1,7 +1,6 @@
 import {
   replayEncryption,
   encryptedPayloadSchema,
-  explainWhyCannotDecrypt,
   type EncryptionState,
 } from "@ternent/concord-plugin-encryption";
 import {
@@ -33,12 +32,23 @@ export type WrapResult = {
 };
 
 export type DecryptCheck = {
-  entryId: string;
+  type: "entry" | "scope";
+  entryId?: string;
   scope: string;
-  epoch: number;
+  epoch?: number;
   ok: boolean;
   reasons: string[];
+  cryptoOk?: boolean;
+  policyOk?: boolean;
 };
+
+export type DecryptMode = "combined" | "crypto" | "policy";
+
+function cliError(code: string, message: string): Error {
+  const error = new Error(message);
+  (error as Error & { code?: string }).code = code;
+  return error;
+}
 
 export function buildStates(
   ledger: LedgerContainer,
@@ -68,7 +78,7 @@ export function createRotateEntry(
   );
   const caps = getEffectiveCaps(permissionsState, author, scope);
   if (!caps.has("admin")) {
-    throw new Error("UNAUTHORIZED_ROTATE");
+    throw cliError("UNAUTHORIZED_ROTATE", "enc.epoch.rotate requires admin capability");
   }
   const currentEpoch = encryptionState.scopes[scope]?.currentEpoch ?? 1;
   const newEpoch = currentEpoch + 1;
@@ -133,11 +143,11 @@ export function createWrapEntry(
   const { identityState, permissionsState } = buildStates(ledger, rootAdmins);
   const caps = getEffectiveCaps(permissionsState, author, scope);
   if (!caps.has("grant") && !caps.has("admin")) {
-    throw new Error("UNAUTHORIZED_WRAP");
+    throw cliError("UNAUTHORIZED_WRAP", "enc.wrap.publish requires grant or admin capability");
   }
   const targetCaps = getEffectiveCaps(permissionsState, principalId, scope);
   if (!targetCaps.has("read")) {
-    throw new Error("INELIGIBLE_TARGET");
+    throw cliError("INELIGIBLE_TARGET", "wrap target must have read capability");
   }
 
   const warnings: string[] = [];
@@ -170,7 +180,9 @@ export function createWrapEntry(
 export function checkDecryptable(
   ledger: LedgerContainer,
   principalId: string,
-  rootAdmins?: string[]
+  rootAdmins?: string[],
+  nowIso?: string,
+  mode: DecryptMode = "combined"
 ): DecryptCheck[] {
   const { encryptionState, identityState, permissionsState } = buildStates(
     ledger,
@@ -186,25 +198,126 @@ export function checkDecryptable(
     if (!parsed.success) {
       continue;
     }
-    const diagnostics = explainWhyCannotDecrypt(
-      encryptionState,
+    const scope = parsed.data.scope;
+    const epoch = parsed.data.epoch;
+    const crypto = evaluateCrypto(encryptionState, principalId, scope, epoch);
+    const policy = evaluatePolicy(
+      identityState,
+      permissionsState,
       principalId,
-      parsed.data.scope,
-      parsed.data.epoch,
-      {
-        identityState,
-        permissionsState,
-      }
+      scope,
+      nowIso
     );
-    const ok = diagnostics.ok;
+    const selected = selectMode(mode, crypto, policy);
     checks.push({
+      type: "entry",
       entryId: entryIds[index] ?? String(index),
-      scope: parsed.data.scope,
-      epoch: parsed.data.epoch,
-      ok,
-      reasons: diagnostics.reasons,
+      scope,
+      epoch,
+      ok: selected.ok,
+      reasons: selected.reasons,
+      cryptoOk: crypto.ok,
+      policyOk: policy.ok,
     });
   }
 
+  if (checks.length === 0) {
+    const scopeEpochs = new Map<string, number>();
+    for (const scope of Object.keys(encryptionState.scopes)) {
+      scopeEpochs.set(scope, encryptionState.scopes[scope].currentEpoch);
+    }
+    for (const [scope, epochs] of Object.entries(encryptionState.wraps)) {
+      if (scopeEpochs.has(scope)) {
+        continue;
+      }
+      const epochNumbers = Object.keys(epochs).map((value) => Number(value));
+      const highest = epochNumbers.length > 0 ? Math.max(...epochNumbers) : 1;
+      scopeEpochs.set(scope, Number.isFinite(highest) ? highest : 1);
+    }
+    for (const [scope, epoch] of scopeEpochs.entries()) {
+      const crypto = evaluateCrypto(encryptionState, principalId, scope, epoch);
+      const policy = evaluatePolicy(
+        identityState,
+        permissionsState,
+        principalId,
+        scope,
+        nowIso
+      );
+      const selected = selectMode(mode, crypto, policy);
+      checks.push({
+        type: "scope",
+        scope,
+        epoch,
+        ok: selected.ok,
+        reasons: selected.reasons,
+        cryptoOk: crypto.ok,
+        policyOk: policy.ok,
+      });
+    }
+  }
+
   return checks;
+}
+
+type Diagnostic = { ok: boolean; reasons: string[] };
+
+function evaluateCrypto(
+  encryptionState: EncryptionState,
+  principalId: string,
+  scope: string,
+  epoch: number
+): Diagnostic {
+  const reasons: string[] = [];
+  const scopeState = encryptionState.scopes[scope];
+  const scopeWraps = encryptionState.wraps[scope];
+  if (!scopeState && !scopeWraps) {
+    return { ok: false, reasons: ["SCOPE_UNKNOWN"] };
+  }
+  const epochWraps = scopeWraps?.[epoch];
+  if (!epochWraps) {
+    return { ok: false, reasons: ["EPOCH_UNKNOWN"] };
+  }
+  const wraps = epochWraps[principalId] ?? [];
+  if (wraps.length === 0) {
+    reasons.push("NO_WRAP");
+  }
+  return { ok: reasons.length === 0, reasons };
+}
+
+function evaluatePolicy(
+  identityState: IdentityState,
+  permissionsState: PermissionState,
+  principalId: string,
+  scope: string,
+  nowIso?: string
+): Diagnostic {
+  const reasons: string[] = [];
+  const identity = identityState.principals[principalId];
+  if (!identity) {
+    reasons.push("NO_IDENTITY");
+  } else if (identity.ageRecipients.length === 0) {
+    reasons.push("NO_RECIPIENT");
+  }
+  const caps = getEffectiveCaps(permissionsState, principalId, scope, nowIso);
+  if (!caps.has("read")) {
+    reasons.push("NO_PERMISSION");
+  }
+  return { ok: reasons.length === 0, reasons };
+}
+
+function selectMode(
+  mode: DecryptMode,
+  crypto: Diagnostic,
+  policy: Diagnostic
+): Diagnostic {
+  if (mode === "crypto") {
+    return crypto;
+  }
+  if (mode === "policy") {
+    return policy;
+  }
+  return {
+    ok: crypto.ok && policy.ok,
+    reasons: [...crypto.reasons, ...policy.reasons],
+  };
 }

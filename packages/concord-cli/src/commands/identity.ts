@@ -8,7 +8,6 @@ import type { LedgerContainer, Entry } from "@ternent/concord-protocol";
 
 export type IdentityUpsertParams = {
   principalId: string;
-  author: string;
   displayName?: string;
   ageRecipients?: string[];
 };
@@ -17,9 +16,6 @@ export function createIdentityUpsertEntry(
   params: IdentityUpsertParams,
   timestamp: string
 ): Entry {
-  if (params.author !== params.principalId) {
-    throw new Error("Author must match principalId");
-  }
   const payload = identityUpsertPayloadSchema.parse({
     principalId: params.principalId,
     displayName: params.displayName,
@@ -28,7 +24,7 @@ export function createIdentityUpsertEntry(
   return {
     kind: "identity.upsert",
     timestamp,
-    author: params.author,
+    author: params.principalId,
     payload,
     signature: null,
   };

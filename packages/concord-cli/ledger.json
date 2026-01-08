@@ -1,0 +1,301 @@
+{
+  "format": "concord-ledger",
+  "version": "1.0",
+  "commits": {
+    "5ff0da2ab65ced75c108f9b0aacfa0f57a97551429e65244d8446995a41a1d7e": {
+      "parent": null,
+      "timestamp": "2026-01-08T16:01:17.363Z",
+      "metadata": {
+        "genesis": true,
+        "spec": "concord-protocol@1.0"
+      },
+      "entries": []
+    },
+    "2d6d402e8d5713db729dd4304ace3932e523e5947448e8d45af849de4fed74d7": {
+      "parent": "5ff0da2ab65ced75c108f9b0aacfa0f57a97551429e65244d8446995a41a1d7e",
+      "timestamp": "2026-01-08T16:01:29.806Z",
+      "metadata": null,
+      "entries": [
+        "3153110c7764185dbf6e2ea8e452f0569ea266a927d4c4b8f88ba522febd22ba"
+      ]
+    },
+    "2592585c0aab860151026924497d4af3332b143127afb2c3de657a27dc514c21": {
+      "parent": "2d6d402e8d5713db729dd4304ace3932e523e5947448e8d45af849de4fed74d7",
+      "timestamp": "2026-01-08T16:01:34.644Z",
+      "metadata": null,
+      "entries": [
+        "a351c78f942f3b3d3865362fa1b2094fe948a4bb55edb4d5b3c4b30dfc2040d9"
+      ]
+    },
+    "50cfe15540df941959aed203bcac175517e329590684af7a8471c70cf5ac94f1": {
+      "parent": "2592585c0aab860151026924497d4af3332b143127afb2c3de657a27dc514c21",
+      "timestamp": "2026-01-08T16:01:41.702Z",
+      "metadata": null,
+      "entries": [
+        "a37ec6827ca2203bf88a9286a42ce679a1a30a6a1a86136344066da73626f8bf"
+      ]
+    },
+    "cd10a8c636e895abec82bc0ac4c9a58e8b12ccd75d7dfc7d25b635c25371867f": {
+      "parent": "50cfe15540df941959aed203bcac175517e329590684af7a8471c70cf5ac94f1",
+      "timestamp": "2026-01-08T16:16:48.527Z",
+      "metadata": null,
+      "entries": [
+        "f8aa870c8789d4ffcc108c1bfd098b0fd88a0fb16ac6868ec8d958f9f8673091"
+      ]
+    },
+    "142e0da3f44b00d9b1ea30a714f133f60a339723607ff00f56648af999b73f34": {
+      "parent": "cd10a8c636e895abec82bc0ac4c9a58e8b12ccd75d7dfc7d25b635c25371867f",
+      "timestamp": "2026-01-08T16:17:20.952Z",
+      "metadata": null,
+      "entries": [
+        "886305a93f7a57c3b2a09bd8847c97fe9331a2186c3efcbbe3bbd5ecf7ba3cc5"
+      ]
+    },
+    "0ff40d8a37e239ac76227f9255e64abfccba6ebc065e439472d9cabc9c97062f": {
+      "parent": "142e0da3f44b00d9b1ea30a714f133f60a339723607ff00f56648af999b73f34",
+      "timestamp": "2026-01-08T16:17:28.587Z",
+      "metadata": null,
+      "entries": [
+        "48dcece2a2583514848d937314bc3ab0ccc5c7e34b8fb9ecd22140f489fd8bf2"
+      ]
+    },
+    "bca4cbb558905992aec51390d77274809ae2f365b9bc719ec6fad5fc3616a7ec": {
+      "parent": "0ff40d8a37e239ac76227f9255e64abfccba6ebc065e439472d9cabc9c97062f",
+      "timestamp": "2026-01-08T16:17:46.126Z",
+      "metadata": null,
+      "entries": [
+        "752ae1ef1b2e97c72790c4bd7fa9de6a99e45957142b3ab0b3cd3c9570baa562"
+      ]
+    },
+    "cab21a0fbc31e96cf0a265faa5743cd4ffc5c4f984d7efe318e37e7b3c8ddd04": {
+      "parent": "bca4cbb558905992aec51390d77274809ae2f365b9bc719ec6fad5fc3616a7ec",
+      "timestamp": "2026-01-08T16:20:27.862Z",
+      "metadata": null,
+      "entries": [
+        "d5e4ecbf14cbfd349c307e4e3b8694885e16372dddc514c09e2cd8cd98c984e4"
+      ]
+    },
+    "5c4410fe90c00d0a70684e833c95ce3982593013ad32132a5d5320190d57e725": {
+      "parent": "cab21a0fbc31e96cf0a265faa5743cd4ffc5c4f984d7efe318e37e7b3c8ddd04",
+      "timestamp": "2026-01-08T16:23:13.722Z",
+      "metadata": null,
+      "entries": [
+        "0ac285b2f432834cb7eb7d3ea4a903b651af3182f857f7cdca4d32fa70c7aa53"
+      ]
+    },
+    "879a6c22c70a751e24c63a494e6bd74801e8f6d454166dac38ac2d73ef1c5758": {
+      "parent": "5c4410fe90c00d0a70684e833c95ce3982593013ad32132a5d5320190d57e725",
+      "timestamp": "2026-01-08T16:23:27.926Z",
+      "metadata": null,
+      "entries": [
+        "c456cb7237d376404ff83acc012075d9c7b9d006bfac300a1ef7ef0fe4e08b8a"
+      ]
+    },
+    "289ff0ec37894cb924e7c2d8373b4b23167740862edc71cee0547a4f93cab1e6": {
+      "parent": "879a6c22c70a751e24c63a494e6bd74801e8f6d454166dac38ac2d73ef1c5758",
+      "timestamp": "2026-01-08T16:23:35.910Z",
+      "metadata": null,
+      "entries": [
+        "671c585efbce1d9bce69b3aa8fd031a7fb0a22ddd42a43c73cab1dc1f89a8be3"
+      ]
+    }
+  },
+  "entries": {
+    "3153110c7764185dbf6e2ea8e452f0569ea266a927d4c4b8f88ba522febd22ba": {
+      "kind": "identity.upsert",
+      "timestamp": "2026-01-08T16:01:29.798Z",
+      "author": "did:root",
+      "payload": {
+        "principalId": "did:root",
+        "displayName": "Root Admin",
+        "ageRecipients": [
+          "age1root"
+        ]
+      },
+      "signature": null
+    },
+    "a351c78f942f3b3d3865362fa1b2094fe948a4bb55edb4d5b3c4b30dfc2040d9": {
+      "kind": "identity.upsert",
+      "timestamp": "2026-01-08T16:01:34.637Z",
+      "author": "did:alice",
+      "payload": {
+        "principalId": "did:alice",
+        "displayName": "Alice",
+        "ageRecipients": [
+          "age1alice"
+        ]
+      },
+      "signature": null
+    },
+    "a37ec6827ca2203bf88a9286a42ce679a1a30a6a1a86136344066da73626f8bf": {
+      "kind": "identity.upsert",
+      "timestamp": "2026-01-08T16:01:41.694Z",
+      "author": "did:bob",
+      "payload": {
+        "principalId": "did:bob",
+        "displayName": "Bob",
+        "ageRecipients": [
+          "age1bob"
+        ]
+      },
+      "signature": null
+    },
+    "f8aa870c8789d4ffcc108c1bfd098b0fd88a0fb16ac6868ec8d958f9f8673091": {
+      "kind": "perm.grant",
+      "timestamp": "2026-01-08T16:16:48.523Z",
+      "author": "did:root",
+      "payload": {
+        "scope": "projects:alpha",
+        "cap": "grant",
+        "target": {
+          "type": "principal",
+          "id": "did:alice"
+        }
+      },
+      "signature": null
+    },
+    "886305a93f7a57c3b2a09bd8847c97fe9331a2186c3efcbbe3bbd5ecf7ba3cc5": {
+      "kind": "perm.grant",
+      "timestamp": "2026-01-08T16:17:20.948Z",
+      "author": "did:root",
+      "payload": {
+        "scope": "projects:alpha",
+        "cap": "read",
+        "target": {
+          "type": "principal",
+          "id": "did:alice"
+        }
+      },
+      "signature": null
+    },
+    "48dcece2a2583514848d937314bc3ab0ccc5c7e34b8fb9ecd22140f489fd8bf2": {
+      "kind": "perm.grant",
+      "timestamp": "2026-01-08T16:17:28.584Z",
+      "author": "did:alice",
+      "payload": {
+        "scope": "projects:alpha",
+        "cap": "read",
+        "target": {
+          "type": "principal",
+          "id": "did:bob"
+        }
+      },
+      "signature": null
+    },
+    "752ae1ef1b2e97c72790c4bd7fa9de6a99e45957142b3ab0b3cd3c9570baa562": {
+      "kind": "enc.epoch.rotate",
+      "timestamp": "2026-01-08T16:17:46.120Z",
+      "author": "did:root",
+      "payload": {
+        "scope": "projects:alpha",
+        "newEpoch": 2,
+        "wraps": [
+          {
+            "principalId": "did:root",
+            "epoch": 2,
+            "wrap": {
+              "to": [
+                "age1root"
+              ],
+              "ct": "wrap:projects:alpha:2:did:root"
+            }
+          },
+          {
+            "principalId": "did:alice",
+            "epoch": 2,
+            "wrap": {
+              "to": [
+                "age1alice"
+              ],
+              "ct": "wrap:projects:alpha:2:did:alice"
+            }
+          },
+          {
+            "principalId": "did:bob",
+            "epoch": 2,
+            "wrap": {
+              "to": [
+                "age1bob"
+              ],
+              "ct": "wrap:projects:alpha:2:did:bob"
+            }
+          }
+        ]
+      },
+      "signature": null
+    },
+    "d5e4ecbf14cbfd349c307e4e3b8694885e16372dddc514c09e2cd8cd98c984e4": {
+      "kind": "app.secret",
+      "timestamp": "2026-01-08T16:20:22.3NZ",
+      "author": "did:alice",
+      "payload": {
+        "enc": "age",
+        "scope": "projects:alpha",
+        "epoch": 2,
+        "ct": "-----BEGIN AGE ENCRYPTED FILE-----\nDUMMY\n-----END AGE ENCRYPTED FILE-----"
+      },
+      "signature": null
+    },
+    "0ac285b2f432834cb7eb7d3ea4a903b651af3182f857f7cdca4d32fa70c7aa53": {
+      "kind": "perm.grant",
+      "timestamp": "2026-01-08T16:23:13.717Z",
+      "author": "did:root",
+      "payload": {
+        "scope": "projects:alpha",
+        "cap": "admin",
+        "target": {
+          "type": "principal",
+          "id": "did:alice"
+        }
+      },
+      "signature": null
+    },
+    "c456cb7237d376404ff83acc012075d9c7b9d006bfac300a1ef7ef0fe4e08b8a": {
+      "kind": "perm.revoke",
+      "timestamp": "2026-01-08T16:23:27.921Z",
+      "author": "did:alice",
+      "payload": {
+        "scope": "projects:alpha",
+        "cap": "read",
+        "target": {
+          "type": "principal",
+          "id": "did:bob"
+        }
+      },
+      "signature": null
+    },
+    "671c585efbce1d9bce69b3aa8fd031a7fb0a22ddd42a43c73cab1dc1f89a8be3": {
+      "kind": "enc.epoch.rotate",
+      "timestamp": "2026-01-08T16:23:35.904Z",
+      "author": "did:root",
+      "payload": {
+        "scope": "projects:alpha",
+        "newEpoch": 3,
+        "wraps": [
+          {
+            "principalId": "did:root",
+            "epoch": 3,
+            "wrap": {
+              "to": [
+                "age1root"
+              ],
+              "ct": "wrap:projects:alpha:3:did:root"
+            }
+          },
+          {
+            "principalId": "did:alice",
+            "epoch": 3,
+            "wrap": {
+              "to": [
+                "age1alice"
+              ],
+              "ct": "wrap:projects:alpha:3:did:alice"
+            }
+          }
+        ]
+      },
+      "signature": null
+    }
+  },
+  "head": "289ff0ec37894cb924e7c2d8373b4b23167740862edc71cee0547a4f93cab1e6"
+}

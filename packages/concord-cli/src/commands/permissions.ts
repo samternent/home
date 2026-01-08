@@ -35,9 +35,10 @@ export function canPerform(
   state: PermissionState,
   principalId: string,
   action: string,
-  scope: string
+  scope: string,
+  nowIso?: string
 ): boolean {
-  return can(state, principalId, action, scope);
+  return can(state, principalId, action, scope, nowIso);
 }
 
 export function createGrantEntry(
@@ -52,7 +53,7 @@ export function createGrantEntry(
       scope: params.scope,
       cap: params.cap,
       target: params.target,
-      constraints: params.expires ? { expires: params.expires } : undefined,
+      ...(params.expires ? { constraints: { expires: params.expires } } : {}),
     },
     signature: null,
   };
