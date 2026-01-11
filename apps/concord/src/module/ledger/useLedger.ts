@@ -62,7 +62,9 @@ type ProvideLedgerContext = {
   getCollections: () => Record<string, any>;
 };
 
-export function provideLedger() {
+export function provideLedger({
+  ledger: initialLedger,
+}: { ledger?: any } = {}) {
   const compressedBlob = shallowRef<Blob>();
 
   const { publicKeyPEM: publicKeyIdentityPEM } = useIdentity();
@@ -93,17 +95,7 @@ export function provideLedger() {
     initialProjection: { lastUpdatedAt: null },
     plugins: [
       idb, // storage first
-      loki.plugin,
-      {
-        name: "vue-ledger-bridge",
-        priority: 100,
-        onEvent(ev) {
-          // Keep a convenient ref to the current ledger for UI/debug
-          if (ev.type === "LOAD" || ev.type === "COMMIT")
-            ledger.value = ev.ledger;
-          if (ev.type === "DESTROY") ledger.value = null;
-        },
-      },
+      loki.plugin, // then in-memory DB
     ],
     resolveAuthor: async (publicKey) =>
       stripIdentityKey(await exportPublicKeyAsPem(publicKey)),
@@ -116,14 +108,6 @@ export function provideLedger() {
   const pending = computed(() => bridge.state.value.pending ?? []);
 
   provideLedgerBridge(bridge);
-
-  // Bootstrapping: try load from IndexedDB; otherwise create new ledger
-  (async () => {
-    const loaded = await api.loadFromStorage();
-    if (!loaded) {
-      await api.create();
-    }
-  })();
 
   // Keep a compressed blob available (for download/export/share)
   watch(

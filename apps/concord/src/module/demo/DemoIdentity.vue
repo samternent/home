@@ -5,7 +5,7 @@ import { useIdentity } from "../../module/identity/useIdentity";
 const { publicKeyPEM, privateKeyPEM, createIdentity } = useIdentity();
 </script>
 <template>
-  <div class="flex flex-col items-center gap-4">
+  <div class="flex flex-col items-center">
     <h2>Identity</h2>
 
     <button @click="createIdentity">Generate new identity</button>

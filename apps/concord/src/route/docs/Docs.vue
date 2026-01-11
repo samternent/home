@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useRoute } from "vue-router";
-import Logo from "../../module/brand/Logo.vue";
 import { buildSidebarNav } from "../../content/navigation";
+import WebLayout from "../../module/app/WebLayout.vue";
 
 const nav = computed(() => buildSidebarNav());
 
@@ -18,9 +18,9 @@ const frontmatter = computed(() => (route.meta.frontmatter as any) ?? {});
 </script>
 
 <template>
-  <main class="page px-4 py-12">
+  <WebLayout>
     <article v-if="docComponent">
-      <header style="margin-bottom: 16px">
+      <header>
         <h1 style="margin: 0">{{ frontmatter.title ?? "" }}</h1>
         <p
           v-if="frontmatter.description"
@@ -37,19 +37,5 @@ const frontmatter = computed(() => (route.meta.frontmatter as any) ?? {});
       <h1>Missing doc</h1>
       <p>This route has no bound markdown component.</p>
     </div>
-  </main>
-  <footer class="flex justify-end items-center py-12 site-footer">
-    <div class="site-footer__inner w-full flex justify-end">
-      <div class="site-footer__links">
-        <a
-          href="mailto:concord@ternent.dev"
-          class="flex flex-col items-center justify-center gap-2"
-        >
-          <Logo
-            class="h-8 w-8 opacity-40 hover:opacity-60 hover:-rotate-6 transition-all duration-300"
-          />
-        </a>
-      </div>
-    </div>
-  </footer>
+  </WebLayout>
 </template>

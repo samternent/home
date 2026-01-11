@@ -1,4 +1,5 @@
 export default {
+  darkMode: "media",
   content: [
     "./index.html",
     "./src/**/*.{js,vue,ts}",

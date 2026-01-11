@@ -41,7 +41,11 @@ const sizeVariant = computed(() => {
 });
 </script>
 <template>
-  <div :class="`p-0 m-0 ${sizeVariant.classes}`">
-    <Glyphy v-if="identity" :identity="identity" :gridLen="sizeVariant.grid" />
+  <div :class="`p-0 m-0 ${sizeVariant.classes}`" :key="identity">
+    <Glyphy
+      v-if="identity"
+      :identity="identity.replace(/\s/g, '')"
+      :gridLen="sizeVariant.grid"
+    />
   </div>
 </template>

@@ -50,21 +50,40 @@
     />
 
     <style>
-      :root {
-        --paper: #fbf7f0; /* warm paper */
-        --paper2: #f5efe6; /* subtle panel */
-        --ink: #121212; /* ink */
-        --muted: #5a5a5a; /* secondary ink */
-        --rule: rgba(18, 18, 18, 0.12);
-        --accent: #6d28d9; /* your purple link vibe */
+      @media (prefers-color-scheme: dark) {
+        :root {
+          /* paper */
+          --paper: #141311; /* warm charcoal paper */
+          --paper2: #1b1a18; /* lifted surface */
+
+          /* ink */
+          --ink: #e9e6df; /* warm off-white ink */
+          --muted: #b7b2a8; /* aged paper ink */
+
+          /* structure */
+          --rule: rgba(233, 230, 223, 0.12);
+
+          /* accent */
+          --accent: #c4b5fd; /* soft lilac ink */
+        }
       }
-      [data-theme="dark"] {
-        --paper: #0b0b0c;
-        --paper2: #111113;
-        --ink: #f2f2f2;
-        --muted: rgba(242, 242, 242, 0.72);
-        --rule: rgba(242, 242, 242, 0.12);
-        --accent: #c084fc;
+
+      @media (prefers-color-scheme: light) {
+        :root {
+          /* paper */
+          --paper: #fbf7f0; /* warm book paper */
+          --paper2: #f2ece2; /* panels, cards */
+
+          /* ink */
+          --ink: #181615; /* soft black ink */
+          --muted: #5f5b55; /* warm grey ink */
+
+          /* structure */
+          --rule: rgba(24, 22, 21, 0.12);
+
+          /* accent */
+          --accent: #6d28d9; /* restrained purple ink */
+        }
       }
 
       html,
@@ -99,10 +118,10 @@
         font-weight: 700;
       }
     </style>
-    <link
+    <!-- <link
       rel="stylesheet"
       href="https://unpkg.com/@tailwindcss/typography@0.4.x/dist/typography.min.css"
-    />
+    /> -->
   </head>
   <body>
     <div id="app"></div>

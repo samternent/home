@@ -10,7 +10,7 @@ export default defineConfig({
   plugins: [
     vue({ include: [/\.vue$/, /\.md$/] }),
     tailwindcss(),
-    Markdown({ wrapperClasses: "prose" }),
+    Markdown({ wrapperClasses: "prose dark:prose-invert" }),
   ],
   ssgOptions: {},
 });

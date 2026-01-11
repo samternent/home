@@ -3,15 +3,21 @@ import Concord from "../concord/Concord.vue";
 import DemoIdentity from "./DemoIdentity.vue";
 import DemoEncryption from "./DemoEncryption.vue";
 import DemoCreateLedger from "./DemoCreateLedger.vue";
+import AppLayout from "../app/AppLayout.vue";
+import Console from "../console/Console.vue";
 </script>
 <template>
-  <div class="h-screen w-screen flex flex-col">
-    <Concord>
-      <div class="flex-1 flex flex-col gap-4">
-        <DemoIdentity />
-        <DemoEncryption />
-        <DemoCreateLedger />
-      </div>
-    </Concord>
-  </div>
+  <Concord>
+    <AppLayout>
+      <DemoIdentity />
+      <DemoEncryption />
+
+      <template #console="{ container }">
+        <Console :container>
+          <template #panel-control> </template>
+          <DemoCreateLedger />
+        </Console>
+      </template>
+    </AppLayout>
+  </Concord>
 </template>

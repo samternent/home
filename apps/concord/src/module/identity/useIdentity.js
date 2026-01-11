@@ -17,12 +17,29 @@ function Identity() {
 
   const publicKey = shallowRef(null);
   const privateKey = shallowRef(null);
+  const ready = shallowRef(null);
 
   async function init() {
     if (publicKeyPEM.value && privateKeyPEM.value) {
       publicKey.value = await importPublicKeyFromPem(publicKeyPEM.value);
       privateKey.value = await importPrivateKeyFromPem(privateKeyPEM.value);
     }
+    ready.value = true;
+  }
+
+  async function impersonate(profile) {
+    ready.value = false;
+    const {
+      publicKey: publicPEM,
+      privateKey: { payload: privatePEM },
+    } = profile.identity;
+    if (publicPEM && privatePEM) {
+      publicKeyPEM.value = publicPEM;
+      privateKeyPEM.value = privatePEM;
+      publicKey.value = await importPublicKeyFromPem(publicPEM);
+      privateKey.value = await importPrivateKeyFromPem(privatePEM);
+    }
+    ready.value = true;
   }
 
   init();
@@ -32,6 +49,8 @@ function Identity() {
     publicKeyPEM.value = stripIdentityKey(
       await exportPublicKeyAsPem(keys.publicKey)
     );
+    publicKey.value = keys.publicKey;
+    privateKey.value = keys.privateKey;
     privateKeyPEM.value = await exportPrivateKeyAsPem(keys.privateKey);
   }
 
@@ -40,6 +59,8 @@ function Identity() {
     privateKey,
     publicKeyPEM,
     privateKeyPEM,
+    ready,
+    impersonate,
     createIdentity: createNewIdentity,
   };
 }

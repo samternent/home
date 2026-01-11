@@ -219,21 +219,6 @@ const userMenuItems = [
   border-radius: 50%;
 }
 
-.user-dropdown {
-  position: absolute;
-  right: 0;
-  top: 100%;
-  margin-top: 0.5rem;
-  width: 20rem;
-  background: oklch(var(--b1) / 0.95);
-  backdrop-filter: blur(12px);
-  border: 1px solid oklch(var(--b3));
-  border-radius: 0.75rem;
-  box-shadow: 0 10px 25px oklch(var(--bc) / 0.1);
-  z-index: 50;
-  overflow: hidden;
-}
-
 .dropdown-header {
   display: flex;
   align-items: center;

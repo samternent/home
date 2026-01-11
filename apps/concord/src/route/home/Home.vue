@@ -1,24 +1,9 @@
 <script setup lang="ts">
-import { Button } from "ternent-ui/primitives";
+import WebLayout from "../../module/app/WebLayout.vue";
 import Whitepaper from "../../content/whitepaper.md";
-import Logo from "../../module/brand/Logo.vue";
 </script>
 <template>
-  <main class="page px-4 py-12">
+  <WebLayout>
     <Whitepaper />
-  </main>
-  <footer class="flex justify-end items-center py-12 site-footer">
-    <div class="site-footer__inner w-full flex justify-end">
-      <div class="site-footer__links">
-        <a
-          href="mailto:concord@ternent.dev"
-          class="flex flex-col items-center justify-center gap-2"
-        >
-          <Logo
-            class="h-8 w-8 opacity-40 hover:opacity-60 hover:-rotate-6 transition-all duration-300"
-          />
-        </a>
-      </div>
-    </div>
-  </footer>
+  </WebLayout>
 </template>

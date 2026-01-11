@@ -1,7 +1,15 @@
 <script setup>
+import { computed, onMounted } from "vue";
 import { provideIdentity } from "./useIdentity";
-provideIdentity();
+const { publicKey, privateKey, createIdentity, ready } = provideIdentity();
+
+const hasIdentity = computed(() => !!publicKey.value && !!privateKey.value);
+onMounted(() => {
+  if (ready.value && !hasIdentity.value) {
+    createIdentity();
+  }
+});
 </script>
 <template>
-  <slot />
+  <slot v-if="hasIdentity" />
 </template>
