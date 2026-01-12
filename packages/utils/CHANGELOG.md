@@ -1,5 +1,11 @@
 # ternent-utils
 
+## 1.0.9
+
+### Patch Changes
+
+- [`5a320441c98148501448363e96f2de42313e141b`](https://github.com/samternent/home/commit/5a320441c98148501448363e96f2de42313e141b) Thanks [@samternent](https://github.com/samternent)! - Update demos
+
 ## 1.0.8
 
 ### Patch Changes
