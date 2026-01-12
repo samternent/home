@@ -1,0 +1,18 @@
+{
+  "format": "concord-profile",
+  "version": "1.0",
+  "profileId": "18c944e22aacb7c4f3992b271ba3260f38c25f0432611811c5a2014e832b95c2",
+  "identity": {
+    "type": "ecdsa-p256",
+    "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEOlrFR0bJAAVjqwisacgqv9fX6MX4\nWbIIgV4cM1r7i9t5p/BEMRnjnRTfzI0RofuK6b9TgqfrfMK6M9jprQvrKQ=="
+  },
+  "encryption": {
+    "type": "age",
+    "recipients": [
+      "age1nef5quy79wfypc3asyxl5m475gyjl8jhhhlpg87d85p05fltydwq6kht2f"
+    ]
+  },
+  "metadata": {
+    "username": "bob"
+  }
+}

@@ -39,11 +39,12 @@ export interface PrivateProfile {
   };
   encryption: {
     type: "age";
-    privateKeys: Array<{
+    publicKey: string; // stripped PEM
+    privateKey: {
       format: "age-secret";
       encrypted: false;
       payload: string; // age secret as stored by useEncryption
-    }>;
+    };
   };
   metadata: ProfileMeta;
 }
@@ -177,15 +178,12 @@ function Profile() {
       },
       encryption: {
         type: "age",
-        privateKeys: encryption.privateKey.value
-          ? [
-              {
-                format: "age-secret",
-                encrypted: false,
-                payload: encryption.privateKey.value,
-              },
-            ]
-          : [],
+        publicKey: encryption.publicKey.value || "",
+        privateKey: {
+          format: "age-secret",
+          encrypted: false,
+          payload: encryption.privateKey.value,
+        },
       },
       metadata: meta.value || {},
     };

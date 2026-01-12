@@ -1,10 +1,20 @@
 <script setup lang="ts">
 import { shallowRef, computed } from "vue";
-import { onClickOutside } from "@vueuse/core";
+import { onClickOutside, useLocalStorage } from "@vueuse/core";
 import { useLedger } from "../ledger/useLedger";
 import IdentityAvatar from "../../module/identity/IdentityAvatar.vue";
 import { useIdentity } from "../../module/identity/useIdentity";
-import { useProfile } from "../../module/profile/useProfile";
+import { useEncryption } from "../../module/encryption/useEncryption";
+import {
+  type PublicProfile,
+  type PrivateProfile,
+  useProfile,
+} from "../../module/profile/useProfile";
+
+type SampleProfilePair = {
+  public?: PublicProfile;
+  private?: PrivateProfile;
+};
 
 const profileModules = import.meta.glob(
   "../../module/profile/samples/concord-profile.*.*.json",
@@ -14,8 +24,8 @@ const profileModules = import.meta.glob(
   }
 ) as Record<string, any>;
 
-const profiles = computed(() => {
-  const profiles = {};
+const profiles = computed<Record<string, SampleProfilePair>>(() => {
+  const profiles: Record<string, SampleProfilePair> = {};
   for (const [path, data] of Object.entries(profileModules)) {
     // example filename:
     // concord-profile.private.3edc6ed685.json
@@ -28,18 +38,31 @@ const profiles = computed(() => {
     const [, visibility, id] = match;
 
     profiles[id] ??= {};
-    profiles[id][visibility as "public" | "private"] = data;
+    profiles[id][visibility as "public" | "private"] = data as
+      | PublicProfile
+      | PrivateProfile;
   }
 
   return profiles;
 });
 
-const { ledger } = useLedger();
-const { publicKeyPEM, impersonate } = useIdentity();
+const { ledger, api } = useLedger();
+const {
+  publicKeyPEM,
+  privateKey,
+  publicKey,
+  impersonate: impersonateIdentity,
+} = useIdentity();
+const { impersonate: impersonateEncryption } = useEncryption();
 const profile = useProfile();
 
-const contentArea = shallowRef();
-const userMenuRef = shallowRef(null);
+const myProfile = useLocalStorage(
+  "concord/profile/me",
+  profile.getPrivateProfileJson()
+);
+
+const contentArea = shallowRef<HTMLElement | null>(null);
+const userMenuRef = shallowRef<HTMLElement | null>(null);
 
 const genesisId = computed(() =>
   (Object.keys(ledger.value?.commits || {})[0] || "").substring(0, 7)
@@ -55,17 +78,25 @@ onClickOutside(userMenuRef, () => {
 });
 
 const hasProfile = computed(() => {
-  return !!profile.meta.value.username;
+  const meta = profile.meta.value as { username?: string };
+  return !!meta.username;
+});
+
+const profileUsername = computed(() => {
+  const meta = profile.meta.value as { username?: string };
+  return typeof meta.username === "string" ? meta.username : "";
 });
 
 const disabled = computed(
   () => !profile.ready.value || !profile.profileId.value
 );
 
-const username = shallowRef("");
+const username = shallowRef<string>("");
 function setProfile() {
   profile.setProfileMeta({ username: username.value });
   username.value = "";
+
+  myProfile.value = profile.getPrivateProfileJson();
 }
 
 function downloadText(
@@ -105,11 +136,37 @@ async function downloadPrivate() {
   downloadText(files.private.filename, files.private.json);
 }
 
-function impersonateUser(e, value) {
-  const parsedProfile = JSON.parse(e.target.value);
-  impersonate(parsedProfile);
+async function impersonateUser(event: Event) {
+  const target = event.target as HTMLSelectElement | null;
+  if (!target) return;
+  const parsedProfile = JSON.parse(target.value) as PrivateProfile;
+  await impersonateIdentity(parsedProfile);
+  await impersonateEncryption(parsedProfile);
   profile.replaceProfileMeta(parsedProfile.metadata);
   profile.setProfileId(parsedProfile.profileId);
+
+  if (publicKey.value && privateKey.value) {
+    await api.auth(privateKey.value, publicKey.value);
+  }
+}
+
+const isImpersonating = computed(() => {
+  return JSON.parse(myProfile.value).profileId !== profile.profileId.value;
+});
+async function cancelImpersonate() {
+  const _profile = JSON.parse(myProfile.value);
+  await impersonateIdentity(_profile);
+  await impersonateEncryption(_profile);
+  profile.replaceProfileMeta(_profile.metadata);
+  profile.setProfileId(_profile.profileId);
+
+  if (publicKey.value && privateKey.value) {
+    await api.auth(privateKey.value, publicKey.value);
+  }
+}
+
+function isActiveProfile(profileId) {
+  return profile.profileId.value === profileId;
 }
 </script>
 <template>
@@ -167,17 +224,9 @@ function impersonateUser(e, value) {
                   class="mx-auto my-4"
                 />
                 <span class="p-2 text-center font-thin"
-                  >@{{ profile.meta.value.username }}</span
+                  >@{{ profileUsername }}</span
                 >
-                <select @change="impersonateUser">
-                  <option
-                    v-for="profile in Object.values(profiles)"
-                    :key="profile.private.profileId"
-                    :value="JSON.stringify(profile.private)"
-                  >
-                    {{ profile.private.metadata.username }}
-                  </option>
-                </select>
+
                 <div
                   v-if="!hasProfile"
                   class="flex flex-col justify-center items-center absolute h-full w-full backdrop-blur-md top-0 left-0 right-0 bottom-0"
@@ -218,6 +267,31 @@ function impersonateUser(e, value) {
                   Download private profile
                 </button>
               </div>
+              <div class="p-2 flex gap-2 items-center">
+                Impersonate
+                <select
+                  @change="impersonateUser"
+                  class="flex-1 border border-[var(--rule)] p-1 rounded-sm"
+                  :key="publicKeyPEM"
+                >
+                  <option disabled selected>...</option>
+                  <option
+                    v-for="_profile in Object.values(profiles)"
+                    :key="_profile.private.profileId"
+                    :value="JSON.stringify(_profile.private)"
+                    :selected="isActiveProfile(_profile.private.profileId)"
+                  >
+                    {{ _profile.private?.metadata.username }}
+                  </option>
+                </select>
+              </div>
+              <button
+                v-if="isImpersonating"
+                @click="cancelImpersonate"
+                class="px-2 py-1 text-xs rounded-full text-red-500"
+              >
+                Cancel impersonation
+              </button>
             </div>
           </div>
         </nav>

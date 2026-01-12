@@ -1,0 +1,26 @@
+{
+  "format": "concord-profile-private",
+  "version": "1.0",
+  "profileId": "46199a89e438857e1e086dcd41155738d17b22c7f3c58f7dcf9464827ec7297b",
+  "identity": {
+    "type": "ecdsa-p256",
+    "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE1KPAghiGaVBl0yP+rtppDu2yMWUB\n8ChRXyKvqgaNXG76woo+iyMKMnF3kHSdY8jlqHzEyDFhrVYYOrtIgRvUEA==",
+    "privateKey": {
+      "format": "pkcs8-pem",
+      "encrypted": false,
+      "payload": "-----BEGIN PRIVATE KEY-----\nMIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgzTmUM4+/BRzCfw/5\nxnceBemBHHfGJVM+5kW0ZDGpM3+hRANCAATUo8CCGIZpUGXTI/6u2mkO7bIxZQHw\nKFFfIq+qBo1cbvrCij6LIwoycXeQdJ1jyOWofMTIMWGtVhg6u0iBG9QQ\n-----END PRIVATE KEY-----"
+    }
+  },
+  "encryption": {
+    "type": "age",
+    "publicKey": "age1ndkqjhxyxssmy6rw3g3dyz58r8fzstp3250wpvj563n49ger2yzstgqawt",
+    "privateKey": {
+      "format": "age-secret",
+      "encrypted": false,
+      "payload": "AGE-SECRET-KEY-1HWV07ZLVQAG7URER04TR6U44H2WJMLAXFQUX2AVF9C0SX3AZECQSASQAQP"
+    }
+  },
+  "metadata": {
+    "username": "alice"
+  }
+}

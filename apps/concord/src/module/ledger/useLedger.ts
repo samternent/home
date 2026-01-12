@@ -1,4 +1,12 @@
-import { shallowRef, provide, inject, watch, computed } from "vue";
+import {
+  shallowRef,
+  provide,
+  inject,
+  watch,
+  computed,
+  type ComputedRef,
+  type ShallowRef,
+} from "vue";
 
 import {
   createLedgerRuntime,
@@ -41,12 +49,12 @@ type PermissionRecord = {
 
 type ProvideLedgerContext = {
   db: any;
-  ledger: ReturnType<typeof computed<any>>;
-  pending: ReturnType<typeof computed<any[]>>;
-  api: ReturnType<typeof createLedgerRuntime<any>>;
-  bridge: ReturnType<typeof createLedgerBridge<any>>;
-  collections: ReturnType<typeof createLedgerBridge<any>>["collections"];
-  compressedBlob: ReturnType<typeof shallowRef<Blob | undefined>>;
+  ledger: ComputedRef<any>;
+  pending: ComputedRef<any[]>;
+  api: ReturnType<typeof createLedgerRuntime>;
+  bridge: ReturnType<typeof createLedgerBridge>;
+  collections: ReturnType<typeof createLedgerBridge>["collections"];
+  compressedBlob: ShallowRef<Blob | undefined>;
   createPermission: (title: string) => Promise<any>;
   addUserPermission: (
     title: string,
@@ -62,9 +70,7 @@ type ProvideLedgerContext = {
   getCollections: () => Record<string, any>;
 };
 
-export function provideLedger({
-  ledger: initialLedger,
-}: { ledger?: any } = {}) {
+export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
   const compressedBlob = shallowRef<Blob>();
 
   const { publicKeyPEM: publicKeyIdentityPEM } = useIdentity();
@@ -99,7 +105,9 @@ export function provideLedger({
     ],
     resolveAuthor: async (publicKey) =>
       stripIdentityKey(await exportPublicKeyAsPem(publicKey)),
-    sign: async (signingKey, payload) => sign(signingKey, payload),
+    sign: async (signingKey, payload) => {
+      return sign(signingKey, payload);
+    },
     autoPersist: true,
   });
 

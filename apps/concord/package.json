@@ -11,6 +11,7 @@
   "dependencies": {
     "@tailwindcss/typography": "^0.5.14",
     "@tailwindcss/vite": "^4.1.18",
+    "@ternent/concord-protocol": "workspace:^",
     "@vueuse/core": "^10.11.1",
     "tailwindcss": "^4.1.18",
     "ternent-encrypt": "workspace:*",

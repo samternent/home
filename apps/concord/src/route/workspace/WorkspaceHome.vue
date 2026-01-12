@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { onMounted, computed, shallowRef } from "vue";
-import { generateId, stripIdentityKey } from "ternent-utils";
 import { LedgerContainer } from "ternent-ledger-types";
+
 import { useLedger } from "../../module/ledger/useLedger";
 import { useIdentity } from "../../module/identity/useIdentity";
-
 import AppLayout from "../../module/app/AppLayout.vue";
 import Console from "../../module/console/Console.vue";
 import SideNav from "../../module/side-nav/SideNav.vue";
 import IdentityAvatar from "../../module/identity/IdentityAvatar.vue";
+import VerifyIcon from "../../module/verify/VerifyIcon.vue";
 import sampleLedger from "./sample-ledger.json";
 
 defineProps({
@@ -19,7 +19,7 @@ defineProps({
 });
 
 const { api, bridge, ledger } = useLedger();
-const { privateKey: priv, publicKey: pub, publicKeyPEM } = useIdentity();
+const { privateKey: priv, publicKey: pub } = useIdentity();
 
 const useSampleLedger = true;
 
@@ -35,6 +35,7 @@ const hasLedger = computed(() => bridge.flags.value.hasLedger);
 const commitMessage = shallowRef("");
 async function commit() {
   if (!bridge.flags.value.canWrite || !bridge.flags.value.pendingCount) {
+    return;
   }
 
   // auto-squash keeps commits clean
@@ -48,6 +49,16 @@ async function commit() {
 const items = computed(() =>
   Object.entries(ledger.value?.commits || {}).reverse()
 );
+
+function formatDate(
+  iso: string,
+  options: Intl.DateTimeFormatOptions = {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }
+) {
+  return new Intl.DateTimeFormat(undefined, options).format(new Date(iso));
+}
 </script>
 <template>
   <AppLayout>
@@ -73,13 +84,15 @@ const items = computed(() =>
           <div
             class="flex flex-col overflow-auto flex-1 py-2 border-l border-[var(--rule)] p-2"
           >
-            <ul
+            <div
               v-for="[commitId, commit] in items"
               :key="commitId"
               class="px-2 flex flex-col gap-1 py-4 border-b border-[var(--rule)]"
             >
-              <div class="text-sm flex items-center gap-2">
-                @{{ commitId.substring(0, 7) }}
+              <div class="text-sm flex items-center gap-2 flex-1">
+                <span class="font-medium text-[var(--accent)]"
+                  >@{{ commitId.substring(0, 7) }}</span
+                >
                 <div
                   v-if="commit.metadata.genesis"
                   class="text-xs py1 px-2 border-1 border-[var(--rule)] rounded-full"
@@ -90,34 +103,46 @@ const items = computed(() =>
 
                 <div v-if="commit.entries.length" class="font-medium">v</div>
               </div>
-              <li
+              <div
                 v-for="entry in commit.entries"
                 :key="entry"
-                class="px-2 text-xs border-t border-[var(--rule)] py-2 my-2"
+                class="px-2 text-xs border-t border-[var(--rule)] py-2 my-2 w-full flex-1"
               >
-                <div class="flex gap-2 items-center">
-                  @{{ entry.substring(0, 7) }}
-                  <div
-                    class="text-xs py1 px-2 border-1 border-[var(--rule)] rounded-full"
-                  >
-                    {{ ledger.entries[entry].kind }}
+                <div class="flex gap-2 items-center justify-between flex-1">
+                  <div class="flex items-center gap-2 flex-1">
+                    <span class="font-medium text-[var(--accent)]">
+                      @{{ entry.substring(0, 7) }}</span
+                    >
+                    <VerifyIcon
+                      :payload="ledger.entries[entry]"
+                      :signature="ledger.entries[entry].signature"
+                      :author="ledger.entries[entry].author"
+                    />
                   </div>
-                  <IdentityAvatar
-                    :identity="ledger.entries[entry].author"
-                    size="xs"
-                  />
-                  <span class="text-sm text-ellipsis w-64 overflow-hidden">{{
-                    ledger.entries[entry].signature
-                  }}</span>
-                  <span class="text-sm text-ellipsis w-64 overflow-hidden">{{
-                    ledger.entries[entry].timestamp
-                  }}</span>
+                  <div class="flex items-center gap-2">
+                    <div
+                      class="text-xs py1 px-2 border-1 border-[var(--rule)] rounded-full"
+                    >
+                      {{ ledger.entries[entry].kind }}
+                    </div>
+                    <IdentityAvatar
+                      :identity="ledger.entries[entry].author"
+                      size="xs"
+                    />
+
+                    <span
+                      v-if="ledger.entries[entry]?.timestamp"
+                      class="text-sm text-ellipsis overflow-hidden"
+                    >
+                      {{ formatDate(ledger.entries[entry].timestamp) }}
+                    </span>
+                  </div>
                 </div>
                 <pre class="w-full overflow-auto">{{
                   ledger.entries[entry].payload
                 }}</pre>
-              </li>
-            </ul>
+              </div>
+            </div>
           </div>
 
           <div class="flex-1 flex flex-col">

@@ -1,15 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useRoute } from "vue-router";
-import { buildSidebarNav } from "../../content/navigation";
 import WebLayout from "../../module/app/WebLayout.vue";
-
-const nav = computed(() => buildSidebarNav());
-
-// Active rules: highlight exact match
-function isActive(to: string) {
-  return route.path === to;
-}
 
 const route = useRoute();
 

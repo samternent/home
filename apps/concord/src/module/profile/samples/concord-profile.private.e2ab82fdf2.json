@@ -1,0 +1,26 @@
+{
+  "format": "concord-profile-private",
+  "version": "1.0",
+  "profileId": "e2ab82fdf2b3f0abf6f06a94de9cee2aef0f16c45f7cb6e676f4e8ca3e58ddcd",
+  "identity": {
+    "type": "ecdsa-p256",
+    "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE4lTRM/O27usBcUSzeLOyMnw13skR\nzSkucxdsufe956pSbawOGJAUES/2A3Vt1hX/q916nKSYEZZHPnuukHThNw==",
+    "privateKey": {
+      "format": "pkcs8-pem",
+      "encrypted": false,
+      "payload": "-----BEGIN PRIVATE KEY-----\nMIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgkvW3AheN3E9zyPa6\nCG7OG/xWqbsKadwH9VTC7kgqJUWhRANCAATiVNEz87bu6wFxRLN4s7IyfDXeyRHN\nKS5zF2y5973nqlJtrA4YkBQRL/YDdW3WFf+r3XqcpJgRlkc+e66QdOE3\n-----END PRIVATE KEY-----"
+    }
+  },
+  "encryption": {
+    "type": "age",
+    "publicKey": "age169zxc7khvqgxq9r52sayvs8c4vfncdklmd44w0lstpfva97km44sc63392",
+    "privateKey": {
+      "format": "age-secret",
+      "encrypted": false,
+      "payload": "AGE-SECRET-KEY-1M2MN7VQCT7Y2NRSFHNK6XGQ94EJ83DGVAFM2F588YA9U2FFZPXZSKTDDFA"
+    }
+  },
+  "metadata": {
+    "username": "mallory"
+  }
+}

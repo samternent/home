@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { onMounted, computed, shallowRef } from "vue";
-import { generateId, stripIdentityKey } from "ternent-utils";
+import { computed } from "vue";
 import { useLedger } from "../../module/ledger/useLedger";
 import { useIdentity } from "../../module/identity/useIdentity";
-import { useEncryption } from "../../module/encryption/useEncryption";
-import { useProfile } from "../../module/profile/useProfile";
+import {
+  type PublicProfile,
+  type PrivateProfile,
+  useProfile,
+} from "../../module/profile/useProfile";
 import IdentityAvatar from "../../module/identity/IdentityAvatar.vue";
 
 const profileModules = import.meta.glob(
@@ -19,8 +21,24 @@ const { api, bridge } = useLedger();
 const { publicKeyPEM } = useIdentity();
 const profile = useProfile();
 
-const users = computed(() =>
-  Object.values(bridge.collections.byKind.value?.users || {})
+type UserEntry = {
+  entryId: string;
+  data: {
+    id: string;
+    publicEncryptionKey: string;
+    publicIdentityKey: string;
+    name?: string;
+  };
+};
+
+type SampleProfilePair = {
+  public?: PublicProfile;
+  private?: PrivateProfile;
+};
+
+const users = computed<UserEntry[]>(
+  () =>
+    Object.values(bridge.collections.byKind.value?.users || {}) as UserEntry[]
 );
 
 const canAddItem = computed(
@@ -34,6 +52,11 @@ const isJoined = computed(() =>
   )
 );
 
+const profileUsername = computed(() => {
+  const meta = profile.meta.value as { username?: string };
+  return typeof meta.username === "string" ? meta.username : "";
+});
+
 async function joinMe() {
   const me = profile.getPublicProfile();
   await api.addAndStage({
@@ -46,7 +69,7 @@ async function joinMe() {
     },
   });
 }
-async function join(_profile) {
+async function join(_profile: PublicProfile) {
   await api.addAndStage({
     kind: "users",
     payload: {
@@ -58,8 +81,8 @@ async function join(_profile) {
   });
 }
 
-const profiles = computed(() => {
-  const profiles = {};
+const profiles = computed<Record<string, SampleProfilePair>>(() => {
+  const profiles: Record<string, SampleProfilePair> = {};
   for (const [path, data] of Object.entries(profileModules)) {
     // example filename:
     // concord-profile.private.3edc6ed685.json
@@ -72,21 +95,26 @@ const profiles = computed(() => {
     const [, visibility, id] = match;
 
     profiles[id] ??= {};
-    profiles[id][visibility as "public" | "private"] = data;
+    profiles[id][visibility as "public" | "private"] =
+      data as PublicProfile | PrivateProfile;
   }
 
   return profiles;
 });
 
-const availableUsers = computed(() =>
-  Object.values(profiles.value).filter(
-    (profile) =>
-      !users.value.some(
-        (user) =>
-          profile.public.profileId.substring(0, 10) ===
-          user.data.id.substring(0, 10)
-      )
-  )
+const availableUsers = computed<PublicProfile[]>(() =>
+  Object.values(profiles.value).flatMap((profile) => {
+    const publicProfile = profile.public;
+    if (!publicProfile) return [];
+
+    const alreadyJoined = users.value.some(
+      (user) =>
+        publicProfile.profileId.substring(0, 10) ===
+        user.data.id.substring(0, 10)
+    );
+
+    return alreadyJoined ? [] : [publicProfile];
+  })
 );
 </script>
 <template>
@@ -120,9 +148,9 @@ const availableUsers = computed(() =>
       v-if="!isJoined"
       class="border-b border-[var(--rule)] w-full flex flex-col justify-center items-center absolute left-0 top-0 bottom-0 right-0 backdrop-blur-md"
     >
-      <div v-if="profile.meta.value.username" class="">
+      <div v-if="profileUsername" class="">
         <div class="flex items-center p-2 text-xl">
-          Join as {{ profile.meta.value.username }}
+          Join as {{ profileUsername }}
         </div>
         <div class="flex flex-col p-2 gap-2">
           <button
@@ -141,16 +169,16 @@ const availableUsers = computed(() =>
         <ul class="flex gap-2 my-2">
           <li
             v-for="profile in availableUsers"
-            :key="profile.public.profileId"
+            :key="profile.profileId"
             class="flex gap-2"
           >
             <button
               class="flex gap-2 items-center py-2 px-4 border border-[var(--rule)] rounded-full"
-              @click="join(profile.public)"
+              @click="join(profile)"
             >
-              Add {{ profile.public.metadata.username }}
+              Add {{ profile.metadata.username }}
               <IdentityAvatar
-                :identity="profile.public.identity.publicKey"
+                :identity="profile.identity.publicKey"
                 size="xs"
               />
             </button>

@@ -1,0 +1,18 @@
+{
+  "format": "concord-profile",
+  "version": "1.0",
+  "profileId": "e2ab82fdf2b3f0abf6f06a94de9cee2aef0f16c45f7cb6e676f4e8ca3e58ddcd",
+  "identity": {
+    "type": "ecdsa-p256",
+    "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE4lTRM/O27usBcUSzeLOyMnw13skR\nzSkucxdsufe956pSbawOGJAUES/2A3Vt1hX/q916nKSYEZZHPnuukHThNw=="
+  },
+  "encryption": {
+    "type": "age",
+    "recipients": [
+      "age169zxc7khvqgxq9r52sayvs8c4vfncdklmd44w0lstpfva97km44sc63392"
+    ]
+  },
+  "metadata": {
+    "username": "mallory"
+  }
+}

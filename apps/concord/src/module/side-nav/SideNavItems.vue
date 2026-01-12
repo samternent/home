@@ -1,7 +1,7 @@
 <script setup>
 import { computed, shallowRef } from "vue";
-import { useRouter, useRoute } from "vue-router";
-import { SMenu, SButton, SIndicator } from "ternent-ui/components";
+import { useRouter } from "vue-router";
+import { SMenu, SIndicator } from "ternent-ui/components";
 
 defineProps({
   items: {
@@ -15,7 +15,6 @@ defineProps({
 });
 
 const router = useRouter();
-const route = useRoute();
 function menuSelect(item) {
   router.push(item.to);
 }

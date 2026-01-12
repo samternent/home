@@ -21,12 +21,24 @@ function Encryption() {
     isReady.value = true;
   }
 
+  async function impersonate(profile) {
+    const {
+      publicKey: publicPEM,
+      privateKey: { payload: privatePEM },
+    } = profile.encryption;
+    if (publicPEM && privatePEM) {
+      publicKey.value = publicPEM;
+      privateKey.value = privatePEM;
+    }
+  }
+
   init();
 
   return {
     publicKey,
     privateKey,
     isReady,
+    impersonate,
   };
 }
 

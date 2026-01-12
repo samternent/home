@@ -198,10 +198,7 @@ function canonicalize(
   }
 
   if (typeof (value as { toJSON?: () => unknown }).toJSON === "function") {
-    return canonicalize(
-      (value as { toJSON: () => unknown }).toJSON(),
-      seen
-    );
+    return canonicalize((value as { toJSON: () => unknown }).toJSON(), seen);
   }
 
   if (Array.isArray(value)) {
@@ -216,10 +213,7 @@ function canonicalize(
     const entries = Object.keys(value as Record<string, unknown>).sort();
     const result: Record<string, unknown> = {};
     for (const key of entries) {
-      result[key] = canonicalize(
-        (value as Record<string, unknown>)[key],
-        seen
-      );
+      result[key] = canonicalize((value as Record<string, unknown>)[key], seen);
     }
     seen.delete(value as object);
     return result;
