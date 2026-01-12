@@ -1,6 +1,6 @@
 {
   "name": "ternent-utils",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "",
   "main": "dist/utils.umd.js",
   "module": "dist/utils.es.js",
