@@ -12,5 +12,10 @@ export default defineConfig({
     tailwindcss(),
     Markdown({ wrapperClasses: "prose dark:prose-invert" }),
   ],
-  ssgOptions: {},
+  ssgOptions: {
+    includedRoutes(paths) {
+      // exclude workspace from pre-render
+      return paths.filter((p) => !p.startsWith("/workspace"));
+    },
+  },
 });
