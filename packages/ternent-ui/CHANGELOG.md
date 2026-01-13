@@ -1,5 +1,11 @@
 # ternent-ui
 
+## 0.3.4
+
+### Patch Changes
+
+- [`05930613e323b1a121bcadc1afc458b81100d9c0`](https://github.com/samternent/home/commit/05930613e323b1a121bcadc1afc458b81100d9c0) Thanks [@samternent](https://github.com/samternent)! - Partial permissions and 404
+
 ## 0.3.3
 
 ### Patch Changes
