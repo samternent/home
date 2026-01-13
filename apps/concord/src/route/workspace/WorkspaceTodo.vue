@@ -163,20 +163,15 @@ const assignedTo = computed(() =>
             v-model="permissionId"
             class="text-xs w-40 border py-1 px-2 rounded-full border-[var(--rule)]"
           >
-            <option :value="null" :selected="!permissionId">anyone</option>
+            <option :value="null" :selected="!permissionId">public</option>
             <option
               v-for="permission in permissions"
               :key="permission.data.id"
               :value="permission.data.id"
             >
-              {{ permission.data.name }}
+              {{ permission.data.title }}
             </option>
           </select>
-          <IdentityAvatar
-            v-if="assignedTo?.data.publicIdentityKey"
-            :identity="assignedTo.data.publicIdentityKey"
-            size="xs"
-          />
         </div>
       </div>
     </div>

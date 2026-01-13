@@ -2,7 +2,10 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
   "trailingSlash": false,
-  "rewrites": [{ "source": "/workspace/:path*", "destination": "/workspace" }],
+  "rewrites": [
+    { "source": "/workspace", "destination": "/index.html" },
+    { "source": "/workspace/:path*", "destination": "/index.html" }
+  ],
 
   "headers": [
     {

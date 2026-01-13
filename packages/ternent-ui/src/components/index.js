@@ -22,7 +22,6 @@ export { default as SBreadcrumbs } from "./SBreadcrumbs.vue";
 export { default as SDrawerRight } from "./SDrawerRight.vue";
 export { default as SDrawerLeft } from "./SDrawerLeft.vue";
 export { default as SBrowserMockup } from "./SBrowserMockup.vue";
-export { default as STimeline } from "./STimeline.vue";
 export { default as SDropdown } from "./SDropdown.vue";
 export { default as SMenu } from "./SMenu.vue";
 export { default as SMenuItem } from "./SMenuItem.vue";
