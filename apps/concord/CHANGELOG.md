@@ -1,5 +1,11 @@
 # concord
 
+## 0.1.4
+
+### Patch Changes
+
+- [`8a65e53cd3bd9e750231bc66089dda83b5a3c51e`](https://github.com/samternent/home/commit/8a65e53cd3bd9e750231bc66089dda83b5a3c51e) Thanks [@samternent](https://github.com/samternent)! - Adds permissions f low
+
 ## 0.1.3
 
 ### Patch Changes
