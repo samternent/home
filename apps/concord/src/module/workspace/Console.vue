@@ -155,11 +155,6 @@ function formatDate(
                       <span class="text-[var(--muted)]">
                         @{{ shortId(pendingEntry.entryId) }}
                       </span>
-                      <VerifyIcon
-                        :payload="pendingEntry.entry"
-                        :signature="pendingEntry.entry.signature"
-                        :author="pendingEntry.entry.author"
-                      />
                       <div
                         class="text-xs py1 px-2 border-1 border-[var(--rule)] rounded-full"
                       >

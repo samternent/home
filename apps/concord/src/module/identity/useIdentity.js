@@ -62,6 +62,7 @@ function Identity() {
     ready,
     impersonate,
     createIdentity: createNewIdentity,
+    init,
   };
 }
 

@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { shallowRef, computed } from "vue";
 import { onClickOutside, useLocalStorage } from "@vueuse/core";
+import {
+  createIdentity,
+  exportPublicKeyAsPem,
+  exportPrivateKeyAsPem,
+} from "ternent-identity";
+import { stripIdentityKey } from "ternent-utils";
 import { useLedger } from "../ledger/useLedger";
 import IdentityAvatar from "../../module/identity/IdentityAvatar.vue";
 import { useIdentity } from "../../module/identity/useIdentity";
@@ -49,8 +55,10 @@ const profiles = computed<Record<string, SampleProfilePair>>(() => {
 const { ledger, api } = useLedger();
 const {
   publicKeyPEM,
+  privateKeyPEM,
   privateKey,
   publicKey,
+  init,
   impersonate: impersonateIdentity,
 } = useIdentity();
 const { impersonate: impersonateEncryption } = useEncryption();
@@ -92,12 +100,6 @@ const disabled = computed(
 );
 
 const username = shallowRef<string>("");
-function setProfile() {
-  profile.setProfileMeta({ username: username.value });
-  username.value = "";
-
-  myProfile.value = profile.getPrivateProfileJson();
-}
 
 function downloadText(
   filename: string,
@@ -170,6 +172,36 @@ async function reauthAndReplay() {
   await api.auth(privateKey.value, publicKey.value);
   await api.replay();
 }
+
+const tempKeys = shallowRef();
+const tempIdentityPEM = shallowRef();
+
+async function generateNewIdentity(e?: Event) {
+  if (e) {
+    e.currentTarget.classList.add("spin");
+  }
+  tempKeys.value = await createIdentity();
+  tempIdentityPEM.value = await stripIdentityKey(
+    await exportPublicKeyAsPem(tempKeys.value.publicKey)
+  );
+}
+
+generateNewIdentity();
+
+async function setProfile() {
+  profile.setProfileMeta({ username: username.value });
+  username.value = "";
+
+  publicKeyPEM.value = stripIdentityKey(
+    await exportPublicKeyAsPem(tempKeys.value.publicKey)
+  );
+  publicKey.value = tempKeys.value.publicKey;
+  privateKey.value = tempKeys.value.privateKey;
+  privateKeyPEM.value = await exportPrivateKeyAsPem(tempKeys.value.privateKey);
+
+  myProfile.value = profile.getPrivateProfileJson();
+  init();
+}
 </script>
 <template>
   <div
@@ -234,6 +266,39 @@ async function reauthAndReplay() {
                   class="flex flex-col justify-center items-center absolute h-full w-full backdrop-blur-md top-0 left-0 right-0 bottom-0"
                 >
                   <div class="flex flex-col gap-2">
+                    <div
+                      class="flex flex-col items-center gap-2 rounded-lg bg-[var(--paper)] border border-[var(--rule)]"
+                    >
+                      <IdentityAvatar
+                        :identity="tempIdentityPEM || publicKeyPEM"
+                        size="lg"
+                        class="mx-auto my-4"
+                      />
+                    </div>
+
+                    <button
+                      @click="generateNewIdentity"
+                      @animationend="
+                        (e) => e.currentTarget.classList.remove('spin')
+                      "
+                      class="spin-target size-8 flex items-center justify-center rounded-full border border-[var(--rule)] bg-[var(--paper)] p-2 mx-auto"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        class="size-4"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+                        />
+                      </svg>
+                    </button>
+
                     <input
                       v-model="username"
                       type="text"
@@ -324,7 +389,7 @@ async function reauthAndReplay() {
     </div>
   </div>
 </template>
-<style scoped>
+<style>
 .user-dropdown {
   position: absolute;
   right: 0;
@@ -338,5 +403,20 @@ async function reauthAndReplay() {
   box-shadow: 0 10px 25px oklch(var(--bc) / 0.1);
   z-index: 50;
   overflow: hidden;
+}
+@keyframes spin-pop {
+  0% {
+    transform: rotate(0) scale(1);
+  }
+  60% {
+    transform: rotate(270deg) scale(1.1);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+.spin {
+  animation: spin-pop 620ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 </style>
