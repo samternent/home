@@ -1,5 +1,11 @@
 # concord
 
+## 0.2.0
+
+### Minor Changes
+
+- [`1c20f1751754004bc62c2f1e2e3118665c6e70b8`](https://github.com/samternent/home/commit/1c20f1751754004bc62c2f1e2e3118665c6e70b8) Thanks [@samternent](https://github.com/samternent)! - End to end demo
+
 ## 0.1.4
 
 ### Patch Changes
