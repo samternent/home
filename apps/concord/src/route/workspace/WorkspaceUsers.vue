@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref, shallowRef } from "vue";
 import { useLedger } from "../../module/ledger/useLedger";
 import { useIdentity } from "../../module/identity/useIdentity";
 import {
@@ -95,8 +95,9 @@ const profiles = computed<Record<string, SampleProfilePair>>(() => {
     const [, visibility, id] = match;
 
     profiles[id] ??= {};
-    profiles[id][visibility as "public" | "private"] =
-      data as PublicProfile | PrivateProfile;
+    profiles[id][visibility as "public" | "private"] = data as
+      | PublicProfile
+      | PrivateProfile;
   }
 
   return profiles;
@@ -116,74 +117,177 @@ const availableUsers = computed<PublicProfile[]>(() =>
     return alreadyJoined ? [] : [publicProfile];
   })
 );
+
+const uploadError = shallowRef("");
+const uploadedProfile = shallowRef<PublicProfile | PrivateProfile | null>(null);
+const uploadedFileName = shallowRef("");
+const isUploading = ref(false);
+
+function getEncryptionRecipient(profile: PublicProfile | PrivateProfile) {
+  if (Array.isArray(profile.encryption?.recipients)) {
+    return profile.encryption.recipients[0] ?? null;
+  }
+  return profile.encryption?.publicKey ?? null;
+}
+
+async function handleProfileUpload(event: Event) {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+  if (!file) return;
+
+  uploadError.value = "";
+  uploadedFileName.value = file.name;
+  isUploading.value = true;
+
+  try {
+    const text = await file.text();
+    const parsed = JSON.parse(text);
+
+    if (!parsed?.profileId || !parsed?.identity?.publicKey) {
+      throw new Error("Missing required profile fields.");
+    }
+
+    uploadedProfile.value = parsed as PublicProfile | PrivateProfile;
+  } catch (error) {
+    uploadError.value = "Could not read that profile file.";
+    uploadedProfile.value = null;
+  } finally {
+    isUploading.value = false;
+  }
+}
+
+async function addUploadedProfile() {
+  if (!uploadedProfile.value) return;
+  const recipient = getEncryptionRecipient(uploadedProfile.value);
+
+  if (!recipient) {
+    uploadError.value = "Profile missing encryption details.";
+    return;
+  }
+
+  await api.addAndStage({
+    kind: "users",
+    payload: {
+      id: uploadedProfile.value.profileId,
+      publicEncryptionKey: recipient,
+      publicIdentityKey: uploadedProfile.value.identity.publicKey,
+      name: uploadedProfile.value.metadata?.username ?? "Unnamed",
+    },
+  });
+
+  uploadedProfile.value = null;
+  uploadedFileName.value = "";
+}
 </script>
 <template>
-  <div class="p-4 mx-auto max-w-140 w-full">
-    <h1>Users</h1>
-
-    <table class="w-full">
-      <thead>
-        <tr>
-          <th class="text-left p-2">Identity</th>
-          <th class="text-left p-2">Name</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-for="user in users"
-          :key="user.entryId"
-          class="border-t border-[var(--rule)] py-2"
-        >
-          <td class="p-2">
-            <IdentityAvatar :identity="user.data.publicIdentityKey" size="sm" />
-          </td>
-          <td class="p-2">
-            {{ user.data.name }}
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <hr class="border-[var(--rule)] my-8" />
-    <div
-      v-if="!isJoined"
-      class="border-b border-[var(--rule)] w-full flex flex-col justify-center items-center absolute left-0 top-0 bottom-0 right-0 backdrop-blur-md"
-    >
-      <div v-if="profileUsername" class="">
-        <div class="flex items-center p-2 text-xl">
-          Join as {{ profileUsername }}
-        </div>
-        <div class="flex flex-col p-2 gap-2">
-          <button
-            class="border border-[var(--rule)] px-4 py-2 text-sm rounded-full"
-            @click="joinMe"
-          >
-            Join
-          </button>
+  <div class="mx-auto w-full max-w-160 flex flex-col flex-1 gap-4">
+    <header class="sticky top-0 bg-[var(--paper)] py-2 z-10">
+      <div class="flex items-center justify-between gap-4">
+        <div class="flex flex-col gap-1">
+          <h1 class="text-2xl">Users.</h1>
+          <p class="text-sm opacity-70">{{ users.length }} members</p>
         </div>
       </div>
-      <div v-else>Set username in the top right</div>
+    </header>
+
+    <section class="flex-1 flex flex-col gap-3 min-h-0">
+      <div class="border border-[var(--rule)] rounded-2xl overflow-hidden">
+        <table class="w-full">
+          <thead class="text-left text-xs uppercase tracking-wide opacity-60">
+            <tr class="border-b border-[var(--rule)]">
+              <th class="p-3">Identity</th>
+              <th class="p-3">Name</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[var(--rule)]">
+            <tr v-for="user in users" :key="user.entryId">
+              <td class="p-3">
+                <IdentityAvatar
+                  :identity="user.data.publicIdentityKey"
+                  size="sm"
+                />
+              </td>
+              <td class="p-3 text-sm">
+                {{ user.data.name }}
+              </td>
+            </tr>
+            <tr v-if="!users.length">
+              <td class="p-4 text-sm opacity-60" colspan="2">No users yet.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <div
+      v-if="!isJoined"
+      class="border border-[var(--rule)] rounded-2xl p-6 flex flex-col items-center gap-4"
+    >
+      <div v-if="profileUsername" class="flex flex-col items-center gap-3">
+        <div class="text-lg">Join as {{ profileUsername }}</div>
+        <button
+          class="border border-[var(--rule)] px-4 py-2 text-sm rounded-full"
+          @click="joinMe"
+        >
+          Join
+        </button>
+      </div>
+      <div v-else class="text-sm opacity-70">
+        Set a username in the top right.
+      </div>
     </div>
-    <div v-else-if="canAddItem" class="">
-      <template v-if="availableUsers.length">
-        <h2>Demo users</h2>
-        <ul class="flex gap-2 my-2">
-          <li
-            v-for="profile in availableUsers"
-            :key="profile.profileId"
-            class="flex gap-2"
+    <div v-else-if="canAddItem" class="flex flex-col gap-3">
+      <div class="border border-[var(--rule)] rounded-2xl p-4">
+        <h2 class="text-sm uppercase tracking-wide opacity-60">
+          Add from profile
+        </h2>
+        <div class="mt-3 flex flex-col gap-3">
+          <input
+            type="file"
+            accept=".json,application/json"
+            class="text-sm"
+            @change="handleProfileUpload"
+          />
+          <div
+            v-if="uploadedFileName"
+            class="flex items-center justify-between gap-2 text-sm"
           >
+            <span class="opacity-70">{{ uploadedFileName }}</span>
             <button
-              class="flex gap-2 items-center py-2 px-4 border border-[var(--rule)] rounded-full"
-              @click="join(profile)"
+              class="border border-[var(--rule)] px-4 py-2 rounded-full text-xs"
+              :disabled="!uploadedProfile || isUploading"
+              @click="addUploadedProfile"
             >
-              Add {{ profile.metadata.username }}
-              <IdentityAvatar
-                :identity="profile.identity.publicKey"
-                size="xs"
-              />
+              Add user
             </button>
-          </li>
-        </ul>
+          </div>
+          <p v-if="uploadError" class="text-xs text-red-500" role="alert">
+            {{ uploadError }}
+          </p>
+        </div>
+      </div>
+      <template v-if="availableUsers.length">
+        <div class="border border-[var(--rule)] rounded-2xl p-4">
+          <h2 class="text-sm uppercase tracking-wide opacity-60">Demo users</h2>
+          <ul class="flex flex-wrap gap-2 mt-3">
+            <li
+              v-for="profile in availableUsers"
+              :key="profile.profileId"
+              class="flex"
+            >
+              <button
+                class="flex gap-2 items-center py-2 px-4 border border-[var(--rule)] rounded-full text-sm"
+                @click="join(profile)"
+              >
+                Add {{ profile.metadata.username }}
+                <IdentityAvatar
+                  :identity="profile.identity.publicKey"
+                  size="xs"
+                />
+              </button>
+            </li>
+          </ul>
+        </div>
       </template>
     </div>
   </div>

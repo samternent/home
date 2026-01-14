@@ -22,20 +22,16 @@ const showSidebar = computed(() => mdAndLarger.value || openSideBar.value);
 
 const topItems = computed(() => [
   {
-    name: "TODO list",
+    name: "Todos",
     to: "/workspace/todo",
   },
   {
-    name: "User management",
+    name: "Users",
     to: "/workspace/users",
   },
   {
     name: "Permissions",
     to: "/workspace/permissions",
-  },
-  {
-    name: "Inspector",
-    to: "/workspace/inspector",
   },
 ]);
 

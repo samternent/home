@@ -20,10 +20,6 @@ export default [
             path: "permissions",
             component: () => import("./WorkspacePermissions.vue"),
           },
-          {
-            path: "inspector",
-            component: () => import("./WorkspaceInspector.vue"),
-          },
         ],
       },
     ],
