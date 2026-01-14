@@ -9,43 +9,29 @@ import type {
 import { getCommitChain, isGenesisCommit } from "@ternent/concord-protocol";
 import type { LedgerContainer } from "@ternent/concord-protocol";
 
-import { decrypt } from "ternent-encrypt";
-import { formatEncryptionFile, stripIdentityKey } from "ternent-utils";
-
 type PayloadObject = Record<string, any>;
 
 function isPayloadObject(payload: unknown): payload is PayloadObject {
   return !!payload && typeof payload === "object" && !Array.isArray(payload);
 }
 
-function getEncryptedPayload(payload: PayloadObject): string | null {
-  if (payload.enc === "age" && typeof payload.ct === "string")
-    return payload.ct;
-  if (typeof payload.encrypted === "string") return payload.encrypted;
-  return null;
-}
-
 function getPayloadId(payload: PayloadObject): string | null {
   return typeof payload.id === "string" ? payload.id : null;
 }
 
-function hasPermissionLink(
-  payload: PayloadObject
-): payload is PayloadObject & { permission: string } {
-  return typeof payload.permission === "string";
-}
-
 export function lokiPlugin<P>(opts: {
   name?: string;
-  myPublicIdentityPem: string;
-  myPrivateEncryptionKey: string;
   mapCollectionName?: (kind: string) => string;
+  transformEntry?: (
+    entry: EntryWithId
+  ) => Promise<EntryWithId | null> | EntryWithId | null;
+  bootstrapKinds?: string[];
 }) {
   const db = new loki(`${opts.name ?? "ledger"}.db`, { env: "BROWSER" });
   const collections: Record<string, Collection<any>> = {};
-  const myIdentity = stripIdentityKey(opts.myPublicIdentityPem);
   let currentLedger: LedgerContainer | null = null;
   let currentPending: PendingEntry[] = [];
+  const bootstrapKinds = new Set(opts.bootstrapKinds ?? []);
 
   function getOrCreateCollection(kind: string) {
     const colName = opts.mapCollectionName?.(kind) ?? kind;
@@ -62,64 +48,11 @@ export function lokiPlugin<P>(opts: {
     }
   }
 
-  function findPermissionSecret(
-    permissionTitle: string,
-    identity: string
-  ): string | null {
-    const permCols = Object.keys(collections)
-      .filter((k) => k.startsWith("concord/perm/"))
-      .map((k) => collections[k]);
-
-    for (const col of permCols) {
-      const rec = col.findOne({
-        "payload.title": permissionTitle,
-        "payload.identity": identity,
-      })?.payload;
-      if (rec?.secret && typeof rec.secret === "string") return rec.secret;
-    }
-    return null;
-  }
-
-  async function decryptEntryIfPossible(
+  async function transformEntryIfNeeded(
     entry: EntryWithId
-  ): Promise<EntryWithId> {
-    if (!isPayloadObject(entry.payload)) return entry;
-
-    const payload = entry.payload;
-    const encryptedPayload = getEncryptedPayload(payload);
-    if (!encryptedPayload) return entry;
-
-    try {
-      if (!hasPermissionLink(payload)) {
-        const clear = await decrypt(
-          opts.myPrivateEncryptionKey,
-          formatEncryptionFile(encryptedPayload)
-        );
-        return { ...entry, payload: { ...payload, ...JSON.parse(clear) } };
-      }
-
-      const permSecret = findPermissionSecret(payload.permission, myIdentity);
-
-      if (!permSecret) {
-        const clear = await decrypt(
-          opts.myPrivateEncryptionKey,
-          formatEncryptionFile(encryptedPayload)
-        );
-        return { ...entry, payload: { ...payload, ...JSON.parse(clear) } };
-      }
-
-      const sharedKey = await decrypt(
-        opts.myPrivateEncryptionKey,
-        formatEncryptionFile(permSecret)
-      );
-      const clear = await decrypt(
-        sharedKey,
-        formatEncryptionFile(encryptedPayload)
-      );
-      return { ...entry, payload: { ...payload, ...JSON.parse(clear) } };
-    } catch {
-      return entry;
-    }
+  ): Promise<EntryWithId | null> {
+    if (!opts.transformEntry) return entry;
+    return opts.transformEntry(entry);
   }
 
   function toLokiDoc<T extends Record<string, any>>(obj: T): T {
@@ -195,16 +128,24 @@ export function lokiPlugin<P>(opts: {
     getOrCreateCollection("concord/all");
     const entries = buildOrderedEntries(currentLedger, currentPending);
     for (const e of entries) {
-      upsert(e);
-      upsert({ ...e, kind: "concord/all" });
+      if (!bootstrapKinds.has(e.kind)) continue;
+      const transformed = await transformEntryIfNeeded(e);
+      if (!transformed) continue;
+      upsert(transformed);
+      upsert({ ...transformed, kind: "concord/all" });
+    }
+    for (const e of entries) {
+      if (bootstrapKinds.has(e.kind)) continue;
+      const transformed = await transformEntryIfNeeded(e);
+      if (!transformed) continue;
+      upsert(transformed);
+      upsert({ ...transformed, kind: "concord/all" });
     }
   }
 
   const plugin: LedgerPlugin<P> = {
     name: "loki",
     priority: 10,
-
-    transformEntry: async (entry) => decryptEntryIfPossible(entry),
 
     onEvent: async (ev: LedgerEvent<P>) => {
       if (ev.type === "LOAD") {
@@ -218,12 +159,17 @@ export function lokiPlugin<P>(opts: {
       }
 
       if (ev.type === "ADD_STAGED") {
-        upsert(ev.entry);
-        upsert({ ...ev.entry, kind: "concord/all" });
+        const transformed = await transformEntryIfNeeded(ev.entry);
+        if (!transformed) return;
+        upsert(transformed);
+        upsert({ ...transformed, kind: "concord/all" });
         currentPending = [
           ...currentPending,
           { entryId: ev.entry.entryId, entry: ev.entry },
         ];
+        if (bootstrapKinds.has(ev.entry.kind)) {
+          await rebuildFromState();
+        }
       }
 
       if (ev.type === "PENDING_REPLACED") {

@@ -145,9 +145,7 @@ async function impersonateUser(event: Event) {
   profile.replaceProfileMeta(parsedProfile.metadata);
   profile.setProfileId(parsedProfile.profileId);
 
-  if (publicKey.value && privateKey.value) {
-    await api.auth(privateKey.value, publicKey.value);
-  }
+  await reauthAndReplay();
 }
 
 const isImpersonating = computed(() => {
@@ -160,13 +158,17 @@ async function cancelImpersonate() {
   profile.replaceProfileMeta(_profile.metadata);
   profile.setProfileId(_profile.profileId);
 
-  if (publicKey.value && privateKey.value) {
-    await api.auth(privateKey.value, publicKey.value);
-  }
+  await reauthAndReplay();
 }
 
 function isActiveProfile(profileId) {
   return profile.profileId.value === profileId;
+}
+
+async function reauthAndReplay() {
+  if (!publicKey.value || !privateKey.value) return;
+  await api.auth(privateKey.value, publicKey.value);
+  await api.replay();
 }
 </script>
 <template>

@@ -4,8 +4,9 @@ import { generateId } from "ternent-utils";
 
 import { useLedger } from "../../module/ledger/useLedger";
 import IdentityAvatar from "../../module/identity/IdentityAvatar.vue";
+import UserPicker from "../../module/user/UserPicker.vue";
 
-const { api, bridge } = useLedger();
+const { bridge, addItem } = useLedger();
 
 type LedgerItem = {
   id: string;
@@ -20,62 +21,74 @@ type ItemEntry = {
   data: LedgerItem;
 };
 
+type PermissionGroup = {
+  id: string;
+  title: string;
+  public: string;
+  createdBy: string;
+};
+
+type PermissionGroupEntry = {
+  entryId: string;
+  data: PermissionGroup;
+};
+
 const items = computed(() =>
-  Object.values(bridge.collections.byKind.value?.items || {}).map((item) => {
-    const assignee = bridge.collections.get("users", item.data.assignedTo);
+  Object.values(bridge.collections.byKind.value?.todos || {}).map((item) => {
+    const assignee = item.data.assignedTo
+      ? bridge.collections.get("users", item.data.assignedTo)
+      : null;
 
     return {
       entryId: item.entryId,
       data: {
         ...item.data,
-        assignedTo: assignee?.data,
+        ...(assignee ? { assignedTo: assignee?.data } : {}),
       },
     };
   })
 );
 
-const users = computed<ItemEntry[]>(
-  () =>
-    Object.values(bridge.collections.byKind.value?.users || {}) as ItemEntry[]
-);
-const permissions = computed<ItemEntry[]>(
+const permissions = computed<PermissionGroupEntry[]>(
   () =>
     Object.values(
-      bridge.collections.byKind.value?.permissions || {}
-    ) as ItemEntry[]
+      bridge.collections.byKind.value?.["permission-groups"] || {}
+    ) as PermissionGroupEntry[]
 );
 
 const canAddItem = computed(
   () => bridge.flags.value.hasLedger && bridge.flags.value.authed
 );
 const itemTitle = shallowRef<string>("");
-const assignedToId = shallowRef(null);
-const permissionId = shallowRef(null);
+const selectedUser = shallowRef();
+const permissionId = shallowRef();
 
-async function addItem() {
+async function addTodoItem() {
   const id = generateId();
-  await api.addAndStage({
-    kind: "items",
-    payload: { id, title: itemTitle.value, assignedTo: assignedToId.value },
-  });
+  await addItem(
+    {
+      id,
+      title: itemTitle.value,
+      ...(selectedUser.value ? { assignedTo: selectedUser.value.id } : {}),
+    },
+    "todos",
+    permissionId.value
+  );
   itemTitle.value = "";
-  assignedToId.value = null;
+  selectedUser.value = null;
 }
 
 async function completeItem(item: LedgerItem) {
-  await api.addAndStage({
-    kind: "items",
-    payload: {
+  await addItem(
+    {
       ...item,
       completed: !item.completed,
-      assignedTo: item.assignedTo?.id,
+      ...(item.assignedTo?.id ? { assignedTo: item.assignedTo.id } : {}),
     },
-  });
+    "todos",
+    item.permission
+  );
 }
-
-const assignedTo = computed(() =>
-  bridge.collections.get("users", assignedToId.value)
-);
 </script>
 <template>
   <div
@@ -129,30 +142,9 @@ const assignedTo = computed(() =>
           placeholder="Item title"
           class="border py-2 px-4 border-[var(--rule)] flex-1 rounded-full"
         />
-        <button @click="addItem">Add item</button>
+        <button @click="addTodoItem">Add item</button>
       </div>
-      <div
-        v-if="users.length"
-        class="flex gap-2 items-center w-full p-2 text-sm"
-      >
-        Assignee:
-        <div class="flex gap-4 items-center p-2 h-10 rounded-full">
-          <select
-            v-model="assignedToId"
-            class="text-xs w-40 border py-1 px-2 rounded-full border-[var(--rule)]"
-          >
-            <option :value="null" :selected="!assignedToId">anyone</option>
-            <option v-for="user in users" :key="user" :value="user.data.id">
-              {{ user.data.name }}
-            </option>
-          </select>
-          <IdentityAvatar
-            v-if="assignedTo?.data.publicIdentityKey"
-            :identity="assignedTo.data.publicIdentityKey"
-            size="xs"
-          />
-        </div>
-      </div>
+      Assignee: <UserPicker v-model="selectedUser" />
       <div
         v-if="permissions.length"
         class="flex gap-2 items-center w-full p-2 text-sm"

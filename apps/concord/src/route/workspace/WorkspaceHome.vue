@@ -145,9 +145,9 @@ function formatDate(
                         </span>
                       </div>
                     </div>
-                    <!-- <pre class="w-full overflow-auto">{{
+                    <pre class="w-full overflow-auto">{{
                       ledger.entries[entry].payload
-                    }}</pre> -->
+                    }}</pre>
                   </div>
                 </div>
               </AccordianItem>

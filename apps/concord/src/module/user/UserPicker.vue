@@ -1,0 +1,49 @@
+<script setup lang="ts">
+import { computed } from "vue";
+
+import { useLedger } from "../../module/ledger/useLedger";
+import IdentityAvatar from "../../module/identity/IdentityAvatar.vue";
+
+const viewModel = defineModel({
+  type: Object,
+  default: null,
+});
+
+const { bridge } = useLedger();
+
+type LedgerItem = {
+  id: string;
+  title: string;
+  completed?: boolean;
+  assignedTo?: boolean;
+  [key: string]: unknown;
+};
+
+type ItemEntry = {
+  entryId: string;
+  data: LedgerItem;
+};
+
+const users = computed<ItemEntry[]>(
+  () =>
+    Object.values(bridge.collections.byKind.value?.users || {}) as ItemEntry[]
+);
+</script>
+<template>
+  <div class="flex gap-4 items-center p-2 h-10 rounded-full">
+    <select
+      v-model="viewModel"
+      class="text-xs w-40 border py-1 px-2 rounded-full border-[var(--rule)]"
+    >
+      <option :value="null" :selected="!viewModel">anyone</option>
+      <option v-for="user in users" :key="user" :value="user.data">
+        {{ user.data.name }}
+      </option>
+    </select>
+    <IdentityAvatar
+      v-if="viewModel?.publicIdentityKey"
+      :identity="viewModel.publicIdentityKey"
+      size="xs"
+    />
+  </div>
+</template>

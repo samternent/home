@@ -12,6 +12,7 @@ import {
   createLedgerRuntime,
   lokiPlugin,
   indexedDbPlugin,
+  type EntryWithId,
 } from "ternent-ledger";
 import {
   createLedgerBridge,
@@ -39,13 +40,46 @@ import { useIdentity } from "../identity/useIdentity";
 
 const useLedgerSymbol = Symbol("useLedger");
 
-type PermissionRecord = {
+type PermissionGroupRecord = {
+  id: string;
+  title: string;
+  public: string;
+  createdBy: string;
+};
+
+type PermissionGrantRecord = {
+  id: string;
+  permissionId: string;
+  identity: string;
+  secret: string;
+};
+
+type LegacyPermissionRecord = {
   id: string;
   identity: string;
   title: string;
   public: string;
   secret: string;
 };
+
+type PayloadObject = Record<string, any>;
+
+function isPayloadObject(payload: unknown): payload is PayloadObject {
+  return !!payload && typeof payload === "object" && !Array.isArray(payload);
+}
+
+function getEncryptedPayload(payload: PayloadObject): string | null {
+  if (payload.enc === "age" && typeof payload.ct === "string")
+    return payload.ct;
+  if (typeof payload.encrypted === "string") return payload.encrypted;
+  return null;
+}
+
+function hasPermissionLink(
+  payload: PayloadObject
+): payload is PayloadObject & { permission: string; permissionId?: string } {
+  return typeof payload.permission === "string";
+}
 
 type ProvideLedgerContext = {
   db: any;
@@ -55,16 +89,20 @@ type ProvideLedgerContext = {
   bridge: ReturnType<typeof createLedgerBridge>;
   collections: ReturnType<typeof createLedgerBridge>["collections"];
   compressedBlob: ShallowRef<Blob | undefined>;
-  createPermission: (title: string) => Promise<any>;
+  createPermission: (title: string) => Promise<PermissionGroupRecord | void>;
   addUserPermission: (
-    title: string,
+    permissionId: string,
     identity: string,
     encryptionKey: string
   ) => Promise<any>;
+  getPermissionGroups: () => PermissionGroupRecord[];
+  getPermissionGrantsByPermissionId: (
+    permissionId: string
+  ) => PermissionGrantRecord[];
   addItem: (
     data: Record<string, any>,
     collection?: string,
-    permissionTitle?: string
+    permissionId?: string
   ) => Promise<void>;
   getCollection: (name: string) => any;
   getCollections: () => Record<string, any>;
@@ -78,10 +116,69 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
     useEncryption();
 
   // Plugins
+  async function decryptEntryIfPossible(
+    entry: EntryWithId
+  ): Promise<EntryWithId | null> {
+    if (!isPayloadObject(entry.payload)) return entry;
+
+    const payload = entry.payload;
+    const encryptedPayload = getEncryptedPayload(payload);
+    const myIdentity = stripIdentityKey(publicKeyIdentityPEM.value);
+
+    if (!encryptedPayload) return entry;
+
+    try {
+      if (!hasPermissionLink(payload)) {
+        const clear = await decrypt(
+          privateKeyEncryption.value,
+          formatEncryptionFile(encryptedPayload)
+        );
+        return { ...entry, payload: { ...JSON.parse(clear) } };
+      }
+
+      let permSecret: string | null = null;
+      if (typeof payload.permissionId === "string") {
+        permSecret =
+          loki.getCollection("permission-grants")?.findOne({
+            "payload.permissionId": payload.permissionId,
+            "payload.identity": myIdentity,
+          })?.payload?.secret ?? null;
+      }
+
+      if (!permSecret) {
+        permSecret =
+          loki.getCollection("permissions")?.findOne({
+            "payload.title": payload.permission,
+            "payload.identity": myIdentity,
+          })?.payload?.secret ?? null;
+      }
+
+      if (permSecret) {
+        const sharedKey = await decrypt(
+          privateKeyEncryption.value,
+          formatEncryptionFile(permSecret)
+        );
+        const clear = await decrypt(
+          sharedKey,
+          formatEncryptionFile(encryptedPayload)
+        );
+        return { ...entry, payload: { ...payload, ...JSON.parse(clear) } };
+      }
+
+      const clear = await decrypt(
+        privateKeyEncryption.value,
+        formatEncryptionFile(encryptedPayload)
+      );
+      return { ...entry, payload: { ...payload, ...JSON.parse(clear) } };
+    } catch {
+      return null;
+    }
+  }
+
   const loki = lokiPlugin({
     name: "ledger",
-    myPublicIdentityPem: stripIdentityKey(publicKeyIdentityPEM.value),
-    myPrivateEncryptionKey: privateKeyEncryption.value,
+    transformEntry: decryptEntryIfPossible,
+    bootstrapKinds: ["permissions", "permission-grants"],
   });
 
   const idb = indexedDbPlugin({
@@ -149,6 +246,17 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
   async function createPermission(title: string) {
     await ensureAuthed();
 
+    // Find permission group record (in Loki read model)
+    const existingGroup = loki.getCollection("permission-groups")?.findOne({
+      "payload.title": title,
+      "payload.createdBy": stripIdentityKey(publicKeyIdentityPEM.value),
+    })?.payload as PermissionGroupRecord | undefined;
+
+    if (existingGroup) {
+      console.log("Permission name already exists");
+      return;
+    }
+
     const [encryptionSecret, encryptionPublic] = await generateEncryptionKeys();
 
     // Secret is encrypted to *my* encryption public key so I can later re-share it
@@ -157,32 +265,71 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
       encryptionSecret
     );
 
-    return api.addAndStage({
+    const permissionGroup = {
+      id: generateId(),
+      title,
+      public: encryptionPublic,
+      createdBy: stripIdentityKey(publicKeyIdentityPEM.value),
+    } satisfies PermissionGroupRecord;
+
+    await api.addAndStage({
+      kind: "permission-groups",
+      payload: permissionGroup,
+    });
+
+    const permissionGrant = {
+      id: generateId(),
+      permissionId: permissionGroup.id,
+      identity: stripIdentityKey(publicKeyIdentityPEM.value),
+      secret: stripEncryptionFile(secretForMe),
+    } satisfies PermissionGrantRecord;
+
+    await api.addAndStage({
+      kind: "permission-grants",
+      payload: permissionGrant,
+    });
+
+    await api.addAndStage({
       kind: "permissions",
       payload: {
-        identity: stripIdentityKey(publicKeyIdentityPEM.value),
-        title,
-        public: encryptionPublic,
-        secret: stripEncryptionFile(secretForMe),
-        id: generateId(),
-      } satisfies PermissionRecord,
+        id: permissionGrant.id,
+        identity: permissionGrant.identity,
+        title: permissionGroup.title,
+        public: permissionGroup.public,
+        secret: permissionGrant.secret,
+      } satisfies LegacyPermissionRecord,
     });
+
+    return permissionGroup;
   }
 
   async function addUserPermission(
-    title: string,
+    permissionId: string,
     identity: string,
     encryptionKey: string
   ) {
     await ensureAuthed();
 
-    // Find my permission record (in Loki read model)
-    const permission = loki.getCollection("permissions")?.findOne({
-      "payload.identity": stripIdentityKey(publicKeyIdentityPEM.value),
-      "payload.title": title,
-    })?.payload as PermissionRecord | undefined;
+    const normalizedIdentity = stripIdentityKey(identity);
 
-    if (!permission) {
+    const permissionGroup = loki
+      .getCollection("permission-groups")
+      ?.findOne({ "payload.id": permissionId })?.payload as
+      | PermissionGroupRecord
+      | undefined;
+
+    if (!permissionGroup) {
+      console.log("No permission group");
+      return;
+    }
+
+    // Find my grant for the group (in Loki read model)
+    const myGrant = loki.getCollection("permission-grants")?.findOne({
+      "payload.identity": stripIdentityKey(publicKeyIdentityPEM.value),
+      "payload.permissionId": permissionId,
+    })?.payload as PermissionGrantRecord | undefined;
+
+    if (!myGrant) {
       console.log("No permission");
       return;
     }
@@ -190,33 +337,45 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
     // Decrypt my stored secret -> recover the permission key
     const permissionKey = await decrypt(
       privateKeyEncryption.value,
-      formatEncryptionFile(permission.secret)
+      formatEncryptionFile(myGrant.secret)
     );
 
     // Encrypt the permission key for the target user
     const secretForUser = await encrypt(encryptionKey, permissionKey);
 
+    const permissionGrant = {
+      permissionId,
+      identity: normalizedIdentity,
+      secret: stripEncryptionFile(secretForUser),
+      id: generateId(),
+    } satisfies PermissionGrantRecord;
+
+    await api.addAndStage({
+      kind: "permission-grants",
+      payload: permissionGrant,
+    });
+
     return api.addAndStage({
       kind: "permissions",
       payload: {
-        identity,
-        title,
-        public: permission.public,
-        secret: stripEncryptionFile(secretForUser),
-        id: generateId(),
-      } satisfies PermissionRecord,
+        id: permissionGrant.id,
+        identity: normalizedIdentity,
+        title: permissionGroup.title,
+        public: permissionGroup.public,
+        secret: permissionGrant.secret,
+      } satisfies LegacyPermissionRecord,
     });
   }
 
   async function addItem(
     data: Record<string, any>,
     collection = "items",
-    permissionTitle?: string
+    permissionId?: string
   ) {
     await ensureAuthed();
 
     // Optional: permission-based encryption
-    if (!permissionTitle) {
+    if (!permissionId) {
       await api.addAndStage({
         kind: collection,
         payload: { ...data, id: data?.id || generateId() },
@@ -224,29 +383,45 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
     } else {
       const myIdentity = stripIdentityKey(publicKeyIdentityPEM.value);
 
-      const permission =
-        loki.getCollection("permissions")?.findOne({
-          "payload.identity": myIdentity,
-          "payload.title": permissionTitle,
+      const permissionGroup =
+        loki.getCollection("permission-groups")?.findOne({
+          "payload.id": permissionId,
         }) ||
-        loki.getCollection("users")?.findOne({
-          "payload.identity": permissionTitle,
+        loki.getCollection("permission-groups")?.findOne({
+          "payload.title": permissionId,
+          "payload.createdBy": myIdentity,
         });
 
-      if (!permission) {
+      const userPermission = permissionGroup
+        ? null
+        : loki.getCollection("users")?.findOne({
+            "payload.identity": permissionId,
+          });
+
+      if (!permissionGroup && !userPermission) {
         await api.addAndStage({
           kind: collection,
           payload: { ...data, id: data?.id || generateId() },
         });
       } else {
-        const pub = permission.payload.public || permission.payload.encryption;
+        const pub =
+          permissionGroup?.payload.public ||
+          permissionGroup?.payload.encryption ||
+          userPermission?.payload.public ||
+          userPermission?.payload.encryption;
+
+        const permissionTitle = permissionGroup?.payload.title || permissionId;
 
         await api.addAndStage({
           kind: collection,
           payload: {
             permission: permissionTitle,
+            permissionId: permissionGroup?.payload.id ?? null,
             encrypted: stripEncryptionFile(
-              await encrypt(pub, JSON.stringify({ ...data, id: generateId() }))
+              await encrypt(
+                pub,
+                JSON.stringify({ ...data, id: data?.id || generateId() })
+              )
             ),
           },
         });
@@ -273,6 +448,13 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
     createPermission,
     addUserPermission,
     addItem,
+    getPermissionGroups: () =>
+      (loki.getCollection("permission-groups")?.find() ??
+        []) as PermissionGroupRecord[],
+    getPermissionGrantsByPermissionId: (permissionId: string) =>
+      (loki.getCollection("permission-grants")?.find({
+        "payload.permissionId": permissionId,
+      }) ?? []) as PermissionGrantRecord[],
     getCollection: (name: string) => loki.getCollection(name),
     getCollections: () => loki.getCollections(),
   };

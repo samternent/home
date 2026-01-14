@@ -2,12 +2,17 @@ import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import tailwindcss from "@tailwindcss/vite";
 import Markdown from "vite-plugin-vue-markdown";
+import { ViteEjsPlugin } from "vite-plugin-ejs";
+import { version } from "./package.json";
 
 export default defineConfig({
   build: {
     assetsInlineLimit: 0,
   },
   plugins: [
+    ViteEjsPlugin(() => ({
+      __APP_VERSION__: version,
+    })),
     vue({ include: [/\.vue$/, /\.md$/] }),
     tailwindcss(),
     Markdown({ wrapperClasses: "prose dark:prose-invert" }),

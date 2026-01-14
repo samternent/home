@@ -1,104 +1,107 @@
 <script setup lang="ts">
 import { computed, shallowRef } from "vue";
-import {
-  stripIdentityKey,
-  stripEncryptionFile,
-  generateId,
-} from "ternent-utils";
-
-import { encrypt, generate as generateEncryptionKeys } from "ternent-encrypt";
-
 import { useLedger } from "../../module/ledger/useLedger";
-import { useIdentity } from "../../module/identity/useIdentity";
-import { useEncryption } from "../../module/encryption/useEncryption";
 import IdentityAvatar from "../../module/identity/IdentityAvatar.vue";
+import UserPicker from "../../module/user/UserPicker.vue";
 
-const { api, bridge } = useLedger();
+const { bridge, createPermission, addUserPermission } = useLedger();
 
-type LedgerItem = {
+type PermissionGroup = {
   id: string;
   title: string;
-  completed?: boolean;
-  assignedTo?: boolean;
-  [key: string]: unknown;
+  public: string;
+  createdBy: string;
 };
 
-type ItemEntry = {
+type PermissionGrant = {
+  id: string;
+  permissionId: string;
+  identity: string;
+  secret: string;
+};
+
+type PermissionGroupEntry = {
   entryId: string;
-  data: LedgerItem;
+  data: PermissionGroup;
 };
 
-const { publicKeyPEM } = useIdentity();
-const { publicKey } = useEncryption();
+type PermissionGrantEntry = {
+  entryId: string;
+  data: PermissionGrant;
+};
 
-const users = computed<ItemEntry[]>(
-  () =>
-    Object.values(bridge.collections.byKind.value?.users || {}) as ItemEntry[]
-);
-const permissions = computed<ItemEntry[]>(
+const permissionGroups = computed<PermissionGroupEntry[]>(
   () =>
     Object.values(
-      bridge.collections.byKind.value?.permissions || {}
-    ) as ItemEntry[]
+      bridge.collections.byKind.value?.["permission-groups"] || {}
+    ) as PermissionGroupEntry[]
 );
+
+const permissionGrantsByPermissionId = computed<
+  Record<string, PermissionGrantEntry[]>
+>(() => {
+  const grants = Object.values(
+    bridge.collections.byKind.value?.["permission-grants"] || {}
+  ) as PermissionGrantEntry[];
+  const grouped: Record<string, PermissionGrantEntry[]> = {};
+
+  for (const grant of grants) {
+    const permissionId = grant.data.permissionId;
+    if (!grouped[permissionId]) grouped[permissionId] = [];
+    grouped[permissionId].push(grant);
+  }
+
+  return grouped;
+});
 
 const canAddItem = computed(
   () => bridge.flags.value.hasLedger && bridge.flags.value.authed
 );
 
+const selectedUser = shallowRef();
 const permissionTitle = shallowRef("");
-const permissionUserId = shallowRef(null);
-const permissionUser = computed(() =>
-  users.value.find((user) => user.entryId === permissionUserId.value)
-);
 
 async function addPermission() {
-  const id = generateId();
-
-  const [encryptionSecret, encryptionPublic] = await generateEncryptionKeys();
-
-  await api.addAndStage({
-    kind: "permissions",
-    payload: {
-      id,
-      grants: [
-        {
-          identity: stripIdentityKey(publicKeyPEM.value),
-          public: encryptionPublic,
-          secret: stripEncryptionFile(
-            await encrypt(publicKey.value, encryptionSecret)
-          ),
-        },
-      ],
-
-      title: permissionTitle.value,
-    },
-  });
+  await createPermission(permissionTitle.value);
   permissionTitle.value = "";
+}
+
+async function addUserToPermission(permissionId: string) {
+  await addUserPermission(
+    permissionId,
+    selectedUser.value.publicIdentityKey,
+    selectedUser.value.publicEncryptionKey
+  );
 }
 </script>
 <template>
   <div class="p-4 mx-auto max-w-140 w-full">
     <h1>Permissions</h1>
 
-    <div v-for="{ data: permission } in permissions" :key="permission.entryId">
-      <h2>{{ permission.title }}</h2>
-      <table
-        v-for="grant in permission.grants"
-        :key="`${permission.entryId}${grant.identity}`"
-        class="w-full"
-      >
-        <thead>
-          <tr>
-            <th class="text-left p-2">Identity</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="border-t border-[var(--rule)] py-2">
-            <td class="p-2">{{ grant.identity }}</td>
-          </tr>
-        </tbody>
-      </table>
+    <div
+      v-for="permissionEntry in permissionGroups"
+      :key="permissionEntry.entryId"
+    >
+      <h2>{{ permissionEntry.data.title }}</h2>
+
+      <div class="flex items-center gap-2">
+        <span>Grants:</span>
+        <div
+          v-for="grant in permissionGrantsByPermissionId[
+            permissionEntry.data.id
+          ] || []"
+          :key="grant.entryId"
+        >
+          <IdentityAvatar :identity="grant.data.identity" size="xs" />
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        Add user: <UserPicker v-model="selectedUser" />
+        <button @click="addUserToPermission(permissionEntry.data.id)">
+          Add user
+        </button>
+      </div>
     </div>
     <div
       v-if="canAddItem"
@@ -112,28 +115,6 @@ async function addPermission() {
           class="border py-2 px-4 border-[var(--rule)] flex-1 rounded-full"
         />
       </div>
-      <!-- <div
-        v-if="users.length"
-        class="flex gap-2 items-center w-full p-2 text-sm"
-      >
-        Assignee:
-        <div class="flex gap-4 items-center p-2 h-10 rounded-full">
-          <select
-            v-model="permissionUserId"
-            class="text-xs w-40 border py-1 px-2 rounded-full border-[var(--rule)]"
-          >
-            <option :value="null" :selected="!permissionUserId">anyone</option>
-            <option v-for="user in users" :key="user" :value="user.entryId">
-              {{ user.data.name }}
-            </option>
-          </select>
-          <IdentityAvatar
-            v-if="permissionUser?.data.publicIdentityKey"
-            :identity="permissionUser.data.publicIdentityKey"
-            size="xs"
-          />
-        </div>
-      </div> -->
       <div class="flex flex-1 gap-2 w-full">
         <button @click="addPermission">Add permission</button>
       </div>

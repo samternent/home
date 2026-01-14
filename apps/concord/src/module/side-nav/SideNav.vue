@@ -4,7 +4,7 @@ import {
   breakpointsTailwind,
   useBreakpoints,
 } from "@vueuse/core";
-import { computed, watch } from "vue";
+import { computed, watch, shallowRef } from "vue";
 import { useRoute } from "vue-router";
 
 const breakpoints = useBreakpoints(breakpointsTailwind);
@@ -41,14 +41,17 @@ const topItems = computed(() => [
 
 const bottomItems = computed(() => [
   {
-    name: "Index",
-    to: "/index",
+    name: "Docs",
+    to: "/docs",
   },
   {
     name: "Protocol Spec",
     to: "/protocol/spec",
   },
 ]);
+const appVersion = shallowRef(
+  document.querySelector("html").dataset.appVersion
+);
 </script>
 <template>
   <div
@@ -122,6 +125,13 @@ const bottomItems = computed(() => [
             <div class="text-sm">{{ item.name }}</div>
           </RouterLink>
         </div>
+        <a
+          :href="`https://github.com/samternent/home/releases/tag/concord-${appVersion}`"
+          target="_blank"
+          class="text-xs font-mono"
+        >
+          v{{ appVersion }}
+        </a>
       </nav>
     </div>
   </div>
