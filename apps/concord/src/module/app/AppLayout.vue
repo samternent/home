@@ -61,8 +61,8 @@ const myProfile = useLocalStorage(
   profile.getPrivateProfileJson()
 );
 
-const contentArea = shallowRef<HTMLElement | null>(null);
-const userMenuRef = shallowRef<HTMLElement | null>(null);
+const contentArea = shallowRef<HTMLElement | null>();
+const userMenuRef = shallowRef<HTMLElement | null>();
 
 const genesisId = computed(() =>
   (Object.keys(ledger.value?.commits || {})[0] || "").substring(0, 7)
