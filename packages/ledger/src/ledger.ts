@@ -367,6 +367,8 @@ export function createLedgerRuntime<P>(config: RuntimeConfig<P>) {
     silent?: boolean;
     /** Optional timestamp override */
     timestamp?: string;
+    /** Optional squash-by-id for specific kinds after staging */
+    squashKinds?: string[];
   }): Promise<EntryWithId | null> {
     if (!state.ledger) throw new Error("Ledger not loaded");
     if (!state.signingKey || !state.publicKey) throw new Error("Not authed");
@@ -399,12 +401,26 @@ export function createLedgerRuntime<P>(config: RuntimeConfig<P>) {
       entry: entryWithId,
       silent: !!opts.silent,
     });
-    notify();
+
+    if (opts.squashKinds?.length) {
+      const nextPending = await squashByIdAndKindAndResign(state.pending, {
+        kinds: opts.squashKinds,
+        signingKey: state.signingKey,
+        publicKey: state.publicKey,
+        resolveAuthor: config.resolveAuthor,
+        sign: config.sign,
+        now,
+        passthroughUnkeyed: true,
+      });
+      state.pending = nextPending;
+      await emit({ type: "PENDING_REPLACED", pending: nextPending });
+    }
 
     if (!opts.silent) {
       await api.recomputeProjection();
     }
 
+    notify();
     await persistIfNeeded();
     return entryWithId;
   }

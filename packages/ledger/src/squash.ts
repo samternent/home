@@ -46,7 +46,13 @@ export async function squashByIdAndKindAndResign(
   // group key => merged payload + template entry
   const buckets = new Map<
     string,
-    { kind: string; id: string; merged: PayloadObject; template: Entry }
+    {
+      kind: string;
+      id: string;
+      merged: PayloadObject;
+      template: Entry;
+      latestTimestamp: string;
+    }
   >();
 
   const passthrough: PendingEntry[] = [];
@@ -81,10 +87,14 @@ export async function squashByIdAndKindAndResign(
         id,
         merged: { ...e.payload },
         template: e,
+        latestTimestamp: e.timestamp,
       });
     } else {
       // later wins
       prev.merged = { ...prev.merged, ...e.payload };
+      if (e.timestamp > prev.latestTimestamp) {
+        prev.latestTimestamp = e.timestamp;
+      }
     }
   }
 
@@ -95,7 +105,7 @@ export async function squashByIdAndKindAndResign(
     // rewritten entry = new timestamp, merged payload, new signature
     const core: Entry = {
       kind: b.kind,
-      timestamp: now(),
+      timestamp: b.latestTimestamp || now(),
       author,
       payload: b.merged,
       signature: null,

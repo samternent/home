@@ -373,12 +373,14 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
     permissionId?: string
   ) {
     await ensureAuthed();
+    const recordId = data?.id || generateId();
 
     // Optional: permission-based encryption
     if (!permissionId) {
       await api.addAndStage({
         kind: collection,
-        payload: { ...data, id: data?.id || generateId() },
+        payload: { ...data, id: recordId },
+        squashKinds: [collection],
       });
     } else {
       const myIdentity = stripIdentityKey(publicKeyIdentityPEM.value);
@@ -401,7 +403,8 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
       if (!permissionGroup && !userPermission) {
         await api.addAndStage({
           kind: collection,
-          payload: { ...data, id: data?.id || generateId() },
+          payload: { ...data, id: recordId },
+          squashKinds: [collection],
         });
       } else {
         const pub =
@@ -417,24 +420,21 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
           payload: {
             permission: permissionTitle,
             permissionId: permissionGroup?.payload.id ?? null,
+            id: recordId,
             encrypted: stripEncryptionFile(
               await encrypt(
                 pub,
-                JSON.stringify({ ...data, id: data?.id || generateId() })
+                JSON.stringify({ ...data, id: recordId })
               )
             ),
           },
+          squashKinds: [collection],
         });
       }
     }
 
-    // // Squash pending (git-style) and re-sign rewritten entries
-    // await api.squash(
-    //   squashByIdAndKindAndResign({
-    //     // which kinds should be squashed (optional filter)
-    //     kinds: [collection],
-    //   })
-    // );
+    // Always squash pending for this kind so the latest entry wins.
+    // Squash runs inside addAndStage to avoid intermediate pending updates.
   }
 
   const ctx: ProvideLedgerContext = {
