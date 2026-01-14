@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { computed, shallowRef } from "vue";
+import { computed, ref } from "vue";
 import { generateId } from "ternent-utils";
 
 import { useLedger } from "../../module/ledger/useLedger";
 import IdentityAvatar from "../../module/identity/IdentityAvatar.vue";
-import UserPicker from "../../module/user/UserPicker.vue";
+import TodoQuickAdd from "./TodoQuickAdd.vue";
 
 const { bridge, addItem } = useLedger();
 
@@ -59,23 +59,22 @@ const permissions = computed<PermissionGroupEntry[]>(
 const canAddItem = computed(
   () => bridge.flags.value.hasLedger && bridge.flags.value.authed
 );
-const itemTitle = shallowRef<string>("");
-const selectedUser = shallowRef();
-const permissionId = shallowRef();
 
-async function addTodoItem() {
+async function addTodoItem(payload: {
+  title: string;
+  assigneeId?: string | null;
+  permissionId?: string | null;
+}) {
   const id = generateId();
   await addItem(
     {
       id,
-      title: itemTitle.value,
-      ...(selectedUser.value ? { assignedTo: selectedUser.value.id } : {}),
+      title: payload.title,
+      ...(payload.assigneeId ? { assignedTo: payload.assigneeId } : {}),
     },
     "todos",
-    permissionId.value
+    payload.permissionId ?? null
   );
-  itemTitle.value = "";
-  selectedUser.value = null;
 }
 
 async function completeItem(item: LedgerItem) {
@@ -89,83 +88,89 @@ async function completeItem(item: LedgerItem) {
     item.permission
   );
 }
+
+const quickAddRef = ref<HTMLElement | null>(null);
+const quickAddHeight = ref(0);
+
+function updateQuickAddHeight() {
+  quickAddHeight.value = quickAddRef.value?.offsetHeight || 0;
+}
 </script>
 <template>
-  <div
-    class="p-4 mx-auto max-w-140 w-full flex flex-col flex-1 justify-between"
-  >
-    <h1 class="sticky top-0 bg-[var(--paper)]">TODO list</h1>
-    <ul class="w-full my-4 py-3 flex-1">
-      <li
-        v-for="item in items"
-        :key="item.entryId"
-        class="py-1 flex items-center w-full justify-between"
-      >
-        <button
-          @click="completeItem(item.data)"
-          class="flex gap-2 items-center"
+  <div class="mx-auto w-full max-w-160 flex flex-col flex-1 gap-4">
+    <header class="sticky top-0 bg-[var(--paper)] py-2 z-10">
+      <div class="flex items-center justify-between gap-4">
+        <div class="flex flex-col gap-1">
+          <h1 class="text-2xl">Todo list.</h1>
+          <p class="text-sm opacity-70">{{ items.length }} items</p>
+        </div>
+      </div>
+    </header>
+
+    <section class="flex-1 flex flex-col gap-3 min-h-0">
+      <div class="overflow-hidden flex-1">
+        <div
+          class="flex-1 overflow-auto min-h-0 flex flex-col"
+          :style="{ paddingBottom: `${quickAddHeight}px` }"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="size-6"
-            :class="item.data.completed ? 'text-green-500' : 'text-gray-300'"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-            />
-          </svg>
-          {{ item.data.title }}
-        </button>
-        <div v-if="item.data.assignedTo">
-          <IdentityAvatar
-            v-if="item.data?.assignedTo?.publicIdentityKey"
-            :identity="item.data.assignedTo.publicIdentityKey"
-            size="xs"
-          />
-        </div>
-      </li>
-    </ul>
-    <div
-      v-if="canAddItem"
-      class="flex flex-col items-center w-full sticky bottom-0 bg-[var(--paper)] py-4 gap-2"
-    >
-      <div class="flex flex-1 gap-2 w-full">
-        <input
-          v-model="itemTitle"
-          type="text"
-          placeholder="Item title"
-          class="border py-2 px-4 border-[var(--rule)] flex-1 rounded-full"
-        />
-        <button @click="addTodoItem">Add item</button>
-      </div>
-      Assignee: <UserPicker v-model="selectedUser" />
-      <div
-        v-if="permissions.length"
-        class="flex gap-2 items-center w-full p-2 text-sm"
-      >
-        Permission:
-        <div class="flex gap-4 items-center p-2 h-10 rounded-full">
-          <select
-            v-model="permissionId"
-            class="text-xs w-40 border py-1 px-2 rounded-full border-[var(--rule)]"
-          >
-            <option :value="null" :selected="!permissionId">public</option>
-            <option
-              v-for="permission in permissions"
-              :key="permission.data.id"
-              :value="permission.data.id"
+          <ul class="w-full divide-y divide-[var(--rule)]">
+            <li
+              v-for="item in items"
+              :key="item.entryId"
+              class="py-3 px-3 flex items-center justify-between gap-3"
             >
-              {{ permission.data.title }}
-            </option>
-          </select>
+              <button
+                @click="completeItem(item.data)"
+                class="flex items-center gap-3 text-left"
+              >
+                <span
+                  class="size-8 flex items-center justify-center rounded-full border border-[var(--rule)]"
+                  :class="item.data.completed ? 'opacity-100' : 'opacity-40'"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="size-6"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                    />
+                  </svg>
+                </span>
+              </button>
+              <div class="flex flex-col gap-1 flex-1">
+                <span
+                  class="text-lg font-thin"
+                  :class="item.data.completed ? 'line-through opacity-60 ' : ''"
+                >
+                  {{ item.data.title }}
+                </span>
+              </div>
+              <div class="flex items-center gap-3">
+                <IdentityAvatar
+                  v-if="item.data?.assignedTo?.publicIdentityKey"
+                  :identity="item.data.assignedTo.publicIdentityKey"
+                  size="sm"
+                />
+              </div>
+            </li>
+            <li v-if="!items.length" class="py-6 px-3 text-sm opacity-60">
+              No items yet. Add your first task below.
+            </li>
+          </ul>
         </div>
       </div>
-    </div>
+      <TodoQuickAdd
+        v-if="canAddItem"
+        ref="quickAddRef"
+        :permissions="permissions"
+        :on-create="addTodoItem"
+      />
+    </section>
   </div>
 </template>

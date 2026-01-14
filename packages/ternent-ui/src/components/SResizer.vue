@@ -119,11 +119,11 @@ watch(isDragging, (value) => {
 <template>
   <div
     ref="resizeHandle"
-    class="absolute z-20 group"
+    class="absolute z-[9999999] group h-8 translate-y-1/2"
     :class="{
       'opacity-100': isDragging,
       '-left-4 top-0 cursor-ew-resize px-4 h-full': direction === 'vertical',
-      'left-0 -top-6 cursor-ns-resize py-2 w-full': direction === 'horizontal',
+      'left-0 -top-8 cursor-ns-resize w-full': direction === 'horizontal',
     }"
   >
     <button
@@ -138,14 +138,12 @@ watch(isDragging, (value) => {
         'h-0.5': size === 'default' && direction === 'horizontal',
         'group-hover:w-1 cursor-ew-resize h-full': direction === 'vertical',
         'group-hover:h-1 cursor-ns-resize w-full': direction === 'horizontal',
-        'group-hover:bg-primary': type === 'primary',
-        'group-hover:bg-secondary': type === 'secondary',
-        'group-hover:bg-accent': type === 'accent',
-        'bg-primary': type === 'primary' && isDragging,
-        'bg-secondary': type === 'secondary' && isDragging,
-        'bg-accent': type === 'accent' && isDragging,
+        'group-hover:bg-blue-400': type === 'primary',
+        'bg-blue-200': type === 'primary' && isDragging,
+        'bg-green-200': type === 'secondary' && isDragging,
+        'bg-indigo-200': type === 'accent' && isDragging,
       }"
-      class="opacity-100 transition-all group-hover:opacity-50 duration-300 bg-base-300"
+      class="z-50 opacity-100 transition-all group-hover:opacity-50 duration-300"
     />
   </div>
 </template>
