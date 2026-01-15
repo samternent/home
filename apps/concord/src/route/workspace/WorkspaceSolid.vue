@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
+import { useLocalStorage } from "@vueuse/core";
 import { useLedger } from "../../module/ledger/useLedger";
 import { useIdentity } from "../../module/identity/useIdentity";
+import { useEncryption } from "../../module/encryption/useEncryption";
+import { useProfile, type PrivateProfile } from "../../module/profile/useProfile";
 import {
   getDefaultSession,
   handleIncomingRedirect,
@@ -22,8 +25,17 @@ import {
 type PrivacyLevel = "private" | "public" | "shared";
 
 const { api, ledger } = useLedger();
-const { privateKey: identityPrivateKey, publicKey: identityPublicKey } =
-  useIdentity();
+const {
+  privateKey: identityPrivateKey,
+  publicKey: identityPublicKey,
+  impersonate: impersonateIdentity,
+} = useIdentity();
+const { impersonate: impersonateEncryption } = useEncryption();
+const profile = useProfile();
+const myProfile = useLocalStorage(
+  "concord/profile/me",
+  profile.getPrivateProfileJson()
+);
 
 const session = getDefaultSession();
 
@@ -44,6 +56,9 @@ const ledgerFiles = ref<{ url: string; name: string }[]>([]);
 const selectedLedgerUrl = ref("");
 const filename = ref("");
 const sharedAgents = ref("");
+const walletPrivateFiles = ref<{ url: string; name: string }[]>([]);
+const walletPublicFiles = ref<{ url: string; name: string }[]>([]);
+const selectedWalletProfileUrl = ref("");
 
 const redirectUrl = computed(() => {
   if (typeof window === "undefined") return "";
@@ -58,6 +73,15 @@ const containerUrls = computed(() => {
     public: new URL("concord/ledgers/public/", selectedPod.value).toString(),
     private: new URL("concord/ledgers/private/", selectedPod.value).toString(),
     shared: new URL("concord/ledgers/shared/", selectedPod.value).toString(),
+    walletRoot: new URL("concord/wallet/", selectedPod.value).toString(),
+    walletPrivate: new URL(
+      "concord/wallet/private/",
+      selectedPod.value
+    ).toString(),
+    walletPublic: new URL(
+      "concord/wallet/public/",
+      selectedPod.value
+    ).toString(),
   };
 });
 
@@ -78,6 +102,12 @@ function syncSessionInfo() {
 async function ensureLedgerAuth() {
   if (!identityPrivateKey.value || !identityPublicKey.value) return;
   await api.auth(identityPrivateKey.value, identityPublicKey.value);
+}
+
+async function reauthAndReplay() {
+  if (!identityPrivateKey.value || !identityPublicKey.value) return;
+  await api.auth(identityPrivateKey.value, identityPublicKey.value);
+  await api.replay();
 }
 
 async function handleRedirect() {
@@ -149,6 +179,9 @@ async function ensureSchema() {
     await createContainerIfMissing(containerUrls.value.public);
     await createContainerIfMissing(containerUrls.value.private);
     await createContainerIfMissing(containerUrls.value.shared);
+    await createContainerIfMissing(containerUrls.value.walletRoot);
+    await createContainerIfMissing(containerUrls.value.walletPrivate);
+    await createContainerIfMissing(containerUrls.value.walletPublic);
     await setPublicAccess(
       containerUrls.value.public,
       { read: true, append: false, write: false, control: false },
@@ -161,6 +194,16 @@ async function ensureSchema() {
     );
     await setPublicAccess(
       containerUrls.value.shared,
+      { read: false, append: false, write: false, control: false },
+      { fetch: session.fetch }
+    );
+    await setPublicAccess(
+      containerUrls.value.walletPublic,
+      { read: true, append: false, write: false, control: false },
+      { fetch: session.fetch }
+    );
+    await setPublicAccess(
+      containerUrls.value.walletPrivate,
       { read: false, append: false, write: false, control: false },
       { fetch: session.fetch }
     );
@@ -290,6 +333,135 @@ async function loadLedger() {
   }
 }
 
+async function refreshWallet() {
+  if (!containerUrls.value) return;
+  error.value = "";
+  busy.value = true;
+  try {
+    status.value = "Loading wallet profiles...";
+    const [privateDataset, publicDataset] = await Promise.all([
+      getSolidDataset(containerUrls.value.walletPrivate, {
+        fetch: session.fetch,
+      }),
+      getSolidDataset(containerUrls.value.walletPublic, { fetch: session.fetch }),
+    ]);
+    const privateUrls = getContainedResourceUrlAll(privateDataset).filter(
+      (url) => !url.endsWith("/")
+    );
+    const publicUrls = getContainedResourceUrlAll(publicDataset).filter(
+      (url) => !url.endsWith("/")
+    );
+    walletPrivateFiles.value = privateUrls.map((url) => ({
+      url,
+      name: url.split("/").pop() || url,
+    }));
+    walletPublicFiles.value = publicUrls.map((url) => ({
+      url,
+      name: url.split("/").pop() || url,
+    }));
+    status.value = "Wallet profiles loaded.";
+  } catch (err: any) {
+    const statusCode = err?.statusCode ?? err?.status;
+    if (statusCode === 404) {
+      walletPrivateFiles.value = [];
+      walletPublicFiles.value = [];
+      status.value = "Wallet container not found yet.";
+    } else {
+      error.value = `Failed to load wallet: ${String(err)}`;
+    }
+  } finally {
+    busy.value = false;
+  }
+}
+
+async function saveProfileToWallet() {
+  if (!containerUrls.value) return;
+  error.value = "";
+  busy.value = true;
+  try {
+    status.value = "Saving profile to wallet...";
+    await profile.ensureProfileId();
+    const files = profile.getDownloadFiles({ pretty: true });
+    const privateUrl = new URL(
+      files.private.filename,
+      containerUrls.value.walletPrivate
+    ).toString();
+    const publicUrl = new URL(
+      files.public.filename,
+      containerUrls.value.walletPublic
+    ).toString();
+
+    await overwriteFile(
+      privateUrl,
+      new Blob([files.private.json], { type: "application/json" }),
+      {
+        contentType: "application/json",
+        fetch: session.fetch,
+      }
+    );
+    await setPublicAccess(
+      privateUrl,
+      { read: false, append: false, write: false, control: false },
+      { fetch: session.fetch }
+    );
+
+    await overwriteFile(
+      publicUrl,
+      new Blob([files.public.json], { type: "application/json" }),
+      {
+        contentType: "application/json",
+        fetch: session.fetch,
+      }
+    );
+    await setPublicAccess(
+      publicUrl,
+      { read: true, append: false, write: false, control: false },
+      { fetch: session.fetch }
+    );
+
+    status.value = "Profile saved to wallet.";
+    await refreshWallet();
+  } catch (err) {
+    error.value = `Failed to save profile: ${String(err)}`;
+  } finally {
+    busy.value = false;
+  }
+}
+
+async function loginWithWalletProfile() {
+  if (!selectedWalletProfileUrl.value) return;
+  error.value = "";
+  busy.value = true;
+  try {
+    status.value = "Signing in with Solid wallet profile...";
+    const file = await getFile(selectedWalletProfileUrl.value, {
+      fetch: session.fetch,
+    });
+    const text = await file.text();
+    const parsed = JSON.parse(text) as PrivateProfile;
+    if (parsed?.format !== "concord-profile-private") {
+      throw new Error("Selected file is not a private profile.");
+    }
+    await impersonateIdentity(parsed);
+    await impersonateEncryption(parsed);
+    profile.replaceProfileMeta(parsed.metadata);
+    profile.setProfileId(parsed.profileId);
+    myProfile.value = JSON.stringify(parsed);
+    await reauthAndReplay();
+    status.value = "Signed in with Solid wallet profile.";
+  } catch (err) {
+    error.value = `Failed to sign in: ${String(err)}`;
+  } finally {
+    busy.value = false;
+  }
+}
+
+async function copyPublicProfileUrl(url: string) {
+  if (typeof navigator === "undefined" || !navigator.clipboard) return;
+  await navigator.clipboard.writeText(url);
+  status.value = "Public profile link copied.";
+}
+
 watch(
   () => ledger.value?.head,
   () => {
@@ -303,6 +475,12 @@ watch(
 watch([selectedPod, privacy], () => {
   ledgerFiles.value = [];
   selectedLedgerUrl.value = "";
+});
+
+watch(selectedPod, () => {
+  walletPrivateFiles.value = [];
+  walletPublicFiles.value = [];
+  selectedWalletProfileUrl.value = "";
 });
 
 onMounted(async () => {
@@ -389,16 +567,18 @@ onMounted(async () => {
         >
           Initialize ledger schema
         </button>
-        <div v-if="containerUrls" class="text-xs font-mono space-y-1">
-          <div>public: {{ containerUrls.public }}</div>
-          <div>private: {{ containerUrls.private }}</div>
-          <div>shared: {{ containerUrls.shared }}</div>
-        </div>
-      </div>
-    </section>
+            <div v-if="containerUrls" class="text-xs font-mono space-y-1">
+              <div>public: {{ containerUrls.public }}</div>
+              <div>private: {{ containerUrls.private }}</div>
+              <div>shared: {{ containerUrls.shared }}</div>
+              <div>wallet/private: {{ containerUrls.walletPrivate }}</div>
+              <div>wallet/public: {{ containerUrls.walletPublic }}</div>
+            </div>
+          </div>
+        </section>
 
-    <section class="border border-[var(--rule)] rounded-xl p-4 space-y-4">
-      <h3 class="text-base font-medium">Ledgers in your pod</h3>
+        <section class="border border-[var(--rule)] rounded-xl p-4 space-y-4">
+          <h3 class="text-base font-medium">Ledgers in your pod</h3>
       <div class="grid gap-3">
         <label class="text-sm">
           Privacy level
@@ -471,11 +651,84 @@ onMounted(async () => {
           Load into workspace
         </button>
       </div>
-    </section>
+        </section>
 
-    <section
-      v-if="status || error"
-      class="border border-[var(--rule)] rounded-xl p-4 space-y-2 text-sm"
+        <section class="border border-[var(--rule)] rounded-xl p-4 space-y-4">
+          <h3 class="text-base font-medium">Solid wallet</h3>
+          <div v-if="!sessionInfo.isLoggedIn" class="text-sm opacity-70">
+            Sign in to manage profiles stored in your pod.
+          </div>
+          <div v-else class="space-y-3 text-sm">
+            <div class="flex flex-wrap gap-2">
+              <button
+                class="border border-[var(--rule)] px-4 py-2 rounded-full text-sm"
+                :disabled="!selectedPod || busy"
+                @click="refreshWallet"
+              >
+                Refresh wallet
+              </button>
+              <button
+                class="border border-[var(--rule)] px-4 py-2 rounded-full text-sm"
+                :disabled="!selectedPod || busy"
+                @click="saveProfileToWallet"
+              >
+                Save current profile
+              </button>
+            </div>
+
+            <label class="block">
+              Login with Solid profile
+              <select
+                v-model="selectedWalletProfileUrl"
+                class="mt-1 w-full border border-[var(--rule)] rounded-lg px-3 py-2 text-sm"
+              >
+                <option value="">Select a private profile</option>
+                <option
+                  v-for="entry in walletPrivateFiles"
+                  :key="entry.url"
+                  :value="entry.url"
+                >
+                  {{ entry.name }}
+                </option>
+              </select>
+            </label>
+            <button
+              class="border border-[var(--rule)] px-4 py-2 rounded-full text-sm"
+              :disabled="!selectedWalletProfileUrl || busy"
+              @click="loginWithWalletProfile"
+            >
+              Sign in with Solid profile
+            </button>
+
+            <div class="space-y-2">
+              <div class="font-medium text-xs">Public profiles</div>
+              <div v-if="!walletPublicFiles.length" class="text-xs opacity-70">
+                No public profiles stored yet.
+              </div>
+              <div v-else class="space-y-2">
+                <div
+                  v-for="entry in walletPublicFiles"
+                  :key="entry.url"
+                  class="flex items-center justify-between gap-2 border border-[var(--rule)] rounded-lg px-3 py-2"
+                >
+                  <div class="text-xs font-mono break-all">
+                    {{ entry.url }}
+                  </div>
+                  <button
+                    class="text-xs border border-[var(--rule)] px-3 py-1 rounded-full"
+                    @click="copyPublicProfileUrl(entry.url)"
+                  >
+                    Copy link
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section
+          v-if="status || error"
+          class="border border-[var(--rule)] rounded-xl p-4 space-y-2 text-sm"
     >
       <div v-if="status" class="text-emerald-700">{{ status }}</div>
       <div v-if="error" class="text-red-600">{{ error }}</div>
