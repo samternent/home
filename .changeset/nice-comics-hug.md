@@ -1,5 +1,0 @@
----
-"concord": patch
----
-
-verification indicators

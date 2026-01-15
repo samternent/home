@@ -1,5 +1,11 @@
 # concord
 
+## 0.2.1
+
+### Patch Changes
+
+- [`da417377ff50f2aea5e3aa5bf52760ac5e8a1d7c`](https://github.com/samternent/home/commit/da417377ff50f2aea5e3aa5bf52760ac5e8a1d7c) Thanks [@samternent](https://github.com/samternent)! - verification indicators
+
 ## 0.2.0
 
 ### Minor Changes
