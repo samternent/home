@@ -20,6 +20,10 @@ export default [
             path: "permissions",
             component: () => import("./WorkspacePermissions.vue"),
           },
+          {
+            path: "tamper",
+            component: () => import("./WorkspaceTamper.vue"),
+          },
         ],
       },
     ],

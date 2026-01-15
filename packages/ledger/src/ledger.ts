@@ -104,7 +104,7 @@ export type Signer = (
 export type LedgerApi<P> = {
   getState(): Readonly<LedgerState<P>>;
   subscribe(listener: (state: Readonly<LedgerState<P>>) => void): () => void;
-  recomputeProjection(): Promise<P>;
+  recomputeProjection(persist?: boolean): Promise<P>;
   replacePending(next: PendingEntry[]): Promise<void>;
   log: (...args: any[]) => void;
 };
@@ -275,12 +275,12 @@ export function createLedgerRuntime<P>(config: RuntimeConfig<P>) {
         listeners.delete(listener);
       };
     },
-    async recomputeProjection() {
+    async recomputeProjection(persist = true) {
       if (!state.ledger) {
         state.projection = config.initialProjection;
         await emit({ type: "PROJECTION", projection: state.projection });
         notify();
-        await persistIfNeeded();
+        if (persist) await persistIfNeeded();
         return state.projection;
       }
 
@@ -297,7 +297,7 @@ export function createLedgerRuntime<P>(config: RuntimeConfig<P>) {
       state.projection = proj;
       await emit({ type: "PROJECTION", projection: proj });
       notify();
-      await persistIfNeeded();
+      if (persist) await persistIfNeeded();
       return proj;
     },
     async replacePending(next) {
@@ -334,16 +334,17 @@ export function createLedgerRuntime<P>(config: RuntimeConfig<P>) {
   async function load(
     ledger: LedgerContainer,
     pending: PendingEntry[] = [],
-    shouldRecompute = true
+    shouldRecompute = true,
+    persist = true
   ) {
     state.ledger = ledger;
     state.pending = pending;
 
     await emit({ type: "LOAD", ledger, pending });
-    if (shouldRecompute) await api.recomputeProjection();
+    if (shouldRecompute) await api.recomputeProjection(persist);
     await emit({ type: "READY" });
     notify();
-    await persistIfNeeded();
+    if (persist) await persistIfNeeded();
 
     return { ledger, pending, projection: state.projection };
   }

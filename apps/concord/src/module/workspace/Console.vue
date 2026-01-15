@@ -58,7 +58,7 @@ function getPayloadId(payload: unknown): string | null {
 }
 
 function entryDisplayId(entryId: string, entry?: { payload?: unknown } | null) {
-  return getPayloadId(entry?.payload) ?? shortId(entryId);
+  return getPayloadId(entry?.payload)?.substring(0, 7) ?? shortId(entryId);
 }
 
 function formatDate(
@@ -217,6 +217,7 @@ function formatDate(
                           @{{ shortId(entryId) }}</span
                         >
                         <VerifyIcon
+                          v-if="entries[entryId].signature"
                           :payload="entries[entryId]"
                           :signature="entries[entryId].signature"
                           :author="entries[entryId].author"

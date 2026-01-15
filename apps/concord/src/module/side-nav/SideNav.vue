@@ -33,6 +33,10 @@ const topItems = computed(() => [
     name: "Permissions",
     to: "/workspace/permissions",
   },
+  {
+    name: "Tamper",
+    to: "/workspace/tamper",
+  },
 ]);
 
 const bottomItems = computed(() => [

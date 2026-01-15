@@ -20,11 +20,32 @@ const { api, bridge, ledger } = useLedger();
 const { privateKey: priv, publicKey: pub } = useIdentity();
 
 const useSampleLedger = true;
+const CORE_LEDGER_KEY = "concord:ledger:core";
+const TAMPER_ACTIVE_KEY = "concord:ledger:tampered";
 
 onMounted(async () => {
-  await api.loadFromStorage();
-  if (!bridge.flags.value.hasLedger && useSampleLedger) {
-    await api.load(sampleLedger as LedgerContainer, [], true);
+  let loaded = false;
+  if (typeof window !== "undefined") {
+    const tamperActive =
+      window.localStorage.getItem(TAMPER_ACTIVE_KEY) === "true";
+    const coreSnapshot = window.localStorage.getItem(CORE_LEDGER_KEY);
+    if (tamperActive && coreSnapshot) {
+      try {
+        const parsed = JSON.parse(coreSnapshot) as LedgerContainer;
+        await api.load(parsed, [], true, true);
+        window.localStorage.removeItem(TAMPER_ACTIVE_KEY);
+        loaded = true;
+      } catch {
+        window.localStorage.removeItem(TAMPER_ACTIVE_KEY);
+      }
+    }
+  }
+
+  if (!loaded) {
+    await api.loadFromStorage();
+    if (!bridge.flags.value.hasLedger && useSampleLedger) {
+      await api.load(sampleLedger as LedgerContainer, [], true);
+    }
   }
   await api.auth(priv.value!, pub.value!);
 });

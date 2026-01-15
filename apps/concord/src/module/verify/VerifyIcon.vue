@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import { computedAsync } from "@vueuse/core";
 import { getEntrySigningPayload } from "@ternent/concord-protocol";
 import { verify, importPublicKeyFromPem } from "ternent-identity";
@@ -18,10 +19,18 @@ const props = defineProps({
   },
 });
 
+const payloadFingerprint = computed(() => {
+  try {
+    return getEntrySigningPayload(props.payload as any);
+  } catch {
+    return "";
+  }
+});
+
 const isVerified = computedAsync(async () => {
+  if (!payloadFingerprint.value) return false;
   const author = await importPublicKeyFromPem(props.author);
-  delete props.payload.signature;
-  return verify(props.signature, getEntrySigningPayload(props.payload), author);
+  return verify(props.signature, payloadFingerprint.value, author);
 }, null);
 </script>
 <template>
@@ -32,7 +41,7 @@ const isVerified = computedAsync(async () => {
     viewBox="0 0 24 24"
     stroke-width="1.5"
     stroke="currentColor"
-    class="size-5"
+    class="size-5 text-green-500"
   >
     <path
       stroke-linecap="round"
@@ -47,7 +56,7 @@ const isVerified = computedAsync(async () => {
     viewBox="0 0 24 24"
     stroke-width="1.5"
     stroke="currentColor"
-    class="size-5"
+    class="size-5 text-red-500"
   >
     <path
       stroke-linecap="round"
