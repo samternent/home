@@ -60,6 +60,9 @@ const appVersion = shallowRef(
 
 const { api, ledger } = useLedger();
 const uploadInputRef = shallowRef(null);
+const CORE_LEDGER_KEY = "concord:ledger:core";
+const TAMPER_LEDGER_KEY = "concord:ledger:tamper";
+const TAMPER_ACTIVE_KEY = "concord:ledger:tampered";
 
 function downloadText(filename, content, mime = "application/json") {
   const blob = new Blob([content], { type: `${mime};charset=utf-8` });
@@ -117,6 +120,17 @@ async function handleLedgerUpload(event) {
   if (!confirmed) return;
 
   await api.load(parsed, [], true, true);
+}
+
+async function deleteLedger() {
+  const confirmed = window.confirm(
+    "Delete the current ledger? This will permanently remove it from local storage."
+  );
+  if (!confirmed) return;
+  await api.destroy();
+  window.localStorage.removeItem(CORE_LEDGER_KEY);
+  window.localStorage.removeItem(TAMPER_LEDGER_KEY);
+  window.localStorage.removeItem(TAMPER_ACTIVE_KEY);
 }
 </script>
 <template>
@@ -202,6 +216,12 @@ async function handleLedgerUpload(event) {
             @click="downloadLedger"
           >
             Download ledger
+          </button>
+          <button
+            class="text-xs border border-red-400/60 text-red-600 px-4 py-2 rounded-full text-left"
+            @click="deleteLedger"
+          >
+            Delete ledger
           </button>
         </div>
         <div v-for="item in bottomItems" :key="item.to" class="group">

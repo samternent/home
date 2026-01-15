@@ -374,63 +374,97 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
   ) {
     await ensureAuthed();
     const recordId = data?.id || generateId();
+    const {
+      permission: dataPermission,
+      permissionId: dataPermissionId,
+      encrypted,
+      enc,
+      ct,
+      ...payloadData
+    } = data || {};
+    const permissionHint =
+      permissionId ??
+      (typeof dataPermissionId === "string" ? dataPermissionId : null) ??
+      (typeof dataPermission === "string" ? dataPermission : null);
+    const forceEncrypt = Boolean(
+      permissionHint || encrypted || enc || ct || dataPermissionId
+    );
 
     // Optional: permission-based encryption
-    if (!permissionId) {
+    if (!permissionHint && !forceEncrypt) {
       await api.addAndStage({
         kind: collection,
-        payload: { ...data, id: recordId },
+        payload: { ...payloadData, id: recordId },
         squashKinds: [collection],
       });
     } else {
       const myIdentity = stripIdentityKey(publicKeyIdentityPEM.value);
 
-      const permissionGroup =
-        loki.getCollection("permission-groups")?.findOne({
-          "payload.id": permissionId,
-        }) ||
-        loki.getCollection("permission-groups")?.findOne({
-          "payload.title": permissionId,
-          "payload.createdBy": myIdentity,
-        });
+      const permissionGroup = permissionHint
+        ? loki.getCollection("permission-groups")?.findOne({
+            "payload.id": permissionHint,
+          }) ||
+          loki.getCollection("permission-groups")?.findOne({
+            "payload.title": permissionHint,
+            "payload.createdBy": myIdentity,
+          })
+        : null;
 
       const userPermission = permissionGroup
         ? null
         : loki.getCollection("users")?.findOne({
-            "payload.identity": permissionId,
+            "payload.identity": permissionHint,
           });
 
-      if (!permissionGroup && !userPermission) {
-        await api.addAndStage({
-          kind: collection,
-          payload: { ...data, id: recordId },
-          squashKinds: [collection],
-        });
-      } else {
-        const pub =
-          permissionGroup?.payload.public ||
-          permissionGroup?.payload.encryption ||
-          userPermission?.payload.public ||
-          userPermission?.payload.encryption;
+      const legacyPermission =
+        permissionGroup || userPermission || !permissionHint
+          ? null
+          : loki.getCollection("permissions")?.findOne({
+              "payload.title": permissionHint,
+              "payload.identity": myIdentity,
+            }) ||
+            loki.getCollection("permissions")?.findOne({
+              "payload.id": permissionHint,
+              "payload.identity": myIdentity,
+            });
 
-        const permissionTitle = permissionGroup?.payload.title || permissionId;
+      const permissionRecord =
+        permissionGroup?.payload ||
+        userPermission?.payload ||
+        legacyPermission?.payload ||
+        null;
 
-        await api.addAndStage({
-          kind: collection,
-          payload: {
-            permission: permissionTitle,
-            permissionId: permissionGroup?.payload.id ?? null,
-            id: recordId,
-            encrypted: stripEncryptionFile(
-              await encrypt(
-                pub,
-                JSON.stringify({ ...data, id: recordId })
-              )
-            ),
-          },
-          squashKinds: [collection],
-        });
+      const pub =
+        permissionRecord?.public ||
+        permissionRecord?.encryption ||
+        (forceEncrypt ? publicKeyEncryption.value : null);
+
+      if (!pub) {
+        throw new Error(
+          "Encrypted item update requires a permission record or a user encryption key."
+        );
       }
+
+      const permissionTitle =
+        permissionGroup?.payload.title ||
+        legacyPermission?.payload.title ||
+        (typeof dataPermission === "string" ? dataPermission : null) ||
+        permissionHint;
+
+      await api.addAndStage({
+        kind: collection,
+        payload: {
+          permission: permissionTitle,
+          permissionId:
+            permissionGroup?.payload.id ??
+            (typeof dataPermissionId === "string" ? dataPermissionId : null),
+          id: recordId,
+          encrypted: stripEncryptionFile(
+            await encrypt(pub, JSON.stringify({ ...payloadData, id: recordId }))
+          ),
+        },
+        squashKinds: [collection],
+      });
     }
 
     // Always squash pending for this kind so the latest entry wins.
