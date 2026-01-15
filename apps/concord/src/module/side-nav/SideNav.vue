@@ -38,6 +38,10 @@ const topItems = computed(() => [
     name: "Tamper",
     to: "/workspace/tamper",
   },
+  {
+    name: "Solid Pods",
+    to: "/workspace/solid",
+  },
 ]);
 
 const bottomItems = computed(() => [
@@ -173,6 +177,33 @@ async function handleLedgerUpload(event) {
 
       <!-- Bottom Items -->
       <nav class="space-y-2 pt-4">
+        <div class="py-2 flex flex-col w-auto gap-2">
+          <button
+            class="text-xs border border-[var(--rule)] px-4 py-2 rounded-full text-left"
+            @click="createNewLedger"
+          >
+            Create new ledger
+          </button>
+          <input
+            ref="uploadInputRef"
+            type="file"
+            accept="application/json"
+            class="hidden"
+            @change="handleLedgerUpload"
+          />
+          <button
+            class="text-xs border border-[var(--rule)] px-4 py-2 rounded-full text-left"
+            @click="triggerLedgerUpload"
+          >
+            Upload ledger
+          </button>
+          <button
+            class="text-xs border border-[var(--rule)] px-4 py-2 rounded-full text-left"
+            @click="downloadLedger"
+          >
+            Download ledger
+          </button>
+        </div>
         <div v-for="item in bottomItems" :key="item.to" class="group">
           <!-- Main Item -->
           <RouterLink
@@ -187,33 +218,7 @@ async function handleLedgerUpload(event) {
             <div class="text-sm">{{ item.name }}</div>
           </RouterLink>
         </div>
-        <div class="pt-2 flex flex-col gap-2">
-          <button
-            class="text-xs border border-[var(--rule)] px-3 py-2 rounded-full text-left"
-            @click="createNewLedger"
-          >
-            Create new ledger
-          </button>
-          <input
-            ref="uploadInputRef"
-            type="file"
-            accept="application/json"
-            class="hidden"
-            @change="handleLedgerUpload"
-          />
-          <button
-            class="text-xs border border-[var(--rule)] px-3 py-2 rounded-full text-left"
-            @click="triggerLedgerUpload"
-          >
-            Upload ledger
-          </button>
-          <button
-            class="text-xs border border-[var(--rule)] px-3 py-2 rounded-full text-left"
-            @click="downloadLedger"
-          >
-            Download ledger
-          </button>
-        </div>
+
         <a
           :href="`https://github.com/samternent/home/releases/tag/concord-${appVersion}`"
           target="_blank"

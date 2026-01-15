@@ -85,6 +85,12 @@ importers:
 
   apps/concord:
     dependencies:
+      '@inrupt/solid-client':
+        specifier: ^3.0.0
+        version: 3.0.0
+      '@inrupt/solid-client-authn-browser':
+        specifier: ^3.1.1
+        version: 3.1.1
       '@tailwindcss/typography':
         specifier: ^0.5.14
         version: 0.5.19(tailwindcss@4.1.18)
@@ -3237,6 +3243,15 @@ packages:
       - encoding
     dev: false
 
+  /@inrupt/oidc-client-ext@3.1.1:
+    resolution: {integrity: sha512-vftKD2u5nufZTFkdUDMS3Uxj5xNQwArP11OFaALFkq6/3RwCAhe3lwOv8hNzL7Scv98T+KbAErBM0TwGGrS69g==}
+    dependencies:
+      '@inrupt/oidc-client': 1.11.6
+      '@inrupt/solid-client-authn-core': 3.1.1
+      jose: 5.10.0
+      uuid: 11.1.0
+    dev: false
+
   /@inrupt/oidc-client@1.11.6:
     resolution: {integrity: sha512-1rCTk1T6pdm/7gKozutZutk7jwmYBADlnkGGoI5ypke099NOCa5KFXjkQpbjsps0PRkKZ+0EaR70XN5+xqmViA==}
     dependencies:
@@ -3260,6 +3275,16 @@ packages:
       - encoding
     dev: false
 
+  /@inrupt/solid-client-authn-browser@3.1.1:
+    resolution: {integrity: sha512-Wd7TREmvdhTp+Sk88ei3hlg54sG1fNqkkPkuS+2tDBkcsXaViRQAEugVyh5pWRkd1xSFKrEzftb7UYEG4mJ0CQ==}
+    dependencies:
+      '@inrupt/oidc-client-ext': 3.1.1
+      '@inrupt/solid-client-authn-core': 3.1.1
+      events: 3.3.0
+      jose: 5.10.0
+      uuid: 11.1.0
+    dev: false
+
   /@inrupt/solid-client-authn-core@1.17.5(encoding@0.1.13):
     resolution: {integrity: sha512-g3WShcPAqGuarPYlw12vUCo+et4elQLI+WYcHkCHGLuQQFF73r2iTicuKpkydQdIrZ5AZgxhwr315jmkx/vcFQ==}
     engines: {node: ^16.0.0 || ^18.0.0 || ^20.0.0}
@@ -3270,6 +3295,20 @@ packages:
       uuid: 9.0.1
     transitivePeerDependencies:
       - encoding
+    dev: false
+
+  /@inrupt/solid-client-authn-core@3.1.1:
+    resolution: {integrity: sha512-1oDSQCh/pVtPlTyvLQ2uwHo+hpLJF7izg82tjB+Ge8jqGYwkQyId0BrfncpCk//uJXxgRIcfAQp2MhXYbZo80Q==}
+    engines: {node: ^20.0.0 || ^22.0.0}
+    dependencies:
+      events: 3.3.0
+      jose: 5.10.0
+      uuid: 11.1.0
+    dev: false
+
+  /@inrupt/solid-client-errors@0.0.2:
+    resolution: {integrity: sha512-Nhq39DJMKDMc35/VFT168v9JwuKzfzCHPN4fYYAE/Q0ECtM6PuBGT7nu0gZ06+S0pZQasHDyTkOGXRIx+zkvJA==}
+    engines: {node: ^18.0.0 || ^20.0.0 || ^22.0.0}
     dev: false
 
   /@inrupt/solid-client@1.30.2(encoding@0.1.13):
@@ -3289,6 +3328,22 @@ packages:
       fsevents: 2.3.3
     transitivePeerDependencies:
       - encoding
+    dev: false
+
+  /@inrupt/solid-client@3.0.0:
+    resolution: {integrity: sha512-QQCLakUeQldTAFewZZv7qlIotAlXnN1ZigRphr6SNKck2L9NAESWihba9i+9/AJLMnAPStx9XS+WuJswzlmhVA==}
+    engines: {node: ^20.0.0 || ^22.0.0}
+    dependencies:
+      '@inrupt/solid-client-errors': 0.0.2
+      '@rdfjs/dataset': 1.1.1
+      buffer: 6.0.3
+      http-link-header: 1.1.3
+      jsonld-context-parser: 3.0.0
+      jsonld-streaming-parser: 5.0.0
+      n3: 1.20.4
+      uuid: 11.1.0
+    optionalDependencies:
+      fsevents: 2.3.3
     dev: false
 
   /@inrupt/universal-fetch@1.0.3(encoding@0.1.13):
@@ -3671,6 +3726,12 @@ packages:
 
   /@rdfjs/types@1.1.0:
     resolution: {integrity: sha512-5zm8bN2/CC634dTcn/0AhTRLaQRjXDZs3QfcAsQKNturHT7XVWcKy/8p3P5gXl+YkZTAmy7T5M/LyiT/jbkENw==}
+    dependencies:
+      '@types/node': 24.10.4
+    dev: false
+
+  /@rdfjs/types@2.0.1:
+    resolution: {integrity: sha512-uyAzpugX7KekAXAHq26m3JlUIZJOC0uSBhpnefGV5i15bevDyyejoB7I+9MKeUrzXD8OOUI3+4FeV1wwQr5ihA==}
     dependencies:
       '@types/node': 24.10.4
     dev: false
@@ -5373,6 +5434,12 @@ packages:
     dependencies:
       '@types/node': 24.10.4
       safe-buffer: 5.1.2
+    dev: false
+
+  /@types/readable-stream@4.0.23:
+    resolution: {integrity: sha512-wwXrtQvbMHxCbBgjHaMGEmImFTQxxpfMOR/ZoQnXxB1woqkUbdLGFDgauo00Py9IudiaqSeiBiulSV9i6XIPig==}
+    dependencies:
+      '@types/node': 24.10.4
     dev: false
 
   /@types/resolve@1.20.2:
@@ -10852,6 +10919,10 @@ packages:
     resolution: {integrity: sha512-1vUQX+IdDMVPj4k8kOxgUqlcK518yluMuGZwqlr44FS1ppZB/5GWh4rZG89erpOBOJjU/OBsnCVFfapsRz6nEA==}
     dev: false
 
+  /jose@5.10.0:
+    resolution: {integrity: sha512-s+3Al/p9g32Iq+oqXxkW//7jk2Vig6FF1CFqzVXoTUXt2qz89YWbL+OwS17NFYEvxC35n0FKeGO2LGYSxeM2Gg==}
+    dev: false
+
   /js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
 
@@ -10973,6 +11044,16 @@ packages:
       - encoding
     dev: false
 
+  /jsonld-context-parser@3.0.0:
+    resolution: {integrity: sha512-Kg6TVtBUdIm057ht/8WNhM9BROt+BeYaDGXbzrKaa3xA99csee+CsD8IMCTizRgzoO8PIzvzcxxCoRvpq1xNQw==}
+    hasBin: true
+    dependencies:
+      '@types/http-link-header': 1.0.7
+      '@types/node': 18.19.45
+      http-link-header: 1.1.3
+      relative-to-absolute-iri: 1.0.7
+    dev: false
+
   /jsonld-streaming-parser@3.4.0(encoding@0.1.13):
     resolution: {integrity: sha512-897CloyQgQidfkB04dLM5XaAXVX/cN9A2hvgHJo4y4jRhIpvg3KLMBBfcrswepV2N3T8c/Rp2JeFdWfVsbVZ7g==}
     dependencies:
@@ -10988,6 +11069,20 @@ packages:
       readable-stream: 4.5.2
     transitivePeerDependencies:
       - encoding
+    dev: false
+
+  /jsonld-streaming-parser@5.0.0:
+    resolution: {integrity: sha512-Q6Bfbmig8fFpIbJgJTi4LLzco9dz0YuBM/mDvUYXzP8L/+me6P3pRy4exrhCpv49Bwv2oQFFIHM7wIwCKma2XA==}
+    dependencies:
+      '@bergos/jsonparse': 1.4.1
+      '@types/http-link-header': 1.0.7
+      '@types/readable-stream': 4.0.23
+      buffer: 6.0.3
+      canonicalize: 1.0.8
+      http-link-header: 1.1.3
+      jsonld-context-parser: 3.0.0
+      rdf-data-factory: 2.0.2
+      readable-stream: 4.5.2
     dev: false
 
   /jsonpointer@5.0.1:
@@ -13155,6 +13250,12 @@ packages:
       '@rdfjs/types': 1.1.0
     dev: false
 
+  /rdf-data-factory@2.0.2:
+    resolution: {integrity: sha512-WzPoYHwQYWvIP9k+7IBLY1b4nIDitzAK4mA37WumAF/Cjvu/KOtYJH9IPZnUTWNSd5K2+pq4vrcE9WZC4sRHhg==}
+    dependencies:
+      '@rdfjs/types': 2.0.1
+    dev: false
+
   /rdf-js@4.0.2:
     resolution: {integrity: sha512-ApvlFa/WsQh8LpPK/6hctQwG06Z9ztQQGWVtrcrf9L6+sejHNXLPOqL+w7q3hF+iL0C4sv3AX1PUtGkLNzyZ0Q==}
     deprecated: Use @types/rdf-js instead. See https://github.com/rdfjs/types?tab=readme-ov-file#what-about-typesrdf-js
@@ -14958,6 +15059,11 @@ packages:
     resolution: {integrity: sha512-8XkAphELsDnEGrDxUOHB3RGvXz6TeuYSGEZBOjtTtPm2lwhGBjLgOzLHB63IUWfBpNucQjND6d3AOudO+H3RWQ==}
     hasBin: true
     dev: true
+
+  /uuid@11.1.0:
+    resolution: {integrity: sha512-0/A9rDy9P7cJ+8w1c9WD9V//9Wj15Ce2MPz8Ri6032usz+NfePxx5AcN3bN+r6ZL6jEo066/yNYB3tn4pQEx+A==}
+    hasBin: true
+    dev: false
 
   /uuid@3.3.2:
     resolution: {integrity: sha512-yXJmeNaw3DnnKAOKJE51sL/ZaYfWJRl1pK9dr19YFCu0ObS231AB1/LbqTKRAQ5kw8A90rA6fr4riOUpTZvQZA==}

@@ -2,12 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import docRoutes from "./docs/routes";
 import workspaceRoutes from "./workspace/routes";
 
-export const routes = [
-  ...docRoutes,
-  ...workspaceRoutes,
-  // Optional: 404
-  { path: "/:pathMatch(.*)*", redirect: "/" },
-];
+export const routes = [...docRoutes, ...workspaceRoutes];
 
 export function createAppRouter() {
   return createRouter({
@@ -18,5 +13,3 @@ export function createAppRouter() {
     },
   });
 }
-
-//{ path: "/", name: "home", component: Home },

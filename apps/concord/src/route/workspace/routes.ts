@@ -24,6 +24,10 @@ export default [
             path: "tamper",
             component: () => import("./WorkspaceTamper.vue"),
           },
+          {
+            path: "solid",
+            component: () => import("./WorkspaceSolid.vue"),
+          },
         ],
       },
     ],
