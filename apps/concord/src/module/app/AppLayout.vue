@@ -173,31 +173,23 @@ async function reauthAndReplay() {
   await api.replay();
 }
 
-const tempKeys = shallowRef();
-const tempIdentityPEM = shallowRef();
-
 async function generateNewIdentity(e?: Event) {
   if (e) {
     e.currentTarget.classList.add("spin");
   }
-  tempKeys.value = await createIdentity();
-  tempIdentityPEM.value = await stripIdentityKey(
-    await exportPublicKeyAsPem(tempKeys.value.publicKey)
+  const keys = await createIdentity();
+  if (!keys) return;
+  publicKeyPEM.value = stripIdentityKey(
+    await exportPublicKeyAsPem(keys.publicKey)
   );
+  publicKey.value = keys.publicKey;
+  privateKey.value = keys.privateKey;
+  privateKeyPEM.value = await exportPrivateKeyAsPem(keys.privateKey);
 }
-
-generateNewIdentity();
 
 async function setProfile() {
   profile.setProfileMeta({ username: username.value });
   username.value = "";
-
-  publicKeyPEM.value = stripIdentityKey(
-    await exportPublicKeyAsPem(tempKeys.value.publicKey)
-  );
-  publicKey.value = tempKeys.value.publicKey;
-  privateKey.value = tempKeys.value.privateKey;
-  privateKeyPEM.value = await exportPrivateKeyAsPem(tempKeys.value.privateKey);
 
   myProfile.value = profile.getPrivateProfileJson();
   init();
@@ -270,7 +262,7 @@ async function setProfile() {
                       class="flex flex-col items-center gap-2 rounded-lg bg-[var(--paper)] border border-[var(--rule)]"
                     >
                       <IdentityAvatar
-                        :identity="tempIdentityPEM || publicKeyPEM"
+                        :identity="publicKeyPEM"
                         size="lg"
                         class="mx-auto my-4"
                       />
