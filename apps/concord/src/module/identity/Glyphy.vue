@@ -1,5 +1,5 @@
 <script setup>
-import { toRefs, computed, h } from "vue";
+import { computed, h, useAttrs } from "vue";
 import useGlyph from "./useGlyph";
 
 const props = defineProps({
@@ -7,72 +7,53 @@ const props = defineProps({
     type: String,
     required: true,
   },
-  gridLen: {
-    type: Number,
-    default: 9,
-  },
 });
-const { colors, sequence, curve, isReady } = useGlyph(props.identity);
 
-function getColor(point) {
-  const i = Math.floor((point * colors.value.length) / 256);
-  return colors.value[i].join();
-}
-function getRadius(point) {
-  const i = Math.floor((point * colors.value.length) / 256);
-  return Math.floor((curve.value[i] / 255) * 17);
-}
-const gridSize = computed(() =>
-  Math.sqrt(props.gridLen || sequence.value.length)
-);
-const sqSize = computed(() => (props.gridLen || sequence.value.length) / 2);
-const borderSize = computed(() =>
-  (props.gridLen || sequence.value.length) > 32 ? 2 : 1
-);
-const glyph = computed(() => {
-  const imageArray = [];
-  let k = 0;
-  for (let i = 0; i < gridSize.value; i++) {
-    imageArray[i] = [];
-    for (let j = 0; j < gridSize.value; j++) {
-      imageArray[i][j] = sequence.value[k];
-      k++;
+const attrs = useAttrs();
+const { grid, colors, isReady } = useGlyph(computed(() => props.identity));
+
+const glyphVNode = computed(() => {
+  const size = grid.value.length || 1;
+  const rects = [];
+
+  if (isReady.value) {
+    for (let y = 0; y < size; y += 1) {
+      for (let x = 0; x < size; x += 1) {
+        const index = grid.value[y][x] ?? 0;
+        const color = colors.value[index] || [220, 220, 220];
+
+        rects.push(
+          h("rect", {
+            x,
+            y,
+            width: 1,
+            height: 1,
+            fill: `rgb(${color.join(",")})`,
+          })
+        );
+      }
     }
   }
-  return imageArray;
-});
 
-function svgGlyph() {
-  if (!isReady.value) return;
-  const rects = glyph.value.map((row, i) =>
-    row.map((sq, j) =>
-      h("rect", {
-        x: i * sqSize.value + borderSize.value / 2,
-        y: j * sqSize.value + borderSize.value / 2,
-        width: sqSize.value - borderSize.value,
-        height: sqSize.value - borderSize.value,
-        rx: getRadius(sq),
-        style: `fill:rgb(${getColor(sq)});`,
-      })
-    )
-  );
-  const glyphRaw = h(
+  const svgAttrs = { ...attrs };
+  if ("size" in svgAttrs) {
+    delete svgAttrs.size;
+  }
+
+  return h(
     "svg",
     {
-      ref: "root",
-      viewBox: `0 0 ${sqSize.value * gridSize.value} ${
-        sqSize.value * gridSize.value
-      }`,
-      version: "1.1",
+      viewBox: `0 0 ${size} ${size}`,
       width: "100%",
+      height: "100%",
       xmlns: "http://www.w3.org/2000/svg",
+      "shape-rendering": "crispEdges",
+      ...svgAttrs,
     },
     rects
   );
-
-  return glyphRaw;
-}
+});
 </script>
 <template>
-  <svgGlyph />
+  <component :is="glyphVNode" />
 </template>

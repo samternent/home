@@ -11,37 +11,41 @@ const props = defineProps({
     type: String,
     default: "sm",
   },
+  variant: {
+    type: Number,
+    default: 0,
+  },
 });
 
 const sizeVariant = computed(() => {
   if (props.size === "xs") {
     return {
       classes: "w-5 h-5",
-      grid: 9,
     };
   }
   if (props.size === "sm") {
     return {
       classes: "w-8 h-8",
-      grid: 9,
     };
   }
   if (props.size === "md") {
     return {
       classes: "w-16 h-16",
-      grid: 16,
     };
   }
   if (props.size === "lg") {
     return {
       classes: "w-32 h-32",
-      grid: 25,
     };
   }
 });
 </script>
 <template>
   <div :class="`p-0 m-0 ${sizeVariant.classes}`">
-    <Glyphy v-if="identity" :identity="identity" :gridLen="sizeVariant.grid" />
+    <Glyphy
+      v-if="identity"
+      :identity="identity.replace(/\s/g, '')"
+      :variant="variant"
+    />
   </div>
 </template>

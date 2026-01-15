@@ -304,7 +304,11 @@ async function setProfile() {
                   d="M19.5 8.25l-7.5 7.5-7.5-7.5"
                 />
               </svg>
-              <IdentityAvatar :identity="publicKeyPEM" size="xs" />
+              <div
+                class="rounded-full overflow-hidden border border-[var(--rule)]"
+              >
+                <IdentityAvatar :identity="publicKeyPEM" size="sm" />
+              </div>
             </button>
 
             <div
