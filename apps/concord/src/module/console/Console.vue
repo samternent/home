@@ -8,6 +8,10 @@ defineProps({
     type: HTMLElement,
     default: document.body,
   },
+  tone: {
+    type: String,
+    default: "default",
+  },
 });
 
 const { width } = useWindowSize();
@@ -47,7 +51,7 @@ watch(dragPosition, (value) => {
 
     <!-- Panel Control + Indicator -->
     <div
-      class="flex justify-between px-2 h-8 border-y border-[var(--rule)] relative z-50 py-1"
+      class="flex justify-between px-2 h-8 border-y relative z-50 py-1 bg-[var--paper2] border-[var(--rule)]"
     >
       <div class="flex-1 items-center flex justify-between">
         <slot name="panel-control" />

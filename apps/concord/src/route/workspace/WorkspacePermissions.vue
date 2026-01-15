@@ -83,15 +83,13 @@ async function addUserToPermission(permissionId: string) {
       <div class="flex items-center justify-between gap-4">
         <div class="flex flex-col gap-1">
           <h1 class="text-2xl">Permissions.</h1>
-          <p class="text-sm opacity-70">
-            {{ permissionGroups.length }} groups
-          </p>
+          <p class="text-sm opacity-70">{{ permissionGroups.length }} groups</p>
         </div>
       </div>
     </header>
 
     <section class="flex-1 flex flex-col gap-3 min-h-0">
-      <div class="border border-[var(--rule)] rounded-2xl overflow-hidden">
+      <div class="overflow-auto">
         <div class="divide-y divide-[var(--rule)]">
           <div
             v-for="permissionEntry in permissionGroups"
@@ -104,9 +102,12 @@ async function addUserToPermission(permissionId: string) {
                   {{ permissionEntry.data.title }}
                 </h2>
                 <p class="text-xs opacity-60">
-                  {{ (permissionGrantsByPermissionId[
-                    permissionEntry.data.id
-                  ] || []).length }}
+                  {{
+                    (
+                      permissionGrantsByPermissionId[permissionEntry.data.id] ||
+                      []
+                    ).length
+                  }}
                   grants
                 </p>
               </div>

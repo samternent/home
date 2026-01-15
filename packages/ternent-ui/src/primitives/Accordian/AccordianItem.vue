@@ -8,7 +8,9 @@ defineProps({
 
 <template>
   <Accordion.Item :value="value">
-    <div class="w-full flex items-center border-b border-[var(--rule)] p-1">
+    <div
+      class="w-full flex items-center border-b border-[var(--rule)] p-1 gap-2"
+    >
       <slot name="title" />
       <Accordion.ItemTrigger>
         <Accordion.ItemContext v-slot="context">

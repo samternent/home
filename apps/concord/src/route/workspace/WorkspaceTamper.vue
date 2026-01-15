@@ -3,7 +3,6 @@ import { computed, onMounted, ref, watch } from "vue";
 import type { LedgerContainer } from "ternent-ledger-types";
 
 import { useLedger } from "../../module/ledger/useLedger";
-import VerifyLedger from "../../module/verify/VerifyLedger.vue";
 
 const { api, ledger, bridge } = useLedger();
 
@@ -170,7 +169,7 @@ const canApply = computed(() => hasLedger.value && !!ledgerText.value.trim());
 </script>
 
 <template>
-  <div class="mx-auto w-full max-w-160 flex flex-col flex-1 gap-4">
+  <div class="mx-auto w-full max-w-160 flex flex-col flex-1 h-full gap-4">
     <header class="sticky top-0 bg-[var(--paper)] py-2 z-10">
       <div class="flex items-center justify-between gap-4">
         <div class="flex flex-col gap-1">
@@ -187,16 +186,17 @@ const canApply = computed(() => hasLedger.value && !!ledgerText.value.trim());
         Core and tampered snapshots are stored locally so you can revert
         quickly.
       </p>
-      <VerifyLedger :ledger="ledger" />
-      <div class="overflow-hidden flex-1 flex flex-col">
+      <div
+        class="overflow-hidden flex-1 flex flex-col bg-[var(--paper2)] rounded-lg border border-[var(--rule)]"
+      >
         <textarea
           v-model="ledgerText"
           @input="onEditorInput"
-          class="flex-1 w-full resize-none bg-transparent p-4 text-sm font-mono min-h-[320px]"
+          class="flex-1 w-full resize-none p-4 text-sm font-mono bg-transparent"
           spellcheck="false"
         />
       </div>
-      <div class="flex flex-wrap items-center gap-2">
+      <div class="flex flex-wrap items-center gap-2 sticky bottom-0">
         <button
           class="border border-[var(--rule)] px-4 py-2 rounded-full text-xs"
           :disabled="!canApply"

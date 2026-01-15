@@ -191,7 +191,7 @@ async function addUploadedProfile() {
     </header>
 
     <section class="flex-1 flex flex-col gap-3 min-h-0">
-      <div class="border border-[var(--rule)] rounded-2xl overflow-hidden">
+      <div class="overflow-auto">
         <table class="w-full">
           <thead class="text-left text-xs uppercase tracking-wide opacity-60">
             <tr class="border-b border-[var(--rule)]">

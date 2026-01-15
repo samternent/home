@@ -6,6 +6,7 @@ import {
   exportPublicKeyAsPem,
   exportPrivateKeyAsPem,
 } from "ternent-identity";
+import { generate as generateEncryptionKeys } from "ternent-encrypt";
 import { stripIdentityKey } from "ternent-utils";
 import { useLedger } from "../ledger/useLedger";
 import IdentityAvatar from "../../module/identity/IdentityAvatar.vue";
@@ -61,7 +62,11 @@ const {
   init,
   impersonate: impersonateIdentity,
 } = useIdentity();
-const { impersonate: impersonateEncryption } = useEncryption();
+const {
+  publicKey: encryptionPublicKey,
+  privateKey: encryptionPrivateKey,
+  impersonate: impersonateEncryption,
+} = useEncryption();
 const profile = useProfile();
 
 const myProfile = useLocalStorage(
@@ -100,6 +105,9 @@ const disabled = computed(
 );
 
 const username = shallowRef<string>("");
+const uploadInputRef = shallowRef<HTMLInputElement | null>(null);
+const uploadError = shallowRef("");
+const uploadStatus = shallowRef("");
 
 function downloadText(
   filename: string,
@@ -150,6 +158,42 @@ async function impersonateUser(event: Event) {
   await reauthAndReplay();
 }
 
+function triggerProfileUpload() {
+  uploadError.value = "";
+  uploadStatus.value = "";
+  uploadInputRef.value?.click();
+}
+
+async function handleProfileUpload(event: Event) {
+  const target = event.target as HTMLInputElement | null;
+  if (!target?.files?.length) return;
+
+  const file = target.files[0];
+  target.value = "";
+
+  let parsed: PrivateProfile;
+  try {
+    parsed = JSON.parse(await file.text()) as PrivateProfile;
+  } catch {
+    uploadError.value = "Invalid JSON file.";
+    return;
+  }
+
+  if (parsed?.format !== "concord-profile-private") {
+    uploadError.value = "Not a private profile file.";
+    return;
+  }
+
+  await impersonateIdentity(parsed);
+  await impersonateEncryption(parsed);
+  profile.replaceProfileMeta(parsed.metadata);
+  profile.setProfileId(parsed.profileId);
+
+  myProfile.value = JSON.stringify(parsed);
+  await reauthAndReplay();
+  uploadStatus.value = "Logged in with uploaded profile.";
+}
+
 const isImpersonating = computed(() => {
   return JSON.parse(myProfile.value).profileId !== profile.profileId.value;
 });
@@ -185,6 +229,30 @@ async function generateNewIdentity(e?: Event) {
   publicKey.value = keys.publicKey;
   privateKey.value = keys.privateKey;
   privateKeyPEM.value = await exportPrivateKeyAsPem(keys.privateKey);
+}
+
+async function resetIdentityAndProfile() {
+  const confirmed = window.confirm(
+    "This will clear the current identity and profile and generate a new one."
+  );
+  if (!confirmed) return;
+
+  uploadError.value = "";
+  uploadStatus.value = "";
+  username.value = "";
+
+  profile.clearProfileMeta();
+  profile.resetProfileId();
+
+  await generateNewIdentity();
+  const [nextPrivate, nextPublic] = await generateEncryptionKeys();
+  encryptionPublicKey.value = nextPublic;
+  encryptionPrivateKey.value = nextPrivate;
+
+  await profile.ensureProfileId();
+  myProfile.value = profile.getPrivateProfileJson();
+  await reauthAndReplay();
+  uploadStatus.value = "New identity created.";
 }
 
 async function setProfile() {
@@ -308,7 +376,7 @@ async function setProfile() {
 
                 <button
                   type="button"
-                  class="rounded-full border px-3 py-2 text-sm transition hover:opacity-90 disabled:opacity-50 border-[var(--rule)]"
+                  class="rounded-full border px-3 py-2 transition hover:opacity-90 disabled:opacity-50 border-[var(--rule)] text-xs"
                   :disabled="disabled"
                   @click="downloadPublic"
                   title="Download your public profile (safe to share)"
@@ -318,13 +386,43 @@ async function setProfile() {
 
                 <button
                   type="button"
-                  class="rounded-full border px-3 py-2 text-sm transition hover:opacity-90 disabled:opacity-50 border-[var(--rule)]"
+                  class="rounded-full border px-3 py-2 text-xs transition hover:opacity-90 disabled:opacity-50 border-[var(--rule)]"
                   :disabled="disabled"
                   @click="downloadPrivate"
                   title="Download your private profile (contains secrets — do not share)"
                 >
                   Download private profile
                 </button>
+
+                <input
+                  ref="uploadInputRef"
+                  type="file"
+                  accept="application/json"
+                  class="hidden"
+                  @change="handleProfileUpload"
+                />
+                <button
+                  type="button"
+                  class="rounded-full border px-3 py-2 text-xs transition hover:opacity-90 border-[var(--rule)]"
+                  @click="triggerProfileUpload"
+                >
+                  Upload private profile
+                </button>
+
+                <button
+                  type="button"
+                  class="rounded-full border px-3 py-2 text-xs transition hover:opacity-90 border-red-300 text-red-600"
+                  @click="resetIdentityAndProfile"
+                >
+                  Reset identity + profile
+                </button>
+
+                <p v-if="uploadError" class="text-xs text-red-600">
+                  {{ uploadError }}
+                </p>
+                <p v-if="uploadStatus" class="text-xs text-green-600">
+                  {{ uploadStatus }}
+                </p>
               </div>
               <div class="p-2 flex gap-2 items-center">
                 Impersonate

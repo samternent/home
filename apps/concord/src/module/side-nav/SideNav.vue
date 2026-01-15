@@ -6,6 +6,7 @@ import {
 } from "@vueuse/core";
 import { computed, watch, shallowRef } from "vue";
 import { useRoute } from "vue-router";
+import { useLedger } from "../ledger/useLedger";
 
 const breakpoints = useBreakpoints(breakpointsTailwind);
 const route = useRoute();
@@ -52,6 +53,67 @@ const bottomItems = computed(() => [
 const appVersion = shallowRef(
   document.querySelector("html").dataset.appVersion
 );
+
+const { api, ledger } = useLedger();
+const uploadInputRef = shallowRef(null);
+
+function downloadText(filename, content, mime = "application/json") {
+  const blob = new Blob([content], { type: `${mime};charset=utf-8` });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.rel = "noopener";
+
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  setTimeout(() => URL.revokeObjectURL(url), 250);
+}
+
+function downloadLedger() {
+  if (!ledger.value) return;
+  const head = ledger.value.head?.slice(0, 7) || "export";
+  const filename = `concord-ledger-${head}.json`;
+  const json = JSON.stringify(ledger.value, null, 2);
+  downloadText(filename, json);
+}
+
+async function createNewLedger() {
+  const confirmed = window.confirm(
+    "Create a new ledger? This will replace the current working copy."
+  );
+  if (!confirmed) return;
+  await api.create();
+}
+
+function triggerLedgerUpload() {
+  uploadInputRef.value?.click();
+}
+
+async function handleLedgerUpload(event) {
+  const target = event.target;
+  if (!target?.files?.length) return;
+  const file = target.files[0];
+  target.value = "";
+
+  let parsed;
+  try {
+    parsed = JSON.parse(await file.text());
+  } catch {
+    window.alert("Invalid ledger JSON.");
+    return;
+  }
+
+  const confirmed = window.confirm(
+    "Upload this ledger? This will replace the current working copy."
+  );
+  if (!confirmed) return;
+
+  await api.load(parsed, [], true, true);
+}
 </script>
 <template>
   <div
@@ -124,6 +186,33 @@ const appVersion = shallowRef(
           >
             <div class="text-sm">{{ item.name }}</div>
           </RouterLink>
+        </div>
+        <div class="pt-2 flex flex-col gap-2">
+          <button
+            class="text-xs border border-[var(--rule)] px-3 py-2 rounded-full text-left"
+            @click="createNewLedger"
+          >
+            Create new ledger
+          </button>
+          <input
+            ref="uploadInputRef"
+            type="file"
+            accept="application/json"
+            class="hidden"
+            @change="handleLedgerUpload"
+          />
+          <button
+            class="text-xs border border-[var(--rule)] px-3 py-2 rounded-full text-left"
+            @click="triggerLedgerUpload"
+          >
+            Upload ledger
+          </button>
+          <button
+            class="text-xs border border-[var(--rule)] px-3 py-2 rounded-full text-left"
+            @click="downloadLedger"
+          >
+            Download ledger
+          </button>
         </div>
         <a
           :href="`https://github.com/samternent/home/releases/tag/concord-${appVersion}`"

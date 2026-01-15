@@ -4,6 +4,7 @@ import { useLedger } from "../../module/ledger/useLedger";
 import Console from "../../module/console/Console.vue";
 import IdentityAvatar from "../../module/identity/IdentityAvatar.vue";
 import VerifyIcon from "../../module/verify/VerifyIcon.vue";
+import VerifyLedger from "../../module/verify/VerifyLedger.vue";
 import { Accordian, AccordianItem } from "ternent-ui/primitives";
 
 defineProps({
@@ -14,6 +15,24 @@ defineProps({
 });
 
 const { api, bridge, ledger, pending } = useLedger();
+
+type VerificationIssue = {
+  level: "error" | "warning";
+  code: string;
+  message: string;
+  commitId?: string;
+  entryId?: string;
+};
+
+type VerificationStatus = {
+  status: "idle" | "verifying" | "ok" | "error";
+  issues: VerificationIssue[];
+};
+
+const ledgerStatus = shallowRef<VerificationStatus>({
+  status: "idle",
+  issues: [],
+});
 
 const activeTab = shallowRef<"pending" | "history">("pending");
 const commitMessage = shallowRef("");
@@ -28,6 +47,44 @@ const pendingEntries = computed(() => {
   );
 });
 const pendingCount = computed(() => bridge.flags.value.pendingCount);
+
+const consoleTone = computed(() =>
+  ledgerStatus.value.status === "error" ? "danger" : "default"
+);
+
+const commitIssuesById = computed(() => {
+  const map: Record<string, VerificationIssue[]> = {};
+  for (const issue of ledgerStatus.value.issues) {
+    if (!issue.commitId) continue;
+    if (!map[issue.commitId]) map[issue.commitId] = [];
+    map[issue.commitId].push(issue);
+  }
+  return map;
+});
+
+const entryIssuesById = computed(() => {
+  const map: Record<string, VerificationIssue[]> = {};
+  for (const issue of ledgerStatus.value.issues) {
+    if (!issue.entryId) continue;
+    if (!map[issue.entryId]) map[issue.entryId] = [];
+    map[issue.entryId].push(issue);
+  }
+  return map;
+});
+
+function handleLedgerStatus(next: VerificationStatus) {
+  ledgerStatus.value = next;
+}
+
+function commitHasIssue(commitId: string, commit?: { entries?: string[] }) {
+  if ((commitIssuesById.value[commitId]?.length ?? 0) > 0) return true;
+  const entryIds = commit?.entries ?? [];
+  return entryIds.some((entryId) => entryHasIssue(entryId));
+}
+
+function entryHasIssue(entryId: string) {
+  return (entryIssuesById.value[entryId]?.length ?? 0) > 0;
+}
 
 const canCommit = computed(() => {
   if (!bridge.flags.value.canWrite || !pendingCount.value) return false;
@@ -72,12 +129,15 @@ function formatDate(
 }
 </script>
 <template>
-  <Console :container="container">
+  <Console :container="container" :tone="consoleTone">
     <template #panel-control>
-      <div
-        class="text-xs font-sans border-1 border-[var(--rule)] rounded-full px-2 py-1 flex items-center justify-center"
-      >
-        {{ pendingCount }}
+      <div class="flex items-center gap-2">
+        <div
+          class="text-xs font-sans border-1 border-[var(--rule)] rounded-full px-2 py-1 flex items-center justify-center"
+        >
+          {{ pendingCount }}
+        </div>
+        <VerifyLedger :ledger="ledger" compact @status="handleLedgerStatus" />
       </div>
     </template>
     <div class="flex w-full flex-1">
@@ -152,7 +212,7 @@ function formatDate(
                 <div class="flex flex-col gap-1 p-2 bg-[var(--paper2)]">
                   <div class="flex gap-2 items-center justify-between flex-1">
                     <div class="flex items-center gap-2 flex-1">
-                      <span class="text-[var(--muted)]">
+                      <span class="text-[var(--muted)] text-xs">
                         @{{ shortId(pendingEntry.entryId) }}
                       </span>
                       <div
@@ -162,8 +222,11 @@ function formatDate(
                       </div>
                     </div>
                   </div>
-                  <pre class="w-full overflow-auto">{{
-                    pendingEntry.entry.payload
+                  <pre class="w-full overflow-auto text-xs py-2">{{
+                    JSON.stringify(pendingEntry.entry.payload, null, 2).replace(
+                      /^\{\n?|\n?\}$/g,
+                      ""
+                    )
                   }}</pre>
                 </div>
               </AccordianItem>
@@ -184,6 +247,12 @@ function formatDate(
                     <span class="font-medium text-[var(--accent)] text-sm"
                       >@{{ shortId(commitId) }}</span
                     >
+                    <span
+                      v-if="commitHasIssue(commitId, commit)"
+                      class="text-[10px] px-2 py-0.5 rounded-full border border-red-400 text-red-600 uppercase"
+                    >
+                      Invalid
+                    </span>
                     <div
                       v-if="commit.metadata?.genesis"
                       class="text-xs py1 px-2 border-1 border-[var(--rule)] rounded-full"
@@ -213,15 +282,19 @@ function formatDate(
                       class="flex gap-2 items-center justify-between flex-1"
                     >
                       <div class="flex items-center gap-2 flex-1">
-                        <span class="text-[var(--muted)]">
-                          @{{ shortId(entryId) }}</span
-                        >
+                        <span> @{{ shortId(entryId) }}</span>
                         <VerifyIcon
                           v-if="entries[entryId].signature"
                           :payload="entries[entryId]"
                           :signature="entries[entryId].signature"
                           :author="entries[entryId].author"
                         />
+                        <span
+                          v-if="entryHasIssue(entryId)"
+                          class="text-[10px] px-2 py-0.5 rounded-full bg-[var(--text-critical)]"
+                        >
+                          Invalid
+                        </span>
                         <div
                           class="text-xs py1 px-2 border-1 border-[var(--rule)] rounded-full"
                         >
@@ -251,9 +324,22 @@ function formatDate(
                         </span>
                       </div>
                     </div>
-                    <pre v-if="entries[entryId]" class="w-full overflow-auto">{{
-                      entries[entryId].payload
-                    }}</pre>
+                    <pre
+                      v-if="entries[entryId]"
+                      class="w-full overflow-auto pt-2"
+                      :class="
+                        entryHasIssue(entryId)
+                          ? 'text-[var(--text-critical)]'
+                          : ''
+                      "
+                      >{{
+                        JSON.stringify(
+                          entries[entryId].payload,
+                          null,
+                          2
+                        ).replace(/^\{\n?|\n?\}$/g, "")
+                      }}</pre
+                    >
                   </div>
                 </div>
               </AccordianItem>

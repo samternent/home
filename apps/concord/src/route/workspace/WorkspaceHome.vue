@@ -56,7 +56,7 @@ const hasLedger = computed(() => bridge.flags.value.hasLedger);
   <AppLayout>
     <template #left-side> <SideNav /> </template>
 
-    <div class="p-4 flex flex-1">
+    <div class="p-4 flex flex-1 h-full">
       <RouterView v-if="hasLedger" />
       <div v-else>
         <p>No ledger found in this workspace.</p>
