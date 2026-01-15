@@ -1,0 +1,5 @@
+---
+"concord": patch
+---
+
+Updates identicon
