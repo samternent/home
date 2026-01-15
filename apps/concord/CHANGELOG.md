@@ -1,5 +1,11 @@
 # concord
 
+## 0.2.2
+
+### Patch Changes
+
+- [`0239a782440d764ff6405685a67c909fe219fd48`](https://github.com/samternent/home/commit/0239a782440d764ff6405685a67c909fe219fd48) Thanks [@samternent](https://github.com/samternent)! - Fix clean urls
+
 ## 0.2.1
 
 ### Patch Changes
