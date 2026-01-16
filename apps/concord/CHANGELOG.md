@@ -1,5 +1,15 @@
 # concord
 
+## 0.2.3
+
+### Patch Changes
+
+- [`383da40a6882c70cb64656550f7329e36f1078ae`](https://github.com/samternent/home/commit/383da40a6882c70cb64656550f7329e36f1078ae) Thanks [@samternent](https://github.com/samternent)! - Login with solid
+
+- [`fef374e0e3a60be935af12484f4620e6b9870074`](https://github.com/samternent/home/commit/fef374e0e3a60be935af12484f4620e6b9870074) Thanks [@samternent](https://github.com/samternent)! - Adds soild integration
+
+- [`d92f1597c81293850fded3f49660d96ef3355f59`](https://github.com/samternent/home/commit/d92f1597c81293850fded3f49660d96ef3355f59) Thanks [@samternent](https://github.com/samternent)! - Updates identicon
+
 ## 0.2.2
 
 ### Patch Changes
