@@ -7,6 +7,7 @@ import {
 import { computed, watch, shallowRef } from "vue";
 import { useRoute } from "vue-router";
 import { useLedger } from "../ledger/useLedger";
+import { useIdentity } from "../identity/useIdentity";
 
 const breakpoints = useBreakpoints(breakpointsTailwind);
 const route = useRoute();
@@ -39,6 +40,10 @@ const topItems = computed(() => [
     to: "/workspace/tamper",
   },
   {
+    name: "Epochs",
+    to: "/epochs",
+  },
+  {
     name: "Solid Pods",
     to: "/workspace/solid",
   },
@@ -59,6 +64,7 @@ const appVersion = shallowRef(
 );
 
 const { api, ledger } = useLedger();
+const { privateKey, publicKey } = useIdentity();
 const uploadInputRef = shallowRef(null);
 const CORE_LEDGER_KEY = "concord:ledger:core";
 const TAMPER_LEDGER_KEY = "concord:ledger:tamper";
@@ -93,6 +99,9 @@ async function createNewLedger() {
     "Create a new ledger? This will replace the current working copy."
   );
   if (!confirmed) return;
+  if (privateKey.value && publicKey.value) {
+    await api.auth(privateKey.value, publicKey.value);
+  }
   await api.create();
 }
 

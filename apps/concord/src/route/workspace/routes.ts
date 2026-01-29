@@ -25,6 +25,11 @@ export default [
             component: () => import("./WorkspaceTamper.vue"),
           },
           {
+            path: "epochs",
+            alias: "/epochs",
+            component: () => import("./WorkspaceEpochs.vue"),
+          },
+          {
             path: "solid",
             component: () => import("./WorkspaceSolid.vue"),
           },

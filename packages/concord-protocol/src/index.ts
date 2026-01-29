@@ -112,7 +112,8 @@ export async function deriveCommitId(commit: Commit): Promise<string> {
  */
 export async function createGenesisCommit(
   metadata: CommitMetadata = {},
-  timestamp = new Date().toISOString()
+  timestamp = new Date().toISOString(),
+  entries: string[] = []
 ): Promise<{ commitId: string; commit: Commit }> {
   const commit: Commit = {
     parent: null,
@@ -122,7 +123,7 @@ export async function createGenesisCommit(
       spec: PROTOCOL_SPEC,
       ...metadata,
     },
-    entries: [],
+    entries,
   };
   const commitId = await deriveCommitId(commit);
   return { commitId, commit };
@@ -133,14 +134,41 @@ export async function createGenesisCommit(
  */
 export async function createLedger(
   metadata: CommitMetadata = {},
-  timestamp = new Date().toISOString()
+  timestamp = new Date().toISOString(),
+  entries: Entry[] = []
 ): Promise<LedgerContainer> {
-  const { commitId, commit } = await createGenesisCommit(metadata, timestamp);
+  const entriesMap: Record<string, Entry> = {};
+  const entryIds: string[] = [];
+
+  for (const entry of entries) {
+    const result = validateEntry(entry);
+    if (!result.ok) {
+      throw new ConcordProtocolError(
+        "INVALID_ENTRY",
+        result.errors.join("; ")
+      );
+    }
+    const entryId = await deriveEntryId(entry);
+    if (entriesMap[entryId]) {
+      throw new ConcordProtocolError(
+        "DUPLICATE_ENTRY",
+        `Entry ${entryId} already exists`
+      );
+    }
+    entriesMap[entryId] = entry;
+    entryIds.push(entryId);
+  }
+
+  const { commitId, commit } = await createGenesisCommit(
+    metadata,
+    timestamp,
+    entryIds
+  );
   return {
     format: LEDGER_FORMAT,
     version: LEDGER_VERSION,
     commits: { [commitId]: commit },
-    entries: {},
+    entries: entriesMap,
     head: commitId,
   };
 }
@@ -502,8 +530,8 @@ export function validateLedger(
           if (genesis.parent !== null) {
             errors.push("Genesis commit parent must be null");
           }
-          if (!Array.isArray(genesis.entries) || genesis.entries.length !== 0) {
-            errors.push("Genesis commit entries must be an empty array");
+          if (!Array.isArray(genesis.entries)) {
+            errors.push("Genesis commit entries must be an array");
           }
           if (
             !genesis.metadata ||
@@ -565,3 +593,6 @@ export function validateLedger(
 
   return { ok: errors.length === 0, errors };
 }
+
+export * from "./epochs";
+export { canonicalStringify } from "./canonical";

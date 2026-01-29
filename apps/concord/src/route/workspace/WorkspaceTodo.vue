@@ -3,16 +3,19 @@ import { computed, ref } from "vue";
 import { generateId } from "ternent-utils";
 
 import { useLedger } from "../../module/ledger/useLedger";
+import { useEpochs } from "../../module/epoch/useEpochs";
 import IdentityAvatar from "../../module/identity/IdentityAvatar.vue";
 import TodoQuickAdd from "./TodoQuickAdd.vue";
 
 const { bridge, addItem } = useLedger();
+const { activeEpochResult, legacyEpochPlacement } = useEpochs();
 
 type LedgerItem = {
   id: string;
   title: string;
   completed?: boolean;
   assignedTo?: boolean;
+  keyMissing?: boolean;
   [key: string]: unknown;
 };
 
@@ -59,6 +62,7 @@ const permissions = computed<PermissionGroupEntry[]>(
 const canAddItem = computed(
   () => bridge.flags.value.hasLedger && bridge.flags.value.authed
 );
+const hasEpoch = computed(() => !!activeEpochResult.value.epoch);
 
 async function addTodoItem(payload: {
   title: string;
@@ -95,6 +99,10 @@ const quickAddHeight = ref(0);
 function updateQuickAddHeight() {
   quickAddHeight.value = quickAddRef.value?.offsetHeight || 0;
 }
+
+function shortKey(value?: string, size = 8) {
+  return value ? value.slice(0, size) : "";
+}
 </script>
 <template>
   <div class="mx-auto w-full max-w-160 flex flex-col flex-1 gap-4">
@@ -104,6 +112,12 @@ function updateQuickAddHeight() {
           <h1 class="text-2xl">Todo list.</h1>
           <p class="text-sm opacity-70">{{ items.length }} items</p>
         </div>
+      </div>
+      <div v-if="!hasEpoch" class="text-xs text-yellow-700 mt-2">
+        No epoch yet. Create one to enable encrypted items.
+      </div>
+      <div v-if="legacyEpochPlacement" class="text-xs text-yellow-700 mt-1">
+        Legacy ledger: initial epoch not in genesis.
       </div>
     </header>
 
@@ -122,6 +136,7 @@ function updateQuickAddHeight() {
               <button
                 @click="completeItem(item.data)"
                 class="flex items-center gap-3 text-left"
+                :disabled="item.data.keyMissing"
               >
                 <span
                   class="size-8 flex items-center justify-center rounded-full border border-[var(--rule)]"
@@ -145,6 +160,14 @@ function updateQuickAddHeight() {
               </button>
               <div class="flex flex-col gap-1 flex-1">
                 <span
+                  v-if="item.data.keyMissing"
+                  class="text-sm text-red-600"
+                >
+                  Missing key for epoch
+                  {{ shortKey(item.data.encryptionKeyId) }}
+                </span>
+                <span
+                  v-else
                   class="text-lg font-thin"
                   :class="item.data.completed ? 'line-through opacity-60 ' : ''"
                 >
@@ -169,6 +192,7 @@ function updateQuickAddHeight() {
         v-if="canAddItem"
         ref="quickAddRef"
         :permissions="permissions"
+        :epoch-ready="hasEpoch"
         :on-create="addTodoItem"
       />
     </section>

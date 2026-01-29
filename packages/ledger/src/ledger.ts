@@ -109,6 +109,12 @@ export type LedgerApi<P> = {
   log: (...args: any[]) => void;
 };
 
+export type GenesisEntryDraft = {
+  kind: string;
+  payload?: Entry["payload"];
+  timestamp?: string;
+};
+
 type RuntimeConfig<P> = {
   plugins?: LedgerPlugin<P>[];
   reducer: Reducer<P>;
@@ -121,6 +127,14 @@ type RuntimeConfig<P> = {
 
   /** Auto-persist after changes (default true if any plugin has storage.save) */
   autoPersist?: boolean;
+
+  /** Optional genesis entries to include at ledger creation */
+  createGenesisEntries?: (params: {
+    author: string;
+    now: () => string;
+    signingKey: CryptoKey;
+    publicKey: CryptoKey;
+  }) => Promise<GenesisEntryDraft[]> | GenesisEntryDraft[];
 };
 
 function sortPlugins<P>(plugins: LedgerPlugin<P>[]) {
@@ -320,7 +334,47 @@ export function createLedgerRuntime<P>(config: RuntimeConfig<P>) {
   }
 
   async function createLedgerInMemory(metadata: Record<string, unknown> = {}) {
-    const ledger = await createLedger({ created_at: now(), ...metadata });
+    if (config.createGenesisEntries) {
+      if (!state.signingKey || !state.publicKey) {
+        throw new Error("Genesis entries require auth before create.");
+      }
+    }
+
+    const author = state.publicKey
+      ? await config.resolveAuthor(state.publicKey)
+      : "";
+
+    const genesisDrafts = config.createGenesisEntries
+      ? await config.createGenesisEntries({
+          author,
+          now,
+          signingKey: state.signingKey as CryptoKey,
+          publicKey: state.publicKey as CryptoKey,
+        })
+      : [];
+
+    const genesisEntries: Entry[] = [];
+    for (const draft of genesisDrafts || []) {
+      if (!draft?.kind) continue;
+      const timestamp = draft.timestamp ?? now();
+      const entryCore: Entry = {
+        kind: draft.kind,
+        timestamp,
+        author,
+        payload: draft.payload ?? null,
+      };
+      const signature = await config.sign(
+        state.signingKey as CryptoKey,
+        getEntrySigningPayload(entryCore)
+      );
+      genesisEntries.push({ ...entryCore, signature });
+    }
+
+    const ledger = await createLedger(
+      { created_at: now(), ...metadata },
+      now(),
+      genesisEntries
+    );
     state.ledger = ledger;
     state.pending = [];
     await emit({ type: "LOAD", ledger, pending: [] });

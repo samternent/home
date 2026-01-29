@@ -30,6 +30,7 @@ const props = defineProps<{
     permissionId?: string | null;
   }) => Promise<void>;
   disabled?: boolean;
+  epochReady?: boolean;
 }>();
 
 const rootRef = ref<HTMLElement | null>(null);
@@ -37,6 +38,7 @@ const isExpanded = ref(false);
 const title = shallowRef("");
 const selectedUser = shallowRef();
 const permissionId = shallowRef<string | null>(null);
+const epochReady = computed(() => props.epochReady ?? true);
 const errorMessage = shallowRef("");
 const isSubmitting = ref(false);
 
@@ -82,6 +84,10 @@ async function submit() {
     errorMessage.value = "Title is required.";
     return;
   }
+  if (!epochReady.value && permissionId.value) {
+    errorMessage.value = "Create an epoch before using permissions.";
+    return;
+  }
   errorMessage.value = "";
   isSubmitting.value = true;
   try {
@@ -95,7 +101,8 @@ async function submit() {
       collapse(true);
     }
   } catch (error) {
-    errorMessage.value = "Unable to add task. Please try again.";
+    const message = (error as Error)?.message;
+    errorMessage.value = message || "Unable to add task. Please try again.";
   } finally {
     isSubmitting.value = false;
   }
@@ -185,29 +192,33 @@ watch(
           </svg>
         </button>
       </div>
-      <div v-if="isExpanded" class="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <div class="flex flex-col gap-2">
-          <label class="font-thin"> Assignee </label>
-          <UserPicker v-model="selectedUser" />
-        </div>
-        <div class="flex flex-col gap-2">
-          <label class="font-thin"> Permissions </label>
-          <select
-            v-model="permissionId"
-            class="border py-2 px-3 rounded-xl border-[var(--rule)]"
-            aria-label="Todo permission"
-          >
-            <option :value="null">public</option>
-            <option
-              v-for="permission in permissions"
-              :key="permission.data.id"
+        <div v-if="isExpanded" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div class="flex flex-col gap-2">
+            <label class="font-thin"> Assignee </label>
+            <UserPicker v-model="selectedUser" />
+          </div>
+          <div class="flex flex-col gap-2">
+            <label class="font-thin"> Permissions </label>
+            <select
+              v-model="permissionId"
+              class="border py-2 px-3 rounded-xl border-[var(--rule)]"
+              aria-label="Todo permission"
+              :disabled="!epochReady"
+            >
+              <option :value="null">public</option>
+              <option
+                v-for="permission in permissions"
+                :key="permission.data.id"
               :value="permission.data.id"
             >
               {{ permission.data.title }}
-            </option>
-          </select>
+              </option>
+            </select>
+            <p v-if="!epochReady" class="text-xs text-yellow-700">
+              Create an epoch to enable permissions.
+            </p>
+          </div>
         </div>
-      </div>
       <p
         v-if="errorMessage"
         class="text-xs text-red-500"

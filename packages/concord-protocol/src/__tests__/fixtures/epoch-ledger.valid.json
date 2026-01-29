@@ -1,0 +1,60 @@
+{
+  "format": "concord-ledger",
+  "version": "1.0",
+  "commits": {
+    "genesis": {
+      "parent": null,
+      "timestamp": "2024-01-01T00:00:00.000Z",
+      "metadata": {
+        "genesis": true,
+        "spec": "concord-protocol@1.0"
+      },
+      "entries": [
+        "entry-epoch-1"
+      ]
+    },
+    "commit-2": {
+      "parent": "genesis",
+      "timestamp": "2024-01-02T00:00:00.000Z",
+      "metadata": {
+        "message": "rotate epoch"
+      },
+      "entries": [
+        "entry-epoch-2"
+      ]
+    }
+  },
+  "entries": {
+    "entry-epoch-1": {
+      "kind": "epochs",
+      "timestamp": "2024-01-01T00:00:00.000Z",
+      "author": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEvalidfixturekeyexample1234567890==",
+      "payload": {
+        "type": "epoch",
+        "epochId": "e6927d90c8872193727dde4c43c89b524c833f5f4dd87fa5cf2ae97871a70d4a",
+        "prevEpochId": null,
+        "createdAt": "2024-01-01T00:00:00.000Z",
+        "encryptionPublicKey": "age1fixturegenesisxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "encryptionKeyId": "e6927d90c8872193727dde4c43c89b524c833f5f4dd87fa5cf2ae97871a70d4a",
+        "signerKeyId": "7950562b46bb7ce109c5f85b9fe96b0e6d8974bb72b00f78d6ab9518ddf68a35"
+      },
+      "signature": "sig"
+    },
+    "entry-epoch-2": {
+      "kind": "epochs",
+      "timestamp": "2024-01-02T00:00:00.000Z",
+      "author": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEvalidfixturekeyexample1234567890==",
+      "payload": {
+        "type": "epoch",
+        "epochId": "4f403d1e882aa4a0fc7b730b776b17755e40bcc6151f235dc53a496c39eff73d",
+        "prevEpochId": "e6927d90c8872193727dde4c43c89b524c833f5f4dd87fa5cf2ae97871a70d4a",
+        "createdAt": "2024-01-02T00:00:00.000Z",
+        "encryptionPublicKey": "age1fixture2yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "encryptionKeyId": "4f403d1e882aa4a0fc7b730b776b17755e40bcc6151f235dc53a496c39eff73d",
+        "signerKeyId": "7950562b46bb7ce109c5f85b9fe96b0e6d8974bb72b00f78d6ab9518ddf68a35"
+      },
+      "signature": "sig"
+    }
+  },
+  "head": "commit-2"
+}

@@ -33,10 +33,24 @@ import {
   generate as generateEncryptionKeys,
 } from "ternent-encrypt";
 
-import { sign, exportPublicKeyAsPem } from "ternent-identity";
+import {
+  sign,
+  exportPublicKeyAsPem,
+  verify,
+  importPublicKeyFromPem,
+} from "ternent-identity";
+import { getCommitChain, getEntrySigningPayload } from "@ternent/concord-protocol";
 
 import { useEncryption } from "../encryption/useEncryption";
 import { useIdentity } from "../identity/useIdentity";
+import { useEpochKeys } from "../epoch/useEpochKeys";
+import {
+  canonicalizeAgeRecipient,
+  canonicalizeIdentityKey,
+  deriveSignerKeyId,
+  deriveEpochId,
+  fingerprint,
+} from "../epoch/epochUtils";
 
 const useLedgerSymbol = Symbol("useLedger");
 
@@ -52,6 +66,7 @@ type PermissionGrantRecord = {
   permissionId: string;
   identity: string;
   secret: string;
+  encryptionKeyId?: string;
 };
 
 type LegacyPermissionRecord = {
@@ -60,6 +75,17 @@ type LegacyPermissionRecord = {
   title: string;
   public: string;
   secret: string;
+  encryptionKeyId?: string;
+};
+
+type EpochRecord = {
+  type: "epoch";
+  epochId: string;
+  prevEpochId: string | null;
+  createdAt: string;
+  encryptionPublicKey: string;
+  encryptionKeyId: string;
+  signerKeyId: string;
 };
 
 type PayloadObject = Record<string, any>;
@@ -79,6 +105,12 @@ function hasPermissionLink(
   payload: PayloadObject
 ): payload is PayloadObject & { permission: string; permissionId?: string } {
   return typeof payload.permission === "string";
+}
+
+function getPayloadKeyId(payload: PayloadObject): string | null {
+  if (typeof payload.encryptionKeyId === "string") return payload.encryptionKeyId;
+  if (typeof payload.epochId === "string") return payload.epochId;
+  return null;
 }
 
 type ProvideLedgerContext = {
@@ -114,6 +146,7 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
   const { publicKeyPEM: publicKeyIdentityPEM } = useIdentity();
   const { privateKey: privateKeyEncryption, publicKey: publicKeyEncryption } =
     useEncryption();
+  const { getKey: getEpochPrivateKey } = useEpochKeys();
 
   // Plugins
   async function decryptEntryIfPossible(
@@ -124,38 +157,58 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
     const payload = entry.payload;
     const encryptedPayload = getEncryptedPayload(payload);
     const myIdentity = stripIdentityKey(publicKeyIdentityPEM.value);
+    const payloadKeyId = getPayloadKeyId(payload);
 
     if (!encryptedPayload) return entry;
 
     try {
       if (!hasPermissionLink(payload)) {
+        const privateKey = payloadKeyId
+          ? getEpochPrivateKey(payloadKeyId) ?? privateKeyEncryption.value
+          : privateKeyEncryption.value;
+
+        if (!privateKey) {
+          return { ...entry, payload: { ...payload, keyMissing: true } };
+        }
+
         const clear = await decrypt(
-          privateKeyEncryption.value,
+          privateKey,
           formatEncryptionFile(encryptedPayload)
         );
-        return { ...entry, payload: { ...JSON.parse(clear) } };
+        return { ...entry, payload: { ...payload, ...JSON.parse(clear) } };
       }
 
       let permSecret: string | null = null;
+      let grantKeyId: string | null = null;
+      let grantKey: string | null = null;
       if (typeof payload.permissionId === "string") {
-        permSecret =
-          loki.getCollection("permission-grants")?.findOne({
-            "payload.permissionId": payload.permissionId,
-            "payload.identity": myIdentity,
-          })?.payload?.secret ?? null;
+        const grant = loki.getCollection("permission-grants")?.findOne({
+          "payload.permissionId": payload.permissionId,
+          "payload.identity": myIdentity,
+        });
+        permSecret = grant?.payload?.secret ?? null;
+        grantKeyId = grant?.payload?.encryptionKeyId ?? null;
       }
 
       if (!permSecret) {
-        permSecret =
-          loki.getCollection("permissions")?.findOne({
-            "payload.title": payload.permission,
-            "payload.identity": myIdentity,
-          })?.payload?.secret ?? null;
+        const legacy = loki.getCollection("permissions")?.findOne({
+          "payload.title": payload.permission,
+          "payload.identity": myIdentity,
+        });
+        permSecret = legacy?.payload?.secret ?? null;
       }
 
       if (permSecret) {
+        grantKey = grantKeyId
+          ? getEpochPrivateKey(grantKeyId) ?? privateKeyEncryption.value
+          : privateKeyEncryption.value;
+
+        if (!grantKey) {
+          return { ...entry, payload: { ...payload, keyMissing: true } };
+        }
+
         const sharedKey = await decrypt(
-          privateKeyEncryption.value,
+          grantKey,
           formatEncryptionFile(permSecret)
         );
         const clear = await decrypt(
@@ -165,13 +218,21 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
         return { ...entry, payload: { ...payload, ...JSON.parse(clear) } };
       }
 
+      const fallbackKey = payloadKeyId
+        ? getEpochPrivateKey(payloadKeyId) ?? privateKeyEncryption.value
+        : privateKeyEncryption.value;
+
+      if (!fallbackKey) {
+        return { ...entry, payload: { ...payload, keyMissing: true } };
+      }
+
       const clear = await decrypt(
-        privateKeyEncryption.value,
+        fallbackKey,
         formatEncryptionFile(encryptedPayload)
       );
       return { ...entry, payload: { ...payload, ...JSON.parse(clear) } };
     } catch {
-      return null;
+      return { ...entry, payload: { ...payload, keyMissing: true } };
     }
   }
 
@@ -205,6 +266,37 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
     sign: async (signingKey, payload) => {
       return sign(signingKey, payload);
     },
+    createGenesisEntries: async ({ now }) => {
+      if (!publicKeyEncryption.value || !publicKeyIdentityPEM.value) {
+        throw new Error("Genesis epoch requires identity and encryption keys.");
+      }
+      const timestamp = now();
+      const signerKeyId = await deriveSignerKeyId(publicKeyIdentityPEM.value);
+      const encryptionPublicKey = canonicalizeAgeRecipient(
+        publicKeyEncryption.value
+      );
+      const epochId = await deriveEpochId({
+        signerKeyId,
+        encryptionPublicKey,
+        prevEpochId: null,
+        createdAt: timestamp,
+      });
+      return [
+        {
+          kind: "epochs",
+          timestamp,
+          payload: {
+            type: "epoch",
+            epochId,
+            prevEpochId: null,
+            createdAt: timestamp,
+            encryptionPublicKey,
+            encryptionKeyId: epochId,
+            signerKeyId,
+          } satisfies EpochRecord,
+        },
+      ];
+    },
     autoPersist: true,
   });
 
@@ -213,6 +305,84 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
   const pending = computed(() => bridge.state.value.pending ?? []);
 
   provideLedgerBridge(bridge);
+
+  async function getCurrentEpochRecord(): Promise<EpochRecord | null> {
+    if (!ledger.value) return null;
+
+    const chain = getCommitChain(ledger.value);
+    let current: EpochRecord | null = null;
+
+    for (const commitId of chain) {
+      const commit = ledger.value.commits?.[commitId];
+      for (const entryId of commit?.entries ?? []) {
+        const entry = ledger.value.entries?.[entryId] as
+          | {
+              kind?: string;
+              payload?: EpochRecord;
+              signature?: string | null;
+              author?: string | null;
+              timestamp?: string;
+            }
+          | undefined;
+        if (!entry || entry.kind !== "epochs" || entry.payload?.type !== "epoch") {
+          continue;
+        }
+        if (!entry.signature || !entry.author || !entry.payload) continue;
+        try {
+          const authorKey = await importPublicKeyFromPem(entry.author);
+          const payload = getEntrySigningPayload(entry as any);
+          const ok = await verify(entry.signature, payload, authorKey);
+          const signerKeyId = await deriveSignerKeyId(
+            canonicalizeIdentityKey(entry.author)
+          );
+          if (!entry.payload.encryptionPublicKey || !entry.payload.createdAt) {
+            continue;
+          }
+          const expectedEpochId = await deriveEpochId({
+            signerKeyId,
+            encryptionPublicKey: entry.payload.encryptionPublicKey,
+            prevEpochId: entry.payload.prevEpochId ?? null,
+            createdAt: entry.payload.createdAt,
+          });
+          if (
+            ok &&
+            entry.payload.signerKeyId === signerKeyId &&
+            entry.payload.epochId === expectedEpochId &&
+            entry.payload.encryptionKeyId === expectedEpochId
+          ) {
+            current = entry.payload;
+          }
+        } catch {
+          continue;
+        }
+      }
+    }
+
+    return current;
+  }
+
+  async function getCurrentEncryptionContext() {
+    const epoch = await getCurrentEpochRecord();
+    if (epoch?.encryptionPublicKey) {
+      return {
+        publicKey: epoch.encryptionPublicKey,
+        encryptionKeyId:
+          epoch.encryptionKeyId ||
+          (await fingerprint(
+            canonicalizeAgeRecipient(epoch.encryptionPublicKey)
+          )),
+      };
+    }
+    return { publicKey: null, encryptionKeyId: null };
+  }
+
+  async function ensureEpochForEncryption() {
+    const encryptionContext = await getCurrentEncryptionContext();
+    if (!encryptionContext.encryptionKeyId) {
+      throw new Error("Create an epoch before encrypting data.");
+    }
+    return encryptionContext;
+  }
 
   // Keep a compressed blob available (for download/export/share)
   watch(
@@ -245,6 +415,7 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
 
   async function createPermission(title: string) {
     await ensureAuthed();
+    const encryptionContext = await ensureEpochForEncryption();
 
     // Find permission group record (in Loki read model)
     const existingGroup = loki.getCollection("permission-groups")?.findOne({
@@ -258,12 +429,14 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
     }
 
     const [encryptionSecret, encryptionPublic] = await generateEncryptionKeys();
+    const myEncryptionKey = encryptionContext.publicKey;
+
+    if (!myEncryptionKey) {
+      throw new Error("Missing encryption key for permission grant.");
+    }
 
     // Secret is encrypted to *my* encryption public key so I can later re-share it
-    const secretForMe = await encrypt(
-      publicKeyEncryption.value,
-      encryptionSecret
-    );
+    const secretForMe = await encrypt(myEncryptionKey, encryptionSecret);
 
     const permissionGroup = {
       id: generateId(),
@@ -282,6 +455,7 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
       permissionId: permissionGroup.id,
       identity: stripIdentityKey(publicKeyIdentityPEM.value),
       secret: stripEncryptionFile(secretForMe),
+      encryptionKeyId: encryptionContext.encryptionKeyId ?? undefined,
     } satisfies PermissionGrantRecord;
 
     await api.addAndStage({
@@ -297,6 +471,7 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
         title: permissionGroup.title,
         public: permissionGroup.public,
         secret: permissionGrant.secret,
+        encryptionKeyId: permissionGrant.encryptionKeyId,
       } satisfies LegacyPermissionRecord,
     });
 
@@ -309,6 +484,7 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
     encryptionKey: string
   ) {
     await ensureAuthed();
+    const encryptionContext = await ensureEpochForEncryption();
 
     const normalizedIdentity = stripIdentityKey(identity);
 
@@ -342,12 +518,14 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
 
     // Encrypt the permission key for the target user
     const secretForUser = await encrypt(encryptionKey, permissionKey);
+    const encryptionKeyId = encryptionContext.encryptionKeyId;
 
     const permissionGrant = {
       permissionId,
       identity: normalizedIdentity,
       secret: stripEncryptionFile(secretForUser),
       id: generateId(),
+      encryptionKeyId,
     } satisfies PermissionGrantRecord;
 
     await api.addAndStage({
@@ -363,6 +541,7 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
         title: permissionGroup.title,
         public: permissionGroup.public,
         secret: permissionGrant.secret,
+        encryptionKeyId: permissionGrant.encryptionKeyId,
       } satisfies LegacyPermissionRecord,
     });
   }
@@ -434,10 +613,15 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
         legacyPermission?.payload ||
         null;
 
+      const usePersonalKey = !permissionRecord && forceEncrypt;
+      const encryptionContext = forceEncrypt
+        ? await ensureEpochForEncryption()
+        : null;
+
       const pub =
         permissionRecord?.public ||
         permissionRecord?.encryption ||
-        (forceEncrypt ? publicKeyEncryption.value : null);
+        (forceEncrypt ? encryptionContext?.publicKey : null);
 
       if (!pub) {
         throw new Error(
@@ -451,6 +635,12 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
         (typeof dataPermission === "string" ? dataPermission : null) ||
         permissionHint;
 
+      const encryptionKeyId = encryptionContext?.encryptionKeyId ?? null;
+
+      if (forceEncrypt && !encryptionKeyId) {
+        throw new Error("Create an epoch before encrypting data.");
+      }
+
       await api.addAndStage({
         kind: collection,
         payload: {
@@ -458,6 +648,7 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
           permissionId:
             permissionGroup?.payload.id ??
             (typeof dataPermissionId === "string" ? dataPermissionId : null),
+          ...(encryptionKeyId ? { encryptionKeyId } : {}),
           id: recordId,
           encrypted: stripEncryptionFile(
             await encrypt(pub, JSON.stringify({ ...payloadData, id: recordId }))

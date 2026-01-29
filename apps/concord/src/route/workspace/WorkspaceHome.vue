@@ -81,6 +81,9 @@ const containerUrl = computed(() => {
 });
 
 async function createNewLedger() {
+  if (priv.value && pub.value) {
+    await api.auth(priv.value, pub.value);
+  }
   await api.create();
 }
 
