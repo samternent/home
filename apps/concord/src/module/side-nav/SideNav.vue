@@ -6,6 +6,7 @@ import {
 } from "@vueuse/core";
 import { computed, watch, shallowRef } from "vue";
 import { useRoute } from "vue-router";
+import { SThemeToggle } from "ternent-ui/components";
 import { useLedger } from "../ledger/useLedger";
 import { useIdentity } from "../identity/useIdentity";
 
@@ -14,6 +15,8 @@ const route = useRoute();
 const mdAndLarger = breakpoints.greaterOrEqual("md");
 const smallerThanMd = breakpoints.smaller("md");
 const smallerThanLg = breakpoints.smaller("lg");
+
+const theme = useLocalStorage("app/theme", "sleekLight");
 
 watch(route, () => {
   openSideBar.value = false;
@@ -145,7 +148,7 @@ async function deleteLedger() {
 <template>
   <div
     v-if="showSidebar"
-    class="sticky top-0 flex flex-col border-r border-[var(--rule)]"
+    class="sticky top-0 flex flex-col border-r border-[var(--ui-border)]"
     :class="{
       'w-64': mdAndLarger,
       'w-64 absolute z-30 h-full': smallerThanMd && openSideBar,
@@ -184,7 +187,7 @@ async function deleteLedger() {
           <!-- Main Item -->
           <RouterLink
             :to="item.to"
-            class="flex items-center px-4 py-1 border-[var(--rule)] transition-all duration-200 font-base"
+            class="flex items-center px-4 py-1 border-[var(--ui-border)] transition-all duration-200 font-base"
             :class="{
               'font-medium': $route.path.startsWith(item.to),
               'font-base': !$route.path.startsWith(item.to),
@@ -202,7 +205,7 @@ async function deleteLedger() {
       <nav class="space-y-2 pt-4">
         <div class="py-2 flex flex-col w-auto gap-2">
           <button
-            class="text-xs border border-[var(--rule)] px-4 py-2 rounded-full text-left"
+            class="text-xs border border-[var(--ui-border)] px-4 py-2 rounded-full text-left"
             @click="createNewLedger"
           >
             Create new ledger
@@ -215,13 +218,13 @@ async function deleteLedger() {
             @change="handleLedgerUpload"
           />
           <button
-            class="text-xs border border-[var(--rule)] px-4 py-2 rounded-full text-left"
+            class="text-xs border border-[var(--ui-border)] px-4 py-2 rounded-full text-left"
             @click="triggerLedgerUpload"
           >
             Upload ledger
           </button>
           <button
-            class="text-xs border border-[var(--rule)] px-4 py-2 rounded-full text-left"
+            class="text-xs border border-[var(--ui-border)] px-4 py-2 rounded-full text-left"
             @click="downloadLedger"
           >
             Download ledger
@@ -247,7 +250,7 @@ async function deleteLedger() {
             <div class="text-sm">{{ item.name }}</div>
           </RouterLink>
         </div>
-
+        <SThemeToggle v-model="theme" show-dropdown size="sm" class="w-full" />
         <a
           :href="`https://github.com/samternent/home/releases/tag/concord-${appVersion}`"
           target="_blank"

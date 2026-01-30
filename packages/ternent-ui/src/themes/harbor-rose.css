@@ -1,0 +1,171 @@
+[data-theme="harbor-light"] {
+  color-scheme: light;
+
+  --ui-bg: #f6f7fb;
+  --ui-fg: #191a23;
+  --ui-fg-muted: #5d6174;
+
+  --ui-surface: #eef0f7;
+  --ui-surface-hover: #e2e5f0;
+  --ui-border: rgba(20, 70, 160, 0.18);
+
+  --ui-primary: #1446a0;
+  --ui-on-primary: #f6f7fb;
+  --ui-primary-muted: rgba(20, 70, 160, 0.14);
+  --ui-primary-hover: rgba(20, 70, 160, 0.22);
+  --ui-primary-active: rgba(20, 70, 160, 0.3);
+
+  --ui-secondary: #db3069;
+  --ui-on-secondary: #fdf2f6;
+  --ui-secondary-muted: rgba(219, 48, 105, 0.14);
+  --ui-secondary-hover: rgba(219, 48, 105, 0.22);
+  --ui-secondary-active: rgba(219, 48, 105, 0.3);
+
+  --ui-accent: #4f6fd3;
+  --ui-on-accent: #f6f7fb;
+  --ui-accent-muted: rgba(79, 111, 211, 0.14);
+  --ui-accent-hover: rgba(79, 111, 211, 0.22);
+  --ui-accent-active: rgba(79, 111, 211, 0.3);
+
+  --ui-success: #2f9e7a;
+  --ui-on-success: #f6f7fb;
+  --ui-success-muted: rgba(47, 158, 122, 0.16);
+  --ui-success-hover: rgba(47, 158, 122, 0.24);
+  --ui-success-active: rgba(47, 158, 122, 0.32);
+
+  --ui-warning: #d38a2f;
+  --ui-on-warning: #1f1406;
+  --ui-warning-muted: rgba(211, 138, 47, 0.16);
+  --ui-warning-hover: rgba(211, 138, 47, 0.24);
+  --ui-warning-active: rgba(211, 138, 47, 0.32);
+
+  --ui-info: #1f7acb;
+  --ui-on-info: #f6f7fb;
+  --ui-info-muted: rgba(31, 122, 203, 0.16);
+  --ui-info-hover: rgba(31, 122, 203, 0.24);
+  --ui-info-active: rgba(31, 122, 203, 0.32);
+
+  --ui-critical: #c34343;
+  --ui-on-critical: #fdf2f2;
+  --ui-critical-muted: rgba(195, 67, 67, 0.16);
+  --ui-critical-hover: rgba(195, 67, 67, 0.24);
+  --ui-critical-active: rgba(195, 67, 67, 0.32);
+
+  --ui-danger: var(--ui-critical);
+  --ui-on-danger: var(--ui-on-critical);
+  --ui-danger-muted: var(--ui-critical-muted);
+  --ui-danger-hover: var(--ui-critical-hover);
+  --ui-danger-active: var(--ui-critical-active);
+
+  --ui-tonal-secondary: rgba(20, 70, 160, 0.06);
+  --ui-tonal-secondary-hover: rgba(20, 70, 160, 0.1);
+  --ui-tonal-tertiary: rgba(20, 70, 160, 0.03);
+  --ui-tonal-tertiary-hover: rgba(20, 70, 160, 0.07);
+
+  --ui-ring: rgba(20, 70, 160, 0.4);
+  --ui-glow-primary: 0 0 0 2px rgba(20, 70, 160, 0.25);
+  --ui-glow-accent: 0 0 0 2px rgba(79, 111, 211, 0.22);
+  --ui-glow-critical: 0 0 0 2px rgba(195, 67, 67, 0.25);
+  --ui-glow-success: 0 0 0 2px rgba(47, 158, 122, 0.22);
+
+  --ui-radius-sm: 8px;
+  --ui-radius-md: 12px;
+  --ui-radius-lg: 16px;
+
+  --ui-duration-fast: 120ms;
+  --ui-duration-normal: 200ms;
+  --ui-duration-slow: 300ms;
+  --ui-ease-out: cubic-bezier(0, 0, 0.2, 1);
+
+  --ui-shadow-sm: 0 1px 2px rgba(11, 13, 22, 0.12);
+  --ui-shadow-md: 0 6px 18px rgba(11, 13, 22, 0.22);
+
+  --ui-lift-hover: -0.5px;
+  --ui-scale-active: 0.97;
+}
+
+[data-theme="harbor-dark"] {
+  color-scheme: dark;
+
+  --ui-bg: #0f1222;
+  --ui-fg: #eef1fa;
+  --ui-fg-muted: #b1b7d0;
+
+  --ui-surface: #171b2e;
+  --ui-surface-hover: #22273f;
+  --ui-border: rgba(238, 241, 250, 0.12);
+
+  --ui-primary: #2c5fc7;
+  --ui-on-primary: #0d1424;
+  --ui-primary-muted: rgba(44, 95, 199, 0.14);
+  --ui-primary-hover: rgba(44, 95, 199, 0.22);
+  --ui-primary-active: rgba(44, 95, 199, 0.3);
+
+  --ui-secondary: #db3069;
+  --ui-on-secondary: #14070b;
+  --ui-secondary-muted: rgba(219, 48, 105, 0.16);
+  --ui-secondary-hover: rgba(219, 48, 105, 0.24);
+  --ui-secondary-active: rgba(219, 48, 105, 0.32);
+
+  --ui-accent: #7f93e6;
+  --ui-on-accent: #0d1424;
+  --ui-accent-muted: rgba(127, 147, 230, 0.16);
+  --ui-accent-hover: rgba(127, 147, 230, 0.24);
+  --ui-accent-active: rgba(127, 147, 230, 0.32);
+
+  --ui-success: #4fc4a2;
+  --ui-on-success: #0b1713;
+  --ui-success-muted: rgba(79, 196, 162, 0.16);
+  --ui-success-hover: rgba(79, 196, 162, 0.24);
+  --ui-success-active: rgba(79, 196, 162, 0.32);
+
+  --ui-warning: #e0a04b;
+  --ui-on-warning: #19120a;
+  --ui-warning-muted: rgba(224, 160, 75, 0.16);
+  --ui-warning-hover: rgba(224, 160, 75, 0.24);
+  --ui-warning-active: rgba(224, 160, 75, 0.32);
+
+  --ui-info: #5aa6e6;
+  --ui-on-info: #0b1220;
+  --ui-info-muted: rgba(90, 166, 230, 0.16);
+  --ui-info-hover: rgba(90, 166, 230, 0.24);
+  --ui-info-active: rgba(90, 166, 230, 0.32);
+
+  --ui-critical: #e07a7a;
+  --ui-on-critical: #14070b;
+  --ui-critical-muted: rgba(224, 122, 122, 0.16);
+  --ui-critical-hover: rgba(224, 122, 122, 0.24);
+  --ui-critical-active: rgba(224, 122, 122, 0.32);
+
+  --ui-danger: var(--ui-critical);
+  --ui-on-danger: var(--ui-on-critical);
+  --ui-danger-muted: var(--ui-critical-muted);
+  --ui-danger-hover: var(--ui-critical-hover);
+  --ui-danger-active: var(--ui-critical-active);
+
+  --ui-tonal-secondary: rgba(238, 241, 250, 0.08);
+  --ui-tonal-secondary-hover: rgba(238, 241, 250, 0.14);
+  --ui-tonal-tertiary: rgba(238, 241, 250, 0.04);
+  --ui-tonal-tertiary-hover: rgba(238, 241, 250, 0.1);
+
+  --ui-ring: rgba(44, 95, 199, 0.5);
+  --ui-glow-primary: 0 0 0 2px rgba(44, 95, 199, 0.35);
+  --ui-glow-accent: 0 0 0 2px rgba(127, 147, 230, 0.35);
+  --ui-glow-critical: 0 0 0 2px rgba(224, 122, 122, 0.3);
+  --ui-glow-success: 0 0 0 2px rgba(79, 196, 162, 0.3);
+
+  --ui-radius-sm: 8px;
+  --ui-radius-md: 12px;
+  --ui-radius-lg: 16px;
+
+  --ui-duration-fast: 120ms;
+  --ui-duration-normal: 200ms;
+  --ui-duration-slow: 300ms;
+  --ui-ease-out: cubic-bezier(0, 0, 0.2, 1);
+
+  --ui-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --ui-shadow-md: 0 6px 18px rgba(0, 0, 0, 0.45);
+
+  --ui-lift-hover: -0.5px;
+  --ui-scale-active: 0.97;
+}

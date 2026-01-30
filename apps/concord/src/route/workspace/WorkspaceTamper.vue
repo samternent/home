@@ -170,7 +170,7 @@ const canApply = computed(() => hasLedger.value && !!ledgerText.value.trim());
 
 <template>
   <div class="mx-auto w-full max-w-160 flex flex-col flex-1 h-full gap-4">
-    <header class="sticky top-0 bg-[var(--paper)] py-2 z-10">
+    <header class="sticky top-0 bg-[var(--ui-bg)] py-2 z-10">
       <div class="flex items-center justify-between gap-4">
         <div class="flex flex-col gap-1">
           <h1 class="text-2xl">Tamper ledger.</h1>
@@ -187,7 +187,7 @@ const canApply = computed(() => hasLedger.value && !!ledgerText.value.trim());
         quickly.
       </p>
       <div
-        class="overflow-hidden flex-1 flex flex-col bg-[var(--paper2)] rounded-lg border border-[var(--rule)]"
+        class="overflow-hidden flex-1 flex flex-col bg-[var(--ui-surface)] rounded-lg border border-[var(--ui-border)]"
       >
         <textarea
           v-model="ledgerText"
@@ -198,28 +198,28 @@ const canApply = computed(() => hasLedger.value && !!ledgerText.value.trim());
       </div>
       <div class="flex flex-wrap items-center gap-2 sticky bottom-0">
         <button
-          class="border border-[var(--rule)] px-4 py-2 rounded-full text-xs"
+          class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-xs"
           :disabled="!canApply"
           @click="applyTamper"
         >
           Apply tamper + replay
         </button>
         <button
-          class="border border-[var(--rule)] px-4 py-2 rounded-full text-xs"
+          class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-xs"
           :disabled="!hasCoreSnapshot"
           @click="revertToCore"
         >
           Revert to core snapshot
         </button>
         <button
-          class="border border-[var(--rule)] px-4 py-2 rounded-full text-xs"
+          class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-xs"
           :disabled="!hasTamperSnapshot"
           @click="loadTamperIntoEditor"
         >
           Load last tamper
         </button>
         <button
-          class="border border-[var(--rule)] px-4 py-2 rounded-full text-xs"
+          class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-xs"
           :disabled="!hasLedger"
           @click="updateCoreSnapshot"
         >

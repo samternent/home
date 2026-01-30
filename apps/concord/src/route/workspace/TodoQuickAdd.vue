@@ -144,7 +144,7 @@ watch(
 <template>
   <div
     ref="rootRef"
-    class="sticky bottom-0 z-10 border-t border-[var(--rule)] bg-[var(--paper)]/90 backdrop-blur py-4"
+    class="sticky bottom-0 z-10 border-t border-[var(--ui-border)] bg-[var(--ui-bg)]/90 backdrop-blur py-4"
   >
     <div class="px-4 py-3 flex flex-col gap-3">
       <div class="flex flex-wrap items-center gap-2">
@@ -152,7 +152,7 @@ watch(
           v-model="title"
           type="text"
           :disabled="disabled"
-          class="flex-1 min-w-[12rem] border border-[var(--rule)] rounded-xl px-3 py-2"
+          class="flex-1 min-w-[12rem] border border-[var(--ui-border)] rounded-xl px-3 py-2"
           placeholder="Quick add a task"
           aria-label="Todo title"
           @focus="expand"
@@ -161,7 +161,7 @@ watch(
 
         <button
           type="button"
-          class="px-4 py-2 rounded-full border border-[var(--rule)]"
+          class="px-4 py-2 rounded-full border border-[var(--ui-border)]"
           :disabled="isSubmitting"
           aria-label="Add todo"
           @click="submit"
@@ -171,7 +171,7 @@ watch(
 
         <button
           type="button"
-          class="p-2 border border-[var(--rule)] rounded-full"
+          class="p-2 border border-[var(--ui-border)] rounded-full"
           aria-label="Toggle more options"
           @click="isExpanded ? collapse(true) : expand()"
         >
@@ -201,7 +201,7 @@ watch(
             <label class="font-thin"> Permissions </label>
             <select
               v-model="permissionId"
-              class="border py-2 px-3 rounded-xl border-[var(--rule)]"
+              class="border py-2 px-3 rounded-xl border-[var(--ui-border)]"
               aria-label="Todo permission"
               :disabled="!epochReady"
             >

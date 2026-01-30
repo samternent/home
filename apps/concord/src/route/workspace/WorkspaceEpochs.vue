@@ -181,7 +181,7 @@ async function copyToClipboard(value: string) {
       </div>
       <div class="flex items-center gap-2">
         <button
-          class="border border-[var(--rule)] px-4 py-2 rounded-full text-sm"
+          class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
           :disabled="!canSign || !hasLedger || !hasActiveEpoch"
           @click="openRotate"
         >
@@ -211,7 +211,7 @@ async function copyToClipboard(value: string) {
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-4 flex-1">
-      <section class="border border-[var(--rule)] rounded-xl p-3">
+      <section class="border border-[var(--ui-border)] rounded-xl p-3">
         <div class="flex items-center justify-between">
           <h2 class="text-sm uppercase tracking-wide opacity-60">Epoch timeline</h2>
           <span class="text-xs opacity-60">{{ epochs.length }} epochs</span>
@@ -222,13 +222,13 @@ async function copyToClipboard(value: string) {
         <ul v-else class="mt-3 space-y-2">
           <li v-for="(epoch, index) in epochs" :key="epoch.record.epochId">
             <button
-              class="w-full text-left border border-[var(--rule)] rounded-lg p-3 flex gap-3 items-start transition"
+              class="w-full text-left border border-[var(--ui-border)] rounded-lg p-3 flex gap-3 items-start transition"
               :class="{
-                'bg-[var(--paper2)]': epoch.record.epochId === selectedEpochId,
+                'bg-[var(--ui-surface)]': epoch.record.epochId === selectedEpochId,
               }"
               @click="selectedEpochId = epoch.record.epochId"
             >
-              <div class="size-10 rounded-lg overflow-hidden border border-[var(--rule)]">
+              <div class="size-10 rounded-lg overflow-hidden border border-[var(--ui-border)]">
                 <Glyphy :identity="epoch.record.encryptionPublicKey" />
               </div>
               <div class="flex-1">
@@ -265,7 +265,7 @@ async function copyToClipboard(value: string) {
         </ul>
       </section>
 
-      <section class="border border-[var(--rule)] rounded-xl p-4">
+      <section class="border border-[var(--ui-border)] rounded-xl p-4">
         <div v-if="!selectedEpoch">
           <h2 class="text-lg font-medium">Epoch unavailable</h2>
           <p class="text-sm opacity-70 mt-2">
@@ -293,7 +293,7 @@ async function copyToClipboard(value: string) {
                 {{ selectedEpoch.record.encryptionKeyId }}
               </code>
               <button
-                class="text-xs border border-[var(--rule)] px-2 py-1 rounded-full"
+                class="text-xs border border-[var(--ui-border)] px-2 py-1 rounded-full"
                 @click="copyToClipboard(selectedEpoch.record.encryptionKeyId)"
               >
                 Copy
@@ -344,7 +344,7 @@ async function copyToClipboard(value: string) {
     v-if="rotateOpen"
     class="fixed inset-0 z-40 flex items-center justify-center bg-black/40"
   >
-    <div class="bg-[var(--paper)] border border-[var(--rule)] rounded-2xl p-6 w-full max-w-lg space-y-4">
+    <div class="bg-[var(--ui-bg)] border border-[var(--ui-border)] rounded-2xl p-6 w-full max-w-lg space-y-4">
       <div class="flex items-center justify-between">
         <h3 class="text-lg font-medium">Rotate encryption key</h3>
         <button class="text-sm opacity-70" @click="closeRotate">Close</button>
@@ -361,14 +361,14 @@ async function copyToClipboard(value: string) {
           </p>
           <div class="flex flex-wrap gap-2">
             <button
-              class="border border-[var(--rule)] px-4 py-2 rounded-full text-sm"
+              class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
               :disabled="!bridge.flags.value.canWrite"
               @click="commitPendingChanges"
             >
               Commit pending changes
             </button>
             <button
-              class="border border-[var(--rule)] px-4 py-2 rounded-full text-sm"
+              class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
               @click="discardPendingChanges"
             >
               Discard pending changes
@@ -384,7 +384,7 @@ async function copyToClipboard(value: string) {
             Generate a new encryption keypair for the next epoch.
           </p>
           <button
-            class="border border-[var(--rule)] px-4 py-2 rounded-full text-sm"
+            class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
             @click="generateKeypair"
           >
             Generate keypair
@@ -406,7 +406,7 @@ async function copyToClipboard(value: string) {
             Proceed without Solid backup
           </label>
           <button
-            class="border border-[var(--rule)] px-4 py-2 rounded-full text-sm"
+            class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
             :disabled="isRotating || (requiresSolidConfirm && !allowUnpersisted)"
             @click="finalizeRotation"
           >

@@ -1,79 +1,38 @@
-import { ternentDotDev, clubColors, concords, sleek } from "./themes";
-import { buildThemes } from "./themes/util";
 import { designTokens } from "./src/design-system/tokens.js";
-
-const themes = {
-  ...buildThemes({ ...clubColors }),
-  ...ternentDotDev,
-  ...concords,
-  sleekLight: sleek.light,
-  sleekDark: sleek.dark,
-};
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: "class",
   content: [
     "./pages/**/*.{js,jsx,vue}",
     "./components/**/*.{js,jsx,vue}",
     "./app/**/*.{js,jsx,vue}",
     "./src/**/*.{js,jsx,vue}",
   ],
-  safelist: [
-    {
-      pattern:
-        /(fill|bg|text|border|btn|link|input|toggle)-(accent|primary|secondary|neutral|error|info|success|base-(100|200|300)|sm|xs)|(bg|text|btn)-(info|green|base|red|orange)-(100|200|300|400|500|600|700|800|900|content)|opacity-(10|20|30|40|50|60|70|80|90)|skeleton|input|join-item|join|link|input-error|bg-opacity-(10|20|30|40|50|60|70|80|90|)|tab|tabs-(boxed|lifted|bordered)|tablist|tab-active|glass|card|table|table-(sm|xs|zebra)|prose/,
-      variants: ["hover"],
-    },
-  ],
-  plugins: [require("daisyui")],
-  darkMode: "false",
-  daisyui: {
-    themes: [
-      "light",
-      "dark",
-      "cupcake",
-      "bumblebee",
-      "emerald",
-      "corporate",
-      "synthwave",
-      "retro",
-      "cyberpunk",
-      "valentine",
-      "halloween",
-      "garden",
-      "forest",
-      "aqua",
-      "lofi",
-      "pastel",
-      "fantasy",
-      "wireframe",
-      "black",
-      "luxury",
-      "dracula",
-      "cmyk",
-      "autumn",
-      "business",
-      "acid",
-      "lemonade",
-      "night",
-      "coffee",
-      "winter",
-      "dim",
-      "nord",
-      "sunset",
-      {
-        sleekLight: sleek.light,
-      },
-      {
-        sleekDark: sleek.dark,
-      },
-      ...Object.entries(themes).map(([name, theme]) => ({ [name]: theme })),
-    ],
-  },
   theme: {
     extend: {
       colors: {
         ...designTokens.colors,
+        "base-50": "color-mix(in srgb, var(--ui-bg) 92%, var(--ui-fg) 8%)",
+        "base-100": "var(--ui-bg)",
+        "base-200": "var(--ui-surface)",
+        "base-300": "var(--ui-border)",
+        "base-content": "var(--ui-fg)",
+        primary: "var(--ui-primary)",
+        "primary-content": "var(--ui-on-primary)",
+        secondary: "var(--ui-secondary)",
+        "secondary-content": "var(--ui-on-secondary)",
+        accent: "var(--ui-accent)",
+        "accent-content": "var(--ui-on-accent)",
+        success: "var(--ui-success)",
+        "success-content": "var(--ui-on-success)",
+        warning: "var(--ui-warning)",
+        "warning-content": "var(--ui-on-warning)",
+        error: "var(--ui-critical)",
+        "error-content": "var(--ui-on-critical)",
+        info: "var(--ui-info)",
+        "info-content": "var(--ui-on-info)",
+        neutral: "var(--ui-fg-muted)",
       },
       spacing: {
         ...designTokens.spacing,

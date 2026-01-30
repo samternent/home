@@ -1,5 +1,6 @@
 <script setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
+import { onClickOutside } from "@vueuse/core";
 
 const props = defineProps({
   modelValue: {
@@ -19,75 +20,31 @@ const props = defineProps({
 
 const emit = defineEmits(["update:modelValue"]);
 
-// All available DaisyUI themes + custom themes
 const themes = [
-  // Custom Themes (Featured)
   {
-    name: "sleekLight",
-    label: "✨ Sleek Light",
-    category: "Custom",
-    featured: true,
+    name: "print",
+    label: "🗞️ Print",
   },
   {
-    name: "sleekDark",
-    label: "🌟 Sleek Dark",
-    category: "Custom",
-    featured: true,
+    name: "spruce",
+    label: "🌲 Spruce",
   },
   {
-    name: "tailwindSql",
-    label: "💠 Tailwind SQL",
-    category: "Custom",
-    featured: true,
+    name: "citrine",
+    label: "🍋 Citrine",
   },
-
-  // Standard DaisyUI Themes
-  { name: "light", label: "☀️ Light", category: "Light" },
-  { name: "dark", label: "🌙 Dark", category: "Dark" },
-  { name: "cupcake", label: "🧁 Cupcake", category: "Light" },
-  { name: "bumblebee", label: "🐝 Bumblebee", category: "Light" },
-  { name: "emerald", label: "💚 Emerald", category: "Light" },
-  { name: "corporate", label: "🏢 Corporate", category: "Light" },
-  { name: "synthwave", label: "🌆 Synthwave", category: "Dark" },
-  { name: "retro", label: "📻 Retro", category: "Light" },
-  { name: "cyberpunk", label: "🤖 Cyberpunk", category: "Dark" },
-  { name: "valentine", label: "💖 Valentine", category: "Light" },
-  { name: "halloween", label: "🎃 Halloween", category: "Dark" },
-  { name: "garden", label: "🌿 Garden", category: "Light" },
-  { name: "forest", label: "🌲 Forest", category: "Dark" },
-  { name: "aqua", label: "🌊 Aqua", category: "Light" },
-  { name: "lofi", label: "📼 Lo-Fi", category: "Light" },
-  { name: "pastel", label: "🎨 Pastel", category: "Light" },
-  { name: "fantasy", label: "🦄 Fantasy", category: "Light" },
-  { name: "wireframe", label: "📐 Wireframe", category: "Light" },
-  { name: "black", label: "⚫ Black", category: "Dark" },
-  { name: "luxury", label: "💎 Luxury", category: "Dark" },
-  { name: "dracula", label: "🧛 Dracula", category: "Dark" },
-  { name: "cmyk", label: "🖨️ CMYK", category: "Light" },
-  { name: "autumn", label: "🍂 Autumn", category: "Light" },
-  { name: "business", label: "💼 Business", category: "Dark" },
-  { name: "acid", label: "🔬 Acid", category: "Light" },
-  { name: "lemonade", label: "🍋 Lemonade", category: "Light" },
-  { name: "night", label: "🌃 Night", category: "Dark" },
-  { name: "coffee", label: "☕ Coffee", category: "Dark" },
-  { name: "winter", label: "❄️ Winter", category: "Light" },
-  { name: "dim", label: "🔅 Dim", category: "Dark" },
-  { name: "nord", label: "🏔️ Nord", category: "Light" },
-  { name: "sunset", label: "🌅 Sunset", category: "Light" },
-
-  // Custom ternent.dev themes
-  { name: "azureBloom", label: "🌸 Azure Bloom", category: "Light" },
-  { name: "azureBloomDark", label: "🌸 Azure Bloom Dark", category: "Dark" },
   {
-    name: "corporateProfessional",
-    label: "🏢 Corporate Pro",
-    category: "Light",
+    name: "harbor",
+    label: "🌊 Harbor",
   },
-  { name: "corporateDark", label: "🏢 Corporate Dark", category: "Dark" },
-  { name: "neonBlanc", label: "⚪ Neon Blanc", category: "Light" },
-  { name: "neon-noir", label: "⚫ Neon Noir", category: "Dark" },
-  { name: "marshmallowLight", label: "🤍 Marshmallow", category: "Light" },
-  { name: "marshmallowDark", label: "🖤 Marshmallow Dark", category: "Dark" },
+  {
+    name: "obsidian",
+    label: "🖤 Obsidian",
+  },
+  {
+    name: "garnet",
+    label: "🍯 Garnet",
+  },
 ];
 
 const currentTheme = computed(() => {
@@ -95,37 +52,43 @@ const currentTheme = computed(() => {
   return theme || themes[0];
 });
 
-const isDark = computed(() => currentTheme.value.category === "Dark");
+const isDark = computed(() => currentTheme.value.name.includes("-dark"));
 
 function updateTheme(themeName) {
   emit("update:modelValue", themeName);
+  closeMenu();
 }
 
 function toggleDarkMode() {
-  // Simple toggle between light and dark for backward compatibility
-  emit("update:modelValue", isDark.value ? "light" : "dark");
+  emit("update:modelValue", isDark.value ? "print-light" : "print-dark");
 }
 
 const sizeClasses = computed(() => ({
-  sm: { icon: "w-4 h-4", toggle: "toggle-sm" },
-  md: { icon: "w-5 h-5", toggle: "" },
-  lg: { icon: "w-6 h-6", toggle: "toggle-lg" },
+  sm: { icon: "w-4 h-4" },
+  md: { icon: "w-5 h-5" },
+  lg: { icon: "w-6 h-6" },
 }));
 
-const lightThemes = computed(() =>
-  themes.filter((t) => t.category === "Light")
-);
-const darkThemes = computed(() => themes.filter((t) => t.category === "Dark"));
-const customThemes = computed(() =>
-  themes.filter((t) => t.category === "Custom")
-);
-const featuredThemes = computed(() => themes.filter((t) => t.featured));
+const menuRef = ref(null);
+const isOpen = ref(false);
+const toggleMenu = () => {
+  isOpen.value = !isOpen.value;
+};
+const closeMenu = () => {
+  isOpen.value = false;
+};
+
+onClickOutside(menuRef, closeMenu);
 </script>
 
 <template>
   <!-- Full Theme Selector Dropdown -->
-  <div v-if="showDropdown" class="dropdown dropdown-end">
-    <div tabindex="0" role="button" class="btn btn-ghost gap-2">
+  <div v-if="showDropdown" ref="menuRef" class="relative inline-block">
+    <button
+      type="button"
+      class="inline-flex items-center gap-2 rounded-full border border-[var(--ui-border)] px-3 py-1.5 text-sm text-[var(--ui-fg)] transition hover:bg-[var(--ui-surface-hover)]"
+      @click="toggleMenu"
+    >
       <span class="text-sm">{{ currentTheme.label }}</span>
       <svg
         class="w-4 h-4"
@@ -140,61 +103,25 @@ const featuredThemes = computed(() => themes.filter((t) => t.featured));
           d="M19 9l-7 7-7-7"
         />
       </svg>
-    </div>
+    </button>
     <div
-      tabindex="0"
-      class="dropdown-content z-[1] p-2 shadow-2xl bg-base-100 rounded-box w-80 max-h-96 overflow-y-auto"
+      v-if="isOpen"
+      class="absolute z-[100] left-0 bottom-0 mt-2 max-h-96 overflow-y-auto rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-bg)] p-2 shadow-[var(--ui-shadow-md)]"
     >
       <div class="grid grid-cols-1 gap-1">
-        <!-- Featured/Custom Themes Section -->
-        <div v-if="featuredThemes.length > 0" class="mb-2">
-          <div class="text-xs font-semibold text-base-content/60 mb-2 px-2">
-            ✨ Featured Themes
-          </div>
-          <div class="grid grid-cols-1 gap-1">
-            <button
-              v-for="theme in featuredThemes"
-              :key="theme.name"
-              @click="updateTheme(theme.name)"
-              class="btn btn-sm btn-ghost justify-start"
-              :class="{ 'btn-active': props.modelValue === theme.name }"
-            >
-              <span class="text-xs">{{ theme.label }}</span>
-            </button>
-          </div>
-          <div class="divider my-2"></div>
-        </div>
-
         <!-- Light Themes Section -->
         <div class="mb-2">
-          <div class="text-xs font-semibold text-base-content/60 mb-2 px-2">
-            ☀️ Light Themes
-          </div>
           <div class="grid grid-cols-2 gap-1">
             <button
-              v-for="theme in lightThemes"
+              v-for="theme in themes"
               :key="theme.name"
               @click="updateTheme(theme.name)"
-              class="btn btn-sm btn-ghost justify-start"
-              :class="{ 'btn-active': props.modelValue === theme.name }"
-            >
-              <span class="text-xs">{{ theme.label }}</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Dark Themes Section -->
-        <div>
-          <div class="text-xs font-semibold text-base-content/60 mb-2 px-2">
-            🌙 Dark Themes
-          </div>
-          <div class="grid grid-cols-2 gap-1">
-            <button
-              v-for="theme in darkThemes"
-              :key="theme.name"
-              @click="updateTheme(theme.name)"
-              class="btn btn-sm btn-ghost justify-start"
-              :class="{ 'btn-active': props.modelValue === theme.name }"
+              class="rounded-lg px-2 py-1 text-left text-xs transition hover:bg-[var(--ui-surface-hover)]"
+              :class="{
+                'bg-[var(--ui-surface)] text-[var(--ui-fg)]':
+                  props.modelValue === theme.name,
+                'text-[var(--ui-fg-muted)]': props.modelValue !== theme.name,
+              }"
             >
               <span class="text-xs">{{ theme.label }}</span>
             </button>

@@ -3,6 +3,6 @@
 }
 
 :focus-visible {
-  outline: var(--ui-focus-ring);
+  outline: 2px solid var(--ui-ring);
   outline-offset: 2px;
 }

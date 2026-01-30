@@ -33,7 +33,7 @@ const users = computed<ItemEntry[]>(
   <div class="flex gap-4 items-center w-full flex-1">
     <select
       v-model="viewModel"
-      class="text-sm border py-2 px-3 rounded-xl border-[var(--rule)] flex-1"
+      class="text-sm border py-2 px-3 rounded-xl border-[var(--ui-border)] flex-1"
     >
       <option :value="null" :selected="!viewModel">anyone</option>
       <option v-for="user in users" :key="user" :value="user.data">

@@ -79,7 +79,7 @@ async function addUserToPermission(permissionId: string) {
 </script>
 <template>
   <div class="mx-auto w-full max-w-160 flex flex-col flex-1 gap-4">
-    <header class="sticky top-0 bg-[var(--paper)] py-2 z-10">
+    <header class="sticky top-0 bg-[var(--ui-bg)] py-2 z-10">
       <div class="flex items-center justify-between gap-4">
         <div class="flex flex-col gap-1">
           <h1 class="text-2xl">Permissions.</h1>
@@ -90,7 +90,7 @@ async function addUserToPermission(permissionId: string) {
 
     <section class="flex-1 flex flex-col gap-3 min-h-0">
       <div class="overflow-auto">
-        <div class="divide-y divide-[var(--rule)]">
+        <div class="divide-y divide-[var(--ui-border)]">
           <div
             v-for="permissionEntry in permissionGroups"
             :key="permissionEntry.entryId"
@@ -131,7 +131,7 @@ async function addUserToPermission(permissionId: string) {
                   v-model="selectedUsersByPermission[permissionEntry.data.id]"
                 />
                 <button
-                  class="border border-[var(--rule)] px-4 py-2 rounded-full text-xs"
+                  class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-xs"
                   @click="addUserToPermission(permissionEntry.data.id)"
                 >
                   Add grant
@@ -148,7 +148,7 @@ async function addUserToPermission(permissionId: string) {
 
     <div
       v-if="canAddItem"
-      class="border border-[var(--rule)] rounded-2xl p-4 flex flex-col gap-3"
+      class="border border-[var(--ui-border)] rounded-2xl p-4 flex flex-col gap-3"
     >
       <h2 class="text-sm uppercase tracking-wide opacity-60">
         Create permission
@@ -158,10 +158,10 @@ async function addUserToPermission(permissionId: string) {
           v-model="permissionTitle"
           type="text"
           placeholder="Permission title"
-          class="border py-2 px-4 border-[var(--rule)] flex-1 rounded-full"
+          class="border py-2 px-4 border-[var(--ui-border)] flex-1 rounded-full"
         />
         <button
-          class="border border-[var(--rule)] px-4 py-2 rounded-full text-xs"
+          class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-xs"
           @click="addPermission"
         >
           Add permission

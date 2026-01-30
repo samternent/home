@@ -219,7 +219,7 @@ watch([selectedPod, privacy], async () => {
   <TransitionGroup name="slow-swap">
     <div
       v-if="loading"
-      class="text-sm opacity-70 flex-1 flex w-full h-screen items-center justify-center bg-[var(--paper2)]"
+      class="text-sm opacity-70 flex-1 flex w-full h-screen items-center justify-center bg-[var(--ui-surface)]"
     ></div>
     <AppLayout v-else>
       <template #left-side> <SideNav /> </template>
@@ -229,26 +229,26 @@ watch([selectedPod, privacy], async () => {
           <RouterView v-if="hasLedger" />
           <div v-else class="space-y-6 max-w-3xl">
             <div
-              class="border border-[var(--rule)] rounded-xl p-4 space-y-3 text-sm"
+              class="border border-[var(--ui-border)] rounded-xl p-4 space-y-3 text-sm"
             >
               <h2 class="text-base font-medium">Workspace ledger</h2>
               <div class="space-y-3">
                 <p>No ledger found in this workspace.</p>
                 <div class="flex flex-wrap gap-2">
                   <button
-                    class="border border-[var(--rule)] px-4 py-2 rounded-full text-sm"
+                    class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
                     @click="createNewLedger"
                   >
                     Create new ledger
                   </button>
                   <button
-                    class="border border-[var(--rule)] px-4 py-2 rounded-full text-sm"
+                    class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
                     @click="triggerLedgerUpload"
                   >
                     Upload ledger
                   </button>
                   <button
-                    class="border border-[var(--rule)] px-4 py-2 rounded-full text-sm"
+                    class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
                     @click="loadSampleLedger"
                   >
                     Load sample ledger
@@ -265,7 +265,7 @@ watch([selectedPod, privacy], async () => {
             </div>
 
             <div
-              class="border border-[var(--rule)] rounded-xl p-4 space-y-4 text-sm"
+              class="border border-[var(--ui-border)] rounded-xl p-4 space-y-4 text-sm"
             >
               <h2 class="text-base font-medium">Solid pod ledger import</h2>
               <div v-if="!solidLoggedIn" class="space-y-3">
@@ -274,7 +274,7 @@ watch([selectedPod, privacy], async () => {
                   <input
                     v-model="oidcIssuer"
                     list="solid-issuers"
-                    class="mt-1 w-full border border-[var(--rule)] rounded-lg px-3 py-2 text-sm"
+                    class="mt-1 w-full border border-[var(--ui-border)] rounded-lg px-3 py-2 text-sm"
                     placeholder="https://login.inrupt.com"
                   />
                 </label>
@@ -284,7 +284,7 @@ watch([selectedPod, privacy], async () => {
                   <option value="https://solidcommunity.net" />
                 </datalist>
                 <button
-                  class="border border-[var(--rule)] px-4 py-2 rounded-full text-sm"
+                  class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
                   @click="loginToSolid"
                 >
                   Connect to Solid
@@ -294,13 +294,13 @@ watch([selectedPod, privacy], async () => {
               <div v-else class="space-y-3">
                 <div class="flex flex-wrap gap-2">
                   <button
-                    class="border border-[var(--rule)] px-4 py-2 rounded-full text-sm"
+                    class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
                     @click="logoutFromSolid"
                   >
                     Disconnect
                   </button>
                   <button
-                    class="border border-[var(--rule)] px-4 py-2 rounded-full text-sm"
+                    class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
                     @click="loadPods"
                   >
                     Refresh pods
@@ -310,7 +310,7 @@ watch([selectedPod, privacy], async () => {
                   Pod storage root
                   <select
                     v-model="selectedPod"
-                    class="mt-1 w-full border border-[var(--rule)] rounded-lg px-3 py-2 text-sm"
+                    class="mt-1 w-full border border-[var(--ui-border)] rounded-lg px-3 py-2 text-sm"
                   >
                     <option value="" disabled>Select a pod</option>
                     <option v-for="pod in podUrls" :key="pod" :value="pod">
@@ -322,7 +322,7 @@ watch([selectedPod, privacy], async () => {
                   Privacy level
                   <select
                     v-model="privacy"
-                    class="mt-1 w-full border border-[var(--rule)] rounded-lg px-3 py-2 text-sm"
+                    class="mt-1 w-full border border-[var(--ui-border)] rounded-lg px-3 py-2 text-sm"
                   >
                     <option value="private">Private</option>
                     <option value="public">Public</option>
@@ -331,7 +331,7 @@ watch([selectedPod, privacy], async () => {
                 </label>
                 <div class="flex flex-wrap gap-2">
                   <button
-                    class="border border-[var(--rule)] px-4 py-2 rounded-full text-sm"
+                    class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
                     :disabled="!selectedPod"
                     @click="refreshSolidLedgers"
                   >
@@ -342,7 +342,7 @@ watch([selectedPod, privacy], async () => {
                   Available ledgers
                   <select
                     v-model="selectedLedgerUrl"
-                    class="mt-1 w-full border border-[var(--rule)] rounded-lg px-3 py-2 text-sm"
+                    class="mt-1 w-full border border-[var(--ui-border)] rounded-lg px-3 py-2 text-sm"
                   >
                     <option value="">Select a ledger</option>
                     <option
@@ -355,7 +355,7 @@ watch([selectedPod, privacy], async () => {
                   </select>
                 </label>
                 <button
-                  class="border border-[var(--rule)] px-4 py-2 rounded-full text-sm"
+                  class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
                   :disabled="!selectedLedgerUrl"
                   @click="loadLedgerFromSolid"
                 >

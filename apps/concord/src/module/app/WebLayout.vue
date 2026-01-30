@@ -3,11 +3,11 @@ import Logo from "../brand/Logo.vue";
 </script>
 <template>
   <header
-    class="sticky top-0 z-20 bg-[color-mix(in srgb, var(--paper) 58%, transparent)] backdrop-blur-[12px] border-b-[1px] border-[var(--rule)] w-full py-2 md:pt-0"
+    class="sticky top-0 z-20 bg-[color-mix(in srgb, var(--ui-bg) 58%, transparent)] backdrop-blur-[12px] border-b-[1px] border-[var(--ui-border)] w-full py-2 md:pt-0"
   >
     <div class="flex items-center justify-center pb-2">
       <RouterLink
-        class="md:hidden text-[var(--ink)] font-[900] text-xl no-underline tracking-[-0.08em]"
+        class="md:hidden text-[var(--ui-fg)] font-[900] text-xl no-underline tracking-[-0.08em]"
         to="/"
         >Concord</RouterLink
       >
@@ -16,7 +16,7 @@ import Logo from "../brand/Logo.vue";
       class="max-w-[980px] mx-auto px-4 flex items-center w-full justify-between"
     >
       <RouterLink
-        class="text-[var(--ink)] font-[900] text-xl no-underline tracking-[-0.08em] brand hidden md:block"
+        class="text-[var(--ui-fg)] font-[900] text-xl no-underline tracking-[-0.08em] brand hidden md:block"
         to="/"
         >Concord</RouterLink
       >
@@ -30,7 +30,7 @@ import Logo from "../brand/Logo.vue";
         </div>
         <RouterLink
           to="/workspace"
-          class="text-xs flex items-center py-1.5 px-3 rounded-md bg-[var(--primary)]"
+          class="text-xs flex items-center py-1.5 px-3 rounded-md bg-[var(--ui-primary)]"
           >Demo</RouterLink
         >
       </nav>
@@ -39,7 +39,7 @@ import Logo from "../brand/Logo.vue";
   <main class="mx-auto max-w-[65ch] p-4"><slot /></main>
 
   <footer
-    class="flex justify-end items-center py-12 border-t-[1px] border-[var(--rule)] w-full"
+    class="flex justify-end items-center py-12 border-t-[1px] border-[var(--ui-border)] w-full"
   >
     <div class="max-w-[980px] mx-auto w-full flex justify-end">
       <a

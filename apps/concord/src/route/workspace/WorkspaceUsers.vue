@@ -181,7 +181,7 @@ async function addUploadedProfile() {
 </script>
 <template>
   <div class="mx-auto w-full max-w-160 flex flex-col flex-1 gap-4">
-    <header class="sticky top-0 bg-[var(--paper)] py-2 z-10">
+    <header class="sticky top-0 bg-[var(--ui-bg)] py-2 z-10">
       <div class="flex items-center justify-between gap-4">
         <div class="flex flex-col gap-1">
           <h1 class="text-2xl">Users.</h1>
@@ -194,12 +194,12 @@ async function addUploadedProfile() {
       <div class="overflow-auto">
         <table class="w-full">
           <thead class="text-left text-xs uppercase tracking-wide opacity-60">
-            <tr class="border-b border-[var(--rule)]">
+            <tr class="border-b border-[var(--ui-border)]">
               <th class="p-3">Identity</th>
               <th class="p-3">Name</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-[var(--rule)]">
+          <tbody class="divide-y divide-[var(--ui-border)]">
             <tr v-for="user in users" :key="user.entryId">
               <td class="p-3">
                 <IdentityAvatar
@@ -221,12 +221,12 @@ async function addUploadedProfile() {
 
     <div
       v-if="!isJoined"
-      class="border border-[var(--rule)] rounded-2xl p-6 flex flex-col items-center gap-4"
+      class="border border-[var(--ui-border)] rounded-2xl p-6 flex flex-col items-center gap-4"
     >
       <div v-if="profileUsername" class="flex flex-col items-center gap-3">
         <div class="text-lg">Join as {{ profileUsername }}</div>
         <button
-          class="border border-[var(--rule)] px-4 py-2 text-sm rounded-full"
+          class="border border-[var(--ui-border)] px-4 py-2 text-sm rounded-full"
           @click="joinMe"
         >
           Join
@@ -237,7 +237,7 @@ async function addUploadedProfile() {
       </div>
     </div>
     <div v-else-if="canAddItem" class="flex flex-col gap-3">
-      <div class="border border-[var(--rule)] rounded-2xl p-4">
+      <div class="border border-[var(--ui-border)] rounded-2xl p-4">
         <h2 class="text-sm uppercase tracking-wide opacity-60">
           Add from profile
         </h2>
@@ -254,7 +254,7 @@ async function addUploadedProfile() {
           >
             <span class="opacity-70">{{ uploadedFileName }}</span>
             <button
-              class="border border-[var(--rule)] px-4 py-2 rounded-full text-xs"
+              class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-xs"
               :disabled="!uploadedProfile || isUploading"
               @click="addUploadedProfile"
             >
@@ -267,7 +267,7 @@ async function addUploadedProfile() {
         </div>
       </div>
       <template v-if="availableUsers.length">
-        <div class="border border-[var(--rule)] rounded-2xl p-4">
+        <div class="border border-[var(--ui-border)] rounded-2xl p-4">
           <h2 class="text-sm uppercase tracking-wide opacity-60">Demo users</h2>
           <ul class="flex flex-wrap gap-2 mt-3">
             <li
@@ -276,7 +276,7 @@ async function addUploadedProfile() {
               class="flex"
             >
               <button
-                class="flex gap-2 items-center py-2 px-4 border border-[var(--rule)] rounded-full text-sm"
+                class="flex gap-2 items-center py-2 px-4 border border-[var(--ui-border)] rounded-full text-sm"
                 @click="join(profile)"
               >
                 Add {{ profile.metadata.username }}

@@ -183,8 +183,13 @@ const activeMenu = computed({
 }
 
 .link {
-  background: linear-gradient(to right, oklch(var(--b1)), oklch(var(--b1))),
-    linear-gradient(to right, oklch(var(--p)), oklch(var(--s)), oklch(var(--s)));
+  background: linear-gradient(to right, var(--ui-bg), var(--ui-bg)),
+    linear-gradient(
+      to right,
+      var(--ui-primary),
+      var(--ui-secondary),
+      var(--ui-secondary)
+    );
   background-size: 100% 1px, 0 1px;
   background-position: 100% 100%, 0 100%;
   background-repeat: no-repeat;

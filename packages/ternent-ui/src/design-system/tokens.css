@@ -1,53 +1,185 @@
 :root {
-  /* --- base colours --- */
-  --ui-bg: oklch(99% 0 0);
-  --ui-fg: oklch(18% 0 0);
-  --ui-fg-muted: oklch(45% 0 0);
+  /* ===== Base (print-light default) ===== */
+  --ui-bg: #fbf7f0;
+  --ui-fg: #181615;
+  --ui-fg-muted: #5f5b55;
 
-  /* --- surfaces --- */
-  --ui-surface: oklch(96% 0 0);
-  --ui-surface-hover: oklch(92% 0 0);
-  --ui-border: oklch(88% 0 0);
+  /* ===== Surfaces & structure ===== */
+  --ui-surface: #f2ece2;
+  --ui-surface-hover: #e7e0d4;
+  --ui-border: rgba(24, 22, 21, 0.12);
 
-  /* --- primary --- */
-  --ui-primary: oklch(63% 0.22 264);
-  --ui-primary-muted: oklch(63% 0.22 264 / 0.14);
-  --ui-on-primary: oklch(98% 0 0);
+  /* ===== Primary ===== */
+  --ui-primary: #6d28d9;
+  --ui-on-primary: #fbf7f0;
+  --ui-primary-muted: rgba(109, 40, 217, 0.14);
+  --ui-primary-hover: rgba(109, 40, 217, 0.22);
+  --ui-primary-active: rgba(109, 40, 217, 0.3);
 
-  /* --- critical / danger --- */
-  --ui-critical: oklch(62% 0.23 25);
-  --ui-critical-muted: oklch(62% 0.23 25 / 0.16);
-  --ui-on-critical: oklch(98% 0 0);
+  /* ===== Accent ===== */
+  --ui-accent: #b45309;
+  --ui-on-accent: #fbf7f0;
+  --ui-accent-muted: rgba(180, 83, 9, 0.14);
+  --ui-accent-hover: rgba(180, 83, 9, 0.22);
+  --ui-accent-active: rgba(180, 83, 9, 0.3);
 
-  /* --- focus --- */
-  --ui-ring: oklch(63% 0.22 264 / 0.4);
+  /* ===== Secondary ===== */
+  --ui-secondary: #3eca9b;
+  --ui-on-secondary: #0f1a16;
+  --ui-secondary-muted: rgba(62, 202, 155, 0.14);
+  --ui-secondary-hover: rgba(62, 202, 155, 0.22);
+  --ui-secondary-active: rgba(62, 202, 155, 0.3);
 
-  /* --- radii --- */
-  --ui-radius-md: 8px;
+  /* ===== Critical / danger ===== */
+  --ui-critical: #b42318;
+  --ui-on-critical: #fbf7f0;
+  --ui-critical-muted: rgba(180, 35, 24, 0.16);
+  --ui-critical-hover: rgba(180, 35, 24, 0.24);
+  --ui-critical-active: rgba(180, 35, 24, 0.32);
+
+  /* ===== Success ===== */
+  --ui-success: #1f8f62;
+  --ui-on-success: #fbf7f0;
+  --ui-success-muted: rgba(31, 143, 98, 0.16);
+  --ui-success-hover: rgba(31, 143, 98, 0.24);
+  --ui-success-active: rgba(31, 143, 98, 0.32);
+
+  /* ===== Warning ===== */
+  --ui-warning: #b45309;
+  --ui-on-warning: #fbf7f0;
+  --ui-warning-muted: rgba(180, 83, 9, 0.16);
+  --ui-warning-hover: rgba(180, 83, 9, 0.24);
+  --ui-warning-active: rgba(180, 83, 9, 0.32);
+
+  /* ===== Info ===== */
+  --ui-info: #2563eb;
+  --ui-on-info: #fbf7f0;
+  --ui-info-muted: rgba(37, 99, 235, 0.16);
+  --ui-info-hover: rgba(37, 99, 235, 0.24);
+  --ui-info-active: rgba(37, 99, 235, 0.32);
+
+  /* Aliases for app configs that still reference danger */
+  --ui-danger: var(--ui-critical);
+  --ui-on-danger: var(--ui-on-critical);
+  --ui-danger-muted: var(--ui-critical-muted);
+  --ui-danger-hover: var(--ui-critical-hover);
+  --ui-danger-active: var(--ui-critical-active);
+
+  /* ===== Tonal surfaces ===== */
+  --ui-tonal-secondary: rgba(24, 22, 21, 0.06);
+  --ui-tonal-secondary-hover: rgba(24, 22, 21, 0.1);
+  --ui-tonal-tertiary: rgba(24, 22, 21, 0.03);
+  --ui-tonal-tertiary-hover: rgba(24, 22, 21, 0.07);
+
+  /* ===== Focus / glow ===== */
+  --ui-ring: rgba(109, 40, 217, 0.4);
+  --ui-glow-primary: 0 0 0 2px rgba(109, 40, 217, 0.25);
+  --ui-glow-accent: 0 0 0 2px rgba(180, 83, 9, 0.22);
+  --ui-glow-critical: 0 0 0 2px rgba(180, 35, 24, 0.25);
+  --ui-glow-success: 0 0 0 2px rgba(31, 143, 98, 0.22);
+
+  /* ===== Shape ===== */
+  --ui-radius-sm: 8px;
+  --ui-radius-md: 12px;
+  --ui-radius-lg: 16px;
+
+  /* ===== Motion ===== */
+  --ui-duration-fast: 120ms;
+  --ui-duration-normal: 200ms;
+  --ui-duration-slow: 300ms;
+  --ui-ease-out: cubic-bezier(0, 0, 0.2, 1);
+
+  /* ===== Elevation ===== */
+  --ui-shadow-sm: 0 1px 2px rgba(10, 8, 6, 0.12);
+  --ui-shadow-md: 0 6px 18px rgba(10, 8, 6, 0.22);
+
+  /* ===== Interaction offsets ===== */
+  --ui-lift-hover: -0.5px;
+  --ui-scale-active: 0.97;
 }
+
 @media (prefers-color-scheme: dark) {
   :root {
-    /* --- base colours --- */
-    --ui-bg: oklch(12% 0 0);
-    --ui-fg: oklch(90% 0 0);
-    --ui-fg-muted: oklch(65% 0 0);
+    /* ===== Base ===== */
+    --ui-bg: #2d3047;
+    --ui-fg: #e9e6df;
+    --ui-fg-muted: #b7b2a8;
 
-    /* --- surfaces --- */
-    --ui-surface: oklch(18% 0 0);
-    --ui-surface-hover: oklch(24% 0 0);
-    --ui-border: oklch(30% 0 0);
+    /* ===== Surfaces & structure ===== */
+    --ui-surface: #1b1a18;
+    --ui-surface-hover: #24231f;
+    --ui-border: rgba(233, 230, 223, 0.12);
 
-    /* --- primary --- */
-    --ui-primary: oklch(70% 0.3 264);
-    --ui-primary-muted: oklch(70% 0.3 264 / 0.16);
-    --ui-on-primary: oklch(10% 0 0);
+    /* ===== Primary ===== */
+    --ui-primary: #419d78;
+    --ui-on-primary: #141311;
+    --ui-primary-muted: rgba(196, 181, 253, 0.14);
+    --ui-primary-hover: rgba(196, 181, 253, 0.22);
+    --ui-primary-active: rgba(196, 181, 253, 0.3);
 
-    /* --- critical / danger --- */
-    --ui-critical: oklch(68% 0.3 25);
-    --ui-critical-muted: oklch(68% 0.3 25 / 0.18);
-    --ui-on-critical: oklch(10% 0 0);
+    /* ===== Accent ===== */
+    --ui-accent: #f59e0b;
+    --ui-on-accent: #141311;
+    --ui-accent-muted: rgba(245, 158, 11, 0.16);
+    --ui-accent-hover: rgba(245, 158, 11, 0.24);
+    --ui-accent-active: rgba(245, 158, 11, 0.32);
 
-    /* --- focus --- */
-    --ui-ring: oklch(70% 0.3 264 / 0.5);
+    /* ===== Secondary ===== */
+    --ui-secondary: #2b9572;
+    --ui-on-secondary: #0b1411;
+    --ui-secondary-muted: rgba(43, 149, 114, 0.16);
+    --ui-secondary-hover: rgba(43, 149, 114, 0.24);
+    --ui-secondary-active: rgba(43, 149, 114, 0.32);
+
+    /* ===== Critical / danger ===== */
+    --ui-critical: #f87171;
+    --ui-on-critical: #141311;
+    --ui-critical-muted: rgba(248, 113, 113, 0.16);
+    --ui-critical-hover: rgba(248, 113, 113, 0.24);
+    --ui-critical-active: rgba(248, 113, 113, 0.32);
+
+    /* ===== Success ===== */
+    --ui-success: #34d399;
+    --ui-on-success: #0b1411;
+    --ui-success-muted: rgba(52, 211, 153, 0.16);
+    --ui-success-hover: rgba(52, 211, 153, 0.24);
+    --ui-success-active: rgba(52, 211, 153, 0.32);
+
+    /* ===== Warning ===== */
+    --ui-warning: #f59e0b;
+    --ui-on-warning: #141311;
+    --ui-warning-muted: rgba(245, 158, 11, 0.16);
+    --ui-warning-hover: rgba(245, 158, 11, 0.24);
+    --ui-warning-active: rgba(245, 158, 11, 0.32);
+
+    /* ===== Info ===== */
+    --ui-info: #60a5fa;
+    --ui-on-info: #0b1411;
+    --ui-info-muted: rgba(96, 165, 250, 0.16);
+    --ui-info-hover: rgba(96, 165, 250, 0.24);
+    --ui-info-active: rgba(96, 165, 250, 0.32);
+
+    --ui-danger: var(--ui-critical);
+    --ui-on-danger: var(--ui-on-critical);
+    --ui-danger-muted: var(--ui-critical-muted);
+    --ui-danger-hover: var(--ui-critical-hover);
+    --ui-danger-active: var(--ui-critical-active);
+
+    /* ===== Tonal surfaces ===== */
+    --ui-tonal-secondary: rgba(233, 230, 223, 0.08);
+    --ui-tonal-secondary-hover: rgba(233, 230, 223, 0.14);
+    --ui-tonal-tertiary: rgba(233, 230, 223, 0.04);
+    --ui-tonal-tertiary-hover: rgba(233, 230, 223, 0.1);
+
+    /* ===== Focus / glow ===== */
+    --ui-ring: rgba(196, 181, 253, 0.5);
+    --ui-glow-primary: 0 0 0 2px rgba(196, 181, 253, 0.35);
+    --ui-glow-accent: 0 0 0 2px rgba(245, 158, 11, 0.35);
+    --ui-glow-critical: 0 0 0 2px rgba(248, 113, 113, 0.3);
+    --ui-glow-success: 0 0 0 2px rgba(52, 211, 153, 0.3);
+
+    /* ===== Elevation ===== */
+    --ui-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --ui-shadow-md: 0 6px 18px rgba(0, 0, 0, 0.45);
   }
 }

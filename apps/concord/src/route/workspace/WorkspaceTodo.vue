@@ -106,7 +106,7 @@ function shortKey(value?: string, size = 8) {
 </script>
 <template>
   <div class="mx-auto w-full max-w-160 flex flex-col flex-1 gap-4">
-    <header class="sticky top-0 bg-[var(--paper)] py-2 z-10">
+    <header class="sticky top-0 bg-[var(--ui-bg)] py-2 z-10">
       <div class="flex items-center justify-between gap-4">
         <div class="flex flex-col gap-1">
           <h1 class="text-2xl">Todo list.</h1>
@@ -127,7 +127,7 @@ function shortKey(value?: string, size = 8) {
           class="flex-1 overflow-auto min-h-0 flex flex-col"
           :style="{ paddingBottom: `${quickAddHeight}px` }"
         >
-          <ul class="w-full divide-y divide-[var(--rule)]">
+          <ul class="w-full divide-y divide-[var(--ui-border)]">
             <li
               v-for="item in items"
               :key="item.entryId"
@@ -139,7 +139,7 @@ function shortKey(value?: string, size = 8) {
                 :disabled="item.data.keyMissing"
               >
                 <span
-                  class="size-8 flex items-center justify-center rounded-full border border-[var(--rule)]"
+                  class="size-8 flex items-center justify-center rounded-full border border-[var(--ui-border)]"
                   :class="item.data.completed ? 'opacity-100' : 'opacity-40'"
                 >
                   <svg

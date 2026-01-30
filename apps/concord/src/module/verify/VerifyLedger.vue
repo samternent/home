@@ -264,7 +264,7 @@ watch(
     :class="
       props.compact
         ? 'flex items-center gap-2 text-xs'
-        : 'border border-[var(--rule)] rounded-2xl p-4 flex flex-col gap-2'
+        : 'border border-[var(--ui-border)] rounded-2xl p-4 flex flex-col gap-2'
     "
   >
     <template v-if="props.compact">
@@ -275,7 +275,7 @@ watch(
             ? 'bg-[var(--success)]'
             : result.status === 'error'
             ? 'bg-[var(--critical)]'
-            : 'bg-[var(--muted)]'
+            : 'bg-[var(--ui-fg-muted)]'
         "
       ></span>
       <span
@@ -284,7 +284,7 @@ watch(
             ? 'text-[var(--text-success)]'
             : result.status === 'error'
             ? 'text-[var(--text-critical)]'
-            : 'text-[var(--muted)]'
+            : 'text-[var(--ui-fg-muted)]'
         "
       >
         {{
@@ -311,7 +311,7 @@ watch(
               ? 'text-green-600'
               : result.status === 'error'
               ? 'text-red-600'
-              : 'text-[var(--muted)]'
+              : 'text-[var(--ui-fg-muted)]'
           "
         >
           {{
@@ -341,7 +341,7 @@ watch(
       </p>
 
       <details v-if="result.errors.length || result.warnings.length">
-        <summary class="text-xs cursor-pointer text-[var(--muted)]">
+        <summary class="text-xs cursor-pointer text-[var(--ui-fg-muted)]">
           View details
         </summary>
         <div class="mt-2 flex flex-col gap-2">

@@ -8,24 +8,20 @@ defineProps({
 defineEmits(["update:modelValue"]);
 </script>
 <template>
-  <div class="drawer drawer-start">
-    <input
-      id="my-drawer-4"
-      type="checkbox"
-      :checked="modelValue"
-      @change="$emit('update:modelValue', !modelValue)"
-      class="drawer-toggle"
-    />
-    <div class="drawer-content">
+  <div class="relative min-h-full">
+    <div class="min-h-full">
       <RouterView />
     </div>
-    <div class="drawer-side z-20">
-      <label
-        for="my-drawer-4"
+    <div v-if="modelValue" class="fixed inset-0 z-20">
+      <button
+        type="button"
+        class="absolute inset-0 bg-[var(--ui-bg)]/60 backdrop-blur-sm"
         aria-label="close sidebar"
-        class="drawer-overlay"
-      ></label>
-      <div class="p-4 w-full min-h-full bg-base-200 text-base-content">
+        @click="$emit('update:modelValue', false)"
+      ></button>
+      <div
+        class="relative h-full w-80 max-w-[80vw] border-r border-[var(--ui-border)] bg-[var(--ui-surface)] text-[var(--ui-fg)] p-4 shadow-[var(--ui-shadow-md)]"
+      >
         <slot />
       </div>
     </div>

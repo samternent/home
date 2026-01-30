@@ -51,7 +51,7 @@ watch(dragPosition, (value) => {
 
     <!-- Panel Control + Indicator -->
     <div
-      class="flex justify-between px-2 h-8 border-y relative z-50 py-1 bg-[var--paper2] border-[var(--rule)]"
+      class="flex justify-between px-2 h-8 border-y relative z-50 py-1 bg-[var(--ui-surface)] border-[var(--ui-border)]"
     >
       <div class="flex-1 items-center flex justify-between">
         <slot name="panel-control" />

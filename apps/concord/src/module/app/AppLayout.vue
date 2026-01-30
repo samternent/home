@@ -269,12 +269,12 @@ async function setProfile() {
     :key="profile.profileId"
   >
     <header
-      class="sticky top-0 z-20 bg-[color-mix(in srgb, var(--paper) 58%, transparent)] backdrop-blur-[12px] border-b-[1px] border-[var(--rule)] w-full"
+      class="sticky top-0 z-20 bg-[color-mix(in srgb, var(--ui-bg) 58%, transparent)] backdrop-blur-[12px] border-b-[1px] border-[var(--ui-border)] w-full"
     >
       <div class="mx-auto px-4 py-2 flex items-center w-full justify-between">
         <div class="flex items-center gap-4 w-64">
           <RouterLink
-            class="text-[var(--ink)] font-[900] text-xl no-underline tracking-[-0.08em] brand"
+            class="text-[var(--ui-fg)] font-[900] text-xl no-underline tracking-[-0.08em] brand"
             to="/"
             >Concord</RouterLink
           ><span class="text-sm">DEMO</span>
@@ -305,7 +305,7 @@ async function setProfile() {
                 />
               </svg>
               <div
-                class="rounded-full overflow-hidden border border-[var(--rule)]"
+                class="rounded-full overflow-hidden border border-[var(--ui-border)]"
               >
                 <IdentityAvatar :identity="publicKeyPEM" size="sm" />
               </div>
@@ -313,7 +313,7 @@ async function setProfile() {
 
             <div
               v-if="userMenuOpen"
-              class="border border-[var(--rule)] absolute p-2 bg-[var(--paper2)] rounded mt-2 w-64 right-0 shadow"
+              class="border border-[var(--ui-border)] absolute p-2 bg-[var(--ui-surface)] rounded mt-2 w-64 right-0 shadow"
             >
               <div class="flex flex-col gap-2 py-2">
                 <IdentityAvatar
@@ -331,7 +331,7 @@ async function setProfile() {
                 >
                   <div class="flex flex-col gap-2">
                     <div
-                      class="flex flex-col items-center gap-2 rounded-lg bg-[var(--paper)] border border-[var(--rule)]"
+                      class="flex flex-col items-center gap-2 rounded-lg bg-[var(--ui-bg)] border border-[var(--ui-border)]"
                     >
                       <IdentityAvatar
                         :identity="publicKeyPEM"
@@ -345,7 +345,7 @@ async function setProfile() {
                       @animationend="
                         (e) => e.currentTarget.classList.remove('spin')
                       "
-                      class="spin-target size-8 flex items-center justify-center rounded-full border border-[var(--rule)] bg-[var(--paper)] p-2 mx-auto"
+                      class="spin-target size-8 flex items-center justify-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-bg)] p-2 mx-auto"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -367,10 +367,10 @@ async function setProfile() {
                       v-model="username"
                       type="text"
                       placeholder="Username"
-                      class="border border-[var(--rule)] px-4 py-2 rounded-full bg-[var(--paper)]"
+                      class="border border-[var(--ui-border)] px-4 py-2 rounded-full bg-[var(--ui-bg)]"
                     />
                     <button
-                      class="border border-[var(--rule)] px-4 py-2 text-sm rounded-full"
+                      class="border border-[var(--ui-border)] px-4 py-2 text-sm rounded-full"
                       @click="setProfile"
                     >
                       Set profile
@@ -380,7 +380,7 @@ async function setProfile() {
 
                 <button
                   type="button"
-                  class="rounded-full border px-3 py-2 transition hover:opacity-90 disabled:opacity-50 border-[var(--rule)] text-xs"
+                  class="rounded-full border px-3 py-2 transition hover:opacity-90 disabled:opacity-50 border-[var(--ui-border)] text-xs"
                   :disabled="disabled"
                   @click="downloadPublic"
                   title="Download your public profile (safe to share)"
@@ -390,7 +390,7 @@ async function setProfile() {
 
                 <button
                   type="button"
-                  class="rounded-full border px-3 py-2 text-xs transition hover:opacity-90 disabled:opacity-50 border-[var(--rule)]"
+                  class="rounded-full border px-3 py-2 text-xs transition hover:opacity-90 disabled:opacity-50 border-[var(--ui-border)]"
                   :disabled="disabled"
                   @click="downloadPrivate"
                   title="Download your private profile (contains secrets — do not share)"
@@ -407,7 +407,7 @@ async function setProfile() {
                 />
                 <button
                   type="button"
-                  class="rounded-full border px-3 py-2 text-xs transition hover:opacity-90 border-[var(--rule)]"
+                  class="rounded-full border px-3 py-2 text-xs transition hover:opacity-90 border-[var(--ui-border)]"
                   @click="triggerProfileUpload"
                 >
                   Upload private profile
@@ -432,7 +432,7 @@ async function setProfile() {
                 Impersonate
                 <select
                   @change="impersonateUser"
-                  class="flex-1 border border-[var(--rule)] p-1 rounded-sm"
+                  class="flex-1 border border-[var(--ui-border)] p-1 rounded-sm"
                   :key="publicKeyPEM"
                 >
                   <option disabled selected>...</option>
@@ -472,7 +472,7 @@ async function setProfile() {
           </div>
           <div
             v-if="$slots['right-side']"
-            class="w-64 border-l border-[var(--rule)] sticky top-0"
+            class="w-64 border-l border-[var(--ui-border)] sticky top-0"
           >
             <slot name="right-side" />
           </div>
@@ -490,11 +490,11 @@ async function setProfile() {
   top: 100%;
   margin-top: 0.5rem;
   width: 20rem;
-  background: oklch(var(--muted) / 0.95);
+  background: color-mix(in srgb, var(--ui-fg-muted) 18%, transparent);
   backdrop-filter: blur(12px);
-  border: 1px solid oklch(var(--b3));
+  border: 1px solid var(--ui-border);
   border-radius: 0.75rem;
-  box-shadow: 0 10px 25px oklch(var(--bc) / 0.1);
+  box-shadow: var(--ui-shadow-md);
   z-index: 50;
   overflow: hidden;
 }

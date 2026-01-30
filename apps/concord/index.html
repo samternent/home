@@ -50,56 +50,6 @@
     />
 
     <style>
-      @media (prefers-color-scheme: dark) {
-        :root {
-          /* paper */
-          --paper: #141311; /* warm charcoal paper */
-          --paper2: #1b1a18; /* lifted surface */
-
-          /* ink */
-          --ink: #e9e6df; /* warm off-white ink */
-          --muted: #b7b2a8; /* aged paper ink */
-
-          /* structure */
-          --rule: rgba(233, 230, 223, 0.12);
-
-          /* accent */
-          --accent: #c4b5fd; /* soft lilac ink */
-          --primary: #2b9572; /* soft lilac ink */
-
-          --success: green;
-          --critical: red;
-
-          --text-success: green;
-          --text-critical: red;
-        }
-      }
-
-      @media (prefers-color-scheme: light) {
-        :root {
-          /* paper */
-          --paper: #fbf7f0; /* warm book paper */
-          --paper2: #f2ece2; /* panels, cards */
-
-          /* ink */
-          --ink: #181615; /* soft black ink */
-          --muted: #5f5b55; /* warm grey ink */
-
-          /* structure */
-          --rule: rgba(24, 22, 21, 0.12);
-
-          /* accent */
-          --accent: #6d28d9; /* restrained purple ink */
-          --primary: #3eca9b; /* soft lilac ink */
-
-          --success: green;
-          --critical: red;
-
-          --text-success: blue;
-          --text-critical: yellow;
-        }
-      }
-
       html,
       body {
         font-family: "Noto Serif", serif;
@@ -108,8 +58,8 @@
         font-style: normal;
         font-variation-settings: "wdth" 100;
         font-size: 18px;
-        background-color: var(--paper);
-        color: var(--ink);
+        background-color: var(--ui-bg);
+        color: var(--ui-fg);
       }
     </style>
   </head>

@@ -491,11 +491,11 @@ onMounted(async () => {
 
 <template>
   <div class="w-full max-w-3xl space-y-6">
-    <section class="border border-[var(--rule)] rounded-xl p-4 space-y-3">
+    <section class="border border-[var(--ui-border)] rounded-xl p-4 space-y-3">
       <div class="flex items-center justify-between">
         <h2 class="text-lg font-medium">Solid pod connection</h2>
         <span
-          class="text-xs px-2 py-1 rounded-full border border-[var(--rule)]"
+          class="text-xs px-2 py-1 rounded-full border border-[var(--ui-border)]"
           :class="{ 'opacity-50': !sessionInfo.isLoggedIn }"
         >
           {{ sessionInfo.isLoggedIn ? "Connected" : "Disconnected" }}
@@ -507,7 +507,7 @@ onMounted(async () => {
           <input
             v-model="oidcIssuer"
             list="solid-issuers"
-            class="mt-1 w-full border border-[var(--rule)] rounded-lg px-3 py-2 text-sm"
+            class="mt-1 w-full border border-[var(--ui-border)] rounded-lg px-3 py-2 text-sm"
             placeholder="https://login.inrupt.com"
           />
         </label>
@@ -517,7 +517,7 @@ onMounted(async () => {
           <option value="https://solidcommunity.net" />
         </datalist>
         <button
-          class="border border-[var(--rule)] px-4 py-2 rounded-full text-sm"
+          class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
           @click="loginToPod"
         >
           Sign in to Solid
@@ -527,13 +527,13 @@ onMounted(async () => {
         <div class="font-mono break-all">{{ sessionInfo.webId }}</div>
         <div class="flex gap-2">
           <button
-            class="border border-[var(--rule)] px-4 py-2 rounded-full text-sm"
+            class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
             @click="logoutFromPod"
           >
             Log out
           </button>
           <button
-            class="border border-[var(--rule)] px-4 py-2 rounded-full text-sm"
+            class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
             @click="loadPods"
           >
             Refresh pods
@@ -542,7 +542,7 @@ onMounted(async () => {
       </div>
     </section>
 
-    <section class="border border-[var(--rule)] rounded-xl p-4 space-y-3">
+    <section class="border border-[var(--ui-border)] rounded-xl p-4 space-y-3">
       <h3 class="text-base font-medium">Directory schema</h3>
       <div v-if="!sessionInfo.isLoggedIn" class="text-sm opacity-70">
         Sign in to select a pod and initialize directories.
@@ -552,7 +552,7 @@ onMounted(async () => {
           Pod storage root
           <select
             v-model="selectedPod"
-            class="mt-1 w-full border border-[var(--rule)] rounded-lg px-3 py-2 text-sm"
+            class="mt-1 w-full border border-[var(--ui-border)] rounded-lg px-3 py-2 text-sm"
           >
             <option value="" disabled>Select a pod</option>
             <option v-for="pod in podUrls" :key="pod" :value="pod">
@@ -561,7 +561,7 @@ onMounted(async () => {
           </select>
         </label>
         <button
-          class="border border-[var(--rule)] px-4 py-2 rounded-full text-sm"
+          class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
           :disabled="!selectedPod || busy"
           @click="ensureSchema"
         >
@@ -577,14 +577,14 @@ onMounted(async () => {
           </div>
         </section>
 
-        <section class="border border-[var(--rule)] rounded-xl p-4 space-y-4">
+        <section class="border border-[var(--ui-border)] rounded-xl p-4 space-y-4">
           <h3 class="text-base font-medium">Ledgers in your pod</h3>
       <div class="grid gap-3">
         <label class="text-sm">
           Privacy level
           <select
             v-model="privacy"
-            class="mt-1 w-full border border-[var(--rule)] rounded-lg px-3 py-2 text-sm"
+            class="mt-1 w-full border border-[var(--ui-border)] rounded-lg px-3 py-2 text-sm"
           >
             <option value="private">Private</option>
             <option value="public">Public</option>
@@ -595,7 +595,7 @@ onMounted(async () => {
           Shared WebIDs (comma or line separated)
           <textarea
             v-model="sharedAgents"
-            class="mt-1 w-full border border-[var(--rule)] rounded-lg px-3 py-2 text-sm"
+            class="mt-1 w-full border border-[var(--ui-border)] rounded-lg px-3 py-2 text-sm"
             rows="2"
             placeholder="https://alice.example/profile/card#me"
           />
@@ -604,20 +604,20 @@ onMounted(async () => {
           Filename
           <input
             v-model="filename"
-            class="mt-1 w-full border border-[var(--rule)] rounded-lg px-3 py-2 text-sm"
+            class="mt-1 w-full border border-[var(--ui-border)] rounded-lg px-3 py-2 text-sm"
             placeholder="concord-ledger-latest.json"
           />
         </label>
         <div class="flex flex-wrap gap-2">
           <button
-            class="border border-[var(--rule)] px-4 py-2 rounded-full text-sm"
+            class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
             :disabled="!selectedPod || busy"
             @click="refreshLedgers"
           >
             Refresh ledger list
           </button>
           <button
-            class="border border-[var(--rule)] px-4 py-2 rounded-full text-sm"
+            class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
             :disabled="!selectedPod || busy || !hasLedger"
             @click="saveLedger"
           >
@@ -631,7 +631,7 @@ onMounted(async () => {
           Available ledgers
           <select
             v-model="selectedLedgerUrl"
-            class="mt-1 w-full border border-[var(--rule)] rounded-lg px-3 py-2 text-sm"
+            class="mt-1 w-full border border-[var(--ui-border)] rounded-lg px-3 py-2 text-sm"
           >
             <option value="">Select a ledger</option>
             <option
@@ -644,7 +644,7 @@ onMounted(async () => {
           </select>
         </label>
         <button
-          class="border border-[var(--rule)] px-4 py-2 rounded-full text-sm"
+          class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
           :disabled="!selectedLedgerUrl || busy"
           @click="loadLedger"
         >
@@ -653,7 +653,7 @@ onMounted(async () => {
       </div>
         </section>
 
-        <section class="border border-[var(--rule)] rounded-xl p-4 space-y-4">
+        <section class="border border-[var(--ui-border)] rounded-xl p-4 space-y-4">
           <h3 class="text-base font-medium">Solid wallet</h3>
           <div v-if="!sessionInfo.isLoggedIn" class="text-sm opacity-70">
             Sign in to manage profiles stored in your pod.
@@ -661,14 +661,14 @@ onMounted(async () => {
           <div v-else class="space-y-3 text-sm">
             <div class="flex flex-wrap gap-2">
               <button
-                class="border border-[var(--rule)] px-4 py-2 rounded-full text-sm"
+                class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
                 :disabled="!selectedPod || busy"
                 @click="refreshWallet"
               >
                 Refresh wallet
               </button>
               <button
-                class="border border-[var(--rule)] px-4 py-2 rounded-full text-sm"
+                class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
                 :disabled="!selectedPod || busy"
                 @click="saveProfileToWallet"
               >
@@ -680,7 +680,7 @@ onMounted(async () => {
               Login with Solid profile
               <select
                 v-model="selectedWalletProfileUrl"
-                class="mt-1 w-full border border-[var(--rule)] rounded-lg px-3 py-2 text-sm"
+                class="mt-1 w-full border border-[var(--ui-border)] rounded-lg px-3 py-2 text-sm"
               >
                 <option value="">Select a private profile</option>
                 <option
@@ -693,7 +693,7 @@ onMounted(async () => {
               </select>
             </label>
             <button
-              class="border border-[var(--rule)] px-4 py-2 rounded-full text-sm"
+              class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
               :disabled="!selectedWalletProfileUrl || busy"
               @click="loginWithWalletProfile"
             >
@@ -709,13 +709,13 @@ onMounted(async () => {
                 <div
                   v-for="entry in walletPublicFiles"
                   :key="entry.url"
-                  class="flex items-center justify-between gap-2 border border-[var(--rule)] rounded-lg px-3 py-2"
+                  class="flex items-center justify-between gap-2 border border-[var(--ui-border)] rounded-lg px-3 py-2"
                 >
                   <div class="text-xs font-mono break-all">
                     {{ entry.url }}
                   </div>
                   <button
-                    class="text-xs border border-[var(--rule)] px-3 py-1 rounded-full"
+                    class="text-xs border border-[var(--ui-border)] px-3 py-1 rounded-full"
                     @click="copyPublicProfileUrl(entry.url)"
                   >
                     Copy link
@@ -728,7 +728,7 @@ onMounted(async () => {
 
         <section
           v-if="status || error"
-          class="border border-[var(--rule)] rounded-xl p-4 space-y-2 text-sm"
+          class="border border-[var(--ui-border)] rounded-xl p-4 space-y-2 text-sm"
     >
       <div v-if="status" class="text-emerald-700">{{ status }}</div>
       <div v-if="error" class="text-red-600">{{ error }}</div>

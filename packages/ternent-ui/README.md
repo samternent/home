@@ -99,24 +99,32 @@ The library now ships a single polished implementation for each component, align
 
 ## 🎭 Theming
 
-Ternent UI comes with several built-in themes:
+Ternent UI uses CSS custom properties with data-attribute driven themes. You can
+lazy-load a theme CSS file and swap themes by updating `data-theme` on the root
+element.
 
 ```javascript
-// Available themes
-const themes = [
-  'azureBloom',
-  'azureBloomDark', 
-  'corporateProfessional',
-  'corporateDark',
-  'neonBlanc',
-  'neonNoir',
-  'marshmallowLight',
-  'coffeeShop',
-  'wallsOfLight'
-];
+import "ternent-ui/styles.css";
+
+// Lazy-load the print themes only when needed
+await import("ternent-ui/themes/print.css");
 
 // Apply theme
-document.documentElement.setAttribute('data-theme', 'azureBloom');
+document.documentElement.setAttribute("data-theme", "print-light");
+```
+
+Built-in CSS theme files:
+
+- `print.css` → `print-light`, `print-dark`
+- `neon-noir.css` → `neon-noir`
+
+### CSS Custom Properties
+
+All themes expose a shared set of `--ui-*` tokens. You can import the token
+documentation from `ternent-ui/components`:
+
+```javascript
+import { uiCssTokenDocs, uiCssTokens } from "ternent-ui/components";
 ```
 
 ## 💫 Animations
