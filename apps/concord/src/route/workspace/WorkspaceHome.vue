@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, computed, shallowRef, ref, watch } from "vue";
+import { useRoute } from "vue-router";
 import { LedgerContainer } from "ternent-ledger-types";
 import {
   getDefaultSession,
@@ -28,6 +29,7 @@ defineProps({
 
 const { api, bridge, ledger } = useLedger();
 const { privateKey: priv, publicKey: pub } = useIdentity();
+const route = useRoute();
 
 const CORE_LEDGER_KEY = "concord:ledger:core";
 const TAMPER_ACTIVE_KEY = "concord:ledger:tampered";
@@ -37,6 +39,10 @@ const solidSession = getDefaultSession();
 const oidcIssuer = ref("https://login.inrupt.com");
 const solidStatus = ref("");
 const solidError = ref("");
+const sessionInfo = ref({
+  isLoggedIn: false,
+  webId: "",
+});
 const podUrls = ref<string[]>([]);
 const selectedPod = ref("");
 const privacy = ref<"private" | "public" | "shared">("private");
@@ -71,7 +77,7 @@ onMounted(async () => {
 });
 
 const hasLedger = computed(() => bridge.flags.value.hasLedger);
-const solidLoggedIn = computed(() => solidSession.info.isLoggedIn === true);
+const solidLoggedIn = computed(() => sessionInfo.value.isLoggedIn === true);
 
 const containerUrl = computed(() => {
   if (!selectedPod.value) return "";
@@ -112,10 +118,19 @@ async function handleLedgerUpload(event: Event) {
   await api.load(parsed, [], true, true);
 }
 
+function syncSessionInfo() {
+  sessionInfo.value = {
+    isLoggedIn: !!solidSession.info.isLoggedIn,
+    webId: solidSession.info.webId ?? "",
+  };
+}
+
 async function handleSolidRedirect() {
   if (typeof window === "undefined") return;
+  if (route.path.startsWith("/workspace/solid")) return;
   await handleIncomingRedirect({ restorePreviousSession: true });
-  if (solidSession.info.isLoggedIn) {
+  syncSessionInfo();
+  if (sessionInfo.value.isLoggedIn) {
     await loadPods();
   }
 }
@@ -135,6 +150,7 @@ async function loginToSolid() {
 
 async function logoutFromSolid() {
   await solidSession.logout();
+  syncSessionInfo();
   podUrls.value = [];
   selectedPod.value = "";
   ledgerFiles.value = [];
@@ -143,11 +159,11 @@ async function logoutFromSolid() {
 }
 
 async function loadPods() {
-  if (!solidSession.info.webId) return;
+  if (!sessionInfo.value.webId) return;
   solidError.value = "";
   try {
     solidStatus.value = "Loading pod storage...";
-    const pods = await getPodUrlAll(solidSession.info.webId, {
+    const pods = await getPodUrlAll(sessionInfo.value.webId, {
       fetch: solidSession.fetch,
     });
     podUrls.value = pods;
@@ -305,6 +321,9 @@ watch([selectedPod, privacy], async () => {
                   >
                     Refresh pods
                   </button>
+                </div>
+                <div class="text-xs font-mono break-all opacity-70">
+                  {{ sessionInfo.webId || "No WebID found." }}
                 </div>
                 <label class="block">
                   Pod storage root

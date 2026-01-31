@@ -7,7 +7,14 @@ export default [
         path: "",
         component: () => import("./WorkspaceHome.vue"),
         children: [
-          { path: "", redirect: "/workspace/todo" },
+          {
+            path: "",
+            redirect: (to) => ({
+              path: "/workspace/todo",
+              query: to.query,
+              hash: to.hash,
+            }),
+          },
           {
             path: "todo",
             component: () => import("./WorkspaceTodo.vue"),
