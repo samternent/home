@@ -20,8 +20,7 @@ The protocol MUST guarantee:
 - Explicit, immutable recording of:
   - Identity declarations
   - Permission grants and revocations
-  - Encryption epoch transitions
-  - Key-wrap publication
+  - Encryption metadata (if present)
 
 The protocol DOES NOT decide:
 
@@ -49,20 +48,11 @@ The following are first-class protocol primitives.
 - The protocol does not enforce authorization rules.
 - Permission entries are replayed into semantic state by consumers.
 
-### 2.3 Encryption Epochs
+### 2.3 Encryption
 
-- Encryption is modeled using epochs scoped to a logical namespace.
-- An epoch represents a versioned encryption context.
-- Epoch transitions are explicit ledger events.
-
-### 2.4 Wrap Distribution
-
-- Epoch rotation entries may include key wraps.
-- A wrap represents encrypted material required to derive the epoch key.
-- Wrap publication is declarative and immutable.
-
-Key rotation in Concord is defined as:
-An epoch transition accompanied by wrap distribution.
+- Encryption details are payload-defined and consumer-specific.
+- The protocol records encrypted payloads but does not define rotation or key
+  distribution schemes.
 
 ---
 
@@ -111,8 +101,6 @@ Two valid semantic interpretations exist.
 
 A principal is decryptable if:
 
-- A wrap exists for the principal
-- The wrap corresponds to the ciphertext epoch
 - The principal possesses the required private material
 
 This reflects historical capability.
@@ -136,13 +124,12 @@ Neither is enforced by the protocol.
 Revocation in Concord is non-retroactive at the protocol level.
 
 - Revocation entries do not modify historical ledger data
-- Revocation does not remove previously published wraps
 - Access to historical data cannot be cryptographically revoked without re-encryption
 
 Applications may:
 
 - Treat revocation as immediately blocking access
-- Allow historical decryption but block future epochs
+- Allow historical decryption but block future data
 
 The protocol remains neutral.
 

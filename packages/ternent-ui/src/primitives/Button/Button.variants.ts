@@ -52,9 +52,12 @@ export const buttonVariants = {
     },
 
     size: {
+      micro: "h-7 px-2 text-xs",
+      xs: "h-8 px-3 text-xs",
       sm: "h-9 px-4 text-sm",
-      md: "h-11 px-5 text-base",
-      lg: "h-13 px-6 text-lg",
+      md: "h-10 px-4 text-sm",
+      lg: "h-11 px-5 text-base",
+      xl: "h-12 px-6 text-base",
     },
   },
 } as const;

@@ -10,27 +10,9 @@
         "spec": "concord-protocol@1.0",
         "created_at": "2026-01-10T19:37:56.171Z"
       },
-      "entries": [
-        "3b23fae793cf259569f7af04244a223750ad7db41b054c00709cf7cb349f2c28"
-      ]
+      "entries": []
     }
   },
-  "entries": {
-    "3b23fae793cf259569f7af04244a223750ad7db41b054c00709cf7cb349f2c28": {
-      "kind": "epochs",
-      "timestamp": "2026-01-10T19:37:56.171Z",
-      "author": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEOlrFR0bJAAVjqwisacgqv9fX6MX4\nWbIIgV4cM1r7i9t5p/BEMRnjnRTfzI0RofuK6b9TgqfrfMK6M9jprQvrKQ==",
-      "payload": {
-        "type": "epoch",
-        "epochId": "07bf5bf0369a5a6568cf248f6f0d6e1ae78036ac5f6bd240851fee0a6017420e",
-        "prevEpochId": null,
-        "createdAt": "2026-01-10T19:37:56.171Z",
-        "encryptionPublicKey": "age1nef5quy79wfypc3asyxl5m475gyjl8jhhhlpg87d85p05fltydwq6kht2f",
-        "encryptionKeyId": "07bf5bf0369a5a6568cf248f6f0d6e1ae78036ac5f6bd240851fee0a6017420e",
-        "signerKeyId": "e09377ff4401e84c1f4514152669b9632dbedb717168f479fbe80af4f1b4652e"
-      },
-      "signature": "MXOrJzxWi9QO/6UFewslIKwz9abqx0YO/Z9B192XLEGN6pN7GDBd088iXeho9kpsy9xess31XMc2UvYegg94xA=="
-    }
-  },
+  "entries": {},
   "head": "29f64fff6b89637a757d910255ca0aec5385fb5d480be203687c2944d10f2d3f"
 }

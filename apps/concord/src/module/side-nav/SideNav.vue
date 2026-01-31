@@ -43,10 +43,6 @@ const topItems = computed(() => [
     to: "/workspace/tamper",
   },
   {
-    name: "Epochs",
-    to: "/epochs",
-  },
-  {
     name: "Solid Pods",
     to: "/workspace/solid",
   },

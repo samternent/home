@@ -9,4 +9,4 @@ export const buttonVariants = [
 ] as const;
 
 export type ButtonVariant = (typeof buttonVariants)[number];
-export type ButtonSize = "sm" | "md" | "lg";
+export type ButtonSize = "micro" | "xs" | "sm" | "md" | "lg" | "xl";

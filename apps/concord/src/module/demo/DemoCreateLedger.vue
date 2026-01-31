@@ -3,7 +3,7 @@ import { computed, ref } from "vue";
 import { generateId } from "ternent-utils";
 import { useLedger } from "../ledger/useLedger";
 import { useIdentity } from "../../module/identity/useIdentity";
-import Button from "../../../../../packages/ternent-ui/src/primitives/Button/Button.vue";
+import { Button } from "ternent-ui/primitives";
 
 const { api, bridge } = useLedger();
 const { privateKey: priv, publicKey: pub } = useIdentity();

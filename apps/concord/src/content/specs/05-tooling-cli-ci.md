@@ -8,7 +8,7 @@ Version: 0.2
 
 Define the minimum tooling expected to make the semantic layers usable:
 
-- CLI to manage identity, permissions, and encryption epochs
+- CLI to manage identity and permissions
 - CI to validate ledgers and enforce policies
 - Web inspector to explore and explain ledger state
 
@@ -47,19 +47,8 @@ Bootstrap:
 
 ### Encryption
 
-- `concord enc rotate --scope <scope>`
-
-  - Computes eligible principals (read+)
-  - Resolves their current age recipients
-  - Generates new epoch key, increments epoch
-  - Emits enc.epoch.rotate entry containing wraps
-
-- `concord enc wrap --scope <scope> --epoch <n> --to <principalId>`
-
-  - Emits enc.wrap.publish
-
-- `concord enc decrypt --file <ledger> --as <principalId>` (operational)
-  - Attempts to decrypt encrypted payloads where wraps exist
+Encryption tooling is implementation-defined. Concord does not require epoch
+rotation or wrap distribution at the protocol level.
 
 ## Output
 
@@ -72,9 +61,9 @@ All commands SHOULD support:
 
 - 0 success
 - 1 protocol validation failure
-- 2 semantic validation failure (identity/permissions/encryption rules)
+- 2 semantic validation failure (identity/permissions rules)
 - 3 authorization failure (attempted grant/rotate not allowed)
-- 4 encryption/decryption failure (missing keys/wraps)
+- 4 encryption/decryption failure
 
 ## GitHub Actions / CI
 
@@ -87,12 +76,12 @@ Recommended jobs:
 
 2. Semantic Replay Check
 
-- Replay identity + permissions + epochs deterministically (deterministic mode)
+- Replay identity + permissions deterministically (deterministic mode)
 - Fail on invalid semantic entries (e.g., unauthorized grants)
 
 3. Policy Checks (optional)
 
-- Example: only allow rootAdmins to perform enc.epoch.rotate
+- Example: only allow rootAdmins to perform permission changes
 
 4. Publish Report (optional)
 
@@ -100,7 +89,7 @@ Recommended jobs:
   - commit graph summary
   - principals list
   - permissions by scope
-  - epoch status and wrap coverage
+  - encryption status (optional)
 
 ## Web Inspector
 
@@ -113,10 +102,10 @@ A static inspector SHOULD:
   - commit chain
   - identity registry
   - permission matrix per scope
-  - epoch keys coverage (wraps present / missing)
+  - encryption coverage (optional)
 - Provide explanations:
   - “Why can’t I grant?” (missing cap)
-  - “Why can’t I decrypt?” (missing wrap or missing private key)
+  - “Why can’t I decrypt?” (missing private key or payload metadata)
 
 ## Determinism Note
 

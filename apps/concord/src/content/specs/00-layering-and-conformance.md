@@ -56,7 +56,6 @@ Semantic layers may be shipped as “official plugins” but remain separate fro
 | L1    | Protocol-compliant | Structural + hash validity and deterministic replay ordering |
 | L2-I  | Identity-aware     | Deterministic principal registry (age recipients + metadata) |
 | L2-P  | Permission-aware   | Deterministic permission state + can()                       |
-| L2-E  | Encryption-aware   | Deterministic epoch/wrap discovery + decrypt eligibility     |
 | L3    | Tooling-complete   | CLI/CI/Web tooling that enforces L2 rules                    |
 
 ## Normative Statement on Rotation
@@ -64,4 +63,3 @@ Semantic layers may be shipped as “official plugins” but remain separate fro
 “Key rotation” is a semantic concept expressed via normal entries and replay rules. It is not a core protocol primitive.
 
 - Identity “rotation” is achieved via successive identity entries.
-- Scope access “revocation” is achieved via epoch rotation and future wrap distribution rules.

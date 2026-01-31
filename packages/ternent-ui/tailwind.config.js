@@ -39,6 +39,13 @@ module.exports = {
       },
       borderRadius: {
         ...designTokens.borderRadius,
+        DEFAULT: "var(--ui-radius-md)",
+        sm: "var(--ui-radius-sm)",
+        md: "var(--ui-radius-md)",
+        lg: "var(--ui-radius-lg)",
+      },
+      borderColor: {
+        DEFAULT: "var(--ui-border)",
       },
       boxShadow: {
         ...designTokens.shadow,

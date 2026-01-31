@@ -30,7 +30,6 @@ const props = defineProps<{
     permissionId?: string | null;
   }) => Promise<void>;
   disabled?: boolean;
-  epochReady?: boolean;
 }>();
 
 const rootRef = ref<HTMLElement | null>(null);
@@ -38,7 +37,6 @@ const isExpanded = ref(false);
 const title = shallowRef("");
 const selectedUser = shallowRef();
 const permissionId = shallowRef<string | null>(null);
-const epochReady = computed(() => props.epochReady ?? true);
 const errorMessage = shallowRef("");
 const isSubmitting = ref(false);
 
@@ -82,10 +80,6 @@ async function submit() {
   const trimmedTitle = title.value.trim();
   if (!trimmedTitle) {
     errorMessage.value = "Title is required.";
-    return;
-  }
-  if (!epochReady.value && permissionId.value) {
-    errorMessage.value = "Create an epoch before using permissions.";
     return;
   }
   errorMessage.value = "";
@@ -203,7 +197,6 @@ watch(
               v-model="permissionId"
               class="border py-2 px-3 rounded-xl border-[var(--ui-border)]"
               aria-label="Todo permission"
-              :disabled="!epochReady"
             >
               <option :value="null">public</option>
               <option
@@ -214,9 +207,6 @@ watch(
               {{ permission.data.title }}
               </option>
             </select>
-            <p v-if="!epochReady" class="text-xs text-yellow-700">
-              Create an epoch to enable permissions.
-            </p>
           </div>
         </div>
       <p

@@ -1,7 +1,8 @@
 <script setup>
 import { shallowRef, watch } from "vue";
 import { useLocalStorage, useWindowSize } from "@vueuse/core";
-import { SResizer, SButton } from "ternent-ui/components";
+import { SResizer } from "ternent-ui/components";
+import { Button } from "ternent-ui/primitives";
 
 defineProps({
   container: {
@@ -58,12 +59,12 @@ watch(dragPosition, (value) => {
       </div>
 
       <div class="flex items-center justify-center">
-        <SButton
+        <Button
           aria-label="Toggle Bottom Panel"
           :aria-pressed="isBottomPanelExpanded"
           @click="isBottomPanelExpanded = !isBottomPanelExpanded"
-          type="ghost"
-          class="mr-2 btn-xs"
+          variant="plain-secondary"
+          class="mr-2"
           size="micro"
         >
           <svg
@@ -81,7 +82,7 @@ watch(dragPosition, (value) => {
               d="M19 9l-7 7-7-7"
             />
           </svg>
-        </SButton>
+        </Button>
       </div>
     </div>
 
