@@ -1,5 +1,11 @@
 # concord
 
+## 0.2.4
+
+### Patch Changes
+
+- [`cfed2a940fdb2b71bf795f70f4b2947bd5a9dbff`](https://github.com/samternent/home/commit/cfed2a940fdb2b71bf795f70f4b2947bd5a9dbff) Thanks [@samternent](https://github.com/samternent)! - Removes epoch, few styles
+
 ## 0.2.3
 
 ### Patch Changes
