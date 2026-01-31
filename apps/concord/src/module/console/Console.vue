@@ -52,7 +52,12 @@ watch(dragPosition, (value) => {
 
     <!-- Panel Control + Indicator -->
     <div
-      class="flex justify-between px-2 h-8 border-y relative z-50 py-1 bg-[var(--ui-surface)] border-[var(--ui-border)]"
+      class="flex justify-between px-2 h-8 border-y relative z-50 py-1 border-[var(--ui-border)]"
+      :class="{
+        'text-[var(--ui-on-critical)] bg-[var(--ui-critical)]':
+          tone === 'danger',
+        'bg-[var(--ui-surface)]': tone === 'default',
+      }"
     >
       <div class="flex-1 items-center flex justify-between">
         <slot name="panel-control" />
