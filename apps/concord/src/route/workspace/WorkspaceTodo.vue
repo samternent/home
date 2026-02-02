@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, shallowRef } from "vue";
 import { generateId } from "ternent-utils";
 
 import { useLedger } from "../../module/ledger/useLedger";
@@ -34,20 +34,40 @@ type PermissionGroupEntry = {
   data: PermissionGroup;
 };
 
-const items = computed(() =>
-  Object.values(bridge.collections.byKind.value?.todos || {}).map((item) => {
-    const assignee = item.data.assignedTo
-      ? bridge.collections.get("users", item.data.assignedTo)
-      : null;
+function formatDate(
+  iso: string,
+  options: Intl.DateTimeFormatOptions = {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }
+) {
+  return new Intl.DateTimeFormat(undefined, options).format(new Date(iso));
+}
 
-    return {
-      entryId: item.entryId,
-      data: {
-        ...item.data,
-        ...(assignee ? { assignedTo: assignee?.data } : {}),
-      },
-    };
-  })
+const hidePrivateItems = shallowRef(true);
+
+const items = computed(() =>
+  Object.values(bridge.collections.byKind.value?.todos || {})
+    .filter((item) => {
+      // if (hidePrivateItems.value && item.data.permission && !item.data.public) {
+      //   return false;
+      // }
+      return true;
+    })
+    .sort((a, b) => (b.data.createdAt || 0) - (a.data.createdAt || 0))
+    .map((item) => {
+      const assignee = item.data.assignedTo
+        ? bridge.collections.get("users", item.data.assignedTo)
+        : null;
+
+      return {
+        entryId: item.entryId,
+        data: {
+          ...item.data,
+          ...(assignee ? { assignedTo: assignee?.data } : {}),
+        },
+      };
+    })
 );
 
 const permissions = computed<PermissionGroupEntry[]>(
@@ -72,6 +92,9 @@ async function addTodoItem(payload: {
       id,
       title: payload.title,
       ...(payload.assigneeId ? { assignedTo: payload.assigneeId } : {}),
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      completed: false,
     },
     "todos",
     payload.permissionId ?? null
@@ -84,31 +107,29 @@ async function completeItem(item: LedgerItem) {
       ...item,
       completed: !item.completed,
       ...(item.assignedTo?.id ? { assignedTo: item.assignedTo.id } : {}),
+      updatedAt: Date.now(),
     },
     "todos",
     item.permission
   );
 }
 
-const quickAddRef = ref<HTMLElement | null>(null);
-const quickAddHeight = ref(0);
-
-function updateQuickAddHeight() {
-  quickAddHeight.value = quickAddRef.value?.offsetHeight || 0;
-}
-
-function shortKey(value?: string, size = 8) {
-  return value ? value.slice(0, size) : "";
-}
+const quickAddHeight = shallowRef(0);
 </script>
 <template>
   <div class="mx-auto w-full max-w-160 flex flex-col flex-1 gap-4">
-    <header class="sticky top-0 bg-[var(--ui-bg)] py-2 z-10">
+    <header
+      class="sticky top-0 bg-[var(--ui-bg)] py-2 z-10 flex justify-between items-center border-b border-[var(--ui-border)] px-3"
+    >
       <div class="flex items-center justify-between gap-4">
         <div class="flex flex-col gap-1">
           <h1 class="text-2xl">Todo list.</h1>
           <p class="text-sm opacity-70">{{ items.length }} items</p>
         </div>
+      </div>
+      <div class="flex items-center gap-2 text-xs">
+        <input type="checkbox" id="hidePrivate" v-model="hidePrivateItems" />
+        <label for="hidePrivate" class="text-sm opacity-70">Hide private</label>
       </div>
     </header>
 
@@ -192,6 +213,7 @@ function shortKey(value?: string, size = 8) {
                   :identity="item.data.assignedTo.publicIdentityKey"
                   size="sm"
                 />
+                <!-- {{ formatDate(item.data?.createdAt) }} -->
                 <span
                   v-if="item.data.permission"
                   class="p-2 opacity-60 flex items-center justify-center rounded-full"

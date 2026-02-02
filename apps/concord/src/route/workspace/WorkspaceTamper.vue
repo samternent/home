@@ -169,7 +169,7 @@ const canApply = computed(() => hasLedger.value && !!ledgerText.value.trim());
 </script>
 
 <template>
-  <div class="mx-auto w-full max-w-160 flex flex-col flex-1 h-full gap-4">
+  <div class="mx-auto w-full flex flex-col flex-1 h-full gap-4">
     <header class="sticky top-0 bg-[var(--ui-bg)] py-2 z-10">
       <div class="flex items-center justify-between gap-4">
         <div class="flex flex-col gap-1">

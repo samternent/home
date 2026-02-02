@@ -41,13 +41,17 @@ import Logo from "../brand/Logo.vue";
   <footer
     class="flex justify-end items-center py-12 border-t-[1px] border-[var(--ui-border)] w-full"
   >
-    <div class="max-w-[980px] mx-auto w-full flex justify-end">
+    <div class="max-w-[980px] mx-auto w-full flex justify-end group">
       <a
         href="mailto:concord@ternent.dev"
-        class="flex flex-col items-center justify-center gap-2"
+        class="flex items-end justify-center gap-3 opacity-80 hover:opacity-100"
       >
+        <span
+          class="text-xs font-mono font-thin -translate-y-1 group-hover:translate-y-0.5 group-hover:translate-x-1.5 transition-all duration-300"
+          >concord@ternent.dev</span
+        >
         <Logo
-          class="h-8 w-8 opacity-40 hover:opacity-60 hover:-rotate-6 transition-all duration-300"
+          class="size-8 group-hover:-rotate-6 transition-all duration-300"
         />
       </a>
     </div>

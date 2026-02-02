@@ -144,7 +144,7 @@ async function deleteLedger() {
 <template>
   <div
     v-if="showSidebar"
-    class="sticky top-0 flex flex-col border-r border-[var(--ui-border)]"
+    class="sticky top-0 flex flex-col border-r border-[var(--ui-border)] font-thin"
     :class="{
       'w-64': mdAndLarger,
       'w-64 absolute z-30 h-full': smallerThanMd && openSideBar,
@@ -176,30 +176,30 @@ async function deleteLedger() {
     </div>
 
     <!-- Navigation Items -->
-    <div class="flex-1 flex flex-col justify-between p-4 overflow-hidden">
+    <div
+      class="flex-1 flex flex-col justify-between p-2 overflow-hidden font-mono"
+    >
       <!-- Top Items -->
-      <nav class="space-y-2">
+      <nav class="space-y-1 text-xs">
         <div v-for="item in topItems" :key="item.to" class="group">
           <!-- Main Item -->
           <RouterLink
             :to="item.to"
-            class="flex items-center px-4 py-1 border-[var(--ui-border)] transition-all duration-200 font-base"
+            class="flex items-center px-4 py-1 border-[var(--ui-border)] transition-all duration-200"
             :class="{
-              'font-medium': $route.path.startsWith(item.to),
-              'font-base': !$route.path.startsWith(item.to),
+              'font-medium text-[var(--ui-primary)]': $route.path.startsWith(
+                item.to
+              ),
             }"
-            active-class="font-medium"
           >
-            <div class="flex-1 min-w-0">
-              {{ item.name }}
-            </div>
+            <div class="flex-1 min-w-0">{{ item.name }}</div>
           </RouterLink>
         </div>
       </nav>
 
       <!-- Bottom Items -->
       <nav class="space-y-2 pt-4">
-        <div class="py-2 flex flex-col w-auto gap-2">
+        <div class="py-2 flex flex-col w-auto gap-2 font-sans">
           <button
             class="text-xs border border-[var(--ui-border)] px-4 py-2 rounded-full text-left"
             @click="createNewLedger"
