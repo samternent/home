@@ -11,6 +11,7 @@ type PermissionGroup = {
   title: string;
   public: string;
   createdBy: string;
+  scope: string;
 };
 
 type PermissionGrant = {
@@ -60,9 +61,10 @@ const canAddItem = computed(
 
 const selectedUsersByPermission = reactive<Record<string, any>>({});
 const permissionTitle = shallowRef("");
+const permissionScope = shallowRef<"tasks" | "social" | "patients">("tasks");
 
 async function addPermission() {
-  await createPermission(permissionTitle.value);
+  await createPermission(permissionTitle.value, permissionScope.value);
   permissionTitle.value = "";
 }
 
@@ -101,6 +103,9 @@ async function addUserToPermission(permissionId: string) {
                 <h2 class="text-lg font-thin">
                   {{ permissionEntry.data.title }}
                 </h2>
+                <p class="text-xs opacity-60">
+                  Scope: {{ permissionEntry.data.scope }}
+                </p>
                 <p class="text-xs opacity-60">
                   {{
                     (
@@ -160,6 +165,14 @@ async function addUserToPermission(permissionId: string) {
           placeholder="Permission title"
           class="border py-2 px-4 border-[var(--ui-border)] flex-1 rounded-full"
         />
+        <select
+          v-model="permissionScope"
+          class="border py-2 px-4 border-[var(--ui-border)] rounded-full text-xs"
+        >
+          <option value="tasks">Tasks</option>
+          <option value="social">Social</option>
+          <option value="patients">Patients</option>
+        </select>
         <button
           class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-xs"
           @click="addPermission"

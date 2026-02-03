@@ -7,6 +7,7 @@ const route = useRoute();
 const tabs = [
   { name: "Tasks", to: "/workspace/apps/todos" },
   { name: "Patient Records", to: "/workspace/apps/patients" },
+  { name: "Social Network", to: "/workspace/apps/social" },
 ];
 
 const activePath = computed(() => route.path);

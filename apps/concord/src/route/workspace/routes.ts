@@ -43,6 +43,10 @@ export default [
                 path: "patients",
                 component: () => import("./WorkspacePatients.vue"),
               },
+              {
+                path: "social",
+                component: () => import("./WorkspaceSocial.vue"),
+              },
             ],
           },
           {

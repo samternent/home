@@ -45,6 +45,7 @@ type PermissionGroupRecord = {
   title: string;
   public: string;
   createdBy: string;
+  scope: string;
 };
 
 type PermissionGrantRecord = {
@@ -89,7 +90,10 @@ type ProvideLedgerContext = {
   bridge: ReturnType<typeof createLedgerBridge>;
   collections: ReturnType<typeof createLedgerBridge>["collections"];
   compressedBlob: ShallowRef<Blob | undefined>;
-  createPermission: (title: string) => Promise<PermissionGroupRecord | void>;
+  createPermission: (
+    title: string,
+    scope: string
+  ) => Promise<PermissionGroupRecord | void>;
   addUserPermission: (
     permissionId: string,
     identity: string,
@@ -266,13 +270,14 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
     );
   }
 
-  async function createPermission(title: string) {
+  async function createPermission(title: string, scope: string) {
     await ensureAuthed();
     const myEncryptionKey = await ensureEncryptionReady();
 
     // Find permission group record (in Loki read model)
     const existingGroup = loki.getCollection("permission-groups")?.findOne({
       "payload.title": title,
+      "payload.scope": scope,
       "payload.createdBy": stripIdentityKey(publicKeyIdentityPEM.value),
     })?.payload as PermissionGroupRecord | undefined;
 
@@ -291,6 +296,7 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
       title,
       public: encryptionPublic,
       createdBy: stripIdentityKey(publicKeyIdentityPEM.value),
+      scope,
     } satisfies PermissionGroupRecord;
 
     await api.addAndStage({

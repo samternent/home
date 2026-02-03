@@ -39,6 +39,7 @@ type PermissionGroup = {
   title: string;
   public: string;
   createdBy: string;
+  scope: string;
 };
 
 type PermissionGroupEntry = {
@@ -107,7 +108,7 @@ const permissions = computed<PermissionGroupEntry[]>(
   () =>
     Object.values(
       bridge.collections.byKind.value?.["permission-groups"] || {}
-    ) as PermissionGroupEntry[]
+    ).filter((entry) => entry.data.scope === "tasks") as PermissionGroupEntry[]
 );
 
 const publicTasklists = computed<TasklistEntry[]>(
@@ -467,7 +468,7 @@ async function addTasklist() {
     closeListDialog();
     return;
   }
-  const permission = await createPermission(title);
+  const permission = await createPermission(title, "tasks");
   if (permission?.id && newListMembers.value.length) {
     for (const member of newListMembers.value) {
       if (!member?.publicIdentityKey || !member?.publicEncryptionKey) continue;

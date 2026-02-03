@@ -272,19 +272,21 @@ async function setProfile() {
     <header
       class="sticky top-0 z-20 bg-[color-mix(in srgb, var(--ui-bg) 58%, transparent)] backdrop-blur-[12px] border-b-[1px] border-[var(--ui-border)] w-full"
     >
-      <div class="mx-auto px-4 py-2 flex items-center w-full justify-between">
-        <div class="flex items-center gap-1 w-64">
+      <div class="mx-auto flex items-center w-full justify-between">
+        <div class="flex items-start gap-2 w-64 px-4 py-2">
           <RouterLink
             class="text-[var(--ui-fg)] font-[900] text-xl no-underline tracking-[-0.08em] brand"
             to="/"
             >Concord</RouterLink
           ><span
             class="text-xs font-mono text-[var(--ui-primary)] bg-[var(--ui-primary)]/10 px-2 rounded-full flex items-center"
-            >alpha</span
+            >DEMO</span
           >
         </div>
 
-        <nav class="flex items-center flex-1 justify-between text-xs font-mono">
+        <nav
+          class="flex items-center flex-1 justify-between text-xs font-mono px-4 py-2"
+        >
           <div>@{{ genesisId }}</div>
           <div class="relative" ref="userMenuRef">
             <!-- Compact user avatar button -->
