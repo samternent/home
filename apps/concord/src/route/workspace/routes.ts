@@ -39,6 +39,10 @@ export default [
                 path: "todos",
                 component: () => import("./WorkspaceTodo.vue"),
               },
+              {
+                path: "patients",
+                component: () => import("./WorkspacePatients.vue"),
+              },
             ],
           },
           {
