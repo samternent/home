@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
 import type { LedgerContainer } from "ternent-ledger-types";
+import { STreeView } from "ternent-ui/components";
 
 import { useLedger } from "../../module/ledger/useLedger";
 
@@ -9,15 +10,37 @@ const { api, ledger, bridge } = useLedger();
 const CORE_LEDGER_KEY = "concord:ledger:core";
 const TAMPER_LEDGER_KEY = "concord:ledger:tamper";
 const TAMPER_ACTIVE_KEY = "concord:ledger:tampered";
+const TAMPER_HISTORY_KEY = "concord:ledger:tamper:history";
+const TAMPER_HISTORY_INDEX_KEY = "concord:ledger:tamper:history:index";
 
 const ledgerText = ref("");
 const parseError = ref("");
 const status = ref("");
 const isDirty = ref(false);
 const hasCoreSnapshot = ref(false);
-const hasTamperSnapshot = ref(false);
+const history = ref<string[]>([]);
+const historyIndex = ref(-1);
+const isApplying = ref(false);
 
-const hasLedger = computed(() => bridge.flags.value.hasLedger);
+let suppressLedgerWatch = false;
+let applyTimer: number | undefined;
+
+type JsonValue =
+  | string
+  | number
+  | boolean
+  | null
+  | JsonValue[]
+  | { [key: string]: JsonValue };
+
+type TreeNode = {
+  id: string;
+  label: string;
+  meta?: string;
+  value?: string;
+  rawValue?: JsonValue;
+  children?: TreeNode[];
+};
 
 function readSnapshot(key: string) {
   if (typeof window === "undefined") return null;
@@ -29,9 +52,33 @@ function writeSnapshot(key: string, value: string) {
   window.localStorage.setItem(key, value);
 }
 
+function readHistory() {
+  if (typeof window === "undefined") return [];
+  const raw = window.localStorage.getItem(TAMPER_HISTORY_KEY);
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw) as string[];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function readHistoryIndex() {
+  if (typeof window === "undefined") return -1;
+  const raw = window.localStorage.getItem(TAMPER_HISTORY_INDEX_KEY);
+  const parsed = raw ? Number(raw) : -1;
+  return Number.isInteger(parsed) ? parsed : -1;
+}
+
+function writeHistory(nextHistory: string[], nextIndex: number) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(TAMPER_HISTORY_KEY, JSON.stringify(nextHistory));
+  window.localStorage.setItem(TAMPER_HISTORY_INDEX_KEY, String(nextIndex));
+}
+
 function refreshSnapshotFlags() {
   hasCoreSnapshot.value = !!readSnapshot(CORE_LEDGER_KEY);
-  hasTamperSnapshot.value = !!readSnapshot(TAMPER_LEDGER_KEY);
 }
 
 function setTamperActive(isActive: boolean) {
@@ -48,7 +95,98 @@ function serializeLedger(value: LedgerContainer | null) {
   return JSON.stringify(value, null, 2);
 }
 
-function setEditorValue(value: string, dirty = false) {
+function formatValue(value: JsonValue) {
+  if (typeof value === "string") return JSON.stringify(value);
+  if (typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+  if (value === null) return "null";
+  return String(value);
+}
+
+function truncate(value: string, max = 48) {
+  if (value.length <= max) return value;
+  return `${value.slice(0, max - 3)}...`;
+}
+
+function buildTreeNode(
+  label: string,
+  value: JsonValue,
+  path: string
+): TreeNode {
+  if (Array.isArray(value)) {
+    return {
+      id: path,
+      label,
+      meta: `${value.length} items`,
+      children: value.map((child, index) =>
+        buildTreeNode(`[${index}]`, child, `${path}/${index}`)
+      ),
+    };
+  }
+
+  if (value && typeof value === "object") {
+    const entries = Object.entries(value);
+    return {
+      id: path,
+      label,
+      meta: `${entries.length} keys`,
+      children: entries.map(([key, child]) =>
+        buildTreeNode(key, child, `${path}/${key}`)
+      ),
+    };
+  }
+
+  return {
+    id: path,
+    label,
+    value: truncate(formatValue(value)),
+    rawValue: value,
+  };
+}
+
+function updateLedgerValue(
+  root: JsonValue,
+  path: string,
+  nextValue: JsonValue
+): boolean {
+  const segments = path.split("/");
+  if (segments.length < 2) return false;
+
+  let parent: JsonValue = root;
+  for (let index = 1; index < segments.length - 1; index += 1) {
+    const segment = segments[index];
+    if (Array.isArray(parent)) {
+      const numericIndex = Number(segment);
+      if (!Number.isInteger(numericIndex)) return false;
+      parent = parent[numericIndex] as JsonValue;
+    } else if (parent && typeof parent === "object") {
+      parent = (parent as Record<string, JsonValue>)[segment];
+    } else {
+      return false;
+    }
+  }
+
+  const key = segments[segments.length - 1];
+  if (Array.isArray(parent)) {
+    const numericIndex = Number(key);
+    if (!Number.isInteger(numericIndex)) return false;
+    parent[numericIndex] = nextValue;
+    return true;
+  }
+
+  if (!parent || typeof parent !== "object") {
+    return false;
+  }
+
+  const record = parent as Record<string, JsonValue>;
+  if (!Object.prototype.hasOwnProperty.call(record, key)) return false;
+  record[key] = nextValue;
+  return true;
+}
+
+function setEditorValue(value: string, dirty = false, suppress = false) {
+  if (suppress) suppressLedgerWatch = true;
   ledgerText.value = value;
   isDirty.value = dirty;
   parseError.value = "";
@@ -60,52 +198,84 @@ function updateCoreSnapshotFromLedger(next: LedgerContainer | null) {
   hasCoreSnapshot.value = true;
 }
 
-watch(
-  ledger,
-  (next) => {
-    if (!isDirty.value) {
-      setEditorValue(serializeLedger(next), false);
-    }
-    updateCoreSnapshotFromLedger(next);
-  },
-  { immediate: true }
-);
-
 onMounted(() => {
   refreshSnapshotFlags();
   updateCoreSnapshotFromLedger(ledger.value);
+  const storedHistory = readHistory();
+  const storedIndex = readHistoryIndex();
+  history.value = storedHistory;
+  historyIndex.value =
+    storedIndex >= 0 && storedIndex < storedHistory.length ? storedIndex : -1;
+
+  const tamper = readSnapshot(TAMPER_LEDGER_KEY);
+  if (tamper) {
+    setEditorValue(tamper, true, true);
+    setTamperActive(true);
+    refreshSnapshotFlags();
+  } else if (ledger.value) {
+    setEditorValue(serializeLedger(ledger.value), false, true);
+  }
+
+  if (!history.value.length) {
+    const seed = tamper ?? serializeLedger(ledger.value);
+    if (seed) {
+      history.value = [seed];
+      historyIndex.value = 0;
+      writeHistory(history.value, historyIndex.value);
+    }
+  }
 });
 
-function onEditorInput() {
-  isDirty.value = true;
-  parseError.value = "";
+function queueApply(value: string) {
+  if (applyTimer) window.clearTimeout(applyTimer);
+  applyTimer = window.setTimeout(async () => {
+    parseError.value = "";
+    status.value = "";
+
+    let parsed: LedgerContainer;
+    try {
+      parsed = JSON.parse(value) as LedgerContainer;
+    } catch {
+      parseError.value = "Invalid JSON. Fix the syntax before applying.";
+      return;
+    }
+
+    if (!parsed || typeof parsed !== "object") {
+      parseError.value = "Ledger JSON must be an object.";
+      return;
+    }
+
+    isApplying.value = true;
+    try {
+      await api.load(parsed, [], true, false);
+      status.value = "Tamper changes applied.";
+    } finally {
+      isApplying.value = false;
+    }
+  }, 300);
 }
 
-async function applyTamper() {
-  parseError.value = "";
-  status.value = "";
-
-  let parsed: LedgerContainer;
-  try {
-    parsed = JSON.parse(ledgerText.value) as LedgerContainer;
-  } catch (err) {
-    parseError.value = "Invalid JSON. Fix the syntax before applying.";
-    return;
-  }
-
-  if (!parsed || typeof parsed !== "object") {
-    parseError.value = "Ledger JSON must be an object.";
-    return;
-  }
-
-  writeSnapshot(TAMPER_LEDGER_KEY, ledgerText.value);
+function recordTamperChange(value: string, options: { apply?: boolean } = {}) {
+  writeSnapshot(TAMPER_LEDGER_KEY, value);
   setTamperActive(true);
   refreshSnapshotFlags();
 
-  await api.load(parsed, [], true, false);
+  const nextHistory =
+    historyIndex.value < history.value.length - 1
+      ? history.value.slice(0, historyIndex.value + 1)
+      : [...history.value];
 
-  isDirty.value = false;
-  status.value = "Tampered ledger applied and replayed.";
+  if (nextHistory[nextHistory.length - 1] !== value) {
+    nextHistory.push(value);
+  }
+
+  history.value = nextHistory;
+  historyIndex.value = nextHistory.length - 1;
+  writeHistory(history.value, historyIndex.value);
+
+  if (options.apply !== false) {
+    queueApply(value);
+  }
 }
 
 async function revertToCore() {
@@ -125,7 +295,7 @@ async function revertToCore() {
     await api.load(parsed, [], true, true);
     setTamperActive(false);
 
-    setEditorValue(core, false);
+    setEditorValue(core, false, true);
     status.value = "Reverted to core ledger snapshot.";
     return;
   }
@@ -137,7 +307,7 @@ async function revertToCore() {
     refreshSnapshotFlags();
     setTamperActive(false);
     // loadFromStorage already refreshes state
-    setEditorValue(serialized, false);
+    setEditorValue(serialized, false, true);
     status.value = "Reverted to persisted ledger snapshot.";
     return;
   }
@@ -145,64 +315,147 @@ async function revertToCore() {
   parseError.value = "No core ledger snapshot found.";
 }
 
-function loadTamperIntoEditor() {
-  status.value = "";
-  parseError.value = "";
+const canUndo = computed(() => historyIndex.value > 0);
+const canRedo = computed(
+  () => historyIndex.value >= 0 && historyIndex.value < history.value.length - 1
+);
 
-  const tamper = readSnapshot(TAMPER_LEDGER_KEY);
-  if (!tamper) {
-    parseError.value = "No tampered ledger snapshot found.";
+const treeState = computed(() => {
+  if (!ledgerText.value.trim()) {
+    return {
+      nodes: [] as TreeNode[],
+      error: "No ledger snapshot to preview yet.",
+    };
+  }
+
+  try {
+    const parsed = JSON.parse(ledgerText.value) as JsonValue;
+    return {
+      nodes: [buildTreeNode("Ledger", parsed, "ledger")],
+      error: "",
+    };
+  } catch {
+    return {
+      nodes: [] as TreeNode[],
+      error: "Invalid JSON. Fix the syntax to preview the tree.",
+    };
+  }
+});
+
+function parseEditedValue(input: string): JsonValue {
+  const trimmed = input.trim();
+  if (trimmed === "") return "";
+  let parsed: JsonValue;
+  try {
+    parsed = JSON.parse(trimmed) as JsonValue;
+  } catch {
+    return input;
+  }
+  return parsed;
+}
+
+function onTreeValueChange(payload: { path: string; raw: string }) {
+  const nextValue = parseEditedValue(payload.raw);
+
+  let parsed: JsonValue;
+  try {
+    parsed = JSON.parse(ledgerText.value) as JsonValue;
+  } catch {
+    parseError.value = "Invalid JSON. Fix the syntax before editing.";
     return;
   }
 
-  setEditorValue(tamper, true);
+  if (!parsed || typeof parsed !== "object") {
+    parseError.value = "Ledger JSON must be an object.";
+    return;
+  }
+
+  const updated = updateLedgerValue(parsed, payload.path, nextValue);
+  if (!updated) {
+    parseError.value = "Edit failed. Path invalid.";
+    return;
+  }
+
+  const nextText = JSON.stringify(parsed, null, 2);
+  setEditorValue(nextText, true, true);
+  recordTamperChange(nextText);
 }
 
-function updateCoreSnapshot() {
-  if (!ledger.value) return;
-  writeSnapshot(CORE_LEDGER_KEY, serializeLedger(ledger.value));
+watch(
+  ledger,
+  (next) => {
+    if (suppressLedgerWatch) {
+      suppressLedgerWatch = false;
+      return;
+    }
+    if (isApplying.value) return;
+    updateCoreSnapshotFromLedger(next);
+    const serialized = serializeLedger(next);
+    if (!serialized) return;
+    setEditorValue(serialized, true, true);
+    recordTamperChange(serialized, { apply: false });
+  },
+  { immediate: true }
+);
+
+function undoChange() {
+  if (!canUndo.value) return;
+  const nextIndex = historyIndex.value - 1;
+  const nextValue = history.value[nextIndex];
+  historyIndex.value = nextIndex;
+  writeHistory(history.value, historyIndex.value);
+  setEditorValue(nextValue, true, true);
+  writeSnapshot(TAMPER_LEDGER_KEY, nextValue);
+  setTamperActive(true);
   refreshSnapshotFlags();
-  status.value = "Core ledger snapshot updated.";
+  queueApply(nextValue);
 }
 
-const canApply = computed(() => hasLedger.value && !!ledgerText.value.trim());
+function redoChange() {
+  if (!canRedo.value) return;
+  const nextIndex = historyIndex.value + 1;
+  const nextValue = history.value[nextIndex];
+  historyIndex.value = nextIndex;
+  writeHistory(history.value, historyIndex.value);
+  setEditorValue(nextValue, true, true);
+  writeSnapshot(TAMPER_LEDGER_KEY, nextValue);
+  setTamperActive(true);
+  refreshSnapshotFlags();
+  queueApply(nextValue);
+}
+
+watch(ledgerText, (next) => {
+  if (suppressLedgerWatch) {
+    suppressLedgerWatch = false;
+    return;
+  }
+  if (isApplying.value) return;
+  if (!next.trim()) return;
+  isDirty.value = true;
+  parseError.value = "";
+  recordTamperChange(next);
+});
 </script>
 
 <template>
-  <div class="mx-auto w-full flex flex-col flex-1 h-full gap-4">
-    <header class="sticky top-0 bg-[var(--ui-bg)] py-2 z-10">
-      <div class="flex items-center justify-between gap-4">
-        <div class="flex flex-col gap-1">
-          <h1 class="text-2xl">Tamper ledger.</h1>
-          <p class="text-sm opacity-70">
-            Edit the JSON to demonstrate how ledger tampering changes state.
-          </p>
-        </div>
-      </div>
-    </header>
-
-    <section class="flex-1 flex flex-col gap-3 min-h-0">
-      <p class="text-xs opacity-60">
-        Core and tampered snapshots are stored locally so you can revert
-        quickly.
-      </p>
-      <div
-        class="overflow-hidden flex-1 flex flex-col bg-[var(--ui-surface)] rounded-lg border border-[var(--ui-border)]"
-      >
-        <textarea
-          v-model="ledgerText"
-          @input="onEditorInput"
-          class="flex-1 w-full resize-none p-4 text-sm font-mono bg-transparent"
-          spellcheck="false"
-        />
-      </div>
+  <div class="mx-auto w-full flex flex-col flex-1 h-full">
+    <header
+      class="sticky top-0 bg-[var(--ui-bg)] p-2 flex items-center z-10 justify-between"
+    >
       <div class="flex flex-wrap items-center gap-2 sticky bottom-0">
         <button
           class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-xs"
-          :disabled="!canApply"
-          @click="applyTamper"
+          :disabled="!canUndo"
+          @click="undoChange"
         >
-          Apply tamper + replay
+          Undo
+        </button>
+        <button
+          class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-xs"
+          :disabled="!canRedo"
+          @click="redoChange"
+        >
+          Redo
         </button>
         <button
           class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-xs"
@@ -211,20 +464,6 @@ const canApply = computed(() => hasLedger.value && !!ledgerText.value.trim());
         >
           Revert to core snapshot
         </button>
-        <button
-          class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-xs"
-          :disabled="!hasTamperSnapshot"
-          @click="loadTamperIntoEditor"
-        >
-          Load last tamper
-        </button>
-        <button
-          class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-xs"
-          :disabled="!hasLedger"
-          @click="updateCoreSnapshot"
-        >
-          Update core snapshot
-        </button>
       </div>
       <p v-if="parseError" class="text-xs text-red-600">
         {{ parseError }}
@@ -232,6 +471,23 @@ const canApply = computed(() => hasLedger.value && !!ledgerText.value.trim());
       <p v-if="status" class="text-xs opacity-60">
         {{ status }}
       </p>
-    </section>
+    </header>
+
+    <div class="overflow-hidden flex flex-col w-full min-h-0 flex-1 font-mono">
+      <div
+        class="flex-1 overflow-auto p-3 bg-[var(--ui-surface)] border-t border-[var(--ui-border)]"
+      >
+        <STreeView
+          v-if="treeState.nodes.length"
+          :nodes="treeState.nodes"
+          :default-expanded-depth="2"
+          editable-values
+          aria-label="Ledger tree view"
+          @value-change="onTreeValueChange"
+          text-size="xs"
+        />
+        <p v-else class="text-xs opacity-60">{{ treeState.error }}</p>
+      </div>
+    </div>
   </div>
 </template>

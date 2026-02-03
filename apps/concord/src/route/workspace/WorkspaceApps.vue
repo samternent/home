@@ -20,7 +20,7 @@ function isActive(to: string) {
 <template>
   <div class="mx-auto w-full flex flex-col flex-1">
     <nav
-      class="sticky top-0 z-10 border-b border-[var(--ui-border)] flex flex-wrap items-center text-xs font-sans"
+      class="sticky top-0 z-10 border-b border-[var(--ui-border)] flex flex-wrap items-center text-xs"
     >
       <RouterLink
         v-for="tab in tabs"

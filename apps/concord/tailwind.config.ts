@@ -10,4 +10,11 @@ export default {
     "./src/**/*.{js,ts,vue}",
     "../../packages/ternent-ui/**/*.{vue,ts,css}",
   ],
+  theme: {
+    extend: {
+      fontFamily: {
+        mono: ['"JetBrains Mono"', "monospace"],
+      },
+    },
+  },
 };

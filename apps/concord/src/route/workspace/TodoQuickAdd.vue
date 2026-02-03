@@ -7,58 +7,97 @@ import {
   shallowRef,
   watch,
 } from "vue";
+import { SBadge } from "ternent-ui/components";
+import { Button } from "ternent-ui/primitives";
 
 import UserPicker from "../../module/user/UserPicker.vue";
 
-type PermissionGroup = {
-  id: string;
-  title: string;
-  public: string;
-  createdBy: string;
-};
-
-type PermissionGroupEntry = {
-  entryId: string;
-  data: PermissionGroup;
-};
-
 const props = defineProps<{
-  permissions: PermissionGroupEntry[];
   onCreate: (payload: {
     title: string;
     assigneeId?: string | null;
     permissionId?: string | null;
+    tasklistId?: string | null;
+    boardColumnId?: string | null;
   }) => Promise<void>;
   disabled?: boolean;
+  forceExpanded?: boolean;
+  initialTitle?: string;
+  initialAssignee?: { id?: string } | null;
+  fixedListValue?: string | null;
+  initialListValue?: string | null;
+  listOptions?: {
+    value: string;
+    label: string;
+    kind: "base" | "public-list" | "permission";
+    id: string | null;
+  }[];
+  listLabel?: string | null;
+  submitLabel?: string;
+  boardColumns?: { id: string; title: string }[];
+  fixedBoardColumnId?: string | null;
+  initialBoardColumnId?: string | null;
+}>();
+
+const emit = defineEmits<{
+  (event: "created"): void;
 }>();
 
 const rootRef = ref<HTMLElement | null>(null);
 const isExpanded = ref(false);
-const title = shallowRef("");
-const selectedUser = shallowRef();
-const permissionId = shallowRef<string | null>(null);
+const title = shallowRef(props.initialTitle ?? "");
+const selectedUser = shallowRef(props.initialAssignee ?? null);
+const selectedListValue = shallowRef<string | null>(
+  props.fixedListValue ?? props.initialListValue ?? null
+);
+const selectedBoardColumnId = shallowRef<string | null>(
+  props.fixedBoardColumnId ?? props.initialBoardColumnId ?? null
+);
 const errorMessage = shallowRef("");
 const isSubmitting = ref(false);
 
-const hasUnsavedChanges = computed(() => {
-  return (
-    title.value.trim().length > 0 ||
-    !!selectedUser.value ||
-    !!permissionId.value
+const hasListOptions = computed(() => (props.listOptions?.length ?? 0) > 0);
+
+const hasBoardColumns = computed(
+  () => (props.boardColumns?.length ?? 0) > 0
+);
+
+const selectedListLabel = computed(() => {
+  if (!hasListOptions.value) return null;
+  const match = props.listOptions?.find(
+    (option) => option.value === selectedListValue.value
   );
+  return match?.label ?? "Public";
 });
 
+const selectedBoardColumnLabel = computed(() => {
+  if (!hasBoardColumns.value) return null;
+  const match = props.boardColumns?.find(
+    (column) => column.id === selectedBoardColumnId.value
+  );
+  return match?.title ?? "No column";
+});
+
+const hasUnsavedChanges = computed(() => {
+  return title.value.trim().length > 0 || !!selectedUser.value;
+});
+
+const isExpandedView = computed(
+  () => props.forceExpanded || isExpanded.value
+);
+
 const isCollapsed = computed(
-  () => !isExpanded.value && !hasUnsavedChanges.value
+  () => !isExpandedView.value && !hasUnsavedChanges.value
 );
 
 function expand() {
-  if (props.disabled) return;
+  if (props.disabled || props.forceExpanded) return;
   isExpanded.value = true;
   errorMessage.value = "";
 }
 
 function collapse(force = false) {
+  if (props.forceExpanded) return;
   if (!force && hasUnsavedChanges.value) return;
   isExpanded.value = false;
   errorMessage.value = "";
@@ -84,8 +123,22 @@ async function submit() {
     await props.onCreate({
       title: trimmedTitle,
       assigneeId: selectedUser.value?.id ?? null,
-      permissionId: permissionId.value ?? null,
+      ...(selectedListValue.value?.startsWith("permission:")
+        ? {
+            permissionId:
+              selectedListValue.value.replace("permission:", "") || null,
+          }
+        : {}),
+      ...(selectedListValue.value?.startsWith("public-list:")
+        ? {
+            tasklistId:
+              selectedListValue.value.replace("public-list:", "") || null,
+          }
+        : {}),
+      boardColumnId:
+        props.fixedBoardColumnId ?? selectedBoardColumnId.value ?? null,
     });
+    emit("created");
     title.value = "";
     if (!title.value.trim()) {
       collapse(true);
@@ -129,6 +182,33 @@ watch(
     if (value) collapse(true);
   }
 );
+
+watch(
+  () => [props.fixedBoardColumnId, props.initialBoardColumnId],
+  () => {
+    selectedBoardColumnId.value =
+      props.fixedBoardColumnId ?? props.initialBoardColumnId ?? null;
+  }
+);
+
+watch(
+  () => [props.fixedListValue, props.initialListValue],
+  () => {
+    selectedListValue.value =
+      props.fixedListValue ?? props.initialListValue ?? null;
+  }
+);
+
+watch(
+  () => props.listOptions,
+  (nextOptions) => {
+    if (!nextOptions?.length) return;
+    if (!selectedListValue.value) {
+      selectedListValue.value = nextOptions[0].value;
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
@@ -136,7 +216,7 @@ watch(
     ref="rootRef"
     class="rounded-3xl border border-[var(--ui-border)] bg-[color-mix(in srgb, var(--ui-surface) 88%, var(--ui-bg))] transition-all duration-300"
     :class="
-      isExpanded
+      isExpandedView
         ? 'shadow-[0_18px_40px_rgba(0,0,0,0.14)]'
         : 'hover:border-[var(--ui-secondary)]/70'
     "
@@ -171,70 +251,86 @@ watch(
       </button>
 
       <div v-else class="flex flex-col gap-3">
-        <div class="flex flex-wrap items-center gap-2">
+        <div class="flex flex-wrap items-start gap-3">
           <input
             v-model="title"
             type="text"
             :disabled="disabled"
-            class="flex-1 min-w-[12rem] border border-[var(--ui-border)] rounded-2xl px-3 py-2 bg-transparent"
+            class="flex-1 min-w-[12rem] border border-[var(--ui-border)] rounded-sm px-3 py-2 bg-transparent"
             placeholder="What needs to get done?"
             aria-label="Task title"
             @focus="expand"
             @keydown="onTitleKeydown"
           />
 
-          <button
+          <Button
             type="button"
-            class="px-4 py-2 rounded-full border border-[var(--ui-border)]"
+            size="sm"
+            variant="secondary"
+            class="!rounded-full"
             :disabled="isSubmitting"
             aria-label="Add task"
             @click="submit"
           >
-            Add
-          </button>
-
-          <button
-            type="button"
-            class="p-2 border border-[var(--ui-border)] rounded-full"
-            aria-label="Toggle more options"
-            @click="isExpanded ? collapse(true) : expand()"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="size-4 transition-transform duration-300 transform-gpu"
-              :class="!isExpanded ? 'rotate-0' : 'rotate-180'"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-          </button>
+            {{ submitLabel ?? "Add" }}
+          </Button>
         </div>
-        <div v-if="isExpanded" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div class="flex flex-wrap items-center gap-2 text-xs">
+          <span class="uppercase tracking-[0.16em] opacity-60">List</span>
+          <SBadge size="xs" tone="neutral" variant="outline">
+            {{
+              selectedListLabel ??
+              listLabel ??
+              "Public"
+            }}
+          </SBadge>
+          <template v-if="hasBoardColumns">
+            <span class="uppercase tracking-[0.16em] opacity-60">
+              Board column
+            </span>
+            <SBadge size="xs" tone="neutral" variant="outline">
+              {{ selectedBoardColumnLabel }}
+            </SBadge>
+          </template>
+        </div>
+        <div
+          v-if="isExpandedView"
+          class="grid grid-cols-1 md:grid-cols-2 gap-4"
+        >
+          <div v-if="hasListOptions" class="flex flex-col gap-2">
+            <label class="font-thin"> List </label>
+            <select
+              v-model="selectedListValue"
+              :disabled="disabled || !!fixedListValue"
+              class="border border-[var(--ui-border)] px-3 py-2 bg-transparent"
+            >
+              <option
+                v-for="option in listOptions"
+                :key="option.value"
+                :value="option.value"
+              >
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
           <div class="flex flex-col gap-2">
             <label class="font-thin"> Assignee </label>
             <UserPicker v-model="selectedUser" />
           </div>
-          <div class="flex flex-col gap-2">
-            <label class="font-thin"> Permissions </label>
+          <div v-if="hasBoardColumns" class="flex flex-col gap-2">
+            <label class="font-thin"> Board column </label>
             <select
-              v-model="permissionId"
-              class="border py-2 px-3 rounded-xl border-[var(--ui-border)] bg-transparent"
-              aria-label="Tasklist permission"
+              v-model="selectedBoardColumnId"
+              :disabled="disabled || !!fixedBoardColumnId"
+              class="border border-[var(--ui-border)] px-3 py-2 bg-transparent"
             >
-              <option :value="null">public</option>
+              <option :value="null">No column</option>
               <option
-                v-for="permission in permissions"
-                :key="permission.data.id"
-                :value="permission.data.id"
+                v-for="column in boardColumns"
+                :key="column.id"
+                :value="column.id"
               >
-                {{ permission.data.title }}
+                {{ column.title }}
               </option>
             </select>
           </div>

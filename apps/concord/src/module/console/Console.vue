@@ -34,7 +34,7 @@ watch(dragPosition, (value) => {
 </script>
 <template>
   <section
-    class="flex flex-col z-40 relative"
+    class="flex flex-col z-20 relative"
     :class="{
       'h-8': !isBottomPanelExpanded,
       'transition-all': !isDragging,
@@ -52,7 +52,7 @@ watch(dragPosition, (value) => {
 
     <!-- Panel Control + Indicator -->
     <div
-      class="flex justify-between px-2 h-8 border-y relative z-50 py-1 border-[var(--ui-border)]"
+      class="flex justify-between px-2 h-8 border-y relative z-30 py-1 border-[var(--ui-border)]"
       :class="{
         'text-[var(--ui-on-critical)] bg-[var(--ui-critical)]':
           tone === 'danger',

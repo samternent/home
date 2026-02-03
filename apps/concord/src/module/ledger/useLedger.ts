@@ -189,7 +189,12 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
   const loki = lokiPlugin({
     name: "ledger",
     transformEntry: decryptEntryIfPossible,
-    bootstrapKinds: ["permissions", "permission-grants"],
+    bootstrapKinds: [
+      "permissions",
+      "permission-grants",
+      "board-columns",
+      "tasklists",
+    ],
   });
 
   const idb = indexedDbPlugin({

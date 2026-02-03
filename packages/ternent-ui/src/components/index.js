@@ -19,6 +19,10 @@ export { default as SInput } from "./SInput.vue";
 export { default as SAlert } from "./SAlert.vue";
 export { default as SThemeToggle } from "./SThemeToggle.vue";
 export { default as SBreadcrumbs } from "./SBreadcrumbs.vue";
+export { default as SBadge } from "./SBadge.vue";
+export { default as SDialog } from "./SDialog.vue";
+export { default as SListButton } from "./SListButton.vue";
+export { default as SSegmentedControl } from "./SSegmentedControl.vue";
 export { default as SDrawerRight } from "./SDrawerRight.vue";
 export { default as SDrawerLeft } from "./SDrawerLeft.vue";
 export { default as SBrowserMockup } from "./SBrowserMockup.vue";
@@ -30,6 +34,7 @@ export { default as SFileInput } from "./SFileInput.vue";
 export { default as SResizer } from "./SResizer.vue";
 export { default as SResizablePanels } from "./SResizablePanels.vue";
 export { default as SSwap } from "./SSwap.vue";
+export { default as STreeView } from "./STreeView.vue";
 
 // Design System
 export * from "../design-system/tokens.js";

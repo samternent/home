@@ -119,11 +119,11 @@ watch(isDragging, (value) => {
 <template>
   <div
     ref="resizeHandle"
-    class="absolute z-[9999999] group h-8 translate-y-1/2"
+    class="absolute z-[9999999] group h-6 translate-y-1/2"
     :class="{
       'opacity-100': isDragging,
       '-left-4 top-0 cursor-ew-resize px-4 h-full': direction === 'vertical',
-      'left-0 -top-8 cursor-ns-resize w-full': direction === 'horizontal',
+      'left-0 -top-5 cursor-ns-resize w-full': direction === 'horizontal',
     }"
   >
     <button

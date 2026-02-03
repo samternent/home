@@ -155,7 +155,9 @@ function formatDate(
             @click="activeTab = 'pending'"
           >
             Pending
-            <span class="ml-1 text-[var(--ui-fg-muted)]">{{ pendingCount }}</span>
+            <span class="ml-1 text-[var(--ui-fg-muted)]">{{
+              pendingCount
+            }}</span>
           </button>
           <button
             class="text-xs border-1 rounded-full px-3 py-1"
@@ -167,7 +169,9 @@ function formatDate(
             @click="activeTab = 'history'"
           >
             History
-            <span class="ml-1 text-[var(--ui-fg-muted)]">{{ commits.length }}</span>
+            <span class="ml-1 text-[var(--ui-fg-muted)]">{{
+              commits.length
+            }}</span>
           </button>
         </div>
         <div class="flex-1 overflow-auto p-2">
@@ -233,7 +237,10 @@ function formatDate(
             </Accordian>
           </div>
           <div v-else>
-            <div v-if="!commits.length" class="text-xs text-[var(--ui-fg-muted)] p-2">
+            <div
+              v-if="!commits.length"
+              class="text-xs text-[var(--ui-fg-muted)] p-2"
+            >
               No commit history yet.
             </div>
             <Accordian v-else>
@@ -349,21 +356,24 @@ function formatDate(
       </div>
 
       <div class="flex-1 flex flex-col">
-        <div class="border-b border-[var(--ui-border)] px-4 py-3">
+        <div
+          class="flex w-full justify-between items-center border-b border-[var(--ui-border)] px-4 py-3"
+        >
           <div class="text-sm font-medium">Commit</div>
           <div class="text-xs text-[var(--ui-fg-muted)]">
             {{ pendingCount }}
             {{ pendingCount === 1 ? "pending entry" : "pending entries" }}
           </div>
         </div>
-        <div class="flex-1 flex flex-col gap-3 p-4">
-          <div class="text-xs text-[var(--ui-fg-muted)]">Message</div>
+        <div class="flex-1 flex flex-col">
           <textarea
             v-model="commitMessage"
             placeholder="Commit message"
-            class="border-1 border-[var(--ui-border)] w-full py-2 px-3 rounded min-h-[120px]"
+            class="w-full p-2 text-xs flex-1 resize-none bg-[var(--ui-surface)] text-[var(--ui-fg-muted)] border-0 outline-none ring-0 focus:outline-none focus:ring-0"
           />
-          <div class="flex items-center justify-end">
+          <div
+            class="flex items-center justify-end sticky bottom-0 px-4 py-3 bg-[var(--ui-bg)] border-t border-[var(--ui-border)]"
+          >
             <button
               class="text-xs border-1 border-[var(--ui-border)] rounded px-3 py-2 disabled:opacity-50"
               @click="commit"
