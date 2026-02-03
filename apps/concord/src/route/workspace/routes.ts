@@ -47,6 +47,10 @@ export default [
                 path: "social",
                 component: () => import("./WorkspaceSocial.vue"),
               },
+              {
+                path: "vault",
+                component: () => import("./WorkspaceVault.vue"),
+              },
             ],
           },
           {

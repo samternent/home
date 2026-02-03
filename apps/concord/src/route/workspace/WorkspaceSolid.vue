@@ -4,7 +4,10 @@ import { useLocalStorage } from "@vueuse/core";
 import { useLedger } from "../../module/ledger/useLedger";
 import { useIdentity } from "../../module/identity/useIdentity";
 import { useEncryption } from "../../module/encryption/useEncryption";
-import { useProfile, type PrivateProfile } from "../../module/profile/useProfile";
+import {
+  useProfile,
+  type PrivateProfile,
+} from "../../module/profile/useProfile";
 import {
   getDefaultSession,
   handleIncomingRedirect,
@@ -343,7 +346,9 @@ async function refreshWallet() {
       getSolidDataset(containerUrls.value.walletPrivate, {
         fetch: session.fetch,
       }),
-      getSolidDataset(containerUrls.value.walletPublic, { fetch: session.fetch }),
+      getSolidDataset(containerUrls.value.walletPublic, {
+        fetch: session.fetch,
+      }),
     ]);
     const privateUrls = getContainedResourceUrlAll(privateDataset).filter(
       (url) => !url.endsWith("/")
@@ -567,18 +572,18 @@ onMounted(async () => {
         >
           Initialize ledger schema
         </button>
-            <div v-if="containerUrls" class="text-xs font-mono space-y-1">
-              <div>public: {{ containerUrls.public }}</div>
-              <div>private: {{ containerUrls.private }}</div>
-              <div>shared: {{ containerUrls.shared }}</div>
-              <div>wallet/private: {{ containerUrls.walletPrivate }}</div>
-              <div>wallet/public: {{ containerUrls.walletPublic }}</div>
-            </div>
-          </div>
-        </section>
+        <div v-if="containerUrls" class="text-xs font-mono space-y-1">
+          <div>public: {{ containerUrls.public }}</div>
+          <div>private: {{ containerUrls.private }}</div>
+          <div>shared: {{ containerUrls.shared }}</div>
+          <div>wallet/private: {{ containerUrls.walletPrivate }}</div>
+          <div>wallet/public: {{ containerUrls.walletPublic }}</div>
+        </div>
+      </div>
+    </section>
 
-        <section class="border border-[var(--ui-border)] rounded-xl p-4 space-y-4">
-          <h3 class="text-base font-medium">Ledgers in your pod</h3>
+    <section class="border border-[var(--ui-border)] rounded-xl p-4 space-y-4">
+      <h3 class="text-base font-medium">Ledgers in your pod</h3>
       <div class="grid gap-3">
         <label class="text-sm">
           Privacy level
@@ -651,84 +656,84 @@ onMounted(async () => {
           Load into workspace
         </button>
       </div>
-        </section>
+    </section>
 
-        <section class="border border-[var(--ui-border)] rounded-xl p-4 space-y-4">
-          <h3 class="text-base font-medium">Solid wallet</h3>
-          <div v-if="!sessionInfo.isLoggedIn" class="text-sm opacity-70">
-            Sign in to manage profiles stored in your pod.
-          </div>
-          <div v-else class="space-y-3 text-sm">
-            <div class="flex flex-wrap gap-2">
-              <button
-                class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
-                :disabled="!selectedPod || busy"
-                @click="refreshWallet"
-              >
-                Refresh wallet
-              </button>
-              <button
-                class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
-                :disabled="!selectedPod || busy"
-                @click="saveProfileToWallet"
-              >
-                Save current profile
-              </button>
-            </div>
+    <section class="border border-[var(--ui-border)] rounded-xl p-4 space-y-4">
+      <h3 class="text-base font-medium">Solid wallet</h3>
+      <div v-if="!sessionInfo.isLoggedIn" class="text-sm opacity-70">
+        Sign in to manage profiles stored in your pod.
+      </div>
+      <div v-else class="space-y-3 text-sm">
+        <div class="flex flex-wrap gap-2">
+          <button
+            class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
+            :disabled="!selectedPod || busy"
+            @click="refreshWallet"
+          >
+            Refresh wallet
+          </button>
+          <button
+            class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
+            :disabled="!selectedPod || busy"
+            @click="saveProfileToWallet"
+          >
+            Save current profile
+          </button>
+        </div>
 
-            <label class="block">
-              Login with Solid profile
-              <select
-                v-model="selectedWalletProfileUrl"
-                class="mt-1 w-full border border-[var(--ui-border)] rounded-lg px-3 py-2 text-sm"
-              >
-                <option value="">Select a private profile</option>
-                <option
-                  v-for="entry in walletPrivateFiles"
-                  :key="entry.url"
-                  :value="entry.url"
-                >
-                  {{ entry.name }}
-                </option>
-              </select>
-            </label>
-            <button
-              class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
-              :disabled="!selectedWalletProfileUrl || busy"
-              @click="loginWithWalletProfile"
+        <label class="block">
+          Login with Solid profile
+          <select
+            v-model="selectedWalletProfileUrl"
+            class="mt-1 w-full border border-[var(--ui-border)] rounded-lg px-3 py-2 text-sm"
+          >
+            <option value="">Select a private profile</option>
+            <option
+              v-for="entry in walletPrivateFiles"
+              :key="entry.url"
+              :value="entry.url"
             >
-              Sign in with Solid profile
-            </button>
+              {{ entry.name }}
+            </option>
+          </select>
+        </label>
+        <button
+          class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
+          :disabled="!selectedWalletProfileUrl || busy"
+          @click="loginWithWalletProfile"
+        >
+          Sign in with Solid profile
+        </button>
 
-            <div class="space-y-2">
-              <div class="font-medium text-xs">Public profiles</div>
-              <div v-if="!walletPublicFiles.length" class="text-xs opacity-70">
-                No public profiles stored yet.
+        <div class="space-y-2">
+          <div class="font-medium text-xs">Public profiles</div>
+          <div v-if="!walletPublicFiles.length" class="text-xs opacity-70">
+            No public profiles stored yet.
+          </div>
+          <div v-else class="space-y-2">
+            <div
+              v-for="entry in walletPublicFiles"
+              :key="entry.url"
+              class="flex items-center justify-between gap-2 border border-[var(--ui-border)] rounded-lg px-3 py-2"
+            >
+              <div class="text-xs font-mono break-all">
+                {{ entry.url }}
               </div>
-              <div v-else class="space-y-2">
-                <div
-                  v-for="entry in walletPublicFiles"
-                  :key="entry.url"
-                  class="flex items-center justify-between gap-2 border border-[var(--ui-border)] rounded-lg px-3 py-2"
-                >
-                  <div class="text-xs font-mono break-all">
-                    {{ entry.url }}
-                  </div>
-                  <button
-                    class="text-xs border border-[var(--ui-border)] px-3 py-1 rounded-full"
-                    @click="copyPublicProfileUrl(entry.url)"
-                  >
-                    Copy link
-                  </button>
-                </div>
-              </div>
+              <button
+                class="text-xs border border-[var(--ui-border)] px-3 py-1 rounded-full"
+                @click="copyPublicProfileUrl(entry.url)"
+              >
+                Copy link
+              </button>
             </div>
           </div>
-        </section>
+        </div>
+      </div>
+    </section>
 
-        <section
-          v-if="status || error"
-          class="border border-[var(--ui-border)] rounded-xl p-4 space-y-2 text-sm"
+    <section
+      v-if="status || error"
+      class="border border-[var(--ui-border)] rounded-xl p-4 space-y-2 text-sm"
     >
       <div v-if="status" class="text-emerald-700">{{ status }}</div>
       <div v-if="error" class="text-red-600">{{ error }}</div>
