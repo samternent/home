@@ -16,7 +16,8 @@ const mdAndLarger = breakpoints.greaterOrEqual("md");
 const smallerThanMd = breakpoints.smaller("md");
 const smallerThanLg = breakpoints.smaller("lg");
 
-const theme = useLocalStorage("app/theme", "sleekLight");
+const theme = useLocalStorage("app/theme", "obsidian");
+const themeMode = useLocalStorage("app/themeMode", "light");
 
 watch(route, () => {
   openSideBar.value = false;
@@ -27,8 +28,8 @@ const showSidebar = computed(() => mdAndLarger.value || openSideBar.value);
 
 const topItems = computed(() => [
   {
-    name: "Todos",
-    to: "/workspace/todo",
+    name: "Apps",
+    to: "/workspace/apps",
   },
   {
     name: "Users",
@@ -38,6 +39,8 @@ const topItems = computed(() => [
     name: "Permissions",
     to: "/workspace/permissions",
   },
+]);
+const middleItems = computed(() => [
   {
     name: "Tamper",
     to: "/workspace/tamper",
@@ -195,13 +198,28 @@ async function deleteLedger() {
             <div class="flex-1 min-w-0">{{ item.name }}</div>
           </RouterLink>
         </div>
+        <hr class="m-4 border-t border-[var(--ui-border)]" />
+        <div v-for="item in middleItems" :key="item.to" class="group text-xs">
+          <!-- Main Item -->
+          <RouterLink
+            :to="item.to"
+            class="flex items-center px-4 py-1 border-[var(--ui-border)] transition-all duration-200"
+            :class="{
+              'font-medium text-[var(--ui-primary)]': $route.path.startsWith(
+                item.to
+              ),
+            }"
+          >
+            <div class="flex-1 min-w-0">{{ item.name }}</div>
+          </RouterLink>
+        </div>
       </nav>
 
       <!-- Bottom Items -->
       <nav class="space-y-2 pt-4">
-        <div class="py-2 flex flex-col w-auto gap-2 font-sans">
+        <div class="py-2 flex flex-col w-auto gap-2 font-mono">
           <button
-            class="text-xs border border-[var(--ui-border)] px-4 py-2 rounded-full text-left"
+            class="text-xs border border-[var(--ui-border)] px-4 py-2 rounded-full text-left cursor-pointer hover:bg-[var(--ui-primary)]/10 transition-colors"
             @click="createNewLedger"
           >
             Create new ledger
@@ -214,46 +232,50 @@ async function deleteLedger() {
             @change="handleLedgerUpload"
           />
           <button
-            class="text-xs border border-[var(--ui-border)] px-4 py-2 rounded-full text-left"
+            class="text-xs border border-[var(--ui-border)] px-4 py-2 rounded-full text-left cursor-pointer hover:bg-[var(--ui-fg)]/5 transition-colors"
             @click="triggerLedgerUpload"
           >
             Upload ledger
           </button>
           <button
-            class="text-xs border border-[var(--ui-border)] px-4 py-2 rounded-full text-left"
+            class="text-xs border border-[var(--ui-border)] px-4 py-2 rounded-full text-left cursor-pointer hover:bg-[var(--ui-fg)]/5 transition-colors"
             @click="downloadLedger"
           >
             Download ledger
           </button>
           <button
-            class="text-xs border border-red-400/60 text-red-600 px-4 py-2 rounded-full text-left"
+            class="text-xs border border-red-400/60 text-red-600 px-4 py-2 rounded-full text-left cursor-pointer hover:bg-[var(--ui-critical)]/10 transition-colors"
             @click="deleteLedger"
           >
             Delete ledger
           </button>
         </div>
-        <div v-for="item in bottomItems" :key="item.to" class="group">
-          <!-- Main Item -->
+        <div class="flex flex-col w-auto gap-1 font-sans">
           <RouterLink
+            v-for="item in bottomItems"
+            :key="item.to"
             :to="item.to"
-            class="flex items-center gap-3 rounded-lg transition-all duration-200 hover:bg-base-300/50"
-            :class="{
-              'bg-base-300 font-bold': $route.path.startsWith(item.to),
-              'text-base-content/80 hover:text-base-content':
-                !$route.path.startsWith(item.to),
-            }"
+            class="flex items-center gap-3 rounded-lg transition-all duration-200 hover:bg-base-300/50 text-xs px-4 hover:text-[var(--ui-secondary)]"
           >
-            <div class="text-sm">{{ item.name }}</div>
+            {{ item.name }}
           </RouterLink>
+          <a
+            :href="`https://github.com/samternent/home/releases/tag/concord-${appVersion}`"
+            target="_blank"
+            class="text-xs font-mono px-2 hover:text-[var(--ui-accent)] transition-colors px-4 py-2"
+          >
+            v{{ appVersion }}
+          </a>
         </div>
-        <SThemeToggle v-model="theme" show-dropdown size="sm" class="w-full" />
-        <a
-          :href="`https://github.com/samternent/home/releases/tag/concord-${appVersion}`"
-          target="_blank"
-          class="text-xs font-mono"
-        >
-          v{{ appVersion }}
-        </a>
+        <div class="flex items-center justify-between py-2 font-sans text-xs">
+          <SThemeToggle
+            v-model="theme"
+            show-dropdown
+            size="xs"
+            class="w-full"
+          />
+          <SThemeToggle v-model="themeMode" size="sm" class="w-20" />
+        </div>
       </nav>
     </div>
   </div>

@@ -17,62 +17,62 @@
   /* =========================
      Primary (pink neon)
      ========================= */
-  --ui-primary: oklch(65% 0.28 330);
+  --ui-primary: oklch(65% 0.27 310);
   --ui-on-primary: oklch(10% 0 0);
 
   /* Tonal + hover/active tones (explicit, reliable) */
-  --ui-primary-muted: oklch(65% 0.28 330 / 0.14);
-  --ui-primary-hover: oklch(65% 0.28 330 / 0.22);
-  --ui-primary-active: oklch(65% 0.28 330 / 0.3);
+  --ui-primary-muted: oklch(65% 0.27 310 / 0.14);
+  --ui-primary-hover: oklch(65% 0.27 310 / 0.22);
+  --ui-primary-active: oklch(65% 0.27 310 / 0.3);
 
   /* =========================
      Accent (gold neon)
      ========================= */
-  --ui-accent: oklch(80% 0.22 80);
+  --ui-accent: oklch(78% 0.2 95);
   --ui-on-accent: oklch(10% 0 0);
-  --ui-accent-muted: oklch(80% 0.22 80 / 0.14);
-  --ui-accent-hover: oklch(80% 0.22 80 / 0.22);
-  --ui-accent-active: oklch(80% 0.22 80 / 0.3);
+  --ui-accent-muted: oklch(78% 0.2 95 / 0.14);
+  --ui-accent-hover: oklch(78% 0.2 95 / 0.22);
+  --ui-accent-active: oklch(78% 0.2 95 / 0.3);
 
   /* =========================
      Secondary (cyan neon)
      ========================= */
-  --ui-secondary: oklch(72% 0.18 190);
+  --ui-secondary: oklch(70% 0.16 200);
   --ui-on-secondary: oklch(10% 0 0);
-  --ui-secondary-muted: oklch(72% 0.18 190 / 0.14);
-  --ui-secondary-hover: oklch(72% 0.18 190 / 0.22);
-  --ui-secondary-active: oklch(72% 0.18 190 / 0.3);
+  --ui-secondary-muted: oklch(70% 0.16 200 / 0.14);
+  --ui-secondary-hover: oklch(70% 0.16 200 / 0.22);
+  --ui-secondary-active: oklch(70% 0.16 200 / 0.3);
 
   /* =========================
      Critical
      ========================= */
-  --ui-critical: oklch(68% 0.3 25);
+  --ui-critical: oklch(66% 0.25 25);
   --ui-on-critical: oklch(10% 0 0);
 
-  --ui-critical-muted: oklch(68% 0.3 25 / 0.16);
-  --ui-critical-hover: oklch(68% 0.3 25 / 0.24);
-  --ui-critical-active: oklch(68% 0.3 25 / 0.32);
+  --ui-critical-muted: oklch(66% 0.25 25 / 0.16);
+  --ui-critical-hover: oklch(66% 0.25 25 / 0.24);
+  --ui-critical-active: oklch(66% 0.25 25 / 0.32);
 
   /* =========================
      Success / Warning / Info
      ========================= */
-  --ui-success: oklch(72% 0.22 150);
+  --ui-success: oklch(68% 0.18 150);
   --ui-on-success: oklch(10% 0 0);
-  --ui-success-muted: oklch(72% 0.22 150 / 0.16);
-  --ui-success-hover: oklch(72% 0.22 150 / 0.24);
-  --ui-success-active: oklch(72% 0.22 150 / 0.32);
+  --ui-success-muted: oklch(68% 0.18 150 / 0.16);
+  --ui-success-hover: oklch(68% 0.18 150 / 0.24);
+  --ui-success-active: oklch(68% 0.18 150 / 0.32);
 
-  --ui-warning: oklch(80% 0.22 80);
+  --ui-warning: oklch(75% 0.2 70);
   --ui-on-warning: oklch(10% 0 0);
-  --ui-warning-muted: oklch(80% 0.22 80 / 0.16);
-  --ui-warning-hover: oklch(80% 0.22 80 / 0.24);
-  --ui-warning-active: oklch(80% 0.22 80 / 0.32);
+  --ui-warning-muted: oklch(75% 0.2 70 / 0.16);
+  --ui-warning-hover: oklch(75% 0.2 70 / 0.24);
+  --ui-warning-active: oklch(75% 0.2 70 / 0.32);
 
-  --ui-info: oklch(72% 0.2 230);
+  --ui-info: oklch(70% 0.18 230);
   --ui-on-info: oklch(10% 0 0);
-  --ui-info-muted: oklch(72% 0.2 230 / 0.16);
-  --ui-info-hover: oklch(72% 0.2 230 / 0.24);
-  --ui-info-active: oklch(72% 0.2 230 / 0.32);
+  --ui-info-muted: oklch(70% 0.18 230 / 0.16);
+  --ui-info-hover: oklch(70% 0.18 230 / 0.24);
+  --ui-info-active: oklch(70% 0.18 230 / 0.32);
 
   /* Aliases for app configs that still reference danger */
   --ui-danger: var(--ui-critical);
@@ -93,15 +93,15 @@
   /* =========================
      Focus / Glow
      ========================= */
-  --ui-ring: oklch(65% 0.28 330 / 0.5);
-  --ui-glow-primary: 0 0 0 1px oklch(65% 0.28 330 / 0.55),
-    0 0 18px oklch(65% 0.28 330 / 0.55);
-  --ui-glow-accent: 0 0 0 1px oklch(80% 0.22 80 / 0.55),
-    0 0 18px oklch(80% 0.22 80 / 0.55);
-  --ui-glow-critical: 0 0 0 1px oklch(68% 0.3 25 / 0.55),
-    0 0 18px oklch(68% 0.3 25 / 0.55);
-  --ui-glow-success: 0 0 0 1px oklch(72% 0.22 150 / 0.5),
-    0 0 18px oklch(72% 0.22 150 / 0.5);
+  --ui-ring: oklch(65% 0.27 310 / 0.5);
+  --ui-glow-primary: 0 0 0 1px oklch(65% 0.27 310 / 0.55),
+    0 0 18px oklch(65% 0.27 310 / 0.55);
+  --ui-glow-accent: 0 0 0 1px oklch(78% 0.2 95 / 0.55),
+    0 0 18px oklch(78% 0.2 95 / 0.55);
+  --ui-glow-critical: 0 0 0 1px oklch(66% 0.25 25 / 0.55),
+    0 0 18px oklch(66% 0.25 25 / 0.55);
+  --ui-glow-success: 0 0 0 1px oklch(68% 0.18 150 / 0.5),
+    0 0 18px oklch(68% 0.18 150 / 0.5);
 
   /* =========================
      Shape

@@ -4,3 +4,13 @@
 /* @import "tailwindcss/components.css" layer(components); */
 @import "tailwindcss/utilities.css" layer(utilities);
 @plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:where(.dark, .dark *));
+/*
+Source - https://stackoverflow.com/a/79423955
+Posted by rozsazoltan, modified by community. See post 'Timeline' for change history
+Retrieved 2026-02-03, License - CC BY-SA 4.0
+*/
+
+@custom-variant dark (&:where([data-theme$="-dark"], [data-theme$="-dark"] *));
+@custom-variant light (&:where([data-theme$="-light"], [data-theme$="-light"] *));

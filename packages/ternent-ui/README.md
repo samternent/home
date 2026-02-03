@@ -117,6 +117,14 @@ Built-in CSS theme files:
 
 - `print.css` → `print-light`, `print-dark`
 - `neon-noir.css` → `neon-noir`
+- `spruce-ink.css` → `spruce-light`, `spruce-dark`
+- `citrine-ash.css` → `citrine-light`, `citrine-dark`
+- `harbor-rose.css` → `harbor-light`, `harbor-dark`
+- `obsidian-iris.css` → `obsidian-light`, `obsidian-dark`
+- `garnet-honey.css` → `garnet-light`, `garnet-dark`
+- `prism.css` → `prism-light`, `prism-dark`
+- `sunset.css` → `sunset-light`, `sunset-dark`
+- `aurora.css` → `aurora-light`, `aurora-dark`
 
 ### CSS Custom Properties
 

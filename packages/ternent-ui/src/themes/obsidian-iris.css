@@ -9,47 +9,47 @@
   --ui-surface-hover: #e2dbe2;
   --ui-border: rgba(33, 26, 29, 0.14);
 
-  --ui-primary: #6320ee;
+  --ui-primary: #4a1d96;
   --ui-on-primary: #f7f5f7;
-  --ui-primary-muted: rgba(99, 32, 238, 0.14);
-  --ui-primary-hover: rgba(99, 32, 238, 0.22);
-  --ui-primary-active: rgba(99, 32, 238, 0.3);
+  --ui-primary-muted: rgba(74, 29, 150, 0.14);
+  --ui-primary-hover: rgba(74, 29, 150, 0.22);
+  --ui-primary-active: rgba(74, 29, 150, 0.3);
 
-  --ui-secondary: #211a1d;
+  --ui-secondary: #1f1b24;
   --ui-on-secondary: #f7f5f7;
-  --ui-secondary-muted: rgba(33, 26, 29, 0.14);
-  --ui-secondary-hover: rgba(33, 26, 29, 0.22);
-  --ui-secondary-active: rgba(33, 26, 29, 0.3);
+  --ui-secondary-muted: rgba(31, 27, 36, 0.14);
+  --ui-secondary-hover: rgba(31, 27, 36, 0.22);
+  --ui-secondary-active: rgba(31, 27, 36, 0.3);
 
-  --ui-accent: #8a55f4;
+  --ui-accent: #7c5cf0;
   --ui-on-accent: #140a20;
-  --ui-accent-muted: rgba(138, 85, 244, 0.14);
-  --ui-accent-hover: rgba(138, 85, 244, 0.22);
-  --ui-accent-active: rgba(138, 85, 244, 0.3);
+  --ui-accent-muted: rgba(124, 92, 240, 0.14);
+  --ui-accent-hover: rgba(124, 92, 240, 0.22);
+  --ui-accent-active: rgba(124, 92, 240, 0.3);
 
-  --ui-success: #3b9f86;
+  --ui-success: #2f8f7a;
   --ui-on-success: #f7f5f7;
-  --ui-success-muted: rgba(59, 159, 134, 0.16);
-  --ui-success-hover: rgba(59, 159, 134, 0.24);
-  --ui-success-active: rgba(59, 159, 134, 0.32);
+  --ui-success-muted: rgba(47, 143, 122, 0.16);
+  --ui-success-hover: rgba(47, 143, 122, 0.24);
+  --ui-success-active: rgba(47, 143, 122, 0.32);
 
-  --ui-warning: #c4872d;
+  --ui-warning: #c4832f;
   --ui-on-warning: #1b1205;
-  --ui-warning-muted: rgba(196, 135, 45, 0.16);
-  --ui-warning-hover: rgba(196, 135, 45, 0.24);
-  --ui-warning-active: rgba(196, 135, 45, 0.32);
+  --ui-warning-muted: rgba(196, 131, 47, 0.16);
+  --ui-warning-hover: rgba(196, 131, 47, 0.24);
+  --ui-warning-active: rgba(196, 131, 47, 0.32);
 
-  --ui-info: #4f4bb0;
+  --ui-info: #3f5fb7;
   --ui-on-info: #f7f5f7;
-  --ui-info-muted: rgba(79, 75, 176, 0.16);
-  --ui-info-hover: rgba(79, 75, 176, 0.24);
-  --ui-info-active: rgba(79, 75, 176, 0.32);
+  --ui-info-muted: rgba(63, 95, 183, 0.16);
+  --ui-info-hover: rgba(63, 95, 183, 0.24);
+  --ui-info-active: rgba(63, 95, 183, 0.32);
 
-  --ui-critical: #b25757;
+  --ui-critical: #b84a4a;
   --ui-on-critical: #f7f5f7;
-  --ui-critical-muted: rgba(178, 87, 87, 0.16);
-  --ui-critical-hover: rgba(178, 87, 87, 0.24);
-  --ui-critical-active: rgba(178, 87, 87, 0.32);
+  --ui-critical-muted: rgba(184, 74, 74, 0.16);
+  --ui-critical-hover: rgba(184, 74, 74, 0.24);
+  --ui-critical-active: rgba(184, 74, 74, 0.32);
 
   --ui-danger: var(--ui-critical);
   --ui-on-danger: var(--ui-on-critical);
@@ -62,11 +62,11 @@
   --ui-tonal-tertiary: rgba(33, 26, 29, 0.03);
   --ui-tonal-tertiary-hover: rgba(33, 26, 29, 0.07);
 
-  --ui-ring: rgba(99, 32, 238, 0.4);
-  --ui-glow-primary: 0 0 0 2px rgba(99, 32, 238, 0.25);
-  --ui-glow-accent: 0 0 0 2px rgba(138, 85, 244, 0.22);
-  --ui-glow-critical: 0 0 0 2px rgba(178, 87, 87, 0.25);
-  --ui-glow-success: 0 0 0 2px rgba(59, 159, 134, 0.22);
+  --ui-ring: rgba(74, 29, 150, 0.4);
+  --ui-glow-primary: 0 0 0 2px rgba(74, 29, 150, 0.25);
+  --ui-glow-accent: 0 0 0 2px rgba(124, 92, 240, 0.22);
+  --ui-glow-critical: 0 0 0 2px rgba(184, 74, 74, 0.25);
+  --ui-glow-success: 0 0 0 2px rgba(47, 143, 122, 0.22);
 
   --ui-radius-sm: 8px;
   --ui-radius-md: 12px;
@@ -95,47 +95,47 @@
   --ui-surface-hover: #231c21;
   --ui-border: rgba(243, 239, 244, 0.12);
 
-  --ui-primary: #6320ee;
+  --ui-primary: #9b7bff;
   --ui-on-primary: #160a2a;
-  --ui-primary-muted: rgba(99, 32, 238, 0.14);
-  --ui-primary-hover: rgba(99, 32, 238, 0.22);
-  --ui-primary-active: rgba(99, 32, 238, 0.3);
+  --ui-primary-muted: rgba(155, 123, 255, 0.14);
+  --ui-primary-hover: rgba(155, 123, 255, 0.22);
+  --ui-primary-active: rgba(155, 123, 255, 0.3);
 
-  --ui-secondary: #5b4a56;
+  --ui-secondary: #433c49;
   --ui-on-secondary: #f3eff4;
-  --ui-secondary-muted: rgba(91, 74, 86, 0.16);
-  --ui-secondary-hover: rgba(91, 74, 86, 0.24);
-  --ui-secondary-active: rgba(91, 74, 86, 0.32);
+  --ui-secondary-muted: rgba(67, 60, 73, 0.16);
+  --ui-secondary-hover: rgba(67, 60, 73, 0.24);
+  --ui-secondary-active: rgba(67, 60, 73, 0.32);
 
-  --ui-accent: #9a6df6;
+  --ui-accent: #b39aff;
   --ui-on-accent: #160a2a;
-  --ui-accent-muted: rgba(154, 109, 246, 0.16);
-  --ui-accent-hover: rgba(154, 109, 246, 0.24);
-  --ui-accent-active: rgba(154, 109, 246, 0.32);
+  --ui-accent-muted: rgba(179, 154, 255, 0.16);
+  --ui-accent-hover: rgba(179, 154, 255, 0.24);
+  --ui-accent-active: rgba(179, 154, 255, 0.32);
 
-  --ui-success: #58bda1;
+  --ui-success: #5ec7ad;
   --ui-on-success: #0e1815;
-  --ui-success-muted: rgba(88, 189, 161, 0.16);
-  --ui-success-hover: rgba(88, 189, 161, 0.24);
-  --ui-success-active: rgba(88, 189, 161, 0.32);
+  --ui-success-muted: rgba(94, 199, 173, 0.16);
+  --ui-success-hover: rgba(94, 199, 173, 0.24);
+  --ui-success-active: rgba(94, 199, 173, 0.32);
 
-  --ui-warning: #d39b4a;
+  --ui-warning: #d9a15a;
   --ui-on-warning: #1c1207;
-  --ui-warning-muted: rgba(211, 155, 74, 0.16);
-  --ui-warning-hover: rgba(211, 155, 74, 0.24);
-  --ui-warning-active: rgba(211, 155, 74, 0.32);
+  --ui-warning-muted: rgba(217, 161, 90, 0.16);
+  --ui-warning-hover: rgba(217, 161, 90, 0.24);
+  --ui-warning-active: rgba(217, 161, 90, 0.32);
 
-  --ui-info: #7a74d9;
+  --ui-info: #7f95e6;
   --ui-on-info: #12101f;
-  --ui-info-muted: rgba(122, 116, 217, 0.16);
-  --ui-info-hover: rgba(122, 116, 217, 0.24);
-  --ui-info-active: rgba(122, 116, 217, 0.32);
+  --ui-info-muted: rgba(127, 149, 230, 0.16);
+  --ui-info-hover: rgba(127, 149, 230, 0.24);
+  --ui-info-active: rgba(127, 149, 230, 0.32);
 
-  --ui-critical: #e07979;
+  --ui-critical: #e28787;
   --ui-on-critical: #14090b;
-  --ui-critical-muted: rgba(224, 121, 121, 0.16);
-  --ui-critical-hover: rgba(224, 121, 121, 0.24);
-  --ui-critical-active: rgba(224, 121, 121, 0.32);
+  --ui-critical-muted: rgba(226, 135, 135, 0.16);
+  --ui-critical-hover: rgba(226, 135, 135, 0.24);
+  --ui-critical-active: rgba(226, 135, 135, 0.32);
 
   --ui-danger: var(--ui-critical);
   --ui-on-danger: var(--ui-on-critical);
@@ -148,11 +148,11 @@
   --ui-tonal-tertiary: rgba(243, 239, 244, 0.04);
   --ui-tonal-tertiary-hover: rgba(243, 239, 244, 0.1);
 
-  --ui-ring: rgba(99, 32, 238, 0.5);
-  --ui-glow-primary: 0 0 0 2px rgba(99, 32, 238, 0.35);
-  --ui-glow-accent: 0 0 0 2px rgba(154, 109, 246, 0.35);
-  --ui-glow-critical: 0 0 0 2px rgba(224, 121, 121, 0.3);
-  --ui-glow-success: 0 0 0 2px rgba(88, 189, 161, 0.3);
+  --ui-ring: rgba(155, 123, 255, 0.5);
+  --ui-glow-primary: 0 0 0 2px rgba(155, 123, 255, 0.35);
+  --ui-glow-accent: 0 0 0 2px rgba(179, 154, 255, 0.35);
+  --ui-glow-critical: 0 0 0 2px rgba(226, 135, 135, 0.3);
+  --ui-glow-success: 0 0 0 2px rgba(94, 199, 173, 0.3);
 
   --ui-radius-sm: 8px;
   --ui-radius-md: 12px;

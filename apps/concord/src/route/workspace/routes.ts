@@ -10,14 +10,44 @@ export default [
           {
             path: "",
             redirect: (to) => ({
-              path: "/workspace/todo",
+              path: "/workspace/apps",
               query: to.query,
               hash: to.hash,
             }),
           },
           {
             path: "todo",
-            component: () => import("./WorkspaceTodo.vue"),
+            redirect: (to) => ({
+              path: "/workspace/apps/todos",
+              query: to.query,
+              hash: to.hash,
+            }),
+          },
+          {
+            path: "apps",
+            component: () => import("./WorkspaceApps.vue"),
+            children: [
+              {
+                path: "",
+                redirect: (to) => ({
+                  path: "/workspace/apps/todos",
+                  query: to.query,
+                  hash: to.hash,
+                }),
+              },
+              {
+                path: "todos",
+                component: () => import("./WorkspaceTodo.vue"),
+              },
+              {
+                path: "boards",
+                component: () => import("./WorkspaceBoards.vue"),
+              },
+              {
+                path: "calendar",
+                component: () => import("./WorkspaceCalendar.vue"),
+              },
+            ],
           },
           {
             path: "users",

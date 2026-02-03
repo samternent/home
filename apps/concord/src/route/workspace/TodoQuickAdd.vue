@@ -40,14 +40,6 @@ const permissionId = shallowRef<string | null>(null);
 const errorMessage = shallowRef("");
 const isSubmitting = ref(false);
 
-const permissionLabel = computed(() => {
-  if (!permissionId.value) return "public";
-  const match = props.permissions.find(
-    (permission) => permission.data.id === permissionId.value
-  );
-  return match?.data.title || "Permission";
-});
-
 const hasUnsavedChanges = computed(() => {
   return (
     title.value.trim().length > 0 ||
@@ -55,6 +47,10 @@ const hasUnsavedChanges = computed(() => {
     !!permissionId.value
   );
 });
+
+const isCollapsed = computed(
+  () => !isExpanded.value && !hasUnsavedChanges.value
+);
 
 function expand() {
   if (props.disabled) return;
@@ -138,54 +134,88 @@ watch(
 <template>
   <div
     ref="rootRef"
-    class="sticky bottom-0 z-10 border-t border-[var(--ui-border)] bg-[var(--ui-bg)]/90 backdrop-blur py-4"
+    class="rounded-3xl border border-[var(--ui-border)] bg-[color-mix(in srgb, var(--ui-surface) 88%, var(--ui-bg))] transition-all duration-300"
+    :class="
+      isExpanded
+        ? 'shadow-[0_18px_40px_rgba(0,0,0,0.14)]'
+        : 'hover:border-[var(--ui-secondary)]/70'
+    "
   >
-    <div class="px-4 py-3 flex flex-col gap-3">
-      <div class="flex flex-wrap items-center gap-2">
-        <input
-          v-model="title"
-          type="text"
-          :disabled="disabled"
-          class="flex-1 min-w-[12rem] border border-[var(--ui-border)] rounded-xl px-3 py-2"
-          placeholder="Quick add a task"
-          aria-label="Todo title"
-          @focus="expand"
-          @keydown="onTitleKeydown"
-        />
-
-        <button
-          type="button"
-          class="px-4 py-2 rounded-full border border-[var(--ui-border)]"
-          :disabled="isSubmitting"
-          aria-label="Add todo"
-          @click="submit"
-        >
-          Add
-        </button>
-
-        <button
-          type="button"
-          class="p-2 border border-[var(--ui-border)] rounded-full"
-          aria-label="Toggle more options"
-          @click="isExpanded ? collapse(true) : expand()"
+    <div class="p-4 md:p-5 flex flex-col gap-3">
+      <button
+        v-if="isCollapsed"
+        type="button"
+        class="flex items-center gap-3 text-left text-sm opacity-70 hover:opacity-100 transition"
+        :disabled="disabled"
+        @click="expand"
+      >
+        <span
+          class="size-10 rounded-full border border-[var(--ui-border)] flex items-center justify-center"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="size-4 transition-transform duration-300 transform-gpu"
-            :class="!isExpanded ? 'rotate-0' : 'rotate-180'"
             fill="none"
             viewBox="0 0 24 24"
+            stroke-width="1.5"
             stroke="currentColor"
+            class="size-5"
           >
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
-              stroke-width="2"
-              d="M19 9l-7 7-7-7"
+              d="M12 4.5v15m7.5-7.5h-15"
             />
           </svg>
-        </button>
-      </div>
+        </span>
+        <span class="text-base font-thin">Add a task</span>
+      </button>
+
+      <div v-else class="flex flex-col gap-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <input
+            v-model="title"
+            type="text"
+            :disabled="disabled"
+            class="flex-1 min-w-[12rem] border border-[var(--ui-border)] rounded-2xl px-3 py-2 bg-transparent"
+            placeholder="What needs to get done?"
+            aria-label="Todo title"
+            @focus="expand"
+            @keydown="onTitleKeydown"
+          />
+
+          <button
+            type="button"
+            class="px-4 py-2 rounded-full border border-[var(--ui-border)]"
+            :disabled="isSubmitting"
+            aria-label="Add todo"
+            @click="submit"
+          >
+            Add
+          </button>
+
+          <button
+            type="button"
+            class="p-2 border border-[var(--ui-border)] rounded-full"
+            aria-label="Toggle more options"
+            @click="isExpanded ? collapse(true) : expand()"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="size-4 transition-transform duration-300 transform-gpu"
+              :class="!isExpanded ? 'rotate-0' : 'rotate-180'"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </button>
+        </div>
         <div v-if="isExpanded" class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div class="flex flex-col gap-2">
             <label class="font-thin"> Assignee </label>
@@ -195,28 +225,29 @@ watch(
             <label class="font-thin"> Permissions </label>
             <select
               v-model="permissionId"
-              class="border py-2 px-3 rounded-xl border-[var(--ui-border)]"
+              class="border py-2 px-3 rounded-xl border-[var(--ui-border)] bg-transparent"
               aria-label="Todo permission"
             >
               <option :value="null">public</option>
               <option
                 v-for="permission in permissions"
                 :key="permission.data.id"
-              :value="permission.data.id"
-            >
-              {{ permission.data.title }}
+                :value="permission.data.id"
+              >
+                {{ permission.data.title }}
               </option>
             </select>
           </div>
         </div>
-      <p
-        v-if="errorMessage"
-        class="text-xs text-red-500"
-        role="alert"
-        aria-live="assertive"
-      >
-        {{ errorMessage }}
-      </p>
+        <p
+          v-if="errorMessage"
+          class="text-xs text-red-500"
+          role="alert"
+          aria-live="assertive"
+        >
+          {{ errorMessage }}
+        </p>
+      </div>
     </div>
   </div>
 </template>

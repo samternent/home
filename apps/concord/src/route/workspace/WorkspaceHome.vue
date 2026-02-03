@@ -232,173 +232,168 @@ watch([selectedPod, privacy], async () => {
 });
 </script>
 <template>
-  <TransitionGroup name="slow-swap">
-    <div
-      v-if="loading"
-      class="text-sm opacity-70 flex-1 flex w-full h-screen items-center justify-center bg-[var(--ui-surface)]"
-    ></div>
-    <AppLayout v-else>
-      <template #left-side> <SideNav /> </template>
+  <AppLayout>
+    <template #left-side> <SideNav /> </template>
 
-      <div class="p-4 flex flex-1 h-full">
-        <div class="w-full">
-          <RouterView v-if="hasLedger" />
-          <div v-else class="space-y-6 max-w-3xl">
-            <div
-              class="border border-[var(--ui-border)] rounded-xl p-4 space-y-3 text-sm"
-            >
-              <h2 class="text-base font-medium">Workspace ledger</h2>
-              <div class="space-y-3">
-                <p>No ledger found in this workspace.</p>
-                <div class="flex flex-wrap gap-2">
-                  <button
-                    class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
-                    @click="createNewLedger"
-                  >
-                    Create new ledger
-                  </button>
-                  <button
-                    class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
-                    @click="triggerLedgerUpload"
-                  >
-                    Upload ledger
-                  </button>
-                  <button
-                    class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
-                    @click="loadSampleLedger"
-                  >
-                    Load sample ledger
-                  </button>
-                </div>
-                <input
-                  ref="uploadInputRef"
-                  type="file"
-                  accept="application/json"
-                  class="hidden"
-                  @change="handleLedgerUpload"
-                />
-              </div>
+    <div class="flex flex-1 h-full">
+      <RouterView />
+      <div
+        v-if="!hasLedger && !loading"
+        class="absolute top-0 left-0 w-full bottom-0 bg-[color-mix(in srgb, var(--ui-bg) 58%, transparent)] backdrop-blur-[12px] z-20 flex flex-col gap-4 items-center justify-center p-4"
+      >
+        <div
+          class="border border-[var(--ui-border)] rounded-xl p-4 space-y-3 text-sm bg-[var(--ui-bg)] shadow-[var(--ui-shadow-md)]"
+        >
+          <h2 class="text-base font-medium">Workspace ledger</h2>
+          <div class="space-y-3">
+            <p>No ledger found in this workspace.</p>
+            <div class="flex flex-wrap gap-2">
+              <button
+                class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
+                @click="createNewLedger"
+              >
+                Create new ledger
+              </button>
+              <button
+                class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
+                @click="triggerLedgerUpload"
+              >
+                Upload ledger
+              </button>
+              <button
+                class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
+                @click="loadSampleLedger"
+              >
+                Load sample ledger
+              </button>
             </div>
+            <input
+              ref="uploadInputRef"
+              type="file"
+              accept="application/json"
+              class="hidden"
+              @change="handleLedgerUpload"
+            />
+          </div>
+        </div>
 
-            <div
-              class="border border-[var(--ui-border)] rounded-xl p-4 space-y-4 text-sm"
+        <div
+          class="border border-[var(--ui-border)] rounded-xl p-4 space-y-4 text-sm bg-[var(--ui-bg)] shadow-[var(--ui-shadow-md)]"
+        >
+          <h2 class="text-base font-medium">Solid pod ledger import</h2>
+          <div v-if="!solidLoggedIn" class="space-y-3">
+            <label class="block text-sm">
+              OIDC issuer
+              <input
+                v-model="oidcIssuer"
+                list="solid-issuers"
+                class="mt-1 w-full border border-[var(--ui-border)] rounded-lg px-3 py-2 text-sm"
+                placeholder="https://login.inrupt.com"
+              />
+            </label>
+            <datalist id="solid-issuers">
+              <option value="https://login.inrupt.com" />
+              <option value="https://broker.pod.inrupt.com" />
+              <option value="https://solidcommunity.net" />
+            </datalist>
+            <button
+              class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
+              @click="loginToSolid"
             >
-              <h2 class="text-base font-medium">Solid pod ledger import</h2>
-              <div v-if="!solidLoggedIn" class="space-y-3">
-                <label class="block text-sm">
-                  OIDC issuer
-                  <input
-                    v-model="oidcIssuer"
-                    list="solid-issuers"
-                    class="mt-1 w-full border border-[var(--ui-border)] rounded-lg px-3 py-2 text-sm"
-                    placeholder="https://login.inrupt.com"
-                  />
-                </label>
-                <datalist id="solid-issuers">
-                  <option value="https://login.inrupt.com" />
-                  <option value="https://broker.pod.inrupt.com" />
-                  <option value="https://solidcommunity.net" />
-                </datalist>
-                <button
-                  class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
-                  @click="loginToSolid"
-                >
-                  Connect to Solid
-                </button>
-              </div>
+              Connect to Solid
+            </button>
+          </div>
 
-              <div v-else class="space-y-3">
-                <div class="flex flex-wrap gap-2">
-                  <button
-                    class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
-                    @click="logoutFromSolid"
-                  >
-                    Disconnect
-                  </button>
-                  <button
-                    class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
-                    @click="loadPods"
-                  >
-                    Refresh pods
-                  </button>
-                </div>
-                <div class="text-xs font-mono break-all opacity-70">
-                  {{ sessionInfo.webId || "No WebID found." }}
-                </div>
-                <label class="block">
-                  Pod storage root
-                  <select
-                    v-model="selectedPod"
-                    class="mt-1 w-full border border-[var(--ui-border)] rounded-lg px-3 py-2 text-sm"
-                  >
-                    <option value="" disabled>Select a pod</option>
-                    <option v-for="pod in podUrls" :key="pod" :value="pod">
-                      {{ pod }}
-                    </option>
-                  </select>
-                </label>
-                <label class="block">
-                  Privacy level
-                  <select
-                    v-model="privacy"
-                    class="mt-1 w-full border border-[var(--ui-border)] rounded-lg px-3 py-2 text-sm"
-                  >
-                    <option value="private">Private</option>
-                    <option value="public">Public</option>
-                    <option value="shared">Shared</option>
-                  </select>
-                </label>
-                <div class="flex flex-wrap gap-2">
-                  <button
-                    class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
-                    :disabled="!selectedPod"
-                    @click="refreshSolidLedgers"
-                  >
-                    Load pod ledgers
-                  </button>
-                </div>
-                <label class="block">
-                  Available ledgers
-                  <select
-                    v-model="selectedLedgerUrl"
-                    class="mt-1 w-full border border-[var(--ui-border)] rounded-lg px-3 py-2 text-sm"
-                  >
-                    <option value="">Select a ledger</option>
-                    <option
-                      v-for="entry in ledgerFiles"
-                      :key="entry.url"
-                      :value="entry.url"
-                    >
-                      {{ entry.name }}
-                    </option>
-                  </select>
-                </label>
-                <button
-                  class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
-                  :disabled="!selectedLedgerUrl"
-                  @click="loadLedgerFromSolid"
+          <div v-else class="space-y-3">
+            <div class="flex flex-wrap gap-2">
+              <button
+                class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
+                @click="logoutFromSolid"
+              >
+                Disconnect
+              </button>
+              <button
+                class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
+                @click="loadPods"
+              >
+                Refresh pods
+              </button>
+            </div>
+            <div class="text-xs font-mono break-all opacity-70">
+              {{ sessionInfo.webId || "No WebID found." }}
+            </div>
+            <label class="block">
+              Pod storage root
+              <select
+                v-model="selectedPod"
+                class="mt-1 w-full border border-[var(--ui-border)] rounded-lg px-3 py-2 text-sm"
+              >
+                <option value="" disabled>Select a pod</option>
+                <option v-for="pod in podUrls" :key="pod" :value="pod">
+                  {{ pod }}
+                </option>
+              </select>
+            </label>
+            <label class="block">
+              Privacy level
+              <select
+                v-model="privacy"
+                class="mt-1 w-full border border-[var(--ui-border)] rounded-lg px-3 py-2 text-sm"
+              >
+                <option value="private">Private</option>
+                <option value="public">Public</option>
+                <option value="shared">Shared</option>
+              </select>
+            </label>
+            <div class="flex flex-wrap gap-2">
+              <button
+                class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
+                :disabled="!selectedPod"
+                @click="refreshSolidLedgers"
+              >
+                Load pod ledgers
+              </button>
+            </div>
+            <label class="block">
+              Available ledgers
+              <select
+                v-model="selectedLedgerUrl"
+                class="mt-1 w-full border border-[var(--ui-border)] rounded-lg px-3 py-2 text-sm"
+              >
+                <option value="">Select a ledger</option>
+                <option
+                  v-for="entry in ledgerFiles"
+                  :key="entry.url"
+                  :value="entry.url"
                 >
-                  Import ledger
-                </button>
-              </div>
+                  {{ entry.name }}
+                </option>
+              </select>
+            </label>
+            <button
+              class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-sm"
+              :disabled="!selectedLedgerUrl"
+              @click="loadLedgerFromSolid"
+            >
+              Import ledger
+            </button>
+          </div>
 
-              <div v-if="solidStatus || solidError" class="space-y-1">
-                <div v-if="solidStatus" class="text-emerald-700">
-                  {{ solidStatus }}
-                </div>
-                <div v-if="solidError" class="text-red-600">
-                  {{ solidError }}
-                </div>
-              </div>
+          <div v-if="solidStatus || solidError" class="space-y-1">
+            <div v-if="solidStatus" class="text-emerald-700">
+              {{ solidStatus }}
+            </div>
+            <div v-if="solidError" class="text-red-600">
+              {{ solidError }}
             </div>
           </div>
         </div>
       </div>
-      <template #console="{ container }">
-        <WorkspaceConsole :container="container" />
-      </template>
-    </AppLayout>
-  </TransitionGroup>
+    </div>
+    <template #console="{ container }">
+      <WorkspaceConsole :container="container" />
+    </template>
+  </AppLayout>
 </template>
 <style>
 .slow-swap-enter-active,

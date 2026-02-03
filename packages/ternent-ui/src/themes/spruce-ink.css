@@ -12,53 +12,53 @@
   --ui-border: rgba(45, 48, 71, 0.14);
 
   /* ===== Primary ===== */
-  --ui-primary: #419d78;
+  --ui-primary: #1b7f5a;
   --ui-on-primary: #f7f7f4;
-  --ui-primary-muted: rgba(65, 157, 120, 0.14);
-  --ui-primary-hover: rgba(65, 157, 120, 0.22);
-  --ui-primary-active: rgba(65, 157, 120, 0.3);
+  --ui-primary-muted: rgba(27, 127, 90, 0.14);
+  --ui-primary-hover: rgba(27, 127, 90, 0.22);
+  --ui-primary-active: rgba(27, 127, 90, 0.3);
 
   /* ===== Secondary ===== */
-  --ui-secondary: #2d3047;
+  --ui-secondary: #1f2937;
   --ui-on-secondary: #f7f7f4;
-  --ui-secondary-muted: rgba(45, 48, 71, 0.14);
-  --ui-secondary-hover: rgba(45, 48, 71, 0.22);
-  --ui-secondary-active: rgba(45, 48, 71, 0.3);
+  --ui-secondary-muted: rgba(31, 41, 55, 0.14);
+  --ui-secondary-hover: rgba(31, 41, 55, 0.22);
+  --ui-secondary-active: rgba(31, 41, 55, 0.3);
 
   /* ===== Accent ===== */
-  --ui-accent: #5fbf9a;
+  --ui-accent: #7cc4a1;
   --ui-on-accent: #0f1a16;
-  --ui-accent-muted: rgba(95, 191, 154, 0.14);
-  --ui-accent-hover: rgba(95, 191, 154, 0.22);
-  --ui-accent-active: rgba(95, 191, 154, 0.3);
+  --ui-accent-muted: rgba(124, 196, 161, 0.14);
+  --ui-accent-hover: rgba(124, 196, 161, 0.22);
+  --ui-accent-active: rgba(124, 196, 161, 0.3);
 
   /* ===== Success ===== */
-  --ui-success: #419d78;
+  --ui-success: #1b7f5a;
   --ui-on-success: #f7f7f4;
-  --ui-success-muted: rgba(65, 157, 120, 0.16);
-  --ui-success-hover: rgba(65, 157, 120, 0.24);
-  --ui-success-active: rgba(65, 157, 120, 0.32);
+  --ui-success-muted: rgba(27, 127, 90, 0.16);
+  --ui-success-hover: rgba(27, 127, 90, 0.24);
+  --ui-success-active: rgba(27, 127, 90, 0.32);
 
   /* ===== Warning ===== */
-  --ui-warning: #b08b4f;
+  --ui-warning: #c0813a;
   --ui-on-warning: #16181f;
-  --ui-warning-muted: rgba(176, 139, 79, 0.16);
-  --ui-warning-hover: rgba(176, 139, 79, 0.24);
-  --ui-warning-active: rgba(176, 139, 79, 0.32);
+  --ui-warning-muted: rgba(192, 129, 58, 0.16);
+  --ui-warning-hover: rgba(192, 129, 58, 0.24);
+  --ui-warning-active: rgba(192, 129, 58, 0.32);
 
   /* ===== Info ===== */
-  --ui-info: #4b5a8b;
+  --ui-info: #2f5d8a;
   --ui-on-info: #f7f7f4;
-  --ui-info-muted: rgba(75, 90, 139, 0.16);
-  --ui-info-hover: rgba(75, 90, 139, 0.24);
-  --ui-info-active: rgba(75, 90, 139, 0.32);
+  --ui-info-muted: rgba(47, 93, 138, 0.16);
+  --ui-info-hover: rgba(47, 93, 138, 0.24);
+  --ui-info-active: rgba(47, 93, 138, 0.32);
 
   /* ===== Critical / danger ===== */
-  --ui-critical: #b65353;
+  --ui-critical: #c4514f;
   --ui-on-critical: #f7f7f4;
-  --ui-critical-muted: rgba(182, 83, 83, 0.16);
-  --ui-critical-hover: rgba(182, 83, 83, 0.24);
-  --ui-critical-active: rgba(182, 83, 83, 0.32);
+  --ui-critical-muted: rgba(196, 81, 79, 0.16);
+  --ui-critical-hover: rgba(196, 81, 79, 0.24);
+  --ui-critical-active: rgba(196, 81, 79, 0.32);
 
   --ui-danger: var(--ui-critical);
   --ui-on-danger: var(--ui-on-critical);
@@ -73,11 +73,11 @@
   --ui-tonal-tertiary-hover: rgba(45, 48, 71, 0.07);
 
   /* ===== Focus / glow ===== */
-  --ui-ring: rgba(65, 157, 120, 0.4);
-  --ui-glow-primary: 0 0 0 2px rgba(65, 157, 120, 0.25);
-  --ui-glow-accent: 0 0 0 2px rgba(95, 191, 154, 0.22);
-  --ui-glow-critical: 0 0 0 2px rgba(182, 83, 83, 0.25);
-  --ui-glow-success: 0 0 0 2px rgba(65, 157, 120, 0.22);
+  --ui-ring: rgba(27, 127, 90, 0.4);
+  --ui-glow-primary: 0 0 0 2px rgba(27, 127, 90, 0.25);
+  --ui-glow-accent: 0 0 0 2px rgba(124, 196, 161, 0.22);
+  --ui-glow-critical: 0 0 0 2px rgba(196, 81, 79, 0.25);
+  --ui-glow-success: 0 0 0 2px rgba(27, 127, 90, 0.22);
 
   /* ===== Shape ===== */
   --ui-radius-sm: 8px;
@@ -113,53 +113,53 @@
   --ui-border: rgba(238, 241, 244, 0.12);
 
   /* ===== Primary ===== */
-  --ui-primary: #419d78;
+  --ui-primary: #4fd1a5;
   --ui-on-primary: #0c1512;
-  --ui-primary-muted: rgba(65, 157, 120, 0.14);
-  --ui-primary-hover: rgba(65, 157, 120, 0.22);
-  --ui-primary-active: rgba(65, 157, 120, 0.3);
+  --ui-primary-muted: rgba(79, 209, 165, 0.14);
+  --ui-primary-hover: rgba(79, 209, 165, 0.22);
+  --ui-primary-active: rgba(79, 209, 165, 0.3);
 
   /* ===== Secondary ===== */
-  --ui-secondary: #4f5474;
+  --ui-secondary: #3f475a;
   --ui-on-secondary: #eef1f4;
-  --ui-secondary-muted: rgba(79, 84, 116, 0.16);
-  --ui-secondary-hover: rgba(79, 84, 116, 0.24);
-  --ui-secondary-active: rgba(79, 84, 116, 0.32);
+  --ui-secondary-muted: rgba(63, 71, 90, 0.16);
+  --ui-secondary-hover: rgba(63, 71, 90, 0.24);
+  --ui-secondary-active: rgba(63, 71, 90, 0.32);
 
   /* ===== Accent ===== */
-  --ui-accent: #6fd1aa;
+  --ui-accent: #9adbc0;
   --ui-on-accent: #0c1512;
-  --ui-accent-muted: rgba(111, 209, 170, 0.16);
-  --ui-accent-hover: rgba(111, 209, 170, 0.24);
-  --ui-accent-active: rgba(111, 209, 170, 0.32);
+  --ui-accent-muted: rgba(154, 219, 192, 0.16);
+  --ui-accent-hover: rgba(154, 219, 192, 0.24);
+  --ui-accent-active: rgba(154, 219, 192, 0.32);
 
   /* ===== Success ===== */
-  --ui-success: #64c6a0;
+  --ui-success: #6fe0b8;
   --ui-on-success: #0c1512;
-  --ui-success-muted: rgba(100, 198, 160, 0.16);
-  --ui-success-hover: rgba(100, 198, 160, 0.24);
-  --ui-success-active: rgba(100, 198, 160, 0.32);
+  --ui-success-muted: rgba(111, 224, 184, 0.16);
+  --ui-success-hover: rgba(111, 224, 184, 0.24);
+  --ui-success-active: rgba(111, 224, 184, 0.32);
 
   /* ===== Warning ===== */
-  --ui-warning: #c79a5b;
+  --ui-warning: #d9a15a;
   --ui-on-warning: #1b1a18;
-  --ui-warning-muted: rgba(199, 154, 91, 0.16);
-  --ui-warning-hover: rgba(199, 154, 91, 0.24);
-  --ui-warning-active: rgba(199, 154, 91, 0.32);
+  --ui-warning-muted: rgba(217, 161, 90, 0.16);
+  --ui-warning-hover: rgba(217, 161, 90, 0.24);
+  --ui-warning-active: rgba(217, 161, 90, 0.32);
 
   /* ===== Info ===== */
-  --ui-info: #6b7ac7;
+  --ui-info: #6f8ec7;
   --ui-on-info: #0b0f1f;
-  --ui-info-muted: rgba(107, 122, 199, 0.16);
-  --ui-info-hover: rgba(107, 122, 199, 0.24);
-  --ui-info-active: rgba(107, 122, 199, 0.32);
+  --ui-info-muted: rgba(111, 142, 199, 0.16);
+  --ui-info-hover: rgba(111, 142, 199, 0.24);
+  --ui-info-active: rgba(111, 142, 199, 0.32);
 
   /* ===== Critical / danger ===== */
-  --ui-critical: #e07a7a;
+  --ui-critical: #e07f7a;
   --ui-on-critical: #141311;
-  --ui-critical-muted: rgba(224, 122, 122, 0.16);
-  --ui-critical-hover: rgba(224, 122, 122, 0.24);
-  --ui-critical-active: rgba(224, 122, 122, 0.32);
+  --ui-critical-muted: rgba(224, 127, 122, 0.16);
+  --ui-critical-hover: rgba(224, 127, 122, 0.24);
+  --ui-critical-active: rgba(224, 127, 122, 0.32);
 
   --ui-danger: var(--ui-critical);
   --ui-on-danger: var(--ui-on-critical);
@@ -174,11 +174,11 @@
   --ui-tonal-tertiary-hover: rgba(238, 241, 244, 0.1);
 
   /* ===== Focus / glow ===== */
-  --ui-ring: rgba(65, 157, 120, 0.5);
-  --ui-glow-primary: 0 0 0 2px rgba(65, 157, 120, 0.35);
-  --ui-glow-accent: 0 0 0 2px rgba(111, 209, 170, 0.35);
-  --ui-glow-critical: 0 0 0 2px rgba(224, 122, 122, 0.3);
-  --ui-glow-success: 0 0 0 2px rgba(100, 198, 160, 0.3);
+  --ui-ring: rgba(79, 209, 165, 0.5);
+  --ui-glow-primary: 0 0 0 2px rgba(79, 209, 165, 0.35);
+  --ui-glow-accent: 0 0 0 2px rgba(154, 219, 192, 0.35);
+  --ui-glow-critical: 0 0 0 2px rgba(224, 127, 122, 0.3);
+  --ui-glow-success: 0 0 0 2px rgba(111, 224, 184, 0.3);
 
   /* ===== Shape ===== */
   --ui-radius-sm: 8px;
