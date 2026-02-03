@@ -4,11 +4,7 @@ import { useRoute } from "vue-router";
 
 const route = useRoute();
 
-const tabs = [
-  { name: "Tasks", to: "/workspace/apps/todos" },
-  { name: "Boards", to: "/workspace/apps/boards" },
-  { name: "Calendar", to: "/workspace/apps/calendar" },
-];
+const tabs = [{ name: "Tasks", to: "/workspace/apps/todos" }];
 
 const activePath = computed(() => route.path);
 

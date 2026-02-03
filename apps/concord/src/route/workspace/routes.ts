@@ -39,14 +39,6 @@ export default [
                 path: "todos",
                 component: () => import("./WorkspaceTodo.vue"),
               },
-              {
-                path: "boards",
-                component: () => import("./WorkspaceBoards.vue"),
-              },
-              {
-                path: "calendar",
-                component: () => import("./WorkspaceCalendar.vue"),
-              },
             ],
           },
           {
