@@ -1,5 +1,11 @@
 # concord
 
+## 0.2.5
+
+### Patch Changes
+
+- [`ccf390ef1db4932408ab581517364eb921f5df76`](https://github.com/samternent/home/commit/ccf390ef1db4932408ab581517364eb921f5df76) Thanks [@samternent](https://github.com/samternent)! - Better task management
+
 ## 0.2.4
 
 ### Patch Changes
