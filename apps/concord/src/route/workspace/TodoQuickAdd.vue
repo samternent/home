@@ -178,7 +178,7 @@ watch(
             :disabled="disabled"
             class="flex-1 min-w-[12rem] border border-[var(--ui-border)] rounded-2xl px-3 py-2 bg-transparent"
             placeholder="What needs to get done?"
-            aria-label="Todo title"
+            aria-label="Task title"
             @focus="expand"
             @keydown="onTitleKeydown"
           />
@@ -187,7 +187,7 @@ watch(
             type="button"
             class="px-4 py-2 rounded-full border border-[var(--ui-border)]"
             :disabled="isSubmitting"
-            aria-label="Add todo"
+            aria-label="Add task"
             @click="submit"
           >
             Add
@@ -226,7 +226,7 @@ watch(
             <select
               v-model="permissionId"
               class="border py-2 px-3 rounded-xl border-[var(--ui-border)] bg-transparent"
-              aria-label="Todo permission"
+              aria-label="Tasklist permission"
             >
               <option :value="null">public</option>
               <option

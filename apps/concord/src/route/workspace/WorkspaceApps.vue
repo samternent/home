@@ -5,7 +5,7 @@ import { useRoute } from "vue-router";
 const route = useRoute();
 
 const tabs = [
-  { name: "Todos", to: "/workspace/apps/todos" },
+  { name: "Tasks", to: "/workspace/apps/todos" },
   { name: "Boards", to: "/workspace/apps/boards" },
   { name: "Calendar", to: "/workspace/apps/calendar" },
 ];
@@ -37,7 +37,7 @@ function isActive(to: string) {
       </RouterLink>
     </nav>
 
-    <section class="flex-1 flex flex-col min-h-0 p-2">
+    <section class="flex-1 flex flex-col min-h-0">
       <RouterView />
     </section>
   </div>

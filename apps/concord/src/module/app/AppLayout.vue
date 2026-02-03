@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { shallowRef, computed } from "vue";
 import { onClickOutside, useLocalStorage } from "@vueuse/core";
+import { SplitButton } from "ternent-ui/primitives";
 import {
   createIdentity,
   exportPublicKeyAsPem,
@@ -378,26 +379,6 @@ async function setProfile() {
                   </div>
                 </div>
 
-                <button
-                  type="button"
-                  class="rounded-full border px-3 py-2 transition hover:opacity-90 disabled:opacity-50 border-[var(--ui-border)] text-xs"
-                  :disabled="disabled"
-                  @click="downloadPublic"
-                  title="Download your public profile (safe to share)"
-                >
-                  Download public profile
-                </button>
-
-                <button
-                  type="button"
-                  class="rounded-full border px-3 py-2 text-xs transition hover:opacity-90 disabled:opacity-50 border-[var(--ui-border)]"
-                  :disabled="disabled"
-                  @click="downloadPrivate"
-                  title="Download your private profile (contains secrets — do not share)"
-                >
-                  Download private profile
-                </button>
-
                 <input
                   ref="uploadInputRef"
                   type="file"
@@ -405,21 +386,53 @@ async function setProfile() {
                   class="hidden"
                   @change="handleProfileUpload"
                 />
-                <button
-                  type="button"
-                  class="rounded-full border px-3 py-2 text-xs transition hover:opacity-90 border-[var(--ui-border)]"
-                  @click="triggerProfileUpload"
-                >
-                  Upload private profile
-                </button>
-
-                <button
-                  type="button"
-                  class="rounded-full border px-3 py-2 text-xs transition hover:opacity-90 border-red-300 text-red-600"
-                  @click="resetIdentityAndProfile"
-                >
-                  Reset identity + profile
-                </button>
+                <SplitButton :disabled="disabled" menuWidth="w-64">
+                  <template #primary>
+                    <button
+                      type="button"
+                      class="flex-1 text-left text-xs px-4 py-2 transition hover:opacity-90 disabled:opacity-50"
+                      :disabled="disabled"
+                      @click="downloadPublic"
+                      title="Download your public profile (safe to share)"
+                    >
+                      Download public profile
+                    </button>
+                  </template>
+                  <template #menu="{ closeMenu }">
+                    <button
+                      type="button"
+                      class="w-full text-left text-xs px-3 py-2 rounded-lg hover:bg-[var(--ui-fg)]/5 transition-colors disabled:opacity-50"
+                      :disabled="disabled"
+                      @click="
+                        downloadPrivate();
+                        closeMenu();
+                      "
+                      title="Download your private profile (contains secrets — do not share)"
+                    >
+                      Download private profile
+                    </button>
+                    <button
+                      type="button"
+                      class="w-full text-left text-xs px-3 py-2 rounded-lg hover:bg-[var(--ui-fg)]/5 transition-colors"
+                      @click="
+                        triggerProfileUpload();
+                        closeMenu();
+                      "
+                    >
+                      Upload private profile
+                    </button>
+                    <button
+                      type="button"
+                      class="w-full text-left text-xs px-3 py-2 rounded-lg text-red-600 hover:bg-[var(--ui-critical)]/10 transition-colors"
+                      @click="
+                        resetIdentityAndProfile();
+                        closeMenu();
+                      "
+                    >
+                      Reset identity + profile
+                    </button>
+                  </template>
+                </SplitButton>
 
                 <p v-if="uploadError" class="text-xs text-red-600">
                   {{ uploadError }}

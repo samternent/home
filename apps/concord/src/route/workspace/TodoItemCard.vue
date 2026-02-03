@@ -35,7 +35,7 @@ const isCollapsed = computed(() => !props.active);
 
 <template>
   <article
-    class="group relative cursor-pointer overflow-hidden rounded-3xl border border-[var(--ui-border)] bg-[color-mix(in srgb, var(--ui-surface) 85%, var(--ui-bg))] transition-all duration-300"
+    class="group relative cursor-pointer overflow-hidden rounded-sm border border-[var(--ui-border)] bg-[color-mix(in srgb, var(--ui-surface) 85%, var(--ui-bg))] transition-all duration-300"
     :class="
       active
         ? 'shadow'
@@ -161,7 +161,7 @@ const isCollapsed = computed(() => !props.active);
               : 'text-[var(--ui-secondary)] border-[var(--ui-secondary)]/40'
           "
         >
-          {{ item.data.completed ? "Done" : "Active" }}
+          {{ item.data.completed ? "Done" : "Open" }}
         </span>
         <span
           v-if="item.data?.createdAt && formatDate"

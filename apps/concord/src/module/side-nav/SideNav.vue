@@ -7,6 +7,7 @@ import {
 import { computed, watch, shallowRef } from "vue";
 import { useRoute } from "vue-router";
 import { SThemeToggle } from "ternent-ui/components";
+import { SplitButton } from "ternent-ui/primitives";
 import { useLedger } from "../ledger/useLedger";
 import { useIdentity } from "../identity/useIdentity";
 
@@ -218,12 +219,6 @@ async function deleteLedger() {
       <!-- Bottom Items -->
       <nav class="space-y-2 pt-4">
         <div class="py-2 flex flex-col w-auto gap-2 font-mono">
-          <button
-            class="text-xs border border-[var(--ui-border)] px-4 py-2 rounded-full text-left cursor-pointer hover:bg-[var(--ui-primary)]/10 transition-colors"
-            @click="createNewLedger"
-          >
-            Create new ledger
-          </button>
           <input
             ref="uploadInputRef"
             type="file"
@@ -231,24 +226,45 @@ async function deleteLedger() {
             class="hidden"
             @change="handleLedgerUpload"
           />
-          <button
-            class="text-xs border border-[var(--ui-border)] px-4 py-2 rounded-full text-left cursor-pointer hover:bg-[var(--ui-fg)]/5 transition-colors"
-            @click="triggerLedgerUpload"
-          >
-            Upload ledger
-          </button>
-          <button
-            class="text-xs border border-[var(--ui-border)] px-4 py-2 rounded-full text-left cursor-pointer hover:bg-[var(--ui-fg)]/5 transition-colors"
-            @click="downloadLedger"
-          >
-            Download ledger
-          </button>
-          <button
-            class="text-xs border border-red-400/60 text-red-600 px-4 py-2 rounded-full text-left cursor-pointer hover:bg-[var(--ui-critical)]/10 transition-colors"
-            @click="deleteLedger"
-          >
-            Delete ledger
-          </button>
+          <SplitButton>
+            <template #primary>
+              <button
+                class="flex-1 text-xs px-4 py-2 text-left cursor-pointer hover:bg-[var(--ui-primary)]/10 transition-colors"
+                @click="createNewLedger"
+              >
+                Create new ledger
+              </button>
+            </template>
+            <template #menu="{ closeMenu }">
+              <button
+                class="w-full text-left text-xs px-3 py-2 rounded-lg hover:bg-[var(--ui-fg)]/5 transition-colors"
+                @click="
+                  triggerLedgerUpload();
+                  closeMenu();
+                "
+              >
+                Upload ledger
+              </button>
+              <button
+                class="w-full text-left text-xs px-3 py-2 rounded-lg hover:bg-[var(--ui-fg)]/5 transition-colors"
+                @click="
+                  downloadLedger();
+                  closeMenu();
+                "
+              >
+                Download ledger
+              </button>
+              <button
+                class="w-full text-left text-xs px-3 py-2 rounded-lg text-red-600 hover:bg-[var(--ui-critical)]/10 transition-colors"
+                @click="
+                  deleteLedger();
+                  closeMenu();
+                "
+              >
+                Delete ledger
+              </button>
+            </template>
+          </SplitButton>
         </div>
         <div class="flex flex-col w-auto gap-1 font-sans">
           <RouterLink
