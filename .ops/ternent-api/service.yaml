@@ -5,9 +5,8 @@ metadata:
   namespace: backend
 spec:
   ports:
-    - name: api
+    - name: http
       port: 80
       targetPort: 3000
-      protocol: TCP
   selector:
     app: ternent-api

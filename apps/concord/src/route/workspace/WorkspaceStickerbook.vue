@@ -126,9 +126,7 @@ const catalogueById = computed(() => {
 
 const totalCreatures = computed(() => catalogueEntries.value.length || 0);
 const collectedCount = computed(() => {
-  return (
-    collectedUniqueBySeries.value.get(selectedSeriesId.value)?.size || 0
-  );
+  return collectedUniqueBySeries.value.get(selectedSeriesId.value)?.size || 0;
 });
 
 const collectedByRarityForSeries = computed(() => {
@@ -205,7 +203,10 @@ async function loadCatalogue() {
   isLoading.value = true;
   loadError.value = "";
   try {
-    const url = new URL("/v1/stickerbook/catalogue", apiBase);
+    const url = new URL(
+      "https://api.ternent.dev/v1/stickerbook/catalogue",
+      apiBase
+    );
     url.searchParams.set("seriesId", selectedSeriesId.value);
     const response = await fetch(url.toString());
     if (!response.ok) {
@@ -230,7 +231,7 @@ async function openWeeklyPack(options: { force?: boolean } = {}) {
   packPhase.value = "opening";
 
   try {
-    const url = new URL("/v1/stickerbook/pack", apiBase);
+    const url = new URL("https://api.ternent.dev/v1/stickerbook/pack", apiBase);
     url.searchParams.set("seriesId", selectedSeriesId.value);
     url.searchParams.set("catalogueVersion", catalogue.value.version);
     url.searchParams.set("periodId", periodId.value);
