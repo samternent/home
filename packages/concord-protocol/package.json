@@ -2,6 +2,7 @@
   "name": "@ternent/concord-protocol",
   "version": "0.0.12",
   "description": "",
+  "type": "module",
   "publishConfig": {
     "access": "public"
   },

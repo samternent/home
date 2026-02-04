@@ -11,7 +11,12 @@ import {
   useStickerbook,
   getPeriodId,
 } from "../../module/stickerbook/useStickerbook";
-import { verifyPackToken } from "../../module/stickerbook/stickerbook";
+import { verifyPackIssue } from "../../module/stickerbook/stickerbook";
+import { hashCanonical } from "../../module/stickerbook/crypto";
+import {
+  generateProof,
+  deriveStickerId,
+} from "../../module/stickerbook/merkle";
 
 const apiBase = import.meta.env.DEV
   ? ""
@@ -21,8 +26,7 @@ function buildApiUrl(path: string) {
   if (!apiBase) return path;
   return new URL(path, apiBase).toString();
 }
-const signingSecret =
-  import.meta.env.VITE_PACK_SIGNING_SECRET || "stickerbook-demo-secret";
+const issuerPublicKeyPem = import.meta.env.VITE_ISSUER_PUBLIC_KEY_PEM || "";
 
 const {
   profileId,
@@ -33,9 +37,7 @@ const {
   collectedUniqueBySeries,
   collectedByPackId,
   swapsBySeries,
-  recordPackOpened,
-  recordCollected,
-  recordSwap,
+  recordPackAndStickers,
 } = useStickerbook();
 
 const activeTab = ref<"book" | "pack" | "swaps" | "progress">("book");
@@ -46,6 +48,11 @@ const packPhase = ref<"idle" | "opening" | "reveal" | "done">("idle");
 const packError = ref("");
 const packCards = ref<any[]>([]);
 const packMeta = ref<any | null>(null);
+const packVerification = ref<"pending" | "verified" | "failed">("pending");
+const packVerificationState = computed(() => {
+  if (openedForPeriod.value?.verified) return "verified";
+  return packVerification.value;
+});
 const selectedSeriesId = ref("");
 const seriesOptions = ref<
   { id: string; label: string; styleType: string; enabled: boolean }[]
@@ -63,7 +70,6 @@ const devPeriodSeconds = computed(() => {
   return Number.isFinite(seconds) && seconds > 0 ? seconds : null;
 });
 
-console.log(import.meta.env);
 const devMode = computed(
   () => import.meta.env.VITE_STICKERBOOK_DEV_MODE === "true"
 );
@@ -106,6 +112,7 @@ const openedPackIds = computed(
 );
 
 const rarityOrder = ["mythic", "rare", "uncommon", "common"];
+const packCount = 5;
 
 function chanceAtLeastOne(p: number, k: number) {
   return 1 - Math.pow(1 - p, k);
@@ -176,13 +183,45 @@ const progressByRarity = computed(() => {
   });
 });
 
+function buildAttributeKey(entry: any) {
+  const attrs = entry?.attributes || entry;
+  return [
+    attrs?.archetypeId,
+    attrs?.bodyId,
+    attrs?.eyesId,
+    attrs?.identityId ?? null,
+    attrs?.accessoryId ?? null,
+    attrs?.frameId ?? null,
+    attrs?.fxId ?? null,
+    entry?.paletteId ?? attrs?.paletteId ?? null,
+  ]
+    .map((value) =>
+      value === null || value === undefined ? "null" : String(value)
+    )
+    .join("|");
+}
+
+const catalogueByAttributes = computed(() => {
+  const map = new Map<string, any>();
+  for (const entry of catalogueEntries.value) {
+    map.set(buildAttributeKey(entry), entry);
+  }
+  return map;
+});
+
 const cardsToReveal = computed(() => {
-  if (!catalogue.value) return [];
-  const cards = packCards.value.map((card) => ({
-    ...card,
-    packId: packMeta.value?.packId,
-    creature: catalogueById.value.get(card.creatureId),
-  }));
+  if (!packCards.value.length) return [];
+  const cards = packCards.value.map((card) => {
+    const creature =
+      card.catalogueId && catalogueById.value.get(card.catalogueId)
+        ? catalogueById.value.get(card.catalogueId)
+        : card.creature;
+    return {
+      ...card,
+      packId: packMeta.value?.packId,
+      creature,
+    };
+  });
   return cards.filter((card) => card.creature);
 });
 
@@ -191,9 +230,12 @@ const revealedCards = computed(() => {
     const list =
       collectedByPackId.value.get(openedForPeriod.value.packId) || [];
     return list.map((item) => ({
-      creature: catalogueById.value.get(item.creatureId),
+      creature:
+        catalogueById.value.get(
+          item.creatureId || item.catalogueId || item.stickerId
+        ) || null,
       rarity: item.rarity,
-      finish: item.finish,
+      finish: "base",
       packId: item.packId,
     }));
   }
@@ -214,7 +256,9 @@ const mythicChance = computed(() => {
   if (!total) return 0;
   return (weights.mythic || 0) / total;
 });
-const packSize = computed(() => packMeta.value?.cards?.length || 5);
+const packSize = computed(
+  () => packMeta.value?.count || packCards.value.length || 5
+);
 const mythicChancePerPack = computed(() =>
   chanceAtLeastOne(mythicChance.value, packSize.value)
 );
@@ -290,70 +334,167 @@ async function openWeeklyPack(options: { force?: boolean } = {}) {
     packMeta.value = null;
   }
   packPhase.value = "opening";
+  packVerification.value = "pending";
 
   try {
-    const url = new URL(
-      buildApiUrl("/v1/stickerbook/pack"),
-      window.location.origin
-    );
-    url.searchParams.set("seriesId", selectedSeriesId.value);
-    url.searchParams.set("catalogueVersion", catalogue.value.version);
-    url.searchParams.set("periodId", periodId.value);
-    url.searchParams.set("profile", profileId.value);
-    if (devMode.value) {
-      url.searchParams.set("devSeed", devSeed.value);
+    if (!issuerPublicKeyPem) {
+      throw new Error("Missing issuer public key.");
     }
-    const response = await fetch(url.toString());
-    if (!response.ok) {
-      throw new Error(`Failed to mint pack (${response.status})`);
-    }
-    const data = await response.json();
-    const valid = await verifyPackToken(data.token, signingSecret);
-    if (!valid) {
-      throw new Error("Pack signature invalid.");
-    }
-    packCards.value = data.pack.cards;
-    packMeta.value = data.pack;
-    packPhase.value = "reveal";
+    const packRequestId = await hashCanonical({
+      seriesId: selectedSeriesId.value,
+      periodId: periodId.value,
+      profileId: profileId.value,
+    });
+    const clientNonce = crypto.randomUUID();
+    const clientNonceHash = await hashCanonical(clientNonce);
 
+    const commitResponse = await fetch(buildApiUrl("/v1/stickerbook/commit"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        packRequestId,
+        seriesId: selectedSeriesId.value,
+        themeId: catalogueThemeId.value,
+        count: packCount,
+        clientNonceHash,
+      }),
+    });
+
+    if (!commitResponse.ok) {
+      throw new Error(`Failed to commit pack (${commitResponse.status})`);
+    }
+    const commitData = await commitResponse.json();
+
+    const issueResponse = await fetch(buildApiUrl("/v1/stickerbook/issue"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ packRequestId, clientNonce }),
+    });
+
+    if (!issueResponse.ok) {
+      throw new Error(`Failed to issue pack (${issueResponse.status})`);
+    }
+    const issueData = await issueResponse.json();
+
+    const verification = await verifyPackIssue({
+      commit: commitData.entry,
+      issue: issueData.entry,
+      issuerPublicKeyPem,
+      catalogue: catalogue.value,
+    });
+
+    if (!verification.ok) {
+      packVerification.value = "failed";
+      throw new Error(`Pack verification failed: ${verification.reason}`);
+    }
+
+    packVerification.value = "verified";
+    const issuePayload = issueData.entry.payload;
+    const entries = verification.entries;
+    const packId = issuePayload.packRoot;
+
+    const packEntries = await Promise.all(
+      entries.map(async (entry: any) => {
+        const stickerId = await deriveStickerId(
+          issuePayload.packRoot,
+          entry.index
+        );
+        const proof = await generateProof(entries, entry.index);
+        const key = buildAttributeKey({
+          ...entry,
+          paletteId: entry.paletteId,
+        });
+        const catalogueEntry = catalogueByAttributes.value.get(key);
+        return {
+          index: entry.index,
+          stickerId,
+          proof,
+          entry,
+          rarity: entry.rarity,
+          catalogueId: catalogueEntry?.id ?? null,
+          verified: true,
+          finish: "base",
+          creature: catalogueEntry || {
+            id: stickerId,
+            rarity: entry.rarity,
+            paletteId: entry.paletteId,
+            attributes: {
+              archetypeId: entry.archetypeId,
+              bodyId: entry.bodyId,
+              eyesId: entry.eyesId,
+              identityId: entry.identityId,
+              accessoryId: entry.accessoryId,
+              frameId: entry.frameId,
+              fxId: entry.fxId,
+            },
+          },
+        };
+      })
+    );
+
+    packCards.value = packEntries;
+    packMeta.value = {
+      packId,
+      packRequestId,
+      seriesId: issuePayload.seriesId,
+      themeId: issuePayload.themeId,
+      periodId: periodId.value,
+      profileId: profileId.value,
+      packSeed: issuePayload.packSeed,
+      packRoot: issuePayload.packRoot,
+      algoVersion: issuePayload.algoVersion,
+      kitHash: issuePayload.kitHash,
+      themeHash: issuePayload.themeHash,
+      count: issuePayload.count,
+    };
+
+    packPhase.value = "reveal";
     await new Promise((resolve) => setTimeout(resolve, 650));
     packPhase.value = "done";
 
-    if (!openedPackIds.value.has(data.pack.packId)) {
-      await recordPackOpened({
-        packId: data.pack.packId,
-        seriesId: data.pack.seriesId,
-        periodId: data.pack.periodId,
-        profile: data.pack.profile,
-        openedAt: new Date().toISOString(),
-      });
-      const owned = new Set(collectedByCreatureId.value.keys());
-      for (const card of data.pack.cards) {
-        if (owned.has(card.creatureId)) {
-          await recordSwap({
-            packId: data.pack.packId,
-            seriesId: data.pack.seriesId,
-            creatureId: card.creatureId,
-            rarity: card.rarity,
-            finish: card.finish,
-            swappedAt: new Date().toISOString(),
-          });
-        } else {
-          owned.add(card.creatureId);
-          await recordCollected({
-            packId: data.pack.packId,
-            seriesId: data.pack.seriesId,
-            creatureId: card.creatureId,
-            rarity: card.rarity,
-            finish: card.finish,
-            collectedAt: new Date().toISOString(),
-          });
-        }
-      }
+    if (!openedPackIds.value.has(packId)) {
+      const packPayload = {
+        type: "pack.received",
+        packId,
+        packRequestId,
+        seriesId: issuePayload.seriesId,
+        themeId: issuePayload.themeId,
+        periodId: periodId.value,
+        profileId: profileId.value,
+        packSeed: issuePayload.packSeed,
+        packRoot: issuePayload.packRoot,
+        algoVersion: issuePayload.algoVersion,
+        kitHash: issuePayload.kitHash,
+        themeHash: issuePayload.themeHash,
+        issuerKeyId: issuePayload.issuerKeyId,
+        verified: true,
+        verifiedAt: new Date().toISOString(),
+      };
+
+      const stickerPayloads = packEntries.map((card) => ({
+        type: "sticker.owned",
+        packId,
+        packRequestId,
+        seriesId: issuePayload.seriesId,
+        themeId: issuePayload.themeId,
+        stickerId: card.stickerId,
+        creatureId: card.catalogueId ?? card.stickerId,
+        index: card.index,
+        rarity: card.rarity,
+        catalogueId: card.catalogueId,
+        finish: "base",
+        verified: true,
+        entry: card.entry,
+        proof: card.proof,
+        ownedAt: new Date().toISOString(),
+      }));
+
+      await recordPackAndStickers(packPayload, stickerPayloads);
     }
   } catch (error: any) {
     packError.value = error?.message || "Pack opening failed.";
     packPhase.value = "idle";
+    packVerification.value = "failed";
   }
 }
 
@@ -493,6 +634,7 @@ const visibleCards = computed(() =>
               :finish="collectedByCreatureId.get(creature.id)?.finish"
               :pack-id="collectedByCreatureId.get(creature.id)?.packId"
               :missing="!collectedByCreatureId.has(creature.id)"
+              :verified="collectedByCreatureId.get(creature.id)?.verified"
               compact
             />
             <StickerCreatureNatural
@@ -504,6 +646,7 @@ const visibleCards = computed(() =>
               :finish="collectedByCreatureId.get(creature.id)?.finish"
               :pack-id="collectedByCreatureId.get(creature.id)?.packId"
               :missing="!collectedByCreatureId.has(creature.id)"
+              :verified="collectedByCreatureId.get(creature.id)?.verified"
               compact
             />
             <StickerPixel
@@ -515,18 +658,28 @@ const visibleCards = computed(() =>
               :finish="collectedByCreatureId.get(creature.id)?.finish"
               :pack-id="collectedByCreatureId.get(creature.id)?.packId"
               :missing="!collectedByCreatureId.has(creature.id)"
+              :verified="collectedByCreatureId.get(creature.id)?.verified"
               compact
             />
             <Sticker8Bit
-              v-else-if="['8bit-sprites', 'animal-archetype-8bit'].includes(catalogueThemeId)"
+              v-else-if="
+                ['8bit-sprites', 'animal-archetype-8bit'].includes(
+                  catalogueThemeId
+                )
+              "
               v-for="sticker in entriesByRarity.get(rarity) || []"
               :key="sticker.id"
               :sticker="sticker"
               :palettes="catalogue?.palettes || []"
               :finish="collectedByCreatureId.get(sticker.id)?.finish"
               :pack-id="collectedByCreatureId.get(sticker.id)?.packId"
-              :kit-id="catalogueThemeId === 'animal-archetype-8bit' ? '8bit-animal-archetype' : '8bit-sprites'"
+              :kit-id="
+                catalogueThemeId === 'animal-archetype-8bit'
+                  ? '8bit-animal-archetype'
+                  : '8bit-sprites'
+              "
               :missing="!collectedByCreatureId.has(sticker.id)"
+              :verified="collectedByCreatureId.get(sticker.id)?.verified"
               compact
             />
             <StickerLetter
@@ -537,6 +690,7 @@ const visibleCards = computed(() =>
               :finish="collectedByCreatureId.get(sticker.id)?.finish"
               :pack-id="collectedByCreatureId.get(sticker.id)?.packId"
               :missing="!collectedByCreatureId.has(sticker.id)"
+              :verified="collectedByCreatureId.get(sticker.id)?.verified"
               compact
             />
           </div>
@@ -566,6 +720,12 @@ const visibleCards = computed(() =>
         </p>
         <p class="pack-meta">
           Series: <strong>{{ selectedSeriesId }}</strong>
+        </p>
+        <p class="pack-meta">
+          Verification:
+          <strong v-if="packVerificationState === 'verified'">Verified</strong>
+          <strong v-else-if="packVerificationState === 'failed'">Failed</strong>
+          <strong v-else>Pending</strong>
         </p>
         <p class="pack-meta" v-if="mythicChance">
           Mythic per card:
@@ -617,6 +777,7 @@ const visibleCards = computed(() =>
               :creature="card.creature"
               :finish="card.finish"
               :pack-id="card.packId"
+              :verified="card.verified"
             />
             <StickerCreatureNatural
               v-else-if="catalogueStyleType === 'natural'"
@@ -624,6 +785,7 @@ const visibleCards = computed(() =>
               :palettes="catalogue?.palettes || []"
               :finish="card.finish"
               :pack-id="card.packId"
+              :verified="card.verified"
             />
             <StickerPixel
               v-else-if="catalogueStyleType === 'pixel'"
@@ -631,20 +793,31 @@ const visibleCards = computed(() =>
               :palettes="catalogue?.palettes || []"
               :finish="card.finish"
               :pack-id="card.packId"
+              :verified="card.verified"
             />
             <Sticker8Bit
-              v-else-if="['8bit-sprites', 'animal-archetype-8bit'].includes(catalogueThemeId)"
+              v-else-if="
+                ['8bit-sprites', 'animal-archetype-8bit'].includes(
+                  catalogueThemeId
+                )
+              "
               :sticker="card.creature"
               :palettes="catalogue?.palettes || []"
               :finish="card.finish"
               :pack-id="card.packId"
-              :kit-id="catalogueThemeId === 'animal-archetype-8bit' ? '8bit-animal-archetype' : '8bit-sprites'"
+              :kit-id="
+                catalogueThemeId === 'animal-archetype-8bit'
+                  ? '8bit-animal-archetype'
+                  : '8bit-sprites'
+              "
+              :verified="card.verified"
             />
             <StickerLetter
               v-else
               :attributes="card.creature.attributes"
               :finish="card.finish"
               :pack-id="card.packId"
+              :verified="card.verified"
             />
             <span class="pack-card-label">{{ card.rarity }}</span>
           </div>
@@ -675,6 +848,7 @@ const visibleCards = computed(() =>
             :creature="catalogueById.get(swap.creatureId)"
             :finish="swap.finish"
             :pack-id="swap.packId"
+            :verified="swap.verified"
             compact
           />
           <StickerCreatureNatural
@@ -683,6 +857,7 @@ const visibleCards = computed(() =>
             :palettes="catalogue?.palettes || []"
             :finish="swap.finish"
             :pack-id="swap.packId"
+            :verified="swap.verified"
             compact
           />
           <StickerPixel
@@ -691,15 +866,25 @@ const visibleCards = computed(() =>
             :palettes="catalogue?.palettes || []"
             :finish="swap.finish"
             :pack-id="swap.packId"
+            :verified="swap.verified"
             compact
           />
           <Sticker8Bit
-            v-else-if="['8bit-sprites', 'animal-archetype-8bit'].includes(catalogueThemeId)"
+            v-else-if="
+              ['8bit-sprites', 'animal-archetype-8bit'].includes(
+                catalogueThemeId
+              )
+            "
             :sticker="catalogueById.get(swap.creatureId)"
             :palettes="catalogue?.palettes || []"
             :finish="swap.finish"
             :pack-id="swap.packId"
-            :kit-id="catalogueThemeId === 'animal-archetype-8bit' ? '8bit-animal-archetype' : '8bit-sprites'"
+            :kit-id="
+              catalogueThemeId === 'animal-archetype-8bit'
+                ? '8bit-animal-archetype'
+                : '8bit-sprites'
+            "
+            :verified="swap.verified"
             compact
           />
           <StickerLetter
@@ -707,6 +892,7 @@ const visibleCards = computed(() =>
             :attributes="catalogueById.get(swap.creatureId)?.attributes"
             :finish="swap.finish"
             :pack-id="swap.packId"
+            :verified="swap.verified"
             compact
           />
           <div class="swap-meta">

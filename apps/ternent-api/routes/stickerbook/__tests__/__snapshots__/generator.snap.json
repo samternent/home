@@ -1,0 +1,38 @@
+[
+  {
+    "index": 0,
+    "archetypeId": "arch",
+    "bodyId": "body",
+    "eyesId": "eyes",
+    "identityId": "ident",
+    "accessoryId": "acc",
+    "frameId": "frame",
+    "fxId": "fx",
+    "paletteId": "p1",
+    "rarity": "common"
+  },
+  {
+    "index": 1,
+    "archetypeId": "arch",
+    "bodyId": "body",
+    "eyesId": "eyes",
+    "identityId": "ident",
+    "accessoryId": "acc",
+    "frameId": "frame",
+    "fxId": "fx",
+    "paletteId": "p1",
+    "rarity": "common"
+  },
+  {
+    "index": 2,
+    "archetypeId": "arch",
+    "bodyId": "body",
+    "eyesId": "eyes",
+    "identityId": "ident",
+    "accessoryId": "acc",
+    "frameId": "frame",
+    "fxId": "fx",
+    "paletteId": "p1",
+    "rarity": "common"
+  }
+]
