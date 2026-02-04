@@ -17,23 +17,11 @@ spec:
           image: samternent/ternent-api:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: 3000
-              hostPort: 80
-              protocol: TCP
-            - containerPort: 3001
-              hostPort: 3001
-              protocol: TCP
-            - containerPort: 1935
-              hostPort: 1935
-              protocol: TCP
+            - name: http
+              containerPort: 3000
           env:
             - name: DIGITALOCEAN_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: ternent-api-env
                   key: digitalocean-token
-            - name: OPENAI_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: ternent-api-env
-                  key: open-ai-key
