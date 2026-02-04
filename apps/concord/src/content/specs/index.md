@@ -9,4 +9,5 @@ nav: false
 - [Core protocal](/specs/01-core-protocol)
 - [Identity registry](/specs/02-identity-registry)
 - [Permissions registry](/specs/03-permissions-registry)
+- [Assertions](/specs/04-assertions)
 - [Tooling CLI/CI](/specs/05-tooling-cli-ci)

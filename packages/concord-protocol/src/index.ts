@@ -595,4 +595,5 @@ export function validateLedger(
 }
 
 export * from "./epochs";
+export * from "./assertions";
 export { canonicalStringify } from "./canonical";

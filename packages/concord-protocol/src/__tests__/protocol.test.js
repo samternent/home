@@ -11,6 +11,7 @@ import {
   deriveEntryId,
   getCommitChain,
   getEntrySigningPayload,
+  getAssertionSigningPayload,
   validateLedger,
 } from "../index";
 import { canonicalStringify } from "../canonical";
@@ -258,5 +259,38 @@ describe("helper safety", () => {
         payload,
       })
     ).rejects.toMatchObject({ code: "INVALID_ENTRY" });
+  });
+});
+
+describe("assertion signing payloads", () => {
+  test("canonical payload includes payload when present", () => {
+    const assertion = {
+      id: "assert-1",
+      subject: { kind: "decision", id: "decision-123" },
+      claim: "signed",
+      payload: { b: 2, a: 1 },
+      assertedBy: "did:example:alice",
+      assertedAt: 1717352400000,
+      signature: "sig",
+    };
+
+    expect(getAssertionSigningPayload(assertion)).toBe(
+      "{\"assertedAt\":1717352400000,\"assertedBy\":\"did:example:alice\",\"claim\":\"signed\",\"payload\":{\"a\":1,\"b\":2},\"subject\":{\"id\":\"decision-123\",\"kind\":\"decision\"}}"
+    );
+  });
+
+  test("canonical payload omits payload when absent", () => {
+    const assertion = {
+      id: "assert-2",
+      subject: { kind: "nfc-tag", id: "tag-1" },
+      claim: "found",
+      assertedBy: "did:example:sam",
+      assertedAt: 1717360000000,
+      signature: "sig",
+    };
+
+    expect(getAssertionSigningPayload(assertion)).toBe(
+      "{\"assertedAt\":1717360000000,\"assertedBy\":\"did:example:sam\",\"claim\":\"found\",\"subject\":{\"id\":\"tag-1\",\"kind\":\"nfc-tag\"}}"
+    );
   });
 });

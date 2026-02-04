@@ -9,6 +9,7 @@ This package provides:
 - Canonical data structures for Concord ledgers
 - Deterministic hashing for EntryID and CommitID
 - Canonical signing payloads and bytes
+- Canonical assertion signing payload helpers
 - Genesis commit creation
 - Commit chain traversal, replay helpers, and validation
 
