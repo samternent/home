@@ -1,4 +1,4 @@
-FROM node:18-slim AS base
+FROM node:24-slim AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
@@ -20,6 +20,5 @@ COPY --from=prod-deps /app/node_modules /app/node_modules
 RUN cp /usr/bin/ffmpeg ./
 
 EXPOSE 3000
-EXPOSE 3001
 
 CMD [ "pnpm", "--filter", "ternent-api", "start" ]

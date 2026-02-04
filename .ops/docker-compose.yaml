@@ -1,14 +1,11 @@
 services:
-  # ternent-api:
-  #   image: "samternent/ternent-api"
-  #   restart: always
-  #   ports:
-  #     - "8001:3000"
-  #     - "8003:3001"
-  #   networks:
-  #     - ternent-api
-  #   env_file:
-  #     - "./ternent-api/.env"
+  ternent-api:
+    image: "samternent/ternent-api"
+    restart: always
+    ports:
+      - "8001:3000"
+    env_file:
+      - "./ternent-api/.env"
 
   footballsocial-api:
     image: "samternent/footballsocial-api"

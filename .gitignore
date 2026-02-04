@@ -26,6 +26,7 @@ docker-compose.override.yaml
 *.sw?
 .vercel
 .env
+.prompts
 
 
 k8s-*-kubeconfig.yaml

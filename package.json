@@ -32,6 +32,8 @@
     "build:ternent-ui": "pnpm --filter ternent-ui build",
     "generate-docs": "node scripts/generate-docs.js",
     "enhance-docs": "node scripts/enhance-docs.js",
+    "generate:stickerbook": "node scripts/stickerbook/generate-catalogue.mjs",
+    "generate:stickerbook-letters": "node scripts/stickerbook/generate-letters-catalogue.mjs",
     "docs": "npm run generate-docs && npm run enhance-docs",
     "dev:docker": "cd .ops && docker-compose up -d"
   },

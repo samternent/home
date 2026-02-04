@@ -8,6 +8,7 @@ const tabs = [
   { name: "Tasks", to: "/workspace/apps/todos" },
   { name: "Patient Records", to: "/workspace/apps/patients" },
   { name: "Social Network", to: "/workspace/apps/social" },
+  { name: "Stickerbook", to: "/workspace/apps/stickerbook" },
   { name: "Vault", to: "/workspace/apps/vault" },
 ];
 

@@ -48,6 +48,10 @@ export default [
                 component: () => import("./WorkspaceSocial.vue"),
               },
               {
+                path: "stickerbook",
+                component: () => import("./WorkspaceStickerbook.vue"),
+              },
+              {
                 path: "vault",
                 component: () => import("./WorkspaceVault.vue"),
               },
