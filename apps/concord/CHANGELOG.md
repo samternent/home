@@ -1,5 +1,13 @@
 # concord
 
+## 0.2.6
+
+### Patch Changes
+
+- [`de41b2c25ad243543a794e755d0f3f342b923470`](https://github.com/samternent/home/commit/de41b2c25ad243543a794e755d0f3f342b923470) Thanks [@samternent](https://github.com/samternent)! - more apps
+
+- [`634d9bcc897b33d963dd959755d5e8850c63cafe`](https://github.com/samternent/home/commit/634d9bcc897b33d963dd959755d5e8850c63cafe) Thanks [@samternent](https://github.com/samternent)! - Adds vault app
+
 ## 0.2.5
 
 ### Patch Changes
