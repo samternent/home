@@ -34,6 +34,8 @@
     "enhance-docs": "node scripts/enhance-docs.js",
     "generate:stickerbook": "node scripts/stickerbook/generate-catalogue.mjs",
     "generate:stickerbook-letters": "node scripts/stickerbook/generate-letters-catalogue.mjs",
+    "generate:stickerbook-critters": "node scripts/stickerbook/generate-series-N1.mjs",
+    "generate:stickerbook-pixel": "node apps/ternent-api/stickerbook/generate-series-8B.mjs",
     "docs": "npm run generate-docs && npm run enhance-docs",
     "dev:docker": "cd .ops && docker-compose up -d"
   },

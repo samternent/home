@@ -9,6 +9,14 @@ export default defineConfig({
   build: {
     assetsInlineLimit: 0,
   },
+  server: {
+    proxy: {
+      "/v1": {
+        target: "http://localhost:8001",
+        changeOrigin: true,
+      },
+    },
+  },
   plugins: [
     ViteEjsPlugin(() => ({
       __APP_VERSION__: version,

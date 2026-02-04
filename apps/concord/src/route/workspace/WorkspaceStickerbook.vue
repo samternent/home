@@ -4,13 +4,23 @@ import { useLocalStorage } from "@vueuse/core";
 import { Button } from "ternent-ui/primitives";
 import StickerCreature from "../../module/stickerbook/StickerCreature.vue";
 import StickerLetter from "../../module/stickerbook/StickerLetter.vue";
+import StickerCreatureNatural from "../../module/stickerbook/StickerCreatureNatural.vue";
+import StickerPixel from "../../module/stickerbook/StickerPixel.vue";
+import Sticker8Bit from "../../module/stickerbook/Sticker8Bit.vue";
 import {
   useStickerbook,
   getPeriodId,
 } from "../../module/stickerbook/useStickerbook";
 import { verifyPackToken } from "../../module/stickerbook/stickerbook";
 
-const apiBase = import.meta.env.VITE_TERNENT_API_URL || "http://localhost:3000";
+const apiBase = import.meta.env.DEV
+  ? ""
+  : import.meta.env.VITE_TERNENT_API_URL || "https://api.ternent.dev";
+
+function buildApiUrl(path: string) {
+  if (!apiBase) return path;
+  return new URL(path, apiBase).toString();
+}
 const signingSecret =
   import.meta.env.VITE_PACK_SIGNING_SECRET || "stickerbook-demo-secret";
 
@@ -36,7 +46,10 @@ const packPhase = ref<"idle" | "opening" | "reveal" | "done">("idle");
 const packError = ref("");
 const packCards = ref<any[]>([]);
 const packMeta = ref<any | null>(null);
-const selectedSeriesId = ref("S1");
+const selectedSeriesId = ref("");
+const seriesOptions = ref<
+  { id: string; label: string; styleType: string; enabled: boolean }[]
+>([]);
 const now = ref(Date.now());
 let nowTimer: number | null = null;
 const periodOffset = ref(0);
@@ -61,10 +74,9 @@ const devPeriodMs = computed(() =>
   devPeriodSeconds.value ? devPeriodSeconds.value * 1000 : null
 );
 
-const seriesOptions = [
-  { id: "S1", label: "Creatures", styleType: "creature" },
-  { id: "SERIES-L1", label: "Friendly Letters", styleType: "letters" },
-];
+const enabledSeries = computed(() =>
+  seriesOptions.value.filter((entry) => entry.enabled !== false)
+);
 
 const periodDate = computed(() => {
   if (!devPeriodMs.value) return new Date(now.value);
@@ -95,6 +107,10 @@ const openedPackIds = computed(
 
 const rarityOrder = ["mythic", "rare", "uncommon", "common"];
 
+function chanceAtLeastOne(p: number, k: number) {
+  return 1 - Math.pow(1 - p, k);
+}
+
 const catalogueEntries = computed(() => {
   if (!catalogue.value) return [];
   return catalogue.value.creatures || catalogue.value.stickers || [];
@@ -104,6 +120,9 @@ const catalogueStyleType = computed(() => {
   return catalogue.value?.styleType || "creature";
 });
 
+const catalogueThemeId = computed(() => {
+  return catalogue.value?.themeId || null;
+});
 const entriesByRarity = computed(() => {
   if (!catalogueEntries.value.length) return new Map();
   const map = new Map<string, any[]>();
@@ -185,6 +204,21 @@ const hasMythic = computed(() =>
   cardsToReveal.value.some((card) => card.rarity === "mythic")
 );
 
+const rarityWeights = computed(() => catalogue.value?.rarityWeights || {});
+const mythicChance = computed(() => {
+  const weights = rarityWeights.value;
+  const total = Object.values(weights).reduce(
+    (sum, value) => sum + Number(value || 0),
+    0
+  );
+  if (!total) return 0;
+  return (weights.mythic || 0) / total;
+});
+const packSize = computed(() => packMeta.value?.cards?.length || 5);
+const mythicChancePerPack = computed(() =>
+  chanceAtLeastOne(mythicChance.value, packSize.value)
+);
+
 const canOpenPack = computed(() =>
   devMode.value
     ? packPhase.value !== "opening" && packPhase.value !== "reveal"
@@ -200,12 +234,16 @@ const displayPhase = computed(() =>
 );
 
 async function loadCatalogue() {
+  if (!selectedSeriesId.value) {
+    catalogue.value = null;
+    return;
+  }
   isLoading.value = true;
   loadError.value = "";
   try {
     const url = new URL(
-      "https://api.ternent.dev/v1/stickerbook/catalogue",
-      apiBase
+      buildApiUrl("/v1/stickerbook/catalogue"),
+      window.location.origin
     );
     url.searchParams.set("seriesId", selectedSeriesId.value);
     const response = await fetch(url.toString());
@@ -220,6 +258,29 @@ async function loadCatalogue() {
   }
 }
 
+async function loadIndex() {
+  try {
+    const url = new URL(
+      buildApiUrl("/v1/stickerbook/index"),
+      window.location.origin
+    );
+    const response = await fetch(url.toString());
+    if (!response.ok) return;
+    const index = await response.json();
+    if (Array.isArray(index?.series) && index.series.length) {
+      seriesOptions.value = index.series;
+      const enabled = index.series.filter(
+        (entry: any) => entry.enabled !== false
+      );
+      if (!enabled.find((entry: any) => entry.id === selectedSeriesId.value)) {
+        selectedSeriesId.value = enabled[0]?.id || "";
+      }
+    }
+  } catch {
+    // Ignore index load failures and keep local defaults.
+  }
+}
+
 async function openWeeklyPack(options: { force?: boolean } = {}) {
   if (!catalogue.value || (!options.force && !canOpenPack.value)) return;
   packError.value = "";
@@ -231,7 +292,10 @@ async function openWeeklyPack(options: { force?: boolean } = {}) {
   packPhase.value = "opening";
 
   try {
-    const url = new URL("https://api.ternent.dev/v1/stickerbook/pack", apiBase);
+    const url = new URL(
+      buildApiUrl("/v1/stickerbook/pack"),
+      window.location.origin
+    );
     url.searchParams.set("seriesId", selectedSeriesId.value);
     url.searchParams.set("catalogueVersion", catalogue.value.version);
     url.searchParams.set("periodId", periodId.value);
@@ -293,7 +357,10 @@ async function openWeeklyPack(options: { force?: boolean } = {}) {
   }
 }
 
-onMounted(loadCatalogue);
+onMounted(async () => {
+  await loadIndex();
+  await loadCatalogue();
+});
 
 watch(
   devPeriodSeconds,
@@ -354,7 +421,7 @@ const visibleCards = computed(() =>
       <span>Series</span>
       <div class="stickerbook-series-buttons">
         <button
-          v-for="series in seriesOptions"
+          v-for="series in enabledSeries"
           :key="series.id"
           type="button"
           :class="selectedSeriesId === series.id ? 'active' : ''"
@@ -428,6 +495,40 @@ const visibleCards = computed(() =>
               :missing="!collectedByCreatureId.has(creature.id)"
               compact
             />
+            <StickerCreatureNatural
+              v-else-if="catalogueStyleType === 'natural'"
+              v-for="creature in entriesByRarity.get(rarity) || []"
+              :key="creature.id"
+              :creature="creature"
+              :palettes="catalogue?.palettes || []"
+              :finish="collectedByCreatureId.get(creature.id)?.finish"
+              :pack-id="collectedByCreatureId.get(creature.id)?.packId"
+              :missing="!collectedByCreatureId.has(creature.id)"
+              compact
+            />
+            <StickerPixel
+              v-else-if="catalogueStyleType === 'pixel'"
+              v-for="creature in entriesByRarity.get(rarity) || []"
+              :key="creature.id"
+              :creature="creature"
+              :palettes="catalogue?.palettes || []"
+              :finish="collectedByCreatureId.get(creature.id)?.finish"
+              :pack-id="collectedByCreatureId.get(creature.id)?.packId"
+              :missing="!collectedByCreatureId.has(creature.id)"
+              compact
+            />
+            <Sticker8Bit
+              v-else-if="['8bit-sprites', 'animal-archetype-8bit'].includes(catalogueThemeId)"
+              v-for="sticker in entriesByRarity.get(rarity) || []"
+              :key="sticker.id"
+              :sticker="sticker"
+              :palettes="catalogue?.palettes || []"
+              :finish="collectedByCreatureId.get(sticker.id)?.finish"
+              :pack-id="collectedByCreatureId.get(sticker.id)?.packId"
+              :kit-id="catalogueThemeId === 'animal-archetype-8bit' ? '8bit-animal-archetype' : '8bit-sprites'"
+              :missing="!collectedByCreatureId.has(sticker.id)"
+              compact
+            />
             <StickerLetter
               v-else
               v-for="sticker in entriesByRarity.get(rarity) || []"
@@ -450,6 +551,10 @@ const visibleCards = computed(() =>
           Each week has one deterministic pack. Open it, verify the signature,
           then lock your stickers into the ledger.
         </p>
+        <p class="pack-copy">
+          Editorial rarity is curated in the set (rule breaks). Drop rarity is
+          rolled per card using the odds below.
+        </p>
         <p class="pack-meta">
           Period: <strong>{{ periodLabel }}</strong>
         </p>
@@ -461,6 +566,15 @@ const visibleCards = computed(() =>
         </p>
         <p class="pack-meta">
           Series: <strong>{{ selectedSeriesId }}</strong>
+        </p>
+        <p class="pack-meta" v-if="mythicChance">
+          Mythic per card:
+          <strong>{{ (mythicChance * 100).toFixed(2) }}%</strong>
+          <span>•</span>
+          Pack size: <strong>{{ packSize }}</strong>
+          <span>•</span>
+          Chance of ≥1 mythic:
+          <strong>{{ (mythicChancePerPack * 100).toFixed(2) }}%</strong>
         </p>
         <Button
           v-if="canOpenPack"
@@ -504,6 +618,28 @@ const visibleCards = computed(() =>
               :finish="card.finish"
               :pack-id="card.packId"
             />
+            <StickerCreatureNatural
+              v-else-if="catalogueStyleType === 'natural'"
+              :creature="card.creature"
+              :palettes="catalogue?.palettes || []"
+              :finish="card.finish"
+              :pack-id="card.packId"
+            />
+            <StickerPixel
+              v-else-if="catalogueStyleType === 'pixel'"
+              :creature="card.creature"
+              :palettes="catalogue?.palettes || []"
+              :finish="card.finish"
+              :pack-id="card.packId"
+            />
+            <Sticker8Bit
+              v-else-if="['8bit-sprites', 'animal-archetype-8bit'].includes(catalogueThemeId)"
+              :sticker="card.creature"
+              :palettes="catalogue?.palettes || []"
+              :finish="card.finish"
+              :pack-id="card.packId"
+              :kit-id="catalogueThemeId === 'animal-archetype-8bit' ? '8bit-animal-archetype' : '8bit-sprites'"
+            />
             <StickerLetter
               v-else
               :attributes="card.creature.attributes"
@@ -539,6 +675,31 @@ const visibleCards = computed(() =>
             :creature="catalogueById.get(swap.creatureId)"
             :finish="swap.finish"
             :pack-id="swap.packId"
+            compact
+          />
+          <StickerCreatureNatural
+            v-else-if="catalogueStyleType === 'natural'"
+            :creature="catalogueById.get(swap.creatureId)"
+            :palettes="catalogue?.palettes || []"
+            :finish="swap.finish"
+            :pack-id="swap.packId"
+            compact
+          />
+          <StickerPixel
+            v-else-if="catalogueStyleType === 'pixel'"
+            :creature="catalogueById.get(swap.creatureId)"
+            :palettes="catalogue?.palettes || []"
+            :finish="swap.finish"
+            :pack-id="swap.packId"
+            compact
+          />
+          <Sticker8Bit
+            v-else-if="['8bit-sprites', 'animal-archetype-8bit'].includes(catalogueThemeId)"
+            :sticker="catalogueById.get(swap.creatureId)"
+            :palettes="catalogue?.palettes || []"
+            :finish="swap.finish"
+            :pack-id="swap.packId"
+            :kit-id="catalogueThemeId === 'animal-archetype-8bit' ? '8bit-animal-archetype' : '8bit-sprites'"
             compact
           />
           <StickerLetter
@@ -880,6 +1041,16 @@ const visibleCards = computed(() =>
 }
 
 .pack-card.mythic .sticker-creature {
+  box-shadow: 0 12px 28px rgba(124, 58, 237, 0.4),
+    inset 0 0 0 4px rgba(124, 58, 237, 0.4);
+}
+
+.pack-card.mythic .sticker-natural {
+  box-shadow: 0 12px 28px rgba(124, 58, 237, 0.4),
+    inset 0 0 0 4px rgba(124, 58, 237, 0.4);
+}
+
+.pack-card.mythic .sticker-pixel {
   box-shadow: 0 12px 28px rgba(124, 58, 237, 0.4),
     inset 0 0 0 4px rgba(124, 58, 237, 0.4);
 }

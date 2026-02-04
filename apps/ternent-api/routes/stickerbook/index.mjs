@@ -22,10 +22,7 @@ function createHmacRng(secret, seed) {
     const digest = hmac.digest();
     counter += 1;
     const int =
-      (digest[0] << 24) |
-      (digest[1] << 16) |
-      (digest[2] << 8) |
-      digest[3];
+      (digest[0] << 24) | (digest[1] << 16) | (digest[2] << 8) | digest[3];
     return (int >>> 0) / 0xffffffff;
   };
 }
@@ -57,7 +54,20 @@ function loadCatalogue(seriesId) {
     "..",
     "..",
     "data/stickerbook",
+    "series",
     filename
+  );
+  console.log(filepath);
+  return JSON.parse(readFileSync(filepath, "utf8"));
+}
+
+function loadIndex() {
+  const filepath = join(
+    __dirname,
+    "..",
+    "..",
+    "data/stickerbook",
+    "index.json"
   );
   return JSON.parse(readFileSync(filepath, "utf8"));
 }
@@ -73,6 +83,13 @@ function getCatalogueEntries(catalogue) {
 }
 
 function pickFinishForCard(catalogue, rarity, rng) {
+  const rarityFinishes = catalogue.rarityFinishes?.[rarity];
+  if (rarityFinishes) {
+    if (Array.isArray(rarityFinishes)) {
+      return rarityFinishes[Math.floor(rng() * rarityFinishes.length)];
+    }
+    return rarityFinishes;
+  }
   const finishOptions = ["base", "foil", "holo", "sparkle", "prismatic"];
   const styleType = catalogue.styleType || "creature";
   if (styleType === "letters") {
@@ -89,6 +106,11 @@ export default function stickerbookRoutes(router) {
     const seriesId = req.query.seriesId || "S1";
     const catalogue = loadCatalogue(seriesId);
     res.status(200).send(catalogue);
+  });
+
+  router.get("/v1/stickerbook/index", (req, res) => {
+    const index = loadIndex();
+    res.status(200).send(index);
   });
 
   router.get("/v1/stickerbook/pack", (req, res) => {
@@ -111,24 +133,61 @@ export default function stickerbookRoutes(router) {
       acc[creature.rarity].push(creature);
       return acc;
     }, {});
+    const availableWeights = Object.entries(catalogue.rarityWeights || {})
+      .filter(([rarity]) => (creaturesByRarity[rarity] || []).length > 0)
+      .reduce((acc, [rarity, weight]) => {
+        acc[rarity] = weight;
+        return acc;
+      }, {});
+    const weightedRarities =
+      Object.keys(availableWeights).length > 0
+        ? availableWeights
+        : catalogue.rarityWeights || {};
 
     const packSize = 5;
     const cards = [];
     const usedCreatureIds = new Set();
 
-    while (cards.length < packSize) {
-      const rarity = pickWeighted(rng, catalogue.rarityWeights);
-      const pool = creaturesByRarity[rarity] || entries;
+    let safety = 0;
+    while (cards.length < packSize && safety < 400) {
+      // Drop rarity is rolled per card; duplicates are avoided per pack.
+      const rarity = pickWeighted(rng, weightedRarities);
+      const pool = creaturesByRarity[rarity] || [];
+      if (!pool.length) {
+        safety += 1;
+        continue;
+      }
       const creature = pool[Math.floor(rng() * pool.length)];
-      if (usedCreatureIds.has(creature.id)) continue;
+      if (usedCreatureIds.has(creature.id)) {
+        safety += 1;
+        continue;
+      }
       usedCreatureIds.add(creature.id);
 
-      const finish = pickFinishForCard(catalogue, rarity, rng);
+      const finish = creature.finish || pickFinishForCard(catalogue, rarity, rng);
       cards.push({
         creatureId: creature.id,
         rarity,
         finish,
       });
+      safety += 1;
+    }
+
+    if (cards.length < packSize) {
+      const allEntries = entries.slice();
+      while (cards.length < packSize && allEntries.length) {
+        const creature = allEntries.splice(
+          Math.floor(rng() * allEntries.length),
+          1
+        )[0];
+        if (usedCreatureIds.has(creature.id)) continue;
+        usedCreatureIds.add(creature.id);
+        cards.push({
+          creatureId: creature.id,
+          rarity: creature.rarity,
+          finish: creature.finish || pickFinishForCard(catalogue, creature.rarity, rng),
+        });
+      }
     }
 
     const payload = {

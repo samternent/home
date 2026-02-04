@@ -391,7 +391,11 @@ async function setProfile() {
                   class="hidden"
                   @change="handleProfileUpload"
                 />
-                <SplitButton :disabled="disabled" menuWidth="w-64">
+                <SplitButton
+                  v-if="hasProfile"
+                  :disabled="disabled"
+                  menuWidth="w-64"
+                >
                   <template #primary>
                     <button
                       type="button"
