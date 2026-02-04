@@ -1,5 +1,11 @@
 # ternent-ledger
 
+## 1.0.23
+
+### Patch Changes
+
+- [`b879e97201fd4d89d9b6040d3bace49b421ad150`](https://github.com/samternent/home/commit/b879e97201fd4d89d9b6040d3bace49b421ad150) Thanks [@samternent](https://github.com/samternent)! - Creates stickerbook with API
+
 ## 1.0.22
 
 ### Patch Changes
