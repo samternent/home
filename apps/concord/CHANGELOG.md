@@ -1,5 +1,11 @@
 # concord
 
+## 0.2.8
+
+### Patch Changes
+
+- [`c0a6e7d6b608283607a5fe4743622d2bdc9e6fb3`](https://github.com/samternent/home/commit/c0a6e7d6b608283607a5fe4743622d2bdc9e6fb3) Thanks [@samternent](https://github.com/samternent)! - fix api url
+
 ## 0.2.7
 
 ### Patch Changes
