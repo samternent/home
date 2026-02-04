@@ -1,5 +1,11 @@
 # ternent-api
 
+## 0.1.9
+
+### Patch Changes
+
+- [`e41460c9aaa02cafb25b4437df210881f3195a98`](https://github.com/samternent/home/commit/e41460c9aaa02cafb25b4437df210881f3195a98) Thanks [@samternent](https://github.com/samternent)! - deployment file
+
 ## 0.1.8
 
 ### Patch Changes
