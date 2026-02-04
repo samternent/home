@@ -110,6 +110,7 @@ function normalizeCandidates(kitJson: any) {
         frameId: candidate.frameId ?? null,
         fxId: candidate.fxId ?? null,
         paletteId: candidate.paletteId ?? null,
+        rarity: candidate.rarity ?? null,
       }))
     : [];
   return candidates.sort((a: any, b: any) =>
@@ -168,7 +169,11 @@ export function generatePack(params: {
       )
     ) as StickerEntry["rarity"];
     const rules = resolveRarityRules(kitJson, rarity);
-    const candidate = candidates.length ? pick(rng, candidates) : null;
+    const rarityCandidates = candidates.filter(
+      (candidate: any) => candidate.rarity === rarity
+    );
+    const candidatePool = rarityCandidates.length ? rarityCandidates : candidates;
+    const candidate = candidatePool.length ? pick(rng, candidatePool) : null;
     const identityRoll = rng() <= Number(rules.identityChance || 0);
     const accessoryRoll = rng() <= Number(rules.accessoryChance || 0);
     const frameRoll = rng() <= Number(rules.frameChance || 0);
@@ -225,6 +230,7 @@ export function deriveKitFromCatalogue(catalogue: any) {
     frameId: entry?.attributes?.frameId ?? null,
     fxId: entry?.attributes?.fxId ?? null,
     paletteId: entry?.paletteId ?? null,
+    rarity: entry?.rarity ?? null,
   }));
 
   return {

@@ -405,18 +405,19 @@ async function openWeeklyPack(options: { force?: boolean } = {}) {
           paletteId: entry.paletteId,
         });
         const catalogueEntry = catalogueByAttributes.value.get(key);
+        const resolvedRarity = catalogueEntry?.rarity ?? entry.rarity;
         return {
           index: entry.index,
           stickerId,
           proof,
           entry,
-          rarity: entry.rarity,
+          rarity: resolvedRarity,
           catalogueId: catalogueEntry?.id ?? null,
           verified: true,
           finish: "base",
           creature: catalogueEntry || {
             id: stickerId,
-            rarity: entry.rarity,
+            rarity: resolvedRarity,
             paletteId: entry.paletteId,
             attributes: {
               archetypeId: entry.archetypeId,
@@ -634,7 +635,6 @@ const visibleCards = computed(() =>
               :finish="collectedByCreatureId.get(creature.id)?.finish"
               :pack-id="collectedByCreatureId.get(creature.id)?.packId"
               :missing="!collectedByCreatureId.has(creature.id)"
-              :verified="collectedByCreatureId.get(creature.id)?.verified"
               compact
             />
             <StickerCreatureNatural
@@ -646,7 +646,6 @@ const visibleCards = computed(() =>
               :finish="collectedByCreatureId.get(creature.id)?.finish"
               :pack-id="collectedByCreatureId.get(creature.id)?.packId"
               :missing="!collectedByCreatureId.has(creature.id)"
-              :verified="collectedByCreatureId.get(creature.id)?.verified"
               compact
             />
             <StickerPixel
@@ -658,7 +657,6 @@ const visibleCards = computed(() =>
               :finish="collectedByCreatureId.get(creature.id)?.finish"
               :pack-id="collectedByCreatureId.get(creature.id)?.packId"
               :missing="!collectedByCreatureId.has(creature.id)"
-              :verified="collectedByCreatureId.get(creature.id)?.verified"
               compact
             />
             <Sticker8Bit
@@ -679,7 +677,6 @@ const visibleCards = computed(() =>
                   : '8bit-sprites'
               "
               :missing="!collectedByCreatureId.has(sticker.id)"
-              :verified="collectedByCreatureId.get(sticker.id)?.verified"
               compact
             />
             <StickerLetter
@@ -690,7 +687,6 @@ const visibleCards = computed(() =>
               :finish="collectedByCreatureId.get(sticker.id)?.finish"
               :pack-id="collectedByCreatureId.get(sticker.id)?.packId"
               :missing="!collectedByCreatureId.has(sticker.id)"
-              :verified="collectedByCreatureId.get(sticker.id)?.verified"
               compact
             />
           </div>
@@ -777,7 +773,6 @@ const visibleCards = computed(() =>
               :creature="card.creature"
               :finish="card.finish"
               :pack-id="card.packId"
-              :verified="card.verified"
             />
             <StickerCreatureNatural
               v-else-if="catalogueStyleType === 'natural'"
@@ -785,7 +780,6 @@ const visibleCards = computed(() =>
               :palettes="catalogue?.palettes || []"
               :finish="card.finish"
               :pack-id="card.packId"
-              :verified="card.verified"
             />
             <StickerPixel
               v-else-if="catalogueStyleType === 'pixel'"
@@ -793,7 +787,6 @@ const visibleCards = computed(() =>
               :palettes="catalogue?.palettes || []"
               :finish="card.finish"
               :pack-id="card.packId"
-              :verified="card.verified"
             />
             <Sticker8Bit
               v-else-if="
@@ -810,14 +803,12 @@ const visibleCards = computed(() =>
                   ? '8bit-animal-archetype'
                   : '8bit-sprites'
               "
-              :verified="card.verified"
             />
             <StickerLetter
               v-else
               :attributes="card.creature.attributes"
               :finish="card.finish"
               :pack-id="card.packId"
-              :verified="card.verified"
             />
             <span class="pack-card-label">{{ card.rarity }}</span>
           </div>
@@ -848,7 +839,6 @@ const visibleCards = computed(() =>
             :creature="catalogueById.get(swap.creatureId)"
             :finish="swap.finish"
             :pack-id="swap.packId"
-            :verified="swap.verified"
             compact
           />
           <StickerCreatureNatural
@@ -857,7 +847,6 @@ const visibleCards = computed(() =>
             :palettes="catalogue?.palettes || []"
             :finish="swap.finish"
             :pack-id="swap.packId"
-            :verified="swap.verified"
             compact
           />
           <StickerPixel
@@ -866,7 +855,6 @@ const visibleCards = computed(() =>
             :palettes="catalogue?.palettes || []"
             :finish="swap.finish"
             :pack-id="swap.packId"
-            :verified="swap.verified"
             compact
           />
           <Sticker8Bit
@@ -884,7 +872,6 @@ const visibleCards = computed(() =>
                 ? '8bit-animal-archetype'
                 : '8bit-sprites'
             "
-            :verified="swap.verified"
             compact
           />
           <StickerLetter
@@ -892,7 +879,6 @@ const visibleCards = computed(() =>
             :attributes="catalogueById.get(swap.creatureId)?.attributes"
             :finish="swap.finish"
             :pack-id="swap.packId"
-            :verified="swap.verified"
             compact
           />
           <div class="swap-meta">

@@ -4,6 +4,42 @@ import { derivePackSeed, hashCanonical } from "./crypto";
 import { computeMerkleRoot } from "./merkle";
 import { generatePack, deriveKitFromCatalogue } from "./generator";
 
+function hashString(input: string) {
+  let hash = 2166136261;
+  for (let i = 0; i < input.length; i += 1) {
+    hash ^= input.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return hash >>> 0;
+}
+
+export function hashToUnit(input: string) {
+  return (hashString(input) % 1000000) / 1000000;
+}
+
+export function hashToRange(input: string, min: number, max: number) {
+  return min + (max - min) * hashToUnit(input);
+}
+
+export function buildSparklePositions(seed: string, count = 6) {
+  const points = [];
+  for (let i = 0; i < count; i += 1) {
+    points.push({
+      x: hashToRange(`${seed}:x:${i}`, 20, 180),
+      y: hashToRange(`${seed}:y:${i}`, 20, 180),
+      r: hashToRange(`${seed}:r:${i}`, 3, 9),
+    });
+  }
+  return points;
+}
+
+function normalizePublicKeyPem(value: string) {
+  if (!value) return value;
+  const normalized = value.includes("\\n") ? value.replace(/\\n/g, "\n") : value;
+  if (normalized.includes("BEGIN PUBLIC KEY")) return normalized.trim();
+  return `-----BEGIN PUBLIC KEY-----\n${normalized.trim()}\n-----END PUBLIC KEY-----`;
+}
+
 export async function verifyIssuerSignature(
   entry: any,
   issuerPublicKeyPem: string
@@ -14,13 +50,6 @@ export async function verifyIssuerSignature(
   );
   const payload = getEntrySigningPayload(entry);
   return verify(entry.signature, payload, publicKey);
-}
-
-function normalizePublicKeyPem(value: string) {
-  if (!value) return value;
-  const normalized = value.includes("\\n") ? value.replace(/\\n/g, "\n") : value;
-  if (normalized.includes("BEGIN PUBLIC KEY")) return normalized.trim();
-  return `-----BEGIN PUBLIC KEY-----\n${normalized.trim()}\n-----END PUBLIC KEY-----`;
 }
 
 export async function verifyCommitRevealConsistency(commit: any, issue: any) {

@@ -192,11 +192,18 @@ export function useStickerbook() {
 }
 
 export function getPeriodId(date: Date) {
-  const year = date.getUTCFullYear();
-  const firstDay = new Date(Date.UTC(year, 0, 1));
-  const dayOffset = Math.floor(
-    (date.getTime() - firstDay.getTime()) / (24 * 60 * 60 * 1000)
+  const seconds = parseInt(
+    import.meta.env.VITE_STICKERBOOK_PERIOD_SECONDS || "",
+    10
   );
-  const week = Math.floor((dayOffset + firstDay.getUTCDay()) / 7);
-  return `week-${year}-${week}`;
+  if (Number.isFinite(seconds) && seconds > 0) {
+    const bucket = Math.floor(date.getTime() / (seconds * 1000));
+    return `dev-${bucket}`;
+  }
+
+  const year = date.getUTCFullYear();
+  const start = new Date(Date.UTC(year, 0, 1));
+  const days = Math.floor((date.getTime() - start.getTime()) / (24 * 60 * 60 * 1000));
+  const week = Math.ceil((days + start.getUTCDay() + 1) / 7);
+  return `${year}-W${String(week).padStart(2, "0")}`;
 }
