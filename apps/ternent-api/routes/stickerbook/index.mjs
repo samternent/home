@@ -21,8 +21,6 @@ import {
   hashCanonical,
   getSigningPayload,
 } from "./stickerbook-utils.mjs";
-
-const DEFAULT_ISSUER_PRIVATE_KEY_PEM = `-----BEGIN PRIVATE KEY-----\nMIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgH3zkHmZ4ao47bnOS\noi9NRC+CRAztQdJHxbDSK3xVS+2hRANCAARALkcpSzcP3ZvxNERy2h36eAxhUwg6\n/xv9TgZ9qqb3Ze8bBKLaVOGDvh9moZcD2p+1LhbsynFqelcbSZ4mxXyH\n-----END PRIVATE KEY-----\n`;
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const ISSUER_LEDGER_PATH = "data/stickerbook/issuer-ledger.json";
@@ -167,9 +165,7 @@ async function appendIssuerEntries(entries, message) {
 }
 
 async function loadIssuerKeys() {
-  const privateKeyPem = normalizePem(
-    process.env.ISSUER_PRIVATE_KEY_PEM || DEFAULT_ISSUER_PRIVATE_KEY_PEM
-  );
+  const privateKeyPem = normalizePem(process.env.ISSUER_PRIVATE_KEY_PEM);
   const publicKeyPem = derivePublicKeyPem(privateKeyPem);
   const author = stripIdentityKey(publicKeyPem);
   const issuerKeyId =
