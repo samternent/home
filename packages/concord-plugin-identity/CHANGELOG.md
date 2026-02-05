@@ -1,5 +1,12 @@
 # @ternent/concord-plugin-identity
 
+## 0.1.1
+
+### Patch Changes
+
+- Updated dependencies [[`6baee491db88439a387fb3f81560d2abe6082d99`](https://github.com/samternent/home/commit/6baee491db88439a387fb3f81560d2abe6082d99)]:
+  - @ternent/concord-protocol@0.1.0
+
 ## 0.1.0
 
 ### Minor Changes
