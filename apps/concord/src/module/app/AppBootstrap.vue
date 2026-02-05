@@ -4,6 +4,10 @@ import { useLedger } from "../ledger/useLedger";
 import { useIdentity } from "../identity/useIdentity";
 import { useProfile } from "../profile/useProfile";
 
+const props = defineProps<{
+  readOnly?: boolean;
+}>();
+
 const { api, ledger } = useLedger();
 const { publicKey, privateKey, publicKeyPEM } = useIdentity();
 const profile = useProfile();
@@ -17,8 +21,15 @@ onMounted(async () => {
 });
 
 watch(
-  () => [profile.ready.value, publicKey.value, privateKey.value] as const,
-  async ([ready, pub, priv]) => {
+  () =>
+    [
+      profile.ready.value,
+      publicKey.value,
+      privateKey.value,
+      props.readOnly,
+    ] as const,
+  async ([ready, pub, priv, isReadOnly]) => {
+    if (isReadOnly) return;
     if (!ready || !pub || !priv) return;
     await profile.ensureProfileId();
 

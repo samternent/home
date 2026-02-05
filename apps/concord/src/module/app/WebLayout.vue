@@ -30,13 +30,13 @@ import Logo from "../brand/Logo.vue";
         </div>
         <RouterLink
           to="/workspace"
-          class="text-xs flex items-center py-1.5 px-3 rounded-md bg-[var(--ui-primary)]"
+          class="text-xs flex items-center py-1.5 px-3 rounded-md bg-[var(--ui-primary)] text-[var(--ui-bg)] hover:bg-[var(--ui-primary-hover)] transition"
           >Demo</RouterLink
         >
       </nav>
     </div>
   </header>
-  <main class="mx-auto max-w-[65ch] p-4"><slot /></main>
+  <main class="mx-auto max-w-[65ch] py-6 lg:py-12 px-2"><slot /></main>
 
   <footer
     class="flex justify-end items-center py-12 border-t-[1px] border-[var(--ui-border)] w-full"

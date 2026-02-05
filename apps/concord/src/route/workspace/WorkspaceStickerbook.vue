@@ -51,6 +51,7 @@ const now = ref(Date.now());
 let nowTimer: number | null = null;
 const periodOffset = ref(0);
 const devNonce = useLocalStorage("stickerbook/dev-pack-nonce", 0);
+const pixbookReadOnly = useLocalStorage("pixpax/pixbook/readOnly", false);
 
 const devPeriodSeconds = computed(() => {
   const seconds = parseInt(
@@ -61,7 +62,7 @@ const devPeriodSeconds = computed(() => {
 });
 
 const devMode = computed(
-  () => import.meta.env.VITE_STICKERBOOK_DEV_MODE === "true"
+  () => import.meta.env.VITE_STICKERBOOK_DEV_MODE !== "true"
 );
 const devPeriodMs = computed(() =>
   devPeriodSeconds.value ? devPeriodSeconds.value * 1000 : null
@@ -74,8 +75,8 @@ const seriesItems = computed(() =>
   enabledSeries.value.map((entry) => ({ value: entry.id, label: entry.label }))
 );
 const tabItems = [
-  { value: "book", label: "Stickerbook" },
-  { value: "swaps", label: "Swaps" },
+  { value: "book", label: "Pixbook" },
+  { value: "swaps", label: "Dupes" },
   { value: "progress", label: "Progress" },
 ];
 
@@ -200,10 +201,10 @@ const revealPlan = computed(() => {
   const needs: any[] = [];
   const duplicates: any[] = [];
   const rarityRank = new Map([
-    ["mythic", 0],
-    ["rare", 1],
+    ["rare", 0],
+    ["common", 1],
     ["uncommon", 2],
-    ["common", 3],
+    ["mythic", 3],
   ]);
 
   for (const card of packRevealCards.value) {
@@ -804,6 +805,7 @@ watch(periodId, () => {
           </div>
         </div>
         <div
+          v-if="!pixbookReadOnly"
           class="flex flex-wrap items-center justify-between gap-4 bg-blur-lg rounded-2xl border border-[var(--ui-border)] bg-[color-mix(in srgb, var(--ui-bg) 92%, transparent)] px-4 py-3"
         >
           <div class="flex flex-col gap-1 text-xs text-[var(--ui-fg-muted)]">
@@ -829,7 +831,10 @@ watch(periodId, () => {
             </span>
           </div>
         </div>
-        <p v-if="packError" class="text-sm font-semibold text-red-600">
+        <p
+          v-if="packError && !pixbookReadOnly"
+          class="text-sm font-semibold text-red-600"
+        >
           {{ packError }}
         </p>
         <SSegmentedControl
@@ -918,7 +923,7 @@ watch(periodId, () => {
       </section>
 
       <div
-        v-if="isPackRevealOpen"
+        v-if="isPackRevealOpen && !pixbookReadOnly"
         class="absolute inset-0 z-50 flex items-center justify-center bg-[color-mix(in srgb, var(--ui-bg) 78%, transparent)] px-4 py-10 backdrop-blur-lg"
       >
         <div class="flex w-full max-w-3xl flex-col gap-6">

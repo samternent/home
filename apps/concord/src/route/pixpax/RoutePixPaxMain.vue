@@ -1,7 +1,6 @@
 <script lang="ts" setup>
-import { shallowRef, computed } from "vue";
+import { shallowRef, computed, onMounted, watch } from "vue";
 import { onClickOutside, useLocalStorage } from "@vueuse/core";
-import { SplitButton } from "ternent-ui/primitives";
 import { SThemeToggle } from "ternent-ui/components";
 import {
   createIdentity,
@@ -24,38 +23,21 @@ import WorkspaceStickerbook from "../workspace/WorkspaceStickerbook.vue";
 import Logo from "../../module/brand/Logo.vue";
 import PixPaxLogo from "../../module/stickerbook/PixPaxLogo.svg";
 
-type SampleProfilePair = {
-  public?: PublicProfile;
-  private?: PrivateProfile;
-};
-
-const profileModules = import.meta.glob(
-  "../../module/profile/samples/concord-profile.*.*.json",
-  {
-    eager: true,
-    import: "default",
-  }
-) as Record<string, any>;
-
-const profiles = computed<Record<string, SampleProfilePair>>(() => {
-  const profiles: Record<string, SampleProfilePair> = {};
-  for (const [path, data] of Object.entries(profileModules)) {
-    const match = path.match(
-      /concord-profile\.(public|private)\.([^.]+)\.json$/
-    );
-
-    if (!match) continue;
-
-    const [, visibility, id] = match;
-
-    profiles[id] ??= {};
-    profiles[id][visibility as "public" | "private"] = data as
-      | PublicProfile
-      | PrivateProfile;
-  }
-
-  return profiles;
-});
+type PixbookExport =
+  | {
+      format: "pixpax-pixbook";
+      version: "1.0";
+      kind: "public";
+      profile: PublicProfile;
+      ledger: any;
+    }
+  | {
+      format: "pixpax-pixbook";
+      version: "1.0";
+      kind: "private";
+      profile: PrivateProfile;
+      ledger: any;
+    };
 
 const { ledger, api } = useLedger();
 const {
@@ -73,11 +55,6 @@ const {
 } = useEncryption();
 const profile = useProfile();
 
-const myProfile = useLocalStorage(
-  "concord/profile/me",
-  profile.getPrivateProfileJson()
-);
-
 const userMenuRef = shallowRef<HTMLElement | null>();
 const userMenuOpen = shallowRef(false);
 const toggleUserMenu = () => {
@@ -88,7 +65,6 @@ onClickOutside(userMenuRef, () => {
 });
 
 const theme = useLocalStorage("app/theme", "obsidian");
-const themeMode = useLocalStorage("app/themeMode", "light");
 
 const hasProfile = computed(() => {
   const meta = profile.meta.value as { username?: string };
@@ -105,14 +81,122 @@ const disabled = computed(
 );
 
 const username = shallowRef<string>("");
-const profileUploadInputRef = shallowRef<HTMLInputElement | null>(null);
-const uploadError = shallowRef("");
-const uploadStatus = shallowRef("");
+const pixbookUploadInputRef = shallowRef<HTMLInputElement | null>(null);
+const pixbookUploadError = shallowRef("");
+const pixbookUploadStatus = shallowRef("");
+const pixbookReadOnly = useLocalStorage("pixpax/pixbook/readOnly", false);
+const viewedPixbookProfileJson = useLocalStorage(
+  "pixpax/pixbook/viewProfileJson",
+  ""
+);
+const viewedPixbookProfile = computed<PublicProfile | null>({
+  get() {
+    if (!viewedPixbookProfileJson.value) return null;
+    try {
+      return JSON.parse(viewedPixbookProfileJson.value) as PublicProfile;
+    } catch {
+      viewedPixbookProfileJson.value = "";
+      return null;
+    }
+  },
+  set(value) {
+    viewedPixbookProfileJson.value = value ? JSON.stringify(value) : "";
+  },
+});
+const publicLedgerSnapshot = useLocalStorage("pixpax/pixbook/publicLedger", "");
+const privateLedgerSnapshot = useLocalStorage(
+  "pixpax/pixbook/privateLedger",
+  ""
+);
 
-const ledgerUploadInputRef = shallowRef<HTMLInputElement | null>(null);
+const PIXBOOK_FORMAT = "pixpax-pixbook";
+const PIXBOOK_VERSION = "1.0";
+
 const CORE_LEDGER_KEY = "concord:ledger:core";
 const TAMPER_LEDGER_KEY = "concord:ledger:tamper";
 const TAMPER_ACTIVE_KEY = "concord:ledger:tampered";
+
+const pixbookHead = computed(() => {
+  return ledger.value?.head?.slice(0, 7) || "new";
+});
+
+const storageChecked = shallowRef(false);
+const creatingPixbook = shallowRef(false);
+const shouldAutoCreatePixbook = shallowRef(true);
+const viewingIdentityKey = computed(() => {
+  return viewedPixbookProfile.value?.identity?.publicKey || "";
+});
+const viewingLabel = computed(() => {
+  const meta = viewedPixbookProfile.value?.metadata as { username?: string };
+  if (meta?.username) return `@${meta.username}`;
+  const id = viewedPixbookProfile.value?.profileId || "";
+  return id ? `Pixbook ${id.slice(0, 6)}` : "Pixbook";
+});
+const hasPublicView = computed(() => {
+  return (
+    pixbookReadOnly.value &&
+    Boolean(viewedPixbookProfile.value) &&
+    Boolean(publicLedgerSnapshot.value)
+  );
+});
+
+onMounted(async () => {
+  if (
+    pixbookReadOnly.value &&
+    (!viewedPixbookProfile.value || !publicLedgerSnapshot.value)
+  ) {
+    pixbookReadOnly.value = false;
+    viewedPixbookProfile.value = null;
+  }
+
+  if (hasPublicView.value) {
+    try {
+      await api.load(JSON.parse(publicLedgerSnapshot.value), [], true, true);
+      await api.replay();
+    } catch {
+      publicLedgerSnapshot.value = "";
+      await api.loadFromStorage();
+    }
+  } else {
+    await api.loadFromStorage();
+  }
+  storageChecked.value = true;
+  if (!publicKeyPEM.value || !privateKeyPEM.value) {
+    await generateNewIdentity();
+  }
+});
+
+watch(
+  () =>
+    [
+      ledger.value,
+      publicKey.value,
+      privateKey.value,
+      storageChecked.value,
+    ] as const,
+  async ([currentLedger, pubKey, privKey, checked]) => {
+    if (!checked) return;
+    if (hasPublicView.value) return;
+    if (!shouldAutoCreatePixbook.value) return;
+    if (currentLedger) return;
+    if (!pubKey || !privKey) return;
+    await ensurePixbook();
+  },
+  { immediate: true }
+);
+
+watch(
+  () => [ledger.value, pixbookReadOnly.value] as const,
+  ([currentLedger, readOnly]) => {
+    if (!currentLedger || readOnly) return;
+    try {
+      privateLedgerSnapshot.value = JSON.stringify(currentLedger);
+    } catch {
+      privateLedgerSnapshot.value = "";
+    }
+  },
+  { immediate: true }
+);
 
 function downloadText(
   filename: string,
@@ -134,84 +218,137 @@ function downloadText(
   setTimeout(() => URL.revokeObjectURL(url), 250);
 }
 
-async function downloadPublic() {
+async function ensurePixbook() {
+  if (creatingPixbook.value || ledger.value) return;
+  if (!publicKey.value || !privateKey.value) return;
+  pixbookReadOnly.value = false;
+  viewedPixbookProfile.value = null;
+  publicLedgerSnapshot.value = "";
+  privateLedgerSnapshot.value = "";
+  creatingPixbook.value = true;
+  try {
+    await api.auth(privateKey.value, publicKey.value);
+    await api.create();
+  } finally {
+    creatingPixbook.value = false;
+  }
+}
+
+function buildPixbook(kind: "public" | "private") {
+  if (!ledger.value) {
+    throw new Error("Pixbook ledger not available.");
+  }
+
+  if (kind === "public") {
+    return {
+      format: PIXBOOK_FORMAT,
+      version: PIXBOOK_VERSION,
+      kind,
+      profile: profile.getPublicProfile(),
+      ledger: ledger.value,
+    };
+  }
+
+  return {
+    format: PIXBOOK_FORMAT,
+    version: PIXBOOK_VERSION,
+    kind,
+    profile: profile.getPrivateProfile(),
+    ledger: ledger.value,
+  };
+}
+
+async function downloadPixbook(kind: "public" | "private") {
+  if (kind === "private" && pixbookReadOnly.value) {
+    pixbookUploadError.value =
+      "Private pixbook export requires the signing keys.";
+    return;
+  }
   await profile.ensureProfileId();
+  if (!ledger.value) {
+    await ensurePixbook();
+  }
 
-  const files = profile.getDownloadFiles({ pretty: true });
-  downloadText(files.public.filename, files.public.json);
+  if (!ledger.value) {
+    pixbookUploadError.value = "Pixbook ledger not available yet.";
+    return;
+  }
+
+  const pixbook = buildPixbook(kind);
+  const filename = `pixbook.${kind}.${pixbookHead.value}.json`;
+  const json = JSON.stringify(pixbook, null, 2);
+  downloadText(filename, json);
 }
 
-async function downloadPrivate() {
-  await profile.ensureProfileId();
-
-  const files = profile.getDownloadFiles({ pretty: true });
-  downloadText(files.private.filename, files.private.json);
+function triggerPixbookUpload() {
+  pixbookUploadError.value = "";
+  pixbookUploadStatus.value = "";
+  pixbookUploadInputRef.value?.click();
 }
 
-async function impersonateUser(event: Event) {
-  const target = event.target as HTMLSelectElement | null;
-  if (!target) return;
-  const parsedProfile = JSON.parse(target.value) as PrivateProfile;
-  await impersonateIdentity(parsedProfile);
-  await impersonateEncryption(parsedProfile);
-  profile.replaceProfileMeta(parsedProfile.metadata);
-  profile.setProfileId(parsedProfile.profileId);
-
-  await reauthAndReplay();
-}
-
-function triggerProfileUpload() {
-  uploadError.value = "";
-  uploadStatus.value = "";
-  profileUploadInputRef.value?.click();
-}
-
-async function handleProfileUpload(event: Event) {
+async function handlePixbookUpload(event: Event) {
   const target = event.target as HTMLInputElement | null;
   if (!target?.files?.length) return;
-
   const file = target.files[0];
   target.value = "";
 
-  let parsed: PrivateProfile;
+  let parsed: PixbookExport;
   try {
-    parsed = JSON.parse(await file.text()) as PrivateProfile;
+    parsed = JSON.parse(await file.text()) as PixbookExport;
   } catch {
-    uploadError.value = "Invalid JSON file.";
+    pixbookUploadError.value = "Invalid pixbook JSON.";
     return;
   }
 
-  if (parsed?.format !== "concord-profile-private") {
-    uploadError.value = "Not a private profile file.";
+  if (parsed?.format !== PIXBOOK_FORMAT || parsed?.version !== PIXBOOK_VERSION) {
+    pixbookUploadError.value = "Not a pixbook export.";
     return;
   }
 
-  await impersonateIdentity(parsed);
-  await impersonateEncryption(parsed);
-  profile.replaceProfileMeta(parsed.metadata);
-  profile.setProfileId(parsed.profileId);
+  const confirmed = window.confirm(
+    "Import this pixbook? This will replace your current pixbook and may replace your identity."
+  );
+  if (!confirmed) return;
 
-  myProfile.value = JSON.stringify(parsed);
-  await reauthAndReplay();
-  uploadStatus.value = "Logged in with uploaded profile.";
-}
+  shouldAutoCreatePixbook.value = false;
+  try {
+    if (parsed.kind === "public") {
+      pixbookReadOnly.value = true;
+      viewedPixbookProfile.value = parsed.profile as PublicProfile;
+      publicLedgerSnapshot.value = JSON.stringify(parsed.ledger);
+      if (ledger.value) {
+        try {
+          privateLedgerSnapshot.value = JSON.stringify(ledger.value);
+        } catch {
+          privateLedgerSnapshot.value = "";
+        }
+      }
+      await api.load(parsed.ledger, [], true, true);
+      await api.replay();
+      pixbookUploadStatus.value = "Public pixbook loaded (read-only).";
+      return;
+    }
 
-const isImpersonating = computed(() => {
-  return JSON.parse(myProfile.value).profileId !== profile.profileId.value;
-});
+    const privateProfile = parsed.profile as PrivateProfile;
+    if (privateProfile?.format !== "concord-profile-private") {
+      pixbookUploadError.value = "Missing private profile in pixbook.";
+      return;
+    }
 
-async function cancelImpersonate() {
-  const _profile = JSON.parse(myProfile.value);
-  await impersonateIdentity(_profile);
-  await impersonateEncryption(_profile);
-  profile.replaceProfileMeta(_profile.metadata);
-  profile.setProfileId(_profile.profileId);
+    pixbookReadOnly.value = false;
+    viewedPixbookProfile.value = null;
+    publicLedgerSnapshot.value = "";
+    await impersonateIdentity(privateProfile);
+    await impersonateEncryption(privateProfile);
+    profile.replaceProfileMeta(privateProfile.metadata);
+    profile.setProfileId(privateProfile.profileId);
 
-  await reauthAndReplay();
-}
-
-function isActiveProfile(profileId: string) {
-  return profile.profileId.value === profileId;
+    await api.load(parsed.ledger, [], true, true);
+    await reauthAndReplay();
+    pixbookUploadStatus.value = "Private pixbook imported.";
+  } finally {
+    shouldAutoCreatePixbook.value = true;
+  }
 }
 
 async function reauthAndReplay() {
@@ -240,8 +377,8 @@ async function resetIdentityAndProfile() {
   );
   if (!confirmed) return;
 
-  uploadError.value = "";
-  uploadStatus.value = "";
+  pixbookUploadError.value = "";
+  pixbookUploadStatus.value = "";
   username.value = "";
 
   profile.clearProfileMeta();
@@ -253,132 +390,85 @@ async function resetIdentityAndProfile() {
   encryptionPrivateKey.value = nextPrivate;
 
   await profile.ensureProfileId();
-  myProfile.value = profile.getPrivateProfileJson();
   await reauthAndReplay();
-  uploadStatus.value = "New identity created.";
+  pixbookUploadStatus.value = "New identity created.";
 }
 
 async function setProfile() {
   profile.setProfileMeta({ username: username.value });
   username.value = "";
 
-  myProfile.value = profile.getPrivateProfileJson();
   init();
 }
 
-function downloadLedger() {
-  if (!ledger.value) return;
-  const head = ledger.value.head?.slice(0, 7) || "export";
-  const filename = `concord-ledger-${head}.json`;
-  const json = JSON.stringify(ledger.value, null, 2);
-  downloadText(filename, json);
-}
-
-async function createNewLedger() {
+async function createNewPixbook() {
   const confirmed = window.confirm(
-    "Create a new ledger? This will replace the current working copy."
+    "Start a new pixbook? This will replace your current pixbook."
   );
   if (!confirmed) return;
+  pixbookReadOnly.value = false;
+  viewedPixbookProfile.value = null;
+  publicLedgerSnapshot.value = "";
+  privateLedgerSnapshot.value = "";
+  shouldAutoCreatePixbook.value = false;
   if (privateKey.value && publicKey.value) {
     await api.auth(privateKey.value, publicKey.value);
   }
   await api.create();
+  shouldAutoCreatePixbook.value = true;
 }
 
-function triggerLedgerUpload() {
-  ledgerUploadInputRef.value?.click();
-}
-
-async function handleLedgerUpload(event: Event) {
-  const target = event.target as HTMLInputElement | null;
-  if (!target?.files?.length) return;
-  const file = target.files[0];
-  target.value = "";
-
-  let parsed;
-  try {
-    parsed = JSON.parse(await file.text());
-  } catch {
-    window.alert("Invalid ledger JSON.");
-    return;
+async function returnToMyPixbook() {
+  shouldAutoCreatePixbook.value = false;
+  pixbookReadOnly.value = false;
+  viewedPixbookProfile.value = null;
+  publicLedgerSnapshot.value = "";
+  if (privateLedgerSnapshot.value) {
+    try {
+      await api.load(JSON.parse(privateLedgerSnapshot.value), [], true, true);
+    } catch {
+      privateLedgerSnapshot.value = "";
+      await api.loadFromStorage();
+    }
+  } else {
+    await api.loadFromStorage();
   }
-
-  const confirmed = window.confirm(
-    "Upload this ledger? This will replace the current working copy."
-  );
-  if (!confirmed) return;
-
-  await api.load(parsed, [], true, true);
+  shouldAutoCreatePixbook.value = true;
+  await ensurePixbook();
 }
 
-async function deleteLedger() {
+async function eraseLocalPixbook() {
   const confirmed = window.confirm(
-    "Delete the current ledger? This will permanently remove it from local storage."
+    "Erase this pixbook from this browser? This cannot be undone."
   );
   if (!confirmed) return;
+  pixbookReadOnly.value = false;
+  viewedPixbookProfile.value = null;
+  publicLedgerSnapshot.value = "";
+  privateLedgerSnapshot.value = "";
   await api.destroy();
   window.localStorage.removeItem(CORE_LEDGER_KEY);
   window.localStorage.removeItem(TAMPER_LEDGER_KEY);
   window.localStorage.removeItem(TAMPER_ACTIVE_KEY);
+  await ensurePixbook();
 }
 </script>
 <template>
-  <AppBootstrap>
+  <AppBootstrap :read-only="pixbookReadOnly">
     <div
       class="dark flex flex-col flex-1 w-screen h-screen overflow-auto font-mono bg-[image:var(--bg-pixpax)]"
     >
       <header
         class="sticky top-0 z-20 w-full backdrop-blur-[12px] border-b border-[var(--ui-border)]"
       >
-        <div class="mx-auto flex items-center w-full justify-between px-4 py-2">
-          <div class="flex items-center">
-            <input
-              ref="ledgerUploadInputRef"
-              type="file"
-              accept="application/json"
-              class="hidden"
-              @change="handleLedgerUpload"
-            />
-            <SplitButton>
-              <template #primary>
-                <button
-                  class="flex-1 text-xs px-4 py-2 text-left cursor-pointer hover:bg-[var(--ui-primary)]/10 transition-colors"
-                  @click="createNewLedger"
-                >
-                  Create new ledger
-                </button>
-              </template>
-              <template #menu="{ closeMenu }">
-                <button
-                  class="w-full text-left text-xs px-3 py-2 rounded-lg hover:bg-[var(--ui-fg)]/5 transition-colors"
-                  @click="
-                    triggerLedgerUpload();
-                    closeMenu();
-                  "
-                >
-                  Upload ledger
-                </button>
-                <button
-                  class="w-full text-left text-xs px-3 py-2 rounded-lg hover:bg-[var(--ui-fg)]/5 transition-colors"
-                  @click="
-                    downloadLedger();
-                    closeMenu();
-                  "
-                >
-                  Download ledger
-                </button>
-                <button
-                  class="w-full text-left text-xs px-3 py-2 rounded-lg text-red-600 hover:bg-[var(--ui-critical)]/10 transition-colors"
-                  @click="
-                    deleteLedger();
-                    closeMenu();
-                  "
-                >
-                  Delete ledger
-                </button>
-              </template>
-            </SplitButton>
-          </div>
+        <div class="mx-auto flex items-center w-full justify-end px-4 py-2">
+          <input
+            ref="pixbookUploadInputRef"
+            type="file"
+            accept="application/json"
+            class="hidden"
+            @change="handlePixbookUpload"
+          />
           <div class="relative" ref="userMenuRef">
             <button
               @click="toggleUserMenu"
@@ -405,6 +495,12 @@ async function deleteLedger() {
               >
                 <IdentityAvatar :identity="publicKeyPEM" size="sm" />
               </div>
+              <span
+                v-if="pixbookReadOnly"
+                class="text-[10px] uppercase tracking-wide text-amber-600 border border-amber-600/30 rounded-full px-2 py-0.5"
+              >
+                read-only
+              </span>
             </button>
 
             <div
@@ -462,109 +558,75 @@ async function deleteLedger() {
                     <input
                       v-model="username"
                       type="text"
-                      placeholder="Username"
+                      placeholder="Display name"
                       class="border border-[var(--ui-border)] px-4 py-2 rounded-full bg-[var(--ui-bg)]"
                     />
                     <button
                       class="border border-[var(--ui-border)] px-4 py-2 text-sm rounded-full"
                       @click="setProfile"
                     >
-                      Set profile
+                      Set handle
                     </button>
                   </div>
                 </div>
-
-                <input
-                  ref="profileUploadInputRef"
-                  type="file"
-                  accept="application/json"
-                  class="hidden"
-                  @change="handleProfileUpload"
-                />
-                <SplitButton
-                  v-if="hasProfile"
-                  :disabled="disabled"
-                  menuWidth="w-64"
-                >
-                  <template #primary>
-                    <button
-                      type="button"
-                      class="flex-1 text-left text-xs px-4 py-2 transition hover:opacity-90 disabled:opacity-50"
-                      :disabled="disabled"
-                      @click="downloadPublic"
-                      title="Download your public profile (safe to share)"
-                    >
-                      Download public profile
-                    </button>
-                  </template>
-                  <template #menu="{ closeMenu }">
-                    <button
-                      type="button"
-                      class="w-full text-left text-xs px-3 py-2 rounded-lg hover:bg-[var(--ui-fg)]/5 transition-colors disabled:opacity-50"
-                      :disabled="disabled"
-                      @click="
-                        downloadPrivate();
-                        closeMenu();
-                      "
-                      title="Download your private profile (contains secrets — do not share)"
-                    >
-                      Download private profile
-                    </button>
-                    <button
-                      type="button"
-                      class="w-full text-left text-xs px-3 py-2 rounded-lg hover:bg-[var(--ui-fg)]/5 transition-colors"
-                      @click="
-                        triggerProfileUpload();
-                        closeMenu();
-                      "
-                    >
-                      Upload private profile
-                    </button>
-                    <button
-                      type="button"
-                      class="w-full text-left text-xs px-3 py-2 rounded-lg text-red-600 hover:bg-[var(--ui-critical)]/10 transition-colors"
-                      @click="
-                        resetIdentityAndProfile();
-                        closeMenu();
-                      "
-                    >
-                      Reset identity + profile
-                    </button>
-                  </template>
-                </SplitButton>
-
-                <p v-if="uploadError" class="text-xs text-red-600">
-                  {{ uploadError }}
-                </p>
-                <p v-if="uploadStatus" class="text-xs text-green-600">
-                  {{ uploadStatus }}
-                </p>
-              </div>
-              <div class="p-2 flex gap-2 items-center">
-                Impersonate
-                <select
-                  @change="impersonateUser"
-                  class="flex-1 border border-[var(--ui-border)] p-1 rounded-sm"
-                  :key="publicKeyPEM"
-                >
-                  <option disabled selected>...</option>
-                  <option
-                    v-for="_profile in Object.values(profiles)"
-                    :key="_profile.private.profileId"
-                    :value="JSON.stringify(_profile.private)"
-                    :selected="isActiveProfile(_profile.private.profileId)"
+                <div class="flex flex-col gap-2">
+                  <p class="text-xs text-[var(--ui-fg-muted)]">
+                    Your pixbook lives in this browser. If you delete it or
+                    clear storage without exporting, it is gone forever.
+                  </p>
+                  <p
+                    v-if="pixbookReadOnly"
+                    class="text-xs text-amber-600 border border-amber-600/30 rounded-md px-2 py-1 bg-amber-500/10"
                   >
-                    {{ _profile.private?.metadata.username }}
-                  </option>
-                </select>
+                    Read-only pixbook. Import a private pixbook to edit or
+                    trade.
+                  </p>
+                  <button
+                    type="button"
+                    class="w-full text-left text-xs px-3 py-2 rounded-lg hover:bg-[var(--ui-fg)]/5 transition-colors disabled:opacity-50"
+                    :disabled="disabled || pixbookReadOnly"
+                    @click="downloadPixbook('private')"
+                  >
+                    Export private pixbook
+                  </button>
+                  <button
+                    type="button"
+                    class="w-full text-left text-xs px-3 py-2 rounded-lg hover:bg-[var(--ui-fg)]/5 transition-colors disabled:opacity-50"
+                    :disabled="disabled"
+                    @click="downloadPixbook('public')"
+                  >
+                    Export public pixbook
+                  </button>
+                  <button
+                    type="button"
+                    class="w-full text-left text-xs px-3 py-2 rounded-lg hover:bg-[var(--ui-fg)]/5 transition-colors"
+                    @click="triggerPixbookUpload"
+                  >
+                    Import pixbook
+                  </button>
+                  <button
+                    type="button"
+                    class="w-full text-left text-xs px-3 py-2 rounded-lg text-red-600 hover:bg-[var(--ui-critical)]/10 transition-colors"
+                    @click="createNewPixbook"
+                  >
+                    Start new pixbook
+                  </button>
+                  <button
+                    type="button"
+                    class="w-full text-left text-xs px-3 py-2 rounded-lg text-red-600 hover:bg-[var(--ui-critical)]/10 transition-colors"
+                    @click="eraseLocalPixbook"
+                  >
+                    Erase local pixbook
+                  </button>
+                </div>
+
+                <p v-if="pixbookUploadError" class="text-xs text-red-600">
+                  {{ pixbookUploadError }}
+                </p>
+                <p v-if="pixbookUploadStatus" class="text-xs text-green-600">
+                  {{ pixbookUploadStatus }}
+                </p>
               </div>
-              <button
-                v-if="isImpersonating"
-                @click="cancelImpersonate"
-                class="px-2 py-1 text-xs rounded-full text-red-500"
-              >
-                Cancel impersonation
-              </button>
             </div>
           </div>
         </div>
@@ -668,6 +730,25 @@ async function deleteLedger() {
           <p class="mt-4 text-xs text-[var(--ui-fg-muted)]">
             Open packs, collect pixels, trade with friends.
           </p>
+          <div
+            v-if="pixbookReadOnly && viewedPixbookProfile"
+            class="mt-6 flex items-center gap-3 rounded-full border border-[var(--ui-border)] bg-[var(--ui-bg)]/60 px-4 py-2 text-xs"
+          >
+            <IdentityAvatar :identity="viewingIdentityKey" size="sm" />
+            <div class="flex flex-col text-left">
+              <span class="text-[var(--ui-fg-muted)]">Viewing</span>
+              <span class="text-[var(--ui-fg)] font-semibold"
+                >{{ viewingLabel }}'s pixbook</span
+              >
+            </div>
+            <button
+              type="button"
+              class="ml-2 rounded-full border border-[var(--ui-border)] px-3 py-1 text-[10px] uppercase tracking-wide hover:bg-[var(--ui-fg)]/5 transition-colors"
+              @click="returnToMyPixbook"
+            >
+              Return to my pixbook
+            </button>
+          </div>
         </div>
       </header>
       <WorkspaceStickerbook />

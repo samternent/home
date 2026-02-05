@@ -1,6 +1,7 @@
 import { computed } from "vue";
+import { useLocalStorage } from "@vueuse/core";
 import { stripIdentityKey } from "ternent-utils";
-import { useProfile } from "../profile/useProfile";
+import { type PublicProfile, useProfile } from "../profile/useProfile";
 import { useLedger, useBridge } from "../ledger/useLedger";
 import { useIdentity } from "../identity/useIdentity";
 
@@ -25,13 +26,33 @@ export function useStickerbook() {
   const ledger = useLedger();
   const bridge = useBridge();
   const identity = useIdentity();
+  const pixbookReadOnly = useLocalStorage("pixpax/pixbook/readOnly", false);
+  const viewedPixbookProfileJson = useLocalStorage(
+    "pixpax/pixbook/viewProfileJson",
+    ""
+  );
+  const viewedPixbookProfile = computed<PublicProfile | null>(() => {
+    if (!viewedPixbookProfileJson.value) return null;
+    try {
+      return JSON.parse(viewedPixbookProfileJson.value) as PublicProfile;
+    } catch {
+      return null;
+    }
+  });
 
   const packEntries = bridge.collections.useArray("pack.received");
   const transferEntries = bridge.collections.useArray("sticker.transfer");
 
-  const profileId = computed(() => profile.profileId.value);
+  const profileId = computed(() => {
+    if (pixbookReadOnly.value && viewedPixbookProfile.value?.profileId) {
+      return viewedPixbookProfile.value.profileId;
+    }
+    return profile.profileId.value;
+  });
   const publicKey = computed(() => {
-    const key = identity.publicKeyPEM.value || "";
+    const key = pixbookReadOnly.value
+      ? viewedPixbookProfile.value?.identity?.publicKey || ""
+      : identity.publicKeyPEM.value || "";
     return key ? stripIdentityKey(key) : "";
   });
 
@@ -53,6 +74,9 @@ export function useStickerbook() {
   );
 
   async function recordPackReceived(payload: PackReceivedPayload) {
+    if (pixbookReadOnly.value) {
+      throw new Error("Pixbook is read-only.");
+    }
     await ledger.api.addAndStage({
       kind: "pack.received",
       payload,
@@ -61,6 +85,9 @@ export function useStickerbook() {
   }
 
   async function recordTransfer(payload: StickerTransferPayload) {
+    if (pixbookReadOnly.value) {
+      throw new Error("Pixbook is read-only.");
+    }
     return ledger.api.addAndStage({
       kind: "sticker.transfer",
       payload,
@@ -69,6 +96,9 @@ export function useStickerbook() {
   }
 
   async function recordPackAndCommit(payload: PackReceivedPayload) {
+    if (pixbookReadOnly.value) {
+      throw new Error("Pixbook is read-only.");
+    }
     const ledgerApi = ledger.api.api;
     const priorPending = ledgerApi?.getState()?.pending ?? [];
 
@@ -93,6 +123,9 @@ export function useStickerbook() {
     recordPackAndCommit,
     recordTransfer,
     migrateStickerOwnedToTransfers: async () => {
+      if (pixbookReadOnly.value) {
+        throw new Error("Pixbook is read-only.");
+      }
       const legacy = bridge.collections.snapshot("sticker.owned") as any[];
       if (!legacy.length) return { migrated: 0 };
       const bySticker = new Map<string, any[]>();
