@@ -5,9 +5,7 @@ version: 0.1
 date: 2026-01-06
 ---
 
-# Concord Whitepaper
-
-_A local‑first, verifiable ledger for application data_
+# A local‑first, verifiable ledger for application data
 
 ---
 

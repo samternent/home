@@ -41,6 +41,7 @@ watchEffect(() => {
     "data-theme",
     `${theme.value}-${themeMode.value || "light"}`
   );
+  document.documentElement.setAttribute("data-theme-palette", themeMode.value);
 
   // document.documentElement.classList.toggle(themeMode.value);
 });

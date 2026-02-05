@@ -3,6 +3,7 @@ import vue from "@vitejs/plugin-vue";
 import tailwindcss from "@tailwindcss/vite";
 import Markdown from "vite-plugin-vue-markdown";
 import { ViteEjsPlugin } from "vite-plugin-ejs";
+import svgLoader from "vite-svg-loader";
 import { version } from "./package.json";
 
 export default defineConfig({
@@ -24,6 +25,7 @@ export default defineConfig({
     vue({ include: [/\.vue$/, /\.md$/] }),
     tailwindcss(),
     Markdown({ wrapperClasses: "prose dark:prose-invert" }),
+    svgLoader(),
   ],
   ssgOptions: {
     includedRoutes(paths) {

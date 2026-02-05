@@ -1,50 +1,76 @@
-import { readFileSync } from "fs";
+import { readFileSync, writeFileSync, existsSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
-import { createHmac } from "crypto";
-
-const DEFAULT_SERVER_SECRET = "stickerbook-demo-secret";
+import {
+  createPrivateKey,
+  createPublicKey,
+  generateKeyPairSync,
+  webcrypto,
+} from "crypto";
+import {
+  createLedger,
+  deriveCommitId,
+  deriveEntryId,
+} from "@ternent/concord-protocol";
+import {
+  computeMerkleRoot,
+  createNonceHex,
+  deriveKitFromCatalogue,
+  derivePackSeed,
+  generatePack,
+  hashCanonical,
+  getSigningPayload,
+} from "./stickerbook-utils.mjs";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-function getServerSecret() {
-  return process.env.SERVER_SECRET || DEFAULT_SERVER_SECRET;
+const ISSUER_LEDGER_PATH = "data/stickerbook/issuer-ledger.json";
+const ISSUER_PENDING_PATH = "data/stickerbook/issuer-pending.json";
+const ALGO_VERSION = "1.0.0";
+
+function stripIdentityKey(key) {
+  return key
+    .replace("-----BEGIN PUBLIC KEY-----\n", "")
+    .replace("\n-----END PUBLIC KEY-----", "");
 }
 
-function getPackSigningSecret() {
-  return process.env.PACK_SIGNING_SECRET || getServerSecret();
+function normalizePem(pem) {
+  if (!pem) return pem;
+  const normalized = pem.includes("\\n") ? pem.replace(/\\n/g, "\n") : pem;
+  return normalized.trim() + "\n";
 }
 
-function createHmacRng(secret, seed) {
-  let counter = 0;
-  return function next() {
-    const hmac = createHmac("sha256", secret);
-    hmac.update(`${seed}:${counter}`);
-    const digest = hmac.digest();
-    counter += 1;
-    const int =
-      (digest[0] << 24) | (digest[1] << 16) | (digest[2] << 8) | digest[3];
-    return (int >>> 0) / 0xffffffff;
-  };
+function derivePublicKeyPem(privateKeyPem) {
+  const privateKey = createPrivateKey(normalizePem(privateKeyPem));
+  return createPublicKey(privateKey).export({ type: "spki", format: "pem" });
 }
 
-function pickWeighted(rng, weights) {
-  const entries = Object.entries(weights);
-  const total = entries.reduce((sum, [, value]) => sum + value, 0);
-  const roll = rng() * total;
-  let cursor = 0;
-  for (const [key, value] of entries) {
-    cursor += value;
-    if (roll <= cursor) return key;
+function pemToDer(pem) {
+  const stripped = pem
+    .replace("-----BEGIN PRIVATE KEY-----", "")
+    .replace("-----END PRIVATE KEY-----", "")
+    .replaceAll("\n", "");
+  return Buffer.from(stripped, "base64");
+}
+
+async function signPayload(privateKeyPem, payload) {
+  const pkcs8 = pemToDer(normalizePem(privateKeyPem));
+  const subtle = webcrypto?.subtle || globalThis.crypto?.subtle;
+  if (!subtle) {
+    throw new Error("WebCrypto subtle is not available.");
   }
-  return entries[entries.length - 1][0];
-}
-
-function base64UrlEncode(payload) {
-  return Buffer.from(payload).toString("base64url");
-}
-
-function signPayload(payload, secret) {
-  return createHmac("sha256", secret).update(payload).digest("base64url");
+  const key = await subtle.importKey(
+    "pkcs8",
+    pkcs8,
+    { name: "ECDSA", namedCurve: "P-256" },
+    false,
+    ["sign"]
+  );
+  const signature = await subtle.sign(
+    { name: "ECDSA", hash: "SHA-256" },
+    key,
+    new TextEncoder().encode(payload)
+  );
+  return Buffer.from(signature).toString("base64");
 }
 
 function loadCatalogue(seriesId) {
@@ -72,36 +98,97 @@ function loadIndex() {
   return JSON.parse(readFileSync(filepath, "utf8"));
 }
 
-function derivePackId(secret, seed) {
-  return createHmac("sha256", secret).update(seed).digest("hex").slice(0, 16);
+function loadIssuerLedger() {
+  const filepath = join(__dirname, "..", "..", ISSUER_LEDGER_PATH);
+  if (existsSync(filepath)) {
+    return JSON.parse(readFileSync(filepath, "utf8"));
+  }
+  return null;
 }
 
-function getCatalogueEntries(catalogue) {
-  if (Array.isArray(catalogue.creatures)) return catalogue.creatures;
-  if (Array.isArray(catalogue.stickers)) return catalogue.stickers;
-  return [];
+function saveIssuerLedger(ledger) {
+  const filepath = join(__dirname, "..", "..", ISSUER_LEDGER_PATH);
+  writeFileSync(filepath, JSON.stringify(ledger, null, 2));
 }
 
-function pickFinishForCard(catalogue, rarity, rng) {
-  const rarityFinishes = catalogue.rarityFinishes?.[rarity];
-  if (rarityFinishes) {
-    if (Array.isArray(rarityFinishes)) {
-      return rarityFinishes[Math.floor(rng() * rarityFinishes.length)];
-    }
-    return rarityFinishes;
+function loadPendingIssuances() {
+  const filepath = join(__dirname, "..", "..", ISSUER_PENDING_PATH);
+  if (!existsSync(filepath)) return {};
+  return JSON.parse(readFileSync(filepath, "utf8"));
+}
+
+function savePendingIssuances(pending) {
+  const filepath = join(__dirname, "..", "..", ISSUER_PENDING_PATH);
+  writeFileSync(filepath, JSON.stringify(pending, null, 2));
+}
+
+async function ensureIssuerLedger() {
+  let ledger = loadIssuerLedger();
+  if (!ledger) {
+    ledger = await createLedger({ issuer: "stickerbook" });
+    saveIssuerLedger(ledger);
   }
-  const finishOptions = ["base", "foil", "holo", "sparkle", "prismatic"];
-  const styleType = catalogue.styleType || "creature";
-  if (styleType === "letters") {
-    if (rarity === "mythic") {
-      return rng() > 0.5 ? "foil" : "sparkle";
-    }
-    return "base";
+  return ledger;
+}
+
+async function appendIssuerEntries(entries, message) {
+  const ledger = await ensureIssuerLedger();
+  const entryIds = [];
+  const nextEntries = { ...ledger.entries };
+
+  for (const entry of entries) {
+    const entryId = await deriveEntryId(entry);
+    if (nextEntries[entryId]) continue;
+    nextEntries[entryId] = entry;
+    entryIds.push(entryId);
   }
-  return finishOptions[Math.floor(rng() * finishOptions.length)];
+
+  if (!entryIds.length) return { ledger, entryIds: [], commitId: null };
+
+  const commit = {
+    parent: ledger.head ?? null,
+    timestamp: new Date().toISOString(),
+    metadata: message ? { message } : null,
+    entries: entryIds,
+  };
+
+  const commitId = await deriveCommitId(commit);
+  const nextLedger = {
+    ...ledger,
+    entries: nextEntries,
+    commits: { ...ledger.commits, [commitId]: commit },
+    head: commitId,
+  };
+
+  saveIssuerLedger(nextLedger);
+  return { ledger: nextLedger, entryIds, commitId };
+}
+
+async function loadIssuerKeys() {
+  const privateKeyPem = normalizePem(process.env.ISSUER_PRIVATE_KEY_PEM);
+  const publicKeyPem = derivePublicKeyPem(privateKeyPem);
+  const author = stripIdentityKey(publicKeyPem);
+  const issuerKeyId =
+    process.env.ISSUER_KEY_ID ||
+    hashCanonical({ type: "issuer-key", v: 1, publicKey: author });
+
+  return { privateKeyPem, publicKeyPem, author, issuerKeyId };
 }
 
 export default function stickerbookRoutes(router) {
+  router.get("/v1/stickerbook/issuer-keypair", (_req, res) => {
+    if (process.env.NODE_ENV === "production") {
+      res.status(403).send({ error: "Disabled in production." });
+      return;
+    }
+    const { publicKey, privateKey } = generateKeyPairSync("ec", {
+      namedCurve: "prime256v1",
+    });
+    const publicKeyPem = publicKey.export({ type: "spki", format: "pem" });
+    const privateKeyPem = privateKey.export({ type: "pkcs8", format: "pem" });
+    res.status(200).send({ publicKeyPem, privateKeyPem });
+  });
+
   router.get("/v1/stickerbook/catalogue", (req, res) => {
     const seriesId = req.query.seriesId || "S1";
     const catalogue = loadCatalogue(seriesId);
@@ -113,101 +200,170 @@ export default function stickerbookRoutes(router) {
     res.status(200).send(index);
   });
 
-  router.get("/v1/stickerbook/pack", (req, res) => {
-    const seriesId = req.query.seriesId || "S1";
-    const periodId = req.query.periodId || "week-0";
-    const profile = req.query.profile || "anon";
-    const devSeed = req.query.devSeed || "";
+  router.post("/v1/stickerbook/commit", async (req, res) => {
+    try {
+      const { packRequestId, seriesId, themeId, count, clientNonceHash } =
+        req.body || {};
 
-    const catalogue = loadCatalogue(seriesId);
-    const catalogueVersion =
-      req.query.catalogueVersion || catalogue.version || "1.0.0";
-
-    const seed = `${seriesId}|${catalogueVersion}|${periodId}|${profile}|${devSeed}`;
-    const rng = createHmacRng(getServerSecret(), seed);
-    const packId = derivePackId(getServerSecret(), seed);
-
-    const entries = getCatalogueEntries(catalogue);
-    const creaturesByRarity = entries.reduce((acc, creature) => {
-      acc[creature.rarity] = acc[creature.rarity] || [];
-      acc[creature.rarity].push(creature);
-      return acc;
-    }, {});
-    const availableWeights = Object.entries(catalogue.rarityWeights || {})
-      .filter(([rarity]) => (creaturesByRarity[rarity] || []).length > 0)
-      .reduce((acc, [rarity, weight]) => {
-        acc[rarity] = weight;
-        return acc;
-      }, {});
-    const weightedRarities =
-      Object.keys(availableWeights).length > 0
-        ? availableWeights
-        : catalogue.rarityWeights || {};
-
-    const packSize = 5;
-    const cards = [];
-    const usedCreatureIds = new Set();
-
-    let safety = 0;
-    while (cards.length < packSize && safety < 400) {
-      // Drop rarity is rolled per card; duplicates are avoided per pack.
-      const rarity = pickWeighted(rng, weightedRarities);
-      const pool = creaturesByRarity[rarity] || [];
-      if (!pool.length) {
-        safety += 1;
-        continue;
+      if (!packRequestId || !seriesId || !themeId || !clientNonceHash) {
+        res.status(400).send({ error: "Missing pack request fields." });
+        return;
       }
-      const creature = pool[Math.floor(rng() * pool.length)];
-      if (usedCreatureIds.has(creature.id)) {
-        safety += 1;
-        continue;
-      }
-      usedCreatureIds.add(creature.id);
 
-      const finish = creature.finish || pickFinishForCard(catalogue, rarity, rng);
-      cards.push({
-        creatureId: creature.id,
-        rarity,
-        finish,
+      const { privateKeyPem, author, issuerKeyId } = await loadIssuerKeys();
+      const issuedAt = new Date().toISOString();
+      const serverSecret = createNonceHex(48);
+      const serverCommit = hashCanonical(serverSecret);
+
+      const payload = {
+        type: "pack.commit",
+        packRequestId,
+        seriesId,
+        themeId,
+        count: Number(count || 0),
+        clientNonceHash,
+        serverCommit,
+        issuerKeyId,
+        issuedAt,
+      };
+
+      const entryCore = {
+        kind: "pack.commit",
+        timestamp: issuedAt,
+        author,
+        payload,
+      };
+      const signature = await signPayload(
+        privateKeyPem,
+        getSigningPayload(entryCore)
+      );
+      const entry = { ...entryCore, signature };
+
+      const { entryIds } = await appendIssuerEntries([entry], "pack.commit");
+
+      const pending = loadPendingIssuances();
+      pending[packRequestId] = {
+        serverSecret,
+        clientNonceHash,
+        seriesId,
+        themeId,
+        count: Number(count || 0),
+        entryId: entryIds[0] || null,
+        issuedAt,
+      };
+      savePendingIssuances(pending);
+
+      res.status(200).send({
+        entry,
+        entryId: entryIds[0] || null,
       });
-      safety += 1;
+    } catch (error) {
+      res.status(500).send({ error: error?.message || "Commit failed." });
     }
+  });
 
-    if (cards.length < packSize) {
-      const allEntries = entries.slice();
-      while (cards.length < packSize && allEntries.length) {
-        const creature = allEntries.splice(
-          Math.floor(rng() * allEntries.length),
-          1
-        )[0];
-        if (usedCreatureIds.has(creature.id)) continue;
-        usedCreatureIds.add(creature.id);
-        cards.push({
-          creatureId: creature.id,
-          rarity: creature.rarity,
-          finish: creature.finish || pickFinishForCard(catalogue, creature.rarity, rng),
-        });
+  router.post("/v1/stickerbook/issue", async (req, res) => {
+    try {
+      const { packRequestId, clientNonce } = req.body || {};
+      if (!packRequestId || !clientNonce) {
+        res.status(400).send({ error: "Missing pack request fields." });
+        return;
       }
+
+      const pending = loadPendingIssuances();
+      const pendingEntry = pending[packRequestId];
+      if (!pendingEntry) {
+        res.status(404).send({ error: "No pending pack commit found." });
+        return;
+      }
+
+      const clientNonceHash = hashCanonical(clientNonce);
+      if (clientNonceHash !== pendingEntry.clientNonceHash) {
+        res.status(400).send({ error: "Client nonce does not match commit." });
+        return;
+      }
+
+      const { privateKeyPem, author, issuerKeyId } = await loadIssuerKeys();
+      const catalogue = loadCatalogue(pendingEntry.seriesId);
+      const kitJson = deriveKitFromCatalogue(catalogue);
+      const kitHash = hashCanonical(kitJson);
+      const themeHash = hashCanonical({
+        themeId: catalogue?.themeId ?? pendingEntry.themeId,
+        themeVersion: catalogue?.themeVersion ?? catalogue?.version ?? "1.0.0",
+      });
+
+      const packSeed = derivePackSeed({
+        serverSecret: pendingEntry.serverSecret,
+        clientNonce,
+        packRequestId,
+        seriesId: pendingEntry.seriesId,
+        themeId: pendingEntry.themeId,
+      });
+
+      const entries = generatePack({
+        packSeed,
+        seriesId: pendingEntry.seriesId,
+        themeId: pendingEntry.themeId,
+        count: pendingEntry.count,
+        algoVersion: ALGO_VERSION,
+        kitJson,
+      });
+
+      const packRoot = await computeMerkleRoot(entries);
+      const issuedAt = new Date().toISOString();
+
+      const payload = {
+        type: "pack.issue",
+        packRequestId,
+        seriesId: pendingEntry.seriesId,
+        themeId: pendingEntry.themeId,
+        count: pendingEntry.count,
+        serverSecret: pendingEntry.serverSecret,
+        clientNonce,
+        packSeed,
+        packRoot,
+        algoVersion: ALGO_VERSION,
+        kitHash,
+        themeHash,
+        issuerKeyId,
+        issuedAt,
+      };
+
+      const entryCore = {
+        kind: "pack.issue",
+        timestamp: issuedAt,
+        author,
+        payload,
+      };
+      const signature = await signPayload(
+        privateKeyPem,
+        getSigningPayload(entryCore)
+      );
+      const entry = { ...entryCore, signature };
+
+      const { entryIds } = await appendIssuerEntries([entry], "pack.issue");
+
+      delete pending[packRequestId];
+      savePendingIssuances(pending);
+
+      res.status(200).send({
+        entry,
+        entryId: entryIds[0] || null,
+        pack: {
+          packRequestId,
+          seriesId: pendingEntry.seriesId,
+          themeId: pendingEntry.themeId,
+          count: pendingEntry.count,
+          packSeed,
+          packRoot,
+          algoVersion: ALGO_VERSION,
+          kitHash,
+          themeHash,
+          entries,
+        },
+      });
+    } catch (error) {
+      res.status(500).send({ error: error?.message || "Issue failed." });
     }
-
-    const payload = {
-      packId,
-      seriesId,
-      catalogueVersion,
-      periodId,
-      profile,
-      ...(devSeed ? { devSeed } : {}),
-      cards,
-      createdAt: new Date().toISOString(),
-    };
-
-    const encodedPayload = base64UrlEncode(JSON.stringify(payload));
-    const signature = signPayload(encodedPayload, getPackSigningSecret());
-    const token = `${encodedPayload}.${signature}`;
-
-    res.status(200).send({
-      pack: payload,
-      token,
-    });
   });
 }

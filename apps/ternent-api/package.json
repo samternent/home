@@ -8,6 +8,7 @@
     "start:dev": "nodemon main.mjs"
   },
   "dependencies": {
+    "@ternent/concord-protocol": "workspace:^",
     "axios": "^0.27.2",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
@@ -17,6 +18,8 @@
     "node-media-server": "^2.7.0",
     "nodemon": "^2.0.22",
     "openai": "^4.56.0",
+    "ternent-identity": "workspace:*",
+    "ternent-utils": "workspace:*",
     "ws": "^8.18.0"
   }
 }
