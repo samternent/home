@@ -1,6 +1,6 @@
 {
   "name": "ternent-ledger",
-  "version": "1.0.23",
+  "version": "1.0.24",
   "description": "",
   "main": "dist/ledger.umd.js",
   "module": "dist/ledger.es.js",

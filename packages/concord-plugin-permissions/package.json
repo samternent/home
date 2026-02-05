@@ -1,6 +1,6 @@
 {
   "name": "@ternent/concord-plugin-permissions",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Concord permissions registry semantic layer",
   "publishConfig": {
     "access": "public"

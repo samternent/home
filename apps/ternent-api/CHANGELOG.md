@@ -1,5 +1,16 @@
 # ternent-api
 
+## 0.2.0
+
+### Minor Changes
+
+- [#440](https://github.com/samternent/home/pull/440) [`6baee491db88439a387fb3f81560d2abe6082d99`](https://github.com/samternent/home/commit/6baee491db88439a387fb3f81560d2abe6082d99) Thanks [@samternent](https://github.com/samternent)! - Adds pixpax app
+
+### Patch Changes
+
+- Updated dependencies [[`6baee491db88439a387fb3f81560d2abe6082d99`](https://github.com/samternent/home/commit/6baee491db88439a387fb3f81560d2abe6082d99)]:
+  - @ternent/concord-protocol@0.1.0
+
 ## 0.1.9
 
 ### Patch Changes
