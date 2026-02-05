@@ -90,4 +90,24 @@ describe("resolveOwnership", () => {
     expect(entry?.conflict).toBe(true);
     expect(entry?.status).toBe("conflicted");
   });
+
+  it("treats empty prevTransferHash as null for chain start", () => {
+    const records = [{ stickerId: "s1" }];
+    const ownership = resolveOwnership({
+      records,
+      transferEntries: [
+        {
+          entryId: "t1",
+          author: "ownerA",
+          data: { stickerId: "s1", toPublicKey: "ownerB", prevTransferHash: "" },
+        },
+      ],
+      defaultOwnerByStickerId: new Map([["s1", "ownerA"]]),
+      currentKey: "ownerA",
+    });
+
+    const entry = ownership.get("s1");
+    expect(entry?.owner).toBe("ownerB");
+    expect(entry?.status).toBe("sent");
+  });
 });

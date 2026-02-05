@@ -1,0 +1,61 @@
+<svg
+            class="w-24"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 128 128"
+            role="img"
+            aria-label="PixPax icon"
+          >
+            <!-- Outer card: 16x16 grid, pixel = 8 -->
+            <path
+              fill="var(--ui-bg)"
+              stroke="var(--ui-border)"
+              stroke-width="8"
+              shape-rendering="crispEdges"
+              d="
+      M 16 16
+      H 88
+      V 24
+      H 96
+      V 32
+      H 112
+      V 112
+      H 16
+      Z
+    "
+            />
+
+            <!-- Inner frame -->
+            <path
+              fill="none"
+              stroke="var(--ui-border)"
+              stroke-width="6"
+              shape-rendering="crispEdges"
+              d="
+      M 24 24
+      H 80
+      V 32
+      H 88
+      V 40
+      H 104
+      V 104
+      H 24
+      Z
+    "
+            />
+
+            <!-- Accent pixels (notch) -->
+            <g fill="var(--ui-accent)" shape-rendering="crispEdges">
+              <rect x="88" y="16" width="8" height="8" />
+              <rect x="96" y="24" width="8" height="8" />
+              <rect x="104" y="32" width="8" height="8" />
+            </g>
+
+            <!-- Rare mark (optional) -->
+            <g fill="var(--ui-secondary)" shape-rendering="crispEdges">
+              <rect x="56" y="64" width="8" height="8" />
+              <rect x="48" y="72" width="8" height="8" />
+              <rect x="64" y="72" width="8" height="8" />
+              <rect x="56" y="80" width="8" height="8" />
+              <rect x="56" y="96" width="8" height="8" />
+            </g>
+          </svg>

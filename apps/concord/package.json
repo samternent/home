@@ -24,6 +24,7 @@
     "ternent-ui": "workspace:*",
     "ternent-utils": "workspace:*",
     "vite-plugin-ejs": "^1.7.0",
+    "vite-svg-loader": "^5.1.0",
     "vue": "^3.5.24"
   },
   "devDependencies": {
@@ -32,10 +33,10 @@
     "@vitejs/plugin-vue": "^6.0.1",
     "gray-matter": "^4.0.3",
     "markdown-it": "^14.1.0",
-    "vitest": "^1.6.0",
     "vite": "npm:rolldown-vite@7.2.5",
     "vite-plugin-vue-markdown": "^0.23.8",
     "vite-ssg": "^28.2.2",
+    "vitest": "^1.6.0",
     "vue-router": "^4.4.3"
   },
   "overrides": {

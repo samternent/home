@@ -43,12 +43,12 @@ import Logo from "../brand/Logo.vue";
   >
     <div class="max-w-[980px] mx-auto w-full flex justify-end group">
       <a
-        href="mailto:concord@ternent.dev"
+        href="mailto:sam@ternent.dev"
         class="flex items-end justify-center gap-3 opacity-80 hover:opacity-100"
       >
         <span
           class="text-xs font-mono font-thin -translate-y-1 group-hover:translate-y-0.5 group-hover:translate-x-1.5 transition-all duration-300"
-          >concord@ternent.dev</span
+          >sam@ternent.dev</span
         >
         <Logo
           class="size-8 group-hover:-rotate-6 transition-all duration-300"

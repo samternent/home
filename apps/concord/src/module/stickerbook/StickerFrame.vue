@@ -15,13 +15,11 @@ type StickerFrameProps = {
 const props = defineProps<StickerFrameProps>();
 
 const isCompact = computed(() => props.compact ?? false);
-const sizeClass = computed(() =>
-  isCompact.value ? "size-[110px]" : "size-[170px]"
+const showLabels = computed(
+  () => !!(props.label || props.sublabel || props.status)
 );
-const labelClass = computed(() => (isCompact.value ? "hidden" : ""));
 const frameSeed = computed(
-  () =>
-    props.seed || props.label || props.sublabel || props.rarity || "sticker"
+  () => props.seed || props.label || props.sublabel || props.rarity || "sticker"
 );
 const frameId = computed(() =>
   Math.floor(hashToRange(frameSeed.value, 0, 1_000_000_000)).toString()
@@ -34,6 +32,13 @@ const showMythicDots = computed(
 const showMythicGlow = computed(
   () => !props.missing && rarity.value === "mythic"
 );
+const showMythicBorder = computed(
+  () => !props.missing && rarity.value === "mythic"
+);
+const mythicBorderDelay = computed(() => {
+  const seconds = hashToRange(`${frameSeed.value}:border`, -6, 0);
+  return `${seconds.toFixed(2)}s`;
+});
 const showShimmer = computed(() => {
   if (props.missing) return false;
   return rarity.value === "mythic" || rarity.value === "rare";
@@ -56,13 +61,24 @@ const backdropFill = computed(() => {
 
 <template>
   <div
-    class="flex flex-col items-center justify-center gap-2 p-2 text-center"
-    :class="[isCompact ? 'gap-1 p-1.5' : 'gap-2 p-2', missing ? 'opacity-60' : '']"
+    class="flex flex-col items-center justify-center gap-2 text-center max-w-[180px]"
+    :class="[isCompact ? 'gap-2' : 'gap-3', missing ? 'opacity-60' : '']"
   >
-    <div class="relative" :class="sizeClass">
+    <div
+      :class="[
+        'relative w-full bg-[var(--ui-surface)]  bg-opacity-10 aspect-4/6 border border-[var(--ui-border)] rounded-sm overflow-hidden',
+        { 'shimmer-border mythic-border p-0.5': showMythicBorder },
+      ]"
+      :style="
+        showMythicBorder
+          ? { '--mythic-border-delay': mythicBorderDelay }
+          : undefined
+      "
+    >
       <svg
-        class="absolute inset-0 size-full"
-        viewBox="0 0 200 200"
+        class="absolute inset-0 h-full w-full"
+        viewBox="0 0 100 150"
+        preserveAspectRatio="none"
         aria-hidden="true"
       >
         <defs>
@@ -151,7 +167,13 @@ const backdropFill = computed(() => {
               repeatCount="indefinite"
             />
           </radialGradient>
-          <filter :id="`frame-glow-${frameId}`" x="-30%" y="-30%" width="160%" height="160%">
+          <filter
+            :id="`frame-glow-${frameId}`"
+            x="-30%"
+            y="-30%"
+            width="160%"
+            height="160%"
+          >
             <feGaussianBlur stdDeviation="8" result="blur" />
             <feColorMatrix
               type="matrix"
@@ -179,7 +201,13 @@ const backdropFill = computed(() => {
               repeatCount="indefinite"
             />
           </pattern>
-          <linearGradient :id="`shimmer-${frameId}`" x1="0" y1="0" x2="1" y2="1">
+          <linearGradient
+            :id="`shimmer-${frameId}`"
+            x1="0"
+            y1="0"
+            x2="1"
+            y2="1"
+          >
             <stop offset="0%" stop-color="rgba(255,255,255,0)" />
             <stop offset="35%" stop-color="rgba(255,255,255,0.0)" />
             <stop offset="46%" stop-color="rgba(255,255,255,0.18)" />
@@ -201,55 +229,122 @@ const backdropFill = computed(() => {
         </defs>
         <rect
           v-if="backdropFill"
-          x="14"
-          y="14"
-          width="172"
-          height="172"
-          rx="26"
+          x="1"
+          y="1"
+          width="98"
+          height="148"
+          rx="6"
           :fill="backdropFill"
           :filter="showMythicGlow ? `url(#frame-glow-${frameId})` : undefined"
         />
         <rect
           v-if="showMythicDots"
-          x="14"
-          y="14"
-          width="172"
-          height="172"
-          rx="26"
+          x="1"
+          y="1"
+          width="100"
+          height="150"
+          rx="6"
           :fill="`url(#dots-${frameId})`"
           opacity="0.45"
         />
         <rect
           v-if="showShimmer"
-          x="14"
-          y="14"
-          width="172"
-          height="172"
-          rx="26"
+          x="1"
+          y="1"
+          width="100"
+          height="150"
+          rx="6"
           :fill="`url(#shimmer-${frameId})`"
           opacity="0.45"
         />
       </svg>
-      <div class="relative size-full">
-        <slot />
-      </div>
-    </div>
-
-    <div v-if="!labelClass && (label || sublabel || status)">
-      <div class="flex flex-col items-center uppercase tracking-[0.08em]">
-        <span v-if="label" class="text-[11px] font-semibold text-[var(--ui-fg)]">
-          {{ label }}
-        </span>
-        <span v-if="sublabel" class="text-[10px] text-[var(--ui-fg-muted)]">
-          {{ sublabel }}
-        </span>
-        <span
-          v-if="status"
-          class="text-[9px] text-[var(--ui-fg-muted)] opacity-70"
+      <div
+        class="flex flex-col relative z-10 rounded-sm h-full overflow-hidden"
+      >
+        <div
+          class="flex flex-col items-center justify-between gap-2 uppercase tracking-[0.16em] bg-[var(--ui-bg)] bg-opacity-90 px-2 py-1 text-[9px] text-[var(--ui-fg-muted)]"
         >
-          {{ status }}
-        </span>
+          <span v-if="sublabel">{{ sublabel }}</span>
+          <span v-else>series</span>
+          <span v-if="status" class="text-[9px] opacity-70">{{ status }}</span>
+        </div>
+        <div class="relative mx-auto w-full">
+          <div class="relative size-full overflow-hidden">
+            <slot />
+          </div>
+        </div>
+        <div
+          v-if="showLabels"
+          class="mt-2 bg-[var(--ui-bg)] flex flex-1 items-center justify-between gap-2 bg-[color-mix(in srgb, var(--ui-bg) 90%, transparent)] px-3 py-1.5 text-[10px] uppercase tracking-[0.12em] text-[var(--ui-fg-muted)]"
+        >
+          <span class="font-semibold text-[var(--ui-fg)]">
+            {{ label || "Sticker" }}
+          </span>
+        </div>
       </div>
     </div>
   </div>
 </template>
+<style scoped>
+.shimmer-border {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-border::before {
+  content: "";
+  position: absolute;
+  inset: -200%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    #fff4c2 60deg,
+    #f6f2d7 120deg,
+    #ffef9a 180deg,
+    transparent 240deg
+  );
+  animation: shimmer-spin 4s linear infinite;
+  animation-delay: var(--mythic-border-delay, 0s);
+}
+@keyframes shimmer-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.shimmer-border.silver::before {
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    #f5f5f5 60deg,
+    #cfd8dc 120deg,
+    #ffffff 180deg,
+    transparent 240deg
+  );
+}
+.shimmer-border::before {
+  opacity: 0.6;
+  filter: blur(2px);
+}
+
+.mythic-border::before {
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    rgba(255, 241, 201, 0.7) 60deg,
+    rgba(208, 186, 118, 0.6) 120deg,
+    rgba(255, 248, 220, 0.7) 180deg,
+    transparent 240deg
+  );
+}
+
+.mythic-border.silver::before {
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    rgba(233, 240, 248, 0.7) 60deg,
+    rgba(193, 205, 220, 0.6) 120deg,
+    rgba(248, 251, 255, 0.7) 180deg,
+    transparent 240deg
+  );
+}
+</style>

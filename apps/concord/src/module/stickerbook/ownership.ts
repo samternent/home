@@ -30,6 +30,7 @@ export function resolveOwnership(params: {
   for (const transfer of params.transferEntries) {
     const stickerId = transfer.data?.stickerId;
     if (!stickerId) continue;
+    const prevTransferHash = transfer.data?.prevTransferHash;
     const list = bySticker.get(stickerId) || [];
     list.push({
       ...transfer,
@@ -37,6 +38,7 @@ export function resolveOwnership(params: {
       data: {
         ...transfer.data,
         toPublicKey: normalizeKey(transfer.data?.toPublicKey || ""),
+        prevTransferHash: prevTransferHash ? prevTransferHash : null,
       },
     });
     bySticker.set(stickerId, list);
@@ -48,7 +50,8 @@ export function resolveOwnership(params: {
     const transfersForSticker = bySticker.get(stickerId) || [];
     const prevMap = new Map<string | null, TransferEntry[]>();
     for (const transfer of transfersForSticker) {
-      const prev = transfer.data?.prevTransferHash ?? null;
+      const prevHash = transfer.data?.prevTransferHash;
+      const prev = prevHash ? prevHash : null;
       const list = prevMap.get(prev) || [];
       list.push(transfer);
       prevMap.set(prev, list);
