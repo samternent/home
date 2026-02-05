@@ -2,10 +2,8 @@
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { useLocalStorage } from "@vueuse/core";
 import { Button } from "ternent-ui/primitives";
+import { SBadge, SSegmentedControl } from "ternent-ui/components";
 import { stripIdentityKey } from "ternent-utils";
-import StickerCreature from "../../module/stickerbook/StickerCreature.vue";
-import StickerLetter from "../../module/stickerbook/StickerLetter.vue";
-import StickerCreatureNatural from "../../module/stickerbook/StickerCreatureNatural.vue";
 import StickerPixel from "../../module/stickerbook/StickerPixel.vue";
 import Sticker8Bit from "../../module/stickerbook/Sticker8Bit.vue";
 import {
@@ -50,6 +48,16 @@ const packVerificationState = computed(() => {
   if (openedForPeriod.value) return "verified";
   return packVerification.value;
 });
+const packVerificationTone = computed(() => {
+  if (packVerificationState.value === "verified") return "secondary";
+  if (packVerificationState.value === "failed") return "critical";
+  return "neutral";
+});
+const packVerificationLabel = computed(() => {
+  if (packVerificationState.value === "verified") return "Verified";
+  if (packVerificationState.value === "failed") return "Failed";
+  return "Pending";
+});
 const selectedSeriesId = ref("");
 const seriesOptions = ref<
   { id: string; label: string; styleType: string; enabled: boolean }[]
@@ -80,6 +88,15 @@ const devPeriodMs = computed(() =>
 const enabledSeries = computed(() =>
   seriesOptions.value.filter((entry) => entry.enabled !== false)
 );
+const seriesItems = computed(() =>
+  enabledSeries.value.map((entry) => ({ value: entry.id, label: entry.label }))
+);
+const tabItems = [
+  { value: "book", label: "Stickerbook" },
+  { value: "pack", label: "Weekly Pack" },
+  { value: "swaps", label: "Swaps" },
+  { value: "progress", label: "Progress" },
+];
 
 const periodDate = computed(() => {
   if (!devPeriodMs.value) return new Date(now.value);
@@ -295,9 +312,15 @@ const catalogueByAttributes = computed(() => {
   return map;
 });
 
-
 watch(
-  () => [receivedPacks.value, transfers.value, catalogue.value, selectedSeriesId.value, publicKey.value] as const,
+  () =>
+    [
+      receivedPacks.value,
+      transfers.value,
+      catalogue.value,
+      selectedSeriesId.value,
+      publicKey.value,
+    ] as const,
   async () => {
     if (!catalogue.value || !selectedSeriesId.value) {
       stickerRecords.value = [];
@@ -310,7 +333,8 @@ watch(
 
     for (const pack of receivedPacks.value) {
       const issuePayload = pack.data?.issuerIssuePayload;
-      if (!issuePayload || issuePayload.seriesId !== selectedSeriesId.value) continue;
+      if (!issuePayload || issuePayload.seriesId !== selectedSeriesId.value)
+        continue;
       const entries = generatePack({
         packSeed: issuePayload.packSeed,
         seriesId: issuePayload.seriesId,
@@ -322,8 +346,14 @@ watch(
 
       const resolved = await Promise.all(
         entries.map(async (entry: any) => {
-          const stickerId = await deriveStickerId(issuePayload.packRoot, entry.index);
-          const key = buildAttributeKey({ ...entry, paletteId: entry.paletteId });
+          const stickerId = await deriveStickerId(
+            issuePayload.packRoot,
+            entry.index
+          );
+          const key = buildAttributeKey({
+            ...entry,
+            paletteId: entry.paletteId,
+          });
           const catalogueEntry = catalogueByAttributes.value.get(key);
           const rarity = catalogueEntry?.rarity ?? entry.rarity;
           return {
@@ -380,7 +410,8 @@ const revealedCards = computed(() => {
     return stickerRecords.value
       .filter((record) => record.packId === openedForPeriod.value.data?.packId)
       .map((record) => ({
-        creature: record.creature || catalogueById.value.get(record.catalogueId),
+        creature:
+          record.creature || catalogueById.value.get(record.catalogueId),
         rarity: record.rarity,
         finish: "base",
         packId: record.packId,
@@ -663,812 +694,515 @@ const visibleCards = computed(() =>
 </script>
 
 <template>
-  <div class="stickerbook-shell">
-    <header class="stickerbook-header">
-      <div>
-        <p class="stickerbook-kicker">Concord Demo</p>
-        <h2 class="stickerbook-title">Stickerbook</h2>
-        <p class="stickerbook-subtitle">
-          Collect stickers, open a weekly pack, and watch your ledger grow.
-        </p>
-      </div>
-      <div class="stickerbook-status">
-        <span>Collected</span>
-        <strong>{{ collectedCount }}/{{ totalCreatures }}</strong>
-      </div>
-    </header>
-
-    <div class="stickerbook-series">
-      <span>Series</span>
-      <div class="stickerbook-series-buttons">
-        <button
-          v-for="series in enabledSeries"
-          :key="series.id"
-          type="button"
-          :class="selectedSeriesId === series.id ? 'active' : ''"
-          @click="selectedSeriesId = series.id"
-        >
-          {{ series.label }}
-        </button>
-      </div>
-    </div>
-
-    <nav class="stickerbook-tabs">
-      <button
-        type="button"
-        :class="activeTab === 'book' ? 'active' : ''"
-        @click="activeTab = 'book'"
+  <div class="flex flex-1 flex-col overflow-auto bg-[image:var(--bg-pixpax)]">
+    <div class="flex flex-1 flex-col gap-8 px-4 py-8 sm:px-6 lg:px-10">
+      <header
+        class="mx-auto flex w-full max-w-4xl flex-col items-center gap-4 text-center"
       >
-        Stickerbook
-      </button>
-      <button
-        type="button"
-        :class="activeTab === 'pack' ? 'active' : ''"
-        @click="activeTab = 'pack'"
-      >
-        Weekly Pack
-      </button>
-      <button
-        type="button"
-        :class="activeTab === 'swaps' ? 'active' : ''"
-        @click="activeTab = 'swaps'"
-      >
-        Swaps
-      </button>
-      <button
-        type="button"
-        :class="activeTab === 'progress' ? 'active' : ''"
-        @click="activeTab = 'progress'"
-      >
-        Progress
-      </button>
-    </nav>
+        <div class="w-full max-w-xl">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 560 160"
+            role="img"
+            aria-label="PixPax"
+          >
+            <!-- ICON (16x16 grid mapped into 128x128 area; pixel = 8 units) -->
+            <g transform="translate(24 16)">
+              <!-- Outer card (sharp, stepped notch top-right) -->
+              <!-- Card bounds: (16,16) to (112,112) with a 2-step notch -->
+              <path
+                fill="var(--ui-bg)"
+                stroke="var(--ui-border)"
+                stroke-width="8"
+                shape-rendering="crispEdges"
+                d="
+        M 16 16
+        H 88
+        V 24
+        H 96
+        V 32
+        H 112
+        V 112
+        H 16
+        Z
+      "
+              />
 
-    <section v-if="activeTab === 'book'" class="stickerbook-panel">
-      <div v-if="isLoading" class="stickerbook-message">
-        Loading catalogue...
-      </div>
-      <div v-else-if="loadError" class="stickerbook-message error">
-        {{ loadError }}
-      </div>
-      <div v-else class="stickerbook-rows">
-        <section
-          v-for="rarity in rarityOrder"
-          :key="rarity"
-          class="rarity-section"
-        >
-          <header>
-            <h3>{{ rarity }}</h3>
-            <span>
-              {{ collectedByRarityForSeries.get(rarity)?.length || 0 }}/{{
-                entriesByRarity.get(rarity)?.length || 0
-              }}
-            </span>
-          </header>
-          <div class="rarity-grid">
-            <StickerCreature
-              v-if="catalogueStyleType === 'creature'"
-              v-for="creature in entriesByRarity.get(rarity) || []"
-              :key="creature.id"
-              :creature="creature"
-              :finish="collectedByCreatureId.get(creature.id)?.finish"
-              :pack-id="collectedByCreatureId.get(creature.id)?.packId"
-              :missing="!isOwnedStatus(getStatus(creature.id))"
-              :status="getStatus(creature.id)"
-              compact
-            />
-            <StickerCreatureNatural
-              v-else-if="catalogueStyleType === 'natural'"
-              v-for="creature in entriesByRarity.get(rarity) || []"
-              :key="creature.id"
-              :creature="creature"
-              :palettes="catalogue?.palettes || []"
-              :finish="collectedByCreatureId.get(creature.id)?.finish"
-              :pack-id="collectedByCreatureId.get(creature.id)?.packId"
-              :missing="!isOwnedStatus(getStatus(creature.id))"
-              :status="getStatus(creature.id)"
-              compact
-            />
-            <StickerPixel
-              v-else-if="catalogueStyleType === 'pixel'"
-              v-for="creature in entriesByRarity.get(rarity) || []"
-              :key="creature.id"
-              :creature="creature"
-              :palettes="catalogue?.palettes || []"
-              :finish="collectedByCreatureId.get(creature.id)?.finish"
-              :pack-id="collectedByCreatureId.get(creature.id)?.packId"
-              :missing="!isOwnedStatus(getStatus(creature.id))"
-              :status="getStatus(creature.id)"
-              compact
-            />
-            <Sticker8Bit
-              v-else-if="
-                ['8bit-sprites', 'animal-archetype-8bit'].includes(
-                  catalogueThemeId
-                )
-              "
-              v-for="sticker in entriesByRarity.get(rarity) || []"
-              :key="sticker.id"
-              :sticker="sticker"
-              :palettes="catalogue?.palettes || []"
-              :finish="collectedByCreatureId.get(sticker.id)?.finish"
-              :pack-id="collectedByCreatureId.get(sticker.id)?.packId"
-              :kit-id="
-                catalogueThemeId === 'animal-archetype-8bit'
-                  ? '8bit-animal-archetype'
-                  : '8bit-sprites'
-              "
-              :missing="!isOwnedStatus(getStatus(sticker.id))"
-              :status="getStatus(sticker.id)"
-              compact
-            />
-            <StickerLetter
-              v-else
-              v-for="sticker in entriesByRarity.get(rarity) || []"
-              :key="sticker.id"
-              :attributes="sticker.attributes"
-              :finish="collectedByCreatureId.get(sticker.id)?.finish"
-              :pack-id="collectedByCreatureId.get(sticker.id)?.packId"
-              :missing="!isOwnedStatus(getStatus(sticker.id))"
-              :status="getStatus(sticker.id)"
-              compact
-            />
-          </div>
-        </section>
-      </div>
-    </section>
+              <!-- Inner frame (offset by 8 units / 1 grid pixel) -->
+              <path
+                fill="none"
+                stroke="var(--ui-border)"
+                stroke-width="6"
+                shape-rendering="crispEdges"
+                d="
+        M 24 24
+        H 80
+        V 32
+        H 88
+        V 40
+        H 104
+        V 104
+        H 24
+        Z
+      "
+              />
 
-    <section v-if="activeTab === 'pack'" class="stickerbook-panel pack-panel">
-      <div class="pack-left">
-        <h3>Weekly Pack</h3>
-        <p class="pack-copy">
-          Each week has one deterministic pack. Open it, verify the signature,
-          then lock your stickers into the ledger.
-        </p>
-        <p class="pack-copy">
-          Editorial rarity is curated in the set (rule breaks). Drop rarity is
-          rolled per card using the odds below.
-        </p>
-        <p class="pack-meta">
-          Period: <strong>{{ periodLabel }}</strong>
-        </p>
-        <p v-if="secondsUntilNextPeriod" class="pack-meta">
-          Refresh in: <strong>{{ secondsUntilNextPeriod }}s</strong>
-        </p>
-        <p v-if="devMode" class="pack-meta">
-          Dev seed: <strong>{{ devSeed }}</strong>
-        </p>
-        <p class="pack-meta">
-          Series: <strong>{{ selectedSeriesId }}</strong>
-        </p>
-        <p class="pack-meta">
-          Verification:
-          <strong v-if="packVerificationState === 'verified'">Verified</strong>
-          <strong v-else-if="packVerificationState === 'failed'">Failed</strong>
-          <strong v-else>Pending</strong>
-        </p>
-        <p class="pack-meta" v-if="mythicChance">
-          Mythic per card:
-          <strong>{{ (mythicChance * 100).toFixed(2) }}%</strong>
-          <span>•</span>
-          Pack size: <strong>{{ packSize }}</strong>
-          <span>•</span>
-          Chance of ≥1 mythic:
-          <strong>{{ (mythicChancePerPack * 100).toFixed(2) }}%</strong>
-        </p>
-        <Button
-          v-if="canOpenPack"
-          class="pack-button"
-          :disabled="isLoading"
-          @click="openWeeklyPack"
-        >
-          {{ devMode ? "Open dev pack" : "Open pack" }}
-        </Button>
-        <div v-else-if="!devMode" class="pack-locked">
-          <strong>Pack opened</strong>
-          <p>Come back next period for a new drop.</p>
-          <p v-if="devPeriodSeconds">Dev period: {{ devPeriodSeconds }}s</p>
+              <!-- Accent pixels hugging the notch (rare cue, minimal) -->
+              <g fill="var(--ui-accent)" shape-rendering="crispEdges">
+                <rect x="88" y="16" width="8" height="8" />
+                <rect x="96" y="24" width="8" height="8" />
+                <rect x="104" y="32" width="8" height="8" />
+              </g>
+
+              <!-- Tiny "rare mark" (keep or delete; still grid-aligned) -->
+              <g fill="var(--ui-fg)" shape-rendering="crispEdges">
+                <!-- diamond-ish made of pixels -->
+                <rect x="56" y="64" width="8" height="8" />
+                <rect x="48" y="72" width="8" height="8" />
+                <rect x="64" y="72" width="8" height="8" />
+                <rect x="56" y="80" width="8" height="8" />
+                <!-- small pixel below -->
+                <rect x="56" y="96" width="8" height="8" />
+              </g>
+            </g>
+
+            <!-- WORDMARK -->
+            <g transform="translate(190 0)">
+              <text
+                x="0"
+                y="98"
+                fill="var(--ui-fg)"
+                font-family="var(--brand-font)"
+                font-size="56"
+                font-weight="700"
+                letter-spacing="0"
+                class="tracking-[-0.08em]"
+              >
+                PixPax
+              </text>
+
+              <!-- Pixel dot for the i: square accent -->
+              <!-- Position tuned for Pixelify Sans; you can tweak x/y by a couple px if needed -->
+              <rect
+                x="42"
+                y="51"
+                width="10"
+                height="10"
+                fill="var(--ui-accent)"
+                shape-rendering="crispEdges"
+              />
+            </g>
+          </svg>
+
+          <p class="mt-4 text-sm text-[var(--ui-fg-muted)]">
+            Collect stickers, open a weekly pack, and watch your ledger grow.
+          </p>
         </div>
-        <p v-if="packError" class="pack-error">{{ packError }}</p>
-      </div>
+      </header>
 
-      <div class="pack-right">
-        <div class="pack-stage" :class="`phase-${displayPhase}`">
-          <div class="pack-wrap">
-            <div class="pack-top"></div>
-            <div class="pack-body">
-              <span>Sticker Pack</span>
-              <small>{{ periodId }}</small>
+      <section class="mx-auto flex w-full max-w-4xl flex-col gap-4">
+        <div
+          class="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-[var(--ui-border)] bg-[color-mix(in srgb, var(--ui-bg) 92%, transparent)] px-4 py-3"
+        >
+          <div class="flex items-center gap-3">
+            <SBadge size="xs" tone="neutral" variant="outline">
+              Collected
+            </SBadge>
+            <span class="text-sm font-semibold text-[var(--ui-fg)]">
+              {{ collectedCount }}/{{ totalCreatures }}
+            </span>
+          </div>
+          <div class="flex flex-wrap items-center gap-3">
+            <SBadge size="xs" tone="neutral" variant="outline">Series</SBadge>
+            <SSegmentedControl
+              v-if="seriesItems.length"
+              v-model="selectedSeriesId"
+              :items="seriesItems"
+              size="xs"
+              aria-label="Sticker series"
+            />
+            <span v-else class="text-xs text-[var(--ui-fg-muted)]">
+              No series available
+            </span>
+          </div>
+        </div>
+        <SSegmentedControl
+          v-model="activeTab"
+          :items="tabItems"
+          size="sm"
+          aria-label="Stickerbook sections"
+          class="self-start"
+        />
+      </section>
+
+      <section v-if="activeTab === 'book'" class="mx-auto w-full max-w-4xl">
+        <div
+          v-if="isLoading"
+          class="text-sm font-semibold text-[var(--ui-fg-muted)]"
+        >
+          Loading catalogue...
+        </div>
+        <div
+          v-else-if="loadError"
+          class="text-sm font-semibold text-red-600"
+        >
+          {{ loadError }}
+        </div>
+        <div v-else class="flex flex-col gap-6">
+          <section
+            v-for="rarity in rarityOrder"
+            :key="rarity"
+            class="rounded-2xl border border-[var(--ui-border)] bg-[color-mix(in srgb, var(--ui-bg) 96%, transparent)] p-4"
+          >
+            <header
+              class="mb-3 flex items-baseline justify-between text-xs uppercase tracking-[0.18em] text-[var(--ui-fg-muted)]"
+            >
+              <h3 class="text-xs font-semibold text-[var(--ui-fg)]">
+                {{ rarity }}
+              </h3>
+              <span>
+                {{ collectedByRarityForSeries.get(rarity)?.length || 0 }}/{{
+                  entriesByRarity.get(rarity)?.length || 0
+                }}
+              </span>
+            </header>
+            <div
+              class="grid gap-3 grid-cols-[repeat(auto-fit,minmax(110px,1fr))]"
+            >
+              <StickerPixel
+                v-if="catalogueStyleType === 'pixel'"
+                v-for="creature in entriesByRarity.get(rarity) || []"
+                :key="creature.id"
+                :creature="creature"
+                :palettes="catalogue?.palettes || []"
+                :finish="collectedByCreatureId.get(creature.id)?.finish"
+                :pack-id="collectedByCreatureId.get(creature.id)?.packId"
+                :missing="!isOwnedStatus(getStatus(creature.id))"
+                :status="getStatus(creature.id)"
+                compact
+              />
+              <Sticker8Bit
+                v-else-if="
+                  ['8bit-sprites', 'animal-archetype-8bit'].includes(
+                    catalogueThemeId
+                  )
+                "
+                v-for="sticker in entriesByRarity.get(rarity) || []"
+                :key="sticker.id"
+                :sticker="sticker"
+                :palettes="catalogue?.palettes || []"
+                :finish="collectedByCreatureId.get(sticker.id)?.finish"
+                :pack-id="collectedByCreatureId.get(sticker.id)?.packId"
+                :kit-id="
+                  catalogueThemeId === 'animal-archetype-8bit'
+                    ? '8bit-animal-archetype'
+                    : '8bit-sprites'
+                "
+                :missing="!isOwnedStatus(getStatus(sticker.id))"
+                :status="getStatus(sticker.id)"
+                compact
+              />
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section
+        v-if="activeTab === 'pack'"
+        class="grid gap-6 rounded-2xl border border-[var(--ui-border)] bg-[color-mix(in srgb, var(--ui-bg) 92%, transparent)] p-6 lg:grid-cols-[minmax(220px,320px)_1fr] lg:items-center"
+      >
+        <div class="flex flex-col gap-3 text-sm">
+          <div class="space-y-2">
+            <h3 class="text-lg font-semibold text-[var(--ui-fg)]">
+              Weekly Pack
+            </h3>
+            <p class="text-sm text-[var(--ui-fg-muted)]">
+              Each week has one deterministic pack. Open it, verify the
+              signature, then lock your stickers into the ledger.
+            </p>
+            <p class="text-sm text-[var(--ui-fg-muted)]">
+              Editorial rarity is curated in the set (rule breaks). Drop rarity
+              is rolled per card using the odds below.
+            </p>
+          </div>
+          <div class="flex flex-col gap-2 text-xs text-[var(--ui-fg-muted)]">
+            <p>
+              Period:
+              <strong class="text-[var(--ui-fg)]">{{ periodLabel }}</strong>
+            </p>
+            <p v-if="secondsUntilNextPeriod">
+              Refresh in:
+              <strong class="text-[var(--ui-fg)]">
+                {{ secondsUntilNextPeriod }}s
+              </strong>
+            </p>
+            <p v-if="devMode">
+              Dev seed:
+              <strong class="text-[var(--ui-fg)]">{{ devSeed }}</strong>
+            </p>
+            <p>
+              Series:
+              <strong class="text-[var(--ui-fg)]">{{ selectedSeriesId }}</strong>
+            </p>
+            <div class="flex items-center gap-2">
+              <span class="uppercase tracking-[0.14em] text-[10px]">
+                Verification
+              </span>
+              <SBadge size="xs" :tone="packVerificationTone" variant="outline">
+                {{ packVerificationLabel }}
+              </SBadge>
+            </div>
+            <p v-if="mythicChance" class="flex flex-wrap items-center gap-2">
+              <span>Mythic per card:</span>
+              <strong class="text-[var(--ui-fg)]">
+                {{ (mythicChance * 100).toFixed(2) }}%
+              </strong>
+              <span>•</span>
+              <span>Pack size:</span>
+              <strong class="text-[var(--ui-fg)]">{{ packSize }}</strong>
+              <span>•</span>
+              <span>Chance of ≥1 mythic:</span>
+              <strong class="text-[var(--ui-fg)]">
+                {{ (mythicChancePerPack * 100).toFixed(2) }}%
+              </strong>
+            </p>
+          </div>
+          <Button
+            v-if="canOpenPack"
+            class="!rounded-full self-start"
+            :disabled="isLoading"
+            @click="openWeeklyPack"
+          >
+            {{ devMode ? "Open dev pack" : "Open pack" }}
+          </Button>
+          <div
+            v-else-if="!devMode"
+            class="rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-fg)] p-4 text-sm text-[var(--ui-bg)]"
+          >
+            <strong>Pack opened</strong>
+            <p>Come back next period for a new drop.</p>
+            <p v-if="devPeriodSeconds">Dev period: {{ devPeriodSeconds }}s</p>
+          </div>
+          <p v-if="packError" class="text-sm font-semibold text-red-600">
+            {{ packError }}
+          </p>
+        </div>
+
+        <div class="relative flex flex-col items-center gap-4">
+          <div class="relative h-[240px] w-[180px]">
+            <div
+              class="relative h-full w-full origin-center transition-transform duration-500 ease-out"
+              :class="[
+                displayPhase === 'opening'
+                  ? 'rotate-[-4deg] -translate-y-1'
+                  : '',
+                displayPhase === 'reveal' || displayPhase === 'done'
+                  ? 'rotate-[3deg] translate-y-1'
+                  : '',
+              ]"
+            >
+              <div
+                class="absolute left-5 right-5 top-0 h-12 rounded-t-[12px] border-4 border-[var(--ui-fg)] bg-[color-mix(in srgb, var(--ui-accent) 40%, var(--ui-bg))]"
+              ></div>
+              <div
+                class="absolute bottom-0 left-3 right-3 flex h-[200px] flex-col items-center justify-center rounded-[16px] border-4 border-[var(--ui-fg)] bg-[color-mix(in srgb, var(--ui-accent) 18%, var(--ui-bg))] text-center text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ui-fg)]"
+              >
+                <span>Sticker Pack</span>
+                <small class="mt-2 text-[10px] opacity-70">{{ periodId }}</small>
+              </div>
+            </div>
+            <div
+              v-if="packPhase !== 'idle'"
+              class="absolute inset-[-20px] rounded-[24px] border-2 border-dashed border-[color-mix(in srgb, var(--ui-border) 70%, transparent)] animate-ping"
+            ></div>
+          </div>
+
+          <div
+            v-if="visibleCards.length"
+            class="grid w-full grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-4"
+          >
+            <div
+              v-for="(card, index) in visibleCards"
+              :key="`${card.creature?.id || card.creatureId}-${index}`"
+              class="flex flex-col items-center gap-2 rounded-xl border border-[var(--ui-border)] bg-[color-mix(in srgb, var(--ui-bg) 96%, transparent)] p-3 text-center shadow-[0_8px_18px_rgba(15,23,42,0.12)] transition-all duration-500 ease-out"
+              :class="[
+                displayPhase !== 'idle'
+                  ? 'opacity-100 translate-y-0 scale-100'
+                  : 'opacity-0 translate-y-6 scale-[0.98]',
+              ]"
+              :style="{ transitionDelay: `${index * 120}ms` }"
+            >
+              <StickerPixel
+                v-if="catalogueStyleType === 'pixel'"
+                :creature="card.creature"
+                :palettes="catalogue?.palettes || []"
+                :finish="card.finish"
+                :pack-id="card.packId"
+                :class="[
+                  card.rarity === 'mythic'
+                    ? 'rounded-[28px] ring-4 ring-[rgba(124,58,237,0.4)] shadow-[0_12px_28px_rgba(124,58,237,0.4)]'
+                    : '',
+                ]"
+              />
+              <Sticker8Bit
+                v-else-if="
+                  ['8bit-sprites', 'animal-archetype-8bit'].includes(
+                    catalogueThemeId
+                  )
+                "
+                :sticker="card.creature"
+                :palettes="catalogue?.palettes || []"
+                :finish="card.finish"
+                :pack-id="card.packId"
+                :kit-id="
+                  catalogueThemeId === 'animal-archetype-8bit'
+                    ? '8bit-animal-archetype'
+                    : '8bit-sprites'
+                "
+                :class="[
+                  card.rarity === 'mythic'
+                    ? 'rounded-[28px] ring-4 ring-[rgba(124,58,237,0.4)] shadow-[0_12px_28px_rgba(124,58,237,0.4)]'
+                    : '',
+                ]"
+              />
+              <span
+                class="text-[10px] uppercase tracking-[0.18em] text-[var(--ui-fg-muted)]"
+              >
+                {{ card.rarity }}
+              </span>
             </div>
           </div>
-          <div class="pack-ripple" v-if="packPhase !== 'idle'"></div>
-        </div>
 
-        <div class="pack-cards" v-if="visibleCards.length">
           <div
-            v-for="(card, index) in visibleCards"
-            :key="`${card.creature?.id || card.creatureId}-${index}`"
-            class="pack-card"
-            :class="[displayPhase !== 'idle' ? 'show' : '', card.rarity]"
-            :style="`--delay:${index * 120}ms;`"
+            v-if="hasMythic && packPhase !== 'idle'"
+            class="absolute -right-2 -top-2 rounded-full bg-[var(--ui-accent)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--ui-bg)] shadow-[0_8px_18px_rgba(124,58,237,0.4)] animate-pulse"
           >
-            <StickerCreature
-              v-if="catalogueStyleType === 'creature'"
-              :creature="card.creature"
-              :finish="card.finish"
-              :pack-id="card.packId"
-            />
-            <StickerCreatureNatural
-              v-else-if="catalogueStyleType === 'natural'"
-              :creature="card.creature"
-              :palettes="catalogue?.palettes || []"
-              :finish="card.finish"
-              :pack-id="card.packId"
-            />
-            <StickerPixel
-              v-else-if="catalogueStyleType === 'pixel'"
-              :creature="card.creature"
-              :palettes="catalogue?.palettes || []"
-              :finish="card.finish"
-              :pack-id="card.packId"
-            />
-            <Sticker8Bit
-              v-else-if="
-                ['8bit-sprites', 'animal-archetype-8bit'].includes(
-                  catalogueThemeId
-                )
-              "
-              :sticker="card.creature"
-              :palettes="catalogue?.palettes || []"
-              :finish="card.finish"
-              :pack-id="card.packId"
-              :kit-id="
-                catalogueThemeId === 'animal-archetype-8bit'
-                  ? '8bit-animal-archetype'
-                  : '8bit-sprites'
-              "
-            />
-            <StickerLetter
-              v-else
-              :attributes="card.creature.attributes"
-              :finish="card.finish"
-              :pack-id="card.packId"
-            />
-            <span class="pack-card-label">{{ card.rarity }}</span>
+            Mythic reveal!
           </div>
         </div>
+      </section>
 
-        <div v-if="hasMythic && packPhase !== 'idle'" class="mythic-reveal">
-          Mythic reveal!
+      <section
+        v-if="activeTab === 'swaps'"
+        class="grid gap-4 rounded-2xl border border-[var(--ui-border)] bg-[color-mix(in srgb, var(--ui-bg) 92%, transparent)] p-6"
+      >
+        <div class="space-y-1">
+          <h3 class="text-lg font-semibold text-[var(--ui-fg)]">Swaps pile</h3>
+          <p class="text-sm text-[var(--ui-fg-muted)]">
+            Duplicates you can trade without affecting collection totals.
+          </p>
         </div>
-      </div>
-    </section>
-
-    <section v-if="activeTab === 'swaps'" class="stickerbook-panel swaps-panel">
-      <div class="swaps-header">
-        <h3>Swaps pile</h3>
-        <p>Duplicates you can trade without affecting collection totals.</p>
-      </div>
-      <div v-if="!swapsForSeries.length" class="stickerbook-message">
-        No swaps yet.
-      </div>
-      <div v-else class="swaps-grid">
         <div
-          v-for="(swap, index) in swapsForSeries"
-          :key="`${swap.stickerId || swap.record?.stickerId}-${index}`"
-          class="swap-card"
+          v-if="!swapsForSeries.length"
+          class="text-sm font-semibold text-[var(--ui-fg-muted)]"
         >
-          <template v-if="swap.record">
-            <StickerCreature
-              v-if="catalogueStyleType === 'creature'"
-              :creature="swap.record.creature || catalogueById.get(swap.record.catalogueId)"
-              :finish="swap.record.finish"
-              :pack-id="swap.record.packId"
-              :status="swap.status"
-              compact
-            />
-            <StickerCreatureNatural
-              v-else-if="catalogueStyleType === 'natural'"
-              :creature="swap.record.creature || catalogueById.get(swap.record.catalogueId)"
-              :palettes="catalogue?.palettes || []"
-              :finish="swap.record.finish"
-              :pack-id="swap.record.packId"
-              :status="swap.status"
-              compact
-            />
-            <StickerPixel
-              v-else-if="catalogueStyleType === 'pixel'"
-              :creature="swap.record.creature || catalogueById.get(swap.record.catalogueId)"
-              :palettes="catalogue?.palettes || []"
-              :finish="swap.record.finish"
-              :pack-id="swap.record.packId"
-              :status="swap.status"
-              compact
-            />
-            <Sticker8Bit
-              v-else-if="
-                ['8bit-sprites', 'animal-archetype-8bit'].includes(
-                  catalogueThemeId
-                )
-              "
-              :sticker="swap.record.creature || catalogueById.get(swap.record.catalogueId)"
-              :palettes="catalogue?.palettes || []"
-              :finish="swap.record.finish"
-              :pack-id="swap.record.packId"
-              :kit-id="
-                catalogueThemeId === 'animal-archetype-8bit'
-                  ? '8bit-animal-archetype'
-                  : '8bit-sprites'
-              "
-              :status="swap.status"
-              compact
-            />
-            <StickerLetter
-              v-else
-              :attributes="swap.record.creature?.attributes || catalogueById.get(swap.record.catalogueId)?.attributes"
-              :finish="swap.record.finish"
-              :pack-id="swap.record.packId"
-              :status="swap.status"
-              compact
-            />
-          </template>
-          <div class="swap-meta">
-            <span>{{ swap.record?.catalogueId || swap.stickerId }}</span>
-            <span>{{ swap.status }}</span>
+          No swaps yet.
+        </div>
+        <div
+          v-else
+          class="grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-4"
+        >
+          <div
+            v-for="(swap, index) in swapsForSeries"
+            :key="`${swap.stickerId || swap.record?.stickerId}-${index}`"
+            class="flex flex-col items-center gap-2 rounded-xl border border-[var(--ui-border)] bg-[color-mix(in srgb, var(--ui-bg) 96%, transparent)] p-3 text-center"
+          >
+            <template v-if="swap.record">
+              <StickerPixel
+                v-if="catalogueStyleType === 'pixel'"
+                :creature="
+                  swap.record.creature ||
+                  catalogueById.get(swap.record.catalogueId)
+                "
+                :palettes="catalogue?.palettes || []"
+                :finish="swap.record.finish"
+                :pack-id="swap.record.packId"
+                :status="swap.status"
+                compact
+              />
+              <Sticker8Bit
+                v-else-if="
+                  ['8bit-sprites', 'animal-archetype-8bit'].includes(
+                    catalogueThemeId
+                  )
+                "
+                :sticker="
+                  swap.record.creature ||
+                  catalogueById.get(swap.record.catalogueId)
+                "
+                :palettes="catalogue?.palettes || []"
+                :finish="swap.record.finish"
+                :pack-id="swap.record.packId"
+                :kit-id="
+                  catalogueThemeId === 'animal-archetype-8bit'
+                    ? '8bit-animal-archetype'
+                    : '8bit-sprites'
+                "
+                :status="swap.status"
+                compact
+              />
+            </template>
+            <div
+              class="flex flex-col gap-1 text-[10px] uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]"
+            >
+              <span>{{ swap.record?.catalogueId || swap.stickerId }}</span>
+              <span>{{ swap.status }}</span>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section
-      v-if="activeTab === 'progress'"
-      class="stickerbook-panel progress-panel"
-    >
-      <div class="progress-card">
-        <h3>Your Collection</h3>
-        <p>
-          Total: <strong>{{ collectedCount }}</strong> of
-          <strong>{{ totalCreatures }}</strong>
-        </p>
-        <ul>
-          <li v-for="item in progressByRarity" :key="item.rarity">
-            <span>{{ item.rarity }}</span>
-            <strong>{{ item.collected }}/{{ item.total }}</strong>
-          </li>
-        </ul>
-      </div>
-      <div class="progress-card">
-        <h3>Series</h3>
-        <p>
-          Series collected:
-          <strong>{{ collectedCount }}</strong>
-        </p>
-        <p>
-          Swaps pile:
-          <strong>{{ swapCount }}</strong>
-        </p>
-        <p>
-          Opened this period:
-          <strong>{{ openedForPeriod ? "yes" : "no" }}</strong>
-        </p>
-      </div>
-    </section>
+      <section
+        v-if="activeTab === 'progress'"
+        class="grid gap-4 lg:grid-cols-2"
+      >
+        <div
+          class="rounded-2xl border border-[var(--ui-border)] bg-[color-mix(in srgb, var(--ui-bg) 96%, transparent)] p-5"
+        >
+          <h3 class="text-lg font-semibold text-[var(--ui-fg)]">
+            Your Collection
+          </h3>
+          <p class="mt-1 text-sm text-[var(--ui-fg-muted)]">
+            Total:
+            <strong class="text-[var(--ui-fg)]">{{ collectedCount }}</strong>
+            of
+            <strong class="text-[var(--ui-fg)]">{{ totalCreatures }}</strong>
+          </p>
+          <ul
+            class="mt-3 grid gap-2 text-xs uppercase tracking-[0.12em] text-[var(--ui-fg-muted)]"
+          >
+            <li
+              v-for="item in progressByRarity"
+              :key="item.rarity"
+              class="flex items-center justify-between"
+            >
+              <span>{{ item.rarity }}</span>
+              <strong class="text-[var(--ui-fg)]">
+                {{ item.collected }}/{{ item.total }}
+              </strong>
+            </li>
+          </ul>
+        </div>
+        <div
+          class="rounded-2xl border border-[var(--ui-border)] bg-[color-mix(in srgb, var(--ui-bg) 96%, transparent)] p-5"
+        >
+          <h3 class="text-lg font-semibold text-[var(--ui-fg)]">Series</h3>
+          <p class="mt-1 text-sm text-[var(--ui-fg-muted)]">
+            Series collected:
+            <strong class="text-[var(--ui-fg)]">{{ collectedCount }}</strong>
+          </p>
+          <p class="mt-1 text-sm text-[var(--ui-fg-muted)]">
+            Swaps pile:
+            <strong class="text-[var(--ui-fg)]">{{ swapCount }}</strong>
+          </p>
+          <p class="mt-1 text-sm text-[var(--ui-fg-muted)]">
+            Opened this period:
+            <strong class="text-[var(--ui-fg)]">
+              {{ openedForPeriod ? "yes" : "no" }}
+            </strong>
+          </p>
+        </div>
+      </section>
+    </div>
   </div>
 </template>
-
-<style scoped>
-.stickerbook-shell {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  padding: 1.5rem;
-  background: radial-gradient(
-    circle at top,
-    #fff7d6 0%,
-    #ffe3f0 40%,
-    #d4f2ff 100%
-  );
-  min-height: 100%;
-  font-family: "Trebuchet MS", "Comic Sans MS", "Verdana", sans-serif;
-}
-
-.stickerbook-header {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  background: #fff;
-  border-radius: 20px;
-  padding: 1.25rem 1.5rem;
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.15);
-  border: 3px solid rgba(15, 23, 42, 0.1);
-}
-
-.stickerbook-kicker {
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  font-size: 0.7rem;
-  color: #a855f7;
-  margin-bottom: 0.3rem;
-}
-
-.stickerbook-title {
-  font-size: 2rem;
-  font-weight: 800;
-  margin: 0;
-  color: #0f172a;
-}
-
-.stickerbook-subtitle {
-  color: #475569;
-  margin: 0.4rem 0 0;
-}
-
-.stickerbook-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  background: #0f172a;
-  color: #fff;
-  padding: 0.4rem 0.8rem;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  align-self: flex-start;
-}
-
-.stickerbook-tabs {
-  display: flex;
-  gap: 0.6rem;
-  flex-wrap: wrap;
-}
-
-.stickerbook-series {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #0f172a;
-}
-
-.stickerbook-series-buttons {
-  display: flex;
-  gap: 0.6rem;
-  flex-wrap: wrap;
-}
-
-.stickerbook-series-buttons button {
-  border: 2px solid rgba(15, 23, 42, 0.2);
-  background: #fff;
-  border-radius: 999px;
-  padding: 0.35rem 0.9rem;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  transition: all 0.2s ease;
-}
-
-.stickerbook-series-buttons button.active {
-  background: #0f172a;
-  color: #fff;
-  transform: translateY(-2px);
-}
-
-.stickerbook-tabs button {
-  border: 2px solid rgba(15, 23, 42, 0.2);
-  background: #fff;
-  border-radius: 999px;
-  padding: 0.4rem 1rem;
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  transition: all 0.2s ease;
-}
-
-.stickerbook-tabs button.active {
-  background: #0f172a;
-  color: #fff;
-  transform: translateY(-2px);
-}
-
-.stickerbook-panel {
-  background: #ffffffc7;
-  border-radius: 20px;
-  padding: 1.5rem;
-  border: 3px dashed rgba(15, 23, 42, 0.18);
-}
-
-.stickerbook-message {
-  font-weight: 600;
-  color: #475569;
-}
-
-.stickerbook-message.error {
-  color: #dc2626;
-}
-
-.stickerbook-rows {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.rarity-section header {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  font-size: 0.85rem;
-  color: #0f172a;
-  margin-bottom: 0.6rem;
-}
-
-.rarity-grid {
-  display: grid;
-  gap: 0.8rem;
-  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-}
-
-.pack-panel {
-  display: grid;
-  gap: 1.5rem;
-}
-
-.pack-left h3 {
-  margin: 0;
-  font-size: 1.5rem;
-}
-
-.pack-copy {
-  color: #475569;
-}
-
-.pack-meta {
-  font-size: 0.9rem;
-}
-
-.pack-locked {
-  background: #0f172a;
-  color: #fff;
-  padding: 0.8rem 1rem;
-  border-radius: 16px;
-}
-
-.pack-error {
-  color: #b91c1c;
-  margin-top: 0.6rem;
-}
-
-.pack-right {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-}
-
-.pack-stage {
-  position: relative;
-  width: 180px;
-  height: 240px;
-}
-
-.pack-wrap {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transform-origin: center;
-  transition: transform 0.5s ease;
-}
-
-.pack-top {
-  position: absolute;
-  top: 0;
-  left: 20px;
-  right: 20px;
-  height: 50px;
-  background: #fca5a5;
-  border: 4px solid #0f172a;
-  border-bottom: 0;
-  border-radius: 12px 12px 0 0;
-}
-
-.pack-body {
-  position: absolute;
-  bottom: 0;
-  left: 10px;
-  right: 10px;
-  height: 200px;
-  background: #fde68a;
-  border: 4px solid #0f172a;
-  border-radius: 16px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-}
-
-.pack-body small {
-  font-size: 0.7rem;
-  margin-top: 0.4rem;
-  opacity: 0.7;
-}
-
-.pack-stage.phase-opening .pack-wrap {
-  transform: rotate(-4deg) translateY(-4px);
-}
-
-.pack-stage.phase-reveal .pack-wrap,
-.pack-stage.phase-done .pack-wrap {
-  transform: rotate(3deg) translateY(4px);
-}
-
-.pack-ripple {
-  position: absolute;
-  inset: -20px;
-  border: 2px dashed rgba(15, 23, 42, 0.25);
-  border-radius: 24px;
-  animation: ripple 2s infinite;
-}
-
-.pack-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 1rem;
-  width: 100%;
-}
-
-.pack-card {
-  opacity: 0;
-  transform: translateY(30px) scale(0.95);
-  transition: all 0.5s ease;
-}
-
-.pack-card.show {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-  transition-delay: var(--delay);
-}
-
-.pack-card-label {
-  display: inline-block;
-  margin-top: 0.4rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 0.7rem;
-  color: #0f172a;
-}
-
-.pack-card.mythic .sticker-creature {
-  box-shadow: 0 12px 28px rgba(124, 58, 237, 0.4),
-    inset 0 0 0 4px rgba(124, 58, 237, 0.4);
-}
-
-.pack-card.mythic .sticker-natural {
-  box-shadow: 0 12px 28px rgba(124, 58, 237, 0.4),
-    inset 0 0 0 4px rgba(124, 58, 237, 0.4);
-}
-
-.pack-card.mythic .sticker-pixel {
-  box-shadow: 0 12px 28px rgba(124, 58, 237, 0.4),
-    inset 0 0 0 4px rgba(124, 58, 237, 0.4);
-}
-
-.mythic-reveal {
-  position: absolute;
-  top: -10px;
-  right: -10px;
-  background: #7c3aed;
-  color: #fff;
-  padding: 0.4rem 0.8rem;
-  border-radius: 999px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  box-shadow: 0 8px 18px rgba(124, 58, 237, 0.4);
-  animation: pop 1.5s ease-in-out infinite;
-}
-
-.progress-panel {
-  display: grid;
-  gap: 1.5rem;
-}
-
-.swaps-panel {
-  display: grid;
-  gap: 1rem;
-}
-
-.swaps-header h3 {
-  margin: 0;
-}
-
-.swaps-grid {
-  display: grid;
-  gap: 0.8rem;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-}
-
-.swap-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.swap-meta {
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 0.7rem;
-  color: #1f2937;
-}
-
-.progress-card {
-  background: #fff;
-  border-radius: 16px;
-  padding: 1.25rem;
-  border: 3px solid rgba(15, 23, 42, 0.1);
-}
-
-.progress-card h3 {
-  margin-top: 0;
-}
-
-.progress-card ul {
-  list-style: none;
-  padding: 0;
-  margin: 0.8rem 0 0;
-  display: grid;
-  gap: 0.4rem;
-}
-
-.progress-card li {
-  display: flex;
-  justify-content: space-between;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 0.75rem;
-}
-
-@media (min-width: 900px) {
-  .stickerbook-header {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .pack-panel {
-    grid-template-columns: minmax(220px, 320px) 1fr;
-    align-items: center;
-  }
-
-  .progress-panel {
-    grid-template-columns: repeat(2, minmax(200px, 1fr));
-  }
-}
-
-@keyframes ripple {
-  0% {
-    transform: scale(0.95);
-    opacity: 0.6;
-  }
-  100% {
-    transform: scale(1.05);
-    opacity: 0;
-  }
-}
-
-@keyframes pop {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.08);
-  }
-}
-</style>

@@ -58,7 +58,9 @@ function decodeGrid(data: string, size: number) {
 }
 
 const palette = computed(() => {
-  const match = props.palettes.find((entry) => entry.id === props.creature.paletteId);
+  const match = props.palettes.find(
+    (entry) => entry.id === props.creature.paletteId
+  );
   return (
     match || {
       id: "fallback",
@@ -89,7 +91,8 @@ function hexToRgb(hex: string) {
 function rgbToHex(rgb: number[]) {
   return (
     "#" +
-    rgb.map((value) => Math.max(0, Math.min(255, Math.round(value))))
+    rgb
+      .map((value) => Math.max(0, Math.min(255, Math.round(value))))
       .map((value) => value.toString(16).padStart(2, "0"))
       .join("")
   );
@@ -138,8 +141,19 @@ const gradientId = computed(() => `pixel-finish-${props.creature.id}`);
 const maskId = computed(() => `pixel-mask-${props.creature.id}`);
 const finishMaskId = computed(() => `pixel-finish-mask-${props.creature.id}`);
 const shadowId = computed(() => `pixel-shadow-${props.creature.id}`);
+const mythicGradientId = computed(
+  () => `pixel-mythic-gradient-${props.creature.id}`
+);
+const rareGradientId = computed(
+  () => `pixel-rare-gradient-${props.creature.id}`
+);
+const backdropDotsId = computed(
+  () => `pixel-backdrop-dots-${props.creature.id}`
+);
 
-const outlineStroke = computed(() => (props.missing ? "#64748b" : "#0f172a"));
+const outlineStroke = computed(() =>
+  props.missing ? "#64748b" : "transparent"
+);
 const backgroundFill = computed(() =>
   props.missing ? fillColors.value[0] : "transparent"
 );
@@ -147,32 +161,86 @@ const pixelFill = (cell: number) =>
   cell === bgIndex.value && !props.missing
     ? "transparent"
     : fillColors.value[cell] || fillColors.value[1];
+const rarityBackdrop = computed(() => {
+  if (props.missing) return null;
+  const rarity = props.creature?.rarity;
+  if (rarity === "mythic") return `url(#${mythicGradientId.value})`;
+  if (rarity === "rare") return `url(#${rareGradientId.value})`;
+  if (rarity === "uncommon") {
+    return "color-mix(in srgb, var(--ui-accent) 14%, var(--ui-bg))";
+  }
+  return null;
+});
+const showMythicDots = computed(
+  () => !props.missing && props.creature?.rarity === "mythic"
+);
+const showMythicGlow = computed(
+  () => !props.missing && props.creature?.rarity === "mythic"
+);
+const showShimmer = computed(() => {
+  if (props.missing) return false;
+  return props.creature?.rarity === "mythic" || props.creature?.rarity === "rare";
+});
+const shimmerPhaseSeconds = computed(() =>
+  Math.floor(hashToRange(`${finishSeed.value}:shimmer`, 0, 8))
+);
 </script>
 
 <template>
   <div
-    class="sticker-pixel"
+    class="flex flex-col items-center justify-center gap-2 p-2 text-center"
     :class="[
-      compact ? 'sticker-compact' : 'sticker-full',
-      missing ? 'sticker-missing' : '',
+      compact ? 'gap-1 p-1.5' : 'gap-2 p-2',
+      missing ? 'opacity-60' : '',
       finishKind !== 'base' ? `finish-${finishKind}` : '',
     ]"
   >
-    <svg viewBox="0 0 200 200" class="sticker-svg" aria-hidden="true">
+    <svg
+      viewBox="0 0 200 200"
+      aria-hidden="true"
+      :class="[compact ? 'size-[110px]' : 'size-[170px]', 'shrink-0']"
+    >
       <defs>
         <linearGradient
           :id="gradientId"
           :gradientTransform="`rotate(${finishAngle})`"
         >
           <stop offset="0%" :stop-color="`hsla(${shimmerHue},90%,72%,1)`" />
-          <stop offset="50%" :stop-color="`hsla(${shimmerHue + 30},90%,65%,1)`" />
-          <stop offset="100%" :stop-color="`hsla(${shimmerHue + 60},90%,60%,1)`" />
+          <stop
+            offset="50%"
+            :stop-color="`hsla(${shimmerHue + 30},90%,65%,1)`"
+          />
+          <stop
+            offset="100%"
+            :stop-color="`hsla(${shimmerHue + 60},90%,60%,1)`"
+          />
         </linearGradient>
         <filter :id="shadowId" x="-20%" y="-20%" width="140%" height="140%">
-          <feMorphology in="SourceAlpha" operator="dilate" radius="1" result="dilated" />
-          <feFlood :flood-color="outlineStroke" flood-opacity="0.9" result="flood" />
-          <feComposite in="flood" in2="dilated" operator="in" result="outline" />
-          <feDropShadow dx="0" dy="5" stdDeviation="5" flood-color="#0f172a" flood-opacity="0.22" result="shadow" />
+          <feMorphology
+            in="SourceAlpha"
+            operator="dilate"
+            radius="1"
+            result="dilated"
+          />
+          <feFlood
+            :flood-color="outlineStroke"
+            flood-opacity="0.9"
+            result="flood"
+          />
+          <feComposite
+            in="flood"
+            in2="dilated"
+            operator="in"
+            result="outline"
+          />
+          <feDropShadow
+            dx="0"
+            dy="5"
+            stdDeviation="5"
+            flood-color="#0f172a"
+            flood-opacity="0.22"
+            result="shadow"
+          />
           <feMerge>
             <feMergeNode in="outline" />
             <feMergeNode in="shadow" />
@@ -181,7 +249,13 @@ const pixelFill = (cell: number) =>
         </filter>
         <mask :id="maskId">
           <rect width="200" height="200" fill="white" />
-          <rect v-if="missing" width="200" height="200" fill="black" opacity="0.35" />
+          <rect
+            v-if="missing"
+            width="200"
+            height="200"
+            fill="black"
+            opacity="0.35"
+          />
         </mask>
         <mask :id="finishMaskId" maskUnits="userSpaceOnUse">
           <rect width="200" height="200" fill="black" />
@@ -200,9 +274,188 @@ const pixelFill = (cell: number) =>
             </template>
           </g>
         </mask>
+        <radialGradient
+          :id="mythicGradientId"
+          cx="30%"
+          cy="25%"
+          r="90%"
+        >
+          <stop
+            offset="0%"
+            stop-color="color-mix(in srgb, var(--ui-accent) 50%, var(--ui-bg))"
+          >
+            <animate
+              v-if="showMythicGlow"
+              attributeName="stop-color"
+              values="color-mix(in srgb, var(--ui-accent) 50%, var(--ui-bg));color-mix(in srgb, var(--ui-primary) 46%, var(--ui-bg));color-mix(in srgb, var(--ui-secondary) 44%, var(--ui-bg));color-mix(in srgb, var(--ui-accent) 50%, var(--ui-bg))"
+              dur="9s"
+              repeatCount="indefinite"
+            />
+          </stop>
+          <stop
+            offset="40%"
+            stop-color="color-mix(in srgb, var(--ui-primary) 45%, var(--ui-bg))"
+          >
+            <animate
+              v-if="showMythicGlow"
+              attributeName="stop-color"
+              values="color-mix(in srgb, var(--ui-primary) 45%, var(--ui-bg));color-mix(in srgb, var(--ui-secondary) 40%, var(--ui-bg));color-mix(in srgb, var(--ui-accent) 42%, var(--ui-bg));color-mix(in srgb, var(--ui-primary) 45%, var(--ui-bg))"
+              dur="9s"
+              repeatCount="indefinite"
+            />
+          </stop>
+          <stop
+            offset="70%"
+            stop-color="color-mix(in srgb, var(--ui-secondary) 42%, var(--ui-bg))"
+          >
+            <animate
+              v-if="showMythicGlow"
+              attributeName="stop-color"
+              values="color-mix(in srgb, var(--ui-secondary) 42%, var(--ui-bg));color-mix(in srgb, var(--ui-accent) 48%, var(--ui-bg));color-mix(in srgb, var(--ui-primary) 40%, var(--ui-bg));color-mix(in srgb, var(--ui-secondary) 42%, var(--ui-bg))"
+              dur="9s"
+              repeatCount="indefinite"
+            />
+          </stop>
+          <stop
+            offset="100%"
+            stop-color="color-mix(in srgb, var(--ui-accent) 45%, var(--ui-bg))"
+          >
+            <animate
+              v-if="showMythicGlow"
+              attributeName="stop-color"
+              values="color-mix(in srgb, var(--ui-accent) 45%, var(--ui-bg));color-mix(in srgb, var(--ui-primary) 42%, var(--ui-bg));color-mix(in srgb, var(--ui-secondary) 40%, var(--ui-bg));color-mix(in srgb, var(--ui-accent) 45%, var(--ui-bg))"
+              dur="9s"
+              repeatCount="indefinite"
+            />
+          </stop>
+          <animateTransform
+            v-if="showMythicGlow"
+            attributeName="gradientTransform"
+            type="rotate"
+            from="0 0.5 0.5"
+            to="360 0.5 0.5"
+            dur="22s"
+            repeatCount="indefinite"
+          />
+        </radialGradient>
+        <radialGradient
+          :id="rareGradientId"
+          cx="35%"
+          cy="30%"
+          r="85%"
+        >
+          <stop
+            offset="0%"
+            stop-color="color-mix(in srgb, var(--ui-primary) 38%, var(--ui-bg))"
+          />
+          <stop
+            offset="45%"
+            stop-color="color-mix(in srgb, var(--ui-secondary) 34%, var(--ui-bg))"
+          />
+          <stop
+            offset="75%"
+            stop-color="color-mix(in srgb, var(--ui-accent) 32%, var(--ui-bg))"
+          />
+          <stop
+            offset="100%"
+            stop-color="color-mix(in srgb, var(--ui-primary) 26%, var(--ui-bg))"
+          />
+          <animateTransform
+            attributeName="gradientTransform"
+            type="rotate"
+            from="0 0.5 0.5"
+            to="-360 0.5 0.5"
+            dur="26s"
+            repeatCount="indefinite"
+          />
+        </radialGradient>
+        <linearGradient
+          :id="`pixel-shimmer-${props.creature.id}`"
+          x1="0"
+          y1="0"
+          x2="1"
+          y2="1"
+        >
+          <stop offset="0%" stop-color="rgba(255,255,255,0)" />
+          <stop offset="35%" stop-color="rgba(255,255,255,0.0)" />
+          <stop offset="46%" stop-color="rgba(255,255,255,0.18)" />
+          <stop offset="55%" stop-color="rgba(255,255,255,0.38)" />
+          <stop offset="64%" stop-color="rgba(255,255,255,0.18)" />
+          <stop offset="70%" stop-color="rgba(255,255,255,0.0)" />
+          <stop offset="100%" stop-color="rgba(255,255,255,0)" />
+          <animateTransform
+            v-if="showShimmer"
+            attributeName="gradientTransform"
+            type="translate"
+            values="-1 -1; -1 -1; 1 1; 1 1; -1 -1"
+            keyTimes="0;0.35;0.5;0.85;1"
+            dur="12s"
+            :begin="`-${shimmerPhaseSeconds}s`"
+            repeatCount="indefinite"
+          />
+        </linearGradient>
+        <filter :id="`pixel-mythic-glow-${props.creature.id}`" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="8" result="blur" />
+          <feColorMatrix
+            type="matrix"
+            values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.7 0"
+          />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+        <pattern
+          :id="backdropDotsId"
+          patternUnits="userSpaceOnUse"
+          width="24"
+          height="24"
+        >
+          <circle cx="4" cy="6" r="1.6" fill="rgba(255,255,255,0.7)" />
+          <circle cx="16" cy="14" r="1.2" fill="rgba(255,255,255,0.5)" />
+          <circle cx="20" cy="6" r="1" fill="rgba(255,255,255,0.4)" />
+          <animateTransform
+            attributeName="patternTransform"
+            type="translate"
+            from="0 0"
+            to="24 24"
+            dur="8s"
+            repeatCount="indefinite"
+          />
+        </pattern>
       </defs>
 
       <g :mask="`url(#${maskId})`">
+        <rect
+          v-if="rarityBackdrop"
+          x="14"
+          y="14"
+          width="172"
+          height="172"
+          rx="26"
+          :fill="rarityBackdrop"
+          :filter="showMythicGlow ? `url(#pixel-mythic-glow-${props.creature.id})` : undefined"
+        />
+        <rect
+          v-if="showMythicDots"
+          x="14"
+          y="14"
+          width="172"
+          height="172"
+          rx="26"
+          :fill="`url(#${backdropDotsId})`"
+          opacity="0.45"
+        />
+        <rect
+          v-if="showShimmer"
+          x="14"
+          y="14"
+          width="172"
+          height="172"
+          rx="26"
+          :fill="`url(#pixel-shimmer-${props.creature.id})`"
+          opacity="0.45"
+        />
         <rect
           x="18"
           y="18"
@@ -211,7 +464,7 @@ const pixelFill = (cell: number) =>
           rx="20"
           :fill="backgroundFill"
           :stroke="outlineStroke"
-          stroke-width="4"
+          stroke-width="0"
         />
 
         <g v-if="showFinish" opacity="0.25" :mask="`url(#${finishMaskId})`">
@@ -250,74 +503,19 @@ const pixelFill = (cell: number) =>
       </g>
     </svg>
 
-    <div class="sticker-label" v-if="!compact">
-      <span class="sticker-name">{{ creature.id }}</span>
-      <span class="sticker-rarity">{{ creature.rarity }}</span>
-      <span v-if="status" class="sticker-status">{{ status }}</span>
+    <div
+      v-if="!compact"
+      class="flex flex-col items-center uppercase tracking-[0.08em]"
+    >
+      <span class="text-[11px] font-semibold text-[var(--ui-fg)]">
+        {{ creature.id }}
+      </span>
+      <span class="text-[10px] text-[var(--ui-fg-muted)]">
+        {{ creature.rarity }}
+      </span>
+      <span v-if="status" class="text-[9px] text-[var(--ui-fg-muted)] opacity-70">
+        {{ status }}
+      </span>
     </div>
   </div>
 </template>
-
-<style scoped>
-.sticker-pixel {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.6rem;
-  background: #fff;
-  border-radius: 18px;
-  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12);
-  border: 3px solid rgba(15, 23, 42, 0.12);
-}
-
-.sticker-svg {
-  width: 150px;
-  height: 150px;
-}
-
-.sticker-compact {
-  padding: 0.4rem;
-  gap: 0.2rem;
-}
-
-.sticker-compact .sticker-svg {
-  width: 110px;
-  height: 110px;
-}
-
-.sticker-full .sticker-svg {
-  width: 170px;
-  height: 170px;
-}
-
-.sticker-label {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.sticker-name {
-  font-weight: 700;
-  font-size: 0.75rem;
-  color: #0f172a;
-}
-
-.sticker-rarity {
-  font-size: 0.65rem;
-  color: #475569;
-}
-
-.sticker-status {
-  font-size: 0.6rem;
-  color: #0f172a;
-  opacity: 0.7;
-}
-
-.sticker-missing {
-  opacity: 0.55;
-  box-shadow: none;
-}
-</style>
