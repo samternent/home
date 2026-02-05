@@ -26,6 +26,7 @@
     "dev:ternentdotdev": "pnpm --filter ternentdotdev dev",
     "dev:ternent-ui": "pnpm --filter ternent-ui dev",
     "build:footballsocial-api": "docker build -f ./apps/footballsocial-api/Dockerfile . -t samternent/footballsocial-api",
+    "build:ternent-api-libs": "pnpm --filter ternent-utils --filter @ternent/concord-protocol --filter ternent-identity build",
     "build:ternent-api": "docker build -f ./apps/ternent-api/Dockerfile . -t samternent/ternent-api",
     "build:slides": "pnpm --filter ternentdotdev build:slides:teamwork-frontend && pnpm --filter ternentdotdev build:slides:router-drawers && pnpm --filter ternentdotdev build:slides:copy",
     "build:libs": "pnpm --filter ternent-ui --filter sams-game-kit --filter ternent-utils --filter @ternent/concord-protocol --filter @ternent/concord-protocol-wasm  --filter ternent-identity --filter ternent-encrypt --filter @ternent/concord-plugin-identity --filter @ternent/concord-plugin-encryption --filter @ternent/concord-plugin-permissions --filter ternent-ledger build",
@@ -35,7 +36,7 @@
     "generate:stickerbook-pack": "node scripts/stickerbook/generate-pack.mjs",
     "generate:stickerbook-pack:8bit": "SERIES_ID=SERIES-8BIT node scripts/stickerbook/generate-pack.mjs",
     "generate:stickerbook-pack:animal-8bit": "SERIES_ID=SERIES-ANIMAL-ARCHETYPE-8BIT node scripts/stickerbook/generate-pack.mjs",
-    "generate:stickerbook-pack:all": "pnpm run generate:stickerbook-pack:8bit && pnpm run generate:stickerbook-pack:animal-8bit",
+    "generate:pixpax:all": "pnpm run generate:stickerbook-pack:8bit && pnpm run generate:stickerbook-pack:animal-8bit",
     "derive:issuer-public-key": "node scripts/stickerbook/derive-issuer-public-key.mjs",
     "docs": "npm run generate-docs && npm run enhance-docs",
     "dev:docker": "cd .ops && docker-compose up -d"

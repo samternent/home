@@ -33,6 +33,13 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+          
+
+      - name: Build libs
+        run: pnpm build:ternent-api-libs
+      
+      - name: Build packs
+        run: pnpm generate:pixpax:all
 
       - name: Build Docker image
         run: pnpm build:ternent-api
