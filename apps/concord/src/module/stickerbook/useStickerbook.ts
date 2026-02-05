@@ -1,142 +1,56 @@
 import { computed } from "vue";
+import { stripIdentityKey } from "ternent-utils";
 import { useProfile } from "../profile/useProfile";
 import { useLedger, useBridge } from "../ledger/useLedger";
+import { useIdentity } from "../identity/useIdentity";
 
 type PackReceivedPayload = {
   type: "pack.received";
   packId: string;
-  packRequestId: string;
-  seriesId: string;
-  themeId: string;
-  periodId: string;
-  profileId: string;
-  packSeed: string;
-  packRoot: string;
-  algoVersion: string;
-  kitHash: string;
-  themeHash: string;
+  issuerIssuePayload: Record<string, any>;
+  issuerSignature: string;
   issuerKeyId: string;
-  verified?: boolean;
-  verifiedAt: string;
 };
 
-type StickerOwnedPayload = {
-  type: "sticker.owned";
-  packId: string;
-  packRequestId: string;
-  seriesId: string;
-  themeId: string;
+type StickerTransferPayload = {
+  type: "sticker.transfer";
   stickerId: string;
-  creatureId?: string;
-  index: number;
-  rarity: string;
-  catalogueId?: string | null;
-  finish?: string;
-  verified?: boolean;
-  entry?: any;
-  proof?: any;
-  ownedAt: string;
+  toPublicKey: string;
+  prevTransferHash: string | null;
+  memo?: string;
 };
 
 export function useStickerbook() {
   const profile = useProfile();
   const ledger = useLedger();
   const bridge = useBridge();
+  const identity = useIdentity();
 
   const packEntries = bridge.collections.useArray("pack.received");
-  const stickerEntries = bridge.collections.useArray("sticker.owned");
+  const transferEntries = bridge.collections.useArray("sticker.transfer");
 
-  const openedEntries = computed(() =>
+  const profileId = computed(() => profile.profileId.value);
+  const publicKey = computed(() => {
+    const key = identity.publicKeyPEM.value || "";
+    return key ? stripIdentityKey(key) : "";
+  });
+
+  const receivedPacks = computed(() =>
     packEntries.value.map((entry: any) => ({
       entryId: entry.entryId,
+      author: entry.author,
       data: entry.payload || entry.data || {},
     }))
   );
 
-  const openedBySeriesPeriod = computed(() => {
-    const map = new Map<string, PackReceivedPayload>();
-    for (const entry of openedEntries.value) {
-      const data = entry.data as PackReceivedPayload;
-      if (!data?.seriesId || !data?.periodId) continue;
-      map.set(`${data.seriesId}:${data.periodId}`, data);
-    }
-    return map;
-  });
-
-  const collectedByStickerId = computed(() => {
-    const map = new Map<string, StickerOwnedPayload>();
-    for (const entry of stickerEntries.value as any[]) {
-      const data = entry.payload || entry.data;
-      if (!data?.stickerId) continue;
-      map.set(data.stickerId, data as StickerOwnedPayload);
-    }
-    return map;
-  });
-
-  const collectedByPackId = computed(() => {
-    const map = new Map<string, StickerOwnedPayload[]>();
-    for (const entry of stickerEntries.value as any[]) {
-      const data = entry.payload || entry.data;
-      if (!data?.packId) continue;
-      const list = map.get(data.packId) || [];
-      list.push(data as StickerOwnedPayload);
-      map.set(data.packId, list);
-    }
-    return map;
-  });
-
-  const collectedBySeries = computed(() => {
-    const map = new Map<string, StickerOwnedPayload[]>();
-    for (const entry of stickerEntries.value as any[]) {
-      const data = entry.payload || entry.data;
-      if (!data?.seriesId) continue;
-      const list = map.get(data.seriesId) || [];
-      list.push(data as StickerOwnedPayload);
-      map.set(data.seriesId, list);
-    }
-    return map;
-  });
-
-  const collectedUniqueBySeries = computed(() => {
-    const map = new Map<string, Set<string>>();
-    for (const entry of stickerEntries.value as any[]) {
-      const data = entry.payload || entry.data;
-      if (!data?.seriesId || !data?.stickerId) continue;
-      const set = map.get(data.seriesId) || new Set<string>();
-      set.add(data.stickerId);
-      map.set(data.seriesId, set);
-    }
-    return map;
-  });
-
-  const collectedByCreatureId = computed(() => {
-    const map = new Map<string, StickerOwnedPayload>();
-    for (const entry of stickerEntries.value as any[]) {
-      const data = entry.payload || entry.data;
-      const key = data?.creatureId || data?.catalogueId || data?.stickerId;
-      if (!key) continue;
-      map.set(key, data as StickerOwnedPayload);
-    }
-    return map;
-  });
-
-  const swapsBySeries = computed(() => {
-    const map = new Map<string, StickerOwnedPayload[]>();
-    const counts = new Map<string, number>();
-    for (const entry of stickerEntries.value as any[]) {
-      const data = entry.payload || entry.data;
-      const swapId = data?.creatureId || data?.stickerId;
-      if (!data?.seriesId || !swapId) continue;
-      const key = `${data.seriesId}:${swapId}`;
-      const next = (counts.get(key) || 0) + 1;
-      counts.set(key, next);
-      if (next <= 1) continue;
-      const list = map.get(data.seriesId) || [];
-      list.push(data as StickerOwnedPayload);
-      map.set(data.seriesId, list);
-    }
-    return map;
-  });
+  const transfers = computed(() =>
+    transferEntries.value.map((entry: any) => ({
+      entryId: entry.entryId,
+      author: entry.author,
+      timestamp: entry.timestamp,
+      data: entry.payload || entry.data || {},
+    }))
+  );
 
   async function recordPackReceived(payload: PackReceivedPayload) {
     await ledger.api.addAndStage({
@@ -146,26 +60,20 @@ export function useStickerbook() {
     });
   }
 
-  async function recordStickerOwned(payload: StickerOwnedPayload) {
-    await ledger.api.addAndStage({
-      kind: "sticker.owned",
+  async function recordTransfer(payload: StickerTransferPayload) {
+    return ledger.api.addAndStage({
+      kind: "sticker.transfer",
       payload,
       silent: true,
     });
   }
 
-  async function recordPackAndStickers(
-    pack: PackReceivedPayload,
-    stickers: StickerOwnedPayload[]
-  ) {
+  async function recordPackAndCommit(payload: PackReceivedPayload) {
     const ledgerApi = ledger.api.api;
     const priorPending = ledgerApi?.getState()?.pending ?? [];
 
     try {
-      await recordPackReceived(pack);
-      for (const sticker of stickers) {
-        await recordStickerOwned(sticker);
-      }
+      await recordPackReceived(payload);
       await ledger.api.commit("stickerbook: pack received", {
         type: "stickerbook",
       });
@@ -178,16 +86,49 @@ export function useStickerbook() {
   }
 
   return {
-    profileId: profile.profileId,
-    openedEntries,
-    openedBySeriesPeriod,
-    collectedByStickerId,
-    collectedByCreatureId,
-    collectedBySeries,
-    collectedUniqueBySeries,
-    collectedByPackId,
-    swapsBySeries,
-    recordPackAndStickers,
+    profileId,
+    publicKey,
+    receivedPacks,
+    transfers,
+    recordPackAndCommit,
+    recordTransfer,
+    migrateStickerOwnedToTransfers: async () => {
+      const legacy = bridge.collections.snapshot("sticker.owned") as any[];
+      if (!legacy.length) return { migrated: 0 };
+      const bySticker = new Map<string, any[]>();
+      for (const entry of legacy) {
+        const data = entry.payload || entry.data;
+        if (!data?.stickerId) continue;
+        const list = bySticker.get(data.stickerId) || [];
+        list.push({ ...entry, data });
+        bySticker.set(data.stickerId, list);
+      }
+
+      let migrated = 0;
+      for (const [stickerId, list] of bySticker.entries()) {
+        const ordered = list.sort((a, b) =>
+          String(a.timestamp || "").localeCompare(String(b.timestamp || ""))
+        );
+        let prevHash: string | null = null;
+        for (const entry of ordered) {
+          const toPublicKey = entry.author || publicKey.value || "";
+          const created = await recordTransfer({
+            type: "sticker.transfer",
+            stickerId,
+            toPublicKey,
+            prevTransferHash: prevHash,
+            memo: "migration",
+          });
+          prevHash = created?.entryId ?? null;
+          migrated += 1;
+        }
+      }
+
+      await ledger.api.commit("stickerbook: migrate transfers", {
+        type: "stickerbook",
+      });
+      return { migrated };
+    },
   };
 }
 
@@ -203,7 +144,9 @@ export function getPeriodId(date: Date) {
 
   const year = date.getUTCFullYear();
   const start = new Date(Date.UTC(year, 0, 1));
-  const days = Math.floor((date.getTime() - start.getTime()) / (24 * 60 * 60 * 1000));
+  const days = Math.floor(
+    (date.getTime() - start.getTime()) / (24 * 60 * 60 * 1000)
+  );
   const week = Math.ceil((days + start.getUTCDay() + 1) / 7);
   return `${year}-W${String(week).padStart(2, "0")}`;
 }

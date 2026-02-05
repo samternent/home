@@ -37,6 +37,7 @@ const props = defineProps<{
   kitId?: string;
   missing?: boolean;
   compact?: boolean;
+  status?: string;
 }>();
 
 const kits = {
@@ -417,6 +418,7 @@ const pixelFill = (cell: number) =>
     <div class="sticker-label" v-if="!compact">
       <span class="sticker-name">{{ sticker.id }}</span>
       <span class="sticker-rarity">{{ sticker.rarity }}</span>
+      <span v-if="status" class="sticker-status">{{ status }}</span>
     </div>
   </div>
 </template>
@@ -471,6 +473,12 @@ const pixelFill = (cell: number) =>
 .sticker-rarity {
   font-size: 0.65rem;
   color: #475569;
+}
+
+.sticker-status {
+  font-size: 0.6rem;
+  color: #0f172a;
+  opacity: 0.7;
 }
 
 .sticker-missing {

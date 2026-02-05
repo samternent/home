@@ -26,6 +26,7 @@ const props = defineProps<{
   packId?: string;
   missing?: boolean;
   compact?: boolean;
+  status?: string;
 }>();
 
 const bodyShape = computed(() => props.creature.attributes.body.shape);
@@ -418,6 +419,7 @@ const sparklePulse = computed(() => (hashToUnit(finishSeed.value) > 0.5 ? 1 : -1
     <div class="sticker-label" v-if="!compact">
       <span class="sticker-name">{{ creature.name }}</span>
       <span class="sticker-rarity">{{ creature.rarity }}</span>
+      <span v-if="status" class="sticker-status">{{ status }}</span>
     </div>
 
     <div
@@ -486,6 +488,11 @@ const sparklePulse = computed(() => (hashToUnit(finishSeed.value) > 0.5 ? 1 : -1
 }
 
 .sticker-rarity {
+  font-size: 0.55rem;
+  opacity: 0.7;
+}
+
+.sticker-status {
   font-size: 0.55rem;
   opacity: 0.7;
 }

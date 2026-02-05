@@ -16,6 +16,7 @@ const props = defineProps<{
   packId?: string;
   missing?: boolean;
   compact?: boolean;
+  status?: string;
 }>();
 
 const { attributes } = toRefs(props);
@@ -235,6 +236,10 @@ const accentColor = computed(() =>
         </g>
       </g>
     </svg>
+    <div class="letter-label" v-if="!compact">
+      <span class="letter-name">{{ attributes.letter }}</span>
+      <span class="letter-status" v-if="status">{{ status }}</span>
+    </div>
   </div>
 </template>
 
@@ -268,5 +273,26 @@ const accentColor = computed(() =>
 
 .letter-missing {
   filter: saturate(0.3);
+}
+
+.letter-label {
+  margin-top: 0.35rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.letter-name {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.letter-status {
+  font-size: 0.6rem;
+  color: #0f172a;
+  opacity: 0.7;
 }
 </style>
