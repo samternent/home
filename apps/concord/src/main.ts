@@ -36,15 +36,17 @@ if (!themeMode.value && typeof window !== "undefined") {
   }
 }
 
-watchEffect(() => {
-  document.documentElement.setAttribute(
-    "data-theme",
-    `${theme.value}-${themeMode.value || "light"}`
-  );
-  document.documentElement.setAttribute("data-theme-palette", themeMode.value);
+if (typeof document !== "undefined") {
+  watchEffect(() => {
+    document.documentElement.setAttribute(
+      "data-theme",
+      `${theme.value}-${themeMode.value || "light"}`
+    );
+    document.documentElement.setAttribute("data-theme-palette", themeMode.value);
 
-  // document.documentElement.classList.toggle(themeMode.value);
-});
+    // document.documentElement.classList.toggle(themeMode.value);
+  });
+}
 
 export const createApp = ViteSSG(
   App,

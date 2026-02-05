@@ -15,6 +15,10 @@ FROM base AS prod-deps
 # Lockfile should be frozen but I can't figure it out. this is bad.
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --no-frozen-lockfile
 
+# Build dependent libs
+RUN build:ternent-api-libs
+RUN generate:pixpax:all
+
 FROM base
 COPY --from=prod-deps /app/node_modules /app/node_modules
 

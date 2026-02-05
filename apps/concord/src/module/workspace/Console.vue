@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, shallowRef } from "vue";
+import type { PropType } from "vue";
 import { useLedger } from "../../module/ledger/useLedger";
 import Console from "../../module/console/Console.vue";
 import IdentityAvatar from "../../module/identity/IdentityAvatar.vue";
@@ -9,8 +10,8 @@ import { Accordian, AccordianItem } from "ternent-ui/primitives";
 
 defineProps({
   container: {
-    type: HTMLElement,
-    default: document.body,
+    type: Object as PropType<HTMLElement | null>,
+    default: null,
   },
 });
 

@@ -8,8 +8,8 @@ const props = defineProps({
    * @type {PropType<HTMLElement>}
    */
   container: {
-    type: HTMLElement,
-    default: () => document.body,
+    type: Object,
+    default: null,
   },
   /**
    * The size of the drag handler.

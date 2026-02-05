@@ -10,8 +10,8 @@ const props = defineProps({
     default: "Drawer",
   },
   container: {
-    type: HTMLElement,
-    default: document.body,
+    type: Object,
+    default: null,
   },
   width: {
     type: String,

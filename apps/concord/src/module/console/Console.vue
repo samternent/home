@@ -1,13 +1,13 @@
-<script setup>
-import { shallowRef, watch } from "vue";
+<script setup lang="ts">
+import { onMounted, shallowRef, watch } from "vue";
+import type { Component, PropType } from "vue";
 import { useLocalStorage, useWindowSize } from "@vueuse/core";
-import { SResizer } from "ternent-ui/components";
 import { Button } from "ternent-ui/primitives";
 
 defineProps({
   container: {
-    type: HTMLElement,
-    default: document.body,
+    type: Object as PropType<HTMLElement | null>,
+    default: null,
   },
   tone: {
     type: String,
@@ -16,6 +16,13 @@ defineProps({
 });
 
 const { width } = useWindowSize();
+
+const SResizer = shallowRef<Component | null>(null);
+
+onMounted(async () => {
+  const { SResizer: Resizer } = await import("ternent-ui/components");
+  SResizer.value = Resizer;
+});
 
 const dragPosition = useLocalStorage("routes/RouteLedger/dragPosition", 600);
 const isDragging = shallowRef(false);
@@ -41,8 +48,9 @@ watch(dragPosition, (value) => {
     }"
     :style="`${isBottomPanelExpanded && `height: ${bottomPanelHeight}px`}`"
   >
-    <SResizer
-      v-if="isBottomPanelExpanded"
+    <component
+      :is="SResizer"
+      v-if="SResizer && isBottomPanelExpanded"
       direction="horizontal"
       v-model:position="dragPosition"
       v-model:dragging="isDragging"
