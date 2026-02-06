@@ -6,12 +6,12 @@
     {
       "source": "/:path*",
       "has": [{ "type": "host", "value": "pixpax.xyz" }],
-      "destination": "/spa.html"
+      "destination": "/pixpax.html"
     },
     {
       "source": "/:path*",
       "has": [{ "type": "host", "value": "www.pixpax.xyz" }],
-      "destination": "/spa.html"
+      "destination": "/pixpax.html"
     },
     { "source": "/workspace", "destination": "/spa.html" },
     { "source": "/workspace/:path*", "destination": "/spa.html" },

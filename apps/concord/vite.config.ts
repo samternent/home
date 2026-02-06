@@ -14,6 +14,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, "index.html"),
         spa: resolve(__dirname, "spa.html"),
+        pixpax: resolve(__dirname, "pixpax.html"),
       },
     },
   },
