@@ -1,5 +1,11 @@
 # concord
 
+## 0.3.2
+
+### Patch Changes
+
+- [`0576d26ab6dc00bbbe5f5491d370e906a5f124a1`](https://github.com/samternent/home/commit/0576d26ab6dc00bbbe5f5491d370e906a5f124a1) Thanks [@samternent](https://github.com/samternent)! - Deployment fixes
+
 ## 0.3.1
 
 ### Patch Changes
