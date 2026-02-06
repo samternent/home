@@ -61,6 +61,7 @@
   src="//gc.zgo.at/count.js"
 ></script>
 
+<script src="/pixpax-preload.js"></script>
 <script src="/pixpax-meta.js" defer></script>
 
 <!-- Performance: fonts -->
@@ -113,5 +114,26 @@
     font-size: 18px;
     background-color: var(--ui-bg);
     color: var(--ui-fg);
+  }
+
+  #pixpax-preload {
+    display: none;
+  }
+
+  .pixpax-preload #app {
+    visibility: hidden;
+  }
+
+  .pixpax-preload #pixpax-preload {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-pixpax);
+    color: var(--ui-fg-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.32em;
+    font-size: 10px;
   }
 </style>
