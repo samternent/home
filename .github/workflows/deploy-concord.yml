@@ -26,6 +26,9 @@ jobs:
         with:
           version: 8
 
+      - name: Ensure system PATH
+        run: echo "/usr/bin:/bin" >> $GITHUB_PATH
+
       - name: Cache PNPM store
         uses: actions/cache@v4
         with:
@@ -56,10 +59,10 @@ jobs:
         run: vercel pull --yes --environment=production --cwd ${{ github.workspace }}/apps/concord --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Build Vercel Environment Information
-        run: PATH=/usr/bin:/bin:$PATH vercel build --prod --cwd ${{ github.workspace }}/apps/concord --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel build --prod --cwd ${{ github.workspace }}/apps/concord --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy Project Artifacts to Vercel
-        run: PATH=/usr/bin:/bin:$PATH vercel deploy --prebuilt --prod --cwd ${{ github.workspace }}/apps/concord --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel deploy --prebuilt --prod --cwd ${{ github.workspace }}/apps/concord --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Update app version in Redis
         run: node .ops/update-redis-version.mjs

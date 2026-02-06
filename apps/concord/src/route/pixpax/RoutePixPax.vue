@@ -3,6 +3,7 @@ import { computed } from "vue";
 import { useFavicon, useTitle } from "@vueuse/core";
 import PixPaxLogoRaw from "../../module/stickerbook/PixPaxLogo.svg?raw";
 import Concord from "../../module/concord/Concord.vue";
+import RoutePixPaxMainLayout from "./RoutePixPaxMainLayout.vue";
 
 useTitle("PixPax.");
 
@@ -38,7 +39,9 @@ useFavicon(computed(() => svgToDataUrl(themedSvg.value)));
 <template>
   <ClientOnly>
     <Concord>
-      <RouterView />
+      <RoutePixPaxMainLayout>
+        <RouterView />
+      </RoutePixPaxMainLayout>
     </Concord>
   </ClientOnly>
 </template>

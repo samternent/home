@@ -7,6 +7,10 @@ export default [
         path: "",
         component: () => import("./RoutePixPaxMain.vue"),
       },
+      {
+        path: "about",
+        component: () => import("./RoutePixPaxAbout.vue"),
+      },
     ],
   },
 ];
