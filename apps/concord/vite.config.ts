@@ -29,8 +29,11 @@ export default defineConfig({
   ],
   ssgOptions: {
     includedRoutes(paths) {
-      // exclude workspace from pre-render
-      return paths.filter((p) => !p.startsWith("/workspace"));
+      // exclude app-only routes from pre-render
+      const excludedPrefixes = ["/workspace", "/pixpax"];
+      return paths.filter(
+        (p) => !excludedPrefixes.some((prefix) => p.startsWith(prefix))
+      );
     },
   },
 });

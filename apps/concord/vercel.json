@@ -3,28 +3,18 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "pixpax.xyz" }],
+      "destination": "/index"
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.pixpax.xyz" }],
+      "destination": "/index"
+    },
     { "source": "/workspace", "destination": "/index" },
-    { "source": "/workspace/:path*", "destination": "/index" },
-    {
-      "source": "/pixpax/:path*",
-      "has": [{ "type": "host", "value": "pixpax.xyz" }],
-      "destination": "/pixpax/:path*"
-    },
-    {
-      "source": "/:path*",
-      "has": [{ "type": "host", "value": "pixpax.xyz" }],
-      "destination": "/pixpax/:path*"
-    },
-    {
-      "source": "/pixpax/:path*",
-      "has": [{ "type": "host", "value": "www.pixpax.xyz" }],
-      "destination": "/pixpax/:path*"
-    },
-    {
-      "source": "/:path*",
-      "has": [{ "type": "host", "value": "www.pixpax.xyz" }],
-      "destination": "/pixpax/:path*"
-    }
+    { "source": "/workspace/:path*", "destination": "/index" }
   ],
 
   "headers": [

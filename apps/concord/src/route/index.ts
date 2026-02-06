@@ -3,7 +3,31 @@ import docRoutes from "./docs/routes";
 import workspaceRoutes from "./workspace/routes";
 import pixpaxRoutes from "./pixpax/routes";
 
-export const routes = [...docRoutes, ...workspaceRoutes, ...pixpaxRoutes];
+const pixpaxHosts = new Set(["pixpax.xyz", "www.pixpax.xyz"]);
+const isPixpaxHost =
+  typeof window !== "undefined" && pixpaxHosts.has(window.location.hostname);
+
+const pixpaxHostRoutes = isPixpaxHost
+  ? [
+      {
+        path: "/:pathMatch(.*)*",
+        component: () => import("./pixpax/RoutePixPax.vue"),
+        children: [
+          {
+            path: "",
+            component: () => import("./pixpax/RoutePixPaxMain.vue"),
+          },
+        ],
+      },
+    ]
+  : [];
+
+export const routes = [
+  ...pixpaxHostRoutes,
+  ...docRoutes,
+  ...workspaceRoutes,
+  ...pixpaxRoutes,
+];
 
 export function createAppRouter() {
   return createRouter({
