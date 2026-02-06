@@ -25,3 +25,9 @@ spec:
                 secretKeyRef:
                   name: ternent-api-env
                   key: digitalocean-token
+            - name: ISSUER_PRIVATE_KEY_PEM
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-env
+                  key: issuer-private-key-pem
+  
