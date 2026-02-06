@@ -52,6 +52,8 @@ let nowTimer: number | null = null;
 const periodOffset = ref(0);
 const devNonce = useLocalStorage("stickerbook/dev-pack-nonce", 0);
 const pixbookReadOnly = useLocalStorage("pixpax/pixbook/readOnly", false);
+const nextDropAt = ref<string | null>(null);
+const apiPeriodSeconds = ref<number | null>(null);
 
 const devPeriodSeconds = computed(() => {
   const seconds = parseInt(
@@ -62,11 +64,22 @@ const devPeriodSeconds = computed(() => {
 });
 
 const devMode = computed(
-  () => import.meta.env.VITE_STICKERBOOK_DEV_MODE === "true"
+  () => import.meta.env.VITE_STICKERBOOK_DEV_MODE !== "true"
 );
 const devPeriodMs = computed(() =>
   devPeriodSeconds.value ? devPeriodSeconds.value * 1000 : null
 );
+const nextDropAtMs = computed(() => {
+  if (!nextDropAt.value) return null;
+  const parsed = Date.parse(nextDropAt.value);
+  if (!Number.isFinite(parsed)) return null;
+  const periodMs = (apiPeriodSeconds.value || 7 * 24 * 60 * 60) * 1000;
+  if (periodMs > 0 && now.value >= parsed) {
+    const elapsedPeriods = Math.floor((now.value - parsed) / periodMs) + 1;
+    return parsed + elapsedPeriods * periodMs;
+  }
+  return parsed;
+});
 
 const enabledSeries = computed(() =>
   seriesOptions.value.filter((entry) => entry.enabled !== false)
@@ -144,10 +157,28 @@ const periodId = computed(() => {
   return getPeriodId(periodDate.value);
 });
 const secondsUntilNextPeriod = computed(() => {
-  if (!devPeriodSeconds.value) return null;
-  const windowMs = devPeriodSeconds.value * 1000;
-  const remaining = windowMs - (now.value % windowMs);
-  return Math.max(1, Math.ceil(remaining / 1000));
+  if (devPeriodSeconds.value) {
+    const windowMs = devPeriodSeconds.value * 1000;
+    const remaining = windowMs - (now.value % windowMs);
+    return Math.max(1, Math.ceil(remaining / 1000));
+  }
+  if (!nextDropAtMs.value) return null;
+  const remaining = nextDropAtMs.value - now.value;
+  return Math.max(0, Math.ceil(remaining / 1000));
+});
+const nextDropLabel = computed(() => {
+  if (secondsUntilNextPeriod.value === null) return "";
+  const total = Math.max(0, secondsUntilNextPeriod.value);
+  const days = Math.floor(total / 86400);
+  const hours = Math.floor((total % 86400) / 3600);
+  const minutes = Math.floor((total % 3600) / 60);
+  const seconds = total % 60;
+  const parts: string[] = [];
+  if (days > 0) parts.push(`${days}d`);
+  if (hours > 0) parts.push(`${hours}h`);
+  if (minutes > 0 || hours > 0 || days > 0) parts.push(`${minutes}m`);
+  parts.push(`${seconds}s`);
+  return parts.join(" ");
 });
 const currentPackRequestId = ref("");
 watch(
@@ -598,6 +629,16 @@ async function loadIndex() {
         selectedSeriesId.value = enabled[0]?.id || "";
       }
     }
+    if (typeof index?.nextDropAt === "string") {
+      nextDropAt.value = index.nextDropAt;
+    } else {
+      nextDropAt.value = null;
+    }
+    const periodSeconds = Number(index?.periodSeconds);
+    apiPeriodSeconds.value =
+      Number.isFinite(periodSeconds) && periodSeconds > 0
+        ? periodSeconds
+        : null;
   } catch {
     // Ignore index load failures and keep local defaults.
   }
@@ -778,13 +819,13 @@ onMounted(async () => {
 });
 
 watch(
-  devPeriodSeconds,
-  (seconds) => {
+  () => [devPeriodSeconds.value, nextDropAt.value] as const,
+  ([seconds, dropAt]) => {
     if (nowTimer) {
       clearInterval(nowTimer);
       nowTimer = null;
     }
-    if (!seconds) return;
+    if (!seconds && !dropAt) return;
     nowTimer = window.setInterval(() => {
       now.value = Date.now();
     }, 1000);
@@ -907,10 +948,10 @@ watch(periodId, () => {
               {{ openPackLabel }}
             </Button>
             <span
-              v-if="!canTapOpenPack && secondsUntilNextPeriod"
-              class="text-[10px] uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]"
+              v-if="!canTapOpenPack && nextDropLabel"
+              class="text-xs uppercase tracking-[0.16em] text-[var(--ui-fg)]"
             >
-              Next pack in {{ secondsUntilNextPeriod }}s
+              Next pack drop in {{ nextDropLabel }}
             </span>
           </div>
           <p

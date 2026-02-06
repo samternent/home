@@ -26,6 +26,19 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ISSUER_LEDGER_PATH = "persisted/stickerbook/issuer-ledger.json";
 const ISSUER_PENDING_PATH = "persisted/stickerbook/issuer-pending.json";
 const ALGO_VERSION = "1.0.0";
+const WEEK_SECONDS = 7 * 24 * 60 * 60;
+
+function getNextWeeklyDropAt(now = new Date()) {
+  const utcMidnight = Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate()
+  );
+  const day = now.getUTCDay();
+  let daysUntil = (7 - day) % 7;
+  if (daysUntil === 0) daysUntil = 7;
+  return new Date(utcMidnight + daysUntil * 24 * 60 * 60 * 1000);
+}
 
 function stripIdentityKey(key) {
   return key
@@ -197,7 +210,14 @@ export default function stickerbookRoutes(router) {
 
   router.get("/v1/stickerbook/index", (req, res) => {
     const index = loadIndex();
-    res.status(200).send(index);
+    const now = new Date();
+    const nextDropAt = getNextWeeklyDropAt(now);
+    res.status(200).send({
+      ...index,
+      periodSeconds: WEEK_SECONDS,
+      nextDropAt: nextDropAt.toISOString(),
+      serverTime: now.toISOString(),
+    });
   });
 
   router.post("/v1/stickerbook/commit", async (req, res) => {
