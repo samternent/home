@@ -1,0 +1,5497 @@
+{
+  "seriesId": "S1",
+  "styleType": "creature",
+  "version": "1.0.0",
+  "generatedAt": "2026-02-04T22:08:26.641Z",
+  "seed": "stickerbook-series-S1",
+  "rarityWeights": {
+    "common": 0.62,
+    "uncommon": 0.25,
+    "rare": 0.1,
+    "mythic": 0.03
+  },
+  "palettes": [
+    {
+      "id": "sunburst",
+      "name": "Sunburst",
+      "colors": [
+        "#F2C94C",
+        "#F2994A",
+        "#EB5757",
+        "#2F80ED"
+      ]
+    },
+    {
+      "id": "pond",
+      "name": "Pond",
+      "colors": [
+        "#56CCF2",
+        "#2D9CDB",
+        "#27AE60",
+        "#6FCF97"
+      ]
+    },
+    {
+      "id": "nebula",
+      "name": "Nebula",
+      "colors": [
+        "#9B51E0",
+        "#BB6BD9",
+        "#2D9CDB",
+        "#56CCF2"
+      ]
+    },
+    {
+      "id": "ember",
+      "name": "Ember",
+      "colors": [
+        "#FF6B6B",
+        "#F06595",
+        "#FFD43B",
+        "#F76707"
+      ]
+    },
+    {
+      "id": "orchard",
+      "name": "Orchard",
+      "colors": [
+        "#A7F3D0",
+        "#34D399",
+        "#FDE68A",
+        "#FCA5A5"
+      ]
+    },
+    {
+      "id": "shadow",
+      "name": "Shadow",
+      "colors": [
+        "#111827",
+        "#374151",
+        "#9CA3AF",
+        "#F9FAFB"
+      ]
+    },
+    {
+      "id": "coral",
+      "name": "Coral",
+      "colors": [
+        "#FF9F1C",
+        "#FFBF69",
+        "#CBF3F0",
+        "#2EC4B6"
+      ]
+    },
+    {
+      "id": "garden",
+      "name": "Garden",
+      "colors": [
+        "#2F855A",
+        "#68D391",
+        "#F6E05E",
+        "#ED8936"
+      ]
+    }
+  ],
+  "creatures": [
+    {
+      "id": "S1-0001",
+      "seed": "S1:85",
+      "name": "Pitata",
+      "rarity": "mythic",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.7586340436615595,
+          "wobble": 0.01835862921279823
+        },
+        "eyes": "oval",
+        "accent": "fin",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.5914427168880223,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#9CA3AF",
+          "highlight": "#374151"
+        }
+      }
+    },
+    {
+      "id": "S1-0002",
+      "seed": "S1:68",
+      "name": "Kota",
+      "rarity": "mythic",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.8180826309062733,
+          "wobble": 0.0042315512556190486
+        },
+        "eyes": "oval",
+        "accent": "leaf",
+        "pattern": {
+          "type": "blush",
+          "density": 0.5359046100140328,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0003",
+      "seed": "S1:21",
+      "name": "Pinolo",
+      "rarity": "mythic",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.8746266222267007,
+          "wobble": 0.08279366464884803
+        },
+        "eyes": "spark",
+        "accent": "horns",
+        "pattern": {
+          "type": "gradient",
+          "density": 0.44948310554015525,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#374151",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0004",
+      "seed": "S1:47",
+      "name": "Pimiko",
+      "rarity": "mythic",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "round",
+          "scale": 0.5726244946528749,
+          "wobble": 0.11048812921170334
+        },
+        "eyes": "spark",
+        "accent": "tuft",
+        "pattern": {
+          "type": "gradient",
+          "density": 0.6810284815102416,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#9CA3AF",
+          "secondary": "#111827",
+          "accent": "#F9FAFB",
+          "highlight": "#374151"
+        }
+      }
+    },
+    {
+      "id": "S1-0005",
+      "seed": "S1:60",
+      "name": "Komiki",
+      "rarity": "mythic",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.5643577022511413,
+          "wobble": 0.13619383190204246
+        },
+        "eyes": "sleepy",
+        "accent": "tail",
+        "pattern": {
+          "type": "blush",
+          "density": 0.7786901914581401,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#9CA3AF",
+          "highlight": "#374151"
+        }
+      }
+    },
+    {
+      "id": "S1-0006",
+      "seed": "S1:37",
+      "name": "Latata",
+      "rarity": "mythic",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.8766528015087016,
+          "wobble": 0.14385762383319847
+        },
+        "eyes": "star",
+        "accent": "tuft",
+        "pattern": {
+          "type": "gradient",
+          "density": 0.34847644248476173,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0007",
+      "seed": "S1:6306",
+      "name": "Koshi",
+      "rarity": "rare",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.7181272950647696,
+          "wobble": 0.01817899228031258
+        },
+        "eyes": "sleepy",
+        "accent": "leaf",
+        "pattern": {
+          "type": "blush",
+          "density": 0.6163433839372228,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0008",
+      "seed": "S1:12231",
+      "name": "Talami",
+      "rarity": "rare",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.7178662061150806,
+          "wobble": 0.1441093364367516
+        },
+        "eyes": "oval",
+        "accent": "tail",
+        "pattern": {
+          "type": "none",
+          "density": 0.6780374156958511,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0009",
+      "seed": "S1:645",
+      "name": "Talashi",
+      "rarity": "rare",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.7170907214672981,
+          "wobble": 0.030742840301418405
+        },
+        "eyes": "star",
+        "accent": "leaf",
+        "pattern": {
+          "type": "blush",
+          "density": 0.30514766895332085,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#374151",
+          "secondary": "#F9FAFB",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0010",
+      "seed": "S1:932",
+      "name": "Koki",
+      "rarity": "rare",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.7138162109450941,
+          "wobble": 0.003598572768643166
+        },
+        "eyes": "sleepy",
+        "accent": "tuft",
+        "pattern": {
+          "type": "blush",
+          "density": 0.7940545492326037,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#9CA3AF",
+          "highlight": "#374151"
+        }
+      }
+    },
+    {
+      "id": "S1-0011",
+      "seed": "S1:2956",
+      "name": "Tami",
+      "rarity": "rare",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.7250865333306339,
+          "wobble": 0.05573464554169556
+        },
+        "eyes": "star",
+        "accent": "fin",
+        "pattern": {
+          "type": "gradient",
+          "density": 0.5483909449303501,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#9CA3AF",
+          "secondary": "#111827",
+          "accent": "#F9FAFB",
+          "highlight": "#374151"
+        }
+      }
+    },
+    {
+      "id": "S1-0012",
+      "seed": "S1:842",
+      "name": "Ranoko",
+      "rarity": "rare",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.7114367441882931,
+          "wobble": 0.11429144994222824
+        },
+        "eyes": "sleepy",
+        "accent": "fin",
+        "pattern": {
+          "type": "none",
+          "density": 0.42756475136325806,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#9CA3AF",
+          "highlight": "#374151"
+        }
+      }
+    },
+    {
+      "id": "S1-0013",
+      "seed": "S1:3621",
+      "name": "Zumi",
+      "rarity": "rare",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.7112328109590413,
+          "wobble": 0.01767284620266241
+        },
+        "eyes": "spark",
+        "accent": "tail",
+        "pattern": {
+          "type": "gradient",
+          "density": 0.5738014362807855,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0014",
+      "seed": "S1:5759",
+      "name": "Talozu",
+      "rarity": "rare",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.7292175115386996,
+          "wobble": 0.14947314971347178
+        },
+        "eyes": "star",
+        "accent": "tuft",
+        "pattern": {
+          "type": "spots",
+          "density": 0.6617865082835281,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0015",
+      "seed": "S1:1176",
+      "name": "Lomilo",
+      "rarity": "rare",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.7298253420576979,
+          "wobble": 0.0723695757967349
+        },
+        "eyes": "star",
+        "accent": "fin",
+        "pattern": {
+          "type": "none",
+          "density": 0.3411759939722661,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#374151",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0016",
+      "seed": "S1:2515",
+      "name": "Piki",
+      "rarity": "rare",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.7310059580092798,
+          "wobble": 0.011070909074291332
+        },
+        "eyes": "oval",
+        "accent": "fin",
+        "pattern": {
+          "type": "blush",
+          "density": 0.6358860301752309,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0017",
+      "seed": "S1:9095",
+      "name": "Mitami",
+      "rarity": "rare",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.7083831754765435,
+          "wobble": 0.002742997930092504
+        },
+        "eyes": "dot",
+        "accent": "leaf",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.6874148619913996,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0018",
+      "seed": "S1:6237",
+      "name": "Laloko",
+      "rarity": "rare",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "round",
+          "scale": 0.7057013874188303,
+          "wobble": 0.023639150050850388
+        },
+        "eyes": "sleepy",
+        "accent": "tail",
+        "pattern": {
+          "type": "blush",
+          "density": 0.5546478240761552,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0019",
+      "seed": "S1:3727",
+      "name": "Rako",
+      "rarity": "rare",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.7348661563091134,
+          "wobble": 0.06923392677428991
+        },
+        "eyes": "sleepy",
+        "accent": "leaf",
+        "pattern": {
+          "type": "none",
+          "density": 0.7841292168093216,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0020",
+      "seed": "S1:11702",
+      "name": "Lapira",
+      "rarity": "rare",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.7049116825579926,
+          "wobble": 0.0742365727490365
+        },
+        "eyes": "star",
+        "accent": "tail",
+        "pattern": {
+          "type": "spots",
+          "density": 0.516569101243878,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0021",
+      "seed": "S1:6310",
+      "name": "Shiva",
+      "rarity": "rare",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.7052481221513004,
+          "wobble": 0.09711193297922423
+        },
+        "eyes": "spark",
+        "accent": "horns",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.4201079856418325,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#9CA3AF",
+          "secondary": "#111827",
+          "accent": "#F9FAFB",
+          "highlight": "#374151"
+        }
+      }
+    },
+    {
+      "id": "S1-0022",
+      "seed": "S1:768",
+      "name": "Mizu",
+      "rarity": "rare",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "round",
+          "scale": 0.7368757437534807,
+          "wobble": 0.045854692905176124
+        },
+        "eyes": "dot",
+        "accent": "fin",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.3865609866535666,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#374151",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0023",
+      "seed": "S1:2611",
+      "name": "Rara",
+      "rarity": "rare",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.7030163028168065,
+          "wobble": 0.0018640295141059973
+        },
+        "eyes": "dot",
+        "accent": "fin",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.5914686726037107,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0024",
+      "seed": "S1:1090",
+      "name": "Zushiki",
+      "rarity": "rare",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.7025533553102411,
+          "wobble": 0.0007246472059573623
+        },
+        "eyes": "oval",
+        "accent": "fin",
+        "pattern": {
+          "type": "none",
+          "density": 0.3718106120642765,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0025",
+      "seed": "S1:6700",
+      "name": "Ralo",
+      "rarity": "rare",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "round",
+          "scale": 0.7019623157922091,
+          "wobble": 0.060372657773637366
+        },
+        "eyes": "oval",
+        "accent": "tail",
+        "pattern": {
+          "type": "blush",
+          "density": 0.513788822645738,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#374151",
+          "secondary": "#F9FAFB",
+          "accent": "#9CA3AF",
+          "highlight": "#111827"
+        }
+      }
+    },
+    {
+      "id": "S1-0026",
+      "seed": "S1:4211",
+      "name": "Koshi",
+      "rarity": "rare",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.701193803246411,
+          "wobble": 0.10408712645389306
+        },
+        "eyes": "star",
+        "accent": "leaf",
+        "pattern": {
+          "type": "blush",
+          "density": 0.37117446684771555,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#9CA3AF",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#F9FAFB"
+        }
+      }
+    },
+    {
+      "id": "S1-0027",
+      "seed": "S1:548",
+      "name": "Pila",
+      "rarity": "rare",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.7400875163590739,
+          "wobble": 0.11712778280887934
+        },
+        "eyes": "sleepy",
+        "accent": "leaf",
+        "pattern": {
+          "type": "spots",
+          "density": 0.43154084663408365,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#374151",
+          "secondary": "#F9FAFB",
+          "accent": "#9CA3AF",
+          "highlight": "#111827"
+        }
+      }
+    },
+    {
+      "id": "S1-0028",
+      "seed": "S1:4935",
+      "name": "Koki",
+      "rarity": "rare",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.7408701902001329,
+          "wobble": 0.1214499609827646
+        },
+        "eyes": "star",
+        "accent": "leaf",
+        "pattern": {
+          "type": "gradient",
+          "density": 0.45996923529542266,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0029",
+      "seed": "S1:17244",
+      "name": "Shiva",
+      "rarity": "rare",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "round",
+          "scale": 0.6998743365518456,
+          "wobble": 0.044508121685243235
+        },
+        "eyes": "spark",
+        "accent": "tail",
+        "pattern": {
+          "type": "spots",
+          "density": 0.31715960905821056,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#9CA3AF",
+          "accent": "#F9FAFB",
+          "highlight": "#374151"
+        }
+      }
+    },
+    {
+      "id": "S1-0030",
+      "seed": "S1:1400",
+      "name": "Lozu",
+      "rarity": "rare",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.7414707190686536,
+          "wobble": 0.015063794507892754
+        },
+        "eyes": "spark",
+        "accent": "tail",
+        "pattern": {
+          "type": "none",
+          "density": 0.6942416881314111,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#374151",
+          "secondary": "#F9FAFB",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0031",
+      "seed": "S1:5125",
+      "name": "Loshi",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.6968702001140616,
+          "wobble": 0.07032964607242718
+        },
+        "eyes": "dot",
+        "accent": "leaf",
+        "pattern": {
+          "type": "spots",
+          "density": 0.7185210381794072,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#374151",
+          "accent": "#9CA3AF",
+          "highlight": "#111827"
+        }
+      }
+    },
+    {
+      "id": "S1-0032",
+      "seed": "S1:4521",
+      "name": "Vapi",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.7561238981331988,
+          "wobble": 0.14169939496594
+        },
+        "eyes": "dot",
+        "accent": "tail",
+        "pattern": {
+          "type": "spots",
+          "density": 0.5362982081217454,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#374151",
+          "secondary": "#F9FAFB",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0033",
+      "seed": "S1:1569",
+      "name": "Piko",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.6836457362476843,
+          "wobble": 0.002972583776100674
+        },
+        "eyes": "oval",
+        "accent": "tuft",
+        "pattern": {
+          "type": "none",
+          "density": 0.3665075960258273,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0034",
+      "seed": "S1:2206",
+      "name": "Vazushi",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.7579527873098741,
+          "wobble": 0.020130964582816456
+        },
+        "eyes": "spark",
+        "accent": "horns",
+        "pattern": {
+          "type": "none",
+          "density": 0.3910363703479609,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0035",
+      "seed": "S1:1517",
+      "name": "Takopi",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "round",
+          "scale": 0.7568678881639773,
+          "wobble": 0.09837307116211695
+        },
+        "eyes": "oval",
+        "accent": "tail",
+        "pattern": {
+          "type": "spots",
+          "density": 0.5243654590156781,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#9CA3AF",
+          "accent": "#374151",
+          "highlight": "#F9FAFB"
+        }
+      }
+    },
+    {
+      "id": "S1-0036",
+      "seed": "S1:6027",
+      "name": "Pizu",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.6811346547983435,
+          "wobble": 0.0519813028518067
+        },
+        "eyes": "spark",
+        "accent": "tail",
+        "pattern": {
+          "type": "spots",
+          "density": 0.45951463359163947,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#374151",
+          "secondary": "#F9FAFB",
+          "accent": "#9CA3AF",
+          "highlight": "#111827"
+        }
+      }
+    },
+    {
+      "id": "S1-0037",
+      "seed": "S1:2295",
+      "name": "Pipimi",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.6804239613889773,
+          "wobble": 0.012346320241304656
+        },
+        "eyes": "spark",
+        "accent": "tuft",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.272773883322434,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0038",
+      "seed": "S1:3337",
+      "name": "Nonono",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.7602280877321559,
+          "wobble": 0.017572006564022042
+        },
+        "eyes": "sleepy",
+        "accent": "tuft",
+        "pattern": {
+          "type": "spots",
+          "density": 0.546468908234143,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#9CA3AF",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#F9FAFB"
+        }
+      }
+    },
+    {
+      "id": "S1-0039",
+      "seed": "S1:4589",
+      "name": "Shishi",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.6778314701346289,
+          "wobble": 0.14363062272165683
+        },
+        "eyes": "spark",
+        "accent": "tail",
+        "pattern": {
+          "type": "spots",
+          "density": 0.7789349613778608,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#9CA3AF",
+          "highlight": "#374151"
+        }
+      }
+    },
+    {
+      "id": "S1-0040",
+      "seed": "S1:14353",
+      "name": "Mizupi",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.6776839590463052,
+          "wobble": 0.11749368462886048
+        },
+        "eyes": "spark",
+        "accent": "leaf",
+        "pattern": {
+          "type": "none",
+          "density": 0.5069080473056315,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#374151",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0041",
+      "seed": "S1:1015",
+      "name": "Noki",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.6789072798865166,
+          "wobble": 0.022714752592778473
+        },
+        "eyes": "star",
+        "accent": "tail",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.39030295160838935,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#9CA3AF",
+          "accent": "#374151",
+          "highlight": "#F9FAFB"
+        }
+      }
+    },
+    {
+      "id": "S1-0042",
+      "seed": "S1:2798",
+      "name": "Rashila",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.7626954767882581,
+          "wobble": 0.09800358181772836
+        },
+        "eyes": "oval",
+        "accent": "horns",
+        "pattern": {
+          "type": "none",
+          "density": 0.5205334073446071,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#374151",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0043",
+      "seed": "S1:3708",
+      "name": "Shitapi",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.7646976853289403,
+          "wobble": 0.11876514924661376
+        },
+        "eyes": "star",
+        "accent": "tail",
+        "pattern": {
+          "type": "spots",
+          "density": 0.7332402616583836,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0044",
+      "seed": "S1:7422",
+      "name": "Piko",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.7651385389885723,
+          "wobble": 0.051380926231243865
+        },
+        "eyes": "spark",
+        "accent": "tail",
+        "pattern": {
+          "type": "blush",
+          "density": 0.6705518542138282,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0045",
+      "seed": "S1:18697",
+      "name": "Varara",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.7663382622334962,
+          "wobble": 0.030840318587338628
+        },
+        "eyes": "sleepy",
+        "accent": "tail",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.5938273085150466,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#9CA3AF",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#F9FAFB"
+        }
+      }
+    },
+    {
+      "id": "S1-0046",
+      "seed": "S1:1069",
+      "name": "Taloko",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.6686934449054984,
+          "wobble": 0.004194751208227768
+        },
+        "eyes": "oval",
+        "accent": "horns",
+        "pattern": {
+          "type": "gradient",
+          "density": 0.7130626297586278,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#374151",
+          "secondary": "#F9FAFB",
+          "accent": "#9CA3AF",
+          "highlight": "#111827"
+        }
+      }
+    },
+    {
+      "id": "S1-0047",
+      "seed": "S1:14786",
+      "name": "Lano",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "round",
+          "scale": 0.6685347781443352,
+          "wobble": 0.1338642530454938
+        },
+        "eyes": "spark",
+        "accent": "tail",
+        "pattern": {
+          "type": "blush",
+          "density": 0.7397604972798751,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0048",
+      "seed": "S1:8192",
+      "name": "Tashi",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.666648333535215,
+          "wobble": 0.028836776485861457
+        },
+        "eyes": "dot",
+        "accent": "tail",
+        "pattern": {
+          "type": "blush",
+          "density": 0.37268379218240355,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0049",
+      "seed": "S1:8376",
+      "name": "Kolozu",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.7750509597419414,
+          "wobble": 0.1120393242715018
+        },
+        "eyes": "oval",
+        "accent": "tail",
+        "pattern": {
+          "type": "spots",
+          "density": 0.4993474104440183,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#374151",
+          "secondary": "#F9FAFB",
+          "accent": "#9CA3AF",
+          "highlight": "#111827"
+        }
+      }
+    },
+    {
+      "id": "S1-0050",
+      "seed": "S1:646",
+      "name": "Pikota",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.7798485007090141,
+          "wobble": 0.04990275797897548
+        },
+        "eyes": "oval",
+        "accent": "horns",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.30121519432897104,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#9CA3AF",
+          "accent": "#F9FAFB",
+          "highlight": "#374151"
+        }
+      }
+    },
+    {
+      "id": "S1-0051",
+      "seed": "S1:11357",
+      "name": "Tashila",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.7805228154362466,
+          "wobble": 0.024097049963683136
+        },
+        "eyes": "dot",
+        "accent": "tuft",
+        "pattern": {
+          "type": "gradient",
+          "density": 0.6779838790949397,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#9CA3AF",
+          "accent": "#F9FAFB",
+          "highlight": "#374151"
+        }
+      }
+    },
+    {
+      "id": "S1-0052",
+      "seed": "S1:6427",
+      "name": "Taki",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.7845263663526919,
+          "wobble": 0.08821198519743327
+        },
+        "eyes": "star",
+        "accent": "horns",
+        "pattern": {
+          "type": "gradient",
+          "density": 0.28250382634170906,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0053",
+      "seed": "S1:431",
+      "name": "Shipizu",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.7854101909639803,
+          "wobble": 0.14449905211676356
+        },
+        "eyes": "star",
+        "accent": "fin",
+        "pattern": {
+          "type": "spots",
+          "density": 0.5849477155099037,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#374151",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0054",
+      "seed": "S1:9737",
+      "name": "Nopiko",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.6549720478255703,
+          "wobble": 0.11499415297643145
+        },
+        "eyes": "spark",
+        "accent": "horns",
+        "pattern": {
+          "type": "none",
+          "density": 0.32134436324037247,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#9CA3AF",
+          "secondary": "#111827",
+          "accent": "#F9FAFB",
+          "highlight": "#374151"
+        }
+      }
+    },
+    {
+      "id": "S1-0055",
+      "seed": "S1:5588",
+      "name": "Tata",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.7863392611002409,
+          "wobble": 0.0071240505220191664
+        },
+        "eyes": "star",
+        "accent": "leaf",
+        "pattern": {
+          "type": "gradient",
+          "density": 0.7193138101183143,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0056",
+      "seed": "S1:216",
+      "name": "Kopimi",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.8716140817319076,
+          "wobble": 0.06738409281647394
+        },
+        "eyes": "dot",
+        "accent": "tail",
+        "pattern": {
+          "type": "gradient",
+          "density": 0.5697312284423344,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0057",
+      "seed": "S1:6187",
+      "name": "Lava",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.6510543570856225,
+          "wobble": 0.12490353388127487
+        },
+        "eyes": "sleepy",
+        "accent": "fin",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.42329643009540074,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0058",
+      "seed": "S1:19508",
+      "name": "Valola",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.6503118271241691,
+          "wobble": 0.07513763621103428
+        },
+        "eyes": "sleepy",
+        "accent": "leaf",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.5210794447155389,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#374151",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0059",
+      "seed": "S1:7599",
+      "name": "Tako",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.7912587319131146,
+          "wobble": 0.10737452773781832
+        },
+        "eyes": "oval",
+        "accent": "tuft",
+        "pattern": {
+          "type": "none",
+          "density": 0.7557473149629653,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#374151",
+          "accent": "#9CA3AF",
+          "highlight": "#111827"
+        }
+      }
+    },
+    {
+      "id": "S1-0060",
+      "seed": "S1:821",
+      "name": "Vamilo",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.6475359014695361,
+          "wobble": 0.10923181463946396
+        },
+        "eyes": "sleepy",
+        "accent": "fin",
+        "pattern": {
+          "type": "spots",
+          "density": 0.5589035926989521,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0061",
+      "seed": "S1:298",
+      "name": "Lolora",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "round",
+          "scale": 0.6085382507668199,
+          "wobble": 0.036201358886016846
+        },
+        "eyes": "star",
+        "accent": "leaf",
+        "pattern": {
+          "type": "spots",
+          "density": 0.7450346785003866,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0062",
+      "seed": "S1:6400",
+      "name": "Takiko",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.7956222347788565,
+          "wobble": 0.008247186920663152
+        },
+        "eyes": "spark",
+        "accent": "leaf",
+        "pattern": {
+          "type": "blush",
+          "density": 0.6003541770974068,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#374151",
+          "secondary": "#F9FAFB",
+          "accent": "#9CA3AF",
+          "highlight": "#111827"
+        }
+      }
+    },
+    {
+      "id": "S1-0063",
+      "seed": "S1:2073",
+      "name": "Rako",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.7959270950048061,
+          "wobble": 0.07244863582832009
+        },
+        "eyes": "spark",
+        "accent": "tail",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.3380871950388158,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#374151",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0064",
+      "seed": "S1:6816",
+      "name": "Pimiko",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.6438919687978673,
+          "wobble": 0.00430310138135755
+        },
+        "eyes": "oval",
+        "accent": "tuft",
+        "pattern": {
+          "type": "spots",
+          "density": 0.28043587116534724,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#9CA3AF",
+          "highlight": "#374151"
+        }
+      }
+    },
+    {
+      "id": "S1-0065",
+      "seed": "S1:631",
+      "name": "Pira",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "round",
+          "scale": 0.6421449712808582,
+          "wobble": 0.04351741191780134
+        },
+        "eyes": "dot",
+        "accent": "tuft",
+        "pattern": {
+          "type": "none",
+          "density": 0.7641363084581999,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#374151",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0066",
+      "seed": "S1:4538",
+      "name": "Zura",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.7988872693150507,
+          "wobble": 0.05034805716721994
+        },
+        "eyes": "spark",
+        "accent": "fin",
+        "pattern": {
+          "type": "gradient",
+          "density": 0.5706538148156026,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#374151",
+          "secondary": "#F9FAFB",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0067",
+      "seed": "S1:1689",
+      "name": "Razu",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.7993715149116171,
+          "wobble": 0.06976901549374895
+        },
+        "eyes": "dot",
+        "accent": "fin",
+        "pattern": {
+          "type": "gradient",
+          "density": 0.273820673959288,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#9CA3AF",
+          "highlight": "#374151"
+        }
+      }
+    },
+    {
+      "id": "S1-0068",
+      "seed": "S1:5097",
+      "name": "Zuvashi",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "round",
+          "scale": 0.8008795733099989,
+          "wobble": 0.14393504733311363
+        },
+        "eyes": "dot",
+        "accent": "tuft",
+        "pattern": {
+          "type": "spots",
+          "density": 0.62184407493841,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0069",
+      "seed": "S1:2594",
+      "name": "Laki",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "round",
+          "scale": 0.8000420029158801,
+          "wobble": 0.14475596041762176
+        },
+        "eyes": "oval",
+        "accent": "horns",
+        "pattern": {
+          "type": "none",
+          "density": 0.5614774442886649,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#9CA3AF",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#F9FAFB"
+        }
+      }
+    },
+    {
+      "id": "S1-0070",
+      "seed": "S1:7696",
+      "name": "Zunora",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.6383504615953077,
+          "wobble": 0.08008933463834443
+        },
+        "eyes": "star",
+        "accent": "fin",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.37582186329546896,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#374151",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0071",
+      "seed": "S1:5704",
+      "name": "Novaki",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.6362915377915584,
+          "wobble": 0.10803240131540977
+        },
+        "eyes": "star",
+        "accent": "leaf",
+        "pattern": {
+          "type": "blush",
+          "density": 0.4675661416998055,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#374151",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0072",
+      "seed": "S1:15975",
+      "name": "Kilota",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "round",
+          "scale": 0.6367083364484618,
+          "wobble": 0.012729939448817154
+        },
+        "eyes": "dot",
+        "accent": "fin",
+        "pattern": {
+          "type": "gradient",
+          "density": 0.32711978075725956,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#9CA3AF",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#F9FAFB"
+        }
+      }
+    },
+    {
+      "id": "S1-0073",
+      "seed": "S1:541",
+      "name": "Pinova",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.8055520580395945,
+          "wobble": 0.0663221791657438
+        },
+        "eyes": "spark",
+        "accent": "tuft",
+        "pattern": {
+          "type": "none",
+          "density": 0.7363913170961643,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#9CA3AF",
+          "highlight": "#374151"
+        }
+      }
+    },
+    {
+      "id": "S1-0074",
+      "seed": "S1:5743",
+      "name": "Lapi",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.8048303017753247,
+          "wobble": 0.05911236528985025
+        },
+        "eyes": "spark",
+        "accent": "horns",
+        "pattern": {
+          "type": "gradient",
+          "density": 0.5560722656445747,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#9CA3AF",
+          "secondary": "#111827",
+          "accent": "#F9FAFB",
+          "highlight": "#374151"
+        }
+      }
+    },
+    {
+      "id": "S1-0075",
+      "seed": "S1:2162",
+      "name": "Shiloshi",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.6329513408553208,
+          "wobble": 0.09910129276083346
+        },
+        "eyes": "star",
+        "accent": "fin",
+        "pattern": {
+          "type": "none",
+          "density": 0.4690907466502606,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0076",
+      "seed": "S1:13261",
+      "name": "Nokota",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.8077290928707759,
+          "wobble": 0.10604140800564582
+        },
+        "eyes": "dot",
+        "accent": "fin",
+        "pattern": {
+          "type": "gradient",
+          "density": 0.5166267594826937,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0077",
+      "seed": "S1:13259",
+      "name": "Rami",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.6320146682863158,
+          "wobble": 0.04289345483828649
+        },
+        "eyes": "spark",
+        "accent": "fin",
+        "pattern": {
+          "type": "gradient",
+          "density": 0.4386014619466386,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#9CA3AF",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#F9FAFB"
+        }
+      }
+    },
+    {
+      "id": "S1-0078",
+      "seed": "S1:4618",
+      "name": "Kikiko",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.8102498204587609,
+          "wobble": 0.015340433459575387
+        },
+        "eyes": "star",
+        "accent": "fin",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.7649389859789375,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0079",
+      "seed": "S1:7443",
+      "name": "Lolo",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.8121389676262949,
+          "wobble": 0.14227063776745244
+        },
+        "eyes": "oval",
+        "accent": "leaf",
+        "pattern": {
+          "type": "none",
+          "density": 0.3002882170142346,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#374151",
+          "secondary": "#F9FAFB",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0080",
+      "seed": "S1:5564",
+      "name": "Loshi",
+      "rarity": "uncommon",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "round",
+          "scale": 0.6268831659403824,
+          "wobble": 0.032330086799880975
+        },
+        "eyes": "oval",
+        "accent": "fin",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.7037842528554109,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0081",
+      "seed": "S1:8324",
+      "name": "Tako",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.625796509039541,
+          "wobble": 0.13699962675734415
+        },
+        "eyes": "star",
+        "accent": "tail",
+        "pattern": {
+          "type": "none",
+          "density": 0.3236530179212925,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0082",
+      "seed": "S1:4721",
+      "name": "Shiko",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.8150376420270273,
+          "wobble": 0.009044796568119153
+        },
+        "eyes": "oval",
+        "accent": "fin",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.7692027016820393,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#374151",
+          "secondary": "#F9FAFB",
+          "accent": "#9CA3AF",
+          "highlight": "#111827"
+        }
+      }
+    },
+    {
+      "id": "S1-0083",
+      "seed": "S1:5930",
+      "name": "Latazu",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.8141023997832328,
+          "wobble": 0.14265631728168957
+        },
+        "eyes": "dot",
+        "accent": "horns",
+        "pattern": {
+          "type": "gradient",
+          "density": 0.2546053022389778,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#9CA3AF",
+          "accent": "#374151",
+          "highlight": "#F9FAFB"
+        }
+      }
+    },
+    {
+      "id": "S1-0084",
+      "seed": "S1:3035",
+      "name": "Lata",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.8153669742437468,
+          "wobble": 0.10691329036068946
+        },
+        "eyes": "sleepy",
+        "accent": "leaf",
+        "pattern": {
+          "type": "gradient",
+          "density": 0.3232133765875393,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#374151",
+          "secondary": "#F9FAFB",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0085",
+      "seed": "S1:3970",
+      "name": "Komizu",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.6244735222716056,
+          "wobble": 0.09665241385732136
+        },
+        "eyes": "sleepy",
+        "accent": "fin",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.4902883438370862,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#374151",
+          "secondary": "#F9FAFB",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0086",
+      "seed": "S1:2570",
+      "name": "Valo",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.6237415963722723,
+          "wobble": 0.026404989679903953
+        },
+        "eyes": "dot",
+        "accent": "horns",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.36790844555197016,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0087",
+      "seed": "S1:6074",
+      "name": "Vata",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.8173486376687299,
+          "wobble": 0.07092676167863578
+        },
+        "eyes": "star",
+        "accent": "leaf",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.7955373420835328,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0088",
+      "seed": "S1:4540",
+      "name": "Mitashi",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.6226374519692356,
+          "wobble": 0.08391284251909537
+        },
+        "eyes": "spark",
+        "accent": "tail",
+        "pattern": {
+          "type": "blush",
+          "density": 0.7810589556421756,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0089",
+      "seed": "S1:9131",
+      "name": "Kolalo",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.6213655813996135,
+          "wobble": 0.10521976814028336
+        },
+        "eyes": "oval",
+        "accent": "horns",
+        "pattern": {
+          "type": "spots",
+          "density": 0.6774967354553512,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#374151",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0090",
+      "seed": "S1:13305",
+      "name": "Rara",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.6206433171221621,
+          "wobble": 0.03743497058456646
+        },
+        "eyes": "spark",
+        "accent": "horns",
+        "pattern": {
+          "type": "none",
+          "density": 0.2646453417173227,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0091",
+      "seed": "S1:11911",
+      "name": "Kovashi",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.8193962129925835,
+          "wobble": 0.08487973332751536
+        },
+        "eyes": "sleepy",
+        "accent": "fin",
+        "pattern": {
+          "type": "gradient",
+          "density": 0.7034516959924837,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0092",
+      "seed": "S1:13644",
+      "name": "Lapiko",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.6203761403263491,
+          "wobble": 0.02568413193237133
+        },
+        "eyes": "star",
+        "accent": "tail",
+        "pattern": {
+          "type": "gradient",
+          "density": 0.30626075090986227,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#9CA3AF",
+          "accent": "#374151",
+          "highlight": "#F9FAFB"
+        }
+      }
+    },
+    {
+      "id": "S1-0093",
+      "seed": "S1:10058",
+      "name": "Vami",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.6188406721965505,
+          "wobble": 0.08047954450139766
+        },
+        "eyes": "star",
+        "accent": "leaf",
+        "pattern": {
+          "type": "gradient",
+          "density": 0.4781451408467594,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#9CA3AF",
+          "highlight": "#374151"
+        }
+      }
+    },
+    {
+      "id": "S1-0094",
+      "seed": "S1:1590",
+      "name": "Lapi",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.6166484910102209,
+          "wobble": 0.07399177828896598
+        },
+        "eyes": "dot",
+        "accent": "tuft",
+        "pattern": {
+          "type": "spots",
+          "density": 0.7694379804119091,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0095",
+      "seed": "S1:4563",
+      "name": "Noshita",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.6176132835838044,
+          "wobble": 0.02073227435367468
+        },
+        "eyes": "star",
+        "accent": "fin",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.3964551517033147,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#9CA3AF",
+          "accent": "#374151",
+          "highlight": "#F9FAFB"
+        }
+      }
+    },
+    {
+      "id": "S1-0096",
+      "seed": "S1:468",
+      "name": "Zumimi",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.6147976549143898,
+          "wobble": 0.09688507603641718
+        },
+        "eyes": "dot",
+        "accent": "tail",
+        "pattern": {
+          "type": "none",
+          "density": 0.7404602816306196,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0097",
+      "seed": "S1:2378",
+      "name": "Nolo",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.8262598736389214,
+          "wobble": 0.13609535033723696
+        },
+        "eyes": "spark",
+        "accent": "fin",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.6121491287048322,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0098",
+      "seed": "S1:8476",
+      "name": "Lalo",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.6137243096865073,
+          "wobble": 0.1332138032846185
+        },
+        "eyes": "star",
+        "accent": "tail",
+        "pattern": {
+          "type": "blush",
+          "density": 0.288154176747928,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#374151",
+          "secondary": "#F9FAFB",
+          "accent": "#9CA3AF",
+          "highlight": "#111827"
+        }
+      }
+    },
+    {
+      "id": "S1-0099",
+      "seed": "S1:9039",
+      "name": "Pita",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.613108774545395,
+          "wobble": 0.053206416453050076
+        },
+        "eyes": "dot",
+        "accent": "fin",
+        "pattern": {
+          "type": "blush",
+          "density": 0.6382779357694737,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0100",
+      "seed": "S1:4356",
+      "name": "Takiva",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.826529157377437,
+          "wobble": 0.13924718236998823
+        },
+        "eyes": "sleepy",
+        "accent": "fin",
+        "pattern": {
+          "type": "blush",
+          "density": 0.665569341302749,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#9CA3AF",
+          "accent": "#F9FAFB",
+          "highlight": "#374151"
+        }
+      }
+    },
+    {
+      "id": "S1-0101",
+      "seed": "S1:4282",
+      "name": "Pipi",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.8294812477262414,
+          "wobble": 0.14777338112419783
+        },
+        "eyes": "oval",
+        "accent": "fin",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.3694804816086498,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0102",
+      "seed": "S1:2446",
+      "name": "Zuki",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.6086520612842059,
+          "wobble": 0.021312574674680965
+        },
+        "eyes": "dot",
+        "accent": "tuft",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.5693643730877351,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0103",
+      "seed": "S1:473",
+      "name": "Lava",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.8319594830348993,
+          "wobble": 0.06327641327243215
+        },
+        "eyes": "oval",
+        "accent": "fin",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.2672341690438879,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0104",
+      "seed": "S1:11869",
+      "name": "Novata",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.606658651623097,
+          "wobble": 0.05344614443682277
+        },
+        "eyes": "spark",
+        "accent": "tuft",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.45142164671593854,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#9CA3AF",
+          "highlight": "#374151"
+        }
+      }
+    },
+    {
+      "id": "S1-0105",
+      "seed": "S1:2898",
+      "name": "Kipiki",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.8338698171390849,
+          "wobble": 0.08944976291140767
+        },
+        "eyes": "sleepy",
+        "accent": "tuft",
+        "pattern": {
+          "type": "none",
+          "density": 0.6696801160158776,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0106",
+      "seed": "S1:3279",
+      "name": "Lola",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.6057943076956539,
+          "wobble": 0.048676063061849226
+        },
+        "eyes": "sleepy",
+        "accent": "leaf",
+        "pattern": {
+          "type": "blush",
+          "density": 0.39807523469163,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0107",
+      "seed": "S1:3979",
+      "name": "Rashi",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.8347212064859274,
+          "wobble": 0.14549951587000384
+        },
+        "eyes": "spark",
+        "accent": "tuft",
+        "pattern": {
+          "type": "blush",
+          "density": 0.36957662810328806,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0108",
+      "seed": "S1:2697",
+      "name": "Milava",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.8349046271957701,
+          "wobble": 0.14032566491289195
+        },
+        "eyes": "sleepy",
+        "accent": "leaf",
+        "pattern": {
+          "type": "blush",
+          "density": 0.7538823220887879,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0109",
+      "seed": "S1:1682",
+      "name": "Nova",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.8359693659436818,
+          "wobble": 0.12406379954751204
+        },
+        "eyes": "spark",
+        "accent": "horns",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.7883963326780117,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#9CA3AF",
+          "highlight": "#374151"
+        }
+      }
+    },
+    {
+      "id": "S1-0110",
+      "seed": "S1:7865",
+      "name": "Miko",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.8360724923750555,
+          "wobble": 0.06550688436615906
+        },
+        "eyes": "spark",
+        "accent": "horns",
+        "pattern": {
+          "type": "spots",
+          "density": 0.6651670581230817,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0111",
+      "seed": "S1:18395",
+      "name": "Vapi",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.8372217233961499,
+          "wobble": 0.00714452705745225
+        },
+        "eyes": "dot",
+        "accent": "tail",
+        "pattern": {
+          "type": "blush",
+          "density": 0.5380406583980752,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0112",
+      "seed": "S1:4873",
+      "name": "Nora",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.6020298885419103,
+          "wobble": 0.1220342373992396
+        },
+        "eyes": "dot",
+        "accent": "tail",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.700572181400045,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#9CA3AF",
+          "highlight": "#374151"
+        }
+      }
+    },
+    {
+      "id": "S1-0113",
+      "seed": "S1:6141",
+      "name": "Pishiva",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.8384560166365598,
+          "wobble": 0.14320672284653566
+        },
+        "eyes": "oval",
+        "accent": "fin",
+        "pattern": {
+          "type": "blush",
+          "density": 0.4256415795710966,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#374151",
+          "secondary": "#F9FAFB",
+          "accent": "#9CA3AF",
+          "highlight": "#111827"
+        }
+      }
+    },
+    {
+      "id": "S1-0114",
+      "seed": "S1:3113",
+      "name": "Shishi",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "round",
+          "scale": 0.7179969137343571,
+          "wobble": 0.03754008359684145
+        },
+        "eyes": "star",
+        "accent": "fin",
+        "pattern": {
+          "type": "gradient",
+          "density": 0.7368421335673989,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0115",
+      "seed": "S1:1630",
+      "name": "Rava",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.8391027913287056,
+          "wobble": 0.000682002492407803
+        },
+        "eyes": "oval",
+        "accent": "leaf",
+        "pattern": {
+          "type": "gradient",
+          "density": 0.7259611275689586,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0116",
+      "seed": "S1:4468",
+      "name": "Lolo",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "round",
+          "scale": 0.6003460735549094,
+          "wobble": 0.09506246950362401
+        },
+        "eyes": "spark",
+        "accent": "horns",
+        "pattern": {
+          "type": "spots",
+          "density": 0.3981713094744299,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0117",
+      "seed": "S1:2299",
+      "name": "Mitata",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.6002796161571238,
+          "wobble": 0.12738670507152255
+        },
+        "eyes": "sleepy",
+        "accent": "tail",
+        "pattern": {
+          "type": "none",
+          "density": 0.7672534188412254,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#9CA3AF",
+          "secondary": "#111827",
+          "accent": "#F9FAFB",
+          "highlight": "#374151"
+        }
+      }
+    },
+    {
+      "id": "S1-0118",
+      "seed": "S1:4694",
+      "name": "Tata",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.7260130003271655,
+          "wobble": 0.033598470684047435
+        },
+        "eyes": "oval",
+        "accent": "tuft",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.7445290794350508,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#9CA3AF",
+          "highlight": "#374151"
+        }
+      }
+    },
+    {
+      "id": "S1-0119",
+      "seed": "S1:2616",
+      "name": "Zulata",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.8442879610215984,
+          "wobble": 0.14345276160013226
+        },
+        "eyes": "dot",
+        "accent": "leaf",
+        "pattern": {
+          "type": "spots",
+          "density": 0.689294023075908,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#374151",
+          "accent": "#9CA3AF",
+          "highlight": "#111827"
+        }
+      }
+    },
+    {
+      "id": "S1-0120",
+      "seed": "S1:5691",
+      "name": "Zuzupi",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.7271042350509913,
+          "wobble": 0.11266625664724647
+        },
+        "eyes": "sleepy",
+        "accent": "horns",
+        "pattern": {
+          "type": "blush",
+          "density": 0.316019998203502,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#9CA3AF",
+          "accent": "#374151",
+          "highlight": "#F9FAFB"
+        }
+      }
+    },
+    {
+      "id": "S1-0121",
+      "seed": "S1:293",
+      "name": "Nopi",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.5664680782394642,
+          "wobble": 0.13915970977143377
+        },
+        "eyes": "spark",
+        "accent": "fin",
+        "pattern": {
+          "type": "blush",
+          "density": 0.4793315622441777,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0122",
+      "seed": "S1:11488",
+      "name": "Pinono",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.5918501579183737,
+          "wobble": 0.013837461688983595
+        },
+        "eyes": "star",
+        "accent": "horns",
+        "pattern": {
+          "type": "none",
+          "density": 0.2787937794296988,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#374151",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0123",
+      "seed": "S1:426",
+      "name": "Loki",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "round",
+          "scale": 0.5907831851022279,
+          "wobble": 0.053218463483084566
+        },
+        "eyes": "star",
+        "accent": "leaf",
+        "pattern": {
+          "type": "none",
+          "density": 0.35149451151990674,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#374151",
+          "accent": "#9CA3AF",
+          "highlight": "#111827"
+        }
+      }
+    },
+    {
+      "id": "S1-0124",
+      "seed": "S1:5434",
+      "name": "Zunopi",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.8483554061265559,
+          "wobble": 0.05988529753170099
+        },
+        "eyes": "dot",
+        "accent": "tuft",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.5544374566302722,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#9CA3AF",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#F9FAFB"
+        }
+      }
+    },
+    {
+      "id": "S1-0125",
+      "seed": "S1:2027",
+      "name": "Tatako",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.8495215833069574,
+          "wobble": 0.01001684455201422
+        },
+        "eyes": "sleepy",
+        "accent": "tail",
+        "pattern": {
+          "type": "spots",
+          "density": 0.5677332062664753,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#9CA3AF",
+          "accent": "#374151",
+          "highlight": "#F9FAFB"
+        }
+      }
+    },
+    {
+      "id": "S1-0126",
+      "seed": "S1:12020",
+      "name": "Mikoko",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.5883373748716753,
+          "wobble": 0.08378379966220441
+        },
+        "eyes": "spark",
+        "accent": "fin",
+        "pattern": {
+          "type": "spots",
+          "density": 0.25417231038542754,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0127",
+      "seed": "S1:3111",
+      "name": "Mikolo",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.8525703945086734,
+          "wobble": 0.041141152391475894
+        },
+        "eyes": "oval",
+        "accent": "tuft",
+        "pattern": {
+          "type": "spots",
+          "density": 0.3317593944216518,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#374151",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0128",
+      "seed": "S1:2681",
+      "name": "Shiki",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.7027164492180377,
+          "wobble": 0.015351138057967447
+        },
+        "eyes": "oval",
+        "accent": "tail",
+        "pattern": {
+          "type": "spots",
+          "density": 0.4437453238046135,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#9CA3AF",
+          "secondary": "#111827",
+          "accent": "#F9FAFB",
+          "highlight": "#374151"
+        }
+      }
+    },
+    {
+      "id": "S1-0129",
+      "seed": "S1:1019",
+      "name": "Lapi",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "round",
+          "scale": 0.7014420853581843,
+          "wobble": 0.054052300135151554
+        },
+        "eyes": "spark",
+        "accent": "horns",
+        "pattern": {
+          "type": "gradient",
+          "density": 0.7694146215611638,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0130",
+      "seed": "S1:3407",
+      "name": "Lalota",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.7012854678442901,
+          "wobble": 0.029042066791803125
+        },
+        "eyes": "spark",
+        "accent": "horns",
+        "pattern": {
+          "type": "none",
+          "density": 0.2856675864280359,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0131",
+      "seed": "S1:8939",
+      "name": "Tapi",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.7009523636663688,
+          "wobble": 0.12056111225871395
+        },
+        "eyes": "dot",
+        "accent": "tuft",
+        "pattern": {
+          "type": "blush",
+          "density": 0.7596310968649647,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#374151",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0132",
+      "seed": "S1:5921",
+      "name": "Zura",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.5843977612523357,
+          "wobble": 0.002683530457476976
+        },
+        "eyes": "star",
+        "accent": "tuft",
+        "pattern": {
+          "type": "spots",
+          "density": 0.30044323175690213,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#9CA3AF",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#F9FAFB"
+        }
+      }
+    },
+    {
+      "id": "S1-0133",
+      "seed": "S1:1436",
+      "name": "Shivaki",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "round",
+          "scale": 0.8561271792874037,
+          "wobble": 0.03965850069412461
+        },
+        "eyes": "dot",
+        "accent": "tuft",
+        "pattern": {
+          "type": "gradient",
+          "density": 0.7037900393604744,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#9CA3AF",
+          "secondary": "#111827",
+          "accent": "#F9FAFB",
+          "highlight": "#374151"
+        }
+      }
+    },
+    {
+      "id": "S1-0134",
+      "seed": "S1:455",
+      "name": "Lano",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.5822132895775637,
+          "wobble": 0.08163649800271645
+        },
+        "eyes": "star",
+        "accent": "tuft",
+        "pattern": {
+          "type": "none",
+          "density": 0.47916160864503166,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0135",
+      "seed": "S1:1683",
+      "name": "Nomipi",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.8581214425638601,
+          "wobble": 0.0261721188961929
+        },
+        "eyes": "spark",
+        "accent": "tuft",
+        "pattern": {
+          "type": "blush",
+          "density": 0.32847394075441966,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0136",
+      "seed": "S1:1846",
+      "name": "Vavalo",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.5817413836325849,
+          "wobble": 0.12867040073700958
+        },
+        "eyes": "star",
+        "accent": "fin",
+        "pattern": {
+          "type": "spots",
+          "density": 0.5832296475146966,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#374151",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0137",
+      "seed": "S1:17221",
+      "name": "Talami",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.5787594970964732,
+          "wobble": 0.1262840560349366
+        },
+        "eyes": "dot",
+        "accent": "leaf",
+        "pattern": {
+          "type": "blush",
+          "density": 0.7714898940342223,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#374151",
+          "secondary": "#F9FAFB",
+          "accent": "#9CA3AF",
+          "highlight": "#111827"
+        }
+      }
+    },
+    {
+      "id": "S1-0138",
+      "seed": "S1:3875",
+      "name": "Kipizu",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.7451823516271967,
+          "wobble": 0.09338440407146337
+        },
+        "eyes": "oval",
+        "accent": "tail",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.7605406164449036,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#374151",
+          "accent": "#9CA3AF",
+          "highlight": "#111827"
+        }
+      }
+    },
+    {
+      "id": "S1-0139",
+      "seed": "S1:4537",
+      "name": "Nopiko",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "round",
+          "scale": 0.7459445897946005,
+          "wobble": 0.14524975687853287
+        },
+        "eyes": "sleepy",
+        "accent": "horns",
+        "pattern": {
+          "type": "spots",
+          "density": 0.7294088959878797,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0140",
+      "seed": "S1:12825",
+      "name": "Miva",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.8631709673589028,
+          "wobble": 0.043852586833260154
+        },
+        "eyes": "spark",
+        "accent": "fin",
+        "pattern": {
+          "type": "none",
+          "density": 0.642396415407396,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0141",
+      "seed": "S1:69",
+      "name": "Zumila",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "round",
+          "scale": 0.649980787269301,
+          "wobble": 0.0005986625912130489
+        },
+        "eyes": "dot",
+        "accent": "tail",
+        "pattern": {
+          "type": "blush",
+          "density": 0.46580625725113933,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#9CA3AF",
+          "secondary": "#374151",
+          "accent": "#F9FAFB",
+          "highlight": "#111827"
+        }
+      }
+    },
+    {
+      "id": "S1-0142",
+      "seed": "S1:661",
+      "name": "Kozumi",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.5759994451832026,
+          "wobble": 0.12372870715887488
+        },
+        "eyes": "oval",
+        "accent": "tuft",
+        "pattern": {
+          "type": "blush",
+          "density": 0.6224302617186751,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#374151",
+          "secondary": "#F9FAFB",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0143",
+      "seed": "S1:4899",
+      "name": "Rashi",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.691676227222587,
+          "wobble": 0.004385049642153328
+        },
+        "eyes": "sleepy",
+        "accent": "tuft",
+        "pattern": {
+          "type": "gradient",
+          "density": 0.6308137964063356,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#374151",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0144",
+      "seed": "S1:15328",
+      "name": "Ratala",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.5746407325553338,
+          "wobble": 0.10316454423665175
+        },
+        "eyes": "sleepy",
+        "accent": "tuft",
+        "pattern": {
+          "type": "blush",
+          "density": 0.6311677876816056,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#374151",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0145",
+      "seed": "S1:4944",
+      "name": "Lopimi",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.5741726593636379,
+          "wobble": 0.05583816958960103
+        },
+        "eyes": "dot",
+        "accent": "fin",
+        "pattern": {
+          "type": "spots",
+          "density": 0.6132978988260258,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#374151",
+          "accent": "#9CA3AF",
+          "highlight": "#111827"
+        }
+      }
+    },
+    {
+      "id": "S1-0146",
+      "seed": "S1:1573",
+      "name": "Lova",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.8660661903014562,
+          "wobble": 0.10924275431531545
+        },
+        "eyes": "sleepy",
+        "accent": "leaf",
+        "pattern": {
+          "type": "spots",
+          "density": 0.7241787325181483,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#374151",
+          "secondary": "#F9FAFB",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0147",
+      "seed": "S1:5295",
+      "name": "Ramishi",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.7493216440894924,
+          "wobble": 0.12439304150743248
+        },
+        "eyes": "sleepy",
+        "accent": "leaf",
+        "pattern": {
+          "type": "none",
+          "density": 0.4964306543572877,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#374151",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0148",
+      "seed": "S1:8772",
+      "name": "Zupino",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "round",
+          "scale": 0.5735315282301818,
+          "wobble": 0.07985827151682653
+        },
+        "eyes": "dot",
+        "accent": "fin",
+        "pattern": {
+          "type": "blush",
+          "density": 0.6270547690282238,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#374151",
+          "secondary": "#F9FAFB",
+          "accent": "#9CA3AF",
+          "highlight": "#111827"
+        }
+      }
+    },
+    {
+      "id": "S1-0149",
+      "seed": "S1:2204",
+      "name": "Zuko",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.751483487664136,
+          "wobble": 0.05045555479602319
+        },
+        "eyes": "star",
+        "accent": "tuft",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.6120665340828865,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0150",
+      "seed": "S1:766",
+      "name": "Rami",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.8684669024237588,
+          "wobble": 0.1456620383881177
+        },
+        "eyes": "sleepy",
+        "accent": "tuft",
+        "pattern": {
+          "type": "none",
+          "density": 0.7973649493994576,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0151",
+      "seed": "S1:6282",
+      "name": "Lopimi",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "round",
+          "scale": 0.5695301705551171,
+          "wobble": 0.06457789792087346
+        },
+        "eyes": "dot",
+        "accent": "horns",
+        "pattern": {
+          "type": "spots",
+          "density": 0.2914635779432635,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#374151",
+          "secondary": "#F9FAFB",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0152",
+      "seed": "S1:4000",
+      "name": "Shila",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.8707064695704511,
+          "wobble": 0.08898453166219046
+        },
+        "eyes": "star",
+        "accent": "tuft",
+        "pattern": {
+          "type": "blush",
+          "density": 0.70780567359361,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0153",
+      "seed": "S1:6053",
+      "name": "Shira",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.7540380851607859,
+          "wobble": 0.1216752901141707
+        },
+        "eyes": "sleepy",
+        "accent": "tuft",
+        "pattern": {
+          "type": "blush",
+          "density": 0.5040586269702899,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#374151",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0154",
+      "seed": "S1:7857",
+      "name": "Tatalo",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.8718690323927135,
+          "wobble": 0.1238750107991218
+        },
+        "eyes": "spark",
+        "accent": "tail",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.2875536359468367,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0155",
+      "seed": "S1:1634",
+      "name": "Miki",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.6839224111134937,
+          "wobble": 0.13644094245658278
+        },
+        "eyes": "spark",
+        "accent": "tuft",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.4350408904219607,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0156",
+      "seed": "S1:11213",
+      "name": "Lozu",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.7549672147852758,
+          "wobble": 0.14425636392418675
+        },
+        "eyes": "star",
+        "accent": "horns",
+        "pattern": {
+          "type": "blush",
+          "density": 0.7782873247233889,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#9CA3AF",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#F9FAFB"
+        }
+      }
+    },
+    {
+      "id": "S1-0157",
+      "seed": "S1:4036",
+      "name": "Lololo",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.5681078282576306,
+          "wobble": 0.1216271512027893
+        },
+        "eyes": "dot",
+        "accent": "tuft",
+        "pattern": {
+          "type": "blush",
+          "density": 0.376432585768968,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#9CA3AF",
+          "secondary": "#111827",
+          "accent": "#F9FAFB",
+          "highlight": "#374151"
+        }
+      }
+    },
+    {
+      "id": "S1-0158",
+      "seed": "S1:7059",
+      "name": "Pila",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.8743341669264096,
+          "wobble": 0.11030704315293278
+        },
+        "eyes": "oval",
+        "accent": "tuft",
+        "pattern": {
+          "type": "none",
+          "density": 0.26138013768041973,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0159",
+      "seed": "S1:1054",
+      "name": "Zumino",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.5652125974919677,
+          "wobble": 0.046868474175424425
+        },
+        "eyes": "oval",
+        "accent": "fin",
+        "pattern": {
+          "type": "blush",
+          "density": 0.34891958079508495,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#374151",
+          "secondary": "#F9FAFB",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0160",
+      "seed": "S1:695",
+      "name": "Mino",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "round",
+          "scale": 0.7587908273350427,
+          "wobble": 0.10440939376233364
+        },
+        "eyes": "spark",
+        "accent": "horns",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.32637459628199567,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0161",
+      "seed": "S1:1228",
+      "name": "Lazu",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.6810650451763219,
+          "wobble": 0.12492997047373326
+        },
+        "eyes": "sleepy",
+        "accent": "tuft",
+        "pattern": {
+          "type": "spots",
+          "density": 0.6669269149114674,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0162",
+      "seed": "S1:2121",
+      "name": "Kizuno",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.5628601805220499,
+          "wobble": 0.009880415981141947
+        },
+        "eyes": "spark",
+        "accent": "fin",
+        "pattern": {
+          "type": "spots",
+          "density": 0.5641533901016585,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#9CA3AF",
+          "highlight": "#374151"
+        }
+      }
+    },
+    {
+      "id": "S1-0163",
+      "seed": "S1:4619",
+      "name": "Razuki",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.5607713474218667,
+          "wobble": 0.09405700905342981
+        },
+        "eyes": "spark",
+        "accent": "fin",
+        "pattern": {
+          "type": "spots",
+          "density": 0.4000930480542809,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#9CA3AF",
+          "highlight": "#374151"
+        }
+      }
+    },
+    {
+      "id": "S1-0164",
+      "seed": "S1:1280",
+      "name": "Kokota",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "round",
+          "scale": 0.5618583262110731,
+          "wobble": 0.09805623455859168
+        },
+        "eyes": "star",
+        "accent": "tail",
+        "pattern": {
+          "type": "gradient",
+          "density": 0.5594211757088595,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#9CA3AF",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#F9FAFB"
+        }
+      }
+    },
+    {
+      "id": "S1-0165",
+      "seed": "S1:7212",
+      "name": "Mila",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.6752180225623814,
+          "wobble": 0.033623284260654654
+        },
+        "eyes": "spark",
+        "accent": "tuft",
+        "pattern": {
+          "type": "gradient",
+          "density": 0.4210802740815748,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#374151",
+          "secondary": "#F9FAFB",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0166",
+      "seed": "S1:13606",
+      "name": "Zuko",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.6749324819131132,
+          "wobble": 0.048803873848822864
+        },
+        "eyes": "sleepy",
+        "accent": "leaf",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.7479530936917181,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0167",
+      "seed": "S1:10983",
+      "name": "Latami",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "round",
+          "scale": 0.5561558769448093,
+          "wobble": 0.0333020571463979
+        },
+        "eyes": "spark",
+        "accent": "leaf",
+        "pattern": {
+          "type": "spots",
+          "density": 0.7111558781846323,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#9CA3AF",
+          "secondary": "#111827",
+          "accent": "#F9FAFB",
+          "highlight": "#374151"
+        }
+      }
+    },
+    {
+      "id": "S1-0168",
+      "seed": "S1:1553",
+      "name": "Kovami",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "round",
+          "scale": 0.8862733184095177,
+          "wobble": 0.06347017636603447
+        },
+        "eyes": "oval",
+        "accent": "leaf",
+        "pattern": {
+          "type": "gradient",
+          "density": 0.7677383937099339,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0169",
+      "seed": "S1:16469",
+      "name": "Novaki",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.8872520978067191,
+          "wobble": 0.025164877291574347
+        },
+        "eyes": "oval",
+        "accent": "tuft",
+        "pattern": {
+          "type": "none",
+          "density": 0.6089689366191088,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#374151",
+          "secondary": "#F9FAFB",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0170",
+      "seed": "S1:2555",
+      "name": "Vaki",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.8873859596060091,
+          "wobble": 0.07385698796106897
+        },
+        "eyes": "star",
+        "accent": "tuft",
+        "pattern": {
+          "type": "spots",
+          "density": 0.4688344907990737,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#374151",
+          "secondary": "#F9FAFB",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0171",
+      "seed": "S1:3998",
+      "name": "Vano",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.6684939078564043,
+          "wobble": 0.08620211433996496
+        },
+        "eyes": "sleepy",
+        "accent": "tail",
+        "pattern": {
+          "type": "spots",
+          "density": 0.47725425776495933,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0172",
+      "seed": "S1:12922",
+      "name": "Lola",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.7715282505544667,
+          "wobble": 0.0008902458825358762
+        },
+        "eyes": "dot",
+        "accent": "fin",
+        "pattern": {
+          "type": "none",
+          "density": 0.7888331152705553,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#374151",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0173",
+      "seed": "S1:16326",
+      "name": "Lolalo",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.7726139846543348,
+          "wobble": 0.03964689846375186
+        },
+        "eyes": "star",
+        "accent": "horns",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.2770968688598594,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#374151",
+          "accent": "#9CA3AF",
+          "highlight": "#111827"
+        }
+      }
+    },
+    {
+      "id": "S1-0174",
+      "seed": "S1:9261",
+      "name": "Vanora",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "orb",
+          "scale": 0.8902871726873068,
+          "wobble": 0.055767745153458725
+        },
+        "eyes": "spark",
+        "accent": "fin",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.6691563551591608,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#374151",
+          "secondary": "#F9FAFB",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0175",
+      "seed": "S1:8368",
+      "name": "Zumi",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.8905144066411337,
+          "wobble": 0.10211671235787605
+        },
+        "eyes": "oval",
+        "accent": "tail",
+        "pattern": {
+          "type": "blush",
+          "density": 0.3489697181268059,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0176",
+      "seed": "S1:2205",
+      "name": "Zutapi",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.6673794386599631,
+          "wobble": 0.034831058568049
+        },
+        "eyes": "sleepy",
+        "accent": "horns",
+        "pattern": {
+          "type": "none",
+          "density": 0.4295819036964285,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#9CA3AF",
+          "secondary": "#111827",
+          "accent": "#F9FAFB",
+          "highlight": "#374151"
+        }
+      }
+    },
+    {
+      "id": "S1-0177",
+      "seed": "S1:4441",
+      "name": "Latata",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "round",
+          "scale": 0.7744507217138192,
+          "wobble": 0.08138432757262706
+        },
+        "eyes": "oval",
+        "accent": "tuft",
+        "pattern": {
+          "type": "blush",
+          "density": 0.6743538336535808,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#9CA3AF",
+          "highlight": "#374151"
+        }
+      }
+    },
+    {
+      "id": "S1-0178",
+      "seed": "S1:3775",
+      "name": "Mizuva",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.8915980205968017,
+          "wobble": 0.0954893171194683
+        },
+        "eyes": "sleepy",
+        "accent": "horns",
+        "pattern": {
+          "type": "gradient",
+          "density": 0.37802490014071227,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#374151",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0179",
+      "seed": "S1:1329",
+      "name": "Mira",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.773778113891319,
+          "wobble": 0.10274362814443735
+        },
+        "eyes": "spark",
+        "accent": "leaf",
+        "pattern": {
+          "type": "gradient",
+          "density": 0.7728651904554259,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#9CA3AF",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#F9FAFB"
+        }
+      }
+    },
+    {
+      "id": "S1-0180",
+      "seed": "S1:3890",
+      "name": "Vaki",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "round",
+          "scale": 0.8919739513290055,
+          "wobble": 0.1315693691213544
+        },
+        "eyes": "star",
+        "accent": "leaf",
+        "pattern": {
+          "type": "blush",
+          "density": 0.5604699910526327,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#9CA3AF",
+          "highlight": "#374151"
+        }
+      }
+    },
+    {
+      "id": "S1-0181",
+      "seed": "S1:10317",
+      "name": "Konozu",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "round",
+          "scale": 0.7765267852988389,
+          "wobble": 0.148860029072701
+        },
+        "eyes": "oval",
+        "accent": "fin",
+        "pattern": {
+          "type": "gradient",
+          "density": 0.29698995228321057,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#374151",
+          "accent": "#9CA3AF",
+          "highlight": "#111827"
+        }
+      }
+    },
+    {
+      "id": "S1-0182",
+      "seed": "S1:1014",
+      "name": "Milova",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.6621607884210909,
+          "wobble": 0.1243443658748512
+        },
+        "eyes": "star",
+        "accent": "tail",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.6095417468365146,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0183",
+      "seed": "S1:1411",
+      "name": "Shishi",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "round",
+          "scale": 0.8958361529153391,
+          "wobble": 0.04323014094103829
+        },
+        "eyes": "sleepy",
+        "accent": "fin",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.4363884271905731,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0184",
+      "seed": "S1:2368",
+      "name": "Zumi",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.6599664627248344,
+          "wobble": 0.1377623384207865
+        },
+        "eyes": "dot",
+        "accent": "horns",
+        "pattern": {
+          "type": "gradient",
+          "density": 0.7669225884408045,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#374151",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0185",
+      "seed": "S1:5540",
+      "name": "Minozu",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.8982235395112595,
+          "wobble": 0.10565846507802103
+        },
+        "eyes": "dot",
+        "accent": "tuft",
+        "pattern": {
+          "type": "none",
+          "density": 0.7053755367536507,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#9CA3AF",
+          "highlight": "#374151"
+        }
+      }
+    },
+    {
+      "id": "S1-0186",
+      "seed": "S1:2937",
+      "name": "Lalo",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "round",
+          "scale": 0.6583803014965682,
+          "wobble": 0.024014678591400076
+        },
+        "eyes": "dot",
+        "accent": "horns",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.7601889624633336,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0187",
+      "seed": "S1:5595",
+      "name": "Tata",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.8992617734007682,
+          "wobble": 0.03149638055625753
+        },
+        "eyes": "star",
+        "accent": "tail",
+        "pattern": {
+          "type": "spots",
+          "density": 0.3405261046696748,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0188",
+      "seed": "S1:355",
+      "name": "Zuzuva",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.8993674620635266,
+          "wobble": 0.0002293685102438015
+        },
+        "eyes": "star",
+        "accent": "tail",
+        "pattern": {
+          "type": "blush",
+          "density": 0.7938539275535974,
+          "symmetry": true
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#9CA3AF",
+          "highlight": "#374151"
+        }
+      }
+    },
+    {
+      "id": "S1-0189",
+      "seed": "S1:8305",
+      "name": "Pila",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "round",
+          "scale": 0.7850641887600218,
+          "wobble": 0.08903238419188009
+        },
+        "eyes": "star",
+        "accent": "leaf",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.5028794219607673,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0190",
+      "seed": "S1:2130",
+      "name": "Zupino",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.7913202482837532,
+          "wobble": 0.06401303490018775
+        },
+        "eyes": "oval",
+        "accent": "tail",
+        "pattern": {
+          "type": "gradient",
+          "density": 0.7881539996802235,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#9CA3AF",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#F9FAFB"
+        }
+      }
+    },
+    {
+      "id": "S1-0191",
+      "seed": "S1:1730",
+      "name": "Pitami",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.6451996152627282,
+          "wobble": 0.12754316963896695
+        },
+        "eyes": "sleepy",
+        "accent": "tuft",
+        "pattern": {
+          "type": "none",
+          "density": 0.6861718426659172,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0192",
+      "seed": "S1:965",
+      "name": "Zuki",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "round",
+          "scale": 0.6450872996926977,
+          "wobble": 0.013054691537528926
+        },
+        "eyes": "sleepy",
+        "accent": "tail",
+        "pattern": {
+          "type": "none",
+          "density": 0.46994646109406524,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0193",
+      "seed": "S1:14131",
+      "name": "Loki",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.6449049185600376,
+          "wobble": 0.1048126917576447
+        },
+        "eyes": "oval",
+        "accent": "fin",
+        "pattern": {
+          "type": "spots",
+          "density": 0.40476565595128705,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#9CA3AF",
+          "highlight": "#374151"
+        }
+      }
+    },
+    {
+      "id": "S1-0194",
+      "seed": "S1:1268",
+      "name": "Tata",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "round",
+          "scale": 0.6444599180003768,
+          "wobble": 0.020581030838792452
+        },
+        "eyes": "oval",
+        "accent": "leaf",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.37881245056139595,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#374151",
+          "accent": "#9CA3AF",
+          "highlight": "#111827"
+        }
+      }
+    },
+    {
+      "id": "S1-0195",
+      "seed": "S1:1333",
+      "name": "Shita",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.7970897201674734,
+          "wobble": 0.028011449491142166
+        },
+        "eyes": "spark",
+        "accent": "tail",
+        "pattern": {
+          "type": "blush",
+          "density": 0.4447135355544075,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0196",
+      "seed": "S1:7163",
+      "name": "Zulo",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "diamond",
+          "scale": 0.7970992849783738,
+          "wobble": 0.05844270801368233
+        },
+        "eyes": "sleepy",
+        "accent": "fin",
+        "pattern": {
+          "type": "spots",
+          "density": 0.38551041949203013,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#374151",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0197",
+      "seed": "S1:6793",
+      "name": "Vazuva",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.6410405045005122,
+          "wobble": 0.022584759786861194
+        },
+        "eyes": "dot",
+        "accent": "horns",
+        "pattern": {
+          "type": "blush",
+          "density": 0.7009605807836541,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0198",
+      "seed": "S1:12194",
+      "name": "Kopila",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.6390972405646689,
+          "wobble": 0.09704857371911606
+        },
+        "eyes": "star",
+        "accent": "fin",
+        "pattern": {
+          "type": "stripes",
+          "density": 0.42892466866851897,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#374151",
+          "accent": "#111827",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0199",
+      "seed": "S1:9148",
+      "name": "Nozula",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "bean",
+          "scale": 0.8013845583776442,
+          "wobble": 0.13103581579193374
+        },
+        "eyes": "spark",
+        "accent": "tail",
+        "pattern": {
+          "type": "none",
+          "density": 0.7359989265645852,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#F9FAFB",
+          "secondary": "#111827",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    },
+    {
+      "id": "S1-0200",
+      "seed": "S1:4267",
+      "name": "Lopi",
+      "rarity": "common",
+      "paletteId": "shadow",
+      "attributes": {
+        "body": {
+          "shape": "squircle",
+          "scale": 0.8024493606068309,
+          "wobble": 0.029225298932107464
+        },
+        "eyes": "dot",
+        "accent": "tuft",
+        "pattern": {
+          "type": "none",
+          "density": 0.5728744544840592,
+          "symmetry": false
+        },
+        "colors": {
+          "primary": "#111827",
+          "secondary": "#F9FAFB",
+          "accent": "#374151",
+          "highlight": "#9CA3AF"
+        }
+      }
+    }
+  ]
+}

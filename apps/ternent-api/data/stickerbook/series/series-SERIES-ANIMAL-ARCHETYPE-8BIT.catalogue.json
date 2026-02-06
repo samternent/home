@@ -1,0 +1,602 @@
+{
+  "seriesId": "SERIES-ANIMAL-ARCHETYPE-8BIT",
+  "themeId": "animal-archetype-8bit",
+  "themeVersion": "1.0.0",
+  "styleType": "theme",
+  "version": "1.0.0",
+  "generatedAt": "2026-02-04T20:53:33.768Z",
+  "seed": "stickerbook-series-SERIES-ANIMAL-ARCHETYPE-8BIT",
+  "rarityWeights": {
+    "common": 0.62,
+    "uncommon": 0.25,
+    "rare": 0.1,
+    "mythic": 0.03
+  },
+  "rarityFinishes": {
+    "common": "base",
+    "uncommon": [
+      "base",
+      "sparkle"
+    ],
+    "rare": [
+      "foil",
+      "holo"
+    ],
+    "mythic": [
+      "prismatic",
+      "holo"
+    ]
+  },
+  "palettes": [
+    {
+      "id": "arcade",
+      "name": "Arcade",
+      "variant": "base",
+      "colors": [
+        "#0b1020",
+        "#4cc9f0",
+        "#4361ee",
+        "#f72585"
+      ]
+    },
+    {
+      "id": "melon",
+      "name": "Melon",
+      "variant": "base",
+      "colors": [
+        "#fff3d1",
+        "#f97316",
+        "#ea580c",
+        "#fcd34d"
+      ]
+    },
+    {
+      "id": "forest",
+      "name": "Forest",
+      "variant": "base",
+      "colors": [
+        "#0f172a",
+        "#22c55e",
+        "#15803d",
+        "#a7f3d0"
+      ]
+    },
+    {
+      "id": "mono",
+      "name": "Mono",
+      "variant": "base",
+      "colors": [
+        "#111827",
+        "#e5e7eb",
+        "#9ca3af",
+        "#f9fafb"
+      ]
+    },
+    {
+      "id": "soda",
+      "name": "Soda",
+      "variant": "base",
+      "colors": [
+        "#e0f2fe",
+        "#0ea5e9",
+        "#0284c7",
+        "#bae6fd"
+      ]
+    },
+    {
+      "id": "tang",
+      "name": "Tang",
+      "variant": "base",
+      "colors": [
+        "#fff7ed",
+        "#fb7185",
+        "#e11d48",
+        "#fed7aa"
+      ]
+    },
+    {
+      "id": "mythic-aurora",
+      "name": "Mythic Aurora",
+      "variant": "mythic",
+      "colors": [
+        "transparent",
+        "#ffd166",
+        "#ef476f",
+        "#ffe29a"
+      ]
+    },
+    {
+      "id": "mythic-cosmic",
+      "name": "Mythic Cosmic",
+      "variant": "mythic",
+      "colors": [
+        "#0b0b1a",
+        "#7dd3fc",
+        "#a855f7",
+        "#f472b6"
+      ]
+    }
+  ],
+  "stickers": [
+    {
+      "id": "SERIES-ANIMAL-ARCHETYPE-8BIT-0001",
+      "seed": "SERIES-ANIMAL-ARCHETYPE-8BIT:2",
+      "rarity": "mythic",
+      "paletteId": "arcade",
+      "finish": "prismatic",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "frog",
+        "bodyId": "frog",
+        "eyesId": "frog-top-wide",
+        "accessoryId": "halo",
+        "frameId": "frame-square",
+        "fxId": "sparkles"
+      }
+    },
+    {
+      "id": "SERIES-ANIMAL-ARCHETYPE-8BIT-0002",
+      "seed": "SERIES-ANIMAL-ARCHETYPE-8BIT:21",
+      "rarity": "rare",
+      "paletteId": "forest",
+      "finish": "holo",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "frog",
+        "bodyId": "frog",
+        "eyesId": "frog-top-dots",
+        "accessoryId": null,
+        "frameId": "frame-square",
+        "fxId": "sparkles"
+      }
+    },
+    {
+      "id": "SERIES-ANIMAL-ARCHETYPE-8BIT-0003",
+      "seed": "SERIES-ANIMAL-ARCHETYPE-8BIT:25",
+      "rarity": "rare",
+      "paletteId": "mono",
+      "finish": "holo",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "frog",
+        "bodyId": "frog",
+        "eyesId": "frog-top-dots",
+        "accessoryId": null,
+        "frameId": "frame-zig",
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-ANIMAL-ARCHETYPE-8BIT-0004",
+      "seed": "SERIES-ANIMAL-ARCHETYPE-8BIT:8",
+      "rarity": "uncommon",
+      "paletteId": "forest",
+      "finish": "sparkle",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "frog",
+        "bodyId": "frog",
+        "eyesId": "frog-top-wide",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-ANIMAL-ARCHETYPE-8BIT-0005",
+      "seed": "SERIES-ANIMAL-ARCHETYPE-8BIT:15",
+      "rarity": "uncommon",
+      "paletteId": "mono",
+      "finish": "base",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "axolotl",
+        "bodyId": "axolotl",
+        "eyesId": "dots",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-ANIMAL-ARCHETYPE-8BIT-0006",
+      "seed": "SERIES-ANIMAL-ARCHETYPE-8BIT:26",
+      "rarity": "uncommon",
+      "paletteId": "forest",
+      "finish": "sparkle",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "axolotl",
+        "bodyId": "axolotl",
+        "eyesId": "wink",
+        "accessoryId": "axolotl-frills",
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-ANIMAL-ARCHETYPE-8BIT-0007",
+      "seed": "SERIES-ANIMAL-ARCHETYPE-8BIT:40",
+      "rarity": "uncommon",
+      "paletteId": "forest",
+      "finish": "sparkle",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "axolotl",
+        "bodyId": "axolotl",
+        "eyesId": "dots",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-ANIMAL-ARCHETYPE-8BIT-0008",
+      "seed": "SERIES-ANIMAL-ARCHETYPE-8BIT:43",
+      "rarity": "uncommon",
+      "paletteId": "mono",
+      "finish": "base",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "axolotl",
+        "bodyId": "axolotl",
+        "eyesId": "happy",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-ANIMAL-ARCHETYPE-8BIT-0009",
+      "seed": "SERIES-ANIMAL-ARCHETYPE-8BIT:42",
+      "rarity": "uncommon",
+      "paletteId": "arcade",
+      "finish": "base",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "cat",
+        "bodyId": "cat",
+        "eyesId": "wide",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-ANIMAL-ARCHETYPE-8BIT-0010",
+      "seed": "SERIES-ANIMAL-ARCHETYPE-8BIT:45",
+      "rarity": "uncommon",
+      "paletteId": "mono",
+      "finish": "base",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "cat",
+        "bodyId": "cat",
+        "eyesId": "sleepy",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-ANIMAL-ARCHETYPE-8BIT-0011",
+      "seed": "SERIES-ANIMAL-ARCHETYPE-8BIT:5",
+      "rarity": "uncommon",
+      "paletteId": "arcade",
+      "finish": "sparkle",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "cat",
+        "bodyId": "cat",
+        "eyesId": "happy",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-ANIMAL-ARCHETYPE-8BIT-0012",
+      "seed": "SERIES-ANIMAL-ARCHETYPE-8BIT:31",
+      "rarity": "common",
+      "paletteId": "melon",
+      "finish": "base",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "frog",
+        "bodyId": "frog",
+        "eyesId": "frog-top-dots",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-ANIMAL-ARCHETYPE-8BIT-0013",
+      "seed": "SERIES-ANIMAL-ARCHETYPE-8BIT:10",
+      "rarity": "common",
+      "paletteId": "tang",
+      "finish": "base",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "frog",
+        "bodyId": "frog",
+        "eyesId": "frog-top-wide",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-ANIMAL-ARCHETYPE-8BIT-0014",
+      "seed": "SERIES-ANIMAL-ARCHETYPE-8BIT:12",
+      "rarity": "common",
+      "paletteId": "mono",
+      "finish": "base",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "bird",
+        "bodyId": "bird",
+        "eyesId": "happy",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-ANIMAL-ARCHETYPE-8BIT-0015",
+      "seed": "SERIES-ANIMAL-ARCHETYPE-8BIT:16",
+      "rarity": "common",
+      "paletteId": "arcade",
+      "finish": "base",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "bird",
+        "bodyId": "bird",
+        "eyesId": "sleepy",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-ANIMAL-ARCHETYPE-8BIT-0016",
+      "seed": "SERIES-ANIMAL-ARCHETYPE-8BIT:6",
+      "rarity": "common",
+      "paletteId": "arcade",
+      "finish": "base",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "bird",
+        "bodyId": "bird",
+        "eyesId": "wink",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-ANIMAL-ARCHETYPE-8BIT-0017",
+      "seed": "SERIES-ANIMAL-ARCHETYPE-8BIT:9",
+      "rarity": "common",
+      "paletteId": "forest",
+      "finish": "base",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "bird",
+        "bodyId": "bird",
+        "eyesId": "glow",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-ANIMAL-ARCHETYPE-8BIT-0018",
+      "seed": "SERIES-ANIMAL-ARCHETYPE-8BIT:3",
+      "rarity": "common",
+      "paletteId": "melon",
+      "finish": "base",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "axolotl",
+        "bodyId": "axolotl",
+        "eyesId": "dots",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-ANIMAL-ARCHETYPE-8BIT-0019",
+      "seed": "SERIES-ANIMAL-ARCHETYPE-8BIT:4",
+      "rarity": "common",
+      "paletteId": "tang",
+      "finish": "base",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "axolotl",
+        "bodyId": "axolotl",
+        "eyesId": "sleepy",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-ANIMAL-ARCHETYPE-8BIT-0020",
+      "seed": "SERIES-ANIMAL-ARCHETYPE-8BIT:19",
+      "rarity": "common",
+      "paletteId": "forest",
+      "finish": "base",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "pig",
+        "bodyId": "pig",
+        "eyesId": "dots",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-ANIMAL-ARCHETYPE-8BIT-0021",
+      "seed": "SERIES-ANIMAL-ARCHETYPE-8BIT:54",
+      "rarity": "common",
+      "paletteId": "forest",
+      "finish": "base",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "pig",
+        "bodyId": "pig",
+        "eyesId": "wide",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-ANIMAL-ARCHETYPE-8BIT-0022",
+      "seed": "SERIES-ANIMAL-ARCHETYPE-8BIT:27",
+      "rarity": "common",
+      "paletteId": "mono",
+      "finish": "base",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "fish",
+        "bodyId": "fish",
+        "eyesId": "dots",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-ANIMAL-ARCHETYPE-8BIT-0023",
+      "seed": "SERIES-ANIMAL-ARCHETYPE-8BIT:39",
+      "rarity": "common",
+      "paletteId": "mono",
+      "finish": "base",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "fish",
+        "bodyId": "fish",
+        "eyesId": "glow",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-ANIMAL-ARCHETYPE-8BIT-0024",
+      "seed": "SERIES-ANIMAL-ARCHETYPE-8BIT:36",
+      "rarity": "common",
+      "paletteId": "melon",
+      "finish": "base",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "cat",
+        "bodyId": "cat",
+        "eyesId": "wide",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-ANIMAL-ARCHETYPE-8BIT-0025",
+      "seed": "SERIES-ANIMAL-ARCHETYPE-8BIT:0",
+      "rarity": "common",
+      "paletteId": "tang",
+      "finish": "base",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "cat",
+        "bodyId": "cat",
+        "eyesId": "wink",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-ANIMAL-ARCHETYPE-8BIT-0026",
+      "seed": "SERIES-ANIMAL-ARCHETYPE-8BIT:1",
+      "rarity": "common",
+      "paletteId": "tang",
+      "finish": "base",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "cat",
+        "bodyId": "cat",
+        "eyesId": "happy",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-ANIMAL-ARCHETYPE-8BIT-0027",
+      "seed": "SERIES-ANIMAL-ARCHETYPE-8BIT:13",
+      "rarity": "common",
+      "paletteId": "melon",
+      "finish": "base",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "bird",
+        "bodyId": "bird",
+        "eyesId": "sleepy",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-ANIMAL-ARCHETYPE-8BIT-0028",
+      "seed": "SERIES-ANIMAL-ARCHETYPE-8BIT:11",
+      "rarity": "common",
+      "paletteId": "soda",
+      "finish": "base",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "bird",
+        "bodyId": "bird",
+        "eyesId": "wide",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-ANIMAL-ARCHETYPE-8BIT-0029",
+      "seed": "SERIES-ANIMAL-ARCHETYPE-8BIT:22",
+      "rarity": "common",
+      "paletteId": "melon",
+      "finish": "base",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "pig",
+        "bodyId": "pig",
+        "eyesId": "happy",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-ANIMAL-ARCHETYPE-8BIT-0030",
+      "seed": "SERIES-ANIMAL-ARCHETYPE-8BIT:29",
+      "rarity": "common",
+      "paletteId": "tang",
+      "finish": "base",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "pig",
+        "bodyId": "pig",
+        "eyesId": "sleepy",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    }
+  ]
+}

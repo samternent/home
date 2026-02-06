@@ -1,0 +1,538 @@
+{
+  "seriesId": "SERIES-8BIT",
+  "themeId": "8bit-sprites",
+  "themeVersion": "1.0.0",
+  "styleType": "theme",
+  "version": "1.0.0",
+  "generatedAt": "2026-02-04T17:11:49.207Z",
+  "seed": "stickerbook-series-SERIES-8BIT",
+  "rarityWeights": {
+    "common": 0.62,
+    "uncommon": 0.25,
+    "rare": 0.1,
+    "mythic": 0.03
+  },
+  "rarityFinishes": {
+    "common": "base",
+    "uncommon": [
+      "base",
+      "sparkle"
+    ],
+    "rare": [
+      "foil",
+      "holo"
+    ],
+    "mythic": [
+      "prismatic",
+      "holo"
+    ]
+  },
+  "palettes": [
+    {
+      "id": "arcade",
+      "name": "Arcade",
+      "variant": "base",
+      "colors": [
+        "#0b1020",
+        "#4cc9f0",
+        "#4361ee",
+        "#f72585"
+      ]
+    },
+    {
+      "id": "melon",
+      "name": "Melon",
+      "variant": "base",
+      "colors": [
+        "#fff3d1",
+        "#f97316",
+        "#ea580c",
+        "#fcd34d"
+      ]
+    },
+    {
+      "id": "forest",
+      "name": "Forest",
+      "variant": "base",
+      "colors": [
+        "#0f172a",
+        "#22c55e",
+        "#15803d",
+        "#a7f3d0"
+      ]
+    },
+    {
+      "id": "mono",
+      "name": "Mono",
+      "variant": "base",
+      "colors": [
+        "#111827",
+        "#e5e7eb",
+        "#9ca3af",
+        "#f9fafb"
+      ]
+    },
+    {
+      "id": "soda",
+      "name": "Soda",
+      "variant": "base",
+      "colors": [
+        "#e0f2fe",
+        "#0ea5e9",
+        "#0284c7",
+        "#bae6fd"
+      ]
+    },
+    {
+      "id": "tang",
+      "name": "Tang",
+      "variant": "base",
+      "colors": [
+        "#fff7ed",
+        "#fb7185",
+        "#e11d48",
+        "#fed7aa"
+      ]
+    },
+    {
+      "id": "mythic-aurora",
+      "name": "Mythic Aurora",
+      "variant": "mythic",
+      "colors": [
+        "#050814",
+        "#ffd166",
+        "#ef476f",
+        "#ffe29a"
+      ]
+    },
+    {
+      "id": "mythic-cosmic",
+      "name": "Mythic Cosmic",
+      "variant": "mythic",
+      "colors": [
+        "#0b0b1a",
+        "#7dd3fc",
+        "#a855f7",
+        "#f472b6"
+      ]
+    }
+  ],
+  "stickers": [
+    {
+      "id": "SERIES-8BIT-0001",
+      "seed": "SERIES-8BIT:45",
+      "rarity": "mythic",
+      "paletteId": "mythic-aurora",
+      "finish": "prismatic",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "mushroom",
+        "bodyId": "mushroom",
+        "eyesId": "sleepy",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-8BIT-0002",
+      "seed": "SERIES-8BIT:139",
+      "rarity": "rare",
+      "paletteId": "mythic-aurora",
+      "finish": "holo",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "mushroom",
+        "bodyId": "mushroom",
+        "eyesId": "wide",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-8BIT-0003",
+      "seed": "SERIES-8BIT:140",
+      "rarity": "rare",
+      "paletteId": "mythic-aurora",
+      "finish": "foil",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "mushroom",
+        "bodyId": "mushroom",
+        "eyesId": "glow",
+        "accessoryId": "leaf",
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-8BIT-0004",
+      "seed": "SERIES-8BIT:55",
+      "rarity": "rare",
+      "paletteId": "mythic-aurora",
+      "finish": "foil",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "mushroom",
+        "bodyId": "mushroom",
+        "eyesId": "wink",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-8BIT-0005",
+      "seed": "SERIES-8BIT:102",
+      "rarity": "rare",
+      "paletteId": "mythic-cosmic",
+      "finish": "foil",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "wide-squat",
+        "bodyId": "turtle",
+        "eyesId": "sleepy",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-8BIT-0006",
+      "seed": "SERIES-8BIT:20",
+      "rarity": "rare",
+      "paletteId": "mythic-cosmic",
+      "finish": "foil",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "round-blob",
+        "bodyId": "frog",
+        "eyesId": "sleepy",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-8BIT-0007",
+      "seed": "SERIES-8BIT:7",
+      "rarity": "rare",
+      "paletteId": "mythic-cosmic",
+      "finish": "holo",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "round-blob",
+        "bodyId": "frog",
+        "eyesId": "dots",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-8BIT-0008",
+      "seed": "SERIES-8BIT:23",
+      "rarity": "common",
+      "paletteId": "melon",
+      "finish": "base",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "two-ear",
+        "bodyId": "cat",
+        "eyesId": "wink",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-8BIT-0009",
+      "seed": "SERIES-8BIT:25",
+      "rarity": "common",
+      "paletteId": "tang",
+      "finish": "base",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "two-ear",
+        "bodyId": "cat",
+        "eyesId": "wide",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-8BIT-0010",
+      "seed": "SERIES-8BIT:47",
+      "rarity": "common",
+      "paletteId": "tang",
+      "finish": "base",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "two-ear",
+        "bodyId": "cat",
+        "eyesId": "sleepy",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-8BIT-0011",
+      "seed": "SERIES-8BIT:89",
+      "rarity": "common",
+      "paletteId": "tang",
+      "finish": "base",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "two-ear",
+        "bodyId": "cat",
+        "eyesId": "glow",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-8BIT-0012",
+      "seed": "SERIES-8BIT:0",
+      "rarity": "uncommon",
+      "paletteId": "mono",
+      "finish": "sparkle",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "round-blob",
+        "bodyId": "slime",
+        "eyesId": "sleepy",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-8BIT-0013",
+      "seed": "SERIES-8BIT:50",
+      "rarity": "uncommon",
+      "paletteId": "arcade",
+      "finish": "sparkle",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "tall-ghost",
+        "bodyId": "ghost",
+        "eyesId": "dots",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-8BIT-0014",
+      "seed": "SERIES-8BIT:68",
+      "rarity": "uncommon",
+      "paletteId": "tang",
+      "finish": "sparkle",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "round-blob",
+        "bodyId": "frog",
+        "eyesId": "wide",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-8BIT-0015",
+      "seed": "SERIES-8BIT:13",
+      "rarity": "common",
+      "paletteId": "tang",
+      "finish": "base",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "wide-squat",
+        "bodyId": "turtle",
+        "eyesId": "dots",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-8BIT-0016",
+      "seed": "SERIES-8BIT:222",
+      "rarity": "common",
+      "paletteId": "soda",
+      "finish": "base",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "wide-squat",
+        "bodyId": "turtle",
+        "eyesId": "glow",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-8BIT-0017",
+      "seed": "SERIES-8BIT:36",
+      "rarity": "common",
+      "paletteId": "soda",
+      "finish": "base",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "wide-squat",
+        "bodyId": "turtle",
+        "eyesId": "wide",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-8BIT-0018",
+      "seed": "SERIES-8BIT:33",
+      "rarity": "uncommon",
+      "paletteId": "arcade",
+      "finish": "sparkle",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "round-blob",
+        "bodyId": "bird",
+        "eyesId": "wide",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-8BIT-0019",
+      "seed": "SERIES-8BIT:10",
+      "rarity": "mythic",
+      "paletteId": "mythic-aurora",
+      "finish": "prismatic",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "antenna-bug",
+        "bodyId": "bug",
+        "eyesId": "glow",
+        "accessoryId": "friends",
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-8BIT-0020",
+      "seed": "SERIES-8BIT:27",
+      "rarity": "uncommon",
+      "paletteId": "melon",
+      "finish": "sparkle",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "tall-ghost",
+        "bodyId": "ghost",
+        "eyesId": "wide",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-8BIT-0021",
+      "seed": "SERIES-8BIT:2",
+      "rarity": "uncommon",
+      "paletteId": "tang",
+      "finish": "base",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "tall-ghost",
+        "bodyId": "ghost",
+        "eyesId": "glow",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-8BIT-0022",
+      "seed": "SERIES-8BIT:21",
+      "rarity": "common",
+      "paletteId": "melon",
+      "finish": "base",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "round-blob",
+        "bodyId": "slime",
+        "eyesId": "happy",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-8BIT-0023",
+      "seed": "SERIES-8BIT:26",
+      "rarity": "common",
+      "paletteId": "soda",
+      "finish": "base",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "round-blob",
+        "bodyId": "slime",
+        "eyesId": "glow",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-8BIT-0024",
+      "seed": "SERIES-8BIT:46",
+      "rarity": "common",
+      "paletteId": "tang",
+      "finish": "base",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "boxy-robot",
+        "bodyId": "robot",
+        "eyesId": "sleepy",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-8BIT-0025",
+      "seed": "SERIES-8BIT:146",
+      "rarity": "common",
+      "paletteId": "tang",
+      "finish": "base",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "boxy-robot",
+        "bodyId": "robot",
+        "eyesId": "glow",
+        "accessoryId": null,
+        "frameId": null,
+        "fxId": null
+      }
+    },
+    {
+      "id": "SERIES-8BIT-0026",
+      "seed": "SERIES-8BIT:70",
+      "rarity": "uncommon",
+      "paletteId": "soda",
+      "finish": "base",
+      "attributes": {
+        "size": 16,
+        "archetypeId": "round-blob",
+        "bodyId": "bird",
+        "eyesId": "happy",
+        "accessoryId": "orange",
+        "frameId": null,
+        "fxId": null
+      }
+    }
+  ]
+}
