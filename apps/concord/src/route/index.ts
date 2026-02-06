@@ -7,7 +7,28 @@ const pixpaxHosts = new Set(["pixpax.xyz", "www.pixpax.xyz"]);
 const isPixpaxHost =
   typeof window !== "undefined" && pixpaxHosts.has(window.location.hostname);
 
+const pixpaxHostChildren = [
+  {
+    path: "",
+    component: () => import("./pixpax/RoutePixPaxMain.vue"),
+  },
+  {
+    path: "about",
+    component: () => import("./pixpax/RoutePixPaxAbout.vue"),
+  },
+];
+
 const pixpaxHostRoutes = [
+  {
+    path: "/",
+    component: () => import("./pixpax/RoutePixPax.vue"),
+    children: pixpaxHostChildren,
+  },
+  {
+    path: "/pixpax",
+    component: () => import("./pixpax/RoutePixPax.vue"),
+    children: pixpaxHostChildren,
+  },
   {
     path: "/:pathMatch(.*)*",
     component: () => import("./pixpax/RoutePixPax.vue"),

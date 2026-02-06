@@ -1,5 +1,47 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "git": {
     "deploymentEnabled": false
-  }
+  },
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "pixpax.xyz" }],
+      "destination": "/pixpax.html"
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.pixpax.xyz" }],
+      "destination": "/pixpax.html"
+    },
+    { "source": "/workspace", "destination": "/spa.html" },
+    { "source": "/workspace/:path*", "destination": "/spa.html" },
+    { "source": "/pixpax", "destination": "/spa.html" },
+    { "source": "/pixpax/:path*", "destination": "/spa.html" }
+  ],
+  "headers": [
+    {
+      "source": "/service-worker.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval' gc.zgo.at; connect-src 'self' *.ternent.dev data: blob: *.ternent.dev ternentdotdev.goatcounter.com; font-src 'self' fonts.gstatic.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com unpkg.com; img-src 'self' data:; base-uri 'self'; frame-ancestors 'none'"
+        },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-XSS-Protection", "value": "1; mode=block" },
+        { "key": "Referrer-Policy", "value": "same-origin" }
+      ]
+    }
+  ]
 }
