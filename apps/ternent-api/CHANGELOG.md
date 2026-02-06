@@ -1,5 +1,11 @@
 # ternent-api
 
+## 0.2.3
+
+### Patch Changes
+
+- [`642a728ae66f1e3c75857ece4eb751670f07a783`](https://github.com/samternent/home/commit/642a728ae66f1e3c75857ece4eb751670f07a783) Thanks [@samternent](https://github.com/samternent)! - Fix dockerfile
+
 ## 0.2.2
 
 ### Patch Changes
