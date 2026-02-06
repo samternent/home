@@ -1,5 +1,11 @@
 # ternent-api
 
+## 0.2.4
+
+### Patch Changes
+
+- [`5a7b4489014281c2f9e85f53d9a8a8e18ed6f60b`](https://github.com/samternent/home/commit/5a7b4489014281c2f9e85f53d9a8a8e18ed6f60b) Thanks [@samternent](https://github.com/samternent)! - hopefully fix pax generations
+
 ## 0.2.3
 
 ### Patch Changes
