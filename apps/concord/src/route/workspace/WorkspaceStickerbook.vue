@@ -814,28 +814,55 @@ watch(periodId, () => {
 
 <template>
   <div class="flex flex-1 flex-col max-w-5xl mx-auto w-full">
-    <div class="flex flex-1 flex-col gap-8 px-4 py-8 sm:px-6 lg:px-10">
-      <section class="mx-auto flex w-full max-w-4xl flex-col gap-8">
-        <div class="flex flex-col gap-8">
+    <div class="flex flex-1 flex-col gap-2">
+      <section class="mx-auto flex w-full mx-auto max-w-4xl flex-col gap-8">
+        <div class="flex flex-col gap-2">
           <div
-            class="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between border-b border-[var(--ui-border)]/70 p-4 pb-8"
+            class="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-center p-4"
           >
             <div class="relative flex flex-col gap-7 w-full max-w-2xl">
-              <span
-                class="text-[10px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]"
-              >
-                Series
-              </span>
+              <div class="flex items-center justify-between gap-4">
+                <span
+                  class="text-[10px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]"
+                >
+                  Series
+                </span>
+                <div
+                  v-if="!pixbookReadOnly"
+                  class="flex flex-col items-start gap-2 text-right lg:items-end"
+                >
+                  <div class="flex flex-col items-start gap-2 lg:items-end">
+                    <select
+                      v-if="seriesItems.length"
+                      v-model="selectedSeriesId"
+                      class="rounded-full border border-[var(--ui-border)] bg-[var(--ui-bg)] px-3 py-1 text-xs text-[var(--ui-fg)]"
+                      aria-label="Choose series page"
+                    >
+                      <option
+                        v-for="item in seriesItems"
+                        :key="item.value"
+                        :value="item.value"
+                      >
+                        {{ item.label }}
+                      </option>
+                    </select>
+                    <span v-else class="text-xs text-[var(--ui-fg-muted)]">
+                      No series available
+                    </span>
+                  </div>
+                </div>
+              </div>
+
               <div class="flex flex-col gap-6 w-full">
                 <h1
-                  class="text-[var(--ui-fg)] font-[900] text-5xl no-underline tracking-[-0.08em] brand"
+                  class="text-[var(--ui-fg)] font-[900] text-3xl lg:text-5xl no-underline tracking-[-0.08em] brand"
                 >
                   {{ seriesTitle }}
                 </h1>
 
                 <div class="flex flex-col gap-3">
                   <div
-                    class="h-2.5 w-full max-w-2xl rounded-full bg-[var(--ui-fg)]/10 ring-1 ring-[var(--ui-fg)]/20"
+                    class="h-1.5 lg:h-2.5 w-full max-w-2xl rounded-full bg-[var(--ui-fg)]/10 ring-1 ring-[var(--ui-fg)]/20"
                   >
                     <div
                       class="h-full rounded-full bg-[var(--ui-fg)] transition-[width] duration-300"
@@ -862,34 +889,6 @@ watch(periodId, () => {
                 >
                   {{ seriesSubtitle }}
                 </p> -->
-              </div>
-            </div>
-            <div
-              class="flex flex-col gap-5 justify-between items-center lg:items-end"
-            >
-              <div
-                v-if="!pixbookReadOnly"
-                class="flex flex-col items-start gap-2 text-right lg:items-end"
-              >
-                <div class="flex flex-col items-start gap-2 lg:items-end">
-                  <select
-                    v-if="seriesItems.length"
-                    v-model="selectedSeriesId"
-                    class="rounded-full border border-[var(--ui-border)] bg-[var(--ui-bg)] px-3 py-1 text-xs text-[var(--ui-fg)]"
-                    aria-label="Choose series page"
-                  >
-                    <option
-                      v-for="item in seriesItems"
-                      :key="item.value"
-                      :value="item.value"
-                    >
-                      {{ item.label }}
-                    </option>
-                  </select>
-                  <span v-else class="text-xs text-[var(--ui-fg-muted)]">
-                    No series available
-                  </span>
-                </div>
               </div>
             </div>
           </div>
@@ -921,7 +920,7 @@ watch(periodId, () => {
             {{ packError }}
           </p>
         </div>
-        <div>
+        <div class="p-2">
           <SSegmentedControl
             v-model="activeTab"
             :items="tabItems"

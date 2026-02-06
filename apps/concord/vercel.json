@@ -4,14 +4,24 @@
   "trailingSlash": false,
   "rewrites": [
     {
+      "source": "/pixpax/:path*",
+      "has": [{ "type": "host", "value": "pixpax.xyz" }],
+      "destination": "/pixpax/:path*"
+    },
+    {
       "source": "/:path*",
       "has": [{ "type": "host", "value": "pixpax.xyz" }],
-      "destination": "/pixpax.html"
+      "destination": "/pixpax/:path*"
+    },
+    {
+      "source": "/pixpax/:path*",
+      "has": [{ "type": "host", "value": "www.pixpax.xyz" }],
+      "destination": "/pixpax/:path*"
     },
     {
       "source": "/:path*",
       "has": [{ "type": "host", "value": "www.pixpax.xyz" }],
-      "destination": "/pixpax.html"
+      "destination": "/pixpax/:path*"
     },
     { "source": "/workspace", "destination": "/spa.html" },
     { "source": "/workspace/:path*", "destination": "/spa.html" },

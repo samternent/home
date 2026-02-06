@@ -465,9 +465,7 @@ async function eraseLocalPixbook() {
       >
         <div class="mx-auto flex items-center w-full justify-between px-4 py-2">
           <div class="hidden lg:block" />
-          <RouterLink to="/pixpax"
-            ><PixPaxLogoText class="h-4 lg:h-6"
-          /></RouterLink>
+          <RouterLink to="/"><PixPaxLogoText class="h-4 lg:h-6" /></RouterLink>
 
           <div>
             <input
