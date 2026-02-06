@@ -1,5 +1,13 @@
 # concord
 
+## 0.3.15
+
+### Patch Changes
+
+- [`741fbdc33883f9a05da2e512e5f5a2f8bb6d93b9`](https://github.com/samternent/home/commit/741fbdc33883f9a05da2e512e5f5a2f8bb6d93b9) Thanks [@samternent](https://github.com/samternent)! - hide content on pixpax
+
+- [`5a73e522631ae59f2e7ecf0e3c67c60fe08cb296`](https://github.com/samternent/home/commit/5a73e522631ae59f2e7ecf0e3c67c60fe08cb296) Thanks [@samternent](https://github.com/samternent)! - hide pixpax content
+
 ## 0.3.14
 
 ### Patch Changes
