@@ -1,0 +1,5 @@
+---
+"concord": patch
+---
+
+use ssg

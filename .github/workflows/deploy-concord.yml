@@ -14,28 +14,26 @@ jobs:
   Deploy-Production:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@master
         with:
-          node-version-file: .nvmrc
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Get branch name
+        id: branch
+        run: |
+          echo "branch_name=$(echo ${GITHUB_REF#refs/heads/} | tr / -)" >> $GITHUB_ENV
+
+      - name: Get node version
+        id: nvmrc
+        run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
 
       - name: Setup PNPM
         uses: pnpm/action-setup@v2
         with:
           version: 8
-
-      - name: Ensure system PATH
-        run: echo "/usr/bin:/bin" >> $GITHUB_PATH
-
-      - name: Cache PNPM store
-        uses: actions/cache@v4
-        with:
-          path: ~/.pnpm-store
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-
 
       - name: Install
         run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
@@ -43,11 +41,11 @@ jobs:
       - name: Build rust libs
         run: cd packages/concord-protocol-wasm && pnpm build && cd ../..
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
       - name: Install Vercel CLI
         run: pnpm install --global vercel@latest
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Build libs
         run: pnpm build:libs
@@ -58,11 +56,14 @@ jobs:
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=production --cwd ${{ github.workspace }}/apps/concord --token=${{ secrets.VERCEL_TOKEN }}
 
+      - name: Link Vercel project to root
+        run: cp -r ${{ github.workspace }}/apps/concord/.vercel ${{ github.workspace }}/
+
       - name: Build Vercel Environment Information
-        run: vercel build --prod --cwd ${{ github.workspace }}/apps/concord --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy Project Artifacts to Vercel
-        run: vercel deploy --prebuilt --prod --cwd ${{ github.workspace }}/apps/concord --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Update app version in Redis
         run: node .ops/update-redis-version.mjs

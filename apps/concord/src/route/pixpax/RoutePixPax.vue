@@ -43,5 +43,16 @@ useFavicon(computed(() => svgToDataUrl(themedSvg.value)));
         <RouterView />
       </RoutePixPaxMainLayout>
     </Concord>
+    <template #fallback>
+      <div
+        class="min-h-screen w-screen flex items-center justify-center bg-[image:var(--bg-pixpax)]"
+      >
+        <div
+          class="flex flex-col items-center gap-3 text-[10px] uppercase tracking-[0.32em] text-[var(--ui-fg-muted)]"
+        >
+          <span>Loading PixPax</span>
+        </div>
+      </div>
+    </template>
   </ClientOnly>
 </template>
