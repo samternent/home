@@ -1,5 +1,13 @@
 # concord
 
+## 0.3.11
+
+### Patch Changes
+
+- [`103d4cc48eb186a78ee9a277c6fb53992208ca32`](https://github.com/samternent/home/commit/103d4cc48eb186a78ee9a277c6fb53992208ca32) Thanks [@samternent](https://github.com/samternent)! - layouts
+
+- [`6f986ff2e79615d9266d213c45a4707fa8753033`](https://github.com/samternent/home/commit/6f986ff2e79615d9266d213c45a4707fa8753033) Thanks [@samternent](https://github.com/samternent)! - workflow still
+
 ## 0.3.10
 
 ### Patch Changes
