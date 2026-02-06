@@ -5,7 +5,10 @@ RUN npm install -g corepack@latest
 RUN corepack enable
 RUN corepack prepare pnpm@latest --activate
 WORKDIR /app
-COPY ./apps/ternent-api /app
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.json tsconfig.node.json ./
+COPY scripts ./scripts
+COPY packages ./packages
+COPY apps/ternent-api ./apps/ternent-api
 
 RUN apt-get -y update
 RUN apt-get -y upgrade
@@ -16,8 +19,8 @@ FROM base AS prod-deps
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --no-frozen-lockfile
 
 # Build dependent libs
-RUN build:ternent-api-libs
-RUN generate:pixpax:all
+RUN pnpm run build:ternent-api-libs
+RUN pnpm run generate:pixpax:all
 
 FROM base
 COPY --from=prod-deps /app/node_modules /app/node_modules

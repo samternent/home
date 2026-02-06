@@ -21,7 +21,7 @@ import {
 } from "../../module/profile/useProfile";
 import WorkspaceStickerbook from "../workspace/WorkspaceStickerbook.vue";
 import Logo from "../../module/brand/Logo.vue";
-import PixPaxLogo from "../../module/stickerbook/PixPaxLogo.svg";
+import PixPaxLogo from "../../module/stickerbook/PixPaxLogo.svg?component";
 
 type PixbookExport =
   | {
