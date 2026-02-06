@@ -16,7 +16,7 @@ RUN apt-get install -y ffmpeg
 
 FROM base AS prod-deps
 # Lockfile should be frozen but I can't figure it out. this is bad.
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --no-frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --filter ternent-api... --no-frozen-lockfile
 
 # Build dependent libs
 RUN pnpm run build:ternent-api-libs
