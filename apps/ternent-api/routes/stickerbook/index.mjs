@@ -23,8 +23,8 @@ import {
 } from "./stickerbook-utils.mjs";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const ISSUER_LEDGER_PATH = "data/stickerbook/issuer-ledger.json";
-const ISSUER_PENDING_PATH = "data/stickerbook/issuer-pending.json";
+const ISSUER_LEDGER_PATH = "persisted/stickerbook/issuer-ledger.json";
+const ISSUER_PENDING_PATH = "persisted/stickerbook/issuer-pending.json";
 const ALGO_VERSION = "1.0.0";
 
 function stripIdentityKey(key) {
@@ -79,7 +79,7 @@ function loadCatalogue(seriesId) {
     __dirname,
     "..",
     "..",
-    "data/stickerbook",
+    "persisted/stickerbook",
     "series",
     filename
   );
@@ -92,7 +92,7 @@ function loadIndex() {
     __dirname,
     "..",
     "..",
-    "data/stickerbook",
+    "persisted/stickerbook",
     "index.json"
   );
   return JSON.parse(readFileSync(filepath, "utf8"));

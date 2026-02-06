@@ -1,0 +1,18 @@
+{
+  "version": "1.0.0",
+  "updatedAt": "2026-02-04T10:32:00.000Z",
+  "series": [
+    {
+      "id": "SERIES-8BIT",
+      "label": "8-bit Sprites",
+      "styleType": "theme",
+      "enabled": true
+    },
+    {
+      "id": "SERIES-ANIMAL-ARCHETYPE-8BIT",
+      "label": "Animal Archetype 8-bit",
+      "styleType": "theme",
+      "enabled": true
+    }
+  ]
+}

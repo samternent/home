@@ -1,2 +1,5 @@
 data
+persisted/stickerbook/packs/
+persisted/stickerbook/issuer-ledger.json
+persisted/stickerbook/issuer-pending.json
 docker-compose.override.yaml

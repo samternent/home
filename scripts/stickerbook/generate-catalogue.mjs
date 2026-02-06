@@ -6,7 +6,7 @@ const OUTPUT_PATH =
   process.env.OUTPUT_PATH ||
   join(
     process.cwd(),
-    "apps/ternent-api/data/stickerbook/series/series-S1.catalogue.json"
+    "apps/ternent-api/persisted/stickerbook/series/series-S1.catalogue.json"
   );
 
 const SERIES_ID = "S1";
