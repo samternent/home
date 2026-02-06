@@ -1,5 +1,11 @@
 # ternent-api
 
+## 0.2.5
+
+### Patch Changes
+
+- [`77b75021f9bc11fe7bc2032ba12f074a65e19969`](https://github.com/samternent/home/commit/77b75021f9bc11fe7bc2032ba12f074a65e19969) Thanks [@samternent](https://github.com/samternent)! - runtime node deps
+
 ## 0.2.4
 
 ### Patch Changes
