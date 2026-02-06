@@ -24,6 +24,7 @@ RUN pnpm run generate:pixpax:all
 
 FROM base
 COPY --from=prod-deps /app/node_modules /app/node_modules
+COPY --from=prod-deps /app/apps/ternent-api/node_modules /app/apps/ternent-api/node_modules
 
 # /usr/bin/ffmpeg is the default path for ffmpeg, copy it to /app
 RUN cp /usr/bin/ffmpeg ./
