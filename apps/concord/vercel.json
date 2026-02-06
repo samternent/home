@@ -6,15 +6,17 @@
     {
       "source": "/:path*",
       "has": [{ "type": "host", "value": "pixpax.xyz" }],
-      "destination": "/index"
+      "destination": "/spa.html"
     },
     {
       "source": "/:path*",
       "has": [{ "type": "host", "value": "www.pixpax.xyz" }],
-      "destination": "/index"
+      "destination": "/spa.html"
     },
-    { "source": "/workspace", "destination": "/index" },
-    { "source": "/workspace/:path*", "destination": "/index" }
+    { "source": "/workspace", "destination": "/spa.html" },
+    { "source": "/workspace/:path*", "destination": "/spa.html" },
+    { "source": "/pixpax", "destination": "/spa.html" },
+    { "source": "/pixpax/:path*", "destination": "/spa.html" }
   ],
 
   "headers": [

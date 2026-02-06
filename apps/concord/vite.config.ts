@@ -1,4 +1,5 @@
 import { defineConfig } from "vite";
+import { resolve } from "path";
 import vue from "@vitejs/plugin-vue";
 import tailwindcss from "@tailwindcss/vite";
 import Markdown from "vite-plugin-vue-markdown";
@@ -9,6 +10,12 @@ import { version } from "./package.json";
 export default defineConfig({
   build: {
     assetsInlineLimit: 0,
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, "index.html"),
+        spa: resolve(__dirname, "spa.html"),
+      },
+    },
   },
   server: {
     proxy: {

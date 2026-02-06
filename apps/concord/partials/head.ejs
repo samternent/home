@@ -1,0 +1,140 @@
+<meta charset="UTF-8" />
+
+<!-- Primary meta -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title data-pixpax-title="<%= pixpaxTitle %>"><%= title %></title>
+<meta
+  name="description"
+  content="<%= description %>"
+  data-pixpax-content="<%= pixpaxDescription %>"
+/>
+<link
+  rel="canonical"
+  href="<%= canonical %>"
+  data-pixpax-href="<%= pixpaxCanonical %>"
+/>
+<meta name="robots" content="<%= robots %>" />
+<meta name="referrer" content="same-origin" />
+
+<!-- Favicons -->
+<link rel="icon" type="image/svg+xml" href="/icon.svg" />
+
+<!-- Open Graph -->
+<meta
+  property="og:site_name"
+  content="<%= ogSiteName %>"
+  data-pixpax-content="<%= pixpaxOgSiteName %>"
+/>
+<meta property="og:type" content="website" />
+<meta
+  property="og:title"
+  content="<%= ogTitle %>"
+  data-pixpax-content="<%= pixpaxOgTitle %>"
+/>
+<meta
+  property="og:description"
+  content="<%= ogDescription %>"
+  data-pixpax-content="<%= pixpaxOgDescription %>"
+/>
+<meta
+  property="og:url"
+  content="<%= ogUrl %>"
+  data-pixpax-content="<%= pixpaxOgUrl %>"
+/>
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary" />
+<meta
+  name="twitter:title"
+  content="<%= twitterTitle %>"
+  data-pixpax-content="<%= pixpaxTwitterTitle %>"
+/>
+<meta
+  name="twitter:description"
+  content="<%= twitterDescription %>"
+  data-pixpax-content="<%= pixpaxTwitterDescription %>"
+/>
+
+<script
+  data-goatcounter="https://ternentdotdev.goatcounter.com/count"
+  async
+  src="//gc.zgo.at/count.js"
+></script>
+
+<script>
+  (function () {
+    var host = window.location.hostname;
+    if (host !== "pixpax.xyz" && host !== "www.pixpax.xyz") return;
+
+    var title = document.querySelector("title");
+    if (title && title.dataset.pixpaxTitle) {
+      title.textContent = title.dataset.pixpaxTitle;
+    }
+
+    document
+      .querySelectorAll("[data-pixpax-content]")
+      .forEach(function (el) {
+        var value = el.getAttribute("data-pixpax-content");
+        if (value) el.setAttribute("content", value);
+      });
+
+    document.querySelectorAll("[data-pixpax-href]").forEach(function (el) {
+      var value = el.getAttribute("data-pixpax-href");
+      if (value) el.setAttribute("href", value);
+    });
+  })();
+</script>
+
+<!-- Performance: fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Noto+Serif:ital,wght@0,100..900;1,100..900&family=JetBrains+Mono:ital,wght@0,200..800;1,200..800&Pixelify+Sans:wght@400;700"
+  rel="stylesheet"
+/>
+
+<style>
+  :root {
+    --brand-font: "Pixelify Sans", "Press Start 2P", ui-monospace, monospace;
+    --bg-pixpax: radial-gradient(
+      circle at top,
+      color-mix(in oklch, var(--pixpax-warm) 70%, var(--ui-bg)) 0%,
+      color-mix(in oklch, var(--pixpax-pink) 60%, var(--ui-bg)) 40%,
+      color-mix(in oklch, var(--pixpax-blue) 50%, var(--ui-bg)) 100%
+    );
+
+    --ui-bg: oklch(98% 0.01 95);
+    --ui-fg: oklch(20% 0.02 260);
+
+    /* PixPax accent washes */
+    --pixpax-warm: oklch(96% 0.05 85);
+    --pixpax-pink: oklch(94% 0.06 10);
+    --pixpax-blue: oklch(95% 0.04 230);
+
+    --font-serif: "Noto Serif", serif;
+    --font-sans: "Noto Sans", sans-serif;
+    --font-mono: "JetBrains Mono", "Courier New", monospace;
+  }
+
+  [data-theme-palette="dark"] {
+    --ui-bg: oklch(18% 0.02 260);
+    --ui-fg: oklch(92% 0.01 95);
+
+    /* Same hues, lower lightness = restraint */
+    --pixpax-warm: oklch(28% 0.04 85);
+    --pixpax-pink: oklch(26% 0.05 10);
+    --pixpax-blue: oklch(30% 0.04 230);
+  }
+
+  html,
+  body {
+    font-family: "Noto Serif", serif;
+    font-optical-sizing: auto;
+    font-weight: 300;
+    font-style: normal;
+    font-variation-settings: "wdth" 100;
+    font-size: 18px;
+    background-color: var(--ui-bg);
+    color: var(--ui-fg);
+  }
+</style>
