@@ -1,5 +1,11 @@
 # concord
 
+## 0.3.16
+
+### Patch Changes
+
+- [`96f3139dcbdacf83d8b75ca72dab9a9920e06eda`](https://github.com/samternent/home/commit/96f3139dcbdacf83d8b75ca72dab9a9920e06eda) Thanks [@samternent](https://github.com/samternent)! - Adds drop timing
+
 ## 0.3.15
 
 ### Patch Changes
