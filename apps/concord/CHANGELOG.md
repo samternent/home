@@ -1,5 +1,11 @@
 # concord
 
+## 0.3.3
+
+### Patch Changes
+
+- [`303b48ea46a929caee1f401014732d738f6ccfe9`](https://github.com/samternent/home/commit/303b48ea46a929caee1f401014732d738f6ccfe9) Thanks [@samternent](https://github.com/samternent)! - Allow ternent api
+
 ## 0.3.2
 
 ### Patch Changes
