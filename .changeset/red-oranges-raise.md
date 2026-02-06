@@ -1,5 +1,0 @@
----
-"concord": patch
----
-
-domain rules
