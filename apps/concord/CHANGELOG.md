@@ -1,5 +1,11 @@
 # concord
 
+## 0.3.10
+
+### Patch Changes
+
+- [`b6b193512f218aa7c86838a92e61e279371d6ab4`](https://github.com/samternent/home/commit/b6b193512f218aa7c86838a92e61e279371d6ab4) Thanks [@samternent](https://github.com/samternent)! - node cache
+
 ## 0.3.9
 
 ### Patch Changes
