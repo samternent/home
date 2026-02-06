@@ -2,6 +2,7 @@ name: Release concord.ternent.dev
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_CONCORD_PROJECT_ID }}
+  VITE_ISSUER_PUBLIC_KEY_PEM: ${{ secrets.VITE_ISSUER_PUBLIC_KEY_PEM }}
   PNPM_CACHE_PATH: ~/.pnpm-store
   PNPM_CACHE_NAME: pnpm-store-cache
 on:
@@ -60,9 +61,6 @@ jobs:
 
       - name: Build Vercel Environment Information
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Build slides
-        run: pnpm build:slides
 
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
