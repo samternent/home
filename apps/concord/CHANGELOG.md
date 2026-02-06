@@ -1,5 +1,11 @@
 # concord
 
+## 0.3.1
+
+### Patch Changes
+
+- [`27f46d06d02db9fe760f8907359b5e528e66d2a3`](https://github.com/samternent/home/commit/27f46d06d02db9fe760f8907359b5e528e66d2a3) Thanks [@samternent](https://github.com/samternent)! - Fix API and concord build
+
 ## 0.3.0
 
 ### Minor Changes
