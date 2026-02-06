@@ -1,5 +1,11 @@
 # ternent-api
 
+## 0.2.6
+
+### Patch Changes
+
+- [`ec28bd9f69983d992452a1362b7e64557a1203a4`](https://github.com/samternent/home/commit/ec28bd9f69983d992452a1362b7e64557a1203a4) Thanks [@samternent](https://github.com/samternent)! - jeez
+
 ## 0.2.5
 
 ### Patch Changes
