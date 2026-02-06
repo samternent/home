@@ -464,8 +464,11 @@ async function eraseLocalPixbook() {
         class="sticky top-0 z-20 w-full backdrop-blur-[12px] border-b border-[var(--ui-border)]"
       >
         <div class="mx-auto flex items-center w-full justify-between px-4 py-2">
-          <RouterLink to="/pixpax"><PixPaxLogo class="size-10" /></RouterLink>
-          <PixPaxLogoText class="h-6" />
+          <div class="hidden lg:block" />
+          <RouterLink to="/pixpax"
+            ><PixPaxLogoText class="h-4 lg:h-6"
+          /></RouterLink>
+
           <div>
             <input
               ref="pixbookUploadInputRef"
@@ -637,39 +640,27 @@ async function eraseLocalPixbook() {
           </div>
         </div>
       </header>
-      <!-- <header
-        class="mx-auto flex w-full max-w-4xl flex-col items-center gap-4 text-center p-12"
+      <div
+        v-if="pixbookReadOnly && viewedPixbookProfile"
+        class="mt-6 mx-auto sticky z-20 top-20 backdrop-blur-sm w-100 flex items-center justify-between gap-3 rounded-full border border-[var(--ui-border)] bg-[var(--ui-bg)]/60 px-4 py-2 text-xs"
       >
-        <div
-          class="w-full max-w-xl flex flex-col gap-4 items-center justify-center"
-        >
-          <PixPaxLogo class="size-24" />
-          <PixPaxLogoText />
-
-          <p class="mt-4 text-xs text-[var(--ui-fg-muted)]">
-            Open packs, collect pixels, trade with friends.
-          </p>
-          <div
-            v-if="pixbookReadOnly && viewedPixbookProfile"
-            class="mt-6 flex items-center gap-3 rounded-full border border-[var(--ui-border)] bg-[var(--ui-bg)]/60 px-4 py-2 text-xs"
-          >
-            <IdentityAvatar :identity="viewingIdentityKey" size="sm" />
-            <div class="flex flex-col text-left">
-              <span class="text-[var(--ui-fg-muted)]">Viewing</span>
-              <span class="text-[var(--ui-fg)] font-semibold"
-                >{{ viewingLabel }}'s pixbook</span
-              >
-            </div>
-            <button
-              type="button"
-              class="ml-2 rounded-full border border-[var(--ui-border)] px-3 py-1 text-[10px] uppercase tracking-wide hover:bg-[var(--ui-fg)]/5 transition-colors"
-              @click="returnToMyPixbook"
+        <div class="flex items-center gap-3">
+          <IdentityAvatar :identity="viewingIdentityKey" size="sm" />
+          <div class="flex flex-col text-left">
+            <span class="text-[var(--ui-fg-muted)]">Viewing</span>
+            <span class="text-[var(--ui-fg)] font-semibold"
+              >{{ viewingLabel }}'s pixbook</span
             >
-              Return to my pixbook
-            </button>
           </div>
         </div>
-      </header> -->
+        <button
+          type="button"
+          class="ml-2 rounded-full border border-[var(--ui-border)] px-3 py-1 text-[10px] uppercase tracking-wide hover:bg-[var(--ui-fg)]/5 transition-colors"
+          @click="returnToMyPixbook"
+        >
+          Return to my pixbook
+        </button>
+      </div>
       <slot />
       <footer
         class="flex justify-end items-center py-8 border-t-[1px] border-[var(--ui-border)] w-full"

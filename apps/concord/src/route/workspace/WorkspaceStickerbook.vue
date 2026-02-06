@@ -2,7 +2,7 @@
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { useLocalStorage } from "@vueuse/core";
 import { Button } from "ternent-ui/primitives";
-import { SBadge, SSegmentedControl } from "ternent-ui/components";
+import { SSegmentedControl } from "ternent-ui/components";
 import { stripIdentityKey } from "ternent-utils";
 import Sticker from "../../module/stickerbook/Sticker.vue";
 import {
@@ -34,7 +34,7 @@ const issuerPublicKeyPem = import.meta.env.VITE_ISSUER_PUBLIC_KEY_PEM || "";
 const { profileId, publicKey, receivedPacks, transfers, recordPackAndCommit } =
   useStickerbook();
 
-const activeTab = ref<"book" | "swaps" | "progress">("book");
+const activeTab = ref<"book" | "swaps">("book");
 const catalogue = ref<any | null>(null);
 const isLoading = ref(false);
 const loadError = ref("");
@@ -76,9 +76,64 @@ const seriesItems = computed(() =>
 );
 const tabItems = [
   { value: "book", label: "Pixbook" },
-  { value: "swaps", label: "Dupes" },
-  { value: "progress", label: "Progress" },
+  { value: "swaps", label: "Swaps" },
 ];
+
+const selectedSeries = computed(() =>
+  seriesOptions.value.find((entry) => entry.id === selectedSeriesId.value)
+);
+
+const toTitle = (value: string) =>
+  value
+    .split("-")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+
+const seriesTitle = computed(() => {
+  if (selectedSeries.value?.label) return selectedSeries.value.label;
+  if (selectedSeriesId.value) return toTitle(selectedSeriesId.value);
+  return "Series page";
+});
+
+const seriesSubtitle = computed(() => {
+  const catalogueSubtitle =
+    catalogue.value?.subtitle || catalogue.value?.tagline || "";
+  if (catalogueSubtitle) return catalogueSubtitle;
+  const themeLabel = catalogueThemeId.value
+    ? toTitle(catalogueThemeId.value)
+    : "";
+  const styleLabel = catalogueStyleType.value
+    ? toTitle(catalogueStyleType.value)
+    : "";
+  if (!themeLabel && !styleLabel) return "";
+  if (themeLabel && styleLabel) return `${themeLabel} • ${styleLabel}`;
+  return themeLabel || styleLabel;
+});
+
+const progressPercent = computed(() => {
+  if (!totalCreatures.value) return 0;
+  const percent = (collectedCount.value / totalCreatures.value) * 100;
+  return Math.min(100, Math.round(percent));
+});
+
+const isSeriesComplete = computed(
+  () => totalCreatures.value > 0 && collectedCount.value >= totalCreatures.value
+);
+
+const seriesAccentStyle = computed(() => {
+  const seed = selectedSeriesId.value || seriesTitle.value || "series";
+  let hash = 0;
+  for (let i = 0; i < seed.length; i += 1) {
+    hash = (hash * 31 + seed.charCodeAt(i)) % 360;
+  }
+  const angle = 12 + (hash % 48);
+  const spacing = 18 + (hash % 14);
+  return {
+    backgroundImage: `repeating-linear-gradient(${angle}deg, color-mix(in srgb, var(--ui-fg) 10%, transparent) 0px, color-mix(in srgb, var(--ui-fg) 10%, transparent) 1px, transparent 1px, transparent ${spacing}px)`,
+    backgroundPosition: `${hash % 18}px ${hash % 12}px`,
+  };
+});
 
 const periodDate = computed(() => {
   if (!devPeriodMs.value) return new Date(now.value);
@@ -87,11 +142,6 @@ const periodDate = computed(() => {
 const periodId = computed(() => {
   if (devMode.value) return `dev-${devNonce.value}`;
   return getPeriodId(periodDate.value);
-});
-const periodLabel = computed(() => {
-  if (devMode.value) return `${periodId.value} (dev)`;
-  if (devPeriodSeconds.value) return `${periodId.value} (dev)`;
-  return periodId.value;
 });
 const secondsUntilNextPeriod = computed(() => {
   if (!devPeriodSeconds.value) return null;
@@ -348,7 +398,6 @@ const swapsForSeries = computed(() => {
   return swaps;
 });
 
-const swapCount = computed(() => swapsForSeries.value.length);
 const swapGroups = computed(() => {
   const byKey = new Map<string, { record: any; count: number }>();
   for (const swap of swapsForSeries.value) {
@@ -363,14 +412,6 @@ const swapGroups = computed(() => {
     byKey.set(key, { record, count: 1 });
   }
   return Array.from(byKey.values());
-});
-
-const progressByRarity = computed(() => {
-  return rarityOrder.map((rarity) => {
-    const total = entriesByRarity.value.get(rarity)?.length || 0;
-    const collected = collectedByRarityForSeries.value.get(rarity)?.length || 0;
-    return { rarity, total, collected };
-  });
 });
 
 function buildAttributeKey(entry: any) {
@@ -510,12 +551,8 @@ const openPackLabel = computed(() => {
   if (packPhase.value === "opening" || packPhase.value === "reveal") {
     return "Opening pack...";
   }
-  if (canTapOpenPack.value)
-    return devMode.value ? "Open dev pack" : "Open pack";
-  if (secondsUntilNextPeriod.value) {
-    return `Open pack in ${secondsUntilNextPeriod.value}s`;
-  }
-  return "Open pack next period";
+  if (canTapOpenPack.value) return "Open pack";
+  return "Open next pack";
 });
 
 async function loadCatalogue() {
@@ -778,46 +815,93 @@ watch(periodId, () => {
 <template>
   <div class="flex flex-1 flex-col max-w-5xl mx-auto w-full">
     <div class="flex flex-1 flex-col gap-8 px-4 py-8 sm:px-6 lg:px-10">
-      <section class="mx-auto flex w-full max-w-4xl flex-col gap-4">
-        <div
-          class="flex flex-wrap items-center justify-between gap-4 rounded-2xl px-4 py-3"
-        >
-          <div class="flex items-center gap-3">
-            <SBadge size="xs" tone="neutral" variant="outline">
-              Collected
-            </SBadge>
-            <span class="text-sm font-semibold text-[var(--ui-fg)]">
-              {{ collectedCount }}/{{ totalCreatures }}
-            </span>
+      <section class="mx-auto flex w-full max-w-4xl flex-col gap-8">
+        <div class="flex flex-col gap-8">
+          <div
+            class="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between border-b border-[var(--ui-border)]/70 p-4 pb-8"
+          >
+            <div class="relative flex flex-col gap-7 w-full max-w-2xl">
+              <span
+                class="text-[10px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]"
+              >
+                Series
+              </span>
+              <div class="flex flex-col gap-6 w-full">
+                <h1
+                  class="text-[var(--ui-fg)] font-[900] text-5xl no-underline tracking-[-0.08em] brand"
+                >
+                  {{ seriesTitle }}
+                </h1>
+
+                <div class="flex flex-col gap-3">
+                  <div
+                    class="h-2.5 w-full max-w-2xl rounded-full bg-[var(--ui-fg)]/10 ring-1 ring-[var(--ui-fg)]/20"
+                  >
+                    <div
+                      class="h-full rounded-full bg-[var(--ui-fg)] transition-[width] duration-300"
+                      :style="{ width: `${progressPercent}%` }"
+                    ></div>
+                  </div>
+                  <div
+                    class="flex items-center gap-2 text-xs text-[var(--ui-fg-muted)]"
+                  >
+                    <span>
+                      {{ collectedCount }} / {{ totalCreatures }} collected
+                    </span>
+                    <span
+                      v-if="isSeriesComplete"
+                      class="rounded-full border border-[var(--ui-border)] px-2 py-0.5 text-[10px] uppercase tracking-[0.2em] text-[var(--ui-fg-muted)]"
+                    >
+                      Completed
+                    </span>
+                  </div>
+                </div>
+                <!-- <p
+                  v-if="seriesSubtitle"
+                  class="text-sm text-[var(--ui-fg-muted)]"
+                >
+                  {{ seriesSubtitle }}
+                </p> -->
+              </div>
+            </div>
+            <div
+              class="flex flex-col gap-5 justify-between items-center lg:items-end"
+            >
+              <div
+                v-if="!pixbookReadOnly"
+                class="flex flex-col items-start gap-2 text-right lg:items-end"
+              >
+                <div class="flex flex-col items-start gap-2 lg:items-end">
+                  <select
+                    v-if="seriesItems.length"
+                    v-model="selectedSeriesId"
+                    class="rounded-full border border-[var(--ui-border)] bg-[var(--ui-bg)] px-3 py-1 text-xs text-[var(--ui-fg)]"
+                    aria-label="Choose series page"
+                  >
+                    <option
+                      v-for="item in seriesItems"
+                      :key="item.value"
+                      :value="item.value"
+                    >
+                      {{ item.label }}
+                    </option>
+                  </select>
+                  <span v-else class="text-xs text-[var(--ui-fg-muted)]">
+                    No series available
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="flex flex-wrap items-center gap-3">
-            <SBadge size="xs" tone="neutral" variant="outline">Series</SBadge>
-            <SSegmentedControl
-              v-if="seriesItems.length"
-              v-model="selectedSeriesId"
-              :items="seriesItems"
-              size="xs"
-              aria-label="Sticker series"
-            />
-            <span v-else class="text-xs text-[var(--ui-fg-muted)]">
-              No series available
+
+          <div class="flex w-full flex-col items-center gap-2 pt-3">
+            <span
+              class="text-[10px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]"
+            >
+              Pack drop
             </span>
-          </div>
-        </div>
-        <div
-          v-if="!pixbookReadOnly"
-          class="flex flex-wrap items-center justify-between gap-4 bg-blur-lg rounded-2xl border border-[var(--ui-border)] bg-[color-mix(in srgb, var(--ui-bg) 92%, transparent)] px-4 py-3"
-        >
-          <div class="flex flex-col gap-1 text-xs text-[var(--ui-fg-muted)]">
-            <span class="uppercase tracking-[0.14em]">Pack drop</span>
-            <span>
-              Period:
-              <strong class="text-[var(--ui-fg)]">{{ periodLabel }}</strong>
-            </span>
-          </div>
-          <div class="flex flex-col items-end gap-1">
             <Button
-              class="!rounded-full"
+              class="!px-5 !py-2 !tracking-[-0.02em] !bg-[var(--ui-accent)]"
               :disabled="!canTapOpenPack"
               @click="openWeeklyPack"
             >
@@ -830,20 +914,21 @@ watch(periodId, () => {
               Next pack in {{ secondsUntilNextPeriod }}s
             </span>
           </div>
+          <p
+            v-if="packError && !pixbookReadOnly"
+            class="text-sm font-semibold text-red-600"
+          >
+            {{ packError }}
+          </p>
         </div>
-        <p
-          v-if="packError && !pixbookReadOnly"
-          class="text-sm font-semibold text-red-600"
-        >
-          {{ packError }}
-        </p>
-        <SSegmentedControl
-          v-model="activeTab"
-          :items="tabItems"
-          size="sm"
-          aria-label="Stickerbook sections"
-          class="self-start"
-        />
+        <div>
+          <SSegmentedControl
+            v-model="activeTab"
+            :items="tabItems"
+            size="sm"
+            aria-label="Pixbook view modes"
+          />
+        </div>
       </section>
 
       <section v-if="activeTab === 'book'" class="mx-auto w-full max-w-4xl">
@@ -1108,10 +1193,18 @@ watch(periodId, () => {
         v-if="activeTab === 'swaps'"
         class="flex flex-col items-center gap-4 rounded-2xl p-6"
       >
-        <div class="space-y-1">
+        <div class="space-y-1 text-center">
           <h3 class="text-lg font-semibold text-[var(--ui-fg)]">Swaps pile</h3>
           <p class="text-sm text-[var(--ui-fg-muted)]">
             Duplicates you can trade without affecting collection totals.
+          </p>
+        </div>
+        <div class="flex flex-col items-center gap-2 text-center">
+          <Button size="sm" variant="secondary" disabled>
+            Trading coming soon
+          </Button>
+          <p class="text-xs text-[var(--ui-fg-muted)]">
+            Trade duplicate cards with friends to complete your Pixbook.
           </p>
         </div>
         <div
@@ -1185,56 +1278,6 @@ watch(periodId, () => {
               <span>swap</span>
             </div>
           </div>
-        </div>
-      </section>
-
-      <section
-        v-if="activeTab === 'progress'"
-        class="grid gap-4 lg:grid-cols-2"
-      >
-        <div
-          class="rounded-2xl border border-[var(--ui-border)] bg-[color-mix(in srgb, var(--ui-bg) 96%, transparent)] p-5"
-        >
-          <h3 class="text-lg font-semibold text-[var(--ui-fg)]">
-            Your Collection
-          </h3>
-          <p class="mt-1 text-sm text-[var(--ui-fg-muted)]">
-            Total:
-            <strong class="text-[var(--ui-fg)]">{{ collectedCount }}</strong>
-            of
-            <strong class="text-[var(--ui-fg)]">{{ totalCreatures }}</strong>
-          </p>
-          <ul
-            class="mt-3 grid gap-2 text-xs uppercase tracking-[0.12em] text-[var(--ui-fg-muted)]"
-          >
-            <li
-              v-for="item in progressByRarity"
-              :key="item.rarity"
-              class="flex items-center justify-between"
-            >
-              <span>{{ item.rarity }}</span>
-              <strong class="text-[var(--ui-fg)]">
-                {{ item.collected }}/{{ item.total }}
-              </strong>
-            </li>
-          </ul>
-        </div>
-        <div class="p-5">
-          <h3 class="text-lg font-semibold text-[var(--ui-fg)]">Series</h3>
-          <p class="mt-1 text-sm text-[var(--ui-fg-muted)]">
-            Series collected:
-            <strong class="text-[var(--ui-fg)]">{{ collectedCount }}</strong>
-          </p>
-          <p class="mt-1 text-sm text-[var(--ui-fg-muted)]">
-            Swaps pile:
-            <strong class="text-[var(--ui-fg)]">{{ swapCount }}</strong>
-          </p>
-          <p class="mt-1 text-sm text-[var(--ui-fg-muted)]">
-            Opened this period:
-            <strong class="text-[var(--ui-fg)]">
-              {{ openedForPeriod ? "yes" : "no" }}
-            </strong>
-          </p>
         </div>
       </section>
     </div>
