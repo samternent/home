@@ -64,7 +64,7 @@ const devPeriodSeconds = computed(() => {
 });
 
 const devMode = computed(
-  () => import.meta.env.VITE_STICKERBOOK_DEV_MODE !== "true"
+  () => import.meta.env.VITE_STICKERBOOK_DEV_MODE === "true"
 );
 const devPeriodMs = computed(() =>
   devPeriodSeconds.value ? devPeriodSeconds.value * 1000 : null
