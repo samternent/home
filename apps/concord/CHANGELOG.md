@@ -1,5 +1,11 @@
 # concord
 
+## 0.3.9
+
+### Patch Changes
+
+- [`fa764bb7930331100324556649b47b31089d66b9`](https://github.com/samternent/home/commit/fa764bb7930331100324556649b47b31089d66b9) Thanks [@samternent](https://github.com/samternent)! - deploy workflow
+
 ## 0.3.8
 
 ### Patch Changes
