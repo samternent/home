@@ -1,5 +1,11 @@
 # concord
 
+## 0.3.5
+
+### Patch Changes
+
+- [`66c1f3a4fa3bdb6bf904e4e263d79fc1a30d3449`](https://github.com/samternent/home/commit/66c1f3a4fa3bdb6bf904e4e263d79fc1a30d3449) Thanks [@samternent](https://github.com/samternent)! - redirection rules
+
 ## 0.3.4
 
 ### Patch Changes
