@@ -1,5 +1,11 @@
 # concord
 
+## 0.3.6
+
+### Patch Changes
+
+- [`9f159900f7f2d1c22a5c654f5b5aac81f47b6a4c`](https://github.com/samternent/home/commit/9f159900f7f2d1c22a5c654f5b5aac81f47b6a4c) Thanks [@samternent](https://github.com/samternent)! - fix the flicker
+
 ## 0.3.5
 
 ### Patch Changes
