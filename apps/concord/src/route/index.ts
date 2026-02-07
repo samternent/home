@@ -16,6 +16,14 @@ const pixpaxHostChildren = [
     path: "about",
     component: () => import("./pixpax/RoutePixPaxAbout.vue"),
   },
+  {
+    path: "collections",
+    component: () => import("./pixpax/RoutePixPaxCollections.vue"),
+  },
+  {
+    path: "admin",
+    component: () => import("./pixpax/RoutePixPaxAdmin.vue"),
+  },
 ];
 
 const pixpaxHostRoutes = [
