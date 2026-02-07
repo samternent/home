@@ -76,7 +76,7 @@ const profileUsername = computed(() => {
 });
 
 const disabled = computed(
-  () => !profile.ready.value || !profile.profileId.value
+  () => !profile.ready.value || !profile.profileId.value,
 );
 
 const username = shallowRef<string>("");
@@ -86,7 +86,7 @@ const pixbookUploadStatus = shallowRef("");
 const pixbookReadOnly = useLocalStorage("pixpax/pixbook/readOnly", false);
 const viewedPixbookProfileJson = useLocalStorage(
   "pixpax/pixbook/viewProfileJson",
-  ""
+  "",
 );
 const viewedPixbookProfile = computed<PublicProfile | null>({
   get() {
@@ -105,7 +105,7 @@ const viewedPixbookProfile = computed<PublicProfile | null>({
 const publicLedgerSnapshot = useLocalStorage("pixpax/pixbook/publicLedger", "");
 const privateLedgerSnapshot = useLocalStorage(
   "pixpax/pixbook/privateLedger",
-  ""
+  "",
 );
 
 const PIXBOOK_FORMAT = "pixpax-pixbook";
@@ -181,7 +181,7 @@ watch(
     if (!pubKey || !privKey) return;
     await ensurePixbook();
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 watch(
@@ -194,13 +194,13 @@ watch(
       privateLedgerSnapshot.value = "";
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 function downloadText(
   filename: string,
   content: string,
-  mime = "application/json"
+  mime = "application/json",
 ) {
   const blob = new Blob([content], { type: `${mime};charset=utf-8` });
   const url = URL.createObjectURL(blob);
@@ -308,7 +308,7 @@ async function handlePixbookUpload(event: Event) {
   }
 
   const confirmed = window.confirm(
-    "Import this pixbook? This will replace your current pixbook and may replace your identity."
+    "Import this pixbook? This will replace your current pixbook and may replace your identity.",
   );
   if (!confirmed) return;
 
@@ -366,7 +366,7 @@ async function generateNewIdentity(e?: Event) {
   const keys = await createIdentity();
   if (!keys) return;
   publicKeyPEM.value = stripIdentityKey(
-    await exportPublicKeyAsPem(keys.publicKey)
+    await exportPublicKeyAsPem(keys.publicKey),
   );
   publicKey.value = keys.publicKey;
   privateKey.value = keys.privateKey;
@@ -375,7 +375,7 @@ async function generateNewIdentity(e?: Event) {
 
 async function resetIdentityAndProfile() {
   const confirmed = window.confirm(
-    "This will clear the current identity and profile and generate a new one."
+    "This will clear the current identity and profile and generate a new one.",
   );
   if (!confirmed) return;
 
@@ -405,7 +405,7 @@ async function setProfile() {
 
 async function createNewPixbook() {
   const confirmed = window.confirm(
-    "Start a new pixbook? This will replace your current pixbook."
+    "Start a new pixbook? This will replace your current pixbook.",
   );
   if (!confirmed) return;
   pixbookReadOnly.value = false;
@@ -441,7 +441,7 @@ async function returnToMyPixbook() {
 
 async function eraseLocalPixbook() {
   const confirmed = window.confirm(
-    "Erase this pixbook from this browser? This cannot be undone."
+    "Erase this pixbook from this browser? This cannot be undone.",
   );
   if (!confirmed) return;
   pixbookReadOnly.value = false;
@@ -672,7 +672,7 @@ async function eraseLocalPixbook() {
           >
             <span
               class="text-xs font-mono font-thin -translate-y-1 group-hover:translate-y-0.5 group-hover:translate-x-1.5 transition-all duration-300"
-              >Verifiable ownership</span
+              >Verifiable ownership.</span
             >
             <span
               class="text-xs font-mono font-thin -translate-y-1 group-hover:translate-y-0.5 group-hover:translate-x-1.5 transition-all duration-300"
@@ -682,17 +682,23 @@ async function eraseLocalPixbook() {
               class="size-8 group-hover:-rotate-6 transition-all duration-300"
             />
           </a>
-
-          <RouterLink
-            to="/pixpax/about"
-            class="opacity-80 hover:opacity-100 text-xs font-mono font-thin -translate-y-1 hover:-translate-y-0.5 transition-all duration-300"
-            >About</RouterLink
-          >
-          <RouterLink
-            to="/pixpax/admin"
-            class="opacity-80 hover:opacity-100 text-xs font-mono font-thin -translate-y-1 hover:-translate-y-0.5 transition-all duration-300"
-            >Admin</RouterLink
-          >
+          <div class="flex items-center gap-3">
+            <RouterLink
+              to="about"
+              class="opacity-80 hover:opacity-100 text-xs font-mono font-thin -translate-y-1 hover:-translate-y-0.5 transition-all duration-300"
+              >About</RouterLink
+            >
+            <RouterLink
+              to="admin"
+              class="opacity-80 hover:opacity-100 text-xs font-mono font-thin -translate-y-1 hover:-translate-y-0.5 transition-all duration-300"
+              >Admin</RouterLink
+            >
+            <RouterLink
+              to="collections"
+              class="opacity-80 hover:opacity-100 text-xs font-mono font-thin -translate-y-1 hover:-translate-y-0.5 transition-all duration-300"
+              >Collections</RouterLink
+            >
+          </div>
           <div class="flex gap-2 items-center justify-center">
             <a
               href="mailto:sam@ternent.dev"

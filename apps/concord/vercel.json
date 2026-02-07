@@ -4,19 +4,79 @@
   "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/:path((?!assets/)(?!.*\\.[^/]+$).*)",
+      "source": "/assets/:path*",
       "has": [{ "type": "host", "value": "pixpax.xyz" }],
-      "destination": "/spa.html"
+      "destination": "/assets/:path*"
     },
     {
-      "source": "/:path((?!assets/)(?!.*\\.[^/]+$).*)",
+      "source": "/assets/:path*",
       "has": [{ "type": "host", "value": "www.pixpax.xyz" }],
-      "destination": "/spa.html"
+      "destination": "/assets/:path*"
     },
-    { "source": "/workspace", "destination": "/spa.html" },
-    { "source": "/workspace/:path*", "destination": "/spa.html" },
-    { "source": "/pixpax", "destination": "/spa.html" },
-    { "source": "/pixpax/:path*", "destination": "/spa.html" }
+    {
+      "source": "/favicon.ico",
+      "has": [{ "type": "host", "value": "pixpax.xyz" }],
+      "destination": "/favicon.ico"
+    },
+    {
+      "source": "/favicon.ico",
+      "has": [{ "type": "host", "value": "www.pixpax.xyz" }],
+      "destination": "/favicon.ico"
+    },
+    {
+      "source": "/icon.svg",
+      "has": [{ "type": "host", "value": "pixpax.xyz" }],
+      "destination": "/icon.svg"
+    },
+    {
+      "source": "/icon.svg",
+      "has": [{ "type": "host", "value": "www.pixpax.xyz" }],
+      "destination": "/icon.svg"
+    },
+    {
+      "source": "/vite.svg",
+      "has": [{ "type": "host", "value": "pixpax.xyz" }],
+      "destination": "/vite.svg"
+    },
+    {
+      "source": "/vite.svg",
+      "has": [{ "type": "host", "value": "www.pixpax.xyz" }],
+      "destination": "/vite.svg"
+    },
+    {
+      "source": "/pixpax-meta.js",
+      "has": [{ "type": "host", "value": "pixpax.xyz" }],
+      "destination": "/pixpax-meta.js"
+    },
+    {
+      "source": "/pixpax-meta.js",
+      "has": [{ "type": "host", "value": "www.pixpax.xyz" }],
+      "destination": "/pixpax-meta.js"
+    },
+    {
+      "source": "/pixpax-preload.js",
+      "has": [{ "type": "host", "value": "pixpax.xyz" }],
+      "destination": "/pixpax-preload.js"
+    },
+    {
+      "source": "/pixpax-preload.js",
+      "has": [{ "type": "host", "value": "www.pixpax.xyz" }],
+      "destination": "/pixpax-preload.js"
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "pixpax.xyz" }],
+      "destination": "/spa"
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.pixpax.xyz" }],
+      "destination": "/spa"
+    },
+    { "source": "/workspace", "destination": "/spa" },
+    { "source": "/workspace/:path*", "destination": "/spa" },
+    { "source": "/pixpax", "destination": "/spa" },
+    { "source": "/pixpax/:path*", "destination": "/spa" }
   ],
 
   "headers": [
