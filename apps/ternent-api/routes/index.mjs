@@ -1,5 +1,6 @@
 import express from "express";
 import billingRoutes from "./billing/index.mjs";
+import pixpaxCollectionRoutes from "./pixpax/collections/index.mjs";
 import stickerbookRoutes from "./stickerbook/index.mjs";
 
 const router = express.Router();
@@ -11,6 +12,7 @@ router.get("/", (req, res) => {
 billingRoutes(router);
 // murderMysteryRoutes(router);
 stickerbookRoutes(router);
+pixpaxCollectionRoutes(router);
 // createMediaServer();
 
 export default router;

@@ -1,12 +1,12 @@
 export function createPixpaxContentConfigFromEnv() {
-  const endpoint = process.env.PIX_PAX_CONTENT_S3_ENDPOINT || "";
-  const bucket = process.env.PIX_PAX_CONTENT_BUCKET || "";
-  const prefix = process.env.PIX_PAX_CONTENT_PREFIX || "pixpax/collections";
-  const region = process.env.PIX_PAX_CONTENT_REGION || "lon1";
-  const accessKeyId = process.env.PIX_PAX_CONTENT_ACCESS_KEY_ID || "";
-  const secretAccessKey = process.env.PIX_PAX_CONTENT_SECRET_ACCESS_KEY || "";
+  const endpoint = process.env.LEDGER_S3_ENDPOINT || "";
+  const bucket = process.env.LEDGER_CONTENT_BUCKET || process.env.LEDGER_BUCKET || "";
+  const prefix = process.env.LEDGER_CONTENT_PREFIX || "pixpax/collections";
+  const region = process.env.LEDGER_REGION || "lon1";
+  const accessKeyId = process.env.LEDGER_ACCESS_KEY_ID || "";
+  const secretAccessKey = process.env.LEDGER_SECRET_ACCESS_KEY || "";
   const forcePathStyle =
-    String(process.env.PIX_PAX_CONTENT_S3_FORCE_PATH_STYLE || "true").toLowerCase() !==
+    String(process.env.LEDGER_S3_FORCE_PATH_STYLE || "true").toLowerCase() !==
     "false";
 
   const ready =
@@ -132,6 +132,20 @@ async function putJson(gateway, bucket, key, value) {
   });
 }
 
+async function putJsonIfAbsent(gateway, bucket, key, value) {
+  try {
+    await gateway.getObject({ bucket, key });
+    return { created: false, key };
+  } catch (error) {
+    if (!String(error?.message || "").startsWith("NoSuchKey:")) {
+      throw error;
+    }
+  }
+
+  await putJson(gateway, bucket, key, value);
+  return { created: true, key };
+}
+
 async function getJson(gateway, bucket, key) {
   const bytes = await gateway.getObject({ bucket, key });
   return JSON.parse(Buffer.from(bytes).toString("utf8"));
@@ -167,16 +181,34 @@ export class CollectionContentStore {
     return { bucket: this.bucket, key };
   }
 
+  async putCollectionIfAbsent(collectionId, version, collectionJson) {
+    const key = this.buildCollectionKey(collectionId, version);
+    const result = await putJsonIfAbsent(this.gateway, this.bucket, key, collectionJson);
+    return { bucket: this.bucket, key, created: result.created };
+  }
+
   async putIndex(collectionId, version, indexJson) {
     const key = this.buildIndexKey(collectionId, version);
     await putJson(this.gateway, this.bucket, key, indexJson);
     return { bucket: this.bucket, key };
   }
 
+  async putIndexIfAbsent(collectionId, version, indexJson) {
+    const key = this.buildIndexKey(collectionId, version);
+    const result = await putJsonIfAbsent(this.gateway, this.bucket, key, indexJson);
+    return { bucket: this.bucket, key, created: result.created };
+  }
+
   async putCard(collectionId, version, cardId, cardJson) {
     const key = this.buildCardKey(collectionId, version, cardId);
     await putJson(this.gateway, this.bucket, key, cardJson);
     return { bucket: this.bucket, key };
+  }
+
+  async putCardIfAbsent(collectionId, version, cardId, cardJson) {
+    const key = this.buildCardKey(collectionId, version, cardId);
+    const result = await putJsonIfAbsent(this.gateway, this.bucket, key, cardJson);
+    return { bucket: this.bucket, key, created: result.created };
   }
 
   async getCollection(collectionId, version) {
@@ -198,7 +230,9 @@ export class CollectionContentStore {
 export async function createCollectionContentStoreFromEnv() {
   const config = createPixpaxContentConfigFromEnv();
   if (!config.ready) {
-    throw new Error("PIX_PAX_CONTENT_* configuration is incomplete.");
+    throw new Error(
+      "Content store configuration is incomplete. Use LEDGER_* connection vars and LEDGER_CONTENT_PREFIX."
+    );
   }
   const gateway = await createCollectionContentGateway(config);
   return new CollectionContentStore({

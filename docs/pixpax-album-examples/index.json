@@ -1,0 +1,11 @@
+{
+  "series": [
+    { "seriesId": "arsenal", "label": "Arsenal" },
+    { "seriesId": "chelsea", "label": "Chelsea" }
+  ],
+  "cards": ["arsenal-01", "chelsea-01"],
+  "cardMap": {
+    "arsenal-01": { "seriesId": "arsenal", "slotIndex": 0, "role": "player" },
+    "chelsea-01": { "seriesId": "chelsea", "slotIndex": 0, "role": "player" }
+  }
+}

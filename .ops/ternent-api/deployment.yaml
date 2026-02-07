@@ -85,7 +85,7 @@ spec:
                   key: ledger-flush-interval-ms
                   optional: true
             - name: LEDGER_FLUSH_SYNC_ON_ISSUE
-              value: "false"
+              value: "true"
             - name: LEDGER_RECORD_DEV_ISSUES
               valueFrom:
                 secretKeyRef:
@@ -97,5 +97,21 @@ spec:
                 secretKeyRef:
                   name: ternent-api-ledger
                   key: ledger-trusted-issuer-public-keys-json
+                  optional: true
+            - name: PIX_PAX_ADMIN_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-pixpax-content
+                  key: pix-pax-admin-token
+            - name: LEDGER_CONTENT_PREFIX
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-pixpax-content
+                  key: ledger-content-prefix
+            - name: LEDGER_CONTENT_BUCKET
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-pixpax-content
+                  key: ledger-content-bucket
                   optional: true
   

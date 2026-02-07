@@ -108,6 +108,9 @@ Secret `ternent-api-ledger` key mapping:
 
 Reference file: `.ops/ternent-api/secret-ledger.example.yaml`.
 
+PixPax content/admin env mapping is configured directly in:
+- `.ops/ternent-api/deployment.yaml`
+
 ### Single writer requirement
 
 Issuer ledger is fork-sensitive. Deploy issuer service with exactly one replica:
@@ -116,3 +119,9 @@ Issuer ledger is fork-sensitive. Deploy issuer service with exactly one replica:
 ### Graceful shutdown
 
 On `SIGTERM`/`SIGINT`, the service flushes pending ledger events before exiting.
+
+## PixPax album model docs
+
+Curated album model (Model 1), example payloads, and curl flows:
+
+- `docs/pixpax-album-model.md`

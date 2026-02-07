@@ -142,7 +142,7 @@ function savePendingIssuances(pending) {
   writeFileSync(filepath, JSON.stringify(pending, null, 2));
 }
 
-async function loadIssuerKeys() {
+export async function loadIssuerKeys() {
   const privateKeyPem = normalizePem(process.env.ISSUER_PRIVATE_KEY_PEM);
   if (!privateKeyPem) {
     throw new Error("ISSUER_PRIVATE_KEY_PEM is required.");
@@ -155,7 +155,7 @@ async function loadIssuerKeys() {
   return { privateKeyPem, publicKeyPem, author, issuerKeyId };
 }
 
-async function ensureIssuerAuditLedger(keys) {
+export async function ensureIssuerAuditLedger(keys) {
   if (issuerAuditLedger) return issuerAuditLedger;
 
   const config = createLedgerConfigFromEnv({

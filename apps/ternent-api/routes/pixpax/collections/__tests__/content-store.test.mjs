@@ -119,13 +119,13 @@ test("createCollectionContentGatewayFromS3Client maps not-found errors to NoSuch
   });
 });
 
-test("createPixpaxContentConfigFromEnv reads PIX_PAX_CONTENT_* vars", () => {
-  process.env.PIX_PAX_CONTENT_S3_ENDPOINT = "https://example.digitaloceanspaces.com";
-  process.env.PIX_PAX_CONTENT_BUCKET = "pixpax-content";
-  process.env.PIX_PAX_CONTENT_PREFIX = "pixpax/collections";
-  process.env.PIX_PAX_CONTENT_ACCESS_KEY_ID = "abc";
-  process.env.PIX_PAX_CONTENT_SECRET_ACCESS_KEY = "def";
-  process.env.PIX_PAX_CONTENT_REGION = "lon1";
+test("createPixpaxContentConfigFromEnv reads LEDGER_* vars", () => {
+  process.env.LEDGER_S3_ENDPOINT = "https://example.digitaloceanspaces.com";
+  process.env.LEDGER_BUCKET = "pixpax-content";
+  process.env.LEDGER_CONTENT_PREFIX = "pixpax/collections";
+  process.env.LEDGER_ACCESS_KEY_ID = "abc";
+  process.env.LEDGER_SECRET_ACCESS_KEY = "def";
+  process.env.LEDGER_REGION = "lon1";
 
   const config = createPixpaxContentConfigFromEnv();
   assert.equal(config.ready, true);
