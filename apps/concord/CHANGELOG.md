@@ -1,5 +1,11 @@
 # concord
 
+## 0.3.21
+
+### Patch Changes
+
+- [`431e3d0633d5d85048aa5f7e9208d25367d65173`](https://github.com/samternent/home/commit/431e3d0633d5d85048aa5f7e9208d25367d65173) Thanks [@samternent](https://github.com/samternent)! - Updatye vercelks
+
 ## 0.3.20
 
 ### Patch Changes
