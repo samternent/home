@@ -1,5 +1,11 @@
 # ternent-api
 
+## 0.2.10
+
+### Patch Changes
+
+- [`1561be2a34a1a51d810450bbabdb624bff5f7e0c`](https://github.com/samternent/home/commit/1561be2a34a1a51d810450bbabdb624bff5f7e0c) Thanks [@samternent](https://github.com/samternent)! - Adds custom pack minting
+
 ## 0.2.9
 
 ### Patch Changes
