@@ -17,8 +17,8 @@ type PackReceivedPayload = {
     segmentKey?: string;
     segmentHash?: string;
   };
-  issuerSignature: string;
-  issuerKeyId: string;
+  issuerSignature?: string;
+  issuerKeyId?: string;
 };
 
 type StickerTransferPayload = {

@@ -246,6 +246,65 @@ test("album pack endpoint is idempotent per user+drop without override", async (
   assert.equal(issuedCount, 1);
 });
 
+test("dev-untracked issuance allows unlimited packs and skips ledger receipt persistence", async () => {
+  createIssuerKeyEnv();
+  process.env.PIX_PAX_ADMIN_TOKEN = "admin-token";
+  process.env.PIX_PAX_OVERRIDE_CODE_SECRET = "override-secret-for-tests";
+  const store = new CollectionContentStore({
+    bucket: "content",
+    prefix: "pixpax/collections",
+    gateway: createMemoryGateway(),
+  });
+  await seedCollection(store);
+  const router = createRouterHarness();
+  let issuedCount = 0;
+
+  pixpaxCollectionRoutes(router, {
+    createStore: () => store,
+    pickRandomIndex: (max) => (max > 1 ? 1 : 0),
+    now: () => new Date("2026-02-07T12:00:00.000Z"),
+    issueLedgerEntry: async () => {
+      issuedCount += 1;
+      return { segmentKey: "pixpax/ledger/segments/day/seg_deadbeef.jsonl.gz", segmentHash: "deadbeef" };
+    },
+    allowDevUntrackedPacks: true,
+  });
+
+  const first = await router.invoke(
+    "POST",
+    "/v1/pixpax/collections/:collectionId/:version/packs",
+    {
+      params: { collectionId: "premier-league-2026", version: "v1" },
+      body: {
+        userKey: "school:user:abc123",
+        issuanceMode: "dev-untracked",
+      },
+    }
+  );
+  const second = await router.invoke(
+    "POST",
+    "/v1/pixpax/collections/:collectionId/:version/packs",
+    {
+      params: { collectionId: "premier-league-2026", version: "v1" },
+      body: {
+        userKey: "school:user:abc123",
+        issuanceMode: "dev-untracked",
+      },
+    }
+  );
+
+  assert.equal(first.statusCode, 200);
+  assert.equal(second.statusCode, 200);
+  assert.equal(first.body.issuance.mode, "dev-untracked");
+  assert.equal(first.body.issuance.untracked, true);
+  assert.equal(first.body.receipt.segmentKey, null);
+  assert.equal(first.body.receipt.segmentHash, null);
+  assert.equal(first.body.cards.length, 5);
+  assert.equal(first.body.entry.signature, "");
+  assert.notEqual(first.body.packId, second.body.packId);
+  assert.equal(issuedCount, 0);
+});
+
 test("album pack endpoint supports admin override for extra issuance", async () => {
   createIssuerKeyEnv();
   process.env.PIX_PAX_ADMIN_TOKEN = "admin-token";

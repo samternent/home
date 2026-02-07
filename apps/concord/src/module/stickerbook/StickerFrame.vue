@@ -16,24 +16,25 @@ const props = defineProps<StickerFrameProps>();
 
 const isCompact = computed(() => props.compact ?? false);
 const showLabels = computed(
-  () => !!(props.label || props.sublabel || props.status)
+  () => !!(props.label || props.sublabel || props.status),
 );
 const frameSeed = computed(
-  () => props.seed || props.label || props.sublabel || props.rarity || "sticker"
+  () =>
+    props.seed || props.label || props.sublabel || props.rarity || "sticker",
 );
 const frameId = computed(() =>
-  Math.floor(hashToRange(frameSeed.value, 0, 1_000_000_000)).toString()
+  Math.floor(hashToRange(frameSeed.value, 0, 1_000_000_000)).toString(),
 );
 const rarity = computed(() => props.rarity || "common");
 
 const showMythicDots = computed(
-  () => !props.missing && rarity.value === "mythic"
+  () => !props.missing && rarity.value === "mythic",
 );
 const showMythicGlow = computed(
-  () => !props.missing && rarity.value === "mythic"
+  () => !props.missing && rarity.value === "mythic",
 );
 const showMythicBorder = computed(
-  () => !props.missing && rarity.value === "mythic"
+  () => !props.missing && rarity.value === "mythic",
 );
 const mythicBorderDelay = computed(() => {
   const seconds = hashToRange(`${frameSeed.value}:border`, -6, 0);
@@ -45,7 +46,7 @@ const showShimmer = computed(() => {
 });
 
 const shimmerPhaseSeconds = computed(() =>
-  Math.floor(hashToRange(`${frameSeed.value}:shimmer`, 0, 8))
+  Math.floor(hashToRange(`${frameSeed.value}:shimmer`, 0, 8)),
 );
 
 const backdropFill = computed(() => {
@@ -61,12 +62,12 @@ const backdropFill = computed(() => {
 
 <template>
   <div
-    class="flex flex-col items-center justify-center gap-2 text-center max-w-[180px]"
+    class="flex flex-col items-center justify-center gap-2 text-center"
     :class="[isCompact ? 'gap-2' : 'gap-3', missing ? 'opacity-60' : '']"
   >
     <div
       :class="[
-        'relative w-full bg-[var(--ui-surface)]  bg-opacity-10 aspect-4/6 border border-[var(--ui-border)] rounded-sm overflow-hidden',
+        'relative w-full bg-[var(--ui-surface)]  bg-opacity-10 aspect-5/7 border border-[var(--ui-border)] rounded-sm overflow-hidden',
         { 'shimmer-border mythic-border p-0.5': showMythicBorder },
       ]"
       :style="

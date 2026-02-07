@@ -79,6 +79,12 @@ type ApiPackResponse = {
   };
   cards: ApiCard[];
   receipt?: { segmentKey?: string | null; segmentHash?: string | null };
+  issuance?: {
+    mode?: string;
+    reused?: boolean;
+    override?: boolean;
+    untracked?: boolean;
+  };
   packRoot?: string;
   itemHashes?: string[];
 };
@@ -142,6 +148,7 @@ const tabItems = [
   { value: "book", label: "Pixbook" },
   { value: "swaps", label: "Swaps" },
 ];
+const isSeriesSelectionDisabled = computed(() => activeTab.value === "swaps");
 
 const packPhase = ref<"idle" | "opening" | "reveal" | "done">("idle");
 const packError = ref("");
@@ -153,6 +160,15 @@ const { publicKey, receivedPacks, recordPackAndCommit } = useStickerbook();
 const route = useRoute();
 const router = useRouter();
 const overrideCode = ref("");
+const devUntrackedPackEnabled =
+  import.meta.env.DEV ||
+  String(import.meta.env.VITE_PIXPAX_DEV_UNTRACKED_PACKS || "")
+    .trim()
+    .toLowerCase() === "true";
+const packMode = useLocalStorage<"weekly" | "dev-untracked">(
+  "pixpax/collections/pack-mode",
+  devUntrackedPackEnabled ? "dev-untracked" : "weekly",
+);
 const now = ref(Date.now());
 let nowTimer: number | null = null;
 
@@ -337,7 +353,9 @@ const canOpenPack = computed(
   () =>
     !!selectedCollection.value &&
     selectedCollection.value.stickers.length > 0 &&
-    (!openedForCurrentDrop.value || !!overrideCode.value.trim()) &&
+    (packMode.value === "dev-untracked" ||
+      !openedForCurrentDrop.value ||
+      !!overrideCode.value.trim()) &&
     packPhase.value !== "opening" &&
     packPhase.value !== "reveal",
 );
@@ -346,6 +364,7 @@ const openPackLabel = computed(() => {
   if (packPhase.value === "opening" || packPhase.value === "reveal") {
     return "Opening pack...";
   }
+  if (packMode.value === "dev-untracked") return "Open dev pack";
   if (overrideCode.value.trim()) return "Redeem code pack";
   if (openedForCurrentDrop.value) return "Open next weekly pack";
   return "Open pack";
@@ -375,13 +394,18 @@ const nextDropLabel = computed(() => {
 });
 const packActionLabel = computed(() => {
   if (canOpenPack.value) return openPackLabel.value;
-  if (openedForCurrentDrop.value && !overrideCode.value.trim()) {
+  if (
+    packMode.value !== "dev-untracked" &&
+    openedForCurrentDrop.value &&
+    !overrideCode.value.trim()
+  ) {
     return `Next pack in ${nextDropLabel.value}`;
   }
   return openPackLabel.value;
 });
 
 function selectPrevSeries() {
+  if (isSeriesSelectionDisabled.value) return;
   if (!seriesOptions.value.length) return;
   const nextIndex =
     selectedSeriesIndex.value <= 0
@@ -391,6 +415,7 @@ function selectPrevSeries() {
 }
 
 function selectNextSeries() {
+  if (isSeriesSelectionDisabled.value) return;
   if (!seriesOptions.value.length) return;
   const nextIndex =
     selectedSeriesIndex.value >= seriesOptions.value.length - 1
@@ -615,6 +640,13 @@ watch(
   },
 );
 
+watch(
+  () => activeTab.value,
+  (nextTab) => {
+    if (nextTab === "swaps") selectedSeries.value = "all";
+  },
+);
+
 async function openPack() {
   if (!canOpenPack.value || !selectedCollection.value) return;
 
@@ -633,9 +665,10 @@ async function openPack() {
   try {
     const payload = {
       userKey: resolveIssuedUserKey(),
+      issuanceMode: packMode.value,
     };
     const normalizedOverrideCode = overrideCode.value.trim();
-    if (normalizedOverrideCode) {
+    if (normalizedOverrideCode && packMode.value !== "dev-untracked") {
       (payload as any).overrideCode = normalizedOverrideCode;
     }
 
@@ -688,6 +721,8 @@ async function openPack() {
     let commitRecorded = false;
     let commitError = "";
     try {
+      const canRecordDevUntrackedPack =
+        String(response.issuance?.mode || "").trim() === "dev-untracked";
       if (responseSignature && responseIssuerKeyId) {
         await recordPackAndCommit({
           type: "pack.received",
@@ -733,6 +768,20 @@ async function openPack() {
           });
           commitRecorded = true;
         }
+      } else if (canRecordDevUntrackedPack) {
+        await recordPackAndCommit({
+          type: "pack.received",
+          packId: response.packId,
+          issuerIssuePayload: responsePayload,
+          renderPayload: {
+            kitParts: toKitParts(nextCards),
+          },
+          receiptRef: {
+            segmentKey: response.receipt?.segmentKey || "",
+            segmentHash: response.receipt?.segmentHash || "",
+          },
+        });
+        commitRecorded = true;
       }
     } catch (error: any) {
       commitError = error?.message || String(error);
@@ -781,6 +830,9 @@ function isOwned(stickerId: string): boolean {
 }
 
 onMounted(async () => {
+  if (!devUntrackedPackEnabled && packMode.value === "dev-untracked") {
+    packMode.value = "weekly";
+  }
   nowTimer = window.setInterval(() => {
     now.value = Date.now();
   }, 1000);
@@ -811,6 +863,15 @@ watch(
     }
   },
 );
+
+watch(
+  () => packMode.value,
+  (mode) => {
+    if (mode === "dev-untracked") {
+      overrideCode.value = "";
+    }
+  },
+);
 </script>
 
 <template>
@@ -820,7 +881,7 @@ watch(
   >
     <div class="flex flex-1 flex-col gap-2">
       <section
-        class="mx-auto flex w-full max-w-4xl flex-col gap-4 px-4 relative sticky top-[57px] z-20 backdrop-blur-xl p-4 border-b border-[var(--ui-border)]"
+        class="mx-auto flex w-full max-w-4xl flex-col gap-4 px-4 relative backdrop-blur-xl p-4 border-b border-[var(--ui-border)]"
       >
         <div class="header-main">
           <div class="flex items-center justify-between gap-4">
@@ -845,17 +906,17 @@ watch(
 
           <div class="flex flex-col w-full">
             <h1
-              class="collection-title text-[var(--ui-fg)] font-[900] no-underline tracking-[-0.08em] brand"
+              class="collection-title z-1 text-[var(--ui-fg)] font-[900] no-underline tracking-[-0.08em] brand"
             >
               {{ selectedCollection?.name }}
             </h1>
 
             <div class="flex flex-col gap-2">
               <div
-                class="h-1.5 lg:h-2.5 w-full rounded-full bg-[var(--ui-fg)]/10 ring-1 ring-[var(--ui-fg)]/20"
+                class="h-1.5 lg:h-2 w-full rounded-full bg-[var(--ui-fg)]/10 ring-1 ring-[var(--ui-fg)]/20"
               >
                 <div
-                  class="h-full rounded-full bg-[var(--ui-fg)] transition-[width] duration-300"
+                  class="h-full rounded-full bg-[var(--ui-fg)]/80 transition-[width] duration-300"
                   :style="{ width: `${collectionProgressPercent}%` }"
                 ></div>
               </div>
@@ -883,6 +944,14 @@ watch(
             >
               Pack drop
             </span>
+            <select
+              v-if="devUntrackedPackEnabled"
+              v-model="packMode"
+              class="rounded-full border border-[var(--ui-border)] px-3 py-1 text-xs text-[var(--ui-fg)]"
+            >
+              <option value="weekly">Weekly tracked</option>
+              <option value="dev-untracked">Dev untracked</option>
+            </select>
             <Button
               class="!px-5 !py-2 !tracking-[-0.02em] !bg-[var(--ui-accent)]"
               :disabled="!canOpenPack"
@@ -895,6 +964,7 @@ watch(
               v-model="overrideCode"
               type="text"
               placeholder="Paste gift code (PPX-XXXX-...)"
+              :disabled="packMode === 'dev-untracked'"
               autocomplete="off"
               spellcheck="false"
             />
@@ -929,6 +999,7 @@ watch(
                 type="button"
                 class="series-arrow"
                 aria-label="Previous series"
+                :disabled="isSeriesSelectionDisabled"
                 @click="selectPrevSeries"
               >
                 ‹
@@ -937,6 +1008,7 @@ watch(
                 v-model="selectedSeries"
                 class="rounded-full border border-[var(--ui-border)] px-3 py-1 text-xs text-[var(--ui-fg)]"
                 aria-label="Filter by series"
+                :disabled="isSeriesSelectionDisabled"
               >
                 <option
                   v-for="entry in seriesOptions"
@@ -950,6 +1022,7 @@ watch(
                 type="button"
                 class="series-arrow"
                 aria-label="Next series"
+                :disabled="isSeriesSelectionDisabled"
                 @click="selectNextSeries"
               >
                 ›
@@ -968,32 +1041,27 @@ watch(
         class="mx-auto w-full max-w-4xl pb-8"
       >
         <div class="flex flex-col gap-6" v-if="!isPackRevealOpen">
-          <div
-            class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 justify-items-center"
+          <p v-if="packError" class="text-sm font-semibold text-red-600">
+            {{ packError }}
+          </p>
+          <p v-if="loadError" class="text-sm font-semibold text-red-600">
+            {{ loadError }}
+          </p>
+          <p
+            v-if="loadingCollections || loadingCards"
+            class="text-xs text-[var(--ui-fg-muted)]"
           >
-            <p v-if="packError" class="text-sm font-semibold text-red-600">
-              {{ packError }}
-            </p>
-            <p v-if="loadError" class="text-sm font-semibold text-red-600">
-              {{ loadError }}
-            </p>
-            <p
-              v-if="loadingCollections || loadingCards"
-              class="text-xs text-[var(--ui-fg-muted)]"
-            >
-              {{
-                loadingCollections
-                  ? "Loading collections..."
-                  : "Loading cards..."
-              }}
-            </p>
+            {{
+              loadingCollections ? "Loading collections..." : "Loading cards..."
+            }}
+          </p>
+          <div class="flex gap-3 justify-items-center flex-wrap justify-center">
             <PixPaxStickerCard
               v-for="sticker in visibleStickers"
               :key="sticker.meta.id"
               :sticker="sticker"
               :palette="selectedCollection!.palette"
               :missing="!isOwned(sticker.meta.id)"
-              compact
             />
           </div>
         </div>
@@ -1148,6 +1216,12 @@ watch(
   color: var(--ui-fg);
   font-size: 18px;
   line-height: 1;
+}
+
+.series-arrow:disabled,
+.series-nav select:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .series-meta {

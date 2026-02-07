@@ -72,6 +72,13 @@ function clampPackCardCount(value) {
   return Math.trunc(count);
 }
 
+function isTruthyEnv(value) {
+  const normalized = String(value || "")
+    .trim()
+    .toLowerCase();
+  return normalized === "1" || normalized === "true" || normalized === "yes" || normalized === "on";
+}
+
 const DEFAULT_PACK_COUNT = 5;
 const DEFAULT_OVERRIDE_CODE_TTL_SECONDS = 14 * 24 * 60 * 60;
 const MAX_OVERRIDE_CODE_TTL_SECONDS = 30 * 24 * 60 * 60;
@@ -212,6 +219,10 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
   const createStore = options.createStore || createCollectionContentStoreFromEnv;
   const pickRandomIndex = options.pickRandomIndex || randomIndex;
   const now = options.now || (() => new Date());
+  const allowDevUntrackedPacks =
+    options.allowDevUntrackedPacks === true ||
+    isTruthyEnv(process.env.PIX_PAX_ALLOW_DEV_UNTRACKED_PACKS) ||
+    process.env.NODE_ENV !== "production";
   const issueLedgerEntry =
     options.issueLedgerEntry ||
     (async ({ entryId, entry, issuerKeys }) => {
@@ -506,10 +517,20 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
     const { collectionId, version } = req.params || {};
     const rawUserKey = req.body?.userKey;
     const normalizedUserKey = canonicalizeUserKey(rawUserKey);
+    const requestedIssuanceMode = String(req.body?.issuanceMode || "").trim().toLowerCase();
+    const wantsDevUntrackedPack = requestedIssuanceMode === "dev-untracked";
     const overrideCode = String(req.body?.overrideCode || "").trim();
     const wantsOverride = req.body?.override === true;
+    if (wantsDevUntrackedPack && !allowDevUntrackedPacks) {
+      res.status(403).send({ error: "Dev untracked pack issuance is disabled." });
+      return;
+    }
     if (wantsOverride && overrideCode) {
       res.status(400).send({ error: "Provide either override=true or overrideCode, not both." });
+      return;
+    }
+    if (wantsDevUntrackedPack && (wantsOverride || overrideCode)) {
+      res.status(400).send({ error: "dev-untracked issuance cannot be combined with override flags." });
       return;
     }
     if (wantsOverride && !requireAdminToken(req, res)) return;
@@ -560,6 +581,8 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
     }
     const dropId = overridePayload
       ? String(overridePayload.dropId)
+      : wantsDevUntrackedPack
+      ? String(requestedDropId || `dev-${Date.parse(issuedAt)}`).trim()
       : String(requestedDropId || `week-${toIsoWeek(new Date(issuedAt))}`).trim();
     if (overridePayload && requestedDropId && requestedDropId !== dropId) {
       res.status(400).send({ error: "dropId does not match override code." });
@@ -605,7 +628,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
           if (!String(error?.message || "").startsWith("NoSuchKey:")) throw error;
         }
       }
-      if (!wantsOverride && !overridePayload) {
+      if (!wantsOverride && !overridePayload && !wantsDevUntrackedPack) {
         try {
           const existingClaim = await store.getPackClaim(collectionId, version, dropId, issuedTo);
           if (existingClaim?.response) {
@@ -667,14 +690,15 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
         packRoot,
       });
 
-      const issuerKeys = await loadIssuerKeys();
+      let entry = null;
+      let appendResult = null;
       const payload = {
         type: "pack.issued",
         packModel: PACK_MODELS.ALBUM,
         packId,
         issuedAt,
-        issuerKeyId: issuerKeys.issuerKeyId,
-        issuedBy: issuerKeys.author,
+        issuerKeyId: null,
+        issuedBy: wantsDevUntrackedPack ? "dev-untracked" : null,
         issuedTo,
         userKeyHash: issuedTo,
         dropId,
@@ -687,19 +711,32 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
         contentsCommitment,
       };
 
-      const entryCore = {
-        kind: "pack.issued",
-        timestamp: issuedAt,
-        author: issuerKeys.author,
-        payload,
-      };
-      const signature = await signPayload(
-        issuerKeys.privateKeyPem,
-        getEntrySigningPayload(entryCore)
-      );
-      const entry = { ...entryCore, signature };
-      const entryId = await deriveEntryId(entry);
-      const appendResult = await issueLedgerEntry({ entryId, entry, issuerKeys });
+      if (!wantsDevUntrackedPack) {
+        const issuerKeys = await loadIssuerKeys();
+        payload.issuerKeyId = issuerKeys.issuerKeyId;
+        payload.issuedBy = issuerKeys.author;
+        const entryCore = {
+          kind: "pack.issued",
+          timestamp: issuedAt,
+          author: issuerKeys.author,
+          payload,
+        };
+        const signature = await signPayload(
+          issuerKeys.privateKeyPem,
+          getEntrySigningPayload(entryCore)
+        );
+        entry = { ...entryCore, signature };
+        const entryId = await deriveEntryId(entry);
+        appendResult = await issueLedgerEntry({ entryId, entry, issuerKeys });
+      } else {
+        entry = {
+          kind: "pack.issued",
+          timestamp: issuedAt,
+          author: "dev-untracked",
+          payload,
+          signature: "",
+        };
+      }
       const responsePayload = {
         packId,
         packModel: PACK_MODELS.ALBUM,
@@ -740,7 +777,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
           });
           return;
         }
-      } else if (!wantsOverride) {
+      } else if (!wantsOverride && !wantsDevUntrackedPack) {
         const claimResult = await store.putPackClaimIfAbsent(
           collectionId,
           version,
@@ -771,9 +808,16 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
       res.status(200).send({
         ...responsePayload,
         issuance: {
-          mode: overridePayload ? "override-code" : wantsOverride ? "override" : "weekly",
+          mode: overridePayload
+            ? "override-code"
+            : wantsOverride
+            ? "override"
+            : wantsDevUntrackedPack
+            ? "dev-untracked"
+            : "weekly",
           reused: false,
           override: wantsOverride || !!overridePayload,
+          untracked: wantsDevUntrackedPack,
           codeId: overridePayload?.codeId || null,
           bindToUser: overridePayload?.bindToUser ?? null,
           dropId,

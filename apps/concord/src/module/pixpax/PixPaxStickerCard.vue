@@ -40,15 +40,15 @@ const finishClass = computed(() => {
 });
 
 const displayLabel = computed(() =>
-  props.missing ? "Unknown Sticker" : props.sticker.meta.name
+  props.missing ? "Unknown Sticker" : props.sticker.meta.name,
 );
 const displayStatus = computed(() =>
-  props.missing ? "unowned" : props.sticker.meta.rarity
+  props.missing ? "unowned" : props.sticker.meta.rarity,
 );
 </script>
 
 <template>
-  <div class="sticker-card">
+  <div class="w-64">
     <StickerFrame
       :rarity="frameRarity"
       :compact="props.compact"
@@ -62,7 +62,7 @@ const displayStatus = computed(() =>
         <CanvasSticker16
           :art="sticker.art"
           :palette="props.palette"
-          :scale="8"
+          :scale="18"
           :class="['mx-auto', props.missing ? 'art-missing' : '']"
         />
         <div
@@ -72,91 +72,5 @@ const displayStatus = computed(() =>
         />
       </div>
     </StickerFrame>
-    <div class="meta-row">
-      <span class="chip">{{ props.missing ? "mystery" : sticker.meta.rarity }}</span>
-      <span class="chip">{{ props.missing ? "locked" : finishLabel }}</span>
-    </div>
   </div>
 </template>
-
-<style scoped>
-.sticker-card {
-  display: grid;
-  gap: 6px;
-}
-
-.art-wrap {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 10px 0;
-  min-height: 138px;
-}
-
-.art-missing {
-  filter: grayscale(1) saturate(0.1);
-  opacity: 0.26;
-}
-
-.finish-overlay {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  border-radius: 8px;
-}
-
-.finish-holo {
-  background: linear-gradient(
-    120deg,
-    transparent 20%,
-    color-mix(in srgb, var(--ui-primary) 32%, transparent) 42%,
-    color-mix(in srgb, var(--ui-secondary) 34%, transparent) 58%,
-    transparent 80%
-  );
-  animation: holo-shift 2.8s linear infinite;
-}
-
-.finish-gold {
-  background: linear-gradient(
-    135deg,
-    transparent,
-    rgba(255, 208, 84, 0.3),
-    transparent
-  );
-}
-
-.finish-silver {
-  background: linear-gradient(
-    135deg,
-    transparent,
-    rgba(210, 220, 230, 0.34),
-    transparent
-  );
-}
-
-.meta-row {
-  display: flex;
-  justify-content: center;
-  gap: 6px;
-}
-
-.chip {
-  border: 1px solid var(--ui-border);
-  border-radius: 9999px;
-  padding: 2px 8px;
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--ui-fg-muted);
-}
-
-@keyframes holo-shift {
-  0% {
-    transform: translateX(-18%);
-  }
-  100% {
-    transform: translateX(18%);
-  }
-}
-</style>
