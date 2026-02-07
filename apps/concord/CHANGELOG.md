@@ -1,5 +1,11 @@
 # concord
 
+## 0.3.19
+
+### Patch Changes
+
+- [`c4d7dd1c94d1ea777e121c66cb723a1ad2bad747`](https://github.com/samternent/home/commit/c4d7dd1c94d1ea777e121c66cb723a1ad2bad747) Thanks [@samternent](https://github.com/samternent)! - deterministic packs
+
 ## 0.3.18
 
 ### Patch Changes
