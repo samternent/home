@@ -502,14 +502,18 @@ watch(
       const issuePayload = pack.data?.issuerIssuePayload;
       if (!issuePayload || issuePayload.seriesId !== selectedSeriesId.value)
         continue;
-      const entries = generatePack({
-        packSeed: issuePayload.packSeed,
-        seriesId: issuePayload.seriesId,
-        themeId: issuePayload.themeId,
-        count: issuePayload.count,
-        algoVersion: issuePayload.algoVersion,
-        kitJson,
-      });
+      const entries = Array.isArray(pack.data?.renderPayload?.kitParts)
+        ? pack.data.renderPayload.kitParts
+        : issuePayload.packSeed
+        ? generatePack({
+            packSeed: issuePayload.packSeed,
+            seriesId: issuePayload.seriesId,
+            themeId: issuePayload.themeId,
+            count: issuePayload.count,
+            algoVersion: issuePayload.algoVersion,
+            kitJson,
+          })
+        : [];
 
       const resolved = await Promise.all(
         entries.map(async (entry: any) => {
@@ -525,7 +529,7 @@ watch(
           const rarity = catalogueEntry?.rarity ?? entry.rarity;
           return {
             stickerId,
-            packId: issuePayload.packRoot,
+            packId: issuePayload.packId || pack.data?.packId || issuePayload.packRoot,
             index: entry.index,
             rarity,
             entry,
@@ -679,7 +683,10 @@ async function openWeeklyPack(options: { force?: boolean } = {}) {
     });
 
     if (!commitResponse.ok) {
-      throw new Error(`Failed to commit pack (${commitResponse.status})`);
+      const errorBody = await commitResponse.text();
+      throw new Error(
+        `Failed to commit pack (${commitResponse.status}): ${errorBody || "unknown error"}`
+      );
     }
     const commitData = await commitResponse.json();
 
@@ -690,7 +697,10 @@ async function openWeeklyPack(options: { force?: boolean } = {}) {
     });
 
     if (!issueResponse.ok) {
-      throw new Error(`Failed to issue pack (${issueResponse.status})`);
+      const errorBody = await issueResponse.text();
+      throw new Error(
+        `Failed to issue pack (${issueResponse.status} ${issueResponse.statusText}): ${errorBody || "<empty response body>"}`
+      );
     }
     const issueData = await issueResponse.json();
 
@@ -699,6 +709,7 @@ async function openWeeklyPack(options: { force?: boolean } = {}) {
       issue: issueData.entry,
       issuerPublicKeyPem,
       catalogue: catalogue.value,
+      reveal: issueData.pack,
     });
 
     if (!verification.ok) {
@@ -706,7 +717,7 @@ async function openWeeklyPack(options: { force?: boolean } = {}) {
     }
     const issuePayload = issueData.entry.payload;
     const entries = verification.entries;
-    const packId = issuePayload.packRoot;
+    const packId = issuePayload.packId || issuePayload.packRoot;
 
     const packEntries = await Promise.all(
       entries.map(async (entry: any) => {
@@ -756,7 +767,7 @@ async function openWeeklyPack(options: { force?: boolean } = {}) {
       themeId: issuePayload.themeId,
       periodId: periodId.value,
       profileId: profileId.value,
-      packSeed: issuePayload.packSeed,
+      packSeed: issueData.pack?.packSeed,
       packRoot: issuePayload.packRoot,
       algoVersion: issuePayload.algoVersion,
       kitHash: issuePayload.kitHash,
@@ -771,10 +782,23 @@ async function openWeeklyPack(options: { force?: boolean } = {}) {
     revealDismissed.value = false;
 
     if (!openedPackIds.value.has(packId)) {
+      const renderKitParts = issueData.pack?.entries || [];
+      const renderGridB64 =
+        typeof window !== "undefined"
+          ? window.btoa(JSON.stringify(renderKitParts))
+          : "";
       const packPayload = {
         type: "pack.received",
         packId,
         issuerIssuePayload: issueData.entry.payload,
+        renderPayload: {
+          gridB64: renderGridB64,
+          kitParts: renderKitParts,
+        },
+        receiptRef: {
+          segmentKey: issueData.receipt?.segmentKey || "",
+          segmentHash: issueData.receipt?.segmentHash || "",
+        },
         issuerSignature: issueData.entry.signature,
         issuerKeyId: issueData.entry.payload?.issuerKeyId,
       };

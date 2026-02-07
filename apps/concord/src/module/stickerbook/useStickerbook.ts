@@ -9,6 +9,14 @@ type PackReceivedPayload = {
   type: "pack.received";
   packId: string;
   issuerIssuePayload: Record<string, any>;
+  renderPayload?: {
+    gridB64?: string;
+    kitParts?: Record<string, any>[];
+  };
+  receiptRef?: {
+    segmentKey?: string;
+    segmentHash?: string;
+  };
   issuerSignature: string;
   issuerKeyId: string;
 };

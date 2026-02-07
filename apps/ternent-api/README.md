@@ -1,111 +1,118 @@
 # ternent-api
 
-A brief description of what your project does and why it’s useful.
+## PixPax issuer audit ledger
 
-## Table of Contents
+`/v1/stickerbook/issue` writes a signed `pack.issued` Concord entry to an append-only
+issuer ledger in DigitalOcean Spaces (S3-compatible).
 
-- [Installation](#installation)
-- [Usage](#usage)
-- [Features](#features)
-- [Configuration](#configuration)
-- [Examples](#examples)
-- [Contributing](#contributing)
-- [License](#license)
+Ledger guarantees:
+- append-only segments (`.jsonl.gz`) with `prevSegmentHash` + `prevSegmentKey`
+- content-addressed segment key (`seg_<sha256>.jsonl.gz`)
+- fixed minimal checkpoint pointer (`checkpoint.json`)
+- signed Concord entry per issuance (`issuerKeyId` supports key rotation)
+- no secrets persisted in ledger events (`serverSecret`, `clientNonce`, `packSeed` excluded)
 
-## Installation
+### Hash input definition
 
-### Prerequisites
+Segment hash is always:
+- `sha256(uncompressed-jsonl-utf8-bytes)`
 
-List any prerequisites, software, or tools that need to be installed before the application or package can be used.
+This hash is used for:
+- `seg_<sha256>.jsonl.gz` file key naming
+- `checkpoint.headSegmentHash`
+- `segment.meta.prevSegmentHash` chaining
 
-'bash
+### Bucket layout
 
-# Example: Clone the repository
+- `<LEDGER_PREFIX>/checkpoint.json`
+- `<LEDGER_PREFIX>/segments/YYYY-MM-DD/seg_<sha256>.jsonl.gz`
 
-git clone https://github.com/your-username/your-repo-name.git
-'
+### Required environment variables
 
-### Install the dependencies
+- `ISSUER_PRIVATE_KEY_PEM`
+- `LEDGER_S3_ENDPOINT` (example: `https://lon1.digitaloceanspaces.com`)
+- `LEDGER_BUCKET`
+- `LEDGER_PREFIX` (example: `pixpax/ledger`)
+- `LEDGER_ACCESS_KEY_ID`
+- `LEDGER_SECRET_ACCESS_KEY`
+- `LEDGER_REGION` (example: `lon1`)
 
-Provide instructions on how to install dependencies.
+Optional:
+- `ISSUER_KEY_ID`
+- `LEDGER_FLUSH_MAX_EVENTS` (default `200`)
+- `LEDGER_FLUSH_INTERVAL_MS` (default `60000`)
+- `LEDGER_FLUSH_SYNC_ON_ISSUE` (default `false`; set `true` for immediate durability per issuance)
+- `LEDGER_RECORD_DEV_ISSUES` (default `false`; in non-production, skip ledger writes unless explicitly `true`)
+- `LEDGER_TRUSTED_ISSUER_PUBLIC_KEYS_JSON`
+- `LEDGER_S3_FORCE_PATH_STYLE` (`true` by default)
 
-'bash
+### Trusted issuer keys JSON schema (strict)
 
-# Example: Using npm or pip
+`LEDGER_TRUSTED_ISSUER_PUBLIC_KEYS_JSON` must be:
 
-npm install
-'
+```json
+[
+  {
+    "keyId": "<64-char sha256 hex fingerprint>",
+    "publicKeyPem": "-----BEGIN PUBLIC KEY-----\\n...\\n-----END PUBLIC KEY-----\\n"
+  }
+]
+```
 
-'bash
+Validation rules:
+- value must be valid JSON
+- top-level must be an array
+- each element must include `keyId` and `publicKeyPem`
+- `keyId` must exactly match `sha256(publicKeyPem normalized)`
 
-# or
+Invalid shape fails startup.
 
-pip install -r requirements.txt
-'
+### Verify a receipt
 
-## Usage
+Endpoint:
+- `GET /v1/pixpax/receipt/:packId?segmentKey=<key>`
 
-Describe how to use the application or package. Include code snippets and examples as necessary.
+CLI:
+```bash
+pnpm pixpax:verify -- --packId <pack-id> --segmentKey <segment-key>
+```
 
-'bash
+Derive issuer key formats from `ISSUER_PRIVATE_KEY_PEM`:
+```bash
+pnpm pixpax:derive-issuer-key-formats -- --env-file .ops/ternent-api/.env
+```
 
-# Example: Running the application
+Verifier checks:
+- segment key hash matches segment content hash
+- checkpoint head consistency
+- parent chain (`prevSegmentHash`/`prevSegmentKey`)
+- entry signature against trusted issuer keys
 
-npm start
-'
+### Kubernetes secret mapping
 
-'bash
+Deployment uses explicit `env` + `secretKeyRef` (not `envFrom`).
 
-# or
+Secret `ternent-api-ledger` key mapping:
+- `ledger-s3-endpoint` -> `LEDGER_S3_ENDPOINT`
+- `ledger-bucket` -> `LEDGER_BUCKET`
+- `ledger-prefix` -> `LEDGER_PREFIX`
+- `ledger-access-key-id` -> `LEDGER_ACCESS_KEY_ID`
+- `ledger-secret-access-key` -> `LEDGER_SECRET_ACCESS_KEY`
+- `ledger-region` -> `LEDGER_REGION`
+- `ledger-flush-max-events` -> `LEDGER_FLUSH_MAX_EVENTS`
+- `ledger-flush-interval-ms` -> `LEDGER_FLUSH_INTERVAL_MS`
+- `ledger-flush-sync-on-issue` -> `LEDGER_FLUSH_SYNC_ON_ISSUE`
+- `ledger-record-dev-issues` -> `LEDGER_RECORD_DEV_ISSUES`
+- `ledger-trusted-issuer-public-keys-json` -> `LEDGER_TRUSTED_ISSUER_PUBLIC_KEYS_JSON`
+- `issuer-key-id` -> `ISSUER_KEY_ID`
 
-python main.py
-'
+Reference file: `.ops/ternent-api/secret-ledger.example.yaml`.
 
-## Features
+### Single writer requirement
 
-Highlight the key features of your project.
+Issuer ledger is fork-sensitive. Deploy issuer service with exactly one replica:
+- `.ops/ternent-api/deployment.yaml` sets `spec.replicas: 1`
 
-- **Feature 1**: Description
-- **Feature 2**: Description
-- **Feature 3**: Description
+### Graceful shutdown
 
-## Configuration
-
-Explain any configuration options available and how to set them up.
-
-'json
-{
-"setting1": "value1",
-"setting2": "value2"
-}
-'
-
-## Examples
-
-Provide some examples of how to use your project effectively. This can include code snippets, command-line examples, or screenshots.
-
-'python
-
-# Example: Python usage
-
-from yourpackage import yourmodule
-
-result = yourmodule.yourfunction()
-print(result)
-'
-
-## Contributing
-
-Explain how others can contribute to the project. Include details on how to report issues, submit pull requests, or contribute in other ways.
-
-1. Fork the project
-2. Create a new branch ('git checkout -b feature/your-feature')
-3. Commit your changes ('git commit -m 'Add some feature'')
-4. Push to the branch ('git push origin feature/your-feature')
-5. Open a pull request
-
-## License
-
-Include the license under which the project is distributed. If you’re using a standard license, you can just link to it.
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+On `SIGTERM`/`SIGINT`, the service flushes pending ledger events before exiting.

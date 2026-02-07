@@ -75,6 +75,32 @@ export async function verifyCommitRevealConsistency(commit: any, issue: any) {
   return expectedPackSeed === issuePayload.packSeed;
 }
 
+export async function verifyCommitRevealFromPayloads(params: {
+  commitPayload: any;
+  revealPayload: any;
+}) {
+  const commitPayload = params.commitPayload;
+  const revealPayload = params.revealPayload;
+  if (!commitPayload || !revealPayload) return false;
+  if (commitPayload.packRequestId !== revealPayload.packRequestId) return false;
+
+  const expectedServerCommit = await hashCanonical(revealPayload.serverSecret);
+  if (expectedServerCommit !== commitPayload.serverCommit) return false;
+
+  const expectedClientNonceHash = await hashCanonical(revealPayload.clientNonce);
+  if (expectedClientNonceHash !== commitPayload.clientNonceHash) return false;
+
+  const expectedPackSeed = await derivePackSeed({
+    serverSecret: revealPayload.serverSecret,
+    clientNonce: revealPayload.clientNonce,
+    packRequestId: revealPayload.packRequestId,
+    seriesId: revealPayload.seriesId,
+    themeId: revealPayload.themeId,
+  });
+
+  return expectedPackSeed === revealPayload.packSeed;
+}
+
 export async function recomputePackSeed(issue: any) {
   const payload = issue?.payload;
   if (!payload) return null;
@@ -111,6 +137,7 @@ export async function verifyPackIssue(params: {
   issue: any;
   issuerPublicKeyPem: string;
   catalogue: any;
+  reveal?: any;
 }) {
   const commitOk = await verifyIssuerSignature(
     params.commit,
@@ -124,13 +151,28 @@ export async function verifyPackIssue(params: {
   );
   if (!issueOk) return { ok: false, reason: "issue-signature" } as const;
 
-  const revealOk = await verifyCommitRevealConsistency(
-    params.commit,
-    params.issue
-  );
-  if (!revealOk) return { ok: false, reason: "commit-reveal" } as const;
-
   const payload = params.issue?.payload;
+  const revealPayload = params.reveal || null;
+
+  if (payload?.type === "pack.issue") {
+    const revealOk = await verifyCommitRevealConsistency(
+      params.commit,
+      params.issue
+    );
+    if (!revealOk) return { ok: false, reason: "commit-reveal" } as const;
+  } else if (payload?.type === "pack.issued") {
+    if (!revealPayload) {
+      return { ok: false, reason: "missing-reveal" } as const;
+    }
+    const revealOk = await verifyCommitRevealFromPayloads({
+      commitPayload: params.commit?.payload,
+      revealPayload,
+    });
+    if (!revealOk) return { ok: false, reason: "commit-reveal" } as const;
+  } else {
+    return { ok: false, reason: "unsupported-issue-type" } as const;
+  }
+
   const kitJson = deriveKitFromCatalogue(params.catalogue);
   const kitHash = await hashCanonical(kitJson);
   if (kitHash !== payload?.kitHash) {
@@ -149,7 +191,7 @@ export async function verifyPackIssue(params: {
   }
 
   const recomputedRoot = await recomputePackRoot({
-    packSeed: payload.packSeed,
+    packSeed: revealPayload?.packSeed || payload.packSeed,
     seriesId: payload.seriesId,
     themeId: payload.themeId,
     count: payload.count,
@@ -165,7 +207,7 @@ export async function verifyPackIssue(params: {
     ok: true,
     kitJson,
     entries: generatePack({
-      packSeed: payload.packSeed,
+      packSeed: revealPayload?.packSeed || payload.packSeed,
       seriesId: payload.seriesId,
       themeId: payload.themeId,
       count: payload.count,

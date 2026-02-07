@@ -4,6 +4,7 @@ metadata:
   name: ternent-api
   namespace: backend
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: ternent-api
@@ -30,4 +31,70 @@ spec:
                 secretKeyRef:
                   name: ternent-api-env
                   key: issuer-private-key-pem
+            - name: ISSUER_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-ledger
+                  key: issuer-key-id
+                  optional: true
+            - name: LEDGER_S3_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-ledger
+                  key: ledger-s3-endpoint
+            - name: LEDGER_BUCKET
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-ledger
+                  key: ledger-bucket
+            - name: LEDGER_PREFIX
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-ledger
+                  key: ledger-prefix
+            - name: LEDGER_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-ledger
+                  key: ledger-access-key-id
+            - name: LEDGER_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-ledger
+                  key: ledger-secret-access-key
+            - name: LEDGER_REGION
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-ledger
+                  key: ledger-region
+            - name: LEDGER_FLUSH_MAX_EVENTS
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-ledger
+                  key: ledger-flush-max-events
+                  optional: true
+            - name: LEDGER_FLUSH_INTERVAL_MS
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-ledger
+                  key: ledger-flush-interval-ms
+                  optional: true
+            - name: LEDGER_FLUSH_SYNC_ON_ISSUE
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-ledger
+                  key: ledger-flush-sync-on-issue
+                  optional: true
+            - name: LEDGER_RECORD_DEV_ISSUES
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-ledger
+                  key: ledger-record-dev-issues
+                  optional: true
+            - name: LEDGER_TRUSTED_ISSUER_PUBLIC_KEYS_JSON
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-ledger
+                  key: ledger-trusted-issuer-public-keys-json
+                  optional: true
   
