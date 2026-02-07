@@ -153,8 +153,10 @@ const isSeriesSelectionDisabled = computed(() => activeTab.value === "swaps");
 const packPhase = ref<"idle" | "opening" | "reveal" | "done">("idle");
 const packError = ref("");
 const packCards = ref<Sticker[]>([]);
+const packMeta = ref<{ packId: string } | null>(null);
 const packRevealIndex = ref(0);
 const revealDismissed = ref(false);
+const packOwnedCountSnapshot = ref<Map<string, number> | null>(null);
 const anonUserKey = useLocalStorage("pixpax/collections/anon-user-key", "");
 const { publicKey, receivedPacks, recordPackAndCommit } = useStickerbook();
 const route = useRoute();
@@ -317,36 +319,108 @@ const duplicateCardGroups = computed(() => {
   return output;
 });
 
-const revealPlan = computed(() => {
-  const seen = new Set<string>();
-  const needs: Sticker[] = [];
-  const duplicates: Sticker[] = [];
-
-  for (const sticker of packCards.value) {
-    if (seen.has(sticker.meta.id)) {
-      duplicates.push(sticker);
-    } else {
-      seen.add(sticker.meta.id);
-      needs.push(sticker);
+function getOwnedCountsForSelectedCollection(
+  options: { excludePackId?: string | null } = {},
+) {
+  const refEntry = selectedCollectionRef.value;
+  const map = new Map<string, number>();
+  if (!refEntry) return map;
+  const excludePackId = String(options.excludePackId || "").trim();
+  for (const pack of receivedPacks.value as any[]) {
+    const payload = pack?.data?.issuerIssuePayload || {};
+    if (String(payload?.packModel || "") !== "album") continue;
+    if (String(payload?.collectionId || "") !== refEntry.collectionId) continue;
+    if (String(payload?.collectionVersion || "") !== refEntry.version) continue;
+    const packId = String(payload?.packId || pack?.data?.packId || "").trim();
+    if (excludePackId && packId === excludePackId) continue;
+    const cardIds = Array.isArray(payload?.cardIds) ? payload.cardIds : [];
+    for (const rawCardId of cardIds) {
+      const cardId = String(rawCardId || "").trim();
+      if (!cardId) continue;
+      map.set(cardId, (map.get(cardId) || 0) + 1);
     }
   }
+  return map;
+}
+
+const ownedCountByStickerId = computed(() => {
+  const activePackId = isPackRevealOpen.value ? packMeta.value?.packId : null;
+  return getOwnedCountsForSelectedCollection({ excludePackId: activePackId });
+});
+const revealPlan = computed(() => {
+  const counts = new Map(
+    packOwnedCountSnapshot.value || ownedCountByStickerId.value,
+  );
+  const needs: Sticker[] = [];
+  const duplicates: Sticker[] = [];
+  const rarityRank = new Map([
+    ["legendary", 0],
+    ["epic", 1],
+    ["rare", 2],
+    ["common", 3],
+  ]);
+
+  for (const sticker of packCards.value) {
+    const key = sticker.meta.id;
+    const count = counts.get(key) || 0;
+    if (count === 0) {
+      needs.push(sticker);
+    } else {
+      duplicates.push(sticker);
+    }
+    counts.set(key, count + 1);
+  }
+
+  needs.sort((a, b) => {
+    const aRank = rarityRank.get(a.meta.rarity) ?? 99;
+    const bRank = rarityRank.get(b.meta.rarity) ?? 99;
+    return aRank - bRank;
+  });
 
   return { needs, duplicates };
 });
-
 const revealNeeds = computed(() => revealPlan.value.needs);
 const revealDuplicates = computed(() => revealPlan.value.duplicates);
+const revealSnapshotOwnedCounts = computed(
+  () => packOwnedCountSnapshot.value || ownedCountByStickerId.value,
+);
+const revealDuplicateGroups = computed(() => {
+  const byId = new Map<string, { card: Sticker; count: number }>();
+  for (const card of revealDuplicates.value) {
+    const key = card.meta.id;
+    const existing = byId.get(key);
+    if (existing) {
+      existing.count += 1;
+      continue;
+    }
+    byId.set(key, { card, count: 1 });
+  }
+  return Array.from(byId.values());
+});
+const revealNewGroups = computed(() => {
+  const byId = new Map<string, { card: Sticker; count: number }>();
+  for (const card of revealNeeds.value) {
+    const key = card.meta.id;
+    const existing = byId.get(key);
+    if (existing) {
+      existing.count += 1;
+      continue;
+    }
+    byId.set(key, { card, count: 1 });
+  }
+  return Array.from(byId.values());
+});
+const activePackCard = computed(
+  () => revealNeeds.value[packRevealIndex.value] || null,
+);
 const revealComplete = computed(
   () => packRevealIndex.value >= revealNeeds.value.length,
 );
 const isPackRevealOpen = computed(
-  () =>
-    (packPhase.value === "reveal" || packPhase.value === "done") &&
-    packCards.value.length > 0 &&
-    !revealDismissed.value,
+  () => !revealDismissed.value && packPhase.value !== "idle",
 );
 const remainingPackCards = computed(() =>
-  revealNeeds.value.slice(packRevealIndex.value, packRevealIndex.value + 3),
+  revealNeeds.value.slice(packRevealIndex.value),
 );
 
 const canOpenPack = computed(
@@ -651,6 +725,11 @@ async function openPack() {
   if (!canOpenPack.value || !selectedCollection.value) return;
 
   packError.value = "";
+  packCards.value = [];
+  packMeta.value = null;
+  packRevealIndex.value = 0;
+  revealDismissed.value = false;
+  packOwnedCountSnapshot.value = getOwnedCountsForSelectedCollection();
   packPhase.value = "opening";
 
   const refEntry = refs.find(
@@ -658,6 +737,8 @@ async function openPack() {
   );
   if (!refEntry) {
     packError.value = "Missing collection reference.";
+    packOwnedCountSnapshot.value = null;
+    packMeta.value = null;
     packPhase.value = "idle";
     return;
   }
@@ -703,6 +784,7 @@ async function openPack() {
     );
 
     packCards.value = nextCards;
+    packMeta.value = { packId: response.packId };
     packRevealIndex.value = 0;
     revealDismissed.value = false;
     packPhase.value = "reveal";
@@ -807,6 +889,8 @@ async function openPack() {
       }
     }
   } catch (error: any) {
+    packOwnedCountSnapshot.value = null;
+    packMeta.value = null;
     packPhase.value = "idle";
     packError.value = error?.message || "Pack opening failed.";
     setStatus("Failed to open pack.", { error: packError.value });
@@ -814,6 +898,7 @@ async function openPack() {
 }
 
 function collectNextPackCard() {
+  if (!activePackCard.value) return;
   packRevealIndex.value += 1;
 }
 
@@ -823,6 +908,10 @@ function skipPackReveal() {
 
 function closePackReveal() {
   revealDismissed.value = true;
+  packPhase.value = "idle";
+  packCards.value = [];
+  packMeta.value = null;
+  packOwnedCountSnapshot.value = null;
 }
 
 function isOwned(stickerId: string): boolean {
@@ -1055,13 +1144,16 @@ watch(
               loadingCollections ? "Loading collections..." : "Loading cards..."
             }}
           </p>
-          <div class="flex gap-3 justify-items-center flex-wrap justify-center">
+          <div
+            class="flex gap-6 justify-items-center flex-wrap justify-center p-4"
+          >
             <PixPaxStickerCard
               v-for="sticker in visibleStickers"
               :key="sticker.meta.id"
               :sticker="sticker"
               :palette="selectedCollection!.palette"
               :missing="!isOwned(sticker.meta.id)"
+              class="w-full md:w-48"
             />
           </div>
         </div>
@@ -1074,20 +1166,17 @@ watch(
         >
           No duplicates yet. Open packs in Pixbook to build swap inventory.
         </div>
-        <div
-          v-else
-          class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 justify-items-center"
-        >
+        <div v-else class="flex gap-6 w-full flex-wrap">
           <div
             v-for="group in duplicateCardGroups"
             :key="group.cardId"
-            class="flex flex-col items-center gap-1"
+            class="flex flex-col items-center gap-2 w-32"
           >
             <PixPaxStickerCard
               v-if="group.card"
               :sticker="group.card"
               :palette="selectedCollection!.palette"
-              compact
+              class="w-full"
             />
             <div
               class="text-xs text-[var(--ui-fg-muted)] uppercase tracking-[0.14em]"
@@ -1103,77 +1192,131 @@ watch(
         class="absolute inset-0 z-50 flex items-center justify-center bg-[color-mix(in srgb, var(--ui-bg) 78%, transparent)] px-4 py-10 backdrop-blur-lg"
       >
         <div class="flex w-full max-w-3xl flex-col gap-6">
-          <div class="flex items-center justify-between">
-            <div
-              class="flex items-center gap-3 text-xs uppercase tracking-[0.16em] bg-[var(--ui-surface)] rounded-full px-3 py-1 text-[var(--ui-fg-muted)]"
+          <div
+            v-if="packPhase === 'opening'"
+            class="mx-auto flex w-full max-w-md flex-col items-center gap-3 rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-surface)] p-6 text-center"
+          >
+            <p
+              class="text-xs uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]"
             >
-              <span v-if="revealNeeds.length">
-                {{ Math.min(packRevealIndex + 1, revealNeeds.length) }}/{{
-                  revealNeeds.length
-                }}
-              </span>
-              <span v-else>Duplicates</span>
-              <span
-                v-if="revealDuplicates.length"
-                class="text-[var(--ui-fg-muted)]"
-              >
-                +{{ revealDuplicates.length }} dupes
-              </span>
-            </div>
-            <button
-              type="button"
-              class="text-xs uppercase tracking-[0.16em] text-[var(--ui-fg-muted)] hover:text-[var(--ui-fg)]"
-              @click="revealComplete ? closePackReveal() : skipPackReveal()"
-            >
-              {{ revealComplete ? "End" : "Skip" }}
-            </button>
+              Opening pack
+            </p>
+            <p class="text-sm text-[var(--ui-fg)]">Preparing reveal...</p>
           </div>
 
-          <div
-            class="relative mx-auto h-[360px] w-[260px]"
-            v-if="!revealComplete"
-          >
-            <div
-              v-for="(sticker, idx) in remainingPackCards"
-              :key="`${sticker.meta.id}-${idx}`"
-              class="absolute inset-0 flex items-center justify-center transition-transform duration-300 ease-out"
-              :style="{
-                transform: `translateY(${idx * 8}px) translateX(${
-                  idx * 5
-                }px) rotate(${idx * 1.5}deg)`,
-                zIndex: remainingPackCards.length - idx,
-              }"
-            >
-              <button
-                type="button"
-                class="relative rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-surface)] p-4 shadow-[0_16px_28px_rgba(15,23,42,0.22)] reveal-flip"
-                @click="collectNextPackCard"
+          <template v-else>
+            <div class="relative mx-auto flex-1" v-if="!revealComplete">
+              <div
+                v-for="(card, index) in remainingPackCards"
+                :key="`${card.meta.id}-${index}`"
+                class="w-full absolute inset-0 flex items-center justify-center transition-transform duration-300 ease-out"
+                :style="{
+                  transform: `translateY(${index * 8}px) translateX(${
+                    index * 5
+                  }px) rotate(${index * 1.5}deg)`,
+                  zIndex: remainingPackCards.length - index,
+                }"
               >
-                <PixPaxStickerCard
-                  :sticker="sticker"
-                  :palette="selectedCollection!.palette"
-                />
-                <span
-                  class="mt-3 block text-[10px] uppercase tracking-[0.18em] text-[var(--ui-fg-muted)]"
+                <button
+                  type="button"
+                  class="relative rounded-2xl min-w-64 border border-[var(--ui-border)] bg-[var(--ui-surface)] p-4 shadow-[0_16px_28px_rgba(15,23,42,0.22)]"
+                  @click="collectNextPackCard"
+                  :class="{
+                    'reveal-mythic':
+                      activePackCard?.meta.rarity === 'legendary' &&
+                      index === 0,
+                  }"
+                  :key="packRevealIndex"
                 >
-                  Tap to collect
-                </span>
-              </button>
+                  <span
+                    v-if="
+                      activePackCard?.meta.rarity === 'legendary' && index === 0
+                    "
+                    class="absolute inset-0 rounded-2xl pointer-events-none mythic-glow"
+                  ></span>
+                  <PixPaxStickerCard
+                    :sticker="card"
+                    :palette="selectedCollection!.palette"
+                  />
+                  <span
+                    class="mt-3 block text-[10px] uppercase tracking-[0.18em] text-[var(--ui-fg-muted)]"
+                  >
+                    Tap to collect
+                  </span>
+                </button>
+              </div>
             </div>
-          </div>
 
-          <div
-            v-else
-            class="flex flex-col gap-3 rounded-2xl p-3 items-center"
-            @click="closePackReveal"
-          >
-            <div class="text-sm text-[var(--ui-fg-muted)]">
-              Pack complete. Tap to close.
+            <div
+              v-else
+              class="flex flex-col gap-4 rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-surface)] p-4"
+            >
+              <p
+                class="text-xs uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]"
+              >
+                Pack summary
+              </p>
+              <div v-if="revealNewGroups.length" class="space-y-2">
+                <p class="text-sm font-semibold text-[var(--ui-fg)]">
+                  New cards ({{ revealNeeds.length }})
+                </p>
+                <div class="flex flex-nowrap gap-2 overflow-x-auto">
+                  <div
+                    v-for="(group, index) in revealNewGroups"
+                    :key="`new-${group.card.meta.id}-${index}`"
+                    class="min-w-40"
+                  >
+                    <PixPaxStickerCard
+                      :sticker="group.card"
+                      :palette="selectedCollection!.palette"
+                      compact
+                    />
+                  </div>
+                </div>
+              </div>
+              <div v-if="revealDuplicateGroups.length" class="space-y-2">
+                <p class="text-sm font-semibold text-[var(--ui-fg)]">
+                  Owned duplicates ({{ revealDuplicates.length }})
+                </p>
+                <div class="flex flex-nowrap gap-2 overflow-x-auto">
+                  <div
+                    v-for="(group, index) in revealDuplicateGroups"
+                    :key="`dup-${group.card.meta.id}-${index}`"
+                    class="relative min-w-34"
+                  >
+                    <span
+                      v-if="group.count > 1"
+                      class="absolute -right-1 -top-1 z-20 rounded-full bg-[var(--ui-fg)] px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.16em] text-[var(--ui-bg)]"
+                    >
+                      x{{ group.count }}
+                    </span>
+                    <PixPaxStickerCard
+                      :sticker="group.card"
+                      :palette="selectedCollection!.palette"
+                      compact
+                    />
+                    <div
+                      class="mt-1 text-[10px] uppercase tracking-[0.14em] text-[var(--ui-fg-muted)] text-center"
+                    >
+                      Owned
+                      {{
+                        revealSnapshotOwnedCounts.get(group.card.meta.id) || 0
+                      }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                v-if="!revealNewGroups.length && !revealDuplicateGroups.length"
+                class="text-sm text-[var(--ui-fg-muted)]"
+              >
+                Pack had no revealable cards.
+              </div>
+              <Button size="xs" variant="secondary" @click="closePackReveal">
+                Done
+              </Button>
             </div>
-            <div class="text-xs text-[var(--ui-fg-muted)]">
-              {{ revealDuplicates.length }} duplicates in this pack.
-            </div>
-          </div>
+          </template>
         </div>
       </div>
     </div>
@@ -1296,5 +1439,50 @@ watch(
 .reveal-flip {
   transform-style: preserve-3d;
   animation: revealFlip 0.6s ease-out both;
+}
+
+.reveal-mythic {
+  animation: mythicShake 0.9s ease-in-out infinite;
+}
+
+.mythic-glow {
+  animation: mythicGlow 1.4s ease-in-out infinite;
+}
+
+.reveal-mythic.reveal-flip {
+  animation-delay: 3s;
+}
+
+@keyframes mythicShake {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  20% {
+    transform: translateY(-2px) rotate(-0.9deg);
+  }
+  40% {
+    transform: translateY(2px) rotate(0.9deg);
+  }
+  60% {
+    transform: translateY(-1px) rotate(-0.5deg);
+  }
+  80% {
+    transform: translateY(1px) rotate(0.5deg);
+  }
+}
+
+@keyframes mythicGlow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--ui-accent) 0%, transparent),
+      0 14px 26px color-mix(in srgb, var(--ui-accent) 24%, transparent);
+    opacity: 0.9;
+  }
+  50% {
+    box-shadow: 0 0 0 5px color-mix(in srgb, var(--ui-accent) 35%, transparent),
+      0 20px 32px color-mix(in srgb, var(--ui-accent) 42%, transparent);
+    opacity: 1;
+  }
 }
 </style>

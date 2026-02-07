@@ -10,6 +10,12 @@ type StickerFrameProps = {
   sublabel?: string;
   status?: string;
   seed?: string;
+  animated?: boolean;
+  backdrop?: boolean;
+  shimmer?: boolean;
+  mythicGlow?: boolean;
+  mythicDots?: boolean;
+  mythicBorder?: boolean;
 };
 
 const props = defineProps<StickerFrameProps>();
@@ -26,23 +32,38 @@ const frameId = computed(() =>
   Math.floor(hashToRange(frameSeed.value, 0, 1_000_000_000)).toString(),
 );
 const rarity = computed(() => props.rarity || "common");
+const animated = computed(() => props.animated !== false);
+const showBackdrop = computed(() => props.backdrop !== false);
 
 const showMythicDots = computed(
-  () => !props.missing && rarity.value === "mythic",
+  () =>
+    animated.value &&
+    !props.missing &&
+    rarity.value === "mythic" &&
+    props.mythicDots !== false,
 );
 const showMythicGlow = computed(
-  () => !props.missing && rarity.value === "mythic",
+  () =>
+    animated.value &&
+    !props.missing &&
+    rarity.value === "mythic" &&
+    props.mythicGlow !== false,
 );
 const showMythicBorder = computed(
-  () => !props.missing && rarity.value === "mythic",
+  () =>
+    animated.value &&
+    !props.missing &&
+    rarity.value === "mythic" &&
+    props.mythicBorder !== false,
 );
 const mythicBorderDelay = computed(() => {
   const seconds = hashToRange(`${frameSeed.value}:border`, -6, 0);
   return `${seconds.toFixed(2)}s`;
 });
 const showShimmer = computed(() => {
-  if (props.missing) return false;
-  return rarity.value === "mythic" || rarity.value === "rare";
+  if (!props.shimmer || props.missing) return false;
+
+  return true;
 });
 
 const shimmerPhaseSeconds = computed(() =>
@@ -50,7 +71,7 @@ const shimmerPhaseSeconds = computed(() =>
 );
 
 const backdropFill = computed(() => {
-  if (props.missing) return null;
+  if (!showBackdrop.value || props.missing) return null;
   if (rarity.value === "mythic") return `url(#mythic-${frameId.value})`;
   if (rarity.value === "rare") return `url(#rare-${frameId.value})`;
   if (rarity.value === "uncommon") {
@@ -62,12 +83,12 @@ const backdropFill = computed(() => {
 
 <template>
   <div
-    class="flex flex-col items-center justify-center gap-2 text-center"
+    class="flex flex-col items-center justify-center gap-2 text-center w-full"
     :class="[isCompact ? 'gap-2' : 'gap-3', missing ? 'opacity-60' : '']"
   >
     <div
       :class="[
-        'relative w-full bg-[var(--ui-surface)]  bg-opacity-10 aspect-5/7 border border-[var(--ui-border)] rounded-sm overflow-hidden',
+        'relative w-full bg-[var(--ui-surface)]  bg-opacity-10 border border-[var(--ui-border)] rounded-sm overflow-hidden sticker-frame-card',
         { 'shimmer-border mythic-border p-0.5': showMythicBorder },
       ]"
       :style="
@@ -160,6 +181,7 @@ const backdropFill = computed(() => {
               stop-color="color-mix(in srgb, var(--ui-primary) 26%, var(--ui-bg))"
             />
             <animateTransform
+              v-if="animated"
               attributeName="gradientTransform"
               type="rotate"
               from="0 0.5 0.5"
@@ -263,33 +285,110 @@ const backdropFill = computed(() => {
         class="flex flex-col relative z-10 rounded-sm h-full overflow-hidden"
       >
         <div
-          class="flex flex-col items-center justify-between gap-2 uppercase tracking-[0.16em] bg-[var(--ui-bg)] bg-opacity-90 px-2 py-1 text-[9px] text-[var(--ui-fg-muted)]"
+          class="frame-meta flex flex-col items-center justify-between uppercase bg-[var(--ui-bg)] bg-opacity-90 text-[var(--ui-fg-muted)]"
         >
-          <span v-if="sublabel">{{ sublabel }}</span>
-          <span v-else>series</span>
-          <span v-if="status" class="text-[9px] opacity-70">{{ status }}</span>
+          <span
+            v-if="showLabels"
+            class="frame-title font-semibold text-[var(--ui-fg)]"
+          >
+            {{ label || "Sticker" }}
+          </span>
+          <div class="frame-meta-line">
+            <span class="frame-subtitle" v-if="sublabel">{{ sublabel }}</span>
+            <span class="frame-subtitle" v-else>series</span>
+            <span v-if="status" class="frame-status opacity-70">{{
+              status
+            }}</span>
+          </div>
         </div>
-        <div class="relative mx-auto w-full">
+        <div class="frame-art-shell relative mx-auto w-full">
           <div
-            class="relative size-full overflow-hidden"
+            class="frame-art-slot relative size-full overflow-hidden"
             :class="missing ? 'grayscale opacity-10' : ''"
           >
             <slot />
           </div>
-        </div>
-        <div
-          v-if="showLabels"
-          class="mt-2 bg-[var(--ui-bg)] flex flex-1 items-center justify-between gap-2 bg-[color-mix(in srgb, var(--ui-bg) 90%, transparent)] px-3 py-1.5 text-[10px] uppercase tracking-[0.12em] text-[var(--ui-fg-muted)]"
-        >
-          <span class="font-semibold text-[var(--ui-fg)]">
-            {{ label || "Sticker" }}
-          </span>
         </div>
       </div>
     </div>
   </div>
 </template>
 <style scoped>
+.sticker-frame-card {
+  container-type: inline-size;
+  --frame-meta-size: clamp(6px, 5.8cqi, 16px);
+  --frame-label-size: clamp(7px, 6.8cqi, 18px);
+  --frame-pad-x: clamp(0.25rem, 4cqi, 0.75rem);
+  --frame-pad-y: clamp(0.2rem, 2.8cqi, 0.4rem);
+  --frame-gap: clamp(0.15rem, 1.8cqi, 0.5rem);
+}
+
+.frame-meta {
+  gap: var(--frame-gap);
+  padding-inline: var(--frame-pad-x);
+  padding-block: var(--frame-pad-y);
+  font-size: var(--frame-meta-size);
+  letter-spacing: 0.16em;
+  line-height: 1.1;
+  max-inline-size: 100%;
+  width: 100%;
+}
+
+.frame-title {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--frame-label-size);
+  line-height: 1.05;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+.frame-meta-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--frame-gap);
+  width: 100%;
+}
+
+.frame-subtitle,
+.frame-status {
+  display: block;
+  max-inline-size: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.frame-status {
+  font-size: 0.9em;
+  flex: 0 0 auto;
+}
+
+.frame-art-shell {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.frame-art-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@container (max-width: 88px) {
+  .frame-meta {
+    letter-spacing: 0.1em;
+  }
+
+  .frame-title {
+    letter-spacing: 0.08em;
+  }
+}
+
 .shimmer-border {
   position: relative;
   overflow: hidden;
