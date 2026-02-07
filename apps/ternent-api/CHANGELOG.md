@@ -1,5 +1,11 @@
 # ternent-api
 
+## 0.2.11
+
+### Patch Changes
+
+- [`db19b015097f72072b0639678b9a51faa5d143af`](https://github.com/samternent/home/commit/db19b015097f72072b0639678b9a51faa5d143af) Thanks [@samternent](https://github.com/samternent)! - Adds custom minted collections with pack codes
+
 ## 0.2.10
 
 ### Patch Changes
