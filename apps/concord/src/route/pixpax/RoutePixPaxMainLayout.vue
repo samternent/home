@@ -688,6 +688,11 @@ async function eraseLocalPixbook() {
             class="opacity-80 hover:opacity-100 text-xs font-mono font-thin -translate-y-1 hover:-translate-y-0.5 transition-all duration-300"
             >About</RouterLink
           >
+          <RouterLink
+            to="/pixpax/admin"
+            class="opacity-80 hover:opacity-100 text-xs font-mono font-thin -translate-y-1 hover:-translate-y-0.5 transition-all duration-300"
+            >Admin</RouterLink
+          >
           <div class="flex gap-2 items-center justify-center">
             <a
               href="mailto:sam@ternent.dev"

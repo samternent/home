@@ -11,6 +11,14 @@ export default [
         path: "about",
         component: () => import("./RoutePixPaxAbout.vue"),
       },
+      {
+        path: "collections",
+        component: () => import("./RoutePixPaxCollections.vue"),
+      },
+      {
+        path: "admin",
+        component: () => import("./RoutePixPaxAdmin.vue"),
+      },
     ],
   },
 ];

@@ -21,7 +21,7 @@ Content objects are immutable by version path.
 
 Example default prefix:
 
-- `pixpax/collections/premier-league-2026/v1/collection.json`
+- `pixpax/collections/premier-league-2026/v2/collection.json`
 
 ## API endpoints
 
@@ -52,7 +52,7 @@ Response:
   "packId": "f7a7f7f4b1f0e33c7d4f77b9",
   "packModel": "album",
   "collectionId": "premier-league-2026",
-  "collectionVersion": "v1",
+  "collectionVersion": "v2",
   "dropId": "week-2026-W06",
   "issuedAt": "2026-02-07T12:00:00.000Z",
   "cards": [
@@ -82,7 +82,7 @@ Each card hash is derived from canonical JSON bytes (UTF-8):
   "v": 1,
   "packModel": "album",
   "collectionId": "premier-league-2026",
-  "collectionVersion": "v1",
+  "collectionVersion": "v2",
   "cardId": "arsenal-01",
   "renderPayload": {
     "gridSize": 16,
@@ -175,7 +175,7 @@ Secret keys used:
 Upload collection:
 
 ```bash
-curl -X PUT "http://localhost:3000/v1/pixpax/collections/premier-league-2026/v1/collection" \
+curl -X PUT "http://localhost:3000/v1/pixpax/collections/premier-league-2026/v2/collection" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $PIX_PAX_ADMIN_TOKEN" \
   --data @docs/pixpax-album-examples/collection.json
@@ -184,7 +184,7 @@ curl -X PUT "http://localhost:3000/v1/pixpax/collections/premier-league-2026/v1/
 Upload index:
 
 ```bash
-curl -X PUT "http://localhost:3000/v1/pixpax/collections/premier-league-2026/v1/index" \
+curl -X PUT "http://localhost:3000/v1/pixpax/collections/premier-league-2026/v2/index" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $PIX_PAX_ADMIN_TOKEN" \
   --data @docs/pixpax-album-examples/index.json
@@ -193,7 +193,7 @@ curl -X PUT "http://localhost:3000/v1/pixpax/collections/premier-league-2026/v1/
 Upload one card:
 
 ```bash
-curl -X PUT "http://localhost:3000/v1/pixpax/collections/premier-league-2026/v1/cards/arsenal-01" \
+curl -X PUT "http://localhost:3000/v1/pixpax/collections/premier-league-2026/v2/cards/arsenal-01" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $PIX_PAX_ADMIN_TOKEN" \
   --data @docs/pixpax-album-examples/cards/arsenal-01.json
@@ -202,9 +202,46 @@ curl -X PUT "http://localhost:3000/v1/pixpax/collections/premier-league-2026/v1/
 Issue album pack:
 
 ```bash
-curl -X POST "http://localhost:3000/v1/pixpax/collections/premier-league-2026/v1/packs" \
+curl -X POST "http://localhost:3000/v1/pixpax/collections/premier-league-2026/v2/packs" \
   -H "Content-Type: application/json" \
-  --data '{"userKey":"school:user:abc123","count":5,"dropId":"week-2026-W06"}'
+  --data '{"userKey":"school:user:abc123","dropId":"week-2026-W06"}'
+```
+
+Notes:
+
+- standard issuance is one pack per `userKey + dropId` (idempotent)
+- standard pack size is fixed to 5 cards (server-enforced)
+- response includes `issuance.mode` and `issuance.reused`
+
+Mint one-time override code (admin):
+
+```bash
+curl -X POST "http://localhost:3000/v1/pixpax/collections/premier-league-2026/v2/override-codes" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $PIX_PAX_ADMIN_TOKEN" \
+  --data '{"userKey":"school:user:abc123","dropId":"week-2026-W06","count":8,"expiresInSeconds":86400}'
+```
+
+Response includes:
+
+- `giftCode`: short human code (`PPX-XXXX-XXXX-XXXX-XXXX-XXXX-XXXX`) for sharing/redeem UI
+- `code`: legacy signed token (still accepted by server)
+
+Gift mode (not bound to a specific user):
+
+```bash
+curl -X POST "http://localhost:3000/v1/pixpax/collections/premier-league-2026/v2/override-codes" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $PIX_PAX_ADMIN_TOKEN" \
+  --data '{"bindToUser":false,"dropId":"week-2026-W06","count":8,"expiresInSeconds":86400}'
+```
+
+Redeem override code once:
+
+```bash
+curl -X POST "http://localhost:3000/v1/pixpax/collections/premier-league-2026/v2/packs" \
+  -H "Content-Type: application/json" \
+  --data '{"userKey":"school:user:abc123","overrideCode":"<giftCode-or-code-from-admin-endpoint>"}'
 ```
 
 Verify receipt (existing endpoint):
@@ -218,6 +255,7 @@ curl "http://localhost:3000/v1/pixpax/receipt/<packId>?segmentKey=<segmentKey>"
 Script:
 
 - `apps/ternent-api/scripts/pixpax-seed-collection.mjs`
+- `apps/ternent-api/scripts/pixpax-generate-public-collection.mjs`
 - npm script alias: `pnpm pixpax:seed -- ...`
 
 Input folder format:
@@ -240,12 +278,19 @@ CLI options:
 Example:
 
 ```bash
+pnpm --filter ternent-api pixpax:generate-public -- \
+  --outDir ../../docs/pixpax-public-collections/premier-league-2026/v2 \
+  --collectionId premier-league-2026 \
+  --version v2 \
+  --seriesCount 5 \
+  --cardsPerSeries 10
+
 pnpm --filter ternent-api pixpax:seed -- \
   --api http://localhost:3000 \
   --token "$PIX_PAX_ADMIN_TOKEN" \
   --collectionId premier-league-2026 \
-  --version v1 \
-  --dir ../../docs/pixpax-album-examples \
+  --version v2 \
+  --dir ../../docs/pixpax-public-collections/premier-league-2026/v2 \
   --skip-existing
 ```
 
@@ -256,9 +301,15 @@ pnpm --filter ternent-api pixpax:seed -- \
   --api http://localhost:3000 \
   --token "$PIX_PAX_ADMIN_TOKEN" \
   --collectionId premier-league-2026 \
-  --version v1 \
-  --dir ../../docs/pixpax-album-examples \
+  --version v2 \
+  --dir ../../docs/pixpax-public-collections/premier-league-2026/v2 \
   --dry-run
+```
+
+Concord route config (to load this collection in `/pixpax/collections`):
+
+```bash
+VITE_PIXPAX_PUBLIC_COLLECTIONS='[{"collectionId":"premier-league-2026","version":"v2"}]'
 ```
 
 Verification workflow after seeding:

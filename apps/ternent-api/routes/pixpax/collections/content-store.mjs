@@ -175,6 +175,33 @@ export class CollectionContentStore {
     return buildObjectKey(this.prefix, collectionId, version, `cards/${trimSegment(cardId)}.json`);
   }
 
+  buildPackClaimKey(collectionId, version, dropId, issuedToHash) {
+    return buildObjectKey(
+      this.prefix,
+      collectionId,
+      version,
+      `claims/${trimSegment(dropId)}/${trimSegment(issuedToHash)}.json`
+    );
+  }
+
+  buildOverrideCodeUseKey(collectionId, version, codeId) {
+    return buildObjectKey(
+      this.prefix,
+      collectionId,
+      version,
+      `override-uses/${trimSegment(codeId)}.json`
+    );
+  }
+
+  buildOverrideCodeRecordKey(collectionId, version, codeId) {
+    return buildObjectKey(
+      this.prefix,
+      collectionId,
+      version,
+      `override-codes/${trimSegment(codeId)}.json`
+    );
+  }
+
   async putCollection(collectionId, version, collectionJson) {
     const key = this.buildCollectionKey(collectionId, version);
     await putJson(this.gateway, this.bucket, key, collectionJson);
@@ -223,6 +250,39 @@ export class CollectionContentStore {
 
   async getCard(collectionId, version, cardId) {
     const key = this.buildCardKey(collectionId, version, cardId);
+    return getJson(this.gateway, this.bucket, key);
+  }
+
+  async putPackClaimIfAbsent(collectionId, version, dropId, issuedToHash, claimJson) {
+    const key = this.buildPackClaimKey(collectionId, version, dropId, issuedToHash);
+    const result = await putJsonIfAbsent(this.gateway, this.bucket, key, claimJson);
+    return { bucket: this.bucket, key, created: result.created };
+  }
+
+  async getPackClaim(collectionId, version, dropId, issuedToHash) {
+    const key = this.buildPackClaimKey(collectionId, version, dropId, issuedToHash);
+    return getJson(this.gateway, this.bucket, key);
+  }
+
+  async putOverrideCodeUseIfAbsent(collectionId, version, codeId, payload) {
+    const key = this.buildOverrideCodeUseKey(collectionId, version, codeId);
+    const result = await putJsonIfAbsent(this.gateway, this.bucket, key, payload);
+    return { bucket: this.bucket, key, created: result.created };
+  }
+
+  async getOverrideCodeUse(collectionId, version, codeId) {
+    const key = this.buildOverrideCodeUseKey(collectionId, version, codeId);
+    return getJson(this.gateway, this.bucket, key);
+  }
+
+  async putOverrideCodeRecord(collectionId, version, codeId, payload) {
+    const key = this.buildOverrideCodeRecordKey(collectionId, version, codeId);
+    await putJson(this.gateway, this.bucket, key, payload);
+    return { bucket: this.bucket, key };
+  }
+
+  async getOverrideCodeRecord(collectionId, version, codeId) {
+    const key = this.buildOverrideCodeRecordKey(collectionId, version, codeId);
     return getJson(this.gateway, this.bucket, key);
   }
 }

@@ -9,7 +9,8 @@
     "test:stickerbook": "node --test routes/stickerbook/__tests__/*.test.mjs",
     "pixpax:verify": "node scripts/pixpax-verify.mjs",
     "pixpax:derive-issuer-key-formats": "node scripts/derive-issuer-key-formats.mjs",
-    "pixpax:seed": "node scripts/pixpax-seed-collection.mjs"
+    "pixpax:seed": "node scripts/pixpax-seed-collection.mjs",
+    "pixpax:generate-public": "node scripts/pixpax-generate-public-collection.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.899.0",

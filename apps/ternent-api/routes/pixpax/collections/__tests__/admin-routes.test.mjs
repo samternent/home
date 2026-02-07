@@ -6,6 +6,9 @@ import { CollectionContentStore } from "../content-store.mjs";
 function createRouterHarness() {
   const routes = new Map();
   return {
+    get(path, handler) {
+      routes.set(`GET:${path}`, handler);
+    },
     put(path, handler) {
       routes.set(`PUT:${path}`, handler);
     },
@@ -226,4 +229,85 @@ test("index and card endpoints validate references and collection grid size", as
     }
   );
   assert.equal(duplicateCard.statusCode, 409);
+});
+
+test("public read endpoints return seeded collection content", async () => {
+  const router = createRouterHarness();
+  process.env.PIX_PAX_ADMIN_TOKEN = "test-token";
+  pixpaxCollectionRoutes(router, { createStore });
+  const headers = { authorization: "Bearer test-token" };
+  const params = { collectionId: "premier-league-2026", version: "v1" };
+
+  const collectionBody = { name: "Premier League 2026", gridSize: 16, version: "v1" };
+  const indexBody = {
+    series: [{ seriesId: "arsenal", name: "Arsenal" }],
+    cards: ["arsenal-01"],
+    cardMap: {
+      "arsenal-01": { seriesId: "arsenal", slotIndex: 0, role: "player" },
+    },
+  };
+  const cardBody = {
+    cardId: "arsenal-01",
+    seriesId: "arsenal",
+    slotIndex: 0,
+    role: "player",
+    label: "Player One",
+    renderPayload: { gridSize: 16, gridB64: "AAECAw==" },
+  };
+
+  const collectionUpload = await router.invoke(
+    "PUT",
+    "/v1/pixpax/collections/:collectionId/:version/collection",
+    { headers, params, body: collectionBody }
+  );
+  assert.equal(collectionUpload.statusCode, 201);
+
+  const indexUpload = await router.invoke(
+    "PUT",
+    "/v1/pixpax/collections/:collectionId/:version/index",
+    { headers, params, body: indexBody }
+  );
+  assert.equal(indexUpload.statusCode, 201);
+
+  const cardUpload = await router.invoke(
+    "PUT",
+    "/v1/pixpax/collections/:collectionId/:version/cards/:cardId",
+    {
+      headers,
+      params: { ...params, cardId: "arsenal-01" },
+      body: cardBody,
+    }
+  );
+  assert.equal(cardUpload.statusCode, 201);
+
+  const collection = await router.invoke(
+    "GET",
+    "/v1/pixpax/collections/:collectionId/:version/collection",
+    { params }
+  );
+  assert.equal(collection.statusCode, 200);
+  assert.equal(collection.body.name, "Premier League 2026");
+
+  const index = await router.invoke(
+    "GET",
+    "/v1/pixpax/collections/:collectionId/:version/index",
+    { params }
+  );
+  assert.equal(index.statusCode, 200);
+  assert.deepEqual(index.body.cards, ["arsenal-01"]);
+
+  const card = await router.invoke(
+    "GET",
+    "/v1/pixpax/collections/:collectionId/:version/cards/:cardId",
+    { params: { ...params, cardId: "arsenal-01" } }
+  );
+  assert.equal(card.statusCode, 200);
+  assert.equal(card.body.cardId, "arsenal-01");
+
+  const missingCard = await router.invoke(
+    "GET",
+    "/v1/pixpax/collections/:collectionId/:version/cards/:cardId",
+    { params: { ...params, cardId: "arsenal-02" } }
+  );
+  assert.equal(missingCard.statusCode, 404);
 });
