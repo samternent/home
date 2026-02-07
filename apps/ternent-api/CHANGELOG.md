@@ -1,5 +1,11 @@
 # ternent-api
 
+## 0.2.8
+
+### Patch Changes
+
+- [`ecd707020dac946aa62a72656b7a95f57b8bed1d`](https://github.com/samternent/home/commit/ecd707020dac946aa62a72656b7a95f57b8bed1d) Thanks [@samternent](https://github.com/samternent)! - API persistence of issued packs
+
 ## 0.2.7
 
 ### Patch Changes
