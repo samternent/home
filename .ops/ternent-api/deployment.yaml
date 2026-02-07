@@ -98,6 +98,12 @@ spec:
                   name: ternent-api-ledger
                   key: ledger-trusted-issuer-public-keys-json
                   optional: true
+            - name: PIX_PAX_OVERRIDE_CODE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-pixpax-content
+                  key: pix-pax-override-code-secret
+                  optional: true
             - name: PIX_PAX_ADMIN_TOKEN
               valueFrom:
                 secretKeyRef:

@@ -4,24 +4,14 @@
   "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/pixpax/:path*",
+      "source": "/:path((?!assets/)(?!.*\\.[^/]+$).*)",
       "has": [{ "type": "host", "value": "pixpax.xyz" }],
-      "destination": "/pixpax/:path*"
+      "destination": "/spa.html"
     },
     {
-      "source": "/:path*",
-      "has": [{ "type": "host", "value": "pixpax.xyz" }],
-      "destination": "/pixpax/:path*"
-    },
-    {
-      "source": "/pixpax/:path*",
+      "source": "/:path((?!assets/)(?!.*\\.[^/]+$).*)",
       "has": [{ "type": "host", "value": "www.pixpax.xyz" }],
-      "destination": "/pixpax/:path*"
-    },
-    {
-      "source": "/:path*",
-      "has": [{ "type": "host", "value": "www.pixpax.xyz" }],
-      "destination": "/pixpax/:path*"
+      "destination": "/spa.html"
     },
     { "source": "/workspace", "destination": "/spa.html" },
     { "source": "/workspace/:path*", "destination": "/spa.html" },
