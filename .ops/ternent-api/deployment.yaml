@@ -31,6 +31,11 @@ spec:
                 secretKeyRef:
                   name: ternent-api-env
                   key: issuer-private-key-pem
+            - name: ISSUER_MASTER_SEED
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-env
+                  key: issuer-master-seed
             - name: ISSUER_KEY_ID
               valueFrom:
                 secretKeyRef:
@@ -80,11 +85,7 @@ spec:
                   key: ledger-flush-interval-ms
                   optional: true
             - name: LEDGER_FLUSH_SYNC_ON_ISSUE
-              valueFrom:
-                secretKeyRef:
-                  name: ternent-api-ledger
-                  key: ledger-flush-sync-on-issue
-                  optional: true
+              value: "false"
             - name: LEDGER_RECORD_DEV_ISSUES
               valueFrom:
                 secretKeyRef:
@@ -97,10 +98,4 @@ spec:
                   name: ternent-api-ledger
                   key: ledger-trusted-issuer-public-keys-json
                   optional: true
-            - name: ISSUER_MASTER_SEED
-              valueFrom:
-                secretKeyRef:
-                  name: ternent-api-env
-                  key: issuer-master-seed
-
   
