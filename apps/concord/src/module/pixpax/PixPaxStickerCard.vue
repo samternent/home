@@ -39,12 +39,8 @@ const finishClass = computed(() => {
   return "";
 });
 
-const displayLabel = computed(() =>
-  props.missing ? "Unknown Sticker" : props.sticker.meta.name,
-);
-const displayStatus = computed(() =>
-  props.missing ? "unowned" : props.sticker.meta.rarity,
-);
+const displayLabel = computed(() => props.sticker.meta.name);
+const displayStatus = computed(() => (props.missing ? "unowned" : "owned"));
 </script>
 
 <template>

@@ -270,7 +270,10 @@ const backdropFill = computed(() => {
           <span v-if="status" class="text-[9px] opacity-70">{{ status }}</span>
         </div>
         <div class="relative mx-auto w-full">
-          <div class="relative size-full overflow-hidden">
+          <div
+            class="relative size-full overflow-hidden"
+            :class="missing ? 'grayscale opacity-10' : ''"
+          >
             <slot />
           </div>
         </div>
