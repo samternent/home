@@ -461,7 +461,7 @@ async function eraseLocalPixbook() {
       class="dark flex flex-col flex-1 w-screen h-screen overflow-auto font-mono bg-[image:var(--bg-pixpax)]"
     >
       <header
-        class="sticky top-0 z-20 w-full backdrop-blur-[12px] border-b border-[var(--ui-border)]"
+        class="sticky top-0 z-30 w-full backdrop-blur-[12px] border-b border-[var(--ui-border)]"
       >
         <div class="mx-auto flex items-center w-full justify-between px-4 py-2">
           <div class="hidden lg:block" />

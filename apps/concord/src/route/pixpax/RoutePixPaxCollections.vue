@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { Button } from "ternent-ui/primitives";
 import { SSegmentedControl } from "ternent-ui/components";
 import { useLocalStorage } from "@vueuse/core";
@@ -153,6 +153,8 @@ const { publicKey, receivedPacks, recordPackAndCommit } = useStickerbook();
 const route = useRoute();
 const router = useRouter();
 const overrideCode = ref("");
+const now = ref(Date.now());
+let nowTimer: number | null = null;
 
 const selectedCollection = computed(
   () =>
@@ -165,7 +167,7 @@ const selectedCollectionRef = computed(
     refs.find((entry) => entry.collectionId === selectedCollectionId.value) ||
     null,
 );
-const currentDropId = computed(() => `week-${toIsoWeek(new Date())}`);
+const currentDropId = computed(() => `week-${toIsoWeek(new Date(now.value))}`);
 const openedForCurrentDrop = computed(() => {
   const refEntry = selectedCollectionRef.value;
   if (!refEntry) return null;
@@ -207,6 +209,12 @@ const seriesOptions = computed(() => {
   }
   return ["all", ...Array.from(set).sort((a, b) => a.localeCompare(b))];
 });
+const selectedSeriesIndex = computed(() =>
+  Math.max(0, seriesOptions.value.indexOf(selectedSeries.value)),
+);
+const selectedSeriesLabel = computed(() =>
+  selectedSeries.value === "all" ? "All series" : selectedSeries.value,
+);
 
 const visibleStickers = computed(() => {
   const stickers = selectedCollection.value?.stickers || [];
@@ -216,22 +224,47 @@ const visibleStickers = computed(() => {
   );
 });
 
-const totalCreatures = computed(() => visibleStickers.value.length);
-const collectedCount = computed(() => {
+const collectionTotalCreatures = computed(
+  () => selectedCollection.value?.stickers.length || 0,
+);
+const collectionCollectedCount = computed(() => {
+  const owned = new Set(ownedStickerIds.value);
+  return (selectedCollection.value?.stickers || []).filter((sticker) =>
+    owned.has(sticker.meta.id),
+  ).length;
+});
+const collectionProgressPercent = computed(() => {
+  if (!collectionTotalCreatures.value) return 0;
+  return Math.min(
+    100,
+    Math.round(
+      (collectionCollectedCount.value / collectionTotalCreatures.value) * 100,
+    ),
+  );
+});
+const isCollectionComplete = computed(
+  () =>
+    collectionTotalCreatures.value > 0 &&
+    collectionCollectedCount.value >= collectionTotalCreatures.value,
+);
+
+const seriesTotalCreatures = computed(() => visibleStickers.value.length);
+const seriesCollectedCount = computed(() => {
   const owned = new Set(ownedStickerIds.value);
   return visibleStickers.value.filter((sticker) => owned.has(sticker.meta.id))
     .length;
 });
-const progressPercent = computed(() => {
-  if (!totalCreatures.value) return 0;
+const seriesProgressPercent = computed(() => {
+  if (!seriesTotalCreatures.value) return 0;
   return Math.min(
     100,
-    Math.round((collectedCount.value / totalCreatures.value) * 100),
+    Math.round((seriesCollectedCount.value / seriesTotalCreatures.value) * 100),
   );
 });
 const isSeriesComplete = computed(
   () =>
-    totalCreatures.value > 0 && collectedCount.value >= totalCreatures.value,
+    seriesTotalCreatures.value > 0 &&
+    seriesCollectedCount.value >= seriesTotalCreatures.value,
 );
 const duplicateCardGroups = computed(() => {
   const refEntry = selectedCollectionRef.value;
@@ -317,6 +350,54 @@ const openPackLabel = computed(() => {
   if (openedForCurrentDrop.value) return "Open next weekly pack";
   return "Open pack";
 });
+const nextWeeklyDropAtMs = computed(() => {
+  const cursor = new Date(now.value);
+  const day = cursor.getUTCDay() || 7;
+  cursor.setUTCHours(0, 0, 0, 0);
+  cursor.setUTCDate(cursor.getUTCDate() + (8 - day));
+  return cursor.getTime();
+});
+const secondsUntilNextWeeklyDrop = computed(() =>
+  Math.max(0, Math.ceil((nextWeeklyDropAtMs.value - now.value) / 1000)),
+);
+const nextDropLabel = computed(() => {
+  const total = secondsUntilNextWeeklyDrop.value;
+  const days = Math.floor(total / 86400);
+  const hours = Math.floor((total % 86400) / 3600);
+  const minutes = Math.floor((total % 3600) / 60);
+  const seconds = total % 60;
+  const parts: string[] = [];
+  if (days > 0) parts.push(`${days}d`);
+  if (hours > 0 || days > 0) parts.push(`${hours}h`);
+  if (minutes > 0 || hours > 0 || days > 0) parts.push(`${minutes}m`);
+  parts.push(`${seconds}s`);
+  return parts.join(" ");
+});
+const packActionLabel = computed(() => {
+  if (canOpenPack.value) return openPackLabel.value;
+  if (openedForCurrentDrop.value && !overrideCode.value.trim()) {
+    return `Next pack in ${nextDropLabel.value}`;
+  }
+  return openPackLabel.value;
+});
+
+function selectPrevSeries() {
+  if (!seriesOptions.value.length) return;
+  const nextIndex =
+    selectedSeriesIndex.value <= 0
+      ? seriesOptions.value.length - 1
+      : selectedSeriesIndex.value - 1;
+  selectedSeries.value = seriesOptions.value[nextIndex] || "all";
+}
+
+function selectNextSeries() {
+  if (!seriesOptions.value.length) return;
+  const nextIndex =
+    selectedSeriesIndex.value >= seriesOptions.value.length - 1
+      ? 0
+      : selectedSeriesIndex.value + 1;
+  selectedSeries.value = seriesOptions.value[nextIndex] || "all";
+}
 
 function setStatus(message: string, detail?: unknown) {
   status.value = detail
@@ -700,6 +781,10 @@ function isOwned(stickerId: string): boolean {
 }
 
 onMounted(async () => {
+  nowTimer = window.setInterval(() => {
+    now.value = Date.now();
+  }, 1000);
+
   const queryCode = route.query?.code;
   if (typeof queryCode === "string" && queryCode.trim()) {
     overrideCode.value = queryCode.trim();
@@ -708,6 +793,10 @@ onMounted(async () => {
   }
   await loadCollections();
   await ensureSelectedCardsLoaded();
+});
+
+onUnmounted(() => {
+  if (nowTimer) window.clearInterval(nowTimer);
 });
 
 watch(
@@ -725,175 +814,217 @@ watch(
 </script>
 
 <template>
-  <div class="flex flex-1 flex-col max-w-5xl mx-auto w-full">
+  <div
+    ref="routeShellRef"
+    class="route-shell flex flex-1 flex-col max-w-5xl mx-auto w-full"
+  >
     <div class="flex flex-1 flex-col gap-2">
-      <section class="mx-auto flex w-full mx-auto max-w-4xl flex-col gap-8">
-        <div class="flex flex-col gap-2">
-          <div
-            class="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-center p-4"
-          >
-            <div class="relative flex flex-col gap-7 w-full max-w-2xl">
-              <div class="flex items-center justify-between gap-4">
-                <span
-                  class="text-[10px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]"
-                >
-                  Collection
-                </span>
-                <select v-model="selectedCollectionId">
-                  <option
-                    v-for="entry in collections"
-                    :key="entry.id"
-                    :value="entry.id"
-                  >
-                    {{ entry.name }}
-                  </option>
-                </select>
+      <section
+        class="mx-auto flex w-full max-w-4xl flex-col gap-4 px-4 relative sticky top-[57px] z-20 backdrop-blur-xl p-4 border-b border-[var(--ui-border)]"
+      >
+        <div class="header-main">
+          <div class="flex items-center justify-between gap-4">
+            <span
+              class="text-[10px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]"
+            >
+              Collection
+            </span>
+            <select
+              v-model="selectedCollectionId"
+              class="rounded-full border border-[var(--ui-border)] px-3 py-1 text-xs text-[var(--ui-fg)]"
+            >
+              <option
+                v-for="entry in collections"
+                :key="entry.id"
+                :value="entry.id"
+              >
+                {{ entry.name }}
+              </option>
+            </select>
+          </div>
+
+          <div class="flex flex-col w-full">
+            <h1
+              class="collection-title text-[var(--ui-fg)] font-[900] no-underline tracking-[-0.08em] brand"
+            >
+              {{ selectedCollection?.name }}
+            </h1>
+
+            <div class="flex flex-col gap-2">
+              <div
+                class="h-1.5 lg:h-2.5 w-full rounded-full bg-[var(--ui-fg)]/10 ring-1 ring-[var(--ui-fg)]/20"
+              >
+                <div
+                  class="h-full rounded-full bg-[var(--ui-fg)] transition-[width] duration-300"
+                  :style="{ width: `${collectionProgressPercent}%` }"
+                ></div>
               </div>
-
-              <div class="flex flex-col gap-6 w-full">
-                <h1
-                  class="text-[var(--ui-fg)] font-[900] text-3xl lg:text-5xl no-underline tracking-[-0.08em] brand"
+              <div
+                class="flex items-center gap-2 text-xs text-[var(--ui-fg-muted)]"
+              >
+                <span>
+                  {{ collectionCollectedCount }} /
+                  {{ collectionTotalCreatures }}
+                  collected
+                </span>
+                <span
+                  v-if="isCollectionComplete"
+                  class="rounded-full border border-[var(--ui-border)] px-2 py-0.5 text-[10px] uppercase tracking-[0.2em] text-[var(--ui-fg-muted)]"
                 >
-                  {{ selectedCollection?.name }}
-                </h1>
-
-                <div class="flex flex-col gap-3">
-                  <div
-                    class="h-1.5 lg:h-2.5 w-full max-w-2xl rounded-full bg-[var(--ui-fg)]/10 ring-1 ring-[var(--ui-fg)]/20"
-                  >
-                    <div
-                      class="h-full rounded-full bg-[var(--ui-fg)] transition-[width] duration-300"
-                      :style="{ width: `${progressPercent}%` }"
-                    ></div>
-                  </div>
-                  <div
-                    class="flex items-center gap-2 text-xs text-[var(--ui-fg-muted)]"
-                  >
-                    <span
-                      >{{ collectedCount }} /
-                      {{ totalCreatures }} collected</span
-                    >
-                    <span
-                      v-if="isSeriesComplete"
-                      class="rounded-full border border-[var(--ui-border)] px-2 py-0.5 text-[10px] uppercase tracking-[0.2em] text-[var(--ui-fg-muted)]"
-                    >
-                      Completed
-                    </span>
-                  </div>
-                </div>
+                  Completed
+                </span>
               </div>
             </div>
           </div>
 
-          <p v-if="packError" class="text-sm font-semibold text-red-600">
-            {{ packError }}
-          </p>
-          <p v-if="loadError" class="text-sm font-semibold text-red-600">
-            {{ loadError }}
-          </p>
-          <p
-            v-if="loadingCollections || loadingCards"
-            class="text-xs text-[var(--ui-fg-muted)]"
-          >
-            {{
-              loadingCollections ? "Loading collections..." : "Loading cards..."
-            }}
-          </p>
+          <div class="flex flex-col justify-center items-center gap-2">
+            <span
+              class="text-[10px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]"
+            >
+              Pack drop
+            </span>
+            <Button
+              class="!px-5 !py-2 !tracking-[-0.02em] !bg-[var(--ui-accent)]"
+              :disabled="!canOpenPack"
+              @click="openPack"
+            >
+              {{ packActionLabel }}
+            </Button>
+            <input
+              class="override-input rounded-xl border border-[var(--ui-border)] text-xs px-3 py-1 flex w-full"
+              v-model="overrideCode"
+              type="text"
+              placeholder="Paste gift code (PPX-XXXX-...)"
+              autocomplete="off"
+              spellcheck="false"
+            />
+          </div>
         </div>
 
-        <div class="p-3 flex flex-col justify-center items-center gap-2">
-          <span
-            class="text-[10px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]"
-          >
-            Pack drop
-          </span>
-          <Button
-            class="!px-5 !py-2 !tracking-[-0.02em] !bg-[var(--ui-accent)]"
-            :disabled="!canOpenPack"
-            @click="openPack"
-          >
-            {{ canOpenPack ? openPackLabel : `Next pack drop in ${10}` }}
-          </Button>
-          <input
-            class="rounded-xl border border-[var(--ui-border)] text-xs px-3 py-1 flex max-w-82 w-full mt-3"
-            v-model="overrideCode"
-            type="text"
-            placeholder="Paste gift code (PPX-XXXX-...)"
-            autocomplete="off"
-            spellcheck="false"
-          />
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]">
+              {{ selectedSeriesLabel }}
+            </span>
+            <div class="series-progress-track">
+              <div
+                class="series-progress-fill"
+                :style="{ width: `${seriesProgressPercent}%` }"
+              ></div>
+            </div>
+            <span class="text-[10px] text-[var(--ui-fg-muted)]">
+              {{ seriesCollectedCount }}/{{ seriesTotalCreatures }}
+            </span>
+            <span
+              v-if="isSeriesComplete"
+              class="text-[10px] uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]"
+            >
+              completed
+            </span>
+          </div>
+
+          <div class="flex flex-col gap-2 items-end">
+            <div class="series-nav">
+              <button
+                type="button"
+                class="series-arrow"
+                aria-label="Previous series"
+                @click="selectPrevSeries"
+              >
+                ‹
+              </button>
+              <select
+                v-model="selectedSeries"
+                class="rounded-full border border-[var(--ui-border)] px-3 py-1 text-xs text-[var(--ui-fg)]"
+                aria-label="Filter by series"
+              >
+                <option
+                  v-for="entry in seriesOptions"
+                  :key="entry"
+                  :value="entry"
+                >
+                  {{ entry === "all" ? "All series" : entry }}
+                </option>
+              </select>
+              <button
+                type="button"
+                class="series-arrow"
+                aria-label="Next series"
+                @click="selectNextSeries"
+              >
+                ›
+              </button>
+            </div>
+          </div>
         </div>
       </section>
-      <div class="w-full p-4 max-w-4xl mx-auto">
-        <SSegmentedControl
-          v-model="activeTab"
-          :items="tabItems"
-          class="max-w-sm"
-        />
-        <select v-model="selectedSeries">
-          <option v-for="entry in seriesOptions" :key="entry" :value="entry">
-            {{ entry === "all" ? "All series" : entry }}
-          </option>
-        </select>
+      <div
+        class="flex items-center justify-center px-4 max-w-4xl mx-auto w-full py-4"
+      >
+        <SSegmentedControl v-model="activeTab" :items="tabItems" />
       </div>
-      <section v-if="activeTab === 'book'" class="mx-auto w-full max-w-4xl">
+      <section
+        v-if="activeTab === 'book'"
+        class="mx-auto w-full max-w-4xl pb-8"
+      >
         <div class="flex flex-col gap-6" v-if="!isPackRevealOpen">
-          <section class="p-4">
-            <header
-              class="mb-3 flex items-baseline justify-between text-xs uppercase tracking-[0.18em] text-[var(--ui-fg-muted)]"
+          <div
+            class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 justify-items-center"
+          >
+            <p v-if="packError" class="text-sm font-semibold text-red-600">
+              {{ packError }}
+            </p>
+            <p v-if="loadError" class="text-sm font-semibold text-red-600">
+              {{ loadError }}
+            </p>
+            <p
+              v-if="loadingCollections || loadingCards"
+              class="text-xs text-[var(--ui-fg-muted)]"
             >
-              <span>{{ visibleStickers.length }} stickers</span>
-            </header>
-            <div
-              class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 justify-items-center"
-            >
-              <PixPaxStickerCard
-                v-for="sticker in visibleStickers"
-                :key="sticker.meta.id"
-                :sticker="sticker"
-                :palette="selectedCollection!.palette"
-                :missing="!isOwned(sticker.meta.id)"
-                compact
-              />
-            </div>
-          </section>
+              {{
+                loadingCollections
+                  ? "Loading collections..."
+                  : "Loading cards..."
+              }}
+            </p>
+            <PixPaxStickerCard
+              v-for="sticker in visibleStickers"
+              :key="sticker.meta.id"
+              :sticker="sticker"
+              :palette="selectedCollection!.palette"
+              :missing="!isOwned(sticker.meta.id)"
+              compact
+            />
+          </div>
         </div>
       </section>
 
       <section v-else class="mx-auto w-full max-w-4xl">
-        <div class="rounded-xl border border-[var(--ui-border)] p-4">
-          <header
-            class="mb-3 flex items-baseline justify-between text-xs uppercase tracking-[0.18em] text-[var(--ui-fg-muted)]"
-          >
-            <h3 class="text-xs font-semibold text-[var(--ui-fg)]">Swaps</h3>
-            <span>{{ duplicateCardGroups.length }} cards with spares</span>
-          </header>
+        <div
+          v-if="!duplicateCardGroups.length"
+          class="text-sm text-[var(--ui-fg-muted)]"
+        >
+          No duplicates yet. Open packs in Pixbook to build swap inventory.
+        </div>
+        <div
+          v-else
+          class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 justify-items-center"
+        >
           <div
-            v-if="!duplicateCardGroups.length"
-            class="text-sm text-[var(--ui-fg-muted)]"
+            v-for="group in duplicateCardGroups"
+            :key="group.cardId"
+            class="flex flex-col items-center gap-1"
           >
-            No duplicates yet. Open packs in Pixbook to build swap inventory.
-          </div>
-          <div
-            v-else
-            class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 justify-items-center"
-          >
+            <PixPaxStickerCard
+              v-if="group.card"
+              :sticker="group.card"
+              :palette="selectedCollection!.palette"
+              compact
+            />
             <div
-              v-for="group in duplicateCardGroups"
-              :key="group.cardId"
-              class="flex flex-col items-center gap-1"
+              class="text-xs text-[var(--ui-fg-muted)] uppercase tracking-[0.14em]"
             >
-              <PixPaxStickerCard
-                v-if="group.card"
-                :sticker="group.card"
-                :palette="selectedCollection!.palette"
-                compact
-              />
-              <div
-                class="text-xs text-[var(--ui-fg-muted)] uppercase tracking-[0.14em]"
-              >
-                Spare x{{ group.spare }}
-              </div>
+              Spare x{{ group.spare }}
             </div>
           </div>
         </div>
@@ -982,38 +1113,95 @@ watch(
 </template>
 
 <style scoped>
-.collection-controls {
-  background: color-mix(in srgb, var(--ui-bg) 78%, transparent);
-}
-
-.field {
+.header-main {
   display: grid;
-  gap: 6px;
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  color: var(--ui-fg-muted);
+  gap: 16px;
+  transition: gap 0.22s ease;
 }
 
-.field input,
-.field select {
+.collection-title {
+  font-size: clamp(2rem, 4.8vw, 3.2rem);
+  line-height: 0.96;
+  /* transition: font-size 0.22s ease, letter-spacing 0.22s ease; */
+}
+
+.pack-controls {
+  transition: transform 0.22s ease;
+}
+
+.series-controls {
+  display: grid;
+  gap: 8px;
+}
+
+.series-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.series-arrow {
+  width: 30px;
+  height: 30px;
   border: 1px solid var(--ui-border);
   border-radius: 9999px;
-  background: var(--ui-bg);
   color: var(--ui-fg);
-  padding: 8px 12px;
+  font-size: 18px;
+  line-height: 1;
 }
 
-.status {
-  margin: 0;
-  max-height: 260px;
-  overflow: auto;
-  border-radius: 8px;
-  border: 1px solid var(--ui-border);
-  padding: 10px;
-  background: rgba(0, 0, 0, 0.28);
-  color: #dce9ff;
-  font-size: 12px;
+.series-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.series-progress-track {
+  width: 82px;
+  height: 4px;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--ui-fg) 16%, transparent);
+  overflow: hidden;
+}
+
+.series-progress-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--ui-fg) 76%, transparent);
+  transition: width 0.22s ease;
+}
+
+.override-input {
+  max-width: 340px;
+  transition: max-width 0.22s ease;
+}
+
+/* .sticky-controls.is-compact {
+  position: absolute;
+  top: 0;
+
+  padding: 10px 12px;
+  gap: 8px;
+  z-index: 45;
+  border-top: 1px solid var(--ui-border);
+} */
+
+.sticky-controls.is-compact .header-main {
+  gap: 10px;
+}
+
+.sticky-controls.is-compact .collection-title {
+  font-size: clamp(1.05rem, 2.4vw, 1.35rem);
+  letter-spacing: -0.03em;
+}
+
+.sticky-controls.is-compact .pack-controls {
+  transform: scale(0.9);
+  transform-origin: top center;
+}
+
+.sticky-controls.is-compact .override-input {
+  max-width: 270px;
 }
 
 @keyframes revealFlip {
