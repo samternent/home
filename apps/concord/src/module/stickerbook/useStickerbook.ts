@@ -183,11 +183,11 @@ export function getPeriodId(date: Date) {
     return `dev-${bucket}`;
   }
 
-  const year = date.getUTCFullYear();
-  const start = new Date(Date.UTC(year, 0, 1));
-  const days = Math.floor(
-    (date.getTime() - start.getTime()) / (24 * 60 * 60 * 1000)
+  const isoDate = new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())
   );
-  const week = Math.ceil((days + start.getUTCDay() + 1) / 7);
-  return `${year}-W${String(week).padStart(2, "0")}`;
+  isoDate.setUTCDate(isoDate.getUTCDate() + 4 - (isoDate.getUTCDay() || 7));
+  const yearStart = new Date(Date.UTC(isoDate.getUTCFullYear(), 0, 1));
+  const week = Math.ceil((((isoDate.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+  return `${isoDate.getUTCFullYear()}-W${String(week).padStart(2, "0")}`;
 }

@@ -98,6 +98,9 @@ export async function verifyCommitRevealFromPayloads(params: {
     themeId: revealPayload.themeId,
   });
 
+  if (!revealPayload.packSeed) {
+    return true;
+  }
   return expectedPackSeed === revealPayload.packSeed;
 }
 
@@ -190,29 +193,61 @@ export async function verifyPackIssue(params: {
     return { ok: false, reason: "theme-hash" } as const;
   }
 
-  const recomputedRoot = await recomputePackRoot({
-    packSeed: revealPayload?.packSeed || payload.packSeed,
-    seriesId: payload.seriesId,
-    themeId: payload.themeId,
-    count: payload.count,
-    algoVersion: payload.algoVersion,
-    kitJson,
-  });
-
-  if (recomputedRoot !== payload.packRoot) {
-    return { ok: false, reason: "pack-root" } as const;
-  }
-
-  return {
-    ok: true,
-    kitJson,
-    entries: generatePack({
-      packSeed: revealPayload?.packSeed || payload.packSeed,
+  let resolvedEntries: any[] = [];
+  let recomputedRoot = "";
+  const seedForRecompute = revealPayload?.packSeed || payload.packSeed;
+  if (seedForRecompute) {
+    resolvedEntries = generatePack({
+      packSeed: seedForRecompute,
       seriesId: payload.seriesId,
       themeId: payload.themeId,
       count: payload.count,
       algoVersion: payload.algoVersion,
       kitJson,
-    }),
+    });
+    recomputedRoot = await computeMerkleRoot(resolvedEntries);
+  } else if (Array.isArray(revealPayload?.entries)) {
+    resolvedEntries = revealPayload.entries;
+    recomputedRoot = await computeMerkleRoot(resolvedEntries);
+  } else {
+    return { ok: false, reason: "missing-pack-derivation" } as const;
+  }
+
+  if (recomputedRoot !== payload.packRoot) {
+    return { ok: false, reason: "pack-root" } as const;
+  }
+
+  if (Array.isArray(payload.itemHashes)) {
+    const recomputedItemHashes = await Promise.all(
+      resolvedEntries.map((entry: any) => hashCanonical(entry))
+    );
+    if (
+      recomputedItemHashes.length !== payload.itemHashes.length ||
+      recomputedItemHashes.some(
+        (itemHash, index) => itemHash !== payload.itemHashes[index]
+      )
+    ) {
+      return { ok: false, reason: "item-hashes" } as const;
+    }
+  }
+
+  if (payload.contentsCommitment) {
+    const itemHashes = await Promise.all(
+      resolvedEntries.map((entry: any) => hashCanonical(entry))
+    );
+    const expectedContentsCommitment = await hashCanonical({
+      itemHashes,
+      count: payload.count,
+      packRoot: payload.packRoot,
+    });
+    if (expectedContentsCommitment !== payload.contentsCommitment) {
+      return { ok: false, reason: "contents-commitment" } as const;
+    }
+  }
+
+  return {
+    ok: true,
+    kitJson,
+    entries: resolvedEntries,
   } as const;
 }

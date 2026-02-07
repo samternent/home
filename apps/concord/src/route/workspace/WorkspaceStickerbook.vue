@@ -180,29 +180,22 @@ const nextDropLabel = computed(() => {
   parts.push(`${seconds}s`);
   return parts.join(" ");
 });
-const currentPackRequestId = ref("");
-watch(
-  () => [selectedSeriesId.value, periodId.value, profileId.value] as const,
-  async ([seriesId, period, profile]) => {
-    if (!seriesId || !period || !profile) {
-      currentPackRequestId.value = "";
-      return;
-    }
-    currentPackRequestId.value = await hashCanonical({
-      seriesId,
-      periodId: period,
-      profileId: profile,
-    });
-  },
-  { immediate: true }
-);
+const currentUserKey = computed(() => {
+  const profile = String(profileId.value || "").trim();
+  return profile ? `profile:${profile}` : "";
+});
 const openedForPeriod = computed(() => {
-  if (!currentPackRequestId.value) return null;
+  if (!selectedSeriesId.value || !periodId.value || !currentUserKey.value) return null;
   return (
     receivedPacks.value.find(
-      (entry) =>
-        entry.data?.issuerIssuePayload?.packRequestId ===
-        currentPackRequestId.value
+      (entry) => {
+        const payload = entry.data?.issuerIssuePayload || {};
+        return (
+          payload.seriesId === selectedSeriesId.value &&
+          payload.week === periodId.value &&
+          payload.userKey === currentUserKey.value
+        );
+      }
     ) || null
   );
 });
@@ -662,11 +655,11 @@ async function openWeeklyPack(options: { force?: boolean } = {}) {
     if (!issuerPublicKeyPem) {
       throw new Error("Missing issuer public key.");
     }
-    const packRequestId = await hashCanonical({
-      seriesId: selectedSeriesId.value,
-      periodId: periodId.value,
-      profileId: profileId.value,
-    });
+    const dropCycleId = periodId.value;
+    const userKey = currentUserKey.value;
+    if (!dropCycleId || !userKey) {
+      throw new Error("Missing weekly dropCycleId or userKey.");
+    }
     const clientNonce = crypto.randomUUID();
     const clientNonceHash = await hashCanonical(clientNonce);
 
@@ -674,7 +667,10 @@ async function openWeeklyPack(options: { force?: boolean } = {}) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        packRequestId,
+        packType: "weekly",
+        dropCycleId,
+        userKey,
+        issuedTo: userKey,
         seriesId: selectedSeriesId.value,
         themeId: catalogueThemeId.value,
         count: packCount,
@@ -689,11 +685,15 @@ async function openWeeklyPack(options: { force?: boolean } = {}) {
       );
     }
     const commitData = await commitResponse.json();
+    const packRequestId = String(commitData?.packRequestId || "").trim();
+    if (!packRequestId) {
+      throw new Error("Commit response missing packRequestId.");
+    }
 
     const issueResponse = await fetch(buildApiUrl("/v1/stickerbook/issue"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ packRequestId, clientNonce }),
+      body: JSON.stringify({ packRequestId, clientNonce, issuedTo: userKey }),
     });
 
     if (!issueResponse.ok) {
@@ -762,10 +762,10 @@ async function openWeeklyPack(options: { force?: boolean } = {}) {
     packCards.value = packEntries;
     packMeta.value = {
       packId,
-      packRequestId,
+      packRequestId: issuePayload.packRequestId || packRequestId,
       seriesId: issuePayload.seriesId,
       themeId: issuePayload.themeId,
-      periodId: periodId.value,
+      periodId: issuePayload.week || periodId.value,
       profileId: profileId.value,
       packSeed: issueData.pack?.packSeed,
       packRoot: issuePayload.packRoot,

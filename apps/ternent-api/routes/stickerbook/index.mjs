@@ -11,8 +11,13 @@ import { deriveEntryId } from "@ternent/concord-protocol";
 import {
   computeMerkleRoot,
   createNonceHex,
+  deriveDeterministicPackId,
+  deriveDeterministicPackRequestId,
   deriveKitFromCatalogue,
   derivePackSeed,
+  deriveWeeklyDropSeed,
+  deriveWeeklyStickerSeed,
+  deriveWeeklyUserSeed,
   generatePack,
   hashCanonical,
   getSigningPayload,
@@ -46,7 +51,7 @@ function getNextWeeklyDropAt(now = new Date()) {
   return new Date(utcMidnight + daysUntil * 24 * 60 * 60 * 1000);
 }
 
-function toIsoWeek(isoDate = new Date()) {
+export function toIsoWeek(isoDate = new Date()) {
   const date = new Date(
     Date.UTC(isoDate.getUTCFullYear(), isoDate.getUTCMonth(), isoDate.getUTCDate())
   );
@@ -213,6 +218,34 @@ function sanitizeIssuedTo(value) {
   return normalized || "unknown";
 }
 
+function canonicalizeUserKey(value) {
+  const normalized = String(value || "")
+    .trim()
+    .toLowerCase();
+  if (!normalized) return "";
+  if (normalized.includes(":")) return normalized;
+  return `user:${normalized}`;
+}
+
+function normalizePackType(value) {
+  return String(value || "").trim().toLowerCase() || "standard";
+}
+
+function requireIssuerMasterSeed() {
+  const seed = String(process.env.ISSUER_MASTER_SEED || "").trim();
+  if (!seed) {
+    throw new Error("ISSUER_MASTER_SEED is required for weekly pack issuance.");
+  }
+  return seed;
+}
+
+async function assertPackConsistency(entries, expectedPackRoot) {
+  const recomputed = await computeMerkleRoot(entries);
+  if (recomputed !== expectedPackRoot) {
+    throw new Error("Pack consistency check failed: packRoot mismatch.");
+  }
+}
+
 function shouldRecordIssuedPackInLedger() {
   if (process.env.NODE_ENV === "production") return true;
   return String(process.env.LEDGER_RECORD_DEV_ISSUES || "false").toLowerCase() === "true";
@@ -254,10 +287,56 @@ export default function stickerbookRoutes(router) {
 
   router.post("/v1/stickerbook/commit", async (req, res) => {
     try {
-      const { packRequestId, seriesId, themeId, count, clientNonceHash, issuedTo } =
-        req.body || {};
+      const {
+        packRequestId,
+        packType,
+        dropCycleId,
+        userKey,
+        seriesId,
+        themeId,
+        count,
+        clientNonceHash,
+        issuedTo,
+      } = req.body || {};
+      const normalizedPackType = normalizePackType(packType);
+      const normalizedIssuedTo = sanitizeIssuedTo(issuedTo);
+      const normalizedUserKey = canonicalizeUserKey(userKey || normalizedIssuedTo);
 
       if (!packRequestId || !seriesId || !themeId || !clientNonceHash) {
+        if (normalizedPackType !== "weekly") {
+          res.status(400).send({ error: "Missing pack request fields." });
+          return;
+        }
+      }
+
+      let resolvedPackRequestId = String(packRequestId || "").trim();
+      let resolvedDropCycleId = String(dropCycleId || "").trim();
+
+      if (normalizedPackType === "weekly") {
+        if (!resolvedDropCycleId) {
+          res.status(400).send({ error: "dropCycleId is required for weekly packs." });
+          return;
+        }
+        if (!normalizedUserKey || normalizedUserKey === "unknown") {
+          res.status(400).send({ error: "userKey (or issuedTo) is required for weekly packs." });
+          return;
+        }
+
+        const issuerMasterSeed = requireIssuerMasterSeed();
+        const dropSeed = deriveWeeklyDropSeed(issuerMasterSeed, resolvedDropCycleId);
+        const weeklyUserSeed = deriveWeeklyUserSeed(dropSeed, normalizedUserKey);
+        const deterministicPackRequestId = deriveDeterministicPackRequestId(weeklyUserSeed);
+        if (resolvedPackRequestId && resolvedPackRequestId !== deterministicPackRequestId) {
+          res.status(400).send({
+            error: "packRequestId does not match deterministic weekly request id.",
+            expectedPackRequestId: deterministicPackRequestId,
+          });
+          return;
+        }
+        resolvedPackRequestId = deterministicPackRequestId;
+      }
+
+      if (!resolvedPackRequestId || !seriesId || !themeId || !clientNonceHash) {
         res.status(400).send({ error: "Missing pack request fields." });
         return;
       }
@@ -269,7 +348,7 @@ export default function stickerbookRoutes(router) {
 
       const payload = {
         type: "pack.commit",
-        packRequestId,
+        packRequestId: resolvedPackRequestId,
         seriesId,
         themeId,
         count: Number(count || 0),
@@ -292,18 +371,25 @@ export default function stickerbookRoutes(router) {
       const entry = { ...entryCore, signature };
 
       const pending = loadPendingIssuances();
-      pending[packRequestId] = {
+      pending[resolvedPackRequestId] = {
+        packType: normalizedPackType,
+        dropCycleId: resolvedDropCycleId || null,
+        userKey: normalizedUserKey || null,
         serverSecret,
         clientNonceHash,
         seriesId,
         themeId,
         count: Number(count || 0),
         issuedAt,
-        issuedTo: sanitizeIssuedTo(issuedTo),
+        issuedTo: normalizedIssuedTo,
       };
       savePendingIssuances(pending);
 
-      res.status(200).send({ entry, entryId: await deriveEntryId(entry) });
+      res.status(200).send({
+        entry,
+        entryId: await deriveEntryId(entry),
+        packRequestId: resolvedPackRequestId,
+      });
     } catch (error) {
       console.error("[stickerbook/commit] failed:", error);
       res.status(500).send({ error: error?.message || "Commit failed." });
@@ -350,13 +436,35 @@ export default function stickerbookRoutes(router) {
       });
 
       stage = "derive-pack-seed";
-      const packSeed = derivePackSeed({
+      const packType = normalizePackType(pendingEntry.packType);
+      const isWeekly = packType === "weekly";
+      let weeklyDropCycleId = "";
+      let weeklyUserKey = "";
+      let weeklyUserSeed = "";
+      let packSeed = derivePackSeed({
         serverSecret: pendingEntry.serverSecret,
         clientNonce,
         packRequestId,
         seriesId: pendingEntry.seriesId,
         themeId: pendingEntry.themeId,
       });
+
+      if (isWeekly) {
+        weeklyDropCycleId = String(pendingEntry.dropCycleId || "").trim();
+        weeklyUserKey = canonicalizeUserKey(pendingEntry.userKey || pendingEntry.issuedTo);
+        if (!weeklyDropCycleId) {
+          res.status(400).send({ error: "dropCycleId is required for weekly packs." });
+          return;
+        }
+        if (!weeklyUserKey || weeklyUserKey === "unknown") {
+          res.status(400).send({ error: "userKey is required for weekly packs." });
+          return;
+        }
+        const issuerMasterSeed = requireIssuerMasterSeed();
+        const dropSeed = deriveWeeklyDropSeed(issuerMasterSeed, weeklyDropCycleId);
+        weeklyUserSeed = deriveWeeklyUserSeed(dropSeed, weeklyUserKey);
+        packSeed = weeklyUserSeed;
+      }
 
       stage = "generate-pack";
       const entries = generatePack({
@@ -366,18 +474,26 @@ export default function stickerbookRoutes(router) {
         count: pendingEntry.count,
         algoVersion: ALGO_VERSION,
         kitJson,
+        stickerSeedForIndex: isWeekly
+          ? (index) => deriveWeeklyStickerSeed(weeklyUserSeed, index)
+          : null,
       });
 
       stage = "compute-pack-root";
       const packRoot = await computeMerkleRoot(entries);
       const issuedAt = new Date().toISOString();
-      const packId = createNonceHex(24);
+      const packId = isWeekly ? deriveDeterministicPackId(weeklyUserSeed, 24) : createNonceHex(24);
       const itemHashes = entries.map((entry) => hashCanonical(entry));
       const contentsCommitment = hashCanonical({
         itemHashes,
         count: pendingEntry.count,
         packRoot,
       });
+      await assertPackConsistency(entries, packRoot);
+      const dropCycleId = isWeekly ? weeklyDropCycleId : toIsoWeek(new Date(issuedAt));
+      const userKeyForPayload = isWeekly
+        ? weeklyUserKey
+        : canonicalizeUserKey(issuedTo || pendingEntry.issuedTo);
 
       stage = "sign-entry";
       const payload = {
@@ -388,10 +504,11 @@ export default function stickerbookRoutes(router) {
         issuerKeyId,
         issuedBy: author,
         issuedTo: sanitizeIssuedTo(issuedTo || pendingEntry.issuedTo),
+        userKey: userKeyForPayload || null,
         seriesId: pendingEntry.seriesId,
-        dropId: `week-${toIsoWeek(new Date(issuedAt))}`,
+        dropId: `week-${dropCycleId}`,
         themeId: pendingEntry.themeId,
-        week: toIsoWeek(new Date(issuedAt)),
+        week: dropCycleId,
         count: pendingEntry.count,
         packRoot,
         itemHashes,
@@ -440,6 +557,15 @@ export default function stickerbookRoutes(router) {
         appendResult = await ledger.appendIssuedEntry(entryId, entry);
       }
 
+      if (isWeekly) {
+        console.debug("[stickerbook/issue] weekly-issued", {
+          dropCycleId,
+          userKey: userKeyForPayload,
+          packId,
+          packRoot,
+        });
+      }
+
       stage = "persist-cleanup";
       delete pending[packRequestId];
       savePendingIssuances(pending);
@@ -456,7 +582,7 @@ export default function stickerbookRoutes(router) {
           seriesId: pendingEntry.seriesId,
           themeId: pendingEntry.themeId,
           count: pendingEntry.count,
-          packSeed,
+          packSeed: isWeekly ? null : packSeed,
           packRoot,
           algoVersion: ALGO_VERSION,
           kitHash,

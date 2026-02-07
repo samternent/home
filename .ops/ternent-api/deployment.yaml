@@ -97,4 +97,10 @@ spec:
                   name: ternent-api-ledger
                   key: ledger-trusted-issuer-public-keys-json
                   optional: true
+            - name: ISSUER_MASTER_SEED
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-env
+                  key: issuer-master-seed
+
   

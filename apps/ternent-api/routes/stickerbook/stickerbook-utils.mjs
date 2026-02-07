@@ -1,5 +1,5 @@
 import { canonicalStringify, getEntrySigningPayload } from "@ternent/concord-protocol";
-import { createHash, randomBytes } from "crypto";
+import { createHash, createHmac, randomBytes } from "crypto";
 
 const DEFAULT_RARITY_WEIGHTS = {
   common: 0.7,
@@ -30,6 +30,32 @@ export function hashCanonical(value) {
 
 export function hashString(value) {
   return createHash("sha256").update(value).digest("hex");
+}
+
+export function hmacSha256Hex(key, value, keyEncoding = "utf8") {
+  const normalizedKey =
+    keyEncoding === "hex" ? Buffer.from(String(key), "hex") : Buffer.from(String(key), "utf8");
+  return createHmac("sha256", normalizedKey).update(String(value), "utf8").digest("hex");
+}
+
+export function deriveWeeklyDropSeed(issuerMasterSeed, dropCycleId) {
+  return hmacSha256Hex(issuerMasterSeed, `pixpax:drop:${dropCycleId}`, "utf8");
+}
+
+export function deriveWeeklyUserSeed(dropSeed, userKey) {
+  return hmacSha256Hex(dropSeed, `pixpax:user:${userKey}`, "hex");
+}
+
+export function deriveWeeklyStickerSeed(userSeed, index) {
+  return hmacSha256Hex(userSeed, `pixpax:sticker:${index}`, "hex");
+}
+
+export function deriveDeterministicPackId(userSeed, length = 24) {
+  return hmacSha256Hex(userSeed, "pixpax:packid", "hex").slice(0, length);
+}
+
+export function deriveDeterministicPackRequestId(userSeed) {
+  return hmacSha256Hex(userSeed, "pixpax:reqid", "hex");
 }
 
 export function derivePackSeed(params) {
@@ -130,7 +156,7 @@ function ensureExplicitNull(value) {
 
 export function generatePack(params) {
   const count = clampInt(params.count || 0);
-  const rng = createSeededRng(
+  const sharedRng = createSeededRng(
     `${params.packSeed}:${params.seriesId}:${params.themeId}:${params.algoVersion}`
   );
   const kitJson = params.kitJson || {};
@@ -148,6 +174,15 @@ export function generatePack(params) {
   const entries = [];
 
   for (let index = 0; index < count; index += 1) {
+    const perStickerSeed =
+      typeof params.stickerSeedForIndex === "function"
+        ? params.stickerSeedForIndex(index)
+        : null;
+    const rng = perStickerSeed
+      ? createSeededRng(
+          `${perStickerSeed}:${params.seriesId}:${params.themeId}:${params.algoVersion}`
+        )
+      : sharedRng;
     const rarity = pickWeighted(
       rng,
       Object.fromEntries(
