@@ -1,0 +1,11 @@
+{
+  "cardId": "liverpool-09",
+  "seriesId": "liverpool",
+  "slotIndex": 8,
+  "role": "player",
+  "label": "Liverpool Player 09",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAAAAAAAAQYBBgEGAAAAFhAWEBYQAAEGAQYBBgAAABYQFhAWEAABBgEGAQYAAAAWEBEQFhAAAQYBBgEGAAAAFhAWEBYQAAEGBmZhBgAAABYQFhAWEAABBgEGAQYAAAAWEBYQFhAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

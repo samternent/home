@@ -1,0 +1,11 @@
+{
+  "cardId": "man-city-08",
+  "seriesId": "man-city",
+  "slotIndex": 7,
+  "role": "player",
+  "label": "Man City Player 08",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAAAAAAAADCAMIAwgAADA4MDgwOAAAAwgDCAMIAAAwODA4MDgAAAMIAwgDCAAAMDgQMTA4AAADCAMIAwgAADA4MDgwOAAAAwiIiAMIAAAwODA4MDgAAAMIAwgDCAAAMDgwODA4AAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

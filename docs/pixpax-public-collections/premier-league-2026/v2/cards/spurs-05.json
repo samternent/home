@@ -1,0 +1,11 @@
+{
+  "cardId": "spurs-05",
+  "seriesId": "spurs",
+  "slotIndex": 4,
+  "role": "player",
+  "label": "Spurs Player 05",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAAAAAAAAwgDCAMIAAAAODA4MDgwAAMIAwgDCAAAADgwODA4MAADCAMIAwgAAAA4MBEwODAAAwgDCAMIAAAAODA4MDgwAAMICIiDCAAAADgwODA4MAADCAMIAwgAAAA4MDgwODAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

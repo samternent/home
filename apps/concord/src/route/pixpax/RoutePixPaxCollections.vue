@@ -29,7 +29,7 @@ function toIsoWeek(date = new Date()) {
   utc.setUTCDate(utc.getUTCDate() + 4 - (utc.getUTCDay() || 7));
   const yearStart = new Date(Date.UTC(utc.getUTCFullYear(), 0, 1));
   const weekNumber = Math.ceil(
-    (((utc.getTime() - yearStart.getTime()) / 86400000) + 1) / 7,
+    ((utc.getTime() - yearStart.getTime()) / 86400000 + 1) / 7,
   );
   return `${utc.getUTCFullYear()}-W${String(weekNumber).padStart(2, "0")}`;
 }
@@ -728,61 +728,6 @@ watch(
   <div class="flex flex-1 flex-col max-w-5xl mx-auto w-full">
     <div class="flex flex-1 flex-col gap-2">
       <section class="mx-auto flex w-full mx-auto max-w-4xl flex-col gap-8">
-        <div
-          class="collection-controls rounded-xl border border-[var(--ui-border)] p-3"
-        >
-          <div class="grid gap-2 md:grid-cols-3">
-            <label class="field">
-              <span>Collection</span>
-              <select v-model="selectedCollectionId">
-                <option
-                  v-for="entry in collections"
-                  :key="entry.id"
-                  :value="entry.id"
-                >
-                  {{ entry.name }}
-                </option>
-              </select>
-            </label>
-            <label class="field">
-              <span>Series</span>
-              <select v-model="selectedSeries">
-                <option
-                  v-for="entry in seriesOptions"
-                  :key="entry"
-                  :value="entry"
-                >
-                  {{ entry === "all" ? "All series" : entry }}
-                </option>
-              </select>
-            </label>
-            <div class="flex items-end">
-              <Button
-                class="!px-5 !py-2 !tracking-[-0.02em] !bg-[var(--ui-accent)]"
-                :disabled="!canOpenPack"
-                @click="openPack"
-              >
-                {{ openPackLabel }}
-              </Button>
-            </div>
-          </div>
-          <div class="mt-3 flex flex-col gap-2">
-            <label class="field">
-              <span>Pack code</span>
-              <input
-                v-model="overrideCode"
-                type="text"
-                placeholder="Paste gift code (PPX-XXXX-...)"
-                autocomplete="off"
-                spellcheck="false"
-              />
-            </label>
-            <p class="text-xs text-[var(--ui-fg-muted)]">
-              Shareable redeem links can use <code>?code=&lt;packCode&gt;</code>.
-            </p>
-          </div>
-        </div>
-
         <div class="flex flex-col gap-2">
           <div
             class="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-center p-4"
@@ -794,16 +739,22 @@ watch(
                 >
                   Collection
                 </span>
-                <span class="text-xs text-[var(--ui-fg-muted)]">
-                  {{ selectedCollection?.name || "No collection" }}
-                </span>
+                <select v-model="selectedCollectionId">
+                  <option
+                    v-for="entry in collections"
+                    :key="entry.id"
+                    :value="entry.id"
+                  >
+                    {{ entry.name }}
+                  </option>
+                </select>
               </div>
 
               <div class="flex flex-col gap-6 w-full">
                 <h1
                   class="text-[var(--ui-fg)] font-[900] text-3xl lg:text-5xl no-underline tracking-[-0.08em] brand"
                 >
-                  {{ selectedSeries === "all" ? "All Series" : selectedSeries }}
+                  {{ selectedCollection?.name }}
                 </h1>
 
                 <div class="flex flex-col gap-3">
@@ -849,6 +800,29 @@ watch(
             }}
           </p>
         </div>
+
+        <div class="p-3 flex flex-col justify-center items-center gap-2">
+          <span
+            class="text-[10px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]"
+          >
+            Pack drop
+          </span>
+          <Button
+            class="!px-5 !py-2 !tracking-[-0.02em] !bg-[var(--ui-accent)]"
+            :disabled="!canOpenPack"
+            @click="openPack"
+          >
+            {{ canOpenPack ? openPackLabel : `Next pack drop in ${10}` }}
+          </Button>
+          <input
+            class="rounded-xl border border-[var(--ui-border)] text-xs px-3 py-1 flex max-w-82 w-full mt-3"
+            v-model="overrideCode"
+            type="text"
+            placeholder="Paste gift code (PPX-XXXX-...)"
+            autocomplete="off"
+            spellcheck="false"
+          />
+        </div>
       </section>
       <div class="w-full p-4 max-w-4xl mx-auto">
         <SSegmentedControl
@@ -856,6 +830,11 @@ watch(
           :items="tabItems"
           class="max-w-sm"
         />
+        <select v-model="selectedSeries">
+          <option v-for="entry in seriesOptions" :key="entry" :value="entry">
+            {{ entry === "all" ? "All series" : entry }}
+          </option>
+        </select>
       </div>
       <section v-if="activeTab === 'book'" class="mx-auto w-full max-w-4xl">
         <div class="flex flex-col gap-6" v-if="!isPackRevealOpen">

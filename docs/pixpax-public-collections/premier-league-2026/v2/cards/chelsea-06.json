@@ -1,0 +1,11 @@
+{
+  "cardId": "chelsea-06",
+  "seriesId": "chelsea",
+  "slotIndex": 5,
+  "role": "player",
+  "label": "Chelsea Player 06",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAAAAAAAAOCQ4JDgkAAJ6QnpCekAAADgkOCQ4JAACekJ6QnpAAAA4JDgkOCQAAnpCREJ6QAAAOCQ4JDgkAAJ6QnpCekAAADgnu7g4JAACekJ6QnpAAAA4JDgkOCQAAnpCekJ6QAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "collectionId": "premier-league-2026",
+  "version": "v2",
+  "name": "Premier League 2026",
+  "description": "Public demo collection with 5 series and 50 cards.",
+  "gridSize": 16,
+  "createdAt": "2026-02-07T17:57:41.897Z",
+  "palette": {
+    "id": "premier-league-2026-default",
+    "colors": [
+      0,
+      4279308561,
+      4294967295,
+      4293870660,
+      4280468830,
+      4282090230,
+      4294286859,
+      4289222135,
+      4278630100,
+      4294538006,
+      4286893078,
+      4293675161,
+      4287323382,
+      4294299902,
+      4290438909,
+      4294829706
+    ]
+  }
+}

@@ -1,0 +1,330 @@
+{
+  "collectionId": "premier-league-2026",
+  "version": "v2",
+  "series": [
+    {
+      "seriesId": "arsenal",
+      "name": "Arsenal"
+    },
+    {
+      "seriesId": "chelsea",
+      "name": "Chelsea"
+    },
+    {
+      "seriesId": "liverpool",
+      "name": "Liverpool"
+    },
+    {
+      "seriesId": "man-city",
+      "name": "Man City"
+    },
+    {
+      "seriesId": "spurs",
+      "name": "Spurs"
+    }
+  ],
+  "cards": [
+    "arsenal-01",
+    "arsenal-02",
+    "arsenal-03",
+    "arsenal-04",
+    "arsenal-05",
+    "arsenal-06",
+    "arsenal-07",
+    "arsenal-08",
+    "arsenal-09",
+    "arsenal-10",
+    "chelsea-01",
+    "chelsea-02",
+    "chelsea-03",
+    "chelsea-04",
+    "chelsea-05",
+    "chelsea-06",
+    "chelsea-07",
+    "chelsea-08",
+    "chelsea-09",
+    "chelsea-10",
+    "liverpool-01",
+    "liverpool-02",
+    "liverpool-03",
+    "liverpool-04",
+    "liverpool-05",
+    "liverpool-06",
+    "liverpool-07",
+    "liverpool-08",
+    "liverpool-09",
+    "liverpool-10",
+    "man-city-01",
+    "man-city-02",
+    "man-city-03",
+    "man-city-04",
+    "man-city-05",
+    "man-city-06",
+    "man-city-07",
+    "man-city-08",
+    "man-city-09",
+    "man-city-10",
+    "spurs-01",
+    "spurs-02",
+    "spurs-03",
+    "spurs-04",
+    "spurs-05",
+    "spurs-06",
+    "spurs-07",
+    "spurs-08",
+    "spurs-09",
+    "spurs-10"
+  ],
+  "cardMap": {
+    "arsenal-01": {
+      "seriesId": "arsenal",
+      "slotIndex": 0,
+      "role": "player"
+    },
+    "arsenal-02": {
+      "seriesId": "arsenal",
+      "slotIndex": 1,
+      "role": "player"
+    },
+    "arsenal-03": {
+      "seriesId": "arsenal",
+      "slotIndex": 2,
+      "role": "player"
+    },
+    "arsenal-04": {
+      "seriesId": "arsenal",
+      "slotIndex": 3,
+      "role": "player"
+    },
+    "arsenal-05": {
+      "seriesId": "arsenal",
+      "slotIndex": 4,
+      "role": "player"
+    },
+    "arsenal-06": {
+      "seriesId": "arsenal",
+      "slotIndex": 5,
+      "role": "player"
+    },
+    "arsenal-07": {
+      "seriesId": "arsenal",
+      "slotIndex": 6,
+      "role": "player"
+    },
+    "arsenal-08": {
+      "seriesId": "arsenal",
+      "slotIndex": 7,
+      "role": "player"
+    },
+    "arsenal-09": {
+      "seriesId": "arsenal",
+      "slotIndex": 8,
+      "role": "player"
+    },
+    "arsenal-10": {
+      "seriesId": "arsenal",
+      "slotIndex": 9,
+      "role": "player"
+    },
+    "chelsea-01": {
+      "seriesId": "chelsea",
+      "slotIndex": 0,
+      "role": "player"
+    },
+    "chelsea-02": {
+      "seriesId": "chelsea",
+      "slotIndex": 1,
+      "role": "player"
+    },
+    "chelsea-03": {
+      "seriesId": "chelsea",
+      "slotIndex": 2,
+      "role": "player"
+    },
+    "chelsea-04": {
+      "seriesId": "chelsea",
+      "slotIndex": 3,
+      "role": "player"
+    },
+    "chelsea-05": {
+      "seriesId": "chelsea",
+      "slotIndex": 4,
+      "role": "player"
+    },
+    "chelsea-06": {
+      "seriesId": "chelsea",
+      "slotIndex": 5,
+      "role": "player"
+    },
+    "chelsea-07": {
+      "seriesId": "chelsea",
+      "slotIndex": 6,
+      "role": "player"
+    },
+    "chelsea-08": {
+      "seriesId": "chelsea",
+      "slotIndex": 7,
+      "role": "player"
+    },
+    "chelsea-09": {
+      "seriesId": "chelsea",
+      "slotIndex": 8,
+      "role": "player"
+    },
+    "chelsea-10": {
+      "seriesId": "chelsea",
+      "slotIndex": 9,
+      "role": "player"
+    },
+    "liverpool-01": {
+      "seriesId": "liverpool",
+      "slotIndex": 0,
+      "role": "player"
+    },
+    "liverpool-02": {
+      "seriesId": "liverpool",
+      "slotIndex": 1,
+      "role": "player"
+    },
+    "liverpool-03": {
+      "seriesId": "liverpool",
+      "slotIndex": 2,
+      "role": "player"
+    },
+    "liverpool-04": {
+      "seriesId": "liverpool",
+      "slotIndex": 3,
+      "role": "player"
+    },
+    "liverpool-05": {
+      "seriesId": "liverpool",
+      "slotIndex": 4,
+      "role": "player"
+    },
+    "liverpool-06": {
+      "seriesId": "liverpool",
+      "slotIndex": 5,
+      "role": "player"
+    },
+    "liverpool-07": {
+      "seriesId": "liverpool",
+      "slotIndex": 6,
+      "role": "player"
+    },
+    "liverpool-08": {
+      "seriesId": "liverpool",
+      "slotIndex": 7,
+      "role": "player"
+    },
+    "liverpool-09": {
+      "seriesId": "liverpool",
+      "slotIndex": 8,
+      "role": "player"
+    },
+    "liverpool-10": {
+      "seriesId": "liverpool",
+      "slotIndex": 9,
+      "role": "player"
+    },
+    "man-city-01": {
+      "seriesId": "man-city",
+      "slotIndex": 0,
+      "role": "player"
+    },
+    "man-city-02": {
+      "seriesId": "man-city",
+      "slotIndex": 1,
+      "role": "player"
+    },
+    "man-city-03": {
+      "seriesId": "man-city",
+      "slotIndex": 2,
+      "role": "player"
+    },
+    "man-city-04": {
+      "seriesId": "man-city",
+      "slotIndex": 3,
+      "role": "player"
+    },
+    "man-city-05": {
+      "seriesId": "man-city",
+      "slotIndex": 4,
+      "role": "player"
+    },
+    "man-city-06": {
+      "seriesId": "man-city",
+      "slotIndex": 5,
+      "role": "player"
+    },
+    "man-city-07": {
+      "seriesId": "man-city",
+      "slotIndex": 6,
+      "role": "player"
+    },
+    "man-city-08": {
+      "seriesId": "man-city",
+      "slotIndex": 7,
+      "role": "player"
+    },
+    "man-city-09": {
+      "seriesId": "man-city",
+      "slotIndex": 8,
+      "role": "player"
+    },
+    "man-city-10": {
+      "seriesId": "man-city",
+      "slotIndex": 9,
+      "role": "player"
+    },
+    "spurs-01": {
+      "seriesId": "spurs",
+      "slotIndex": 0,
+      "role": "player"
+    },
+    "spurs-02": {
+      "seriesId": "spurs",
+      "slotIndex": 1,
+      "role": "player"
+    },
+    "spurs-03": {
+      "seriesId": "spurs",
+      "slotIndex": 2,
+      "role": "player"
+    },
+    "spurs-04": {
+      "seriesId": "spurs",
+      "slotIndex": 3,
+      "role": "player"
+    },
+    "spurs-05": {
+      "seriesId": "spurs",
+      "slotIndex": 4,
+      "role": "player"
+    },
+    "spurs-06": {
+      "seriesId": "spurs",
+      "slotIndex": 5,
+      "role": "player"
+    },
+    "spurs-07": {
+      "seriesId": "spurs",
+      "slotIndex": 6,
+      "role": "player"
+    },
+    "spurs-08": {
+      "seriesId": "spurs",
+      "slotIndex": 7,
+      "role": "player"
+    },
+    "spurs-09": {
+      "seriesId": "spurs",
+      "slotIndex": 8,
+      "role": "player"
+    },
+    "spurs-10": {
+      "seriesId": "spurs",
+      "slotIndex": 9,
+      "role": "player"
+    }
+  }
+}

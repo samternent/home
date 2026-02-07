@@ -1,0 +1,11 @@
+{
+  "cardId": "arsenal-03",
+  "seriesId": "arsenal",
+  "slotIndex": 2,
+  "role": "player",
+  "label": "Arsenal Player 03",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAAAAAAACAMIAwgDAAAIMDgwODAwAAgDCAMIAwAACDA4MDgwMAAIAwgDCAMAAAgwMTAYMDAACAMIAwgDAAAIMDgwODAwAAgDCIiIAwAACDA4MDgwMAAIAwgDCAMAAAgwODA4MDAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}
