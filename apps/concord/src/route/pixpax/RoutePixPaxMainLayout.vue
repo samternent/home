@@ -467,10 +467,10 @@ async function eraseLocalPixbook() {
         class="sticky top-0 z-30 w-full backdrop-blur-[12px] border-b border-[var(--ui-border)]"
       >
         <div class="mx-auto flex items-center w-full justify-between px-4 py-2">
-          <div class="hidden lg:block w-20" />
+          <div class="hidden lg:block flex-1" />
           <RouterLink to="/"><PixPaxLogoText class="h-4 lg:h-6" /></RouterLink>
 
-          <div>
+          <div class="flex-1">
             <input
               ref="pixbookUploadInputRef"
               type="file"
@@ -478,7 +478,10 @@ async function eraseLocalPixbook() {
               class="hidden"
               @change="handlePixbookUpload"
             />
-            <div class="relative w-20" ref="userMenuRef">
+            <div
+              class="relative flex justify-end items-center"
+              ref="userMenuRef"
+            >
               <button
                 @click="toggleUserMenu"
                 class="flex items-center gap-2"
@@ -514,7 +517,7 @@ async function eraseLocalPixbook() {
 
               <div
                 v-if="userMenuOpen"
-                class="border border-[var(--ui-border)] absolute p-2 bg-[var(--ui-surface)] rounded mt-2 w-64 right-0 shadow"
+                class="border border-[var(--ui-border)] absolute p-2 bg-[var(--ui-surface)] rounded mt-2 w-64 right-0 shadow top-12"
               >
                 <div class="flex flex-col gap-2 py-2">
                   <IdentityAvatar
@@ -697,14 +700,8 @@ async function eraseLocalPixbook() {
               >Admin</RouterLink
             >
           </div>
-          <div class="flex items-center justify-between py-2 font-sans text-xs">
-            <SThemeToggle
-              v-model="theme"
-              show-dropdown
-              size="xs"
-              class="w-full"
-            />
-            <SThemeToggle v-model="themeMode" size="sm" class="w-20" />
+          <div class="flex items-center justify-center py-2 font-sans text-xs">
+            <SThemeToggle v-model="themeMode" size="sm" />
           </div>
           <div class="flex gap-2 items-center justify-center">
             <a

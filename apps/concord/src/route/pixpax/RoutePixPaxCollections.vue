@@ -540,26 +540,6 @@ const packCtaChip = computed(() =>
   packMode.value === "dev-untracked" ? "Dev: untracked" : "",
 );
 
-function selectPrevSeries() {
-  if (isSeriesSelectionDisabled.value) return;
-  if (!seriesOptions.value.length) return;
-  const nextIndex =
-    selectedSeriesIndex.value <= 0
-      ? seriesOptions.value.length - 1
-      : selectedSeriesIndex.value - 1;
-  selectedSeries.value = seriesOptions.value[nextIndex] || "all";
-}
-
-function selectNextSeries() {
-  if (isSeriesSelectionDisabled.value) return;
-  if (!seriesOptions.value.length) return;
-  const nextIndex =
-    selectedSeriesIndex.value >= seriesOptions.value.length - 1
-      ? 0
-      : selectedSeriesIndex.value + 1;
-  selectedSeries.value = seriesOptions.value[nextIndex] || "all";
-}
-
 function setStatus(message: string, detail?: unknown) {
   status.value = detail
     ? `${message}\n${JSON.stringify(detail, null, 2)}`
@@ -1205,7 +1185,7 @@ watch(
               :key="group.series"
               class="flex flex-col gap-3"
             >
-              <div class="sticky top-20">
+              <div class="sticky top-20 z-0">
                 <span
                   class="uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]"
                 >
@@ -1236,10 +1216,10 @@ watch(
                   :sticker="sticker"
                   :palette="selectedCollection!.palette"
                   :missing="!isOwned(sticker.meta.id)"
-                  class="w-full max-w-48"
+                  class="max-w-38 sm:max-w-48"
                   :sparkles="sticker.meta.shiny"
                   :glow="sticker.meta.shiny"
-                  :shimmer="sticker.meta.shiny"
+                  :shimmer="true"
                   :animated="true"
                   :finish-fx="true"
                 />
@@ -1412,10 +1392,10 @@ watch(
                     <PixPaxStickerCard
                       :sticker="group.card"
                       :palette="selectedCollection!.palette"
+                      compact
                       :sparkles="group.card.meta.shiny"
                       :glow="group.card.meta.shiny"
                       :shimmer="group.card.meta.shiny"
-                      :animated-background="group.card.meta.shiny"
                       :animated="true"
                       :finish-fx="true"
                     />

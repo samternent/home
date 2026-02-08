@@ -19,7 +19,7 @@ function toIsoWeek(date = new Date()) {
   utc.setUTCDate(utc.getUTCDate() + 4 - (utc.getUTCDay() || 7));
   const yearStart = new Date(Date.UTC(utc.getUTCFullYear(), 0, 1));
   const weekNumber = Math.ceil(
-    (((utc.getTime() - yearStart.getTime()) / 86400000) + 1) / 7,
+    ((utc.getTime() - yearStart.getTime()) / 86400000 + 1) / 7,
   );
   return `${utc.getUTCFullYear()}-W${String(weekNumber).padStart(2, "0")}`;
 }
@@ -49,7 +49,9 @@ type OverrideCodeResponse = {
 };
 
 function parseCollectionRefs(): CollectionRef[] {
-  const raw = String(import.meta.env.VITE_PIXPAX_PUBLIC_COLLECTIONS || "").trim();
+  const raw = String(
+    import.meta.env.VITE_PIXPAX_PUBLIC_COLLECTIONS || "",
+  ).trim();
   if (raw) {
     try {
       const parsed = JSON.parse(raw);
@@ -107,8 +109,8 @@ const redeemCode = computed(() =>
 const shareLink = computed(() => {
   if (!redeemCode.value) return "";
   const code = encodeURIComponent(redeemCode.value);
-  if (typeof window === "undefined") return `/pixpax/collections?code=${code}`;
-  return `${window.location.origin}/pixpax/collections?code=${code}`;
+  if (typeof window === "undefined") return `?code=${code}`;
+  return `${window.location.origin}?code=${code}`;
 });
 
 function login() {
@@ -162,7 +164,11 @@ async function mintOverrideCode() {
 
   try {
     const response = await fetch(
-      buildApiUrl(`/v1/pixpax/collections/${encodeURIComponent(collectionId)}/${encodeURIComponent(version)}/override-codes`),
+      buildApiUrl(
+        `/v1/pixpax/collections/${encodeURIComponent(
+          collectionId,
+        )}/${encodeURIComponent(version)}/override-codes`,
+      ),
       {
         method: "POST",
         headers: {
@@ -181,7 +187,11 @@ async function mintOverrideCode() {
 
     if (!response.ok) {
       const text = await response.text();
-      throw new Error(`${response.status} ${response.statusText}: ${text || "request failed"}`);
+      throw new Error(
+        `${response.status} ${response.statusText}: ${
+          text || "request failed"
+        }`,
+      );
     }
 
     const payload = (await response.json()) as OverrideCodeResponse;
@@ -200,7 +210,8 @@ async function mintOverrideCode() {
     <section class="rounded-xl border border-[var(--ui-border)] p-4">
       <h1 class="text-xl font-semibold mb-2">PixPax Admin</h1>
       <p class="text-sm text-[var(--ui-fg-muted)] mb-4">
-        Use admin token auth to mint one-time pack override codes. The server rejects requests without a valid token.
+        Use admin token auth to mint one-time pack override codes. The server
+        rejects requests without a valid token.
       </p>
 
       <div class="grid gap-2 md:grid-cols-[1fr_auto_auto]">
@@ -283,7 +294,11 @@ async function mintOverrideCode() {
       </div>
 
       <div class="mt-4 flex items-center gap-3">
-        <Button class="!px-5 !py-2 !bg-[var(--ui-accent)]" :disabled="minting" @click="mintOverrideCode">
+        <Button
+          class="!px-5 !py-2 !bg-[var(--ui-accent)]"
+          :disabled="minting"
+          @click="mintOverrideCode"
+        >
           {{ minting ? "Minting..." : "Mint code" }}
         </Button>
       </div>
@@ -341,7 +356,8 @@ async function mintOverrideCode() {
 }
 
 .mono {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
   font-size: 12px;
 }
 </style>

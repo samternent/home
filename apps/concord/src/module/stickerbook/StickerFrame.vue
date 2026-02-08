@@ -77,20 +77,20 @@ const backdropFill = computed(() => {
   if (rarity.value === "uncommon") {
     return "color-mix(in srgb, var(--ui-accent) 14%, var(--ui-bg))";
   }
-  return null;
+  return "color-mix(in srgb, var(--ui-accent) 14%, var(--ui-bg))";
 });
 </script>
 
 <template>
   <div
-    class="flex flex-col items-center justify-center gap-2 text-center w-full rounded-sm overflow-hidden shadow border border-[var(--ui-border)]"
-    :class="[isCompact ? 'gap-2' : 'gap-3']"
+    class="flex flex-col items-center justify-center gap-2 text-center w-full rounded-sm overflow-hidden"
+    :class="[isCompact ? 'gap-2' : 'gap-3', !missing ? 'shadow ' : '']"
   >
     <div
       :class="[
-        'relative w-full bg-[var(--ui-surface)]  bg-opacity-10   overflow-hidden sticker-frame-card',
+        'relative w-full   overflow-hidden sticker-frame-card',
         { 'shimmer-border mythic-border p-0.5': showMythicBorder },
-        missing ? 'opacity-60 blur-[2px] grayscale' : '',
+        missing ? 'opacity-100 blur-[2px] grayscale' : '',
       ]"
       :style="
         showMythicBorder
@@ -283,19 +283,20 @@ const backdropFill = computed(() => {
         />
       </svg>
 
-      <div class="flex flex-col relative z-10 h-full overflow-hidden relative">
+      <div
+        class="flex flex-col relative z-10 h-full overflow-hidden relative"
+        :class="[!missing ? '' : 'opacity-40']"
+      >
         <div
-          class="p-2 flex flex-col items-center justify-between uppercase bg-[var(--ui-bg)] bg-opacity-90 text-[var(--ui-fg-muted)]"
+          class="p-2 flex flex-col items-center justify-between uppercase bg-opacity-90 text-[var(--ui-fg-muted)]"
+          :class="[!missing ? 'bg-[var(--ui-bg)] ' : '']"
         >
           <span v-if="showLabels" class="font-semibold text-[var(--ui-fg)]">
             {{ label || "Sticker" }}
           </span>
         </div>
         <div class="relative mx-auto w-full">
-          <div
-            class="relative size-full overflow-hidden"
-            :class="[missing ? 'opacity-20' : '']"
-          >
+          <div class="relative size-full overflow-hidden">
             <slot />
           </div>
         </div>
