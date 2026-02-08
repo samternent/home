@@ -5,6 +5,7 @@ import "ternent-ui/styles.css";
 import "ternent-ui/themes/print.css";
 import "ternent-ui/themes/spruce-ink.css";
 import "ternent-ui/themes/obsidian-iris.css";
+import "ternent-ui/themes/pixpax.css";
 import "ternent-ui/themes/harbor-rose.css";
 import "ternent-ui/themes/garnet-honey.css";
 import "ternent-ui/themes/citrine-ash.css";
@@ -27,11 +28,11 @@ if (!themeMode.value && typeof window !== "undefined") {
   if (typeof media.addEventListener === "function") {
     media.addEventListener(
       "change",
-      (event) => (themeMode.value = media.matches ? "dark" : "light")
+      (event) => (themeMode.value = media.matches ? "dark" : "light"),
     );
   } else if (typeof media.addListener === "function") {
     media.addListener(
-      (event) => (themeMode.value = media.matches ? "dark" : "light")
+      (event) => (themeMode.value = media.matches ? "dark" : "light"),
     );
   }
 }
@@ -40,9 +41,12 @@ if (typeof document !== "undefined") {
   watchEffect(() => {
     document.documentElement.setAttribute(
       "data-theme",
-      `${theme.value}-${themeMode.value || "light"}`
+      `${theme.value}-${themeMode.value || "light"}`,
     );
-    document.documentElement.setAttribute("data-theme-palette", themeMode.value);
+    document.documentElement.setAttribute(
+      "data-theme-palette",
+      themeMode.value,
+    );
 
     // document.documentElement.classList.toggle(themeMode.value);
   });
@@ -62,5 +66,5 @@ export const createApp = ViteSSG(
       const loader = document.getElementById("pixpax-preload");
       if (loader) loader.remove();
     });
-  }
+  },
 );

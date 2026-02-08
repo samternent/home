@@ -24,6 +24,7 @@
     "./themes/citrine-ash.css": "./src/themes/citrine-ash.css",
     "./themes/harbor-rose.css": "./src/themes/harbor-rose.css",
     "./themes/obsidian-iris.css": "./src/themes/obsidian-iris.css",
+    "./themes/pixpax.css": "./src/themes/pixpax.css",
     "./themes/garnet-honey.css": "./src/themes/garnet-honey.css",
     "./themes/prism.css": "./src/themes/prism.css",
     "./themes/sunset.css": "./src/themes/sunset.css",

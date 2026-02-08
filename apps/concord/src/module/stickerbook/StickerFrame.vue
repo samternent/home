@@ -83,7 +83,7 @@ const backdropFill = computed(() => {
 
 <template>
   <div
-    class="flex flex-col items-center justify-center gap-2 text-center w-full border border-[var(--ui-border)] rounded-sm overflow-hidden shadow"
+    class="flex flex-col items-center justify-center gap-2 text-center w-full rounded-sm overflow-hidden shadow border border-[var(--ui-border)]"
     :class="[isCompact ? 'gap-2' : 'gap-3']"
   >
     <div

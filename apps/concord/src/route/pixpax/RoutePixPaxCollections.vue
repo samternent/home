@@ -4,6 +4,7 @@ import { Button } from "ternent-ui/primitives";
 import { SSegmentedControl } from "ternent-ui/components";
 import { useLocalStorage } from "@vueuse/core";
 import { useRoute, useRouter } from "vue-router";
+import PackDropCard from "../../module/pixpax/PackDropCard.vue";
 import PixPaxStickerCard from "../../module/pixpax/PixPaxStickerCard.vue";
 import type {
   Collection,
@@ -510,17 +511,34 @@ const nextDropLabel = computed(() => {
   parts.push(`${seconds}s`);
   return parts.join(" ");
 });
-const packActionLabel = computed(() => {
-  if (canOpenPack.value) return openPackLabel.value;
+const packCtaLabel = computed(() => {
   if (
     packMode.value !== "dev-untracked" &&
     openedForCurrentDrop.value &&
-    !overrideCode.value.trim()
+    !overrideCode.value.trim() &&
+    !canOpenPack.value
   ) {
-    return `Next pack in ${nextDropLabel.value}`;
+    return "Next pack";
   }
   return openPackLabel.value;
 });
+
+const packCtaSubtext = computed(() => {
+  if (packMode.value === "dev-untracked") return "";
+  if (
+    packMode.value !== "dev-untracked" &&
+    openedForCurrentDrop.value &&
+    !overrideCode.value.trim() &&
+    !canOpenPack.value
+  ) {
+    return `Available in ${nextDropLabel.value}`;
+  }
+  return "3 cards inside";
+});
+
+const packCtaChip = computed(() =>
+  packMode.value === "dev-untracked" ? "Dev: untracked" : "",
+);
 
 function selectPrevSeries() {
   if (isSeriesSelectionDisabled.value) return;
@@ -980,6 +998,20 @@ async function openPack() {
   }
 }
 
+async function redeemPack(code: string) {
+  if (packMode.value === "dev-untracked") {
+    throw new Error("Gift codes are unavailable for dev packs.");
+  }
+  overrideCode.value = code;
+  if (!canOpenPack.value || !selectedCollection.value) {
+    throw new Error("Pack not available yet.");
+  }
+  await openPack();
+  if (packError.value) {
+    throw new Error(packError.value);
+  }
+}
+
 function collectNextPackCard() {
   if (!activePackCard.value) return;
   packRevealIndex.value += 1;
@@ -1076,37 +1108,27 @@ watch(
             </select>
           </div> -->
 
-          <div class="flex flex-col justify-center items-center gap-2">
-            <span
-              class="text-[10px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]"
-            >
-              Pack drop
-            </span>
-            <select
-              v-if="devUntrackedPackEnabled"
-              v-model="packMode"
-              class="rounded-full border border-[var(--ui-border)] px-3 py-1 text-xs text-[var(--ui-fg)]"
-            >
-              <option value="weekly">Weekly tracked</option>
-              <option value="dev-untracked">Dev untracked</option>
-            </select>
-            <Button
-              class="!px-5 !py-2 !tracking-[-0.02em] !bg-[var(--ui-accent)]"
-              :disabled="!canOpenPack"
-              @click="openPack"
-            >
-              {{ packActionLabel }}
-            </Button>
-            <input
-              class="override-input rounded-xl border border-[var(--ui-border)] text-xs px-3 py-1 flex w-full"
-              v-model="overrideCode"
-              type="text"
-              placeholder="Paste gift code (PPX-XXXX-...)"
-              :disabled="packMode === 'dev-untracked'"
-              autocomplete="off"
-              spellcheck="false"
-            />
-          </div>
+          <PackDropCard
+            :cta-label="packCtaLabel"
+            :cta-subtext="packCtaSubtext"
+            :cta-disabled="!canOpenPack"
+            :cta-chip="packCtaChip"
+            :prefill-code="overrideCode"
+            :can-redeem="packMode !== 'dev-untracked'"
+            :show-dev-options="devUntrackedPackEnabled"
+            :on-open-pack="openPack"
+            :on-redeem-code="redeemPack"
+          >
+            <template #dev-options>
+              <select
+                v-model="packMode"
+                class="rounded-full border border-[var(--ui-border)] px-3 py-1 text-xs text-[var(--ui-fg)]"
+              >
+                <option value="weekly">Weekly tracked</option>
+                <option value="dev-untracked">Dev untracked</option>
+              </select>
+            </template>
+          </PackDropCard>
         </div>
         <div class="flex flex-col w-full">
           <h1
@@ -1228,13 +1250,31 @@ watch(
       </section>
 
       <section v-else class="mx-auto w-full max-w-4xl">
+        <div class="py-4">
+          <div class="space-y-1 text-center">
+            <h3 class="text-lg font-semibold text-[var(--ui-fg)]">
+              Swaps pile
+            </h3>
+            <p class="text-sm text-[var(--ui-fg-muted)]">
+              Duplicates you can trade without affecting collection totals.
+            </p>
+          </div>
+          <div class="flex flex-col items-center gap-2 text-center py-2">
+            <Button size="sm" variant="secondary" disabled>
+              Trading coming soon
+            </Button>
+            <p class="text-xs text-[var(--ui-fg-muted)]">
+              Trade duplicate cards with friends to complete your Pixbook.
+            </p>
+          </div>
+        </div>
         <div
           v-if="!duplicateCardGroups.length"
           class="text-sm text-[var(--ui-fg-muted)]"
         >
           No duplicates yet. Open packs in Pixbook to build swap inventory.
         </div>
-        <div v-else class="flex gap-6 w-full flex-wrap justify-center">
+        <div v-else class="flex gap-6 w-full flex-wrap justify-center py-8">
           <div
             v-for="group in duplicateCardGroups"
             :key="group.cardId"
@@ -1252,9 +1292,9 @@ watch(
               :finish-fx="true"
             />
             <div
-              class="text-xs text-[var(--ui-fg-muted)] uppercase tracking-[0.14em]"
+              class="text-[var(--ui-fg)] font-bold px-3 rounded-full py-0.5 uppercase tracking-[0.14em]"
             >
-              Spare x{{ group.spare }}
+              x{{ group.spare }}
             </div>
           </div>
         </div>
@@ -1267,7 +1307,7 @@ watch(
         <div class="flex w-full max-w-3xl flex-col gap-6">
           <div
             v-if="packPhase === 'opening'"
-            class="mx-auto flex w-full max-w-md flex-col items-center gap-3 rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-surface)] p-6 text-center"
+            class="mx-auto flex w-full max-w-md flex-col items-center gap-3 rounded-2xl border border-[var(--ui-border)] p-6 text-center"
           >
             <p
               class="text-xs uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]"
@@ -1278,7 +1318,7 @@ watch(
           </div>
 
           <template v-else>
-            <div class="relative mx-auto flex-1" v-if="!revealComplete">
+            <div class="relative mx-auto flex-1 p-2" v-if="!revealComplete">
               <div
                 v-for="(card, index) in remainingPackCards"
                 :key="`${card.meta.id}-${index}`"
@@ -1321,17 +1361,20 @@ watch(
               </div>
             </div>
 
-            <div v-else class="flex flex-col gap-4 items-center p-4">
+            <div
+              v-else
+              class="flex flex-col gap-4 items-center overflow-hidden"
+            >
               <p
                 class="text-xs uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]"
               >
                 Pack summary
               </p>
-              <div v-if="revealNewGroups.length" class="space-y-2">
+              <div v-if="revealNewGroups.length" class="space-y-2 w-full">
                 <p class="text-sm font-semibold text-[var(--ui-fg)]">
                   New cards ({{ revealNeeds.length }})
                 </p>
-                <div class="flex flex-nowrap gap-2 overflow-x-auto">
+                <div class="flex flex-nowrap gap-2 overflow-x-auto w-full py-4">
                   <div
                     v-for="(group, index) in revealNewGroups"
                     :key="`new-${group.card.meta.id}-${index}`"
@@ -1350,11 +1393,11 @@ watch(
                   </div>
                 </div>
               </div>
-              <div v-if="revealDuplicateGroups.length" class="space-y-2">
+              <div v-if="revealDuplicateGroups.length" class="space-y-2 w-full">
                 <p class="text-sm font-semibold text-[var(--ui-fg)]">
                   Owned duplicates ({{ revealDuplicates.length }})
                 </p>
-                <div class="flex flex-nowrap gap-2 overflow-x-auto">
+                <div class="flex flex-nowrap gap-2 overflow-x-auto w-full py-4">
                   <div
                     v-for="(group, index) in revealDuplicateGroups"
                     :key="`dup-${group.card.meta.id}-${index}`"
@@ -1362,7 +1405,7 @@ watch(
                   >
                     <span
                       v-if="group.count > 1"
-                      class="absolute -right-1 -top-1 z-20 rounded-full bg-[var(--ui-fg)] px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.16em] text-[var(--ui-bg)]"
+                      class="absolute bottom-0 right-0 z-20 rounded-full bg-[var(--ui-fg)] px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.16em] text-[var(--ui-bg)]"
                     >
                       x{{ group.count }}
                     </span>
@@ -1376,14 +1419,6 @@ watch(
                       :animated="true"
                       :finish-fx="true"
                     />
-                    <div
-                      class="mt-1 text-[10px] uppercase tracking-[0.14em] text-[var(--ui-fg-muted)] text-center"
-                    >
-                      Owned
-                      {{
-                        revealSnapshotOwnedCounts.get(group.card.meta.id) || 0
-                      }}
-                    </div>
                   </div>
                 </div>
               </div>

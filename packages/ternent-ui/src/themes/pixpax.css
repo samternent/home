@@ -1,0 +1,196 @@
+/* PixPax — Light
+   Goal: soft paper + lilac ink, “collectible” feel, still readable */
+[data-theme="pixpax-light"] {
+  color-scheme: light;
+
+  /* Base */
+  --ui-bg: #fbf8ff; /* lilac-tinted paper */
+  --ui-fg: #1a1220; /* deep ink */
+  --ui-fg-muted: #5d5163;
+
+  /* Surfaces */
+  --ui-surface: #f2ebff; /* soft lilac surface */
+  --ui-surface-hover: #e8defd;
+  --ui-border: rgba(26, 18, 32, 0.14);
+
+  /* Primary: “pack purple” */
+  --ui-primary: #5a2bff;
+  --ui-on-primary: #fbf8ff;
+  --ui-primary-muted: rgba(90, 43, 255, 0.14);
+  --ui-primary-hover: rgba(90, 43, 255, 0.22);
+  --ui-primary-active: rgba(90, 43, 255, 0.3);
+
+  /* Secondary: inky neutral */
+  --ui-secondary: #211726;
+  --ui-on-secondary: #fbf8ff;
+  --ui-secondary-muted: rgba(33, 23, 38, 0.12);
+  --ui-secondary-hover: rgba(33, 23, 38, 0.2);
+  --ui-secondary-active: rgba(33, 23, 38, 0.28);
+
+  /* Accent: “pixel glow” lavender */
+  --ui-accent: #b69cff;
+  --ui-on-accent: #1a1220;
+  --ui-accent-muted: rgba(182, 156, 255, 0.18);
+  --ui-accent-hover: rgba(182, 156, 255, 0.26);
+  --ui-accent-active: rgba(182, 156, 255, 0.34);
+
+  /* Semantics: keep friendly + toy-like */
+  --ui-success: #22a38a;
+  --ui-on-success: #fbf8ff;
+  --ui-success-muted: rgba(34, 163, 138, 0.16);
+  --ui-success-hover: rgba(34, 163, 138, 0.24);
+  --ui-success-active: rgba(34, 163, 138, 0.32);
+
+  --ui-warning: #d19a2a; /* slightly “foil” */
+  --ui-on-warning: #1b1205;
+  --ui-warning-muted: rgba(209, 154, 42, 0.16);
+  --ui-warning-hover: rgba(209, 154, 42, 0.24);
+  --ui-warning-active: rgba(209, 154, 42, 0.32);
+
+  --ui-info: #3a6cff;
+  --ui-on-info: #fbf8ff;
+  --ui-info-muted: rgba(58, 108, 255, 0.16);
+  --ui-info-hover: rgba(58, 108, 255, 0.24);
+  --ui-info-active: rgba(58, 108, 255, 0.32);
+
+  --ui-critical: #d54a63;
+  --ui-on-critical: #fbf8ff;
+  --ui-critical-muted: rgba(213, 74, 99, 0.16);
+  --ui-critical-hover: rgba(213, 74, 99, 0.24);
+  --ui-critical-active: rgba(213, 74, 99, 0.32);
+
+  --ui-danger: var(--ui-critical);
+  --ui-on-danger: var(--ui-on-critical);
+  --ui-danger-muted: var(--ui-critical-muted);
+  --ui-danger-hover: var(--ui-critical-hover);
+  --ui-danger-active: var(--ui-critical-active);
+
+  /* Tonals */
+  --ui-tonal-secondary: rgba(26, 18, 32, 0.06);
+  --ui-tonal-secondary-hover: rgba(26, 18, 32, 0.1);
+  --ui-tonal-tertiary: rgba(26, 18, 32, 0.03);
+  --ui-tonal-tertiary-hover: rgba(26, 18, 32, 0.07);
+
+  /* Focus + glow (PixPax wants a “soft neon” ring) */
+  --ui-ring: rgba(90, 43, 255, 0.42);
+  --ui-glow-primary: 0 0 0 2px rgba(90, 43, 255, 0.24);
+  --ui-glow-accent: 0 0 0 2px rgba(182, 156, 255, 0.22);
+  --ui-glow-critical: 0 0 0 2px rgba(213, 74, 99, 0.22);
+  --ui-glow-success: 0 0 0 2px rgba(34, 163, 138, 0.2);
+
+  /* Shape + motion (keep yours) */
+  --ui-radius-sm: 10px;
+  --ui-radius-md: 14px;
+  --ui-radius-lg: 20px;
+
+  --ui-duration-fast: 120ms;
+  --ui-duration-normal: 200ms;
+  --ui-duration-slow: 300ms;
+  --ui-ease-out: cubic-bezier(0, 0, 0.2, 1);
+
+  /* Shadows: softer + “collectible card” */
+  --ui-shadow-sm: 0 1px 2px rgba(12, 10, 12, 0.1);
+  --ui-shadow-md: 0 10px 28px rgba(26, 18, 32, 0.18);
+
+  --ui-lift-hover: -0.5px;
+  --ui-scale-active: 0.97;
+}
+
+/* PixPax — Dark
+   Goal: arcade night + purple nebula, higher contrast borders, juicy CTA */
+[data-theme="pixpax-dark"] {
+  color-scheme: dark;
+
+  /* Base */
+  --ui-bg: #0c0711; /* deeper than obsidian */
+  --ui-fg: #f4f0ff;
+  --ui-fg-muted: #b8acc6;
+
+  /* Surfaces */
+  --ui-surface: #140c1a; /* inky purple surface */
+  --ui-surface-hover: #1b1124;
+  --ui-border: rgba(244, 240, 255, 0.14); /* a touch stronger for cards */
+
+  /* Primary: “pack purple” (CTA) */
+  --ui-primary: #a88bff;
+  --ui-on-primary: #140728;
+  --ui-primary-muted: rgba(168, 139, 255, 0.16);
+  --ui-primary-hover: rgba(168, 139, 255, 0.24);
+  --ui-primary-active: rgba(168, 139, 255, 0.32);
+
+  /* Secondary: deep neutral */
+  --ui-secondary: #2a2330;
+  --ui-on-secondary: #f4f0ff;
+  --ui-secondary-muted: rgba(42, 35, 48, 0.18);
+  --ui-secondary-hover: rgba(42, 35, 48, 0.26);
+  --ui-secondary-active: rgba(42, 35, 48, 0.34);
+
+  /* Accent: brighter “pixel glow” */
+  --ui-accent: #c7b3ff;
+  --ui-on-accent: #140728;
+  --ui-accent-muted: rgba(199, 179, 255, 0.18);
+  --ui-accent-hover: rgba(199, 179, 255, 0.26);
+  --ui-accent-active: rgba(199, 179, 255, 0.34);
+
+  /* Semantics */
+  --ui-success: #5fe2c3;
+  --ui-on-success: #061613;
+  --ui-success-muted: rgba(95, 226, 195, 0.16);
+  --ui-success-hover: rgba(95, 226, 195, 0.24);
+  --ui-success-active: rgba(95, 226, 195, 0.32);
+
+  /* Warning: “foil gold” */
+  --ui-warning: #f2c35a;
+  --ui-on-warning: #1c1207;
+  --ui-warning-muted: rgba(242, 195, 90, 0.16);
+  --ui-warning-hover: rgba(242, 195, 90, 0.24);
+  --ui-warning-active: rgba(242, 195, 90, 0.32);
+
+  --ui-info: #7da2ff;
+  --ui-on-info: #0b0a18;
+  --ui-info-muted: rgba(125, 162, 255, 0.16);
+  --ui-info-hover: rgba(125, 162, 255, 0.24);
+  --ui-info-active: rgba(125, 162, 255, 0.32);
+
+  --ui-critical: #ff8ea0;
+  --ui-on-critical: #1a0710;
+  --ui-critical-muted: rgba(255, 142, 160, 0.16);
+  --ui-critical-hover: rgba(255, 142, 160, 0.24);
+  --ui-critical-active: rgba(255, 142, 160, 0.32);
+
+  --ui-danger: var(--ui-critical);
+  --ui-on-danger: var(--ui-on-critical);
+  --ui-danger-muted: var(--ui-critical-muted);
+  --ui-danger-hover: var(--ui-critical-hover);
+  --ui-danger-active: var(--ui-critical-active);
+
+  /* Tonals */
+  --ui-tonal-secondary: rgba(244, 240, 255, 0.09);
+  --ui-tonal-secondary-hover: rgba(244, 240, 255, 0.15);
+  --ui-tonal-tertiary: rgba(244, 240, 255, 0.05);
+  --ui-tonal-tertiary-hover: rgba(244, 240, 255, 0.11);
+
+  /* Focus + glow */
+  --ui-ring: rgba(168, 139, 255, 0.55);
+  --ui-glow-primary: 0 0 0 2px rgba(168, 139, 255, 0.36);
+  --ui-glow-accent: 0 0 0 2px rgba(199, 179, 255, 0.36);
+  --ui-glow-critical: 0 0 0 2px rgba(255, 142, 160, 0.3);
+  --ui-glow-success: 0 0 0 2px rgba(95, 226, 195, 0.28);
+
+  /* Shape + motion */
+  --ui-radius-sm: 10px;
+  --ui-radius-md: 14px;
+  --ui-radius-lg: 20px;
+
+  --ui-duration-fast: 120ms;
+  --ui-duration-normal: 200ms;
+  --ui-duration-slow: 300ms;
+  --ui-ease-out: cubic-bezier(0, 0, 0.2, 1);
+
+  /* Shadows: deeper, a bit more “card” */
+  --ui-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.38);
+  --ui-shadow-md: 0 14px 40px rgba(0, 0, 0, 0.55);
+
+  --ui-lift-hover: -0.5px;
+  --ui-scale-active: 0.97;
+}

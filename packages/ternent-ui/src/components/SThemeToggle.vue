@@ -41,6 +41,10 @@ const themes = [
     label: "🖤 Obsidian",
   },
   {
+    name: "pixpax",
+    label: " PixPax",
+  },
+  {
     name: "garnet",
     label: "🍯 Garnet",
   },

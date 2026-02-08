@@ -6,6 +6,7 @@ import {
   exportPublicKeyAsPem,
   exportPrivateKeyAsPem,
 } from "ternent-identity";
+import { SThemeToggle } from "ternent-ui";
 import { generate as generateEncryptionKeys } from "ternent-encrypt";
 import { stripIdentityKey } from "ternent-utils";
 import AppBootstrap from "../../module/app/AppBootstrap.vue";
@@ -78,6 +79,8 @@ const profileUsername = computed(() => {
 const disabled = computed(
   () => !profile.ready.value || !profile.profileId.value,
 );
+
+const themeMode = useLocalStorage("app/themeMode", "light");
 
 const username = shallowRef<string>("");
 const pixbookUploadInputRef = shallowRef<HTMLInputElement | null>(null);
@@ -693,6 +696,15 @@ async function eraseLocalPixbook() {
               class="opacity-80 hover:opacity-100 text-xs font-mono font-thin -translate-y-1 hover:-translate-y-0.5 transition-all duration-300"
               >Admin</RouterLink
             >
+          </div>
+          <div class="flex items-center justify-between py-2 font-sans text-xs">
+            <SThemeToggle
+              v-model="theme"
+              show-dropdown
+              size="xs"
+              class="w-full"
+            />
+            <SThemeToggle v-model="themeMode" size="sm" class="w-20" />
           </div>
           <div class="flex gap-2 items-center justify-center">
             <a
