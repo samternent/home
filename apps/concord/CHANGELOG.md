@@ -1,5 +1,11 @@
 # concord
 
+## 0.3.27
+
+### Patch Changes
+
+- [`db9b43b594af0b5e91659d96b90171ab14e9f379`](https://github.com/samternent/home/commit/db9b43b594af0b5e91659d96b90171ab14e9f379) Thanks [@samternent](https://github.com/samternent)! - ui tweaks
+
 ## 0.3.26
 
 ### Patch Changes
