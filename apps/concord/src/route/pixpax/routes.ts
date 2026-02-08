@@ -19,6 +19,10 @@ export default [
         path: "admin",
         component: () => import("./RoutePixPaxAdmin.vue"),
       },
+      {
+        path: "creator",
+        component: () => import("./RoutePixPaxCreator.vue"),
+      },
     ],
   },
 ];
