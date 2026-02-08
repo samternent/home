@@ -1053,10 +1053,10 @@ watch(
   >
     <div class="flex flex-1 flex-col gap-2">
       <section
-        class="mx-auto flex w-full max-w-4xl flex-col gap-4 px-4 relative backdrop-blur-xl p-4 border-b border-[var(--ui-border)]"
+        class="mx-auto flex w-full max-w-4xl flex-col gap-4 px-4 relative backdrop-blur-xl p-4"
       >
-        <div class="header-main">
-          <div class="flex items-center justify-between gap-4">
+        <div>
+          <!-- <div class="flex items-center justify-between gap-4">
             <span
               class="text-[10px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]"
             >
@@ -1074,41 +1074,7 @@ watch(
                 {{ entry.name }}
               </option>
             </select>
-          </div>
-
-          <div class="flex flex-col w-full">
-            <h1
-              class="collection-title z-1 text-[var(--ui-fg)] font-[900] no-underline tracking-[-0.08em] brand"
-            >
-              {{ selectedCollection?.name }}
-            </h1>
-
-            <div class="flex flex-col gap-2">
-              <div
-                class="h-1.5 lg:h-2 w-full rounded-full bg-[var(--ui-fg)]/10 ring-1 ring-[var(--ui-fg)]/20"
-              >
-                <div
-                  class="h-full rounded-full bg-[var(--ui-fg)]/80 transition-[width] duration-300"
-                  :style="{ width: `${collectionProgressPercent}%` }"
-                ></div>
-              </div>
-              <div
-                class="flex items-center gap-2 text-xs text-[var(--ui-fg-muted)]"
-              >
-                <span>
-                  {{ collectionCollectedCount }} /
-                  {{ collectionTotalCreatures }}
-                  collected
-                </span>
-                <span
-                  v-if="isCollectionComplete"
-                  class="rounded-full border border-[var(--ui-border)] px-2 py-0.5 text-[10px] uppercase tracking-[0.2em] text-[var(--ui-fg-muted)]"
-                >
-                  Completed
-                </span>
-              </div>
-            </div>
-          </div>
+          </div> -->
 
           <div class="flex flex-col justify-center items-center gap-2">
             <span
@@ -1142,70 +1108,41 @@ watch(
             />
           </div>
         </div>
-
-        <div class="flex items-center justify-between">
-          <div>
-            <span class="uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]">
-              {{ selectedSeriesLabel }}
-            </span>
-            <div class="series-progress-track">
+        <div class="flex flex-col w-full">
+          <h1
+            class="uppercase text-5xl font-thin z-1 text-[var(--ui-fg)] font-[900] no-underline tracking-[-0.08em] brand"
+          >
+            {{ selectedCollection?.name }}
+          </h1>
+          <div class="flex flex-col gap-2">
+            <div
+              class="h-1 lg:h-1.5 w-full rounded-full bg-[var(--ui-fg)]/10 ring-1 ring-[var(--ui-fg)]/20"
+            >
               <div
-                class="series-progress-fill"
-                :style="{ width: `${seriesProgressPercent}%` }"
+                class="h-full rounded-full bg-[var(--ui-fg)]/80 transition-[width] duration-300"
+                :style="{ width: `${collectionProgressPercent}%` }"
               ></div>
             </div>
-            <span class="text-[10px] text-[var(--ui-fg-muted)]">
-              {{ seriesCollectedCount }}/{{ seriesTotalCreatures }}
-            </span>
-            <span
-              v-if="isSeriesComplete"
-              class="text-[10px] uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]"
+            <div
+              class="flex items-center gap-2 text-xs text-[var(--ui-fg-muted)]"
             >
-              completed
-            </span>
-          </div>
-
-          <div class="flex flex-col gap-2 items-end">
-            <div class="series-nav">
-              <button
-                type="button"
-                class="series-arrow"
-                aria-label="Previous series"
-                :disabled="isSeriesSelectionDisabled"
-                @click="selectPrevSeries"
+              <span>
+                {{ collectionCollectedCount }} /
+                {{ collectionTotalCreatures }}
+                collected
+              </span>
+              <span
+                v-if="isCollectionComplete"
+                class="rounded-full border border-[var(--ui-border)] px-2 py-0.5 text-[10px] uppercase tracking-[0.2em] text-[var(--ui-fg-muted)]"
               >
-                ‹
-              </button>
-              <select
-                v-model="selectedSeries"
-                class="rounded-full border border-[var(--ui-border)] px-3 py-1 text-xs text-[var(--ui-fg)]"
-                aria-label="Filter by series"
-                :disabled="isSeriesSelectionDisabled"
-              >
-                <option
-                  v-for="entry in seriesOptions"
-                  :key="entry"
-                  :value="entry"
-                >
-                  {{ entry === "all" ? "All series" : entry }}
-                </option>
-              </select>
-              <button
-                type="button"
-                class="series-arrow"
-                aria-label="Next series"
-                :disabled="isSeriesSelectionDisabled"
-                @click="selectNextSeries"
-              >
-                ›
-              </button>
+                Completed
+              </span>
             </div>
           </div>
         </div>
       </section>
-      <div
-        class="flex items-center justify-center px-4 max-w-4xl mx-auto w-full py-4"
-      >
+
+      <div class="flex items-center justify-end px-4 max-w-4xl mx-auto w-full">
         <SSegmentedControl v-model="activeTab" :items="tabItems" />
       </div>
       <section
@@ -1237,7 +1174,7 @@ watch(
               :sticker="sticker"
               :palette="selectedCollection!.palette"
               :missing="!isOwned(sticker.meta.id)"
-              class="w-full md:w-48"
+              class="w-full max-w-48"
             />
           </div>
           <div v-else class="flex flex-col gap-8 p-4">
@@ -1246,7 +1183,7 @@ watch(
               :key="group.series"
               class="flex flex-col gap-3"
             >
-              <div>
+              <div class="sticky top-20">
                 <span
                   class="uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]"
                 >
@@ -1277,7 +1214,7 @@ watch(
                   :sticker="sticker"
                   :palette="selectedCollection!.palette"
                   :missing="!isOwned(sticker.meta.id)"
-                  class="w-full md:w-48"
+                  class="w-full max-w-48"
                   :sparkles="sticker.meta.shiny"
                   :glow="sticker.meta.shiny"
                   :shimmer="sticker.meta.shiny"
@@ -1297,17 +1234,22 @@ watch(
         >
           No duplicates yet. Open packs in Pixbook to build swap inventory.
         </div>
-        <div v-else class="flex gap-6 w-full flex-wrap">
+        <div v-else class="flex gap-6 w-full flex-wrap justify-center">
           <div
             v-for="group in duplicateCardGroups"
             :key="group.cardId"
-            class="flex flex-col items-center gap-2 w-32"
+            class="flex flex-col items-center gap-2 w-34 md:w-48"
           >
             <PixPaxStickerCard
               v-if="group.card"
               :sticker="group.card"
               :palette="selectedCollection!.palette"
               class="w-full"
+              :sparkles="group.card.meta.shiny"
+              :glow="group.card.meta.shiny"
+              :shimmer="group.card.meta.shiny"
+              :animated="true"
+              :finish-fx="true"
             />
             <div
               class="text-xs text-[var(--ui-fg-muted)] uppercase tracking-[0.14em]"
@@ -1320,7 +1262,7 @@ watch(
 
       <div
         v-if="isPackRevealOpen"
-        class="absolute inset-0 z-50 flex items-center justify-center bg-[color-mix(in srgb, var(--ui-bg) 78%, transparent)] px-4 py-10 backdrop-blur-lg"
+        class="absolute inset-0 z-50 flex items-center justify-center px-4 py-10 backdrop-blur-lg"
       >
         <div class="flex w-full max-w-3xl flex-col gap-6">
           <div
@@ -1367,7 +1309,6 @@ watch(
                     :sparkles="card.meta.shiny"
                     :glow="card.meta.shiny"
                     :shimmer="card.meta.shiny"
-                    :animated-background="card.meta.shiny"
                     :animated="true"
                     :finish-fx="true"
                   />
@@ -1380,10 +1321,7 @@ watch(
               </div>
             </div>
 
-            <div
-              v-else
-              class="flex flex-col gap-4 rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-surface)] p-4"
-            >
+            <div v-else class="flex flex-col gap-4 items-center p-4">
               <p
                 class="text-xs uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]"
               >
@@ -1406,7 +1344,6 @@ watch(
                       :sparkles="group.card.meta.shiny"
                       :glow="group.card.meta.shiny"
                       :shimmer="group.card.meta.shiny"
-                      :animated-background="group.card.meta.shiny"
                       :animated="true"
                       :finish-fx="true"
                     />
@@ -1432,7 +1369,6 @@ watch(
                     <PixPaxStickerCard
                       :sticker="group.card"
                       :palette="selectedCollection!.palette"
-                      compact
                       :sparkles="group.card.meta.shiny"
                       :glow="group.card.meta.shiny"
                       :shimmer="group.card.meta.shiny"

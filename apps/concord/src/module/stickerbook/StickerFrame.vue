@@ -83,13 +83,14 @@ const backdropFill = computed(() => {
 
 <template>
   <div
-    class="flex flex-col items-center justify-center gap-2 text-center w-full"
-    :class="[isCompact ? 'gap-2' : 'gap-3', missing ? 'opacity-60' : '']"
+    class="flex flex-col items-center justify-center gap-2 text-center w-full border border-[var(--ui-border)] rounded-sm overflow-hidden shadow"
+    :class="[isCompact ? 'gap-2' : 'gap-3']"
   >
     <div
       :class="[
-        'relative w-full bg-[var(--ui-surface)]  bg-opacity-10 border border-[var(--ui-border)] rounded-sm overflow-hidden sticker-frame-card',
+        'relative w-full bg-[var(--ui-surface)]  bg-opacity-10   overflow-hidden sticker-frame-card',
         { 'shimmer-border mythic-border p-0.5': showMythicBorder },
+        missing ? 'opacity-60 blur-[2px] grayscale' : '',
       ]"
       :style="
         showMythicBorder
@@ -281,30 +282,19 @@ const backdropFill = computed(() => {
           opacity="0.45"
         />
       </svg>
-      <div
-        class="flex flex-col relative z-10 rounded-sm h-full overflow-hidden"
-      >
+
+      <div class="flex flex-col relative z-10 h-full overflow-hidden relative">
         <div
-          class="frame-meta flex flex-col items-center justify-between uppercase bg-[var(--ui-bg)] bg-opacity-90 text-[var(--ui-fg-muted)]"
+          class="p-2 flex flex-col items-center justify-between uppercase bg-[var(--ui-bg)] bg-opacity-90 text-[var(--ui-fg-muted)]"
         >
-          <span
-            v-if="showLabels"
-            class="frame-title font-semibold text-[var(--ui-fg)]"
-          >
+          <span v-if="showLabels" class="font-semibold text-[var(--ui-fg)]">
             {{ label || "Sticker" }}
           </span>
-          <div class="frame-meta-line">
-            <span class="frame-subtitle" v-if="sublabel">{{ sublabel }}</span>
-            <span class="frame-subtitle" v-else>series</span>
-            <span v-if="status" class="frame-status opacity-70">{{
-              status
-            }}</span>
-          </div>
         </div>
-        <div class="frame-art-shell relative mx-auto w-full">
+        <div class="relative mx-auto w-full">
           <div
-            class="frame-art-slot relative size-full overflow-hidden"
-            :class="missing ? 'grayscale opacity-10' : ''"
+            class="relative size-full overflow-hidden"
+            :class="[missing ? 'opacity-20' : '']"
           >
             <slot />
           </div>
