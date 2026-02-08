@@ -1,5 +1,11 @@
 # concord
 
+## 0.3.24
+
+### Patch Changes
+
+- [`b9ea8c68903b46f7fe41f5e3e31746561e025a2f`](https://github.com/samternent/home/commit/b9ea8c68903b46f7fe41f5e3e31746561e025a2f) Thanks [@samternent](https://github.com/samternent)! - Adds new pack type
+
 ## 0.3.23
 
 ### Patch Changes
