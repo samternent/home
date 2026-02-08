@@ -533,7 +533,7 @@ const packCtaSubtext = computed(() => {
   ) {
     return `Available in ${nextDropLabel.value}`;
   }
-  return "3 cards inside";
+  return "";
 });
 
 const packCtaChip = computed(() =>
