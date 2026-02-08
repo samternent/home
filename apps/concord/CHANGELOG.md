@@ -1,5 +1,11 @@
 # concord
 
+## 0.3.23
+
+### Patch Changes
+
+- [`874655f397778dacd85d534ac60aa2096634989f`](https://github.com/samternent/home/commit/874655f397778dacd85d534ac60aa2096634989f) Thanks [@samternent](https://github.com/samternent)! - Adds host routes
+
 ## 0.3.22
 
 ### Patch Changes
