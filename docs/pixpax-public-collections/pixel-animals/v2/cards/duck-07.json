@@ -1,0 +1,14 @@
+{
+  "cardId": "duck-07",
+  "seriesId": "duck",
+  "slotIndex": 6,
+  "role": "animal",
+  "label": "Duck 07",
+  "attributes": {
+    "shiny": false
+  },
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARAAAAAAAAEaoRAAAAAAGqqqoQAAAAAaKqKhAAAAABoaoaEAAAAAGru7sQAAAAAasbsbEAAAABq7u7EAAAAAGqqqoQAAAAzMzMzMwAAAAMzMzMwAAAAAzMIszAAAAADMzMzMAAA="
+  }
+}

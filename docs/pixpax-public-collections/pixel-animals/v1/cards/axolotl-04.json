@@ -1,0 +1,11 @@
+{
+  "cardId": "axolotl-04",
+  "seriesId": "axolotl",
+  "slotIndex": 3,
+  "role": "animal",
+  "label": "Axolotl In a Bin",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABxERERFwAABxFmZmYRcAABcWZmZhcQAAcRYmYmEXcAEREREREREQABAAAAAAAQAAH//////xAAAf//////EAABEREREREQA="
+  }
+}

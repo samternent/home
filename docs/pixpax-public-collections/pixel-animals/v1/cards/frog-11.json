@@ -1,0 +1,11 @@
+{
+  "cardId": "frog-11",
+  "seriesId": "frog",
+  "slotIndex": 10,
+  "role": "animal",
+  "label": "Frog Weird Hair",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAzc3NAAAAAAAREREAAAAAABEREQAAAAAAAAAAAAAAAAERABEQAAAAAYEAGBAAAAAREhEhEQAAABiBiBiBAAAAGIiIiIEAAAAYiIiIgQAAABaIiIhhAAAAGZERmZEAAAAREREREQAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

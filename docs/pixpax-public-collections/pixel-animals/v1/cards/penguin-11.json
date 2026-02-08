@@ -1,0 +1,11 @@
+{
+  "cardId": "penguin-11",
+  "seriesId": "penguin",
+  "slotIndex": 10,
+  "role": "animal",
+  "label": "Penguin Weird Hair",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAzc3NAAAAAAAREREAAAAAABEREQAAAAAAAAAAAAAAAAEREREQAAAAARERERAAAAABEhEhEAAAAAERqhEQAAAAARIiIRAAAAABEiIhEAAAAAESIiEQAAAAARIiIRAAAAABqhGqEAAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

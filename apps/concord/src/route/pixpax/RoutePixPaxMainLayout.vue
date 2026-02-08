@@ -693,11 +693,6 @@ async function eraseLocalPixbook() {
               class="opacity-80 hover:opacity-100 text-xs font-mono font-thin -translate-y-1 hover:-translate-y-0.5 transition-all duration-300"
               >Admin</RouterLink
             >
-            <RouterLink
-              to="collections"
-              class="opacity-80 hover:opacity-100 text-xs font-mono font-thin -translate-y-1 hover:-translate-y-0.5 transition-all duration-300"
-              >Collections</RouterLink
-            >
           </div>
           <div class="flex gap-2 items-center justify-center">
             <a

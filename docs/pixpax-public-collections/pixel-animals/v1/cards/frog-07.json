@@ -1,0 +1,11 @@
+{
+  "cardId": "frog-07",
+  "seriesId": "frog",
+  "slotIndex": 6,
+  "role": "animal",
+  "label": "Frog Hoodie",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAERABEQAAAAHMzMzMEAAADBEhEhHAAAAMiBiBiMAAAAyIiIiIwAAADIiIiIjAAAAMaIiIhsAAAAyZEimZwAAAAczMzMwQAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

@@ -29,13 +29,14 @@ const props = withDefaults(defineProps<PixPaxStickerCardProps>(), {
 });
 
 const frameRarity = computed(() => {
+  if (props.sticker.meta.shiny) {
+    return "mythic";
+  }
   switch (props.sticker.meta.rarity) {
-    case "legendary":
-      return "mythic";
     case "epic":
       return "uncommon";
     default:
-      return props.sticker.meta.rarity;
+      return "common";
   }
 });
 

@@ -1,0 +1,11 @@
+{
+  "cardId": "frog-08",
+  "seriesId": "frog",
+  "slotIndex": 7,
+  "role": "animal",
+  "label": "Frog Flower",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADgAAAAAAAADq4AAAAAAAAA4RABEQAAAACIEAGBAAAAAYEhEhEQAAABiBiBiBAAAAGIiIiIEAAAAYiIiIgQAAABaIiIhhAAAAGZERmZEAAAAREREREQAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

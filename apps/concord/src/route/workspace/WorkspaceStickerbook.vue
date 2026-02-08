@@ -58,16 +58,16 @@ const apiPeriodSeconds = ref<number | null>(null);
 const devPeriodSeconds = computed(() => {
   const seconds = parseInt(
     import.meta.env.VITE_STICKERBOOK_PERIOD_SECONDS || "",
-    10
+    10,
   );
   return Number.isFinite(seconds) && seconds > 0 ? seconds : null;
 });
 
 const devMode = computed(
-  () => import.meta.env.VITE_STICKERBOOK_DEV_MODE === "true"
+  () => import.meta.env.VITE_STICKERBOOK_DEV_MODE === "true",
 );
 const devPeriodMs = computed(() =>
-  devPeriodSeconds.value ? devPeriodSeconds.value * 1000 : null
+  devPeriodSeconds.value ? devPeriodSeconds.value * 1000 : null,
 );
 const nextDropAtMs = computed(() => {
   if (!nextDropAt.value) return null;
@@ -82,10 +82,10 @@ const nextDropAtMs = computed(() => {
 });
 
 const enabledSeries = computed(() =>
-  seriesOptions.value.filter((entry) => entry.enabled !== false)
+  seriesOptions.value.filter((entry) => entry.enabled !== false),
 );
 const seriesItems = computed(() =>
-  enabledSeries.value.map((entry) => ({ value: entry.id, label: entry.label }))
+  enabledSeries.value.map((entry) => ({ value: entry.id, label: entry.label })),
 );
 const tabItems = [
   { value: "book", label: "Pixbook" },
@@ -93,7 +93,7 @@ const tabItems = [
 ];
 
 const selectedSeries = computed(() =>
-  seriesOptions.value.find((entry) => entry.id === selectedSeriesId.value)
+  seriesOptions.value.find((entry) => entry.id === selectedSeriesId.value),
 );
 
 const toTitle = (value: string) =>
@@ -131,7 +131,8 @@ const progressPercent = computed(() => {
 });
 
 const isSeriesComplete = computed(
-  () => totalCreatures.value > 0 && collectedCount.value >= totalCreatures.value
+  () =>
+    totalCreatures.value > 0 && collectedCount.value >= totalCreatures.value,
 );
 
 const seriesAccentStyle = computed(() => {
@@ -185,22 +186,21 @@ const currentUserKey = computed(() => {
   return profile ? `profile:${profile}` : "";
 });
 const openedForPeriod = computed(() => {
-  if (!selectedSeriesId.value || !periodId.value || !currentUserKey.value) return null;
+  if (!selectedSeriesId.value || !periodId.value || !currentUserKey.value)
+    return null;
   return (
-    receivedPacks.value.find(
-      (entry) => {
-        const payload = entry.data?.issuerIssuePayload || {};
-        return (
-          payload.seriesId === selectedSeriesId.value &&
-          payload.week === periodId.value &&
-          payload.userKey === currentUserKey.value
-        );
-      }
-    ) || null
+    receivedPacks.value.find((entry) => {
+      const payload = entry.data?.issuerIssuePayload || {};
+      return (
+        payload.seriesId === selectedSeriesId.value &&
+        payload.week === periodId.value &&
+        payload.userKey === currentUserKey.value
+      );
+    }) || null
   );
 });
 const openedPackIds = computed(
-  () => new Set(receivedPacks.value.map((entry) => entry.data.packId))
+  () => new Set(receivedPacks.value.map((entry) => entry.data.packId)),
 );
 
 const rarityOrder = ["mythic", "rare", "uncommon", "common"];
@@ -318,21 +318,21 @@ const revealDuplicateGroups = computed(() => {
   return Array.from(byKey.values());
 });
 const activePackCard = computed(
-  () => revealNeeds.value[packRevealIndex.value] || null
+  () => revealNeeds.value[packRevealIndex.value] || null,
 );
 const remainingPackCards = computed(() =>
-  revealNeeds.value.slice(packRevealIndex.value)
+  revealNeeds.value.slice(packRevealIndex.value),
 );
 const revealDismissed = ref(false);
 const revealComplete = computed(
-  () => packRevealIndex.value >= revealNeeds.value.length
+  () => packRevealIndex.value >= revealNeeds.value.length,
 );
 const isPackRevealOpen = computed(
   () =>
     packPhase.value === "done" &&
     !revealDismissed.value &&
     (packRevealIndex.value < revealNeeds.value.length ||
-      revealDuplicates.value.length > 0)
+      revealDuplicates.value.length > 0),
 );
 
 function getRevealTag() {
@@ -451,7 +451,7 @@ function buildAttributeKey(entry: any) {
     entry?.paletteId ?? attrs?.paletteId ?? null,
   ]
     .map((value) =>
-      value === null || value === undefined ? "null" : String(value)
+      value === null || value === undefined ? "null" : String(value),
     )
     .join("|");
 }
@@ -512,7 +512,7 @@ watch(
         entries.map(async (entry: any) => {
           const stickerId = await deriveStickerId(
             issuePayload.packRoot,
-            entry.index
+            entry.index,
           );
           const key = buildAttributeKey({
             ...entry,
@@ -522,7 +522,8 @@ watch(
           const rarity = catalogueEntry?.rarity ?? entry.rarity;
           return {
             stickerId,
-            packId: issuePayload.packId || pack.data?.packId || issuePayload.packRoot,
+            packId:
+              issuePayload.packId || pack.data?.packId || issuePayload.packRoot,
             index: entry.index,
             rarity,
             entry,
@@ -530,14 +531,14 @@ watch(
             creature: catalogueEntry,
             finish: "base",
           };
-        })
+        }),
       );
 
       for (const record of resolved) {
         nextRecords.push(record);
         defaultOwners.set(
           record.stickerId,
-          normalizeKey(pack.author) || publicKey.value
+          normalizeKey(pack.author) || publicKey.value,
         );
       }
     }
@@ -550,7 +551,7 @@ watch(
       currentKey: publicKey.value,
     });
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const cardsToReveal = computed(() => {
@@ -572,7 +573,7 @@ const cardsToReveal = computed(() => {
 const canOpenPack = computed(() =>
   devMode.value
     ? packPhase.value !== "opening" && packPhase.value !== "reveal"
-    : !openedForPeriod.value && packPhase.value === "idle"
+    : !openedForPeriod.value && packPhase.value === "idle",
 );
 const canTapOpenPack = computed(() => canOpenPack.value && !isLoading.value);
 const openPackLabel = computed(() => {
@@ -593,7 +594,7 @@ async function loadCatalogue() {
   try {
     const url = new URL(
       buildApiUrl("/v1/stickerbook/catalogue"),
-      window.location.origin
+      window.location.origin,
     );
     url.searchParams.set("seriesId", selectedSeriesId.value);
     const response = await fetch(url.toString());
@@ -612,7 +613,7 @@ async function loadIndex() {
   try {
     const url = new URL(
       buildApiUrl("/v1/stickerbook/index"),
-      window.location.origin
+      window.location.origin,
     );
     const response = await fetch(url.toString());
     if (!response.ok) return;
@@ -620,7 +621,7 @@ async function loadIndex() {
     if (Array.isArray(index?.series) && index.series.length) {
       seriesOptions.value = index.series;
       const enabled = index.series.filter(
-        (entry: any) => entry.enabled !== false
+        (entry: any) => entry.enabled !== false,
       );
       if (!enabled.find((entry: any) => entry.id === selectedSeriesId.value)) {
         selectedSeriesId.value = enabled[0]?.id || "";
@@ -681,7 +682,9 @@ async function openWeeklyPack(options: { force?: boolean } = {}) {
     if (!commitResponse.ok) {
       const errorBody = await commitResponse.text();
       throw new Error(
-        `Failed to commit pack (${commitResponse.status}): ${errorBody || "unknown error"}`
+        `Failed to commit pack (${commitResponse.status}): ${
+          errorBody || "unknown error"
+        }`,
       );
     }
     const commitData = await commitResponse.json();
@@ -699,7 +702,9 @@ async function openWeeklyPack(options: { force?: boolean } = {}) {
     if (!issueResponse.ok) {
       const errorBody = await issueResponse.text();
       throw new Error(
-        `Failed to issue pack (${issueResponse.status} ${issueResponse.statusText}): ${errorBody || "<empty response body>"}`
+        `Failed to issue pack (${issueResponse.status} ${
+          issueResponse.statusText
+        }): ${errorBody || "<empty response body>"}`,
       );
     }
     const issueData = await issueResponse.json();
@@ -723,7 +728,7 @@ async function openWeeklyPack(options: { force?: boolean } = {}) {
       entries.map(async (entry: any) => {
         const stickerId = await deriveStickerId(
           issuePayload.packRoot,
-          entry.index
+          entry.index,
         );
         const proof = await generateProof(entries, entry.index);
         const key = buildAttributeKey({
@@ -756,7 +761,7 @@ async function openWeeklyPack(options: { force?: boolean } = {}) {
             },
           },
         };
-      })
+      }),
     );
 
     packCards.value = packEntries;
@@ -854,7 +859,7 @@ watch(
       now.value = Date.now();
     }, 1000);
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 onUnmounted(() => {
@@ -1020,7 +1025,9 @@ watch(periodId, () => {
               </span>
             </header>
 
-            <div class="flex gap-6 flex-wrap items-center justify-center">
+            <div
+              class="flex gap-6 flex-wrap w-full items-center justify-center"
+            >
               <Sticker
                 v-if="catalogueStyleType === 'pixel'"
                 v-for="creature in entriesByRarity.get(rarity) || []"
@@ -1037,11 +1044,12 @@ watch(periodId, () => {
                 :pack-id="collectedByCreatureId.get(creature.id)?.packId"
                 :missing="!isOwnedStatus(getStatus(creature.id))"
                 size="compact"
+                class="max-w-64"
               />
               <Sticker
                 v-else-if="
                   ['8bit-sprites', 'animal-archetype-8bit'].includes(
-                    catalogueThemeId
+                    catalogueThemeId,
                   )
                 "
                 v-for="sticker in entriesByRarity.get(rarity) || []"
@@ -1065,6 +1073,7 @@ watch(periodId, () => {
                 :pack-id="collectedByCreatureId.get(sticker.id)?.packId"
                 :missing="!isOwnedStatus(getStatus(sticker.id))"
                 size="compact"
+                class="max-w-64"
               />
             </div>
           </section>
@@ -1152,11 +1161,12 @@ watch(periodId, () => {
                   :rarity="card.rarity"
                   :finish="card.finish"
                   :pack-id="card.packId"
+                  class="w-64"
                 />
                 <Sticker
                   v-else-if="
                     ['8bit-sprites', 'animal-archetype-8bit'].includes(
-                      catalogueThemeId
+                      catalogueThemeId,
                     )
                   "
                   :art="{
@@ -1173,6 +1183,7 @@ watch(periodId, () => {
                   :rarity="card.rarity"
                   :finish="card.finish"
                   :pack-id="card.packId"
+                  class="w-64"
                 />
                 <span
                   class="mt-3 block text-[10px] uppercase tracking-[0.18em] text-[var(--ui-fg-muted)]"
@@ -1215,11 +1226,12 @@ watch(periodId, () => {
                   :finish="group.card.finish"
                   :pack-id="group.card.packId"
                   size="compact"
+                  class="w-32"
                 />
                 <Sticker
                   v-else-if="
                     ['8bit-sprites', 'animal-archetype-8bit'].includes(
-                      catalogueThemeId
+                      catalogueThemeId,
                     )
                   "
                   :art="{
@@ -1236,7 +1248,7 @@ watch(periodId, () => {
                   :rarity="group.card.rarity"
                   :finish="group.card.finish"
                   :pack-id="group.card.packId"
-                  size="compact"
+                  class="w-64"
                 />
               </div>
             </div>
@@ -1311,7 +1323,7 @@ watch(periodId, () => {
               <Sticker
                 v-else-if="
                   ['8bit-sprites', 'animal-archetype-8bit'].includes(
-                    catalogueThemeId
+                    catalogueThemeId,
                   )
                 "
                 :art="{

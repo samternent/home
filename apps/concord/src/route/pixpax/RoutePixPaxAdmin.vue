@@ -29,6 +29,10 @@ type CollectionRef = {
   version: string;
 };
 
+function isDeprecatedCollectionRef(entry: CollectionRef) {
+  return entry.collectionId === "pixel-animals" && entry.version === "v1";
+}
+
 type OverrideCodeResponse = {
   ok: boolean;
   code: string;
@@ -55,14 +59,19 @@ function parseCollectionRefs(): CollectionRef[] {
             collectionId: String(entry?.collectionId || "").trim(),
             version: String(entry?.version || "").trim(),
           }))
-          .filter((entry) => entry.collectionId && entry.version);
+          .filter(
+            (entry) =>
+              entry.collectionId &&
+              entry.version &&
+              !isDeprecatedCollectionRef(entry),
+          );
         if (refs.length) return refs;
       }
     } catch {
       // fallback below
     }
   }
-  return [{ collectionId: "premier-league-2026", version: "v2" }];
+  return [{ collectionId: "pixel-animals", version: "v2" }];
 }
 
 const refs = parseCollectionRefs();

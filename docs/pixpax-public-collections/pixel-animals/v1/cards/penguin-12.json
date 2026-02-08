@@ -1,0 +1,11 @@
+{
+  "cardId": "penguin-12",
+  "seriesId": "penguin",
+  "slotIndex": 11,
+  "role": "shiny",
+  "label": "Penguin Cursed (Shiny)",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAACqoAAAAAAAAAoAAAAADAAAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAEREREQAAAAARERERAACgABHhHhEACqoAERqhEQCqoAARIiIRAAoAABEiIhEAAAAAESIiEQAAAAARIiIRAAAAwBqhGqEMAAAAAACgAAAAAAAACqoAAAA="
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "cardId": "frog-09",
+  "seriesId": "frog",
+  "slotIndex": 8,
+  "role": "animal",
+  "label": "Frog Party Hat",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAoAAAAAAAAAAQAAAAAAAAAeEAAAAAAAAe7hAAAAAAEe7u4QAAAAAYEKGBAAAAAREhEhEQAAABiBiBiBAAAAGIiIiIEAAAAYiIiIgQAAABaIiIhhAAAAGZERmZEAAAAREREREQAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

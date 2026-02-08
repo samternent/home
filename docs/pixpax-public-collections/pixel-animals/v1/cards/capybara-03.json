@@ -1,0 +1,11 @@
+{
+  "cardId": "capybara-03",
+  "seriesId": "capybara",
+  "slotIndex": 2,
+  "role": "animal",
+  "label": "Capybara Crown",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAREQAAAAAAABERAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABEAAAAAAAAREREREQAAABREREQREQAAFERCQhRBAAAUREFBVbEAABVVUVVVEQAAEREREREAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

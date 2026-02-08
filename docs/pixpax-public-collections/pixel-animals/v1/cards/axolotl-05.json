@@ -1,0 +1,11 @@
+{
+  "cardId": "axolotl-05",
+  "seriesId": "axolotl",
+  "slotIndex": 4,
+  "role": "animal",
+  "label": "Axolotl Wizard",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAARAAAAAAAAERERAAAAAAAR3REAAAAAAAHaEAAAAAAAHa2hAAAAAAAd2tEAAAAAAAAAAAAAAABxERERFwAABxFmZmYRcAABcWZmZhcQAAcRYmYmEXcAAHFhZhYXdwAAAWYRZhAAAAABEzMxEAAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

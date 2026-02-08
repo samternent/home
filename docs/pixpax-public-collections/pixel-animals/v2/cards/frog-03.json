@@ -1,0 +1,14 @@
+{
+  "cardId": "frog-03",
+  "seriesId": "frog",
+  "slotIndex": 2,
+  "role": "animal",
+  "label": "Frog 03",
+  "attributes": {
+    "shiny": false
+  },
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAKAAoAAAAAAAEcAAAAAAAREAERoAAAABgaoYGgAAAAEoEYIQAAAAGBiIgYEAAAAYiIiIgQAAABiIiIiBAAAAGIERGIEAAAAYiIiIgQAAABiZmZmBAAAAARERERAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

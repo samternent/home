@@ -1,0 +1,11 @@
+{
+  "cardId": "capybara-10",
+  "seriesId": "capybara",
+  "slotIndex": 9,
+  "role": "animal",
+  "label": "Capybara Monocle",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABEAAAAAAAAREREREQAAABRERLuxEQAAFERCsrRBAAAUREG7tbEAABVVUVW1EQAAEREREbEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "cardId": "duck-11",
+  "seriesId": "duck",
+  "slotIndex": 10,
+  "role": "animal",
+  "label": "Duck Weird Hair",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAzc3NAAAAAAAREREAAAAAABEREQAAAAAAERERAAAAAAAaqqEAAAAAARIRIRAAAAABoaoaEAAAAAGqEREQAAAAAaoRERAAAAABqqqqEAAAAAEREREQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

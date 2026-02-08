@@ -1,0 +1,14 @@
+{
+  "cardId": "duck-06",
+  "seriesId": "duck",
+  "slotIndex": 5,
+  "role": "animal",
+  "label": "Duck 06",
+  "attributes": {
+    "shiny": false
+  },
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARAAAAAAAAEaoRAAAAAAGqqqoQAAAAAaKqKhAAAAABoaoaEAAAAAGru7sQAAAAAasbsbEAAAABq7u7EAAAAAGqqqoQAAAAABEREQAAAAAAAAAAAAAAAAVVVVVQAAAAABAAAQAAA="
+  }
+}

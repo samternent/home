@@ -1,0 +1,11 @@
+{
+  "cardId": "penguin-09",
+  "seriesId": "penguin",
+  "slotIndex": 8,
+  "role": "animal",
+  "label": "Penguin Party Hat",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAoAAAAAAAAAAQAAAAAAAAAeEAAAAAAAAe7hAAAAAAEe7u4QAAAAAREaERAAAAABEhEhEAAAAAERqhEQAAAAARIiIRAAAAABEiIhEAAAAAESIiEQAAAAARIiIRAAAAABqhGqEAAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

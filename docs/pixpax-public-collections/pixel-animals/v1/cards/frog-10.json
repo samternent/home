@@ -1,0 +1,11 @@
+{
+  "cardId": "frog-10",
+  "seriesId": "frog",
+  "slotIndex": 9,
+  "role": "animal",
+  "label": "Frog Monocle",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAERABEQAAAAAYEAGBAAAAAREhEhEQAAABiBiLuxAAAAGIiIsrEAAAAYiIi7sQAAABaIiIixAAAAGZERmbEAAAAREREREQAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

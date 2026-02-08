@@ -1,0 +1,11 @@
+{
+  "cardId": "duck-04",
+  "seriesId": "duck",
+  "slotIndex": 3,
+  "role": "animal",
+  "label": "Duck In a Bin",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACqAAAAAAAAERERAAAAAAAaqqEAAAAAARIRIRAAAAABoaoaEAAAAAGqEREQAAAAAaoRERAAAAABqqqqEAAAEREREREREQABAAAAAAAQAAH//////xAAAf//////EAABEREREREQA="
+  }
+}

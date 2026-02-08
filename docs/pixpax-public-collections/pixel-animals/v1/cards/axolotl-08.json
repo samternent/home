@@ -1,0 +1,11 @@
+{
+  "cardId": "axolotl-08",
+  "seriesId": "axolotl",
+  "slotIndex": 7,
+  "role": "animal",
+  "label": "Axolotl Flower",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADgAAAAAAAADq4AAAAAAAAA4AAAAAAAAACAAAAAAAAAB4ERERFwAABxFmZmYRcAABcWZmZhcQAAcRYmYmEXcAAHFhZhYXdwAAAWYRZhAAAAABEzMxEAAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

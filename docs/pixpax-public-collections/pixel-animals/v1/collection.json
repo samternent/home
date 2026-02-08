@@ -1,0 +1,29 @@
+{
+  "collectionId": "pixel-animals",
+  "version": "v1",
+  "name": "Pixel Animals",
+  "description": "A playful 16x16 pixel-art collection featuring capybaras, axolotls, frogs, ducks, and penguins in the same 12 silly situations. The 12th card in each series is a shiny cursed/unhinged variant.",
+  "gridSize": 16,
+  "createdAt": "2026-02-07T00:00:00.000Z",
+  "palette": {
+    "id": "pixel-animals-v1",
+    "colors": [
+      0,
+      4278915104,
+      4294967295,
+      4294368184,
+      4289852763,
+      4285416486,
+      4294934453,
+      4286335834,
+      4281249647,
+      4278825540,
+      4294951757,
+      4292582144,
+      4283662335,
+      4285239807,
+      4294929741,
+      4290382036
+    ]
+  }
+}

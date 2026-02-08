@@ -1,0 +1,11 @@
+{
+  "cardId": "penguin-03",
+  "seriesId": "penguin",
+  "slotIndex": 2,
+  "role": "animal",
+  "label": "Penguin Crown",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAREQAAAAAAABERAAAAAAAAAAAAAAAAAAAAAAAAAAAAEREREQAAAAARERERAAAAABEhEhEAAAAAERqhEQAAAAARIiIRAAAAABEiIhEAAAAAESIiEQAAAAARIiIRAAAAABqhGqEAAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

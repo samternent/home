@@ -1,0 +1,11 @@
+{
+  "cardId": "axolotl-07",
+  "seriesId": "axolotl",
+  "slotIndex": 6,
+  "role": "animal",
+  "label": "Axolotl Hoodie",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHMzMzMEAAADBERERHAAAB8FmZmYccAABwWZmZhwQAAfBYmYmHHcAAMFhZhYcdwAAwWYiZhwAAAAczMzMwQAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

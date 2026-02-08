@@ -1,0 +1,11 @@
+{
+  "cardId": "frog-05",
+  "seriesId": "frog",
+  "slotIndex": 4,
+  "role": "animal",
+  "label": "Frog Wizard",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAARAAAAAAAAERERAAAAAAAR3REAAAAAAAHaEAAAAAAAHa2hAAAAAAEd2tEQAAAAAYEAGBAAAAAREhEhEQAAABiBiBiBAAAAGIiIiIEAAAAYiIiIgQAAABaIiIhhAAAAGZERmZEAAAAREREREQAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

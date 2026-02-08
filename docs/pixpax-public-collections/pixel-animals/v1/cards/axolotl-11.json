@@ -1,0 +1,11 @@
+{
+  "cardId": "axolotl-11",
+  "seriesId": "axolotl",
+  "slotIndex": 10,
+  "role": "animal",
+  "label": "Axolotl Weird Hair",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAzc3NAAAAAAAREREAAAAAABEREQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABxERERFwAABxFmZmYRcAABcWZmZhcQAAcRYmYmEXcAAHFhZhYXdwAAAWYRZhAAAAABEzMxEAAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

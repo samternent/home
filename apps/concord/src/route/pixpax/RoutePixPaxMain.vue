@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import WorkspaceStickerbook from "../workspace/WorkspaceStickerbook.vue";
+import RoutePixPaxCollections from "./RoutePixPaxCollections.vue";
 </script>
 <template>
-  <WorkspaceStickerbook />
+  <RoutePixPaxCollections />
 </template>

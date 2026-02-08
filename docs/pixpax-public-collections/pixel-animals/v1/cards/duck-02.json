@@ -1,0 +1,11 @@
+{
+  "cardId": "duck-02",
+  "seriesId": "duck",
+  "slotIndex": 1,
+  "role": "animal",
+  "label": "Duck Sunglasses",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACqAAAAAAAAERERAAAAAAAaqqEAAAAAARIRIRAAAAABoaoaEAAAAAESESEQAAAAARERERAAAAABqqqqEAAAAAEREREQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

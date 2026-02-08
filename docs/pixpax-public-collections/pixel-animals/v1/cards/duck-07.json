@@ -1,0 +1,11 @@
+{
+  "cardId": "duck-07",
+  "seriesId": "duck",
+  "slotIndex": 6,
+  "role": "animal",
+  "label": "Duck Hoodie",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACqAAAAAAAAERERAAAAAAAaqqEAAAAAHMzMzMEAAADBoaoaHAAAAMGqEREcAAAAwaoRERwAAADBqqqqHAAAAMEREREcAAAAwAAiAAwAAAAczMzMwQAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

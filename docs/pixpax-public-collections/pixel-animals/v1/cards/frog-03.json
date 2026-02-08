@@ -1,0 +1,11 @@
+{
+  "cardId": "frog-03",
+  "seriesId": "frog",
+  "slotIndex": 2,
+  "role": "animal",
+  "label": "Frog Crown",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAREQAAAAAAABERAAAAAAAAAAAAAAAAAAAAAAAAAAAAERABEQAAAAAYEAGBAAAAAREhEhEQAAABiBiBiBAAAAGIiIiIEAAAAYiIiIgQAAABaIiIhhAAAAGZERmZEAAAAREREREQAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

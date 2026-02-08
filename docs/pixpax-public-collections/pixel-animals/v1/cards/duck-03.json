@@ -1,0 +1,11 @@
+{
+  "cardId": "duck-03",
+  "seriesId": "duck",
+  "slotIndex": 2,
+  "role": "animal",
+  "label": "Duck Crown",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAREQAAAAAAABERAAAAAAAACqAAAAAAAAERERAAAAAAAaqqEAAAAAARIRIRAAAAABoaoaEAAAAAGqEREQAAAAAaoRERAAAAABqqqqEAAAAAEREREQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

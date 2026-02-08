@@ -1,0 +1,11 @@
+{
+  "cardId": "frog-12",
+  "seriesId": "frog",
+  "slotIndex": 11,
+  "role": "shiny",
+  "label": "Frog Cursed",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAACqoAAAAAAAAAoAAAAADAAAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAERABEQAAAAAYEAGBAACgARHhHhEQCqoBiBiBiBCqoAGIiIiIEAoAAYiIiIgQAAABaIiIhhAAAAGZERmZEAAAwREREREcAAAAAACgAAAAAAAACqoAAAA="
+  }
+}

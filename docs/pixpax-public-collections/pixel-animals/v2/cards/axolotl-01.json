@@ -1,0 +1,14 @@
+{
+  "cardId": "axolotl-01",
+  "seriesId": "axolotl",
+  "slotIndex": 0,
+  "role": "animal",
+  "label": "Axolotl 01",
+  "attributes": {
+    "shiny": true
+  },
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAwAIiIAwAACIAoCIKACICAAwAAADAACAMAAARAADAAAAAEWYRAAAAABFmZmYRAAABZmZmZmYQAAF2YmYmZxAAAWZhZhZmEAAAFmZmZmEAAAABZhFmEAAAAAFmZmYQAAAAABEREQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "cardId": "penguin-07",
+  "seriesId": "penguin",
+  "slotIndex": 6,
+  "role": "animal",
+  "label": "Penguin Hoodie",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEREREQAAAAHMzMzMEAAADBEhEhHAAAAMERqhEcAAAAwRIiIRwAAADBEiIhHAAAAMESIiEcAAAAwRIiIRwAAAAczMzMwQAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

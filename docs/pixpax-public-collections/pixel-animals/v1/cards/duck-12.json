@@ -1,0 +1,11 @@
+{
+  "cardId": "duck-12",
+  "seriesId": "duck",
+  "slotIndex": 11,
+  "role": "shiny",
+  "label": "Duck Cursed (Shiny)",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAACqoAAAAAAAAAoAAAAADAAAAAAAwAAAAACqAAAAAAAAERERAAAAAAAaqqEAAAAAARIRIRAACgABrqrqEACqoAGqEREQCqoAAaoRERAAoAABqqqqEAAAAAEREREQAAAAAAAAAAAAAAwAAAAAAMAAAAAACgAAAAAAAACqoAAAA="
+  }
+}

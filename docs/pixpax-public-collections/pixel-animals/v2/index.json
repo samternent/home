@@ -1,0 +1,358 @@
+{
+  "series": [
+    {
+      "seriesId": "capybara",
+      "name": "Capybaras"
+    },
+    {
+      "seriesId": "axolotl",
+      "name": "Axolotls"
+    },
+    {
+      "seriesId": "frog",
+      "name": "Frogs"
+    },
+    {
+      "seriesId": "duck",
+      "name": "Ducks"
+    },
+    {
+      "seriesId": "penguin",
+      "name": "Penguins"
+    }
+  ],
+  "cards": [
+    "capybara-01",
+    "capybara-02",
+    "capybara-03",
+    "capybara-04",
+    "capybara-05",
+    "capybara-06",
+    "capybara-07",
+    "capybara-08",
+    "capybara-09",
+    "capybara-10",
+    "capybara-11",
+    "axolotl-01",
+    "axolotl-02",
+    "axolotl-03",
+    "axolotl-04",
+    "axolotl-05",
+    "axolotl-06",
+    "axolotl-07",
+    "axolotl-08",
+    "axolotl-09",
+    "axolotl-10",
+    "axolotl-11",
+    "frog-01",
+    "frog-02",
+    "frog-03",
+    "frog-04",
+    "frog-05",
+    "frog-06",
+    "frog-07",
+    "frog-08",
+    "frog-09",
+    "frog-10",
+    "frog-11",
+    "duck-01",
+    "duck-02",
+    "duck-03",
+    "duck-04",
+    "duck-05",
+    "duck-06",
+    "duck-07",
+    "duck-08",
+    "duck-09",
+    "duck-10",
+    "duck-11",
+    "penguin-01",
+    "penguin-02",
+    "penguin-03",
+    "penguin-04",
+    "penguin-05",
+    "penguin-06",
+    "penguin-07",
+    "penguin-08",
+    "penguin-09",
+    "penguin-10",
+    "penguin-11"
+  ],
+  "cardMap": {
+    "capybara-01": {
+      "seriesId": "capybara",
+      "slotIndex": 0,
+      "role": "animal"
+    },
+    "capybara-02": {
+      "seriesId": "capybara",
+      "slotIndex": 1,
+      "role": "animal"
+    },
+    "capybara-03": {
+      "seriesId": "capybara",
+      "slotIndex": 2,
+      "role": "animal"
+    },
+    "capybara-04": {
+      "seriesId": "capybara",
+      "slotIndex": 3,
+      "role": "animal"
+    },
+    "capybara-05": {
+      "seriesId": "capybara",
+      "slotIndex": 4,
+      "role": "animal"
+    },
+    "capybara-06": {
+      "seriesId": "capybara",
+      "slotIndex": 5,
+      "role": "animal"
+    },
+    "capybara-07": {
+      "seriesId": "capybara",
+      "slotIndex": 6,
+      "role": "animal"
+    },
+    "capybara-08": {
+      "seriesId": "capybara",
+      "slotIndex": 7,
+      "role": "animal"
+    },
+    "capybara-09": {
+      "seriesId": "capybara",
+      "slotIndex": 8,
+      "role": "animal"
+    },
+    "capybara-10": {
+      "seriesId": "capybara",
+      "slotIndex": 9,
+      "role": "animal"
+    },
+    "capybara-11": {
+      "seriesId": "capybara",
+      "slotIndex": 10,
+      "role": "animal"
+    },
+    "axolotl-01": {
+      "seriesId": "axolotl",
+      "slotIndex": 0,
+      "role": "animal"
+    },
+    "axolotl-02": {
+      "seriesId": "axolotl",
+      "slotIndex": 1,
+      "role": "animal"
+    },
+    "axolotl-03": {
+      "seriesId": "axolotl",
+      "slotIndex": 2,
+      "role": "animal"
+    },
+    "axolotl-04": {
+      "seriesId": "axolotl",
+      "slotIndex": 3,
+      "role": "animal"
+    },
+    "axolotl-05": {
+      "seriesId": "axolotl",
+      "slotIndex": 4,
+      "role": "animal"
+    },
+    "axolotl-06": {
+      "seriesId": "axolotl",
+      "slotIndex": 5,
+      "role": "animal"
+    },
+    "axolotl-07": {
+      "seriesId": "axolotl",
+      "slotIndex": 6,
+      "role": "animal"
+    },
+    "axolotl-08": {
+      "seriesId": "axolotl",
+      "slotIndex": 7,
+      "role": "animal"
+    },
+    "axolotl-09": {
+      "seriesId": "axolotl",
+      "slotIndex": 8,
+      "role": "animal"
+    },
+    "axolotl-10": {
+      "seriesId": "axolotl",
+      "slotIndex": 9,
+      "role": "animal"
+    },
+    "axolotl-11": {
+      "seriesId": "axolotl",
+      "slotIndex": 10,
+      "role": "animal"
+    },
+    "frog-01": {
+      "seriesId": "frog",
+      "slotIndex": 0,
+      "role": "animal"
+    },
+    "frog-02": {
+      "seriesId": "frog",
+      "slotIndex": 1,
+      "role": "animal"
+    },
+    "frog-03": {
+      "seriesId": "frog",
+      "slotIndex": 2,
+      "role": "animal"
+    },
+    "frog-04": {
+      "seriesId": "frog",
+      "slotIndex": 3,
+      "role": "animal"
+    },
+    "frog-05": {
+      "seriesId": "frog",
+      "slotIndex": 4,
+      "role": "animal"
+    },
+    "frog-06": {
+      "seriesId": "frog",
+      "slotIndex": 5,
+      "role": "animal"
+    },
+    "frog-07": {
+      "seriesId": "frog",
+      "slotIndex": 6,
+      "role": "animal"
+    },
+    "frog-08": {
+      "seriesId": "frog",
+      "slotIndex": 7,
+      "role": "animal"
+    },
+    "frog-09": {
+      "seriesId": "frog",
+      "slotIndex": 8,
+      "role": "animal"
+    },
+    "frog-10": {
+      "seriesId": "frog",
+      "slotIndex": 9,
+      "role": "animal"
+    },
+    "frog-11": {
+      "seriesId": "frog",
+      "slotIndex": 10,
+      "role": "animal"
+    },
+    "duck-01": {
+      "seriesId": "duck",
+      "slotIndex": 0,
+      "role": "animal"
+    },
+    "duck-02": {
+      "seriesId": "duck",
+      "slotIndex": 1,
+      "role": "animal"
+    },
+    "duck-03": {
+      "seriesId": "duck",
+      "slotIndex": 2,
+      "role": "animal"
+    },
+    "duck-04": {
+      "seriesId": "duck",
+      "slotIndex": 3,
+      "role": "animal"
+    },
+    "duck-05": {
+      "seriesId": "duck",
+      "slotIndex": 4,
+      "role": "animal"
+    },
+    "duck-06": {
+      "seriesId": "duck",
+      "slotIndex": 5,
+      "role": "animal"
+    },
+    "duck-07": {
+      "seriesId": "duck",
+      "slotIndex": 6,
+      "role": "animal"
+    },
+    "duck-08": {
+      "seriesId": "duck",
+      "slotIndex": 7,
+      "role": "animal"
+    },
+    "duck-09": {
+      "seriesId": "duck",
+      "slotIndex": 8,
+      "role": "animal"
+    },
+    "duck-10": {
+      "seriesId": "duck",
+      "slotIndex": 9,
+      "role": "animal"
+    },
+    "duck-11": {
+      "seriesId": "duck",
+      "slotIndex": 10,
+      "role": "animal"
+    },
+    "penguin-01": {
+      "seriesId": "penguin",
+      "slotIndex": 0,
+      "role": "animal"
+    },
+    "penguin-02": {
+      "seriesId": "penguin",
+      "slotIndex": 1,
+      "role": "animal"
+    },
+    "penguin-03": {
+      "seriesId": "penguin",
+      "slotIndex": 2,
+      "role": "animal"
+    },
+    "penguin-04": {
+      "seriesId": "penguin",
+      "slotIndex": 3,
+      "role": "animal"
+    },
+    "penguin-05": {
+      "seriesId": "penguin",
+      "slotIndex": 4,
+      "role": "animal"
+    },
+    "penguin-06": {
+      "seriesId": "penguin",
+      "slotIndex": 5,
+      "role": "animal"
+    },
+    "penguin-07": {
+      "seriesId": "penguin",
+      "slotIndex": 6,
+      "role": "animal"
+    },
+    "penguin-08": {
+      "seriesId": "penguin",
+      "slotIndex": 7,
+      "role": "animal"
+    },
+    "penguin-09": {
+      "seriesId": "penguin",
+      "slotIndex": 8,
+      "role": "animal"
+    },
+    "penguin-10": {
+      "seriesId": "penguin",
+      "slotIndex": 9,
+      "role": "animal"
+    },
+    "penguin-11": {
+      "seriesId": "penguin",
+      "slotIndex": 10,
+      "role": "animal"
+    }
+  }
+}

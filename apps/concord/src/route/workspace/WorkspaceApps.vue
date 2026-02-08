@@ -39,7 +39,7 @@ function isActive(to: string) {
       </RouterLink>
     </nav>
 
-    <section class="flex-1 flex flex-col min-h-0">
+    <section class="flex-1 flex flex-col min-h-0 overflow-auto">
       <RouterView />
     </section>
   </div>

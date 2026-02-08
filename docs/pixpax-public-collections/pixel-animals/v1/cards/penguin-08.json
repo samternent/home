@@ -1,0 +1,11 @@
+{
+  "cardId": "penguin-08",
+  "seriesId": "penguin",
+  "slotIndex": 7,
+  "role": "animal",
+  "label": "Penguin Flower",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADgAAAAAAAADq4AAAAAAAAA4REREQAAAACBERERAAAAAIEhEhEAAAAAERqhEQAAAAARIiIRAAAAABEiIhEAAAAAESIiEQAAAAARIiIRAAAAABqhGqEAAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

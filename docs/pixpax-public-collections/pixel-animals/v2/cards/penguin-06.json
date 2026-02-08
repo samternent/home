@@ -1,0 +1,14 @@
+{
+  "cardId": "penguin-06",
+  "seriesId": "penguin",
+  "slotIndex": 5,
+  "role": "animal",
+  "label": "Penguin 06",
+  "attributes": {
+    "shiny": false
+  },
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAABEAAAAAAAAREREAAAAAARMRERAAAAABEREREAAAAAESIiEQAAAAARISERAAAAAREiohEQAAABESqqERAAAAERIiIREAAAAREiIhEQAAABESIiERAAAAERIiIREAAAABEREREAAAAAVVVVVQAAAAABAAAQAAA="
+  }
+}

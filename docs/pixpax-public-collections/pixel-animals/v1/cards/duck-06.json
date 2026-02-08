@@ -1,0 +1,11 @@
+{
+  "cardId": "duck-06",
+  "seriesId": "duck",
+  "slotIndex": 5,
+  "role": "animal",
+  "label": "Duck Skateboard",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACqAAAAAAAAERERAAAAAAAaqqEAAAAAARIRIRAAAAABoaoaEAAAAAGqEREQAAAAAaoRERAAAAABqqqqEAAAAAEREREQAAAAAAAAAAAAAAAAAAAAAAAAAAEREREQAAAAAMAADAAAA="
+  }
+}

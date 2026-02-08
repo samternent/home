@@ -1,0 +1,11 @@
+{
+  "cardId": "capybara-02",
+  "seriesId": "capybara",
+  "slotIndex": 1,
+  "role": "animal",
+  "label": "Capybara Sunglasses",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABEAAAAAAAAREREREQAAABQSESEREQAAFBERERRBAAAUREFBVbEAABVVUVVVEQAAEREREREAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

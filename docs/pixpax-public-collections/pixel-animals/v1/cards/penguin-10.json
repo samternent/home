@@ -1,0 +1,11 @@
+{
+  "cardId": "penguin-10",
+  "seriesId": "penguin",
+  "slotIndex": 9,
+  "role": "animal",
+  "label": "Penguin Monocle",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEREREQAAAAARERERAAAAABEhEhEAAAAAERqruwAAAAARIisrAAAAABEiK7sAAAAAESIiGwAAAAARIiIbAAAAABqhGqEAAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

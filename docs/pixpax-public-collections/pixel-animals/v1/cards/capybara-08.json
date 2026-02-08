@@ -1,0 +1,11 @@
+{
+  "cardId": "capybara-08",
+  "seriesId": "capybara",
+  "slotIndex": 7,
+  "role": "animal",
+  "label": "Capybara Flower",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADgAAAAAAAADq4AAAAAAAAA4AAAAAAAAACBEAAAAAAAAYEREREQAAABREREQREQAAFERCQhRBAAAUREFBVbEAABVVUVVVEQAAEREREREAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

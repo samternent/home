@@ -39,6 +39,10 @@ type CollectionRef = {
   version: string;
 };
 
+function isDeprecatedCollectionRef(entry: CollectionRef) {
+  return entry.collectionId === "pixel-animals" && entry.version === "v1";
+}
+
 type ApiCollection = {
   collectionId?: string;
   name?: string;
@@ -63,6 +67,14 @@ type ApiCard = {
   slotIndex?: number;
   role?: string;
   label?: string;
+  attributes?: {
+    shiny?: boolean | string | number | null;
+    shiney?: boolean | string | number | null;
+  };
+  tags?: string[];
+  meta?: {
+    tags?: string[];
+  };
   renderPayload?: { gridSize?: number; gridB64?: string };
 };
 
@@ -122,14 +134,19 @@ function parseCollectionRefs(): CollectionRef[] {
             collectionId: String(entry?.collectionId || "").trim(),
             version: String(entry?.version || "").trim(),
           }))
-          .filter((entry) => entry.collectionId && entry.version);
+          .filter(
+            (entry) =>
+              entry.collectionId &&
+              entry.version &&
+              !isDeprecatedCollectionRef(entry),
+          );
       }
     } catch {
       // fall through to default
     }
   }
 
-  return [{ collectionId: "premier-league-2026", version: "v2" }];
+  return [{ collectionId: "pixel-animals", version: "v2" }];
 }
 
 const refs = parseCollectionRefs();
@@ -240,6 +257,38 @@ const visibleStickers = computed(() => {
   return stickers.filter(
     (sticker) => sticker.meta.series === selectedSeries.value,
   );
+});
+const seriesGroupsForBook = computed(() => {
+  const stickers = selectedCollection.value?.stickers || [];
+  const owned = new Set(ownedStickerIds.value);
+  const bySeries = new Map<string, Sticker[]>();
+  for (const sticker of stickers) {
+    const key = String(sticker.meta.series || "").trim() || "Unassigned";
+    const list = bySeries.get(key) || [];
+    list.push(sticker);
+    bySeries.set(key, list);
+  }
+  const sortedSeries = Array.from(bySeries.keys()).sort((a, b) =>
+    a.localeCompare(b),
+  );
+  return sortedSeries.map((series) => {
+    const entries = bySeries.get(series) || [];
+    const collected = entries.filter((sticker) =>
+      owned.has(sticker.meta.id),
+    ).length;
+    const total = entries.length;
+    const progressPercent = total
+      ? Math.min(100, Math.round((collected / total) * 100))
+      : 0;
+    return {
+      series,
+      stickers: entries,
+      collected,
+      total,
+      progressPercent,
+      complete: total > 0 && collected >= total,
+    };
+  });
 });
 
 const collectionTotalCreatures = computed(
@@ -353,12 +402,6 @@ const revealPlan = computed(() => {
   );
   const needs: Sticker[] = [];
   const duplicates: Sticker[] = [];
-  const rarityRank = new Map([
-    ["legendary", 0],
-    ["epic", 1],
-    ["rare", 2],
-    ["common", 3],
-  ]);
 
   for (const sticker of packCards.value) {
     const key = sticker.meta.id;
@@ -372,9 +415,10 @@ const revealPlan = computed(() => {
   }
 
   needs.sort((a, b) => {
-    const aRank = rarityRank.get(a.meta.rarity) ?? 99;
-    const bRank = rarityRank.get(b.meta.rarity) ?? 99;
-    return aRank - bRank;
+    const aRank = a.meta.shiny ? 1 : 0;
+    const bRank = b.meta.shiny ? 1 : 0;
+    if (aRank !== bRank) return aRank - bRank;
+    return a.meta.id.localeCompare(b.meta.id);
   });
 
   return { needs, duplicates };
@@ -524,6 +568,34 @@ function normalizePalette(input?: ApiCollection["palette"]): PackPalette16 {
   };
 }
 
+function isTruthyShiny(value: unknown): boolean {
+  if (typeof value === "boolean") return value;
+  if (typeof value === "number") return value > 0;
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+    return normalized === "true" || normalized === "1" || normalized === "yes";
+  }
+  return false;
+}
+
+function hasShinyTag(tags: unknown): boolean {
+  if (!Array.isArray(tags)) return false;
+  return tags.some((tag) => {
+    const normalized = String(tag || "")
+      .trim()
+      .toLowerCase();
+    return normalized === "shiny" || normalized === "shiney";
+  });
+}
+
+function isCardShiny(card: ApiCard): boolean {
+  if (isTruthyShiny(card.attributes?.shiny)) return true;
+  if (isTruthyShiny(card.attributes?.shiney)) return true;
+  if (hasShinyTag(card.tags)) return true;
+  if (hasShinyTag(card.meta?.tags)) return true;
+  return false;
+}
+
 function toSticker(args: {
   collection: Collection;
   card: ApiCard;
@@ -547,7 +619,7 @@ function toSticker(args: {
     series: seriesId,
     rarity: "common",
     finish: "matte",
-    shiny: false,
+    shiny: isCardShiny(args.card),
   };
 
   return {
@@ -765,11 +837,17 @@ async function openPack() {
     );
 
     const index = indexByCollection.value[selectedCollection.value.id];
+    const existingById = new Map(
+      (selectedCollection.value.stickers || []).map((sticker) => [
+        sticker.meta.id,
+        sticker,
+      ]),
+    );
     const nextCards = (Array.isArray(response.cards) ? response.cards : []).map(
       (card) => {
         const cardId = String(card.cardId || "").trim();
         const mapping = index?.cardMap?.[cardId];
-        return toSticker({
+        const sticker = toSticker({
           collection: selectedCollection.value!,
           card: {
             ...card,
@@ -780,6 +858,11 @@ async function openPack() {
           },
           fallbackSeries: mapping?.seriesId,
         });
+        const existing = existingById.get(cardId);
+        if (existing?.meta?.shiny) {
+          sticker.meta.shiny = true;
+        }
+        return sticker;
       },
     );
 
@@ -1146,6 +1229,7 @@ watch(
           </p>
           <div
             class="flex gap-6 justify-items-center flex-wrap justify-center p-4"
+            v-if="selectedSeries !== 'all'"
           >
             <PixPaxStickerCard
               v-for="sticker in visibleStickers"
@@ -1155,6 +1239,53 @@ watch(
               :missing="!isOwned(sticker.meta.id)"
               class="w-full md:w-48"
             />
+          </div>
+          <div v-else class="flex flex-col gap-8 p-4">
+            <section
+              v-for="group in seriesGroupsForBook"
+              :key="group.series"
+              class="flex flex-col gap-3"
+            >
+              <div>
+                <span
+                  class="uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]"
+                >
+                  {{ group.series }}
+                </span>
+                <div class="series-progress-track">
+                  <div
+                    class="series-progress-fill"
+                    :style="{ width: `${group.progressPercent}%` }"
+                  ></div>
+                </div>
+                <span class="text-[10px] text-[var(--ui-fg-muted)]">
+                  {{ group.collected }}/{{ group.total }}
+                </span>
+                <span
+                  v-if="group.complete"
+                  class="text-[10px] uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]"
+                >
+                  completed
+                </span>
+              </div>
+              <div
+                class="flex gap-6 justify-items-center flex-wrap justify-center"
+              >
+                <PixPaxStickerCard
+                  v-for="sticker in group.stickers"
+                  :key="`${group.series}-${sticker.meta.id}`"
+                  :sticker="sticker"
+                  :palette="selectedCollection!.palette"
+                  :missing="!isOwned(sticker.meta.id)"
+                  class="w-full md:w-48"
+                  :sparkles="sticker.meta.shiny"
+                  :glow="sticker.meta.shiny"
+                  :shimmer="sticker.meta.shiny"
+                  :animated="true"
+                  :finish-fx="true"
+                />
+              </div>
+            </section>
           </div>
         </div>
       </section>
@@ -1222,21 +1353,23 @@ watch(
                   class="relative rounded-2xl min-w-64 border border-[var(--ui-border)] bg-[var(--ui-surface)] p-4 shadow-[0_16px_28px_rgba(15,23,42,0.22)]"
                   @click="collectNextPackCard"
                   :class="{
-                    'reveal-mythic':
-                      activePackCard?.meta.rarity === 'legendary' &&
-                      index === 0,
+                    'reveal-shiny': activePackCard?.meta.shiny && index === 0,
                   }"
                   :key="packRevealIndex"
                 >
                   <span
-                    v-if="
-                      activePackCard?.meta.rarity === 'legendary' && index === 0
-                    "
-                    class="absolute inset-0 rounded-2xl pointer-events-none mythic-glow"
+                    v-if="activePackCard?.meta.shiny && index === 0"
+                    class="absolute inset-0 rounded-2xl pointer-events-none shiny-glow"
                   ></span>
                   <PixPaxStickerCard
                     :sticker="card"
                     :palette="selectedCollection!.palette"
+                    :sparkles="card.meta.shiny"
+                    :glow="card.meta.shiny"
+                    :shimmer="card.meta.shiny"
+                    :animated-background="card.meta.shiny"
+                    :animated="true"
+                    :finish-fx="true"
                   />
                   <span
                     class="mt-3 block text-[10px] uppercase tracking-[0.18em] text-[var(--ui-fg-muted)]"
@@ -1270,6 +1403,12 @@ watch(
                       :sticker="group.card"
                       :palette="selectedCollection!.palette"
                       compact
+                      :sparkles="group.card.meta.shiny"
+                      :glow="group.card.meta.shiny"
+                      :shimmer="group.card.meta.shiny"
+                      :animated-background="group.card.meta.shiny"
+                      :animated="true"
+                      :finish-fx="true"
                     />
                   </div>
                 </div>
@@ -1294,6 +1433,12 @@ watch(
                       :sticker="group.card"
                       :palette="selectedCollection!.palette"
                       compact
+                      :sparkles="group.card.meta.shiny"
+                      :glow="group.card.meta.shiny"
+                      :shimmer="group.card.meta.shiny"
+                      :animated-background="group.card.meta.shiny"
+                      :animated="true"
+                      :finish-fx="true"
                     />
                     <div
                       class="mt-1 text-[10px] uppercase tracking-[0.14em] text-[var(--ui-fg-muted)] text-center"
@@ -1441,15 +1586,15 @@ watch(
   animation: revealFlip 0.6s ease-out both;
 }
 
-.reveal-mythic {
+.reveal-shiny {
   animation: mythicShake 0.9s ease-in-out infinite;
 }
 
-.mythic-glow {
+.shiny-glow {
   animation: mythicGlow 1.4s ease-in-out infinite;
 }
 
-.reveal-mythic.reveal-flip {
+.reveal-shiny.reveal-flip {
   animation-delay: 3s;
 }
 

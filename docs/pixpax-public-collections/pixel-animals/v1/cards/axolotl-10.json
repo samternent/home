@@ -1,0 +1,11 @@
+{
+  "cardId": "axolotl-10",
+  "seriesId": "axolotl",
+  "slotIndex": 9,
+  "role": "animal",
+  "label": "Axolotl Monocle",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABxERERFwAABxFmZruxcAABcWZmsrcQAAcRYma7sXcAAHFhZha3dwAAAWYRZrAAAAABEzMxEAAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

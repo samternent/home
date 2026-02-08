@@ -1,0 +1,11 @@
+{
+  "cardId": "capybara-06",
+  "seriesId": "capybara",
+  "slotIndex": 5,
+  "role": "animal",
+  "label": "Capybara Skateboard",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABEAAAAAAAAREREREQAAABREREQREQAAFERCQhRBAAAUREFBVbEAABVVUVVVEQAAEREREREAAAAAAAAAAAAAAAEREREQAAAAAMAADAAAA="
+  }
+}

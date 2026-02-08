@@ -1,0 +1,11 @@
+{
+  "cardId": "axolotl-09",
+  "seriesId": "axolotl",
+  "slotIndex": 8,
+  "role": "animal",
+  "label": "Axolotl Party Hat",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAoAAAAAAAAAAQAAAAAAAAAeEAAAAAAAAe7hAAAAAAAe7u4QAAAAAAAKAAAAAABxERERFwAABxFmZmYRcAABcWZmZhcQAAcRYmYmEXcAAHFhZhYXdwAAAWYRZhAAAAABEzMxEAAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

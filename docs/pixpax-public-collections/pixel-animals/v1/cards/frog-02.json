@@ -1,0 +1,11 @@
+{
+  "cardId": "frog-02",
+  "seriesId": "frog",
+  "slotIndex": 1,
+  "role": "animal",
+  "label": "Frog Sunglasses",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAERABEQAAAAAYEAGBAAAAAREhEhEQAAABgSESGBAAAAGBEREYEAAAAYiIiIgQAAABaIiIhhAAAAGZERmZEAAAAREREREQAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

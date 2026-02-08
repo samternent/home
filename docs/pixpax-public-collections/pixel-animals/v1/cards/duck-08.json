@@ -1,0 +1,11 @@
+{
+  "cardId": "duck-08",
+  "seriesId": "duck",
+  "slotIndex": 7,
+  "role": "animal",
+  "label": "Duck Flower",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADgCqAAAAAADq4RERAAAAAA4aqqEAAAAACBIRIRAAAAAIoaoaEAAAAAGqEREQAAAAAaoRERAAAAABqqqqEAAAAAEREREQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

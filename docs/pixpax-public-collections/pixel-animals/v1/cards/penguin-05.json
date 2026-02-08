@@ -1,0 +1,11 @@
+{
+  "cardId": "penguin-05",
+  "seriesId": "penguin",
+  "slotIndex": 4,
+  "role": "animal",
+  "label": "Penguin Wizard",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAARAAAAAAAAERERAAAAAAAR3REAAAAAAAHaEAAAAAAAHa2hAAAAAAEd2tEQAAAAARERERAAAAABEhEhEAAAAAERqhEQAAAAARIiIRAAAAABEiIhEAAAAAESIiEQAAAAARIiIRAAAAABqhGqEAAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

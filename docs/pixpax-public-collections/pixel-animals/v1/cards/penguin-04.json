@@ -1,0 +1,11 @@
+{
+  "cardId": "penguin-04",
+  "seriesId": "penguin",
+  "slotIndex": 3,
+  "role": "animal",
+  "label": "Penguin In a Bin",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEREREQAAAAARERERAAAAABEhEhEAAAAAERqhEQAAAAARIiIRAAAAABEiIhEAAAEREREREREQABAAAAAAAQAAH//////xAAAf//////EAABEREREREQA="
+  }
+}

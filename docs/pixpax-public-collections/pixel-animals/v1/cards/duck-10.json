@@ -1,0 +1,11 @@
+{
+  "cardId": "duck-10",
+  "seriesId": "duck",
+  "slotIndex": 9,
+  "role": "animal",
+  "label": "Duck Monocle",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACqAAAAAAAAERERAAAAAAAaqqEAAAAAARIRIRAAAAABoaoaEAAAAAGqEbuwAAAAAaoRsrAAAAABqqq7sAAAAAERERGwAAAAAAAAALAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

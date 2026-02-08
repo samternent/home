@@ -1,0 +1,11 @@
+{
+  "cardId": "axolotl-12",
+  "seriesId": "axolotl",
+  "slotIndex": 11,
+  "role": "shiny",
+  "label": "Axolotl Cursed (Shiny)",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAACqoAAAAAAAAAoAAAAADAAAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACgBxHhHhFwCqpxFmZmYReqoBcWZmZhcQoAcRYmYmEXcAAHFhZhYXdwAAAWYRZhAAAAwBEzMxEMAAAAAACgAAAAAAAACqoAAAA="
+  }
+}

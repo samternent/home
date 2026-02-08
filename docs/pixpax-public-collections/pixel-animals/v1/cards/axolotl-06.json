@@ -1,0 +1,11 @@
+{
+  "cardId": "axolotl-06",
+  "seriesId": "axolotl",
+  "slotIndex": 5,
+  "role": "animal",
+  "label": "Axolotl Skateboard",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABxERERFwAABxFmZmYRcAABcWZmZhcQAAcRYmYmEXcAAHFhZhYXdwAAAWYRZhAAAAABEzMxEAAAAAEREREQAAAAAMAADAAAA="
+  }
+}

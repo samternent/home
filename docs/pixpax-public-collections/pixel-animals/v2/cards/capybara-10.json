@@ -1,0 +1,14 @@
+{
+  "cardId": "capybara-10",
+  "seriesId": "capybara",
+  "slotIndex": 9,
+  "role": "animal",
+  "label": "Capybara 10",
+  "attributes": {
+    "shiny": false
+  },
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAAAAAAAAAAQAAEAAAAAAUERFBAAAAAUREREQQAAABRERERBAAAAFEJEL/EAAAAUQUT0TwAAABRERE/xAAAAFEREREEAAAAURBQUQfAAABRERERBAAAAARERERAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

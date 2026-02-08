@@ -1,0 +1,11 @@
+{
+  "cardId": "axolotl-03",
+  "seriesId": "axolotl",
+  "slotIndex": 2,
+  "role": "animal",
+  "label": "Axolotl Crown",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAREQAAAAAAABERAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABxERERFwAABxFmZmYRcAABcWZmZhcQAAcRYmYmEXcAAHFhZhYXdwAAAWYRZhAAAAABEzMxEAAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

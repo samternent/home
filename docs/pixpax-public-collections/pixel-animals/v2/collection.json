@@ -1,0 +1,15 @@
+{
+  "collectionId": "pixel-animals",
+  "version": "v2",
+  "name": "Pixel Animals",
+  "description": "Face-on pixel animals with shared situation variants (11 per series). Slot 1 is a special card via attributes only.",
+  "gridSize": 16,
+  "palette": {
+    "id": "pixel-animals-v2",
+    "colors": [
+      0, 4278915104, 4294967295, 4294368184, 4290348380, 4285416486, 4294934453,
+      4286335834, 4281249647, 4278825540, 4294951757, 4292582144, 4283662335,
+      4285239807, 4294929741, 4290382036
+    ]
+  }
+}

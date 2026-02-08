@@ -1,0 +1,11 @@
+{
+  "cardId": "capybara-12",
+  "seriesId": "capybara",
+  "slotIndex": 11,
+  "role": "shiny",
+  "label": "Capybara Cursed (Shiny)",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAACqoAAAAAAAAAoAAAAADAAAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABEAAAAACgARHhHhEQCqoBREREQRGqoAFERCQhRBoAAUREFBVbEAABVVUVVVEQAAEREREREAAAwAAAAAAMAAAAAACgAAAAAAAACqoAAAA="
+  }
+}

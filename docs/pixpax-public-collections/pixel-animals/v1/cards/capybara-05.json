@@ -1,0 +1,11 @@
+{
+  "cardId": "capybara-05",
+  "seriesId": "capybara",
+  "slotIndex": 4,
+  "role": "animal",
+  "label": "Capybara Wizard",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAARAAAAAAAAERERAAAAAAAR3REAAAAAAAHaEAAAAAAAHa2hAAAAAAAd2tEAAAAAABEAAAAAAAAREREREQAAABREREQREQAAFERCQhRBAAAUREFBVbEAABVVUVVVEQAAEREREREAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

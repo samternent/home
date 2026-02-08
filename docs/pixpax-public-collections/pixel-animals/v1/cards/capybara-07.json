@@ -1,0 +1,11 @@
+{
+  "cardId": "capybara-07",
+  "seriesId": "capybara",
+  "slotIndex": 6,
+  "role": "animal",
+  "label": "Capybara Hoodie",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHMzMzMEAAADBERERHAAAAMREREQcEQAAxERCQhxBAADEREFBXLEAAMVVUVVcEQAAwREiERwAAAAczMzMwQAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

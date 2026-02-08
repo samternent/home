@@ -49,7 +49,7 @@ export default [
               },
               {
                 path: "stickerbook",
-                component: () => import("./WorkspaceStickerbook.vue"),
+                component: () => import("../pixpax/RoutePixPaxCollections.vue"),
               },
               {
                 path: "vault",

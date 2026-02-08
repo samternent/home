@@ -1,0 +1,11 @@
+{
+  "cardId": "duck-05",
+  "seriesId": "duck",
+  "slotIndex": 4,
+  "role": "animal",
+  "label": "Duck Wizard",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAARAAAAAAAAERERAAAAAAAR3REAAAAAAAHaEAAAAAAAHa2hAAAAAAAd2tEAAAAAARIRIRAAAAABoaoaEAAAAAGqEREQAAAAAaoRERAAAAABqqqqEAAAAAEREREQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

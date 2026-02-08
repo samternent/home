@@ -1,0 +1,14 @@
+{
+  "cardId": "penguin-02",
+  "seriesId": "penguin",
+  "slotIndex": 1,
+  "role": "animal",
+  "label": "Penguin 02",
+  "attributes": {
+    "shiny": false
+  },
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAABEAAAAAAAAREREAAAAAARMRERAAAAABEREREAAAAAESIiEQAAAAARESERAAAAARERoREQAAABESqqERAAAAERIiIREAAAAREiIhEQAAABESIiERAAAAERIiIREAAAABEREREAAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

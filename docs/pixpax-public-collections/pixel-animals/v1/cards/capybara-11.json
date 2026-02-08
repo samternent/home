@@ -1,0 +1,11 @@
+{
+  "cardId": "capybara-11",
+  "seriesId": "capybara",
+  "slotIndex": 10,
+  "role": "animal",
+  "label": "Capybara Weird Hair",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAzc3NAAAAAAAREREAAAAAABEREQAAAAAAAAAAAAAAAAAAAAAAAAAAABEAAAAAAAAREREREQAAABREREQREQAAFERCQhRBAAAUREFBVbEAABVVUVVVEQAAEREREREAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

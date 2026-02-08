@@ -1,0 +1,11 @@
+{
+  "cardId": "capybara-04",
+  "seriesId": "capybara",
+  "slotIndex": 3,
+  "role": "animal",
+  "label": "Capybara In a Bin",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABEAAAAAAAAREREREQAAABREREQREQAAFERCQhRBAAAUREFBVbEAEREREREREQABAAAAAAAQAAH//////xAAAf//////EAABEREREREQA="
+  }
+}

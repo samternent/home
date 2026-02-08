@@ -1,0 +1,11 @@
+{
+  "cardId": "axolotl-02",
+  "seriesId": "axolotl",
+  "slotIndex": 1,
+  "role": "animal",
+  "label": "Axolotl Sunglasses",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABxERERFwAABxESESERcAABcRERERcQAAcRYmYmEXcAAHFhZhYXdwAAAWYRZhAAAAABEzMxEAAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

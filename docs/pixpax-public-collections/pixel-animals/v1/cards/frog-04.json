@@ -1,0 +1,11 @@
+{
+  "cardId": "frog-04",
+  "seriesId": "frog",
+  "slotIndex": 3,
+  "role": "animal",
+  "label": "Frog In a Bin",
+  "renderPayload": {
+    "gridSize": 16,
+    "gridB64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAERABEQAAAAAYEAGBAAAAAREhEhEQAAABiBiBiBAAAAGIiIiIEAAAAYiIiIgQAAEREREREREQABAAAAAAAQAAH//////xAAAf//////EAABEREREREQA="
+  }
+}
