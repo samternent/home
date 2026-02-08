@@ -1,5 +1,11 @@
 # concord
 
+## 0.3.26
+
+### Patch Changes
+
+- [`d9a849f8843e2c66197c3f7c4368d83795817974`](https://github.com/samternent/home/commit/d9a849f8843e2c66197c3f7c4368d83795817974) Thanks [@samternent](https://github.com/samternent)! - remove 23 cards inside text
+
 ## 0.3.25
 
 ### Patch Changes
