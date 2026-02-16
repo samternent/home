@@ -16,6 +16,10 @@ export default [
         component: () => import("./RoutePixPaxCollections.vue"),
       },
       {
+        path: "analytics",
+        component: () => import("./RoutePixPaxAnalytics.vue"),
+      },
+      {
         path: "admin",
         component: () => import("./RoutePixPaxAdmin.vue"),
       },

@@ -759,3 +759,73 @@ test("verify-pack route fails loudly after cached tamper", async () => {
   assert.equal(verify.body.ok, false);
   assert.equal(verify.body.reason, "item-hashes-mismatch");
 });
+
+test("public analytics route returns pack totals, insights, and non-identifying pack list", async () => {
+  createIssuerKeyEnv();
+  process.env.PIX_PAX_ADMIN_TOKEN = "admin-token";
+  process.env.PIX_PAX_OVERRIDE_CODE_SECRET = "override-secret-for-tests";
+  const store = new CollectionContentStore({
+    bucket: "content",
+    prefix: "pixpax/collections",
+    gateway: createMemoryGateway(),
+  });
+  await seedCollection(store);
+  const router = createRouterHarness();
+
+  let nowCall = 0;
+  pixpaxCollectionRoutes(router, {
+    createStore: () => store,
+    pickRandomIndex: (max) => (max > 1 ? 1 : 0),
+    now: () => new Date(`2026-02-07T12:00:0${Math.min(nowCall++, 9)}.000Z`),
+    allowDevUntrackedPacks: true,
+    issueLedgerEntry: async () => ({
+      segmentKey: "pixpax/ledger/segments/day/seg_deadbeef.jsonl.gz",
+      segmentHash: "deadbeef",
+    }),
+  });
+
+  const issueA = await router.invoke(
+    "POST",
+    "/v1/pixpax/collections/:collectionId/:version/packs",
+    {
+      params: { collectionId: "premier-league-2026", version: "v1" },
+      body: {
+        userKey: "school:user:alpha",
+        dropId: "week-2026-W06",
+      },
+    }
+  );
+  assert.equal(issueA.statusCode, 200);
+
+  const issueB = await router.invoke(
+    "POST",
+    "/v1/pixpax/collections/:collectionId/:version/packs",
+    {
+      params: { collectionId: "premier-league-2026", version: "v1" },
+      body: {
+        userKey: "school:user:beta",
+        dropId: "week-2026-W07",
+      },
+    }
+  );
+  assert.equal(issueB.statusCode, 200);
+
+  const analytics = await router.invoke("GET", "/v1/pixpax/analytics/packs");
+  assert.equal(analytics.statusCode, 200);
+  assert.equal(analytics.body.ok, true);
+  assert.equal(analytics.body.packsTotal, 2);
+  assert.equal(analytics.body.insights.totalPacks, 2);
+  assert.ok(Array.isArray(analytics.body.packs));
+  assert.equal(analytics.body.packs.length, 2);
+  assert.ok(Array.isArray(analytics.body.insights.topDrops));
+  assert.ok(Array.isArray(analytics.body.insights.packsByCollectionVersion));
+  assert.ok(Array.isArray(analytics.body.insights.issuanceModes));
+
+  for (const pack of analytics.body.packs) {
+    assert.equal(typeof pack.packId, "string");
+    assert.equal(pack.collectionId, "premier-league-2026");
+    assert.equal(pack.collectionVersion, "v1");
+    assert.equal("issuedTo" in pack, false);
+    assert.equal("userKeyHash" in pack, false);
+  }
+});

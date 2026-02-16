@@ -224,6 +224,110 @@ async function mapWithConcurrency(items, concurrency, mapper) {
   return output;
 }
 
+function parsePositiveInt(value, fallback, max) {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return fallback;
+  const rounded = Math.max(1, Math.floor(parsed));
+  if (Number.isFinite(max) && max > 0) {
+    return Math.min(rounded, max);
+  }
+  return rounded;
+}
+
+function parseEventScopeFromKey(prefix, key) {
+  const normalizedPrefix = String(prefix || "").replace(/\/+$/, "");
+  const normalizedKey = String(key || "");
+  const prefixWithSlash = `${normalizedPrefix}/`;
+  if (!normalizedKey.startsWith(prefixWithSlash)) return null;
+  const relative = normalizedKey.slice(prefixWithSlash.length);
+  const parts = relative.split("/");
+  if (parts.length < 5) return null;
+  const [collectionId, version, scope] = parts;
+  if (!collectionId || !version || scope !== "events") return null;
+  return { collectionId, version };
+}
+
+function dedupePackRows(rows) {
+  const byId = new Map();
+  for (const row of rows) {
+    const id = `${row.collectionId}:${row.collectionVersion}:${row.packId}`;
+    const existing = byId.get(id);
+    if (!existing) {
+      byId.set(id, row);
+      continue;
+    }
+    if (String(row.issuedAt || "").localeCompare(String(existing.issuedAt || "")) > 0) {
+      byId.set(id, row);
+    }
+  }
+  return Array.from(byId.values());
+}
+
+function summarizePackAnalytics(rows, scannedEvents) {
+  const totalPacks = rows.length;
+  const totalCardsIssued = rows.reduce((sum, row) => sum + Number(row.count || 0), 0);
+  const byCollection = new Map();
+  const byDrop = new Map();
+  const byMode = new Map();
+  const byDay = new Map();
+
+  let firstIssuedAt = null;
+  let lastIssuedAt = null;
+
+  for (const row of rows) {
+    const collectionVersionKey = `${row.collectionId}:${row.collectionVersion}`;
+    byCollection.set(collectionVersionKey, (byCollection.get(collectionVersionKey) || 0) + 1);
+    byDrop.set(row.dropId || "unknown", (byDrop.get(row.dropId || "unknown") || 0) + 1);
+    byMode.set(row.issuanceMode || "weekly", (byMode.get(row.issuanceMode || "weekly") || 0) + 1);
+
+    const issuedAt = String(row.issuedAt || "");
+    if (issuedAt) {
+      const day = issuedAt.slice(0, 10);
+      byDay.set(day, (byDay.get(day) || 0) + 1);
+      if (!firstIssuedAt || issuedAt.localeCompare(firstIssuedAt) < 0) {
+        firstIssuedAt = issuedAt;
+      }
+      if (!lastIssuedAt || issuedAt.localeCompare(lastIssuedAt) > 0) {
+        lastIssuedAt = issuedAt;
+      }
+    }
+  }
+
+  const topDrops = Array.from(byDrop.entries())
+    .map(([dropId, packs]) => ({ dropId, packs }))
+    .sort((a, b) => b.packs - a.packs || a.dropId.localeCompare(b.dropId))
+    .slice(0, 10);
+
+  const packsByCollectionVersion = Array.from(byCollection.entries())
+    .map(([key, packs]) => {
+      const [collectionId, collectionVersion] = key.split(":");
+      return { collectionId, collectionVersion, packs };
+    })
+    .sort((a, b) => b.packs - a.packs || a.collectionId.localeCompare(b.collectionId));
+
+  const issuanceModes = Array.from(byMode.entries())
+    .map(([mode, packs]) => ({ mode, packs }))
+    .sort((a, b) => b.packs - a.packs || a.mode.localeCompare(b.mode));
+
+  const packsByDay = Array.from(byDay.entries())
+    .map(([day, packs]) => ({ day, packs }))
+    .sort((a, b) => a.day.localeCompare(b.day));
+
+  return {
+    totalPacks,
+    totalCardsIssued,
+    uniqueCollections: packsByCollectionVersion.length,
+    uniqueDrops: byDrop.size,
+    firstIssuedAt,
+    lastIssuedAt,
+    scannedEvents,
+    issuanceModes,
+    topDrops,
+    packsByCollectionVersion,
+    packsByDay,
+  };
+}
+
 export default function pixpaxCollectionRoutes(router, options = {}) {
   const createStore = options.createStore || createCollectionContentStoreFromEnv;
   const rngSource = options.rngSource
@@ -589,6 +693,139 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
       }
       console.error("[pixpax/collections] get card failed:", error);
       res.status(500).send({ error: "Failed to load card JSON." });
+    }
+  });
+
+  router.get("/v1/pixpax/analytics/packs", async (req, res) => {
+    const collectionIdFilter = String(req.query?.collectionId || "").trim();
+    const versionFilter = String(req.query?.version || "").trim();
+    const dropIdFilter = String(req.query?.dropId || "").trim();
+    const rawLimit = String(req.query?.limit || "").trim();
+    const limit = rawLimit ? parsePositiveInt(rawLimit, 2000, 50000) : null;
+    const includeCardIds =
+      String(req.query?.includeCardIds || "true").trim().toLowerCase() !== "false";
+
+    try {
+      const store = await getStore();
+      if (typeof store?.gateway?.listObjects !== "function") {
+        res.status(503).send({
+          error: "Content store gateway does not support listObjects analytics.",
+        });
+        return;
+      }
+
+      const eventRefs = [];
+      const maxScanKeys = parsePositiveInt(req.query?.maxScanKeys, 50000, 200000);
+      const prefix = `${store.prefix}/`;
+      let cursor = null;
+
+      do {
+        const listed = await store.gateway.listObjects({
+          bucket: store.bucket,
+          prefix,
+          cursor,
+          maxKeys: 1000,
+        });
+        const keys = Array.isArray(listed?.keys) ? listed.keys : [];
+        for (const key of keys) {
+          const scope = parseEventScopeFromKey(store.prefix, key);
+          if (!scope) continue;
+          if (collectionIdFilter && scope.collectionId !== collectionIdFilter) continue;
+          if (versionFilter && scope.version !== versionFilter) continue;
+          eventRefs.push({ key, scope });
+          if (eventRefs.length >= maxScanKeys) break;
+        }
+        if (eventRefs.length >= maxScanKeys) break;
+        cursor = listed?.nextCursor || null;
+      } while (cursor);
+
+      const loadedEvents = await mapWithConcurrency(eventRefs, 24, async (ref) => {
+        try {
+          const bytes = await store.gateway.getObject({
+            bucket: store.bucket,
+            key: ref.key,
+          });
+          const parsed = JSON.parse(Buffer.from(bytes).toString("utf8"));
+          return {
+            event: parsed,
+            collectionId: ref.scope.collectionId,
+            version: ref.scope.version,
+          };
+        } catch {
+          return null;
+        }
+      });
+
+      const packRows = dedupePackRows(
+        loadedEvents
+          .filter(Boolean)
+          .filter((entry) => entry?.event?.type === PIXPAX_EVENT_TYPES.PACK_ISSUED)
+          .map((entry) => {
+            const payload = entry.event?.payload || {};
+            const cardIds = Array.isArray(payload?.cardIds)
+              ? payload.cardIds.map((value) => String(value || "").trim()).filter(Boolean)
+              : [];
+            const countRaw = Number(payload?.count);
+            const count = Number.isFinite(countRaw) && countRaw > 0 ? Math.floor(countRaw) : cardIds.length;
+            return {
+              packId: String(payload?.packId || "").trim(),
+              collectionId: String(payload?.collectionId || entry.collectionId || "").trim(),
+              collectionVersion: String(
+                payload?.collectionVersion || payload?.version || entry.version || ""
+              ).trim(),
+              dropId: String(payload?.dropId || "").trim(),
+              issuedAt: String(payload?.issuedAt || entry.event?.occurredAt || "").trim(),
+              count,
+              packRoot: String(payload?.packRoot || "").trim(),
+              contentsCommitment: String(payload?.contentsCommitment || "").trim(),
+              issuanceMode: String(payload?.issuanceMode || "weekly"),
+              untracked: payload?.untracked === true,
+              eventId: String(entry.event?.eventId || "").trim(),
+              cardIds: includeCardIds ? cardIds : undefined,
+            };
+          })
+          .filter((row) => row.packId && row.collectionId && row.collectionVersion)
+          .filter((row) => (dropIdFilter ? row.dropId === dropIdFilter : true))
+      );
+
+      packRows.sort((a, b) => {
+        const byIssuedAt = String(b.issuedAt || "").localeCompare(String(a.issuedAt || ""));
+        if (byIssuedAt !== 0) return byIssuedAt;
+        return String(a.packId || "").localeCompare(String(b.packId || ""));
+      });
+
+      const insights = summarizePackAnalytics(packRows, loadedEvents.filter(Boolean).length);
+      const packs = Number.isFinite(limit) ? packRows.slice(0, limit) : packRows;
+
+      res.status(200).send({
+        ok: true,
+        filters: {
+          collectionId: collectionIdFilter || null,
+          version: versionFilter || null,
+          dropId: dropIdFilter || null,
+        },
+        scan: {
+          prefix,
+          scannedEventKeys: eventRefs.length,
+          scannedEvents: loadedEvents.filter(Boolean).length,
+          invalidEventPayloads: loadedEvents.length - loadedEvents.filter(Boolean).length,
+        },
+        insights,
+        packsTotal: packRows.length,
+        packsReturned: packs.length,
+        truncated: packs.length < packRows.length,
+        packs,
+      });
+    } catch (error) {
+      if (missingContentConfigError(error)) {
+        res.status(503).send({
+          error:
+            "Content store configuration is incomplete. Use LEDGER_* connection vars and LEDGER_CONTENT_PREFIX.",
+        });
+        return;
+      }
+      console.error("[pixpax/collections] analytics packs failed:", error);
+      res.status(500).send({ error: "Failed to load PixPax analytics." });
     }
   });
 
