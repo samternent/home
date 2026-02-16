@@ -1,12 +1,17 @@
-import { createCollectionContentStoreFromEnv } from "./content-store.mjs";
+import {
+  createCollectionContentGateway,
+  createCollectionContentStoreFromEnv,
+} from "./content-store.mjs";
 import { PACK_MODELS } from "../models/pack-models.mjs";
 import { createNonceHex, hashCanonical } from "../../stickerbook/stickerbook-utils.mjs";
 import { deriveEntryId, getEntrySigningPayload } from "@ternent/concord-protocol";
 import { createHash, createHmac, timingSafeEqual, webcrypto } from "node:crypto";
+import { gunzipSync } from "node:zlib";
 import {
   ensureIssuerAuditLedger,
   loadIssuerKeys,
 } from "../../stickerbook/index.mjs";
+import { parseSegmentJsonl } from "../../stickerbook/issuer-audit-ledger.mjs";
 import {
   validateCardPayload,
   validateCollectionPayload,
@@ -247,6 +252,54 @@ function parseEventScopeFromKey(prefix, key) {
   return { collectionId, version };
 }
 
+function normalizePathPrefix(value, fallback = "") {
+  const normalized = String(value || fallback)
+    .trim()
+    .replace(/^\/+/, "")
+    .replace(/\/+$/, "");
+  return normalized;
+}
+
+function resolvePublicId(payload) {
+  const publicId = String(payload?.issuedTo || payload?.userKeyHash || "").trim();
+  return publicId || null;
+}
+
+function buildPackAnalyticsRow(params) {
+  const payload = params?.payload || {};
+  const fallbackCollectionId = String(params?.collectionId || "").trim();
+  const fallbackVersion = String(params?.version || "").trim();
+  const fallbackIssuedAt = String(params?.occurredAt || "").trim();
+  const source = String(params?.source || "").trim();
+
+  const cardIds = Array.isArray(payload?.cardIds)
+    ? payload.cardIds.map((value) => String(value || "").trim()).filter(Boolean)
+    : [];
+  const countRaw = Number(payload?.count);
+  const count = Number.isFinite(countRaw) && countRaw > 0 ? Math.floor(countRaw) : cardIds.length;
+  const publicId = resolvePublicId(payload);
+
+  return {
+    packId: String(payload?.packId || "").trim(),
+    collectionId: String(payload?.collectionId || fallbackCollectionId || "").trim(),
+    collectionVersion: String(
+      payload?.collectionVersion || payload?.version || fallbackVersion || ""
+    ).trim(),
+    dropId: String(payload?.dropId || "").trim(),
+    issuedAt: String(payload?.issuedAt || fallbackIssuedAt || "").trim(),
+    count,
+    packRoot: String(payload?.packRoot || "").trim(),
+    contentsCommitment: String(payload?.contentsCommitment || "").trim(),
+    issuanceMode: String(payload?.issuanceMode || "weekly"),
+    untracked: payload?.untracked === true,
+    publicId,
+    avatarSeed: publicId,
+    source,
+    eventId: String(params?.eventId || "").trim(),
+    cardIds: params?.includeCardIds ? cardIds : undefined,
+  };
+}
+
 function dedupePackRows(rows) {
   const byId = new Map();
   for (const row of rows) {
@@ -354,12 +407,59 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
       return ledger.appendIssuedEntry(entryId, entry);
     });
   let storePromise = null;
+  let ledgerReadContextPromise = null;
 
   async function getStore() {
     if (!storePromise) {
       storePromise = Promise.resolve(createStore());
     }
     return storePromise;
+  }
+
+  async function getLedgerReadContext() {
+    if (!ledgerReadContextPromise) {
+      ledgerReadContextPromise = (async () => {
+        const store = await getStore();
+        const ledgerPrefix = normalizePathPrefix(process.env.LEDGER_PREFIX, "pixpax/ledger");
+        const ledgerBucket = String(process.env.LEDGER_BUCKET || "").trim() || String(store.bucket || "");
+
+        if (ledgerBucket === String(store.bucket || "")) {
+          return {
+            gateway: store.gateway,
+            bucket: ledgerBucket,
+            prefix: ledgerPrefix,
+          };
+        }
+
+        const endpoint = String(process.env.LEDGER_S3_ENDPOINT || "").trim();
+        const region = String(process.env.LEDGER_REGION || "lon1").trim();
+        const accessKeyId = String(process.env.LEDGER_ACCESS_KEY_ID || "").trim();
+        const secretAccessKey = String(process.env.LEDGER_SECRET_ACCESS_KEY || "").trim();
+        const forcePathStyle =
+          String(process.env.LEDGER_S3_FORCE_PATH_STYLE || "true").toLowerCase() !==
+          "false";
+
+        if (!endpoint || !ledgerBucket || !region || !accessKeyId || !secretAccessKey) {
+          return null;
+        }
+
+        const gateway = await createCollectionContentGateway({
+          endpoint,
+          region,
+          accessKeyId,
+          secretAccessKey,
+          forcePathStyle,
+        });
+
+        return {
+          gateway,
+          bucket: ledgerBucket,
+          prefix: ledgerPrefix,
+        };
+      })();
+    }
+
+    return ledgerReadContextPromise;
   }
 
   async function emitDomainEvent(type, payload, occurredAt) {
@@ -714,16 +814,16 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
         return;
       }
 
-      const eventRefs = [];
       const maxScanKeys = parsePositiveInt(req.query?.maxScanKeys, 50000, 200000);
-      const prefix = `${store.prefix}/`;
-      let cursor = null;
+      const contentPrefix = `${store.prefix}/`;
+      const eventRefs = [];
+      let contentCursor = null;
 
       do {
         const listed = await store.gateway.listObjects({
           bucket: store.bucket,
-          prefix,
-          cursor,
+          prefix: contentPrefix,
+          cursor: contentCursor,
           maxKeys: 1000,
         });
         const keys = Array.isArray(listed?.keys) ? listed.keys : [];
@@ -736,8 +836,8 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
           if (eventRefs.length >= maxScanKeys) break;
         }
         if (eventRefs.length >= maxScanKeys) break;
-        cursor = listed?.nextCursor || null;
-      } while (cursor);
+        contentCursor = listed?.nextCursor || null;
+      } while (contentCursor);
 
       const loadedEvents = await mapWithConcurrency(eventRefs, 24, async (ref) => {
         try {
@@ -756,34 +856,91 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
         }
       });
 
-      const packRows = dedupePackRows(
-        loadedEvents
-          .filter(Boolean)
-          .filter((entry) => entry?.event?.type === PIXPAX_EVENT_TYPES.PACK_ISSUED)
-          .map((entry) => {
-            const payload = entry.event?.payload || {};
-            const cardIds = Array.isArray(payload?.cardIds)
-              ? payload.cardIds.map((value) => String(value || "").trim()).filter(Boolean)
-              : [];
-            const countRaw = Number(payload?.count);
-            const count = Number.isFinite(countRaw) && countRaw > 0 ? Math.floor(countRaw) : cardIds.length;
-            return {
-              packId: String(payload?.packId || "").trim(),
-              collectionId: String(payload?.collectionId || entry.collectionId || "").trim(),
-              collectionVersion: String(
-                payload?.collectionVersion || payload?.version || entry.version || ""
-              ).trim(),
-              dropId: String(payload?.dropId || "").trim(),
-              issuedAt: String(payload?.issuedAt || entry.event?.occurredAt || "").trim(),
-              count,
-              packRoot: String(payload?.packRoot || "").trim(),
-              contentsCommitment: String(payload?.contentsCommitment || "").trim(),
-              issuanceMode: String(payload?.issuanceMode || "weekly"),
-              untracked: payload?.untracked === true,
-              eventId: String(entry.event?.eventId || "").trim(),
-              cardIds: includeCardIds ? cardIds : undefined,
-            };
+      const eventPackRows = loadedEvents
+        .filter(Boolean)
+        .filter((entry) => entry?.event?.type === PIXPAX_EVENT_TYPES.PACK_ISSUED)
+        .map((entry) =>
+          buildPackAnalyticsRow({
+            payload: entry.event?.payload || {},
+            collectionId: entry.collectionId,
+            version: entry.version,
+            occurredAt: entry.event?.occurredAt,
+            source: "collection-events",
+            eventId: entry.event?.eventId,
+            includeCardIds,
           })
+        );
+
+      const ledgerContext = await getLedgerReadContext();
+      const segmentRefs = [];
+      let ledgerEventsScanned = 0;
+      let ledgerSegmentsInvalid = 0;
+      let ledgerCursor = null;
+      let ledgerPrefix = null;
+
+      if (ledgerContext?.gateway && typeof ledgerContext.gateway.listObjects === "function") {
+        ledgerPrefix = `${normalizePathPrefix(ledgerContext.prefix, "pixpax/ledger")}/segments/`;
+        do {
+          const listed = await ledgerContext.gateway.listObjects({
+            bucket: ledgerContext.bucket,
+            prefix: ledgerPrefix,
+            cursor: ledgerCursor,
+            maxKeys: 1000,
+          });
+          const keys = Array.isArray(listed?.keys) ? listed.keys : [];
+          for (const key of keys) {
+            if (!String(key).endsWith(".jsonl.gz")) continue;
+            segmentRefs.push(key);
+            if (segmentRefs.length >= maxScanKeys) break;
+          }
+          if (segmentRefs.length >= maxScanKeys) break;
+          ledgerCursor = listed?.nextCursor || null;
+        } while (ledgerCursor);
+      }
+
+      const segmentPackRowsNested = await mapWithConcurrency(
+        segmentRefs,
+        12,
+        async (segmentKey) => {
+          try {
+            const compressed = await ledgerContext.gateway.getObject({
+              bucket: ledgerContext.bucket,
+              key: segmentKey,
+            });
+            const unzipped = gunzipSync(Buffer.from(compressed));
+            const parsed = parseSegmentJsonl(unzipped.toString("utf8"));
+            const rows = [];
+            for (const event of parsed.events || []) {
+              ledgerEventsScanned += 1;
+              const entry = event?.entry || {};
+              const payload = entry?.payload || {};
+              if (entry?.kind !== "pack.issued") continue;
+              const row = buildPackAnalyticsRow({
+                payload,
+                occurredAt: entry?.timestamp || parsed?.meta?.createdAt || null,
+                source: "ledger-segment",
+                eventId: event?.entryId || null,
+                includeCardIds,
+              });
+              if (!row.collectionId || !row.collectionVersion || !row.packId) {
+                continue;
+              }
+              if (collectionIdFilter && row.collectionId !== collectionIdFilter) continue;
+              if (versionFilter && row.collectionVersion !== versionFilter) continue;
+              rows.push(row);
+            }
+            return rows;
+          } catch {
+            ledgerSegmentsInvalid += 1;
+            return [];
+          }
+        }
+      );
+
+      const segmentPackRows = segmentPackRowsNested.flat();
+
+      const packRows = dedupePackRows(
+        [...eventPackRows, ...segmentPackRows]
           .filter((row) => row.packId && row.collectionId && row.collectionVersion)
           .filter((row) => (dropIdFilter ? row.dropId === dropIdFilter : true))
       );
@@ -794,7 +951,10 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
         return String(a.packId || "").localeCompare(String(b.packId || ""));
       });
 
-      const insights = summarizePackAnalytics(packRows, loadedEvents.filter(Boolean).length);
+      const insights = summarizePackAnalytics(
+        packRows,
+        loadedEvents.filter(Boolean).length + ledgerEventsScanned
+      );
       const packs = Number.isFinite(limit) ? packRows.slice(0, limit) : packRows;
 
       res.status(200).send({
@@ -805,10 +965,14 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
           dropId: dropIdFilter || null,
         },
         scan: {
-          prefix,
+          prefix: contentPrefix,
+          ledgerPrefix: ledgerPrefix || null,
           scannedEventKeys: eventRefs.length,
           scannedEvents: loadedEvents.filter(Boolean).length,
           invalidEventPayloads: loadedEvents.length - loadedEvents.filter(Boolean).length,
+          scannedLedgerSegments: segmentRefs.length,
+          scannedLedgerEvents: ledgerEventsScanned,
+          invalidLedgerSegments: ledgerSegmentsInvalid,
         },
         insights,
         packsTotal: packRows.length,

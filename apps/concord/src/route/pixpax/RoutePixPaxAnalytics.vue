@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import { Button } from "ternent-ui/primitives";
+import IdentityAvatar from "../../module/identity/IdentityAvatar.vue";
 
 const apiBase = import.meta.env.DEV
   ? ""
@@ -20,6 +21,8 @@ type AnalyticsRow = {
   count: number;
   issuanceMode: string;
   untracked: boolean;
+  publicId?: string | null;
+  avatarSeed?: string | null;
 };
 
 type AnalyticsResponse = {
@@ -199,13 +202,14 @@ onMounted(() => {
     </div>
 
     <div class="rounded border border-[var(--ui-border)] bg-[var(--ui-bg)]/30 overflow-auto">
-      <table class="w-full text-xs min-w-[760px]">
+      <table class="w-full text-xs min-w-[920px]">
         <thead>
           <tr class="text-left text-[var(--ui-fg-muted)] uppercase tracking-wide border-b border-[var(--ui-border)]">
             <th class="px-3 py-2">Issued</th>
             <th class="px-3 py-2">Collection</th>
             <th class="px-3 py-2">Version</th>
             <th class="px-3 py-2">Drop</th>
+            <th class="px-3 py-2">Public ID</th>
             <th class="px-3 py-2">Pack ID</th>
             <th class="px-3 py-2">Cards</th>
             <th class="px-3 py-2">Mode</th>
@@ -222,13 +226,20 @@ onMounted(() => {
             <td class="px-3 py-2">{{ pack.collectionId }}</td>
             <td class="px-3 py-2">{{ pack.collectionVersion }}</td>
             <td class="px-3 py-2">{{ pack.dropId || "-" }}</td>
+            <td class="px-3 py-2">
+              <div v-if="pack.publicId" class="flex items-center gap-2">
+                <IdentityAvatar :identity="pack.avatarSeed || pack.publicId" size="xs" />
+                <span class="font-mono">{{ pack.publicId }}</span>
+              </div>
+              <span v-else>-</span>
+            </td>
             <td class="px-3 py-2 font-mono">{{ pack.packId }}</td>
             <td class="px-3 py-2">{{ pack.count }}</td>
             <td class="px-3 py-2">{{ pack.issuanceMode || "weekly" }}</td>
             <td class="px-3 py-2">{{ pack.untracked ? "No" : "Yes" }}</td>
           </tr>
           <tr v-if="!loading && packs.length === 0">
-            <td colspan="8" class="px-3 py-4 text-center text-[var(--ui-fg-muted)]">
+            <td colspan="9" class="px-3 py-4 text-center text-[var(--ui-fg-muted)]">
               No pack issuance events found.
             </td>
           </tr>

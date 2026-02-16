@@ -825,6 +825,9 @@ test("public analytics route returns pack totals, insights, and non-identifying 
     assert.equal(typeof pack.packId, "string");
     assert.equal(pack.collectionId, "premier-league-2026");
     assert.equal(pack.collectionVersion, "v1");
+    assert.equal(typeof pack.publicId, "string");
+    assert.match(pack.publicId, /^[a-f0-9]{64}$/);
+    assert.equal(pack.avatarSeed, pack.publicId);
     assert.equal("issuedTo" in pack, false);
     assert.equal("userKeyHash" in pack, false);
   }
