@@ -52,6 +52,18 @@ function createMemoryGateway() {
       const id = `${bucket}:${key}`;
       objects.set(id, Buffer.from(body));
     },
+    async listObjects({ bucket, prefix, cursor, maxKeys = 1000 }) {
+      const allKeys = Array.from(objects.keys())
+        .filter((id) => id.startsWith(`${bucket}:`))
+        .map((id) => id.slice(bucket.length + 1))
+        .filter((key) => key.startsWith(prefix))
+        .sort((a, b) => a.localeCompare(b));
+      const startIndex = cursor ? Math.max(0, allKeys.indexOf(cursor) + 1) : 0;
+      const keys = allKeys.slice(startIndex, startIndex + maxKeys);
+      const nextCursor =
+        startIndex + maxKeys < allKeys.length ? keys[keys.length - 1] || null : null;
+      return { keys, nextCursor };
+    },
   };
 }
 
@@ -415,5 +427,77 @@ test("event schema rejects unsupported event types", async () => {
         payload: {},
       }),
     /Unsupported PixPax event type/
+  );
+});
+
+test("default appendEvent persists mutation events to event log", async () => {
+  const gateway = createMemoryGateway();
+  const store = new CollectionContentStore({
+    bucket: "content-bucket",
+    prefix: "pixpax/collections",
+    gateway,
+  });
+  const router = createRouterHarness();
+  process.env.PIX_PAX_ADMIN_TOKEN = "test-token";
+  pixpaxCollectionRoutes(router, {
+    createStore: () => store,
+    now: () => new Date("2026-02-16T12:00:00.000Z"),
+  });
+  const headers = { authorization: "Bearer test-token" };
+  const params = { collectionId: "premier-league-2026", version: "v1" };
+
+  const collectionUpload = await router.invoke(
+    "PUT",
+    "/v1/pixpax/collections/:collectionId/:version/collection",
+    {
+      headers,
+      params,
+      body: { name: "Premier League 2026", gridSize: 16, version: "v1" },
+    }
+  );
+  assert.equal(collectionUpload.statusCode, 201);
+
+  const indexUpload = await router.invoke(
+    "PUT",
+    "/v1/pixpax/collections/:collectionId/:version/index",
+    {
+      headers,
+      params,
+      body: {
+        series: [{ seriesId: "arsenal" }],
+        cards: ["arsenal-01"],
+        cardMap: {
+          "arsenal-01": { seriesId: "arsenal", slotIndex: 0, role: "player" },
+        },
+      },
+    }
+  );
+  assert.equal(indexUpload.statusCode, 201);
+
+  const cardUpload = await router.invoke(
+    "PUT",
+    "/v1/pixpax/collections/:collectionId/:version/cards/:cardId",
+    {
+      headers,
+      params: { ...params, cardId: "arsenal-01" },
+      body: {
+        cardId: "arsenal-01",
+        seriesId: "arsenal",
+        slotIndex: 0,
+        role: "player",
+        renderPayload: { gridSize: 16, gridB64: "AAECAw==" },
+      },
+    }
+  );
+  assert.equal(cardUpload.statusCode, 201);
+
+  const replay = await store.replayEvents("premier-league-2026", "v1");
+  assert.deepEqual(
+    replay.map((event) => event.type).sort((a, b) => a.localeCompare(b)),
+    [
+      PIXPAX_EVENT_TYPES.CARD_ADDED,
+      PIXPAX_EVENT_TYPES.COLLECTION_CREATED,
+      PIXPAX_EVENT_TYPES.SERIES_ADDED,
+    ]
   );
 });

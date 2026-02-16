@@ -67,6 +67,16 @@ function randomIndex(maxExclusive) {
   return Math.floor(Math.random() * maxExclusive);
 }
 
+function resolveEventCollectionScope(event) {
+  const payload = event?.payload || {};
+  const collectionId = String(payload?.collectionId || "").trim();
+  const version = String(payload?.version || payload?.collectionVersion || "").trim();
+  if (!collectionId || !version) {
+    throw new Error("PixPax event payload must include collectionId and version/collectionVersion.");
+  }
+  return { collectionId, version };
+}
+
 function clampPackCardCount(value) {
   const count = Number(value ?? 5);
   if (!Number.isFinite(count)) return 5;
@@ -220,7 +230,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
   const createStore = options.createStore || createCollectionContentStoreFromEnv;
   const pickRandomIndex = options.pickRandomIndex || randomIndex;
   const now = options.now || (() => new Date());
-  const appendEvent = options.appendEvent || (async () => ({ emitted: false }));
+  const appendEventOverride = options.appendEvent || null;
   const allowDevUntrackedPacks =
     options.allowDevUntrackedPacks === true ||
     isTruthyEnv(process.env.PIX_PAX_ALLOW_DEV_UNTRACKED_PACKS) ||
@@ -253,7 +263,13 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
       occurredAt,
       source: "pixpax.collections",
     });
-    await appendEvent(event);
+    if (appendEventOverride) {
+      await appendEventOverride(event);
+      return event;
+    }
+    const scope = resolveEventCollectionScope(event);
+    const store = await getStore();
+    await store.putEventIfAbsent(scope.collectionId, scope.version, event);
     return event;
   }
 

@@ -29,7 +29,7 @@ export function createPixpaxContentConfigFromEnv() {
 }
 
 export function createCollectionContentGatewayFromS3Client(params) {
-  const { client, GetObjectCommand, PutObjectCommand } = params || {};
+  const { client, GetObjectCommand, PutObjectCommand, ListObjectsV2Command } = params || {};
   if (!client || !GetObjectCommand || !PutObjectCommand) {
     throw new Error(
       "createCollectionContentGatewayFromS3Client requires client, GetObjectCommand, and PutObjectCommand."
@@ -83,11 +83,32 @@ export function createCollectionContentGatewayFromS3Client(params) {
         })
       );
     },
+
+    async listObjects({ bucket, prefix, cursor, maxKeys = 1000 }) {
+      if (!ListObjectsV2Command) {
+        throw new Error("Gateway listObjects requires ListObjectsV2Command.");
+      }
+      const response = await client.send(
+        new ListObjectsV2Command({
+          Bucket: bucket,
+          Prefix: prefix,
+          MaxKeys: maxKeys,
+          ContinuationToken: cursor || undefined,
+        })
+      );
+      const keys = Array.isArray(response?.Contents)
+        ? response.Contents.map((entry) => String(entry?.Key || "")).filter(Boolean)
+        : [];
+      return {
+        keys,
+        nextCursor: response?.IsTruncated ? response?.NextContinuationToken || null : null,
+      };
+    },
   };
 }
 
 export async function createCollectionContentGateway(config) {
-  const { S3Client, GetObjectCommand, PutObjectCommand } = await import(
+  const { S3Client, GetObjectCommand, PutObjectCommand, ListObjectsV2Command } = await import(
     "@aws-sdk/client-s3"
   );
   const client = new S3Client({
@@ -103,6 +124,7 @@ export async function createCollectionContentGateway(config) {
     client,
     GetObjectCommand,
     PutObjectCommand,
+    ListObjectsV2Command,
   });
 }
 
@@ -119,6 +141,19 @@ function buildObjectKey(prefix, collectionId, version, filename) {
     .filter(Boolean)
     .join("/");
   return `${scopedPrefix}/${filename}`;
+}
+
+function dateForPath(isoTimestamp) {
+  const date = new Date(String(isoTimestamp || ""));
+  if (!Number.isFinite(date.getTime())) {
+    throw new Error("Invalid event occurredAt timestamp.");
+  }
+  return date.toISOString();
+}
+
+function normalizeEventTimestampForKey(isoTimestamp) {
+  const iso = dateForPath(isoTimestamp);
+  return iso.replace(/[-:.]/g, "");
 }
 
 async function putJson(gateway, bucket, key, value) {
@@ -199,6 +234,24 @@ export class CollectionContentStore {
       collectionId,
       version,
       `override-codes/${trimSegment(codeId)}.json`
+    );
+  }
+
+  buildEventsPrefix(collectionId, version) {
+    return `${buildObjectKey(this.prefix, collectionId, version, "events")}/`;
+  }
+
+  buildEventKey(collectionId, version, event) {
+    const eventId = trimSegment(event?.eventId);
+    if (!eventId) throw new Error("event.eventId is required.");
+    const iso = dateForPath(event?.occurredAt);
+    const day = iso.slice(0, 10);
+    const stamp = normalizeEventTimestampForKey(iso);
+    return buildObjectKey(
+      this.prefix,
+      collectionId,
+      version,
+      `events/${day}/${stamp}_${eventId}.json`
     );
   }
 
@@ -284,6 +337,49 @@ export class CollectionContentStore {
   async getOverrideCodeRecord(collectionId, version, codeId) {
     const key = this.buildOverrideCodeRecordKey(collectionId, version, codeId);
     return getJson(this.gateway, this.bucket, key);
+  }
+
+  async putEventIfAbsent(collectionId, version, event) {
+    const key = this.buildEventKey(collectionId, version, event);
+    const result = await putJsonIfAbsent(this.gateway, this.bucket, key, event);
+    return { bucket: this.bucket, key, created: result.created };
+  }
+
+  async listEventKeys(collectionId, version, options = {}) {
+    if (typeof this.gateway.listObjects !== "function") {
+      throw new Error("Collection content gateway does not support listObjects.");
+    }
+    const prefix = this.buildEventsPrefix(collectionId, version);
+    const response = await this.gateway.listObjects({
+      bucket: this.bucket,
+      prefix,
+      cursor: options.cursor || null,
+      maxKeys: options.limit || 1000,
+    });
+    return {
+      keys: Array.isArray(response?.keys) ? response.keys : [],
+      nextCursor: response?.nextCursor || null,
+    };
+  }
+
+  async listEvents(collectionId, version, options = {}) {
+    const listed = await this.listEventKeys(collectionId, version, options);
+    const events = [];
+    for (const key of listed.keys) {
+      events.push(await getJson(this.gateway, this.bucket, key));
+    }
+    events.sort((a, b) => {
+      const aAt = String(a?.occurredAt || "");
+      const bAt = String(b?.occurredAt || "");
+      if (aAt !== bAt) return aAt.localeCompare(bAt);
+      return String(a?.eventId || "").localeCompare(String(b?.eventId || ""));
+    });
+    return { events, nextCursor: listed.nextCursor };
+  }
+
+  async replayEvents(collectionId, version, options = {}) {
+    const listed = await this.listEvents(collectionId, version, options);
+    return listed.events;
   }
 }
 

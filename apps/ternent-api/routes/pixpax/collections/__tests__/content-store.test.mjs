@@ -24,6 +24,18 @@ function createMemoryGateway() {
       objects.set(id, Buffer.from(body));
       writes.push({ bucket, key, contentType, cacheControl });
     },
+    async listObjects({ bucket, prefix, cursor, maxKeys = 1000 }) {
+      const allKeys = Array.from(objects.keys())
+        .filter((id) => id.startsWith(`${bucket}:`))
+        .map((id) => id.slice(bucket.length + 1))
+        .filter((key) => key.startsWith(prefix))
+        .sort((a, b) => a.localeCompare(b));
+      const startIndex = cursor ? Math.max(0, allKeys.indexOf(cursor) + 1) : 0;
+      const keys = allKeys.slice(startIndex, startIndex + maxKeys);
+      const nextCursor =
+        startIndex + maxKeys < allKeys.length ? keys[keys.length - 1] || null : null;
+      return { keys, nextCursor };
+    },
   };
 }
 
@@ -133,4 +145,68 @@ test("createPixpaxContentConfigFromEnv reads LEDGER_* vars", () => {
   assert.equal(config.bucket, "pixpax-content");
   assert.equal(config.prefix, "pixpax/collections");
   assert.equal(config.region, "lon1");
+});
+
+test("CollectionContentStore appends events and replays in deterministic order", async () => {
+  const gateway = createMemoryGateway();
+  const store = new CollectionContentStore({
+    bucket: "content-bucket",
+    prefix: "pixpax/collections",
+    gateway,
+  });
+
+  const eventA = {
+    eventId: "evt_a",
+    type: "collection.created",
+    occurredAt: "2026-02-16T12:00:00.000Z",
+    source: "test",
+    payload: {
+      collectionId: "premier-league-2026",
+      version: "v1",
+    },
+  };
+  const eventB = {
+    eventId: "evt_b",
+    type: "series.added",
+    occurredAt: "2026-02-16T12:00:01.000Z",
+    source: "test",
+    payload: {
+      collectionId: "premier-league-2026",
+      version: "v1",
+      seriesIds: ["arsenal"],
+    },
+  };
+
+  const firstWrite = await store.putEventIfAbsent(
+    "premier-league-2026",
+    "v1",
+    eventA
+  );
+  const duplicateWrite = await store.putEventIfAbsent(
+    "premier-league-2026",
+    "v1",
+    eventA
+  );
+  const secondWrite = await store.putEventIfAbsent(
+    "premier-league-2026",
+    "v1",
+    eventB
+  );
+
+  assert.equal(firstWrite.created, true);
+  assert.equal(duplicateWrite.created, false);
+  assert.equal(secondWrite.created, true);
+
+  const listed = await store.listEvents("premier-league-2026", "v1");
+  assert.equal(listed.events.length, 2);
+  assert.deepEqual(
+    listed.events.map((event) => event.eventId),
+    ["evt_a", "evt_b"]
+  );
+
+  const replayed = await store.replayEvents("premier-league-2026", "v1");
+  assert.deepEqual(
+    replayed.map((event) => event.type),
+    ["collection.created", "series.added"]
+  );
 });
