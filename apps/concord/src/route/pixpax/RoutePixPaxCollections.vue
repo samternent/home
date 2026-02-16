@@ -79,6 +79,13 @@ type ApiCard = {
   renderPayload?: { gridSize?: number; gridB64?: string };
 };
 
+type ApiCollectionBundle = {
+  collection?: ApiCollection;
+  index?: ApiIndex;
+  cards?: ApiCard[];
+  missingCardIds?: string[];
+};
+
 type ApiPackResponse = {
   packId: string;
   issuedAt: string;
@@ -157,7 +164,6 @@ const indexByCollection = ref<Record<string, ApiIndex>>({});
 const selectedCollectionId = ref("");
 const selectedSeries = ref("all");
 const loadingCollections = ref(false);
-const loadingCards = ref(false);
 const status = ref("Loading public collections...");
 const loadError = ref("");
 
@@ -643,84 +649,71 @@ async function fetchJson<T>(path: string, init?: RequestInit): Promise<T> {
   return response.json() as Promise<T>;
 }
 
-async function fetchCollectionAndIndex(
-  refEntry: CollectionRef,
-): Promise<Collection> {
+async function fetchCollectionBundle(refEntry: CollectionRef): Promise<Collection> {
   const encodedCollectionId = encodeURIComponent(refEntry.collectionId);
   const encodedVersion = encodeURIComponent(refEntry.version);
-  const [collectionJson, indexJson] = await Promise.all([
-    fetchJson<ApiCollection>(
-      `/v1/pixpax/collections/${encodedCollectionId}/${encodedVersion}/collection`,
-    ),
-    fetchJson<ApiIndex>(
-      `/v1/pixpax/collections/${encodedCollectionId}/${encodedVersion}/index`,
-    ),
-  ]);
+  const bundle = await fetchJson<ApiCollectionBundle>(
+    `/v1/pixpax/collections/${encodedCollectionId}/${encodedVersion}/bundle`,
+  );
+  const collectionJson = bundle.collection || {};
+  const indexJson = bundle.index || {};
+  const cards = Array.isArray(bundle.cards) ? bundle.cards : [];
+  const missingCardIds = Array.isArray(bundle.missingCardIds)
+    ? bundle.missingCardIds
+    : [];
 
   indexByCollection.value[refEntry.collectionId] = indexJson;
 
-  return {
+  const collection: Collection = {
     id: refEntry.collectionId,
     name: String(collectionJson.name || refEntry.collectionId),
     series: String(collectionJson.description || ""),
     palette: normalizePalette(collectionJson.palette),
     stickers: [],
   };
-}
 
-async function fetchCardsForCollection(collection: Collection) {
-  const refEntry = refs.find((entry) => entry.collectionId === collection.id);
-  if (!refEntry) return;
-  const index = indexByCollection.value[collection.id];
-  const cardIds = Array.isArray(index?.cards)
-    ? index.cards.map((value) => String(value || "").trim()).filter(Boolean)
-    : [];
+  const cardsById = new Map(
+    cards
+      .map((card) => {
+        const cardId = String(card?.cardId || "").trim();
+        if (!cardId) return null;
+        return [cardId, { ...card, cardId }] as const;
+      })
+      .filter(Boolean) as Array<readonly [string, ApiCard]>,
+  );
 
-  if (!cardIds.length) {
-    collection.stickers = [];
-    return;
+  const cardIds = Array.isArray(indexJson.cards)
+    ? indexJson.cards.map((value) => String(value || "").trim()).filter(Boolean)
+    : Array.from(cardsById.keys());
+
+  collection.stickers = cardIds
+    .map((cardId) => {
+      const card = cardsById.get(cardId);
+      if (!card) return null;
+      const mapping = indexJson.cardMap?.[cardId];
+      return toSticker({
+        collection,
+        card: {
+          ...card,
+          cardId,
+          seriesId: card.seriesId || mapping?.seriesId,
+          slotIndex: card.slotIndex ?? mapping?.slotIndex,
+          role: card.role || mapping?.role,
+        },
+        fallbackSeries: mapping?.seriesId,
+      });
+    })
+    .filter(Boolean) as Sticker[];
+
+  if (missingCardIds.length) {
+    setStatus("Collection bundle is missing card payloads.", {
+      collectionId: refEntry.collectionId,
+      version: refEntry.version,
+      missingCardIds,
+    });
   }
 
-  loadingCards.value = true;
-  try {
-    const encodedCollectionId = encodeURIComponent(collection.id);
-    const encodedVersion = encodeURIComponent(refEntry.version);
-
-    const concurrency = 8;
-    const stickers: Sticker[] = new Array(cardIds.length);
-    let nextIndex = 0;
-
-    async function worker() {
-      while (nextIndex < cardIds.length) {
-        const current = nextIndex;
-        nextIndex += 1;
-        const cardId = cardIds[current];
-        const encodedCardId = encodeURIComponent(cardId);
-        const cardJson = await fetchJson<ApiCard>(
-          `/v1/pixpax/collections/${encodedCollectionId}/${encodedVersion}/cards/${encodedCardId}`,
-        );
-        const mapping = index?.cardMap?.[cardId];
-        stickers[current] = toSticker({
-          collection,
-          card: {
-            ...cardJson,
-            cardId,
-            seriesId: cardJson.seriesId || mapping?.seriesId,
-            slotIndex: cardJson.slotIndex ?? mapping?.slotIndex,
-            role: cardJson.role || mapping?.role,
-          },
-          fallbackSeries: mapping?.seriesId,
-        });
-      }
-    }
-
-    await Promise.all(
-      new Array(Math.min(concurrency, cardIds.length)).fill(null).map(worker),
-    );
-    collection.stickers = stickers;
-  } finally {
-    loadingCards.value = false;
-  }
+  return collection;
 }
 
 function toKitParts(cards: Sticker[]) {
@@ -740,7 +733,7 @@ async function loadCollections() {
   loadError.value = "";
 
   try {
-    const loaded = await Promise.all(refs.map(fetchCollectionAndIndex));
+    const loaded = await Promise.all(refs.map(fetchCollectionBundle));
     collections.value = loaded;
     if (
       !collections.value.find(
@@ -749,7 +742,7 @@ async function loadCollections() {
     ) {
       selectedCollectionId.value = collections.value[0]?.id || "";
     }
-    setStatus("Loaded public collections.", {
+    setStatus("Loaded public collections and cards.", {
       count: collections.value.length,
       refs,
     });
@@ -761,26 +754,10 @@ async function loadCollections() {
   }
 }
 
-async function ensureSelectedCardsLoaded() {
-  if (!selectedCollection.value || selectedCollection.value.stickers.length)
-    return;
-  try {
-    await fetchCardsForCollection(selectedCollection.value);
-    setStatus("Loaded collection cards.", {
-      collectionId: selectedCollection.value.id,
-      cards: selectedCollection.value.stickers.length,
-    });
-  } catch (error: any) {
-    packError.value = error?.message || "Failed to load cards.";
-    setStatus("Failed to load cards.", { error: packError.value });
-  }
-}
-
 watch(
   () => selectedCollectionId.value,
-  async () => {
+  () => {
     selectedSeries.value = "all";
-    await ensureSelectedCardsLoaded();
   },
 );
 
@@ -1028,7 +1005,6 @@ onMounted(async () => {
     overrideCode.value = String(queryCode[0]).trim();
   }
   await loadCollections();
-  await ensureSelectedCardsLoaded();
 });
 
 onUnmounted(() => {
@@ -1158,13 +1134,8 @@ watch(
           <p v-if="loadError" class="text-sm font-semibold text-red-600">
             {{ loadError }}
           </p>
-          <p
-            v-if="loadingCollections || loadingCards"
-            class="text-xs text-[var(--ui-fg-muted)]"
-          >
-            {{
-              loadingCollections ? "Loading collections..." : "Loading cards..."
-            }}
+          <p v-if="loadingCollections" class="text-xs text-[var(--ui-fg-muted)]">
+            Loading collections...
           </p>
           <div
             class="flex gap-6 justify-items-center flex-wrap justify-center p-4"

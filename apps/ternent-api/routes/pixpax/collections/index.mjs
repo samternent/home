@@ -708,6 +708,59 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
     }
   });
 
+  router.get("/v1/pixpax/collections/:collectionId/:version/bundle", async (req, res) => {
+    const { collectionId, version } = req.params || {};
+    try {
+      const store = await getStore();
+      const [collection, index] = await Promise.all([
+        store.getCollection(collectionId, version),
+        store.getIndex(collectionId, version),
+      ]);
+
+      const cardIds = Array.isArray(index?.cards)
+        ? index.cards.map((value) => String(value || "").trim()).filter(Boolean)
+        : [];
+
+      const missingCardIds = [];
+      const cardRows = await mapWithConcurrency(cardIds, 16, async (cardId) => {
+        try {
+          const card = await store.getCard(collectionId, version, cardId);
+          return {
+            ...card,
+            cardId,
+          };
+        } catch (error) {
+          if (String(error?.message || "").startsWith("NoSuchKey:")) {
+            missingCardIds.push(cardId);
+            return null;
+          }
+          throw error;
+        }
+      });
+
+      res.status(200).send({
+        collection,
+        index,
+        cards: cardRows.filter(Boolean),
+        missingCardIds: missingCardIds.sort((a, b) => a.localeCompare(b)),
+      });
+    } catch (error) {
+      if (missingContentConfigError(error)) {
+        res.status(503).send({
+          error:
+            "Content store configuration is incomplete. Use LEDGER_* connection vars and LEDGER_CONTENT_PREFIX.",
+        });
+        return;
+      }
+      if (String(error?.message || "").startsWith("NoSuchKey:")) {
+        res.status(404).send({ error: "Collection content is missing for this version." });
+        return;
+      }
+      console.error("[pixpax/collections] get bundle failed:", error);
+      res.status(500).send({ error: "Failed to load collection bundle." });
+    }
+  });
+
   router.put(
     "/v1/pixpax/collections/:collectionId/:version/cards/:cardId",
     async (req, res) => {

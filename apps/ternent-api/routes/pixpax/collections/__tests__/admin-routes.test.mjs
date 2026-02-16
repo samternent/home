@@ -317,6 +317,19 @@ test("public read endpoints return seeded collection content", async () => {
   assert.equal(card.statusCode, 200);
   assert.equal(card.body.cardId, "arsenal-01");
 
+  const bundle = await router.invoke(
+    "GET",
+    "/v1/pixpax/collections/:collectionId/:version/bundle",
+    { params }
+  );
+  assert.equal(bundle.statusCode, 200);
+  assert.equal(bundle.body.collection.name, "Premier League 2026");
+  assert.deepEqual(bundle.body.index.cards, ["arsenal-01"]);
+  assert.equal(Array.isArray(bundle.body.cards), true);
+  assert.equal(bundle.body.cards.length, 1);
+  assert.equal(bundle.body.cards[0].cardId, "arsenal-01");
+  assert.deepEqual(bundle.body.missingCardIds, []);
+
   const missingCard = await router.invoke(
     "GET",
     "/v1/pixpax/collections/:collectionId/:version/cards/:cardId",
