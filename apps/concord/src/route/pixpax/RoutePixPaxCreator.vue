@@ -158,7 +158,9 @@ const currentCard = computed(() => {
 watch(
   () => project.value.cards.map((card) => card.cardId),
   () => {
-    if (!project.value.cards.find((card) => card.cardId === selectedCardId.value)) {
+    if (
+      !project.value.cards.find((card) => card.cardId === selectedCardId.value)
+    ) {
       selectedCardId.value = project.value.cards[0]?.cardId || "";
     }
   },
@@ -173,8 +175,8 @@ watch(
   { immediate: true },
 );
 
-const shinyCount = computed(() =>
-  project.value.cards.filter((card) => card.shiny).length,
+const shinyCount = computed(
+  () => project.value.cards.filter((card) => card.shiny).length,
 );
 const shinyLimit = computed(() => Math.max(0, project.value.series.shinyLimit));
 const shinyLimitReached = computed(
@@ -357,9 +359,7 @@ function handleShinyChange(event: Event) {
 
 function login() {
   savedAdminToken.value = String(loginToken.value || "").trim();
-  loginStatus.value = savedAdminToken.value
-    ? "Admin token saved locally."
-    : "";
+  loginStatus.value = savedAdminToken.value ? "Admin token saved locally." : "";
 }
 
 function logout() {
@@ -396,8 +396,6 @@ const previewSticker = computed<Sticker>(() => {
       collectionId: project.value.collectionId,
       collectionName: project.value.name,
       series: project.value.series.seriesId,
-      rarity: "common",
-      finish: "matte",
       shiny: Boolean(card?.shiny),
     },
     art: currentArt.value,
@@ -421,7 +419,10 @@ function buildCollectionPayload() {
 
 function buildIndexPayload() {
   const cards = project.value.cards.map((card) => card.cardId);
-  const cardMap: Record<string, { seriesId: string; slotIndex: number; role: string }> = {};
+  const cardMap: Record<
+    string,
+    { seriesId: string; slotIndex: number; role: string }
+  > = {};
   project.value.cards.forEach((card, index) => {
     cardMap[card.cardId] = {
       seriesId: project.value.series.seriesId,
@@ -481,14 +482,18 @@ function downloadJson(filename: string, payload: unknown) {
 
 function exportProject() {
   downloadJson(
-    `${project.value.collectionId || "pixpax"}-${project.value.version}-draft.json`,
+    `${project.value.collectionId || "pixpax"}-${
+      project.value.version
+    }-draft.json`,
     project.value,
   );
 }
 
 function exportUploadBundle() {
   downloadJson(
-    `${project.value.collectionId || "pixpax"}-${project.value.version}-bundle.json`,
+    `${project.value.collectionId || "pixpax"}-${
+      project.value.version
+    }-bundle.json`,
     buildUploadBundle(),
   );
 }
@@ -593,7 +598,9 @@ async function uploadAll() {
     uploadStep.value = "Uploading cards";
     for (let i = 0; i < project.value.cards.length; i += 1) {
       const card = project.value.cards[i];
-      uploadStep.value = `Uploading ${card.cardId} (${i + 1}/${project.value.cards.length})`;
+      uploadStep.value = `Uploading ${card.cardId} (${i + 1}/${
+        project.value.cards.length
+      })`;
       await putJson(
         `/v1/pixpax/collections/${encodedCollectionId}/${encodedVersion}/cards/${encodeURIComponent(
           card.cardId,
@@ -603,7 +610,8 @@ async function uploadAll() {
       );
     }
 
-    uploadStatus.value = "Upload complete. Collection is now stored server-side.";
+    uploadStatus.value =
+      "Upload complete. Collection is now stored server-side.";
   } catch (error: any) {
     uploadError.value = error?.message || "Upload failed.";
   } finally {
@@ -731,7 +739,9 @@ onUnmounted(() => {
         <h2 class="text-lg font-medium mb-3">Palette + Editor</h2>
         <div class="grid gap-4 lg:grid-cols-[minmax(0,200px)_minmax(0,1fr)]">
           <div class="grid gap-2">
-            <div class="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--ui-fg-muted)]">
+            <div
+              class="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--ui-fg-muted)]"
+            >
               Palette
             </div>
             <div class="grid grid-cols-4 gap-2">
@@ -757,7 +767,9 @@ onUnmounted(() => {
                 :key="`palette-edit-${index}`"
                 class="palette-edit"
               >
-                <span class="text-xs text-[var(--ui-fg-muted)]">{{ index }}</span>
+                <span class="text-xs text-[var(--ui-fg-muted)]">{{
+                  index
+                }}</span>
                 <input
                   v-if="index !== 0"
                   type="color"
@@ -828,6 +840,22 @@ onUnmounted(() => {
             </button>
           </div>
         </div>
+        <div class="grid gap-3">
+          <div
+            class="text-xs uppercase tracking-[0.2em] text-[var(--ui-fg-muted)]"
+          >
+            Preview
+          </div>
+          <PixPaxStickerCard
+            :sticker="previewSticker"
+            :palette="activePalette"
+            :animated="true"
+            :sparkles="previewSticker.meta.shiny"
+            :glow="previewSticker.meta.shiny"
+            :shimmer="true"
+            class="max-w-48"
+          />
+        </div>
 
         <div v-if="currentCard" class="mt-4 grid gap-3">
           <label class="field">
@@ -847,10 +875,7 @@ onUnmounted(() => {
           </label>
           <label class="field">
             <span>Shiny</span>
-            <select
-              :value="currentCard.shiny"
-              @change="handleShinyChange"
-            >
+            <select :value="currentCard.shiny" @change="handleShinyChange">
               <option :value="false">No</option>
               <option :value="true">Yes</option>
             </select>
@@ -858,32 +883,6 @@ onUnmounted(() => {
           <p v-if="shinyError" class="text-xs text-red-600">
             {{ shinyError }}
           </p>
-
-          <div class="grid gap-3">
-            <div class="text-xs uppercase tracking-[0.2em] text-[var(--ui-fg-muted)]">
-              Preview
-            </div>
-            <PixPaxStickerCard
-              :sticker="previewSticker"
-              :palette="activePalette"
-              :compact="false"
-              :animated="false"
-              :sparkles="previewSticker.meta.shiny"
-              :glow="previewSticker.meta.shiny"
-              :shimmer="previewSticker.meta.shiny"
-            />
-            <div class="flex items-center gap-2">
-              <CanvasSticker16
-                :art="currentArt"
-                :palette="activePalette"
-                :scale="8"
-                class="border border-[var(--ui-border)] rounded-md"
-              />
-              <div class="text-xs text-[var(--ui-fg-muted)]">
-                gridB64 length: {{ currentArt.px.length }}
-              </div>
-            </div>
-          </div>
         </div>
       </section>
     </div>
@@ -932,10 +931,14 @@ onUnmounted(() => {
       </p>
 
       <div class="mt-4 rounded-lg border border-[var(--ui-border)] p-3">
-        <div class="text-xs uppercase tracking-[0.2em] text-[var(--ui-fg-muted)]">
+        <div
+          class="text-xs uppercase tracking-[0.2em] text-[var(--ui-fg-muted)]"
+        >
           Deploy Checklist
         </div>
-        <ul class="mt-2 text-xs text-[var(--ui-fg-muted)] list-disc list-inside">
+        <ul
+          class="mt-2 text-xs text-[var(--ui-fg-muted)] list-disc list-inside"
+        >
           <li>Upload collection, index, and cards (button above).</li>
           <li>
             Add the collection to `VITE_PIXPAX_PUBLIC_COLLECTIONS` and rebuild
@@ -995,11 +998,7 @@ onUnmounted(() => {
       rgba(255, 255, 255, 0.1) 25%,
       transparent 25%
     ),
-    linear-gradient(
-      -45deg,
-      rgba(255, 255, 255, 0.1) 25%,
-      transparent 25%
-    ),
+    linear-gradient(-45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%),
     linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.1) 75%),
     linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.1) 75%);
   background-size: 12px 12px;
