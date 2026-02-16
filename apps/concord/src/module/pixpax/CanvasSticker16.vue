@@ -2,7 +2,7 @@
 import { onMounted, onUnmounted, ref, watch } from "vue";
 import type { PackPalette16, StickerArt16 } from "./sticker-types";
 import { argbToRgbaTuple, decodeIdx4ToIndices } from "./pixel";
-import { assertPalette16, assertStickerArt16 } from "./protocol";
+import { assertPalette16, assertStickerArt16 } from "./domain/protocol";
 
 type CanvasStickerProps = {
   art: StickerArt16;

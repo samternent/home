@@ -1,5 +1,5 @@
 import type { StickerArt16 } from "./sticker-types";
-import { assertStickerArt16 } from "./protocol";
+import { assertStickerArt16 } from "./domain/protocol";
 
 const PIXEL_COUNT = 16 * 16;
 const PACKED_SIZE = PIXEL_COUNT / 2;

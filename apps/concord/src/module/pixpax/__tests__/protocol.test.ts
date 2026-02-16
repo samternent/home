@@ -3,9 +3,16 @@ import type { PackPalette16, StickerArt16 } from "../sticker-types";
 import {
   assertPalette16,
   assertStickerArt16,
-} from "../protocol";
+} from "../domain/protocol";
 import { decodeIdx4ToIndices, packIndicesToIdx4Base64 } from "../pixel";
-import { hashPalette16, hashRender, hashStickerArt } from "../hash";
+import {
+  computeMerkleRootFromItemHashes,
+  computePackCommitment,
+  hashCanonical,
+  hashPalette16,
+  hashRender,
+  hashStickerArt,
+} from "../domain/hash";
 
 function buildIndices(seed = 0): Uint8Array {
   const out = new Uint8Array(16 * 16);
@@ -97,5 +104,17 @@ describe("pixpax protocol invariants", () => {
       px: "AA==",
     } as StickerArt16;
     expect(() => assertStickerArt16(art)).toThrow();
+  });
+
+  it("merkle root and pack commitment are deterministic", async () => {
+    const a = await hashCanonical({ cardId: "a" });
+    const b = await hashCanonical({ cardId: "b" });
+    const rootA = await computeMerkleRootFromItemHashes([a, b]);
+    const rootB = await computeMerkleRootFromItemHashes([a, b]);
+    const commitmentA = await computePackCommitment({ itemHashes: [a, b] });
+    const commitmentB = await computePackCommitment({ itemHashes: [a, b] });
+
+    expect(rootA).toBe(rootB);
+    expect(commitmentA).toBe(commitmentB);
   });
 });
