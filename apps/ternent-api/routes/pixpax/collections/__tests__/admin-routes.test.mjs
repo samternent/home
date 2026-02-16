@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import pixpaxCollectionRoutes from "../index.mjs";
 import { CollectionContentStore } from "../content-store.mjs";
+import { PIXPAX_EVENT_TYPES, createPixpaxEvent } from "../../domain/events.mjs";
 
 function createRouterHarness() {
   const routes = new Map();
@@ -310,4 +311,109 @@ test("public read endpoints return seeded collection content", async () => {
     { params: { ...params, cardId: "arsenal-02" } }
   );
   assert.equal(missingCard.statusCode, 404);
+});
+
+test("mutating admin endpoints emit PixPax domain events", async () => {
+  const router = createRouterHarness();
+  process.env.PIX_PAX_ADMIN_TOKEN = "test-token";
+  process.env.PIX_PAX_OVERRIDE_CODE_SECRET = "override-secret-for-tests";
+  const events = [];
+  pixpaxCollectionRoutes(router, {
+    createStore,
+    now: () => new Date("2026-02-16T12:00:00.000Z"),
+    appendEvent: async (event) => {
+      events.push(event);
+      return { emitted: true };
+    },
+  });
+  const headers = { authorization: "Bearer test-token" };
+  const params = { collectionId: "premier-league-2026", version: "v1" };
+
+  const collectionUpload = await router.invoke(
+    "PUT",
+    "/v1/pixpax/collections/:collectionId/:version/collection",
+    {
+      headers,
+      params,
+      body: { name: "Premier League 2026", gridSize: 16, version: "v1" },
+    }
+  );
+  assert.equal(collectionUpload.statusCode, 201);
+
+  const indexUpload = await router.invoke(
+    "PUT",
+    "/v1/pixpax/collections/:collectionId/:version/index",
+    {
+      headers,
+      params,
+      body: {
+        series: [{ seriesId: "arsenal" }],
+        cards: ["arsenal-01"],
+        cardMap: {
+          "arsenal-01": { seriesId: "arsenal", slotIndex: 0, role: "player" },
+        },
+      },
+    }
+  );
+  assert.equal(indexUpload.statusCode, 201);
+
+  const cardUpload = await router.invoke(
+    "PUT",
+    "/v1/pixpax/collections/:collectionId/:version/cards/:cardId",
+    {
+      headers,
+      params: { ...params, cardId: "arsenal-01" },
+      body: {
+        cardId: "arsenal-01",
+        seriesId: "arsenal",
+        slotIndex: 0,
+        role: "player",
+        label: "Player One",
+        renderPayload: { gridSize: 16, gridB64: "AAECAw==" },
+      },
+    }
+  );
+  assert.equal(cardUpload.statusCode, 201);
+
+  const codeCreate = await router.invoke(
+    "POST",
+    "/v1/pixpax/collections/:collectionId/:version/override-codes",
+    {
+      headers,
+      params,
+      body: {
+        userKey: "school:user:abc123",
+        dropId: "week-2026-W07",
+        count: 5,
+      },
+    }
+  );
+  assert.equal(codeCreate.statusCode, 201);
+
+  assert.equal(events.length, 4);
+  assert.deepEqual(
+    events.map((event) => event.type),
+    [
+      PIXPAX_EVENT_TYPES.COLLECTION_CREATED,
+      PIXPAX_EVENT_TYPES.SERIES_ADDED,
+      PIXPAX_EVENT_TYPES.CARD_ADDED,
+      PIXPAX_EVENT_TYPES.GIFTCODE_CREATED,
+    ]
+  );
+  assert.equal(events[0].payload.collectionId, "premier-league-2026");
+  assert.equal(events[1].payload.seriesIds[0], "arsenal");
+  assert.equal(events[2].payload.cardId, "arsenal-01");
+  assert.equal(events[3].payload.codeId.length, 24);
+});
+
+test("event schema rejects unsupported event types", async () => {
+  assert.throws(
+    () =>
+      createPixpaxEvent({
+        type: "not.real",
+        occurredAt: "2026-02-16T12:00:00.000Z",
+        payload: {},
+      }),
+    /Unsupported PixPax event type/
+  );
 });

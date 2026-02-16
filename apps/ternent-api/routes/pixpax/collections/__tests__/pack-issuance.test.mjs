@@ -4,6 +4,7 @@ import { generateKeyPairSync } from "node:crypto";
 import pixpaxCollectionRoutes from "../index.mjs";
 import { CollectionContentStore } from "../content-store.mjs";
 import { PACK_MODELS } from "../../models/pack-models.mjs";
+import { PIXPAX_EVENT_TYPES } from "../../domain/events.mjs";
 
 function createRouterHarness() {
   const routes = new Map();
@@ -204,6 +205,7 @@ test("album pack endpoint is idempotent per user+drop without override", async (
   await seedCollection(store);
   const router = createRouterHarness();
   let issuedCount = 0;
+  const events = [];
 
   pixpaxCollectionRoutes(router, {
     createStore: () => store,
@@ -212,6 +214,10 @@ test("album pack endpoint is idempotent per user+drop without override", async (
     issueLedgerEntry: async () => {
       issuedCount += 1;
       return { segmentKey: "pixpax/ledger/segments/day/seg_deadbeef.jsonl.gz", segmentHash: "deadbeef" };
+    },
+    appendEvent: async (event) => {
+      events.push(event);
+      return { emitted: true };
     },
   });
 
@@ -244,6 +250,10 @@ test("album pack endpoint is idempotent per user+drop without override", async (
   assert.equal(second.body.issuance.reused, true);
   assert.equal(second.body.packId, first.body.packId);
   assert.equal(issuedCount, 1);
+  assert.deepEqual(
+    events.map((event) => event.type),
+    [PIXPAX_EVENT_TYPES.PACK_ISSUED, PIXPAX_EVENT_TYPES.PACK_CLAIMED]
+  );
 });
 
 test("dev-untracked issuance allows unlimited packs and skips ledger receipt persistence", async () => {
@@ -396,12 +406,17 @@ test("admin can mint one-time override code and code can be redeemed once", asyn
   });
   await seedCollection(store);
   const router = createRouterHarness();
+  const events = [];
 
   pixpaxCollectionRoutes(router, {
     createStore: () => store,
     pickRandomIndex: (max) => (max > 1 ? 1 : 0),
     now: () => new Date("2026-02-07T12:00:00.000Z"),
     issueLedgerEntry: async () => ({ segmentKey: "pixpax/ledger/segments/day/seg_deadbeef.jsonl.gz", segmentHash: "deadbeef" }),
+    appendEvent: async (event) => {
+      events.push(event);
+      return { emitted: true };
+    },
   });
 
   const mint = await router.invoke(
@@ -453,6 +468,14 @@ test("admin can mint one-time override code and code can be redeemed once", asyn
   );
   assert.equal(secondUse.statusCode, 409);
   assert.equal(secondUse.body.error, "Override code has already been used.");
+  assert.deepEqual(
+    events.map((event) => event.type),
+    [
+      PIXPAX_EVENT_TYPES.GIFTCODE_CREATED,
+      PIXPAX_EVENT_TYPES.PACK_ISSUED,
+      PIXPAX_EVENT_TYPES.GIFTCODE_REDEEMED,
+    ]
+  );
 });
 
 test("override code cannot be redeemed by another user", async () => {

@@ -16,6 +16,7 @@ import {
   computeMerkleRootFromItemHashes,
   hashAlbumCard,
 } from "./curated-hashing.mjs";
+import { createPixpaxEvent, PIXPAX_EVENT_TYPES } from "../domain/events.mjs";
 
 function extractBearerToken(headerValue) {
   const raw = String(headerValue || "").trim();
@@ -219,6 +220,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
   const createStore = options.createStore || createCollectionContentStoreFromEnv;
   const pickRandomIndex = options.pickRandomIndex || randomIndex;
   const now = options.now || (() => new Date());
+  const appendEvent = options.appendEvent || (async () => ({ emitted: false }));
   const allowDevUntrackedPacks =
     options.allowDevUntrackedPacks === true ||
     isTruthyEnv(process.env.PIX_PAX_ALLOW_DEV_UNTRACKED_PACKS) ||
@@ -242,6 +244,17 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
       storePromise = Promise.resolve(createStore());
     }
     return storePromise;
+  }
+
+  async function emitDomainEvent(type, payload, occurredAt) {
+    const event = createPixpaxEvent({
+      type,
+      payload,
+      occurredAt,
+      source: "pixpax.collections",
+    });
+    await appendEvent(event);
+    return event;
   }
 
   function requireAdminToken(req, res) {
@@ -276,6 +289,16 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
         res.status(409).send({ error: "collection.json already exists for this version." });
         return;
       }
+      await emitDomainEvent(
+        PIXPAX_EVENT_TYPES.COLLECTION_CREATED,
+        {
+          collectionId: String(collectionId),
+          version: String(version),
+          name: String(req.body?.name || ""),
+          gridSize: Number(req.body?.gridSize || 0),
+        },
+        now().toISOString()
+      );
       res.status(201).send({
         ok: true,
         collectionId,
@@ -359,6 +382,19 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
       createdAt: issuedAt,
       payload,
     });
+    await emitDomainEvent(
+      PIXPAX_EVENT_TYPES.GIFTCODE_CREATED,
+      {
+        codeId: payload.codeId,
+        collectionId: String(collectionId),
+        version: String(version),
+        dropId: payload.dropId,
+        count: payload.count,
+        bindToUser: payload.bindToUser,
+        issuedTo: payload.issuedTo,
+      },
+      issuedAt
+    );
     const code = createOverrideCode(payload, secret);
     const giftCode = codeIdToGiftCode(payload.codeId);
     res.status(201).send({
@@ -393,6 +429,21 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
         res.status(409).send({ error: "index.json already exists for this version." });
         return;
       }
+      const seriesIds = Array.isArray(req.body?.series)
+        ? req.body.series
+            .map((entry) => String(entry?.seriesId || "").trim())
+            .filter(Boolean)
+        : [];
+      await emitDomainEvent(
+        PIXPAX_EVENT_TYPES.SERIES_ADDED,
+        {
+          collectionId: String(collectionId),
+          version: String(version),
+          seriesIds,
+          cardCount: Array.isArray(req.body?.cards) ? req.body.cards.length : 0,
+        },
+        now().toISOString()
+      );
       res.status(201).send({
         ok: true,
         collectionId,
@@ -468,6 +519,16 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
           res.status(409).send({ error: "card already exists for this version/cardId." });
           return;
         }
+        await emitDomainEvent(
+          PIXPAX_EVENT_TYPES.CARD_ADDED,
+          {
+            collectionId: String(collectionId),
+            version: String(version),
+            cardId: String(cardId),
+            seriesId: req.body?.seriesId ? String(req.body.seriesId) : null,
+          },
+          now().toISOString()
+        );
 
         res.status(201).send({
           ok: true,
@@ -753,6 +814,31 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
         packRoot,
         itemHashes,
       };
+      const issuanceMode = overridePayload
+        ? "override-code"
+        : wantsOverride
+        ? "override"
+        : wantsDevUntrackedPack
+        ? "dev-untracked"
+        : "weekly";
+
+      await emitDomainEvent(
+        PIXPAX_EVENT_TYPES.PACK_ISSUED,
+        {
+          packId,
+          collectionId: String(collectionId),
+          collectionVersion: String(version),
+          dropId,
+          issuedTo,
+          count: cards.length,
+          packRoot,
+          itemHashes,
+          contentsCommitment,
+          issuanceMode,
+          untracked: wantsDevUntrackedPack,
+        },
+        issuedAt
+      );
 
       if (overridePayload) {
         const codeUseResult = await store.putOverrideCodeUseIfAbsent(
@@ -777,6 +863,18 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
           });
           return;
         }
+        await emitDomainEvent(
+          PIXPAX_EVENT_TYPES.GIFTCODE_REDEEMED,
+          {
+            codeId: String(overridePayload.codeId),
+            packId,
+            collectionId: String(collectionId),
+            version: String(version),
+            issuedTo,
+            dropId,
+          },
+          issuedAt
+        );
       } else if (!wantsOverride && !wantsDevUntrackedPack) {
         const claimResult = await store.putPackClaimIfAbsent(
           collectionId,
@@ -802,19 +900,26 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
             });
             return;
           }
+        } else {
+          await emitDomainEvent(
+            PIXPAX_EVENT_TYPES.PACK_CLAIMED,
+            {
+              packId,
+              collectionId: String(collectionId),
+              collectionVersion: String(version),
+              dropId,
+              issuedTo,
+              mode: "weekly",
+            },
+            issuedAt
+          );
         }
       }
 
       res.status(200).send({
         ...responsePayload,
         issuance: {
-          mode: overridePayload
-            ? "override-code"
-            : wantsOverride
-            ? "override"
-            : wantsDevUntrackedPack
-            ? "dev-untracked"
-            : "weekly",
+          mode: issuanceMode,
           reused: false,
           override: wantsOverride || !!overridePayload,
           untracked: wantsDevUntrackedPack,
