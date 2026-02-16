@@ -105,6 +105,40 @@ function createWeeklyDeterministicPolicy(params) {
       return { reusedResponse: null };
     },
     async afterIssue(context) {
+      try {
+        const existingClaim = await context.store.getPackClaim(
+          context.collectionId,
+          context.version,
+          dropId,
+          context.issuedTo
+        );
+        if (existingClaim?.response) {
+          return {
+            reusedResponse: {
+              ...existingClaim.response,
+              issuance: {
+                mode: "weekly",
+                reused: true,
+                override: false,
+                dropId,
+              },
+            },
+            events: [],
+          };
+        }
+      } catch (error) {
+        if (!isNoSuchKeyError(error)) throw error;
+      }
+
+      await context.emitEvent("pack.claimed", {
+        packId: context.packId,
+        collectionId: String(context.collectionId),
+        collectionVersion: String(context.version),
+        dropId,
+        issuedTo: context.issuedTo,
+        mode: "weekly",
+      });
+
       const claimResult = await context.store.putPackClaimIfAbsent(
         context.collectionId,
         context.version,
@@ -137,22 +171,7 @@ function createWeeklyDeterministicPolicy(params) {
           };
         }
       }
-      return {
-        reusedResponse: null,
-        events: [
-          {
-            type: "pack.claimed",
-            payload: {
-              packId: context.packId,
-              collectionId: String(context.collectionId),
-              collectionVersion: String(context.version),
-              dropId,
-              issuedTo: context.issuedTo,
-              mode: "weekly",
-            },
-          },
-        ],
-      };
+      return { reusedResponse: null, events: [] };
     },
   };
 }
@@ -221,6 +240,34 @@ function createGiftCodePolicy(params) {
       return { reusedResponse: null };
     },
     async afterIssue(context) {
+      try {
+        const existingUse = await context.store.getOverrideCodeUse(
+          context.collectionId,
+          context.version,
+          payload.codeId
+        );
+        if (existingUse) {
+          throw new IssuancePolicyError(409, {
+            error: "Override code has already been used.",
+            codeId: payload.codeId,
+            usedAt: existingUse.usedAt || null,
+            packId: existingUse.packId || null,
+          });
+        }
+      } catch (error) {
+        if (error instanceof IssuancePolicyError) throw error;
+        if (!isNoSuchKeyError(error)) throw error;
+      }
+
+      await context.emitEvent("giftcode.redeemed", {
+        codeId: String(payload.codeId),
+        packId: context.packId,
+        collectionId: String(context.collectionId),
+        version: String(context.version),
+        issuedTo: context.issuedTo,
+        dropId,
+      });
+
       const codeUseResult = await context.store.putOverrideCodeUseIfAbsent(
         context.collectionId,
         context.version,
@@ -246,22 +293,7 @@ function createGiftCodePolicy(params) {
           packId: existingUse?.packId || null,
         });
       }
-      return {
-        reusedResponse: null,
-        events: [
-          {
-            type: "giftcode.redeemed",
-            payload: {
-              codeId: String(payload.codeId),
-              packId: context.packId,
-              collectionId: String(context.collectionId),
-              version: String(context.version),
-              issuedTo: context.issuedTo,
-              dropId,
-            },
-          },
-        ],
-      };
+      return { reusedResponse: null, events: [] };
     },
   };
 }

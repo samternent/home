@@ -431,6 +431,74 @@ test("mutating admin endpoints emit PixPax domain events", async () => {
   assert.equal(events[3].payload.codeId.length, 24);
 });
 
+test("series retirement endpoint emits event and prevents duplicate retirement", async () => {
+  const store = createStore();
+  const router = createRouterHarness();
+  process.env.PIX_PAX_ADMIN_TOKEN = "test-token";
+  pixpaxCollectionRoutes(router, {
+    createStore: () => store,
+    now: () => new Date("2026-02-16T12:00:00.000Z"),
+  });
+  const headers = { authorization: "Bearer test-token" };
+  const params = { collectionId: "premier-league-2026", version: "v1" };
+
+  const collectionUpload = await router.invoke(
+    "PUT",
+    "/v1/pixpax/collections/:collectionId/:version/collection",
+    {
+      headers,
+      params,
+      body: { name: "Premier League 2026", gridSize: 16, version: "v1" },
+    }
+  );
+  assert.equal(collectionUpload.statusCode, 201);
+
+  const indexUpload = await router.invoke(
+    "PUT",
+    "/v1/pixpax/collections/:collectionId/:version/index",
+    {
+      headers,
+      params,
+      body: {
+        series: [{ seriesId: "arsenal" }],
+        cards: ["arsenal-01"],
+        cardMap: {
+          "arsenal-01": { seriesId: "arsenal", slotIndex: 0, role: "player" },
+        },
+      },
+    }
+  );
+  assert.equal(indexUpload.statusCode, 201);
+
+  const retire = await router.invoke(
+    "POST",
+    "/v1/pixpax/collections/:collectionId/:version/series/:seriesId/retire",
+    {
+      headers,
+      params: { ...params, seriesId: "arsenal" },
+      body: { reason: "season-complete" },
+    }
+  );
+  assert.equal(retire.statusCode, 201);
+  assert.equal(retire.body.seriesId, "arsenal");
+
+  const duplicate = await router.invoke(
+    "POST",
+    "/v1/pixpax/collections/:collectionId/:version/series/:seriesId/retire",
+    {
+      headers,
+      params: { ...params, seriesId: "arsenal" },
+      body: { reason: "again" },
+    }
+  );
+  assert.equal(duplicate.statusCode, 409);
+
+  const replay = await store.replayEvents("premier-league-2026", "v1");
+  const retirement = replay.find((event) => event.type === PIXPAX_EVENT_TYPES.SERIES_RETIRED);
+  assert.ok(retirement);
+  assert.equal(retirement.payload.seriesId, "arsenal");
+});
+
 test("event schema rejects unsupported event types", async () => {
   assert.throws(
     () =>
@@ -513,4 +581,35 @@ test("default appendEvent persists mutation events to event log", async () => {
       PIXPAX_EVENT_TYPES.SERIES_ADDED,
     ]
   );
+});
+
+test("collection write aborts when event emission fails", async () => {
+  const store = createStore();
+  const router = createRouterHarness();
+  process.env.PIX_PAX_ADMIN_TOKEN = "test-token";
+  pixpaxCollectionRoutes(router, {
+    createStore: () => store,
+    appendEvent: async () => {
+      throw new Error("event sink unavailable");
+    },
+  });
+
+  const params = { collectionId: "premier-league-2026", version: "v1" };
+  const upload = await router.invoke(
+    "PUT",
+    "/v1/pixpax/collections/:collectionId/:version/collection",
+    {
+      headers: { authorization: "Bearer test-token" },
+      params,
+      body: { name: "Premier League 2026", gridSize: 16, version: "v1" },
+    }
+  );
+  assert.equal(upload.statusCode, 500);
+
+  const readBack = await router.invoke(
+    "GET",
+    "/v1/pixpax/collections/:collectionId/:version/collection",
+    { params }
+  );
+  assert.equal(readBack.statusCode, 404);
 });

@@ -190,6 +190,49 @@ test("album issuance uses rngSource.nextInt with issuance context", async () => 
   assert.ok(calls.every((entry) => entry.maxExclusive === 2));
 });
 
+test("album pack endpoint rejects issuance when all series are retired", async () => {
+  createIssuerKeyEnv();
+  process.env.PIX_PAX_ADMIN_TOKEN = "admin-token";
+  process.env.PIX_PAX_OVERRIDE_CODE_SECRET = "override-secret-for-tests";
+  const store = new CollectionContentStore({
+    bucket: "content",
+    prefix: "pixpax/collections",
+    gateway: createMemoryGateway(),
+  });
+  await seedCollection(store);
+  const router = createRouterHarness();
+  pixpaxCollectionRoutes(router, {
+    createStore: () => store,
+    issueLedgerEntry: async () => ({ segmentKey: "seg", segmentHash: "hash" }),
+    now: () => new Date("2026-02-07T12:00:00.000Z"),
+  });
+
+  const retire = await router.invoke(
+    "POST",
+    "/v1/pixpax/collections/:collectionId/:version/series/:seriesId/retire",
+    {
+      headers: { authorization: "Bearer admin-token" },
+      params: { collectionId: "premier-league-2026", version: "v1", seriesId: "arsenal" },
+      body: { reason: "season-complete" },
+    }
+  );
+  assert.equal(retire.statusCode, 201);
+
+  const issue = await router.invoke(
+    "POST",
+    "/v1/pixpax/collections/:collectionId/:version/packs",
+    {
+      params: { collectionId: "premier-league-2026", version: "v1" },
+      body: {
+        userKey: "school:user:abc123",
+        dropId: "week-2026-W06",
+      },
+    }
+  );
+  assert.equal(issue.statusCode, 422);
+  assert.equal(issue.body.error, "All series are retired for this collection version.");
+});
+
 test("album pack endpoint issues receipt and keeps ledger payload secret-free", async () => {
   createIssuerKeyEnv();
   process.env.PIX_PAX_ADMIN_TOKEN = "admin-token";

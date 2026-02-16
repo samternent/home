@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { canonicalStringify } from "@ternent/concord-protocol";
 import { hashCanonical } from "../../stickerbook/stickerbook-utils.mjs";
 import { PACK_MODELS } from "../models/pack-models.mjs";
 
@@ -33,7 +34,7 @@ export function buildCanonicalAlbumCardObject({
 
 export function canonicalAlbumCardBytes(params) {
   const canonical = buildCanonicalAlbumCardObject(params);
-  return Buffer.from(JSON.stringify(canonical), "utf8");
+  return Buffer.from(canonicalStringify(canonical), "utf8");
 }
 
 export function hashAlbumCard(params) {

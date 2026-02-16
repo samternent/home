@@ -25,6 +25,7 @@ import { createPixpaxEvent, PIXPAX_EVENT_TYPES } from "../domain/events.mjs";
 import { createCryptoRngSource, createDelegateRngSource } from "../domain/rng-source.mjs";
 import { IssuancePolicyError, resolveIssuancePolicy } from "../domain/issuance-policy.mjs";
 import { verifyPack } from "../domain/verify-pack.mjs";
+import { rebuildCollectionSnapshotFromEvents } from "../domain/rebuild-from-events.mjs";
 
 function extractBearerToken(headerValue) {
   const raw = String(headerValue || "").trim();
@@ -506,10 +507,14 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
     const { collectionId, version } = req.params || {};
     try {
       const store = await getStore();
-      const result = await store.putCollectionIfAbsent(collectionId, version, req.body);
-      if (!result.created) {
+      try {
+        await store.getCollection(collectionId, version);
         res.status(409).send({ error: "collection.json already exists for this version." });
         return;
+      } catch (error) {
+        if (!String(error?.message || "").startsWith("NoSuchKey:")) {
+          throw error;
+        }
       }
       await emitDomainEvent(
         PIXPAX_EVENT_TYPES.COLLECTION_CREATED,
@@ -521,6 +526,11 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
         },
         now().toISOString()
       );
+      const result = await store.putCollectionIfAbsent(collectionId, version, req.body);
+      if (!result.created) {
+        res.status(409).send({ error: "collection.json already exists for this version." });
+        return;
+      }
       res.status(201).send({
         ok: true,
         collectionId,
@@ -600,10 +610,6 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
       exp,
     };
     const store = await getStore();
-    await store.putOverrideCodeRecord(collectionId, version, payload.codeId, {
-      createdAt: issuedAt,
-      payload,
-    });
     await emitDomainEvent(
       PIXPAX_EVENT_TYPES.GIFTCODE_CREATED,
       {
@@ -617,6 +623,10 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
       },
       issuedAt
     );
+    await store.putOverrideCodeRecord(collectionId, version, payload.codeId, {
+      createdAt: issuedAt,
+      payload,
+    });
     const code = createOverrideCode(payload, secret);
     const giftCode = codeIdToGiftCode(payload.codeId);
     res.status(201).send({
@@ -646,10 +656,14 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
     const { collectionId, version } = req.params || {};
     try {
       const store = await getStore();
-      const result = await store.putIndexIfAbsent(collectionId, version, req.body);
-      if (!result.created) {
+      try {
+        await store.getIndex(collectionId, version);
         res.status(409).send({ error: "index.json already exists for this version." });
         return;
+      } catch (error) {
+        if (!String(error?.message || "").startsWith("NoSuchKey:")) {
+          throw error;
+        }
       }
       const seriesIds = Array.isArray(req.body?.series)
         ? req.body.series
@@ -666,6 +680,11 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
         },
         now().toISOString()
       );
+      const result = await store.putIndexIfAbsent(collectionId, version, req.body);
+      if (!result.created) {
+        res.status(409).send({ error: "index.json already exists for this version." });
+        return;
+      }
       res.status(201).send({
         ok: true,
         collectionId,
@@ -707,6 +726,75 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
       res.status(500).send({ error: "Failed to load index.json." });
     }
   });
+
+  router.post(
+    "/v1/pixpax/collections/:collectionId/:version/series/:seriesId/retire",
+    async (req, res) => {
+      if (!requireAdminToken(req, res)) return;
+      const { collectionId, version, seriesId } = req.params || {};
+      const normalizedSeriesId = String(seriesId || "").trim();
+      if (!normalizedSeriesId) {
+        res.status(400).send({ error: "seriesId is required." });
+        return;
+      }
+
+      try {
+        const store = await getStore();
+        const index = await store.getIndex(collectionId, version);
+        const declaredSeriesIds = new Set(
+          (Array.isArray(index?.series) ? index.series : [])
+            .map((entry) => String(entry?.seriesId || "").trim())
+            .filter(Boolean)
+        );
+        if (!declaredSeriesIds.has(normalizedSeriesId)) {
+          res.status(404).send({ error: "Unknown series for collection/version." });
+          return;
+        }
+
+        const events = await store.replayEvents(collectionId, version);
+        const snapshot = rebuildCollectionSnapshotFromEvents(events);
+        if ((snapshot.retiredSeriesIds || []).includes(normalizedSeriesId)) {
+          res.status(409).send({ error: "Series is already retired." });
+          return;
+        }
+
+        const occurredAt = now().toISOString();
+        const reason = String(req.body?.reason || "").trim();
+        const event = await emitDomainEvent(
+          PIXPAX_EVENT_TYPES.SERIES_RETIRED,
+          {
+            collectionId: String(collectionId),
+            version: String(version),
+            seriesId: normalizedSeriesId,
+            ...(reason ? { reason } : {}),
+          },
+          occurredAt
+        );
+        res.status(201).send({
+          ok: true,
+          collectionId,
+          version,
+          seriesId: normalizedSeriesId,
+          retiredAt: occurredAt,
+          eventId: event.eventId,
+        });
+      } catch (error) {
+        if (missingContentConfigError(error)) {
+          res.status(503).send({
+            error:
+              "Content store configuration is incomplete. Use LEDGER_* connection vars and LEDGER_CONTENT_PREFIX.",
+          });
+          return;
+        }
+        if (String(error?.message || "").startsWith("NoSuchKey:")) {
+          res.status(404).send({ error: "Collection content is missing for this version." });
+          return;
+        }
+        console.error("[pixpax/collections] retire series failed:", error);
+        res.status(500).send({ error: "Failed to retire series." });
+      }
+    }
+  );
 
   router.get("/v1/pixpax/collections/:collectionId/:version/bundle", async (req, res) => {
     const { collectionId, version } = req.params || {};
@@ -788,11 +876,14 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
           res.status(400).send({ error: "Invalid card payload.", details: validation.errors });
           return;
         }
-
-        const result = await store.putCardIfAbsent(collectionId, version, cardId, req.body);
-        if (!result.created) {
+        try {
+          await store.getCard(collectionId, version, cardId);
           res.status(409).send({ error: "card already exists for this version/cardId." });
           return;
+        } catch (error) {
+          if (!String(error?.message || "").startsWith("NoSuchKey:")) {
+            throw error;
+          }
         }
         await emitDomainEvent(
           PIXPAX_EVENT_TYPES.CARD_ADDED,
@@ -804,6 +895,11 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
           },
           now().toISOString()
         );
+        const result = await store.putCardIfAbsent(collectionId, version, cardId, req.body);
+        if (!result.created) {
+          res.status(409).send({ error: "card already exists for this version/cardId." });
+          return;
+        }
 
         res.status(201).send({
           ok: true,
@@ -1171,11 +1267,27 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
       const dropId = issuancePolicy.dropId;
       const count = issuancePolicy.count;
       const index = await store.getIndex(collectionId, version);
-      const cardPool = Array.isArray(index?.cards)
+      const allCardIds = Array.isArray(index?.cards)
         ? index.cards.map((cardId) => String(cardId || "").trim()).filter(Boolean)
         : [];
-      if (!cardPool.length) {
+      if (!allCardIds.length) {
         res.status(422).send({ error: "Collection index has no cards." });
+        return;
+      }
+      const events = await store.replayEvents(collectionId, version);
+      const snapshot = rebuildCollectionSnapshotFromEvents(events);
+      const retiredSeriesIds = new Set(
+        (Array.isArray(snapshot?.retiredSeriesIds) ? snapshot.retiredSeriesIds : [])
+          .map((seriesId) => String(seriesId || "").trim())
+          .filter(Boolean)
+      );
+      const cardPool = allCardIds.filter((cardId) => {
+        if (!retiredSeriesIds.size) return true;
+        const seriesId = String(index?.cardMap?.[cardId]?.seriesId || "").trim();
+        return !seriesId || !retiredSeriesIds.has(seriesId);
+      });
+      if (!cardPool.length) {
+        res.status(422).send({ error: "All series are retired for this collection version." });
         return;
       }
 
@@ -1222,6 +1334,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
       });
 
       let entry = null;
+      let issuerKeys = null;
       let appendResult = null;
       const payload = {
         type: "pack.issued",
@@ -1243,7 +1356,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
       };
 
       if (!issuancePolicy.untracked) {
-        const issuerKeys = await loadIssuerKeys();
+        issuerKeys = await loadIssuerKeys();
         payload.issuerKeyId = issuerKeys.issuerKeyId;
         payload.issuedBy = issuerKeys.author;
         const entryCore = {
@@ -1257,8 +1370,6 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
           getEntrySigningPayload(entryCore)
         );
         entry = { ...entryCore, signature };
-        const entryId = await deriveEntryId(entry);
-        appendResult = await issueLedgerEntry({ entryId, entry, issuerKeys });
       } else {
         entry = {
           kind: "pack.issued",
@@ -1268,23 +1379,6 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
           signature: "",
         };
       }
-
-      const responsePayload = {
-        packId,
-        packModel: PACK_MODELS.ALBUM,
-        collectionId,
-        collectionVersion: version,
-        dropId,
-        issuedAt,
-        entry,
-        cards,
-        receipt: {
-          segmentKey: appendResult?.segmentKey || null,
-          segmentHash: appendResult?.segmentHash || null,
-        },
-        packRoot,
-        itemHashes,
-      };
 
       await emitDomainEvent(
         PIXPAX_EVENT_TYPES.PACK_ISSUED,
@@ -1310,6 +1404,32 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
         issuedAt
       );
 
+      if (!issuancePolicy.untracked && entry && issuerKeys) {
+        try {
+          const entryId = await deriveEntryId(entry);
+          appendResult = await issueLedgerEntry({ entryId, entry, issuerKeys });
+        } catch (ledgerError) {
+          console.error("[pixpax/collections] issue ledger append failed:", ledgerError);
+        }
+      }
+
+      const responsePayload = {
+        packId,
+        packModel: PACK_MODELS.ALBUM,
+        collectionId,
+        collectionVersion: version,
+        dropId,
+        issuedAt,
+        entry,
+        cards,
+        receipt: {
+          segmentKey: appendResult?.segmentKey || null,
+          segmentHash: appendResult?.segmentHash || null,
+        },
+        packRoot,
+        itemHashes,
+      };
+
       const afterIssue = await issuancePolicy.afterIssue({
         store,
         collectionId,
@@ -1320,13 +1440,12 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
         dropId,
         cardsCount: cards.length,
         responsePayload,
+        emitEvent: async (type, payloadValue) =>
+          emitDomainEvent(type, payloadValue, issuedAt),
       });
       if (afterIssue?.reusedResponse) {
         res.status(200).send(afterIssue.reusedResponse);
         return;
-      }
-      for (const event of afterIssue?.events || []) {
-        await emitDomainEvent(event.type, event.payload, issuedAt);
       }
 
       res.status(200).send({
