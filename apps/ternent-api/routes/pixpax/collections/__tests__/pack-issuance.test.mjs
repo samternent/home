@@ -133,6 +133,51 @@ test("album pack endpoint validates required fields", async () => {
   assert.equal(badCount.statusCode, 400);
 });
 
+test("album issuance uses rngSource.nextInt with issuance context", async () => {
+  createIssuerKeyEnv();
+  process.env.PIX_PAX_ADMIN_TOKEN = "admin-token";
+  process.env.PIX_PAX_OVERRIDE_CODE_SECRET = "override-secret-for-tests";
+  const store = new CollectionContentStore({
+    bucket: "content",
+    prefix: "pixpax/collections",
+    gateway: createMemoryGateway(),
+  });
+  await seedCollection(store);
+  const router = createRouterHarness();
+  const calls = [];
+  const rngSource = {
+    nextInt(maxExclusive, context) {
+      calls.push({ maxExclusive, context });
+      return maxExclusive > 1 ? 1 : 0;
+    },
+  };
+
+  pixpaxCollectionRoutes(router, {
+    createStore: () => store,
+    rngSource,
+    now: () => new Date("2026-02-07T12:00:00.000Z"),
+    issueLedgerEntry: async () => ({ segmentKey: "pixpax/ledger/segments/day/seg_deadbeef.jsonl.gz", segmentHash: "deadbeef" }),
+  });
+
+  const response = await router.invoke(
+    "POST",
+    "/v1/pixpax/collections/:collectionId/:version/packs",
+    {
+      params: { collectionId: "premier-league-2026", version: "v1" },
+      body: {
+        userKey: "school:user:abc123",
+        dropId: "week-2026-W06",
+      },
+    }
+  );
+  assert.equal(response.statusCode, 200);
+  assert.equal(calls.length, 5);
+  assert.deepEqual(calls.map((entry) => entry.context.slotIndex), [0, 1, 2, 3, 4]);
+  assert.ok(calls.every((entry) => entry.context.collectionId === "premier-league-2026"));
+  assert.ok(calls.every((entry) => entry.context.version === "v1"));
+  assert.ok(calls.every((entry) => entry.maxExclusive === 2));
+});
+
 test("album pack endpoint issues receipt and keeps ledger payload secret-free", async () => {
   createIssuerKeyEnv();
   process.env.PIX_PAX_ADMIN_TOKEN = "admin-token";

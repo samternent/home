@@ -17,6 +17,7 @@ import {
   hashAlbumCard,
 } from "./curated-hashing.mjs";
 import { createPixpaxEvent, PIXPAX_EVENT_TYPES } from "../domain/events.mjs";
+import { createCryptoRngSource, createDelegateRngSource } from "../domain/rng-source.mjs";
 
 function extractBearerToken(headerValue) {
   const raw = String(headerValue || "").trim();
@@ -60,11 +61,6 @@ function toIsoWeek(isoDate = new Date()) {
   const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
   const weekNumber = Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
   return `${date.getUTCFullYear()}-W${String(weekNumber).padStart(2, "0")}`;
-}
-
-function randomIndex(maxExclusive) {
-  if (!Number.isInteger(maxExclusive) || maxExclusive <= 0) return 0;
-  return Math.floor(Math.random() * maxExclusive);
 }
 
 function resolveEventCollectionScope(event) {
@@ -228,7 +224,11 @@ async function mapWithConcurrency(items, concurrency, mapper) {
 
 export default function pixpaxCollectionRoutes(router, options = {}) {
   const createStore = options.createStore || createCollectionContentStoreFromEnv;
-  const pickRandomIndex = options.pickRandomIndex || randomIndex;
+  const rngSource = options.rngSource
+    ? options.rngSource
+    : options.pickRandomIndex
+    ? createDelegateRngSource(options.pickRandomIndex)
+    : createCryptoRngSource();
   const now = options.now || (() => new Date());
   const appendEventOverride = options.appendEvent || null;
   const allowDevUntrackedPacks =
@@ -738,7 +738,17 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
       // With replacement, matching stickerbook behavior.
       const selectedCardIds = new Array(count)
         .fill(null)
-        .map(() => cardPool[pickRandomIndex(cardPool.length)]);
+        .map((_, slotIndex) =>
+          cardPool[
+            rngSource.nextInt(cardPool.length, {
+              collectionId,
+              version,
+              dropId,
+              slotIndex,
+              count,
+            })
+          ]
+        );
 
       const cards = await mapWithConcurrency(selectedCardIds, 8, async (cardId) => {
         const card = await store.getCard(collectionId, version, cardId);
