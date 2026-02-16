@@ -1,0 +1,88 @@
+ <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 368 48"
+            role="img"
+            aria-label="PIXPAX"
+            fill="var(--ui-fg)"
+          >
+            <!--
+    Grid rules:
+    - Each glyph is 3x3 squares
+    - Each square = 16px
+    - Glyph size = 48x48
+    - Letter spacing = 16px
+    - Total width = 6*48 + 5*16 = 368
+  -->
+
+            <defs>
+              <!-- P (7 blocks): all filled except bottom-center (1,2) and bottom-right (2,2) -->
+              <g id="G_P" class="px">
+                <!-- row 0 -->
+                <rect x="0" y="0" width="16" height="16" />
+                <rect x="16" y="0" width="16" height="16" />
+                <rect x="32" y="0" width="16" height="16" />
+                <!-- row 1 -->
+                <rect x="0" y="16" width="16" height="16" />
+                <rect x="16" y="16" width="16" height="16" />
+                <rect x="32" y="16" width="16" height="16" />
+                <!-- row 2 (left only) -->
+                <rect x="0" y="32" width="16" height="16" />
+              </g>
+
+              <!-- i (7 blocks): top row full + bottom row full + center (1,1) -->
+              <g id="G_I" class="px">
+                <!-- row 0 -->
+                <rect x="0" y="0" width="16" height="16" />
+                <rect x="16" y="0" width="16" height="16" />
+                <rect x="32" y="0" width="16" height="16" />
+                <!-- row 1 (center only) -->
+                <rect x="16" y="16" width="16" height="16" />
+                <!-- row 2 -->
+                <rect x="0" y="32" width="16" height="16" />
+                <rect x="16" y="32" width="16" height="16" />
+                <rect x="32" y="32" width="16" height="16" />
+              </g>
+
+              <!-- X (5 blocks): corners + center -->
+              <g id="G_X" class="px">
+                <rect x="0" y="0" width="16" height="16" />
+                <!-- (0,0) -->
+                <rect x="32" y="0" width="16" height="16" />
+                <!-- (2,0) -->
+                <rect x="16" y="16" width="16" height="16" />
+                <!-- (1,1) -->
+                <rect x="0" y="32" width="16" height="16" />
+                <!-- (0,2) -->
+                <rect x="32" y="32" width="16" height="16" />
+                <!-- (2,2) -->
+              </g>
+
+              <!-- A:
+      - Top row: left empty, center filled, right empty
+      - Middle row: all filled
+      - Bottom row: left+right filled, center empty
+    -->
+              <g id="G_A" class="px">
+                <!-- row 0 (center only) -->
+                <rect x="16" y="0" width="16" height="16" />
+                <!-- row 1 (full) -->
+                <rect x="0" y="16" width="16" height="16" />
+                <rect x="16" y="16" width="16" height="16" />
+                <rect x="32" y="16" width="16" height="16" />
+                <!-- row 2 (left + right) -->
+                <rect x="0" y="32" width="16" height="16" />
+                <rect x="32" y="32" width="16" height="16" />
+              </g>
+            </defs>
+
+            <!-- Layout: P I X P A X with 16px letter spacing -->
+            <!-- Step per glyph = 48 + 16 = 64 -->
+            <g>
+              <use href="#G_P" x="0" y="0" />
+              <use href="#G_I" x="64" y="0" />
+              <use href="#G_X" x="128" y="0" />
+              <use href="#G_P" x="192" y="0" />
+              <use href="#G_A" x="256" y="0" />
+              <use href="#G_X" x="320" y="0" />
+            </g>
+          </svg>

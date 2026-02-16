@@ -94,6 +94,14 @@ Replay guardrails:
 - Materialized tables/views are caches only; authoritative truth is append-only history
 - Verification must fail closed on canonicalization/hash/signature mismatch
 
+Concord protocol notes to mirror in PixPax:
+
+- Genesis/root events are structural anchors and are not semantic business events; do not overload them with domain state.
+- For entry signing payloads, follow Concord shape exactly: include `payload: null` when absent, never `undefined`.
+- Deterministic IDs must be derived from canonical content (hash-based), not random labels (same rule as `EntryID`, `CommitID`, `signerKeyId`, `epochId`).
+- Preserve domain separation in hashes/HMACs with explicit prefixes (e.g. `pixpax:*`) so IDs for different purposes never collide silently.
+- Treat timestamp ordering as a verification signal: events/entries must not appear to occur after their enclosing append operation.
+
 ## Security / Abuse Guardrails
 
 - Admin or privileged actions must be explicit and auditable (events).

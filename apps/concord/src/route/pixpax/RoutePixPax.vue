@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useFavicon, useTitle } from "@vueuse/core";
-import PixPaxLogoRaw from "../../module/stickerbook/PixPaxLogo.svg?raw";
+import PixPaxLogoRaw from "../../module/pixpax/ui/assets/PixPaxLogo.svg?raw";
 import Concord from "../../module/concord/Concord.vue";
 import RoutePixPaxMainLayout from "./RoutePixPaxMainLayout.vue";
 

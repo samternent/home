@@ -19,6 +19,7 @@ import {
 import { createPixpaxEvent, PIXPAX_EVENT_TYPES } from "../domain/events.mjs";
 import { createCryptoRngSource, createDelegateRngSource } from "../domain/rng-source.mjs";
 import { IssuancePolicyError, resolveIssuancePolicy } from "../domain/issuance-policy.mjs";
+import { verifyPack } from "../domain/verify-pack.mjs";
 
 function extractBearerToken(headerValue) {
   const raw = String(headerValue || "").trim();
@@ -590,6 +591,45 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
       res.status(500).send({ error: "Failed to load card JSON." });
     }
   });
+
+  router.get(
+    "/v1/pixpax/collections/:collectionId/:version/packs/:packId/verify",
+    async (req, res) => {
+      const { collectionId, version, packId } = req.params || {};
+      try {
+        const store = await getStore();
+        const result = await verifyPack({
+          store,
+          packId: String(packId || ""),
+          collectionId: String(collectionId || ""),
+          version: String(version || ""),
+        });
+        if (result.ok) {
+          res.status(200).send(result);
+          return;
+        }
+        if (result.reason === "pack-not-found") {
+          res.status(404).send(result);
+          return;
+        }
+        res.status(422).send(result);
+      } catch (error) {
+        if (missingContentConfigError(error)) {
+          res.status(503).send({
+            error:
+              "Content store configuration is incomplete. Use LEDGER_* connection vars and LEDGER_CONTENT_PREFIX.",
+          });
+          return;
+        }
+        if (String(error?.message || "").startsWith("NoSuchKey:")) {
+          res.status(404).send({ error: "Collection content is missing for this version." });
+          return;
+        }
+        console.error("[pixpax/collections] verify pack failed:", error);
+        res.status(500).send({ error: "Failed to verify pack." });
+      }
+    }
+  );
 
   router.post("/v1/pixpax/collections/:collectionId/:version/packs", async (req, res) => {
     const { collectionId, version } = req.params || {};

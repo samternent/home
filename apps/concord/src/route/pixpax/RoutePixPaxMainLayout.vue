@@ -20,8 +20,8 @@ import {
   useProfile,
 } from "../../module/profile/useProfile";
 import Logo from "../../module/brand/Logo.vue";
-import PixPaxLogo from "../../module/stickerbook/PixPaxLogo.svg?component";
-import PixPaxLogoText from "../../module/stickerbook/PixPaxLogoText.svg?component";
+import PixPaxLogo from "../../module/pixpax/ui/assets/PixPaxLogo.svg?component";
+import PixPaxLogoText from "../../module/pixpax/ui/assets/PixPaxLogoText.svg?component";
 
 type PixbookExport =
   | {

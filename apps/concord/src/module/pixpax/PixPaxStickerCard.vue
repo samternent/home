@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import StickerFrame from "../stickerbook/StickerFrame.vue";
+import CardFrame from "./ui/CardFrame.vue";
 import type { PackPalette16, Sticker } from "./sticker-types";
-import CanvasSticker16 from "./CanvasSticker16.vue";
+import PixPaxArtRenderer from "./renderers/PixPaxArtRenderer.vue";
+import { toPixPaxArtInput } from "./renderers/types";
 
 type PixPaxStickerCardProps = {
   sticker: Sticker;
@@ -28,7 +29,7 @@ const props = withDefaults(defineProps<PixPaxStickerCardProps>(), {
   finishFx: true,
 });
 
-const frameRarity = computed(() => {
+const frameTone = computed(() => {
   if (props.sticker.meta.shiny) {
     return "mythic";
   }
@@ -58,7 +59,7 @@ const showAtmosphere = computed(
 const showSparkles = computed(
   () => props.animated && props.sparkles && !props.missing,
 );
-const showGlow = computed(() => props.glow && !props.missing);
+const rendererInput = computed(() => toPixPaxArtInput(props.sticker));
 const finishOverlayClass = computed(() => {
   if (finishClass.value === "finish-holo") {
     return "bg-[linear-gradient(130deg,rgba(255,255,255,0)_24%,rgba(173,255,247,0.16)_38%,rgba(255,226,140,0.2)_50%,rgba(194,213,255,0.14)_62%,rgba(255,255,255,0)_76%)] mix-blend-screen";
@@ -74,8 +75,8 @@ const finishOverlayClass = computed(() => {
 </script>
 
 <template>
-  <StickerFrame
-    :rarity="frameRarity"
+  <CardFrame
+    :tone="frameTone"
     :compact="props.compact"
     :label="displayLabel"
     :sublabel="sticker.meta.collectionName"
@@ -85,9 +86,9 @@ const finishOverlayClass = computed(() => {
     :animated="props.animated"
     :backdrop="props.animatedBackground"
     :shimmer="props.shimmer"
-    :mythic-glow="props.glow"
-    :mythic-dots="props.sparkles"
-    :mythic-border="props.glow"
+    :accent-glow="props.glow"
+    :accent-dots="props.sparkles"
+    :accent-border="props.glow"
   >
     <div
       class="relative h-auto w-full aspect-square overflow-hidden rounded-[0.2rem] [container-type:inline-size] isolate"
@@ -102,8 +103,8 @@ const finishOverlayClass = computed(() => {
         class="pointer-events-none absolute inset-[-8%] z-[5] animate-[sparkleFloat_7.5s_linear_infinite] mix-blend-screen bg-[radial-gradient(circle_at_24%_28%,rgba(255,255,255,0.45)_0_2%,transparent_3%),radial-gradient(circle_at_72%_34%,rgba(255,255,255,0.35)_0_1.8%,transparent_3%),radial-gradient(circle_at_56%_76%,rgba(255,255,255,0.38)_0_2.2%,transparent_3.2%),radial-gradient(circle_at_18%_80%,rgba(255,255,255,0.3)_0_1.4%,transparent_2.6%)] opacity-65"
         aria-hidden="true"
       ></div>
-      <CanvasSticker16
-        :art="sticker.art"
+      <PixPaxArtRenderer
+        :art="rendererInput"
         :palette="props.palette"
         class="relative z-[10] size-full mx-auto"
       />
@@ -116,7 +117,7 @@ const finishOverlayClass = computed(() => {
         aria-hidden="true"
       />
     </div>
-  </StickerFrame>
+  </CardFrame>
 </template>
 
 <style scoped>

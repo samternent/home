@@ -52,6 +52,18 @@ function createMemoryGateway() {
     async putObject({ bucket, key, body }) {
       objects.set(`${bucket}:${key}`, Buffer.from(body));
     },
+    async listObjects({ bucket, prefix, cursor, maxKeys = 1000 }) {
+      const allKeys = Array.from(objects.keys())
+        .filter((id) => id.startsWith(`${bucket}:`))
+        .map((id) => id.slice(bucket.length + 1))
+        .filter((key) => key.startsWith(prefix))
+        .sort((a, b) => a.localeCompare(b));
+      const startIndex = cursor ? Math.max(0, allKeys.indexOf(cursor) + 1) : 0;
+      const keys = allKeys.slice(startIndex, startIndex + maxKeys);
+      const nextCursor =
+        startIndex + maxKeys < allKeys.length ? keys[keys.length - 1] || null : null;
+      return { keys, nextCursor };
+    },
   };
 }
 
@@ -639,4 +651,111 @@ test("unbound gift override code can be redeemed by any user once", async () => 
   );
   assert.equal(secondUse.statusCode, 409);
   assert.equal(secondUse.body.error, "Override code has already been used.");
+});
+
+test("verify-pack route returns ok for a clean dev-untracked pack", async () => {
+  createIssuerKeyEnv();
+  process.env.PIX_PAX_ADMIN_TOKEN = "admin-token";
+  process.env.PIX_PAX_OVERRIDE_CODE_SECRET = "override-secret-for-tests";
+  const store = new CollectionContentStore({
+    bucket: "content",
+    prefix: "pixpax/collections",
+    gateway: createMemoryGateway(),
+  });
+  await seedCollection(store);
+  const router = createRouterHarness();
+
+  pixpaxCollectionRoutes(router, {
+    createStore: () => store,
+    pickRandomIndex: (max) => (max > 1 ? 1 : 0),
+    now: () => new Date("2026-02-07T12:00:00.000Z"),
+    allowDevUntrackedPacks: true,
+    issueLedgerEntry: async () => ({ segmentKey: "pixpax/ledger/segments/day/seg_deadbeef.jsonl.gz", segmentHash: "deadbeef" }),
+  });
+
+  const issue = await router.invoke(
+    "POST",
+    "/v1/pixpax/collections/:collectionId/:version/packs",
+    {
+      params: { collectionId: "premier-league-2026", version: "v1" },
+      body: {
+        userKey: "school:user:abc123",
+        issuanceMode: "dev-untracked",
+      },
+    }
+  );
+  assert.equal(issue.statusCode, 200);
+
+  const verify = await router.invoke(
+    "GET",
+    "/v1/pixpax/collections/:collectionId/:version/packs/:packId/verify",
+    {
+      params: {
+        collectionId: "premier-league-2026",
+        version: "v1",
+        packId: issue.body.packId,
+      },
+    }
+  );
+  assert.equal(verify.statusCode, 200);
+  assert.equal(verify.body.ok, true);
+  assert.equal(verify.body.checks.signature, "skipped-untracked");
+});
+
+test("verify-pack route fails loudly after cached tamper", async () => {
+  createIssuerKeyEnv();
+  process.env.PIX_PAX_ADMIN_TOKEN = "admin-token";
+  process.env.PIX_PAX_OVERRIDE_CODE_SECRET = "override-secret-for-tests";
+  const store = new CollectionContentStore({
+    bucket: "content",
+    prefix: "pixpax/collections",
+    gateway: createMemoryGateway(),
+  });
+  await seedCollection(store);
+  const router = createRouterHarness();
+
+  pixpaxCollectionRoutes(router, {
+    createStore: () => store,
+    pickRandomIndex: (max) => (max > 1 ? 1 : 0),
+    now: () => new Date("2026-02-07T12:00:00.000Z"),
+    allowDevUntrackedPacks: true,
+    issueLedgerEntry: async () => ({ segmentKey: "pixpax/ledger/segments/day/seg_deadbeef.jsonl.gz", segmentHash: "deadbeef" }),
+  });
+
+  const issue = await router.invoke(
+    "POST",
+    "/v1/pixpax/collections/:collectionId/:version/packs",
+    {
+      params: { collectionId: "premier-league-2026", version: "v1" },
+      body: {
+        userKey: "school:user:abc123",
+        issuanceMode: "dev-untracked",
+      },
+    }
+  );
+  assert.equal(issue.statusCode, 200);
+
+  await store.putCard("premier-league-2026", "v1", "arsenal-02", {
+    cardId: "arsenal-02",
+    seriesId: "arsenal",
+    slotIndex: 1,
+    role: "player",
+    label: "Player Two (tampered)",
+    renderPayload: { gridSize: 16, gridB64: "////////" },
+  });
+
+  const verify = await router.invoke(
+    "GET",
+    "/v1/pixpax/collections/:collectionId/:version/packs/:packId/verify",
+    {
+      params: {
+        collectionId: "premier-league-2026",
+        version: "v1",
+        packId: issue.body.packId,
+      },
+    }
+  );
+  assert.equal(verify.statusCode, 422);
+  assert.equal(verify.body.ok, false);
+  assert.equal(verify.body.reason, "item-hashes-mismatch");
 });

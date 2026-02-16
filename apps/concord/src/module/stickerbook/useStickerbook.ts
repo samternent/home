@@ -174,12 +174,22 @@ export function useStickerbook() {
 }
 
 export function getPeriodId(date: Date) {
+  const pixpaxSeconds = parseInt(
+    import.meta.env.VITE_PIXPAX_PERIOD_SECONDS || "",
+    10
+  );
   const seconds = parseInt(
     import.meta.env.VITE_STICKERBOOK_PERIOD_SECONDS || "",
     10
   );
-  if (Number.isFinite(seconds) && seconds > 0) {
-    const bucket = Math.floor(date.getTime() / (seconds * 1000));
+
+  const effectiveSeconds =
+    Number.isFinite(pixpaxSeconds) && pixpaxSeconds > 0
+      ? pixpaxSeconds
+      : seconds;
+
+  if (Number.isFinite(effectiveSeconds) && effectiveSeconds > 0) {
+    const bucket = Math.floor(date.getTime() / (effectiveSeconds * 1000));
     return `dev-${bucket}`;
   }
 

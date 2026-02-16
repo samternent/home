@@ -12,7 +12,7 @@ import type {
   Sticker,
   StickerMeta,
 } from "../../module/pixpax/sticker-types";
-import { useStickerbook } from "../../module/stickerbook/useStickerbook";
+import { usePixbook } from "../../module/pixpax/state/usePixbook";
 
 const apiBase = import.meta.env.DEV
   ? ""
@@ -176,7 +176,7 @@ const packRevealIndex = ref(0);
 const revealDismissed = ref(false);
 const packOwnedCountSnapshot = ref<Map<string, number> | null>(null);
 const anonUserKey = useLocalStorage("pixpax/collections/anon-user-key", "");
-const { publicKey, receivedPacks, recordPackAndCommit } = useStickerbook();
+const { publicKey, receivedPacks, recordPackAndCommit } = usePixbook();
 const route = useRoute();
 const router = useRouter();
 const overrideCode = ref("");
