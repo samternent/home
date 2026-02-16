@@ -47,11 +47,17 @@ export type PixPaxEventPayloadByType = {
     collectionId: string;
     collectionVersion: string;
     dropId: string;
+    cardIds?: string[];
     issuedTo?: string;
     count?: number;
     packRoot: string;
     itemHashes?: string[];
     contentsCommitment?: string;
+    issuerKeyId?: string | null;
+    issuerAuthor?: string | null;
+    issuerSignature?: string | null;
+    entryTimestamp?: string;
+    signedEntryPayload?: Record<string, unknown>;
     issuanceMode?: string;
     untracked?: boolean;
   };

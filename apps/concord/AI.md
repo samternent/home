@@ -59,6 +59,41 @@ Avoid legacy terminology: "stickerbook" (deprecated).
 - Do not spread hashing/merkle logic across modules; keep it in one domain module.
 - Avoid flag-based branching like override/dev-untracked inside core logic; use explicit event types and policy modules.
 
+## Concord Protocol Alignment (Required)
+
+PixPax is a Concord semantic application. Keep the Concord L1/L2 boundary intact:
+
+- L1 (core protocol) handles only canonicalization, IDs, ordering, and replay mechanics.
+- L2 (PixPax semantics) defines entry/event kinds and replay reducers for domain meaning.
+- Never bake PixPax business semantics into protocol-core assumptions.
+
+When implementing cryptographic or ledger logic, prefer `@ternent/concord-protocol` primitives:
+
+- `canonicalStringify` for canonical JSON
+- `deriveEntryId` / `deriveCommitId` for protocol IDs
+- `getEntrySigningPayload` for signature bytes
+
+Never use ad-hoc `JSON.stringify` hashing for protocol-addressed data.
+
+Canonicalization guardrails (from Concord rules):
+
+- No `undefined` values in canonicalized structures
+- No `toJSON`-driven objects
+- No `NaN` / `Infinity`
+- Optional fields should be omitted, not set to `undefined`
+
+Signature guardrails:
+
+- Entry signatures sign entry-core only (signature field excluded)
+- Assertion signatures sign assertion-core only (`id` and `signature` excluded)
+- Key IDs and epoch IDs must be deterministic derivations, not random labels
+
+Replay guardrails:
+
+- State reducers MUST be deterministic under replay from genesis/head ordering
+- Materialized tables/views are caches only; authoritative truth is append-only history
+- Verification must fail closed on canonicalization/hash/signature mismatch
+
 ## Security / Abuse Guardrails
 
 - Admin or privileged actions must be explicit and auditable (events).

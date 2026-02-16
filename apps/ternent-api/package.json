@@ -8,6 +8,7 @@
     "start:dev": "nodemon --ignore persisted/** --ignore data/** main.mjs",
     "test:stickerbook": "node --test routes/stickerbook/__tests__/*.test.mjs",
     "pixpax:verify": "node scripts/pixpax-verify.mjs",
+    "pixpax:verify-pack": "node scripts/pixpax-verify-pack.mjs",
     "pixpax:derive-issuer-key-formats": "node scripts/derive-issuer-key-formats.mjs",
     "pixpax:seed": "node scripts/pixpax-seed-collection.mjs",
     "pixpax:generate-public": "node scripts/pixpax-generate-public-collection.mjs"

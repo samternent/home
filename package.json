@@ -38,6 +38,7 @@
     "generate:stickerbook-pack:animal-8bit": "SERIES_ID=SERIES-ANIMAL-ARCHETYPE-8BIT node scripts/stickerbook/generate-pack.mjs",
     "generate:pixpax:all": "pnpm run generate:stickerbook-pack:8bit && pnpm run generate:stickerbook-pack:animal-8bit",
     "pixpax:verify": "pnpm --filter ternent-api pixpax:verify",
+    "pixpax:verify-pack": "pnpm --filter ternent-api pixpax:verify-pack",
     "pixpax:derive-issuer-key-formats": "pnpm --filter ternent-api pixpax:derive-issuer-key-formats",
     "derive:issuer-public-key": "pnpm run pixpax:derive-issuer-key-formats",
     "docs": "npm run generate-docs && npm run enhance-docs",

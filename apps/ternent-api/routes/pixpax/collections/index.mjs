@@ -18,6 +18,7 @@ import {
 } from "./curated-hashing.mjs";
 import { createPixpaxEvent, PIXPAX_EVENT_TYPES } from "../domain/events.mjs";
 import { createCryptoRngSource, createDelegateRngSource } from "../domain/rng-source.mjs";
+import { IssuancePolicyError, resolveIssuancePolicy } from "../domain/issuance-policy.mjs";
 
 function extractBearerToken(headerValue) {
   const raw = String(headerValue || "").trim();
@@ -596,21 +597,8 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
     const normalizedUserKey = canonicalizeUserKey(rawUserKey);
     const requestedIssuanceMode = String(req.body?.issuanceMode || "").trim().toLowerCase();
     const wantsDevUntrackedPack = requestedIssuanceMode === "dev-untracked";
-    const overrideCode = String(req.body?.overrideCode || "").trim();
+    const overrideCodeRaw = String(req.body?.overrideCode || "").trim();
     const wantsOverride = req.body?.override === true;
-    if (wantsDevUntrackedPack && !allowDevUntrackedPacks) {
-      res.status(403).send({ error: "Dev untracked pack issuance is disabled." });
-      return;
-    }
-    if (wantsOverride && overrideCode) {
-      res.status(400).send({ error: "Provide either override=true or overrideCode, not both." });
-      return;
-    }
-    if (wantsDevUntrackedPack && (wantsOverride || overrideCode)) {
-      res.status(400).send({ error: "dev-untracked issuance cannot be combined with override flags." });
-      return;
-    }
-    if (wantsOverride && !requireAdminToken(req, res)) return;
     const issuedAt = now().toISOString();
     const nowSeconds = Math.floor(Date.parse(issuedAt) / 1000);
     const requestedDropId = String(req.body?.dropId || "").trim();
@@ -619,113 +607,75 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
       res.status(400).send({ error: "userKey is required." });
       return;
     }
-    let overridePayload = null;
-    if (overrideCode) {
-      const giftCodeId = giftCodeToCodeId(overrideCode);
-      if (giftCodeId) {
-        try {
-          const store = await getStore();
-          const codeRecord = await store.getOverrideCodeRecord(collectionId, version, giftCodeId);
-          overridePayload = codeRecord?.payload || null;
-          if (!overridePayload) {
-            res.status(400).send({ error: "Invalid override code." });
-            return;
-          }
-          if (!Number.isInteger(overridePayload.exp) || overridePayload.exp <= nowSeconds) {
-            res.status(400).send({ error: "Override code is expired." });
-            return;
-          }
-        } catch (error) {
-          if (String(error?.message || "").startsWith("NoSuchKey:")) {
-            res.status(400).send({ error: "Invalid override code." });
-            return;
-          }
-          throw error;
-        }
-      } else {
-        const secret = resolveOverrideCodeSecret();
-        if (!secret) {
-          res.status(503).send({ error: "PIX_PAX_OVERRIDE_CODE_SECRET is not configured." });
-          return;
-        }
-        try {
-          overridePayload = parseOverrideCode(overrideCode, secret, nowSeconds);
-        } catch (error) {
-          res.status(400).send({ error: error?.message || "Invalid override code." });
-          return;
-        }
-      }
-    }
-    const dropId = overridePayload
-      ? String(overridePayload.dropId)
-      : wantsDevUntrackedPack
-      ? String(requestedDropId || `dev-${Date.parse(issuedAt)}`).trim()
-      : String(requestedDropId || `week-${toIsoWeek(new Date(issuedAt))}`).trim();
-    if (overridePayload && requestedDropId && requestedDropId !== dropId) {
-      res.status(400).send({ error: "dropId does not match override code." });
-      return;
-    }
-    const count = overridePayload
-      ? Number(overridePayload.count)
-      : wantsOverride
-      ? clampPackCardCount(req.body?.count)
-      : DEFAULT_PACK_COUNT;
-    if (!Number.isInteger(count) || count < 1 || count > 50) {
-      res.status(400).send({ error: "count must be an integer between 1 and 50." });
-      return;
-    }
 
     try {
       const store = await getStore();
-      const issuedTo = hashIssuedToUserKey(normalizedUserKey);
-      if (overridePayload) {
-        if (
-          String(overridePayload.collectionId) !== String(collectionId) ||
-          String(overridePayload.version) !== String(version)
-        ) {
-          res.status(403).send({ error: "Override code scope does not match collection/version." });
-          return;
-        }
-        if (overridePayload.bindToUser && String(overridePayload.issuedTo) !== issuedTo) {
-          res.status(403).send({ error: "Override code is not valid for this user." });
-          return;
-        }
-        try {
-          const existingUse = await store.getOverrideCodeUse(collectionId, version, overridePayload.codeId);
-          if (existingUse) {
-            res.status(409).send({
-              error: "Override code has already been used.",
-              codeId: overridePayload.codeId,
-              usedAt: existingUse.usedAt || null,
-              packId: existingUse.packId || null,
-            });
-            return;
-          }
-        } catch (error) {
-          if (!String(error?.message || "").startsWith("NoSuchKey:")) throw error;
-        }
-      }
-      if (!wantsOverride && !overridePayload && !wantsDevUntrackedPack) {
-        try {
-          const existingClaim = await store.getPackClaim(collectionId, version, dropId, issuedTo);
-          if (existingClaim?.response) {
-            res.status(200).send({
-              ...existingClaim.response,
-              issuance: {
-                mode: "weekly",
-                reused: true,
-                override: false,
-                dropId,
-              },
-            });
-            return;
-          }
-        } catch (error) {
-          if (!String(error?.message || "").startsWith("NoSuchKey:")) {
+
+      let overridePayload = null;
+      if (overrideCodeRaw) {
+        const giftCodeId = giftCodeToCodeId(overrideCodeRaw);
+        if (giftCodeId) {
+          try {
+            const codeRecord = await store.getOverrideCodeRecord(collectionId, version, giftCodeId);
+            overridePayload = codeRecord?.payload || null;
+            if (!overridePayload) {
+              res.status(400).send({ error: "Invalid override code." });
+              return;
+            }
+            if (!Number.isInteger(overridePayload.exp) || overridePayload.exp <= nowSeconds) {
+              res.status(400).send({ error: "Override code is expired." });
+              return;
+            }
+          } catch (error) {
+            if (String(error?.message || "").startsWith("NoSuchKey:")) {
+              res.status(400).send({ error: "Invalid override code." });
+              return;
+            }
             throw error;
           }
+        } else {
+          const secret = resolveOverrideCodeSecret();
+          if (!secret) {
+            res.status(503).send({ error: "PIX_PAX_OVERRIDE_CODE_SECRET is not configured." });
+            return;
+          }
+          try {
+            overridePayload = parseOverrideCode(overrideCodeRaw, secret, nowSeconds);
+          } catch (error) {
+            res.status(400).send({ error: error?.message || "Invalid override code." });
+            return;
+          }
         }
       }
+
+      const issuancePolicy = resolveIssuancePolicy({
+        wantsDevUntrackedPack,
+        wantsOverride,
+        overrideCodeRaw,
+        overridePayload,
+        allowDevUntrackedPacks,
+        requestedDropId,
+        requestedCount: req.body?.count,
+        issuedAt,
+        clampPackCardCount,
+        defaultPackCount: DEFAULT_PACK_COUNT,
+      });
+      if (issuancePolicy.requiresAdmin && !requireAdminToken(req, res)) return;
+
+      const issuedTo = hashIssuedToUserKey(normalizedUserKey);
+      const beforeIssue = await issuancePolicy.beforeIssue({
+        store,
+        collectionId,
+        version,
+        issuedTo,
+      });
+      if (beforeIssue?.reusedResponse) {
+        res.status(200).send(beforeIssue.reusedResponse);
+        return;
+      }
+
+      const dropId = issuancePolicy.dropId;
+      const count = issuancePolicy.count;
       const index = await store.getIndex(collectionId, version);
       const cardPool = Array.isArray(index?.cards)
         ? index.cards.map((cardId) => String(cardId || "").trim()).filter(Boolean)
@@ -785,7 +735,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
         packId,
         issuedAt,
         issuerKeyId: null,
-        issuedBy: wantsDevUntrackedPack ? "dev-untracked" : null,
+        issuedBy: issuancePolicy.untracked ? "dev-untracked" : null,
         issuedTo,
         userKeyHash: issuedTo,
         dropId,
@@ -798,7 +748,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
         contentsCommitment,
       };
 
-      if (!wantsDevUntrackedPack) {
+      if (!issuancePolicy.untracked) {
         const issuerKeys = await loadIssuerKeys();
         payload.issuerKeyId = issuerKeys.issuerKeyId;
         payload.issuedBy = issuerKeys.author;
@@ -824,6 +774,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
           signature: "",
         };
       }
+
       const responsePayload = {
         packId,
         packModel: PACK_MODELS.ALBUM,
@@ -840,13 +791,6 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
         packRoot,
         itemHashes,
       };
-      const issuanceMode = overridePayload
-        ? "override-code"
-        : wantsOverride
-        ? "override"
-        : wantsDevUntrackedPack
-        ? "dev-untracked"
-        : "weekly";
 
       await emitDomainEvent(
         PIXPAX_EVENT_TYPES.PACK_ISSUED,
@@ -856,105 +800,58 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
           collectionVersion: String(version),
           dropId,
           issuedTo,
+          cardIds: selectedCardIds,
           count: cards.length,
           packRoot,
           itemHashes,
           contentsCommitment,
-          issuanceMode,
-          untracked: wantsDevUntrackedPack,
+          issuerKeyId: payload.issuerKeyId || null,
+          issuerAuthor: entry?.author || null,
+          issuerSignature: entry?.signature || null,
+          entryTimestamp: entry?.timestamp || issuedAt,
+          signedEntryPayload: payload,
+          issuanceMode: issuancePolicy.mode,
+          untracked: issuancePolicy.untracked,
         },
         issuedAt
       );
 
-      if (overridePayload) {
-        const codeUseResult = await store.putOverrideCodeUseIfAbsent(
-          collectionId,
-          version,
-          overridePayload.codeId,
-          {
-            usedAt: issuedAt,
-            packId,
-            dropId,
-            issuedTo,
-            count: cards.length,
-          }
-        );
-        if (!codeUseResult.created) {
-          const existingUse = await store.getOverrideCodeUse(collectionId, version, overridePayload.codeId);
-          res.status(409).send({
-            error: "Override code has already been used.",
-            codeId: overridePayload.codeId,
-            usedAt: existingUse?.usedAt || null,
-            packId: existingUse?.packId || null,
-          });
-          return;
-        }
-        await emitDomainEvent(
-          PIXPAX_EVENT_TYPES.GIFTCODE_REDEEMED,
-          {
-            codeId: String(overridePayload.codeId),
-            packId,
-            collectionId: String(collectionId),
-            version: String(version),
-            issuedTo,
-            dropId,
-          },
-          issuedAt
-        );
-      } else if (!wantsOverride && !wantsDevUntrackedPack) {
-        const claimResult = await store.putPackClaimIfAbsent(
-          collectionId,
-          version,
-          dropId,
-          issuedTo,
-          {
-            createdAt: issuedAt,
-            response: responsePayload,
-          }
-        );
-        if (!claimResult.created) {
-          const existingClaim = await store.getPackClaim(collectionId, version, dropId, issuedTo);
-          if (existingClaim?.response) {
-            res.status(200).send({
-              ...existingClaim.response,
-              issuance: {
-                mode: "weekly",
-                reused: true,
-                override: false,
-                dropId,
-              },
-            });
-            return;
-          }
-        } else {
-          await emitDomainEvent(
-            PIXPAX_EVENT_TYPES.PACK_CLAIMED,
-            {
-              packId,
-              collectionId: String(collectionId),
-              collectionVersion: String(version),
-              dropId,
-              issuedTo,
-              mode: "weekly",
-            },
-            issuedAt
-          );
-        }
+      const afterIssue = await issuancePolicy.afterIssue({
+        store,
+        collectionId,
+        version,
+        issuedTo,
+        issuedAt,
+        packId,
+        dropId,
+        cardsCount: cards.length,
+        responsePayload,
+      });
+      if (afterIssue?.reusedResponse) {
+        res.status(200).send(afterIssue.reusedResponse);
+        return;
+      }
+      for (const event of afterIssue?.events || []) {
+        await emitDomainEvent(event.type, event.payload, issuedAt);
       }
 
       res.status(200).send({
         ...responsePayload,
         issuance: {
-          mode: issuanceMode,
+          mode: issuancePolicy.mode,
           reused: false,
-          override: wantsOverride || !!overridePayload,
-          untracked: wantsDevUntrackedPack,
-          codeId: overridePayload?.codeId || null,
-          bindToUser: overridePayload?.bindToUser ?? null,
+          override: issuancePolicy.override,
+          untracked: issuancePolicy.untracked,
+          codeId: issuancePolicy.codeId || null,
+          bindToUser: issuancePolicy.bindToUser ?? null,
           dropId,
         },
       });
     } catch (error) {
+      if (error instanceof IssuancePolicyError) {
+        res.status(error.statusCode).send(error.payload);
+        return;
+      }
       if (missingContentConfigError(error)) {
         res.status(503).send({
           error:

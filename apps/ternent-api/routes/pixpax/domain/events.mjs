@@ -66,6 +66,28 @@ function assertPayloadForType(type, payload) {
       ensureString(payload.collectionVersion, "event.payload.collectionVersion");
       ensureString(payload.dropId, "event.payload.dropId");
       ensureString(payload.packRoot, "event.payload.packRoot");
+      if (payload.cardIds !== undefined) {
+        if (!Array.isArray(payload.cardIds)) {
+          throw new Error("event.payload.cardIds must be an array when provided.");
+        }
+        for (const cardId of payload.cardIds) {
+          ensureString(cardId, "event.payload.cardIds[]");
+        }
+      }
+      if (payload.itemHashes !== undefined) {
+        if (!Array.isArray(payload.itemHashes)) {
+          throw new Error("event.payload.itemHashes must be an array when provided.");
+        }
+        for (const itemHash of payload.itemHashes) {
+          ensureString(itemHash, "event.payload.itemHashes[]");
+        }
+      }
+      if (
+        payload.signedEntryPayload !== undefined &&
+        (!payload.signedEntryPayload || typeof payload.signedEntryPayload !== "object")
+      ) {
+        throw new Error("event.payload.signedEntryPayload must be an object when provided.");
+      }
       break;
     case PIXPAX_EVENT_TYPES.PACK_CLAIMED:
       ensureString(payload.packId, "event.payload.packId");
