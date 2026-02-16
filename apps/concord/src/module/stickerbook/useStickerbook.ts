@@ -6,7 +6,7 @@ import { useLedger, useBridge } from "../ledger/useLedger";
 import { useIdentity } from "../identity/useIdentity";
 
 type PackReceivedPayload = {
-  type: "pack.received";
+  type: "pack.received" | "pixpax.pack.received";
   packId: string;
   issuerIssuePayload: Record<string, any>;
   renderPayload?: {
@@ -22,12 +22,17 @@ type PackReceivedPayload = {
 };
 
 type StickerTransferPayload = {
-  type: "sticker.transfer";
+  type: "sticker.transfer" | "pixpax.card.transfer";
   stickerId: string;
   toPublicKey: string;
   prevTransferHash: string | null;
   memo?: string;
 };
+
+const PACK_RECEIVED_KIND = "pixpax.pack.received";
+const PACK_RECEIVED_LEGACY_KIND = "pack.received";
+const CARD_TRANSFER_KIND = "pixpax.card.transfer";
+const CARD_TRANSFER_LEGACY_KIND = "sticker.transfer";
 
 export function useStickerbook() {
   const profile = useProfile();
@@ -48,8 +53,10 @@ export function useStickerbook() {
     }
   });
 
-  const packEntries = bridge.collections.useArray("pack.received");
-  const transferEntries = bridge.collections.useArray("sticker.transfer");
+  const packEntries = bridge.collections.useArray(PACK_RECEIVED_KIND);
+  const legacyPackEntries = bridge.collections.useArray(PACK_RECEIVED_LEGACY_KIND);
+  const transferEntries = bridge.collections.useArray(CARD_TRANSFER_KIND);
+  const legacyTransferEntries = bridge.collections.useArray(CARD_TRANSFER_LEGACY_KIND);
 
   const profileId = computed(() => {
     if (pixbookReadOnly.value && viewedPixbookProfile.value?.profileId) {
@@ -65,20 +72,25 @@ export function useStickerbook() {
   });
 
   const receivedPacks = computed(() =>
-    packEntries.value.map((entry: any) => ({
-      entryId: entry.entryId,
-      author: entry.author,
-      data: entry.payload || entry.data || {},
-    }))
+    [...packEntries.value, ...legacyPackEntries.value]
+      .map((entry: any) => ({
+        entryId: entry.entryId,
+        author: entry.author,
+        timestamp: entry.timestamp,
+        data: entry.payload || entry.data || {},
+      }))
+      .sort((a, b) => String(a.timestamp || "").localeCompare(String(b.timestamp || "")))
   );
 
   const transfers = computed(() =>
-    transferEntries.value.map((entry: any) => ({
-      entryId: entry.entryId,
-      author: entry.author,
-      timestamp: entry.timestamp,
-      data: entry.payload || entry.data || {},
-    }))
+    [...transferEntries.value, ...legacyTransferEntries.value]
+      .map((entry: any) => ({
+        entryId: entry.entryId,
+        author: entry.author,
+        timestamp: entry.timestamp,
+        data: entry.payload || entry.data || {},
+      }))
+      .sort((a, b) => String(a.timestamp || "").localeCompare(String(b.timestamp || "")))
   );
 
   async function recordPackReceived(payload: PackReceivedPayload) {
@@ -86,7 +98,7 @@ export function useStickerbook() {
       throw new Error("Pixbook is read-only.");
     }
     await ledger.api.addAndStage({
-      kind: "pack.received",
+      kind: PACK_RECEIVED_KIND,
       payload,
       silent: true,
     });
@@ -97,7 +109,7 @@ export function useStickerbook() {
       throw new Error("Pixbook is read-only.");
     }
     return ledger.api.addAndStage({
-      kind: "sticker.transfer",
+      kind: CARD_TRANSFER_KIND,
       payload,
       silent: true,
     });
@@ -154,7 +166,7 @@ export function useStickerbook() {
         for (const entry of ordered) {
           const toPublicKey = entry.author || publicKey.value || "";
           const created = await recordTransfer({
-            type: "sticker.transfer",
+            type: "pixpax.card.transfer",
             stickerId,
             toPublicKey,
             prevTransferHash: prevHash,

@@ -888,7 +888,7 @@ async function openPack() {
         String(response.issuance?.mode || "").trim() === "dev-untracked";
       if (responseSignature && responseIssuerKeyId) {
         await recordPackAndCommit({
-          type: "pack.received",
+          type: "pixpax.pack.received",
           packId: response.packId,
           issuerIssuePayload: responsePayload,
           renderPayload: {
@@ -916,7 +916,7 @@ async function openPack() {
         const issuerKeyId = String(issuePayload?.issuerKeyId || "").trim();
         if (receiptVerified && issueSignature && issuerKeyId) {
           await recordPackAndCommit({
-            type: "pack.received",
+            type: "pixpax.pack.received",
             packId: response.packId,
             issuerIssuePayload: issuePayload,
             renderPayload: {
@@ -933,7 +933,7 @@ async function openPack() {
         }
       } else if (canRecordDevUntrackedPack) {
         await recordPackAndCommit({
-          type: "pack.received",
+          type: "pixpax.pack.received",
           packId: response.packId,
           issuerIssuePayload: responsePayload,
           renderPayload: {
