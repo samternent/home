@@ -1,4 +1,9 @@
-import { createNonceHex, hashCanonical } from "../../stickerbook/stickerbook-utils.mjs";
+import { createHash } from "node:crypto";
+import { canonicalStringify } from "@ternent/concord-protocol";
+
+function hashCanonical(value) {
+  return createHash("sha256").update(canonicalStringify(value), "utf8").digest("hex");
+}
 
 export const PIXPAX_EVENT_TYPES = Object.freeze({
   COLLECTION_CREATED: "collection.created",
@@ -131,17 +136,14 @@ export function createPixpaxEvent(params) {
   const occurredAt = String(params?.occurredAt || "").trim() || new Date().toISOString();
   const payload = params?.payload || {};
   const source = String(params?.source || "pixpax.collections").trim();
-  const nonce = createNonceHex(12);
 
   assertPayloadForType(type, payload);
   ensureIsoDate(occurredAt, "event.occurredAt");
 
   const eventId = hashCanonical({
     type,
-    occurredAt,
     payload,
     source,
-    nonce,
   });
 
   const event = {

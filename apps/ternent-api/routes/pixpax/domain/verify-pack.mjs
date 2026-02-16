@@ -1,9 +1,11 @@
-import { getEntrySigningPayload } from "@ternent/concord-protocol";
+import { canonicalStringify, getEntrySigningPayload } from "@ternent/concord-protocol";
 import { createHash, webcrypto } from "node:crypto";
-import { hashCanonical } from "../../stickerbook/stickerbook-utils.mjs";
-import { loadIssuerKeys } from "../../stickerbook/index.mjs";
 import { PACK_MODELS } from "../models/pack-models.mjs";
 import { computeMerkleRootFromItemHashes, hashAlbumCard } from "../collections/curated-hashing.mjs";
+
+function hashCanonical(value) {
+  return createHash("sha256").update(canonicalStringify(value), "utf8").digest("hex");
+}
 
 function normalizePublicKeyPem(value) {
   const normalized = String(value || "").replace(/\\n/g, "\n").trim();
@@ -115,20 +117,28 @@ async function resolveTrustedIssuerKeys(inputMap = {}) {
     if (!normalized) continue;
     map.set(String(keyId), normalized);
   }
-  if (map.size > 0) return map;
 
-  try {
-    const keys = await loadIssuerKeys();
-    if (keys?.issuerKeyId && keys?.publicKeyPem) {
-      map.set(String(keys.issuerKeyId), normalizePublicKeyPem(keys.publicKeyPem));
+  const trustedKeysJson = String(process.env.LEDGER_TRUSTED_ISSUER_PUBLIC_KEYS_JSON || "").trim();
+  if (trustedKeysJson) {
+    try {
+      const parsed = JSON.parse(trustedKeysJson);
+      if (Array.isArray(parsed)) {
+        for (const row of parsed) {
+          const keyId = String(row?.keyId || "").trim();
+          const publicKeyPem = normalizePublicKeyPem(row?.publicKeyPem || "");
+          if (!keyId || !publicKeyPem) continue;
+          map.set(keyId, publicKeyPem);
+        }
+      }
+    } catch {
+      // Ignore malformed trusted key JSON here; verification can still proceed with other sources.
     }
-  } catch {
-    // No configured issuer key in local env; caller may provide explicit trusted map.
   }
 
   const envPublicKey = normalizePublicKeyPem(process.env.ISSUER_PUBLIC_KEY_PEM || "");
   if (envPublicKey) {
-    map.set(fingerprintPublicKey(envPublicKey), envPublicKey);
+    const explicitKeyId = String(process.env.ISSUER_KEY_ID || "").trim();
+    map.set(explicitKeyId || fingerprintPublicKey(envPublicKey), envPublicKey);
   }
 
   return map;

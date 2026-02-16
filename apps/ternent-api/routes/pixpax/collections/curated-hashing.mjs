@@ -1,10 +1,13 @@
 import { createHash } from "node:crypto";
 import { canonicalStringify } from "@ternent/concord-protocol";
-import { hashCanonical } from "../../stickerbook/stickerbook-utils.mjs";
 import { PACK_MODELS } from "../models/pack-models.mjs";
 
 function sha256HexUtf8(value) {
   return createHash("sha256").update(value, "utf8").digest("hex");
+}
+
+function hashCanonical(value) {
+  return sha256HexUtf8(canonicalStringify(value));
 }
 
 export function buildCanonicalAlbumCardObject({

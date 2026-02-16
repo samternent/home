@@ -52,6 +52,10 @@ function createMemoryGateway() {
       const id = `${bucket}:${key}`;
       objects.set(id, Buffer.from(body));
     },
+    async deleteObject({ bucket, key }) {
+      const id = `${bucket}:${key}`;
+      objects.delete(id);
+    },
     async listObjects({ bucket, prefix, cursor, maxKeys = 1000 }) {
       const allKeys = Array.from(objects.keys())
         .filter((id) => id.startsWith(`${bucket}:`))

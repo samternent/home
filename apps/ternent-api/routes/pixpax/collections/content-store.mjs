@@ -29,7 +29,13 @@ export function createPixpaxContentConfigFromEnv() {
 }
 
 export function createCollectionContentGatewayFromS3Client(params) {
-  const { client, GetObjectCommand, PutObjectCommand, ListObjectsV2Command } = params || {};
+  const {
+    client,
+    GetObjectCommand,
+    PutObjectCommand,
+    DeleteObjectCommand,
+    ListObjectsV2Command,
+  } = params || {};
   if (!client || !GetObjectCommand || !PutObjectCommand) {
     throw new Error(
       "createCollectionContentGatewayFromS3Client requires client, GetObjectCommand, and PutObjectCommand."
@@ -84,6 +90,18 @@ export function createCollectionContentGatewayFromS3Client(params) {
       );
     },
 
+    async deleteObject({ bucket, key }) {
+      if (!DeleteObjectCommand) {
+        throw new Error("Gateway deleteObject requires DeleteObjectCommand.");
+      }
+      await client.send(
+        new DeleteObjectCommand({
+          Bucket: bucket,
+          Key: key,
+        })
+      );
+    },
+
     async listObjects({ bucket, prefix, cursor, maxKeys = 1000 }) {
       if (!ListObjectsV2Command) {
         throw new Error("Gateway listObjects requires ListObjectsV2Command.");
@@ -108,7 +126,7 @@ export function createCollectionContentGatewayFromS3Client(params) {
 }
 
 export async function createCollectionContentGateway(config) {
-  const { S3Client, GetObjectCommand, PutObjectCommand, ListObjectsV2Command } = await import(
+  const { S3Client, GetObjectCommand, PutObjectCommand, DeleteObjectCommand, ListObjectsV2Command } = await import(
     "@aws-sdk/client-s3"
   );
   const client = new S3Client({
@@ -124,6 +142,7 @@ export async function createCollectionContentGateway(config) {
     client,
     GetObjectCommand,
     PutObjectCommand,
+    DeleteObjectCommand,
     ListObjectsV2Command,
   });
 }
@@ -149,11 +168,6 @@ function dateForPath(isoTimestamp) {
     throw new Error("Invalid event occurredAt timestamp.");
   }
   return date.toISOString();
-}
-
-function normalizeEventTimestampForKey(isoTimestamp) {
-  const iso = dateForPath(isoTimestamp);
-  return iso.replace(/[-:.]/g, "");
 }
 
 async function putJson(gateway, bucket, key, value) {
@@ -184,6 +198,22 @@ async function putJsonIfAbsent(gateway, bucket, key, value) {
 async function getJson(gateway, bucket, key) {
   const bytes = await gateway.getObject({ bucket, key });
   return JSON.parse(Buffer.from(bytes).toString("utf8"));
+}
+
+async function deleteIfExists(gateway, bucket, key) {
+  if (typeof gateway.deleteObject !== "function") {
+    throw new Error("Collection content gateway does not support deleteObject.");
+  }
+  try {
+    await gateway.getObject({ bucket, key });
+  } catch (error) {
+    if (String(error?.message || "").startsWith("NoSuchKey:")) {
+      return { deleted: false, key };
+    }
+    throw error;
+  }
+  await gateway.deleteObject({ bucket, key });
+  return { deleted: true, key };
 }
 
 export class CollectionContentStore {
@@ -246,12 +276,11 @@ export class CollectionContentStore {
     if (!eventId) throw new Error("event.eventId is required.");
     const iso = dateForPath(event?.occurredAt);
     const day = iso.slice(0, 10);
-    const stamp = normalizeEventTimestampForKey(iso);
     return buildObjectKey(
       this.prefix,
       collectionId,
       version,
-      `events/${day}/${stamp}_${eventId}.json`
+      `events/${day}/${eventId}.json`
     );
   }
 
@@ -259,6 +288,12 @@ export class CollectionContentStore {
     const key = this.buildCollectionKey(collectionId, version);
     await putJson(this.gateway, this.bucket, key, collectionJson);
     return { bucket: this.bucket, key };
+  }
+
+  async deleteCollection(collectionId, version) {
+    const key = this.buildCollectionKey(collectionId, version);
+    const result = await deleteIfExists(this.gateway, this.bucket, key);
+    return { bucket: this.bucket, key, deleted: result.deleted };
   }
 
   async putCollectionIfAbsent(collectionId, version, collectionJson) {
@@ -273,6 +308,12 @@ export class CollectionContentStore {
     return { bucket: this.bucket, key };
   }
 
+  async deleteIndex(collectionId, version) {
+    const key = this.buildIndexKey(collectionId, version);
+    const result = await deleteIfExists(this.gateway, this.bucket, key);
+    return { bucket: this.bucket, key, deleted: result.deleted };
+  }
+
   async putIndexIfAbsent(collectionId, version, indexJson) {
     const key = this.buildIndexKey(collectionId, version);
     const result = await putJsonIfAbsent(this.gateway, this.bucket, key, indexJson);
@@ -283,6 +324,12 @@ export class CollectionContentStore {
     const key = this.buildCardKey(collectionId, version, cardId);
     await putJson(this.gateway, this.bucket, key, cardJson);
     return { bucket: this.bucket, key };
+  }
+
+  async deleteCard(collectionId, version, cardId) {
+    const key = this.buildCardKey(collectionId, version, cardId);
+    const result = await deleteIfExists(this.gateway, this.bucket, key);
+    return { bucket: this.bucket, key, deleted: result.deleted };
   }
 
   async putCardIfAbsent(collectionId, version, cardId, cardJson) {

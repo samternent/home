@@ -3,9 +3,8 @@ import {
   createCollectionContentStoreFromEnv,
 } from "./content-store.mjs";
 import { PACK_MODELS } from "../models/pack-models.mjs";
-import { createNonceHex, hashCanonical } from "../../stickerbook/stickerbook-utils.mjs";
-import { deriveEntryId, getEntrySigningPayload } from "@ternent/concord-protocol";
-import { createHash, createHmac, timingSafeEqual, webcrypto } from "node:crypto";
+import { canonicalStringify, deriveEntryId, getEntrySigningPayload } from "@ternent/concord-protocol";
+import { createHash, createHmac, randomBytes, timingSafeEqual, webcrypto } from "node:crypto";
 import { gunzipSync } from "node:zlib";
 import {
   ensureIssuerAuditLedger,
@@ -26,6 +25,14 @@ import { createCryptoRngSource, createDelegateRngSource } from "../domain/rng-so
 import { IssuancePolicyError, resolveIssuancePolicy } from "../domain/issuance-policy.mjs";
 import { verifyPack } from "../domain/verify-pack.mjs";
 import { rebuildCollectionSnapshotFromEvents } from "../domain/rebuild-from-events.mjs";
+
+function hashCanonical(value) {
+  return createHash("sha256").update(canonicalStringify(value), "utf8").digest("hex");
+}
+
+function createNonceHex(length = 16) {
+  return randomBytes(Math.ceil(length / 2)).toString("hex").slice(0, length);
+}
 
 function extractBearerToken(headerValue) {
   const raw = String(headerValue || "").trim();
@@ -409,6 +416,8 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
     });
   let storePromise = null;
   let ledgerReadContextPromise = null;
+  const analyticsResponseCache = new Map();
+  const analyticsCacheTtlMs = 15000;
 
   async function getStore() {
     if (!storePromise) {
@@ -507,29 +516,29 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
     const { collectionId, version } = req.params || {};
     try {
       const store = await getStore();
-      try {
-        await store.getCollection(collectionId, version);
-        res.status(409).send({ error: "collection.json already exists for this version." });
-        return;
-      } catch (error) {
-        if (!String(error?.message || "").startsWith("NoSuchKey:")) {
-          throw error;
-        }
-      }
-      await emitDomainEvent(
-        PIXPAX_EVENT_TYPES.COLLECTION_CREATED,
-        {
-          collectionId: String(collectionId),
-          version: String(version),
-          name: String(req.body?.name || ""),
-          gridSize: Number(req.body?.gridSize || 0),
-        },
-        now().toISOString()
-      );
       const result = await store.putCollectionIfAbsent(collectionId, version, req.body);
       if (!result.created) {
         res.status(409).send({ error: "collection.json already exists for this version." });
         return;
+      }
+      try {
+        await emitDomainEvent(
+          PIXPAX_EVENT_TYPES.COLLECTION_CREATED,
+          {
+            collectionId: String(collectionId),
+            version: String(version),
+            name: String(req.body?.name || ""),
+            gridSize: Number(req.body?.gridSize || 0),
+          },
+          now().toISOString()
+        );
+      } catch (error) {
+        try {
+          await store.deleteCollection(collectionId, version);
+        } catch (rollbackError) {
+          console.error("[pixpax/collections] collection rollback failed:", rollbackError);
+        }
+        throw error;
       }
       res.status(201).send({
         ok: true,
@@ -656,34 +665,34 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
     const { collectionId, version } = req.params || {};
     try {
       const store = await getStore();
-      try {
-        await store.getIndex(collectionId, version);
+      const result = await store.putIndexIfAbsent(collectionId, version, req.body);
+      if (!result.created) {
         res.status(409).send({ error: "index.json already exists for this version." });
         return;
-      } catch (error) {
-        if (!String(error?.message || "").startsWith("NoSuchKey:")) {
-          throw error;
-        }
       }
       const seriesIds = Array.isArray(req.body?.series)
         ? req.body.series
             .map((entry) => String(entry?.seriesId || "").trim())
             .filter(Boolean)
         : [];
-      await emitDomainEvent(
-        PIXPAX_EVENT_TYPES.SERIES_ADDED,
-        {
-          collectionId: String(collectionId),
-          version: String(version),
-          seriesIds,
-          cardCount: Array.isArray(req.body?.cards) ? req.body.cards.length : 0,
-        },
-        now().toISOString()
-      );
-      const result = await store.putIndexIfAbsent(collectionId, version, req.body);
-      if (!result.created) {
-        res.status(409).send({ error: "index.json already exists for this version." });
-        return;
+      try {
+        await emitDomainEvent(
+          PIXPAX_EVENT_TYPES.SERIES_ADDED,
+          {
+            collectionId: String(collectionId),
+            version: String(version),
+            seriesIds,
+            cardCount: Array.isArray(req.body?.cards) ? req.body.cards.length : 0,
+          },
+          now().toISOString()
+        );
+      } catch (error) {
+        try {
+          await store.deleteIndex(collectionId, version);
+        } catch (rollbackError) {
+          console.error("[pixpax/collections] index rollback failed:", rollbackError);
+        }
+        throw error;
       }
       res.status(201).send({
         ok: true,
@@ -876,29 +885,29 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
           res.status(400).send({ error: "Invalid card payload.", details: validation.errors });
           return;
         }
-        try {
-          await store.getCard(collectionId, version, cardId);
-          res.status(409).send({ error: "card already exists for this version/cardId." });
-          return;
-        } catch (error) {
-          if (!String(error?.message || "").startsWith("NoSuchKey:")) {
-            throw error;
-          }
-        }
-        await emitDomainEvent(
-          PIXPAX_EVENT_TYPES.CARD_ADDED,
-          {
-            collectionId: String(collectionId),
-            version: String(version),
-            cardId: String(cardId),
-            seriesId: req.body?.seriesId ? String(req.body.seriesId) : null,
-          },
-          now().toISOString()
-        );
         const result = await store.putCardIfAbsent(collectionId, version, cardId, req.body);
         if (!result.created) {
           res.status(409).send({ error: "card already exists for this version/cardId." });
           return;
+        }
+        try {
+          await emitDomainEvent(
+            PIXPAX_EVENT_TYPES.CARD_ADDED,
+            {
+              collectionId: String(collectionId),
+              version: String(version),
+              cardId: String(cardId),
+              seriesId: req.body?.seriesId ? String(req.body.seriesId) : null,
+            },
+            now().toISOString()
+          );
+        } catch (error) {
+          try {
+            await store.deleteCard(collectionId, version, cardId);
+          } catch (rollbackError) {
+            console.error("[pixpax/collections] card rollback failed:", rollbackError);
+          }
+          throw error;
         }
 
         res.status(201).send({
@@ -955,6 +964,20 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
       String(req.query?.includeCardIds || "true").trim().toLowerCase() !== "false";
 
     try {
+      const cacheKey = hashCanonical({
+        collectionIdFilter,
+        versionFilter,
+        dropIdFilter,
+        limit,
+        includeCardIds,
+        maxScanKeys: req.query?.maxScanKeys ?? null,
+      });
+      const cached = analyticsResponseCache.get(cacheKey);
+      if (cached && cached.expiresAt > Date.now()) {
+        res.status(200).send(cached.payload);
+        return;
+      }
+
       const store = await getStore();
       if (typeof store?.gateway?.listObjects !== "function") {
         res.status(503).send({
@@ -963,7 +986,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
         return;
       }
 
-      const maxScanKeys = parsePositiveInt(req.query?.maxScanKeys, 50000, 200000);
+      const maxScanKeys = parsePositiveInt(req.query?.maxScanKeys, 10000, 50000);
       const contentPrefix = `${store.prefix}/`;
       const eventRefs = [];
       let contentCursor = null;
@@ -1106,7 +1129,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
       );
       const packs = Number.isFinite(limit) ? packRows.slice(0, limit) : packRows;
 
-      res.status(200).send({
+      const payload = {
         ok: true,
         filters: {
           collectionId: collectionIdFilter || null,
@@ -1128,7 +1151,13 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
         packsReturned: packs.length,
         truncated: packs.length < packRows.length,
         packs,
+      };
+
+      analyticsResponseCache.set(cacheKey, {
+        expiresAt: Date.now() + analyticsCacheTtlMs,
+        payload,
       });
+      res.status(200).send(payload);
     } catch (error) {
       if (missingContentConfigError(error)) {
         res.status(503).send({
@@ -1405,12 +1434,8 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
       );
 
       if (!issuancePolicy.untracked && entry && issuerKeys) {
-        try {
-          const entryId = await deriveEntryId(entry);
-          appendResult = await issueLedgerEntry({ entryId, entry, issuerKeys });
-        } catch (ledgerError) {
-          console.error("[pixpax/collections] issue ledger append failed:", ledgerError);
-        }
+        const entryId = await deriveEntryId(entry);
+        appendResult = await issueLedgerEntry({ entryId, entry, issuerKeys });
       }
 
       const responsePayload = {
