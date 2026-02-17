@@ -1,5 +1,11 @@
 # concord
 
+## 0.3.28
+
+### Patch Changes
+
+- [`5b784f2e43c4ac2423e105030b75b4f40d108cb9`](https://github.com/samternent/home/commit/5b784f2e43c4ac2423e105030b75b4f40d108cb9) Thanks [@samternent](https://github.com/samternent)! - Adds creator
+
 ## 0.3.27
 
 ### Patch Changes
