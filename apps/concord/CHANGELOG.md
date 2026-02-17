@@ -1,5 +1,11 @@
 # concord
 
+## 0.3.29
+
+### Patch Changes
+
+- [`e4acef15c9115801b9728f68b0329856505aeef2`](https://github.com/samternent/home/commit/e4acef15c9115801b9728f68b0329856505aeef2) Thanks [@samternent](https://github.com/samternent)! - Adds pixpax admin
+
 ## 0.3.28
 
 ### Patch Changes
