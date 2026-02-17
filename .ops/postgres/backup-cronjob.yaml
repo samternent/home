@@ -1,0 +1,66 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: ternent-postgres-backup
+  namespace: backend
+spec:
+  schedule: "15 2 * * *"
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: ternent-postgres-backup
+        spec:
+          restartPolicy: OnFailure
+          affinity:
+            podAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                - labelSelector:
+                    matchExpressions:
+                      - key: app
+                        operator: In
+                        values: ["ternent-postgres"]
+                  topologyKey: kubernetes.io/hostname
+          containers:
+            - name: backup
+              image: ghcr.io/wal-g/wal-g:latest
+              command: ["/bin/sh", "-lc"]
+              args:
+                - >-
+                  wal-g backup-push /var/lib/postgresql/data
+              env:
+                - name: WALG_S3_PREFIX
+                  valueFrom:
+                    secretKeyRef:
+                      name: ternent-postgres-backup
+                      key: WALG_S3_PREFIX
+                - name: AWS_ENDPOINT
+                  valueFrom:
+                    secretKeyRef:
+                      name: ternent-postgres-backup
+                      key: AWS_ENDPOINT
+                - name: AWS_REGION
+                  valueFrom:
+                    secretKeyRef:
+                      name: ternent-postgres-backup
+                      key: AWS_REGION
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: ternent-postgres-backup
+                      key: AWS_ACCESS_KEY_ID
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: ternent-postgres-backup
+                      key: AWS_SECRET_ACCESS_KEY
+              volumeMounts:
+                - name: pg-data
+                  mountPath: /var/lib/postgresql/data
+          volumes:
+            - name: pg-data
+              persistentVolumeClaim:
+                claimName: pg-data-ternent-postgres-0

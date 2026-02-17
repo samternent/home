@@ -125,3 +125,68 @@ On `SIGTERM`/`SIGINT`, the service flushes pending ledger events before exiting.
 Curated album model (Model 1), example payloads, and curl flows:
 
 - `docs/pixpax-album-model.md`
+
+## Platform auth (Better Auth)
+
+Ternent platform auth now lives in `ternent-api` and is app-agnostic.
+
+- Auth base route: `/v1/auth/*`
+- Account/workspace route: `/v1/account/*`
+- PixPax can consume platform capabilities via shared middleware.
+
+### Required environment variables
+
+- `DATABASE_URL`
+- `AUTH_SECRET`
+- `AUTH_BASE_URL`
+
+Recommended:
+
+- `AUTH_TRUSTED_ORIGINS` (comma-separated)
+- `CORS_ALLOW_ORIGINS` (comma-separated)
+- `AUTH_SESSION_IDLE_SECONDS`
+- `AUTH_SESSION_ROLLING_SECONDS`
+
+Email OTP fallback (optional, but recommended):
+
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_SECURE`
+- `SMTP_USER`
+- `SMTP_PASS`
+- `SMTP_FROM`
+
+### Database migrations
+
+Run:
+
+```bash
+pnpm --filter ternent-api platform:migrate
+```
+
+Migration files:
+
+- `apps/ternent-api/data/migrations/*.sql`
+
+### Notes
+
+- Better Auth dependencies must be installed in `ternent-api`.
+- If auth dependencies or env vars are missing, auth/account routes fail closed with `503`.
+
+## Cheap Postgres profile (existing cluster)
+
+Low-cost manifests live under:
+
+- `.ops/postgres/*`
+
+This profile uses:
+
+- single Postgres StatefulSet (`postgres:17`)
+- one 20Gi PVC
+- WAL-G archiving to Spaces
+- nightly backup cron
+- weekly restore-drill cron (backup inventory validation baseline)
+
+See:
+
+- `.ops/postgres/README.md`

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, computed, shallowRef, ref, watch } from "vue";
 import { useRoute } from "vue-router";
-import { LedgerContainer } from "ternent-ledger-types";
+import type { LedgerContainer } from "@ternent/concord-protocol";
 import {
   getDefaultSession,
   handleIncomingRedirect,

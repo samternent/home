@@ -1,0 +1,35 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: ternent-postgres-restrict
+  namespace: backend
+spec:
+  podSelector:
+    matchLabels:
+      app: ternent-postgres
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: ternent-api
+        - podSelector:
+            matchLabels:
+              app: ternent-postgres-backup
+        - namespaceSelector:
+            matchLabels:
+              name: backend-dr
+      ports:
+        - protocol: TCP
+          port: 5432
+  egress:
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+      ports:
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 5432

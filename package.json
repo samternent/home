@@ -42,7 +42,7 @@
     "pixpax:derive-issuer-key-formats": "pnpm --filter ternent-api pixpax:derive-issuer-key-formats",
     "derive:issuer-public-key": "pnpm run pixpax:derive-issuer-key-formats",
     "docs": "npm run generate-docs && npm run enhance-docs",
-    "dev:docker": "cd .ops && docker-compose up -d"
+    "dev:docker": "cd .ops && env -u DOCKER_DEFAULT_PLATFORM docker-compose up -d"
   },
   "pnpm": {
     "patchedDependencies": {}

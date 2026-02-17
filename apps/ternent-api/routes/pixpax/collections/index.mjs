@@ -25,6 +25,7 @@ import { createCryptoRngSource, createDelegateRngSource } from "../domain/rng-so
 import { IssuancePolicyError, resolveIssuancePolicy } from "../domain/issuance-policy.mjs";
 import { verifyPack } from "../domain/verify-pack.mjs";
 import { rebuildCollectionSnapshotFromEvents } from "../domain/rebuild-from-events.mjs";
+import { isPlatformAuthReady, requestHasCapability } from "../../../services/auth/permissions.mjs";
 
 function hashCanonical(value) {
   return createHash("sha256").update(canonicalStringify(value), "utf8").digest("hex");
@@ -495,9 +496,38 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
     return event;
   }
 
-  function resolveAdminAccess(req) {
+  async function resolveAdminAccess(req) {
     const expectedToken = resolveAdminToken();
+    const provided = extractBearerToken(req?.headers?.authorization);
+
+    if (expectedToken && provided && provided === expectedToken) {
+      return {
+        ok: true,
+        statusCode: 200,
+        permissions: [...PIXPAX_ADMIN_PERMISSIONS],
+        source: "bearer-token",
+      };
+    }
+
+    const platformAccess = await requestHasCapability(req, "pixpax.admin.manage");
+    if (platformAccess.ok) {
+      return {
+        ok: true,
+        statusCode: 200,
+        permissions: [...PIXPAX_ADMIN_PERMISSIONS],
+        source: "platform-session",
+      };
+    }
+
     if (!expectedToken) {
+      const platformReady = await isPlatformAuthReady();
+      if (platformReady) {
+        return {
+          ok: false,
+          statusCode: platformAccess.statusCode || 401,
+          payload: { error: "Unauthorized." },
+        };
+      }
       return {
         ok: false,
         statusCode: 503,
@@ -506,7 +536,6 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
         },
       };
     }
-    const provided = extractBearerToken(req?.headers?.authorization);
     if (!provided || provided !== expectedToken) {
       return {
         ok: false,
@@ -518,11 +547,12 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
       ok: true,
       statusCode: 200,
       permissions: [...PIXPAX_ADMIN_PERMISSIONS],
+      source: "bearer-token",
     };
   }
 
-  function requireAdminToken(req, res) {
-    const access = resolveAdminAccess(req);
+  async function requireAdminToken(req, res) {
+    const access = await resolveAdminAccess(req);
     if (!access.ok) {
       res.status(access.statusCode).send(access.payload);
       return false;
@@ -530,8 +560,8 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
     return true;
   }
 
-  router.get("/v1/pixpax/admin/session", (req, res) => {
-    const access = resolveAdminAccess(req);
+  router.get("/v1/pixpax/admin/session", async (req, res) => {
+    const access = await resolveAdminAccess(req);
     if (!access.ok) {
       if (access.statusCode === 401) {
         res.status(401).send({
@@ -552,7 +582,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
   });
 
   router.put("/v1/pixpax/collections/:collectionId/:version/collection", async (req, res) => {
-    if (!requireAdminToken(req, res)) return;
+    if (!(await requireAdminToken(req, res))) return;
     const validation = validateCollectionPayload(req.body);
     if (!validation.ok) {
       res.status(400).send({ error: "Invalid collection payload.", details: validation.errors });
@@ -629,7 +659,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
   });
 
   router.post("/v1/pixpax/collections/:collectionId/:version/override-codes", async (req, res) => {
-    if (!requireAdminToken(req, res)) return;
+    if (!(await requireAdminToken(req, res))) return;
     const secret = resolveOverrideCodeSecret();
     if (!secret) {
       res.status(503).send({ error: "PIX_PAX_OVERRIDE_CODE_SECRET is not configured." });
@@ -701,7 +731,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
   });
 
   router.put("/v1/pixpax/collections/:collectionId/:version/index", async (req, res) => {
-    if (!requireAdminToken(req, res)) return;
+    if (!(await requireAdminToken(req, res))) return;
     const validation = validateIndexPayload(req.body);
     if (!validation.ok) {
       res.status(400).send({ error: "Invalid index payload.", details: validation.errors });
@@ -785,7 +815,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
   router.post(
     "/v1/pixpax/collections/:collectionId/:version/series/:seriesId/retire",
     async (req, res) => {
-      if (!requireAdminToken(req, res)) return;
+      if (!(await requireAdminToken(req, res))) return;
       const { collectionId, version, seriesId } = req.params || {};
       const normalizedSeriesId = String(seriesId || "").trim();
       if (!normalizedSeriesId) {
@@ -907,7 +937,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
   router.put(
     "/v1/pixpax/collections/:collectionId/:version/cards/:cardId",
     async (req, res) => {
-      if (!requireAdminToken(req, res)) return;
+      if (!(await requireAdminToken(req, res))) return;
 
       const { collectionId, version, cardId } = req.params || {};
 
@@ -1001,7 +1031,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
   });
 
   router.get("/v1/pixpax/analytics/packs", async (req, res) => {
-    if (!requireAdminToken(req, res)) return;
+    if (!(await requireAdminToken(req, res))) return;
     const collectionIdFilter = String(req.query?.collectionId || "").trim();
     const versionFilter = String(req.query?.version || "").trim();
     const dropIdFilter = String(req.query?.dropId || "").trim();
@@ -1326,7 +1356,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
         clampPackCardCount,
         defaultPackCount: DEFAULT_PACK_COUNT,
       });
-      if (issuancePolicy.requiresAdmin && !requireAdminToken(req, res)) return;
+      if (issuancePolicy.requiresAdmin && !(await requireAdminToken(req, res))) return;
 
       const issuedTo = hashIssuedToUserKey(normalizedUserKey);
       const beforeIssue = await issuancePolicy.beforeIssue({

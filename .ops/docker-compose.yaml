@@ -6,6 +6,15 @@ services:
       - "8001:3000"
     env_file:
       - "./ternent-api/.env"
+    environment:
+      DATABASE_URL: "${DATABASE_URL:-postgresql://ternent:change-me@postgres:5432/ternent}"
+      AUTH_BASE_URL: "${AUTH_BASE_URL:-http://localhost:8001}"
+      AUTH_SECRET: "${AUTH_SECRET:-local-dev-auth-secret-change-me}"
+      CORS_ALLOW_ORIGINS: "${CORS_ALLOW_ORIGINS:-http://localhost:5173}"
+      AUTH_TRUSTED_ORIGINS: "${AUTH_TRUSTED_ORIGINS:-http://localhost:5173}"
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   footballsocial-api:
     image: "samternent/footballsocial-api"
@@ -14,3 +23,23 @@ services:
       - "8002:3000"
     env_file:
       - "./footballsocial-api/.env"
+
+  postgres:
+    image: "postgres:17-alpine"
+    restart: always
+    environment:
+      POSTGRES_USER: "ternent"
+      POSTGRES_PASSWORD: "change-me"
+      POSTGRES_DB: "ternent"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ternent -d ternent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  postgres-data:

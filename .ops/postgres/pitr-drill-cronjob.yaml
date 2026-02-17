@@ -1,0 +1,49 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: ternent-postgres-pitr-drill
+  namespace: backend-dr
+spec:
+  schedule: "0 4 1 * *"
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: pitr-drill
+              image: ghcr.io/wal-g/wal-g:latest
+              command: ["/bin/sh", "-lc"]
+              args:
+                - >-
+                  echo "Starting monthly PITR drill (inventory baseline)" &&
+                  wal-g backup-list &&
+                  echo "PITR drill baseline completed. Extend this job with backup-fetch + SQL smoke checks."
+              env:
+                - name: WALG_S3_PREFIX
+                  valueFrom:
+                    secretKeyRef:
+                      name: ternent-postgres-backup
+                      key: WALG_S3_PREFIX
+                - name: AWS_ENDPOINT
+                  valueFrom:
+                    secretKeyRef:
+                      name: ternent-postgres-backup
+                      key: AWS_ENDPOINT
+                - name: AWS_REGION
+                  valueFrom:
+                    secretKeyRef:
+                      name: ternent-postgres-backup
+                      key: AWS_REGION
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: ternent-postgres-backup
+                      key: AWS_ACCESS_KEY_ID
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: ternent-postgres-backup
+                      key: AWS_SECRET_ACCESS_KEY

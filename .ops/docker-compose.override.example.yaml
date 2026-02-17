@@ -12,3 +12,13 @@ services:
     command: "pnpm --filter footballsocial-api dev"
     volumes:
       - ../:/app
+
+  postgres:
+    image: "postgres:17-alpine"
+    platform: linux/amd64
+    environment:
+      POSTGRES_USER: "ternent"
+      POSTGRES_PASSWORD: "change-me"
+      POSTGRES_DB: "ternent"
+    ports:
+      - "5432:5432"

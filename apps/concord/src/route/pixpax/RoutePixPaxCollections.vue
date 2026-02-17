@@ -14,9 +14,14 @@ import type {
 } from "../../module/pixpax/sticker-types";
 import { usePixbook } from "../../module/pixpax/state/usePixbook";
 
-const apiBase = import.meta.env.DEV
-  ? ""
-  : import.meta.env.VITE_TERNENT_API_URL || "https://api.ternent.dev";
+function resolveApiBase() {
+  if (import.meta.env.DEV) return "";
+  const configured = String(import.meta.env.VITE_TERNENT_API_URL || "").trim();
+  if (/^https?:\/\//i.test(configured)) return configured;
+  return "https://api.ternent.dev";
+}
+
+const apiBase = resolveApiBase();
 
 function buildApiUrl(path: string) {
   if (!apiBase) return path;

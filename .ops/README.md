@@ -14,6 +14,28 @@ kubectl apply -f .ops/ternent-api/deployment.yaml,.ops/ternent-api/service.yaml
 ```
 
 ```bash
+# Upsert (add/update) ternent-api auth secret keys from .ops/ternent-api/.env
+.ops/ternent-api/upsert-k8s-secrets.sh
+
+# Optional: also upsert postgres + backup secrets
+WITH_POSTGRES=true .ops/ternent-api/upsert-k8s-secrets.sh
+```
+
+```bash
+kubectl apply -f .ops/ternent-api/secret-auth.example.yaml
+kubectl apply -f .ops/postgres/secret-postgres.example.yaml
+kubectl apply -f .ops/postgres/secret-postgres-backup.example.yaml
+kubectl apply -f .ops/postgres/configmap.yaml
+kubectl apply -f .ops/postgres/service.yaml
+kubectl apply -f .ops/postgres/statefulset.yaml
+kubectl apply -f .ops/postgres/networkpolicy.yaml
+kubectl apply -f .ops/postgres/backup-cronjob.yaml
+kubectl apply -f .ops/postgres/namespace-backend-dr.yaml
+kubectl apply -f .ops/postgres/restore-drill-cronjob.yaml
+kubectl apply -f .ops/postgres/pitr-drill-cronjob.yaml
+```
+
+```bash
 kubectl apply -f .ops/ternent-api/deployment.yaml,.ops/ternent-api/service.yaml
 ```
 

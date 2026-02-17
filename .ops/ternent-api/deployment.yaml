@@ -120,4 +120,82 @@ spec:
                   name: ternent-api-pixpax-content
                   key: ledger-content-bucket
                   optional: true
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-auth
+                  key: database-url
+            - name: DATABASE_SSL
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-auth
+                  key: database-ssl
+                  optional: true
+            - name: AUTH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-auth
+                  key: auth-secret
+            - name: AUTH_BASE_URL
+              value: "https://api.ternent.dev"
+            - name: AUTH_TRUSTED_ORIGINS
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-auth
+                  key: auth-trusted-origins
+                  optional: true
+            - name: AUTH_SESSION_IDLE_SECONDS
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-auth
+                  key: auth-session-idle-seconds
+                  optional: true
+            - name: AUTH_SESSION_ROLLING_SECONDS
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-auth
+                  key: auth-session-rolling-seconds
+                  optional: true
+            - name: SMTP_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-auth
+                  key: smtp-host
+                  optional: true
+            - name: SMTP_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-auth
+                  key: smtp-port
+                  optional: true
+            - name: SMTP_SECURE
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-auth
+                  key: smtp-secure
+                  optional: true
+            - name: SMTP_USER
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-auth
+                  key: smtp-user
+                  optional: true
+            - name: SMTP_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-auth
+                  key: smtp-pass
+                  optional: true
+            - name: SMTP_FROM
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-auth
+                  key: smtp-from
+                  optional: true
+            - name: CORS_ALLOW_ORIGINS
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-auth
+                  key: cors-allow-origins
+                  optional: true
   

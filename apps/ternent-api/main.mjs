@@ -17,8 +17,47 @@ const app = express();
 
 app.set("view engine", "ejs");
 
-app.use(bodyParser.json());
-app.use(cors({ exposedHeaders: ["X-Api-Version"] }));
+function parseCsv(input) {
+  return String(input || "")
+    .split(",")
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+}
+
+const corsAllowOrigins = parseCsv(process.env.CORS_ALLOW_ORIGINS);
+
+app.use(
+  cors({
+    credentials: true,
+    exposedHeaders: ["X-Api-Version"],
+    origin(origin, callback) {
+      if (!origin) {
+        callback(null, true);
+        return;
+      }
+
+      if (corsAllowOrigins.length === 0 || corsAllowOrigins.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error("Origin is not allowed by CORS policy."));
+    },
+  })
+);
+
+const jsonBodyParser = bodyParser.json({
+  limit: String(process.env.BODY_JSON_LIMIT || "1mb"),
+});
+
+app.use((req, res, next) => {
+  // Better Auth requires raw request handling for /v1/auth/* routes.
+  if (req.path.startsWith("/v1/auth/")) {
+    next();
+    return;
+  }
+  jsonBodyParser(req, res, next);
+});
 app.use(function (req, res, next) {
   res.setHeader("Content-Security-Policy", "default-src 'self';");
   res.setHeader("X-XSS-Protection", "0");
