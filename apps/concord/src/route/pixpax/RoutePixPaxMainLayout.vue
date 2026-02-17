@@ -695,17 +695,17 @@ async function eraseLocalPixbook() {
               >About</RouterLink
             >
             <RouterLink
-              to="creator"
+              to="/pixpax/control/creator"
               class="opacity-80 hover:opacity-100 text-xs font-mono font-thin -translate-y-1 hover:-translate-y-0.5 transition-all duration-300"
               >Creator</RouterLink
             >
             <RouterLink
-              to="analytics"
+              to="/pixpax/control/analytics"
               class="opacity-80 hover:opacity-100 text-xs font-mono font-thin -translate-y-1 hover:-translate-y-0.5 transition-all duration-300"
               >Analytics</RouterLink
             >
             <RouterLink
-              to="admin"
+              to="/pixpax/control/admin"
               class="opacity-80 hover:opacity-100 text-xs font-mono font-thin -translate-y-1 hover:-translate-y-0.5 transition-all duration-300"
               >Admin</RouterLink
             >

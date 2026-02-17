@@ -1,34 +1,22 @@
 import { createRouter, createWebHistory } from "vue-router";
 import docRoutes from "./docs/routes";
 import workspaceRoutes from "./workspace/routes";
-import pixpaxRoutes from "./pixpax/routes";
+import pixpaxRoutes, { pixpaxChildren } from "./pixpax/routes";
 
 const pixpaxHosts = new Set(["pixpax.xyz", "www.pixpax.xyz"]);
 const isPixpaxHost =
   typeof window !== "undefined" && pixpaxHosts.has(window.location.hostname);
 
-const pixpaxHostChildren = [
-  {
-    path: "",
-    component: () => import("./pixpax/RoutePixPaxMain.vue"),
-  },
-  {
-    path: "about",
-    component: () => import("./pixpax/RoutePixPaxAbout.vue"),
-  },
-  {
-    path: "collections",
-    component: () => import("./pixpax/RoutePixPaxCollections.vue"),
-  },
-  {
-    path: "admin",
-    component: () => import("./pixpax/RoutePixPaxAdmin.vue"),
-  },
-  {
-    path: "creator",
-    component: () => import("./pixpax/RoutePixPaxCreator.vue"),
-  },
-];
+function cloneRouteRecord(record: any): any {
+  return {
+    ...record,
+    children: Array.isArray(record.children)
+      ? record.children.map((child) => cloneRouteRecord(child))
+      : undefined,
+  };
+}
+
+const pixpaxHostChildren = pixpaxChildren.map((child) => cloneRouteRecord(child));
 
 const pixpaxHostRoutes = [
   {

@@ -1,16 +1,13 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
 import { useLocalStorage } from "@vueuse/core";
 import { Button } from "ternent-ui/primitives";
-
-const apiBase = import.meta.env.DEV
-  ? ""
-  : import.meta.env.VITE_TERNENT_API_URL || "https://api.ternent.dev";
-
-function buildApiUrl(path: string) {
-  if (!apiBase) return path;
-  return new URL(path, apiBase).toString();
-}
+import {
+  PixPaxApiError,
+  createOverrideCode,
+} from "../../module/pixpax/api/client";
+import { usePixpaxAuth } from "../../module/pixpax/auth/usePixpaxAuth";
 
 function toIsoWeek(date = new Date()) {
   const utc = new Date(
@@ -32,21 +29,6 @@ type CollectionRef = {
 function isDeprecatedCollectionRef(entry: CollectionRef) {
   return entry.collectionId === "pixel-animals" && entry.version === "v1";
 }
-
-type OverrideCodeResponse = {
-  ok: boolean;
-  code: string;
-  giftCode?: string;
-  codeId: string;
-  collectionId: string;
-  version: string;
-  dropId: string;
-  count: number;
-  bindToUser?: boolean;
-  issuedTo?: string | null;
-  expiresAt: string;
-  issuedAt: string;
-};
 
 function parseCollectionRefs(): CollectionRef[] {
   const raw = String(
@@ -79,8 +61,8 @@ function parseCollectionRefs(): CollectionRef[] {
 const refs = parseCollectionRefs();
 const selectedRef = ref(`${refs[0].collectionId}::${refs[0].version}`);
 
-const savedAdminToken = useLocalStorage("pixpax/admin/token", "");
-const loginToken = ref(savedAdminToken.value);
+const router = useRouter();
+const auth = usePixpaxAuth();
 const userKey = useLocalStorage("pixpax/admin/userKey", "public:demo-user");
 const bindToUser = ref(true);
 const dropId = ref(`week-${toIsoWeek(new Date())}`);
@@ -90,7 +72,7 @@ const expiresInSeconds = ref(86400);
 const minting = ref(false);
 const mintError = ref("");
 const mintStatus = ref("");
-const minted = ref<OverrideCodeResponse | null>(null);
+const minted = ref<Awaited<ReturnType<typeof createOverrideCode>> | null>(null);
 const copied = ref<"" | "code" | "link">("");
 
 const activeRef = computed(() => {
@@ -101,7 +83,7 @@ const activeRef = computed(() => {
   };
 });
 
-const loggedIn = computed(() => !!String(savedAdminToken.value || "").trim());
+const loggedIn = computed(() => auth.isAuthenticated.value);
 const redeemCode = computed(() =>
   String(minted.value?.giftCode || minted.value?.code || "").trim(),
 );
@@ -112,18 +94,6 @@ const shareLink = computed(() => {
   if (typeof window === "undefined") return `?code=${code}`;
   return `${window.location.origin}?code=${code}`;
 });
-
-function login() {
-  savedAdminToken.value = String(loginToken.value || "").trim();
-  mintError.value = "";
-  mintStatus.value = savedAdminToken.value ? "Admin token saved locally." : "";
-}
-
-function logout() {
-  savedAdminToken.value = "";
-  loginToken.value = "";
-  mintStatus.value = "Logged out.";
-}
 
 async function copyText(value: string, kind: "code" | "link") {
   if (!value) return;
@@ -139,9 +109,18 @@ async function copyText(value: string, kind: "code" | "link") {
 }
 
 async function mintOverrideCode() {
-  const token = String(savedAdminToken.value || "").trim();
+  const canMint = await auth.ensurePermission("pixpax.admin.manage");
+  if (!canMint) {
+    mintError.value = "Admin permission required.";
+    await router.replace({
+      path: "/pixpax/control/login",
+      query: { redirect: "/pixpax/control/admin" },
+    });
+    return;
+  }
+  const token = String(auth.token.value || "").trim();
   if (!token) {
-    mintError.value = "Please login with your admin token first.";
+    mintError.value = "Admin token is not available.";
     return;
   }
 
@@ -163,46 +142,45 @@ async function mintOverrideCode() {
   minted.value = null;
 
   try {
-    const response = await fetch(
-      buildApiUrl(
-        `/v1/pixpax/collections/${encodeURIComponent(
-          collectionId,
-        )}/${encodeURIComponent(version)}/override-codes`,
-      ),
+    const payload = await createOverrideCode(
+      collectionId,
+      version,
       {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-          authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          userKey: normalizedUserKey || undefined,
-          bindToUser: bindToUser.value,
-          dropId: String(dropId.value || "").trim(),
-          count: Number(count.value || 0),
-          expiresInSeconds: Number(expiresInSeconds.value || 0),
-        }),
+        userKey: normalizedUserKey || undefined,
+        bindToUser: bindToUser.value,
+        dropId: String(dropId.value || "").trim(),
+        count: Number(count.value || 0),
+        expiresInSeconds: Number(expiresInSeconds.value || 0),
       },
+      token,
     );
-
-    if (!response.ok) {
-      const text = await response.text();
-      throw new Error(
-        `${response.status} ${response.statusText}: ${
-          text || "request failed"
-        }`,
-      );
-    }
-
-    const payload = (await response.json()) as OverrideCodeResponse;
     minted.value = payload;
     mintStatus.value = `Code minted for ${payload.collectionId}/${payload.version} (${payload.dropId}).`;
-  } catch (error: any) {
-    mintError.value = error?.message || "Failed to mint override code.";
+  } catch (error: unknown) {
+    if (error instanceof PixPaxApiError && error.status === 401) {
+      auth.logout();
+      mintError.value = "Admin session expired. Login again.";
+      await router.replace({
+        path: "/pixpax/control/login",
+        query: { redirect: "/pixpax/control/admin" },
+      });
+    } else {
+      mintError.value = String((error as Error)?.message || "Failed to mint override code.");
+    }
   } finally {
     minting.value = false;
   }
 }
+
+onMounted(async () => {
+  const ok = await auth.ensurePermission("pixpax.admin.manage");
+  if (!ok) {
+    await router.replace({
+      path: "/pixpax/control/login",
+      query: { redirect: "/pixpax/control/admin" },
+    });
+  }
+});
 </script>
 
 <template>
@@ -210,30 +188,11 @@ async function mintOverrideCode() {
     <section class="rounded-xl border border-[var(--ui-border)] p-4">
       <h1 class="text-xl font-semibold mb-2">PixPax Admin</h1>
       <p class="text-sm text-[var(--ui-fg-muted)] mb-4">
-        Use admin token auth to mint one-time pack override codes. The server
-        rejects requests without a valid token.
+        Mint one-time pack override codes. This route requires admin permission
+        and is server-verified.
       </p>
-
-      <div class="grid gap-2 md:grid-cols-[1fr_auto_auto]">
-        <label class="field">
-          <span>Admin token</span>
-          <input
-            v-model="loginToken"
-            type="password"
-            autocomplete="off"
-            placeholder="Paste PIX_PAX_ADMIN_TOKEN"
-          />
-        </label>
-        <div class="flex items-end">
-          <Button class="!px-4 !py-2" @click="login">Login</Button>
-        </div>
-        <div class="flex items-end">
-          <Button class="!px-4 !py-2" @click="logout">Logout</Button>
-        </div>
-      </div>
-
       <p class="mt-2 text-xs text-[var(--ui-fg-muted)]">
-        Status: {{ loggedIn ? "token saved locally" : "not logged in" }}
+        Status: {{ loggedIn ? "authenticated" : "not authenticated" }}
       </p>
     </section>
 

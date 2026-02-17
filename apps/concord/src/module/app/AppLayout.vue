@@ -19,6 +19,21 @@ import {
   useProfile,
 } from "../../module/profile/useProfile";
 
+const props = withDefaults(
+  defineProps<{
+    brandLabel?: string;
+    brandTo?: string;
+    badgeLabel?: string;
+    showBadge?: boolean;
+  }>(),
+  {
+    brandLabel: "Concord",
+    brandTo: "/",
+    badgeLabel: "DEMO",
+    showBadge: true,
+  }
+);
+
 type SampleProfilePair = {
   public?: PublicProfile;
   private?: PrivateProfile;
@@ -276,11 +291,12 @@ async function setProfile() {
         <div class="flex items-start gap-2 w-64 px-4 py-2">
           <RouterLink
             class="text-[var(--ui-fg)] font-[900] text-xl no-underline tracking-[-0.08em] brand"
-            to="/"
-            >Concord</RouterLink
+            :to="props.brandTo"
+            >{{ props.brandLabel }}</RouterLink
           ><span
+            v-if="props.showBadge"
             class="text-xs font-mono text-[var(--ui-primary)] bg-[var(--ui-primary)]/10 px-2 rounded-full flex items-center"
-            >DEMO</span
+            >{{ props.badgeLabel }}</span
           >
         </div>
 

@@ -806,7 +806,7 @@ test("verify-pack route fails loudly after cached tamper", async () => {
   assert.equal(verify.body.reason, "item-hashes-mismatch");
 });
 
-test("public analytics route returns pack totals, insights, and non-identifying pack list", async () => {
+test("authenticated analytics route returns pack totals, insights, and non-identifying pack list", async () => {
   createIssuerKeyEnv();
   process.env.PIX_PAX_ADMIN_TOKEN = "admin-token";
   process.env.PIX_PAX_OVERRIDE_CODE_SECRET = "override-secret-for-tests";
@@ -856,7 +856,9 @@ test("public analytics route returns pack totals, insights, and non-identifying 
   );
   assert.equal(issueB.statusCode, 200);
 
-  const analytics = await router.invoke("GET", "/v1/pixpax/analytics/packs");
+  const analytics = await router.invoke("GET", "/v1/pixpax/analytics/packs", {
+    headers: { authorization: "Bearer admin-token" },
+  });
   assert.equal(analytics.statusCode, 200);
   assert.equal(analytics.body.ok, true);
   assert.equal(analytics.body.packsTotal, 2);

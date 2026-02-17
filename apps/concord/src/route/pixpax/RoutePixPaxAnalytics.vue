@@ -1,57 +1,21 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
 import { Button } from "ternent-ui/primitives";
 import IdentityAvatar from "../../module/identity/IdentityAvatar.vue";
+import {
+  PixPaxApiError,
+  type PixPaxAnalyticsResponse,
+  getPackAnalytics,
+} from "../../module/pixpax/api/client";
+import { usePixpaxAuth } from "../../module/pixpax/auth/usePixpaxAuth";
 
-const apiBase = import.meta.env.DEV
-  ? ""
-  : import.meta.env.VITE_TERNENT_API_URL || "https://api.ternent.dev";
-
-function buildApiUrl(path: string) {
-  if (!apiBase) return path;
-  return new URL(path, apiBase).toString();
-}
-
-type AnalyticsRow = {
-  packId: string;
-  collectionId: string;
-  collectionVersion: string;
-  dropId: string;
-  issuedAt: string;
-  count: number;
-  issuanceMode: string;
-  untracked: boolean;
-  publicId?: string | null;
-  avatarSeed?: string | null;
-};
-
-type AnalyticsResponse = {
-  ok: boolean;
-  packsTotal: number;
-  packsReturned: number;
-  truncated?: boolean;
-  insights: {
-    totalPacks: number;
-    totalCardsIssued: number;
-    uniqueCollections: number;
-    uniqueDrops: number;
-    firstIssuedAt: string | null;
-    lastIssuedAt: string | null;
-    topDrops: Array<{ dropId: string; packs: number }>;
-    issuanceModes: Array<{ mode: string; packs: number }>;
-    packsByCollectionVersion: Array<{
-      collectionId: string;
-      collectionVersion: string;
-      packs: number;
-    }>;
-    packsByDay: Array<{ day: string; packs: number }>;
-  };
-  packs: AnalyticsRow[];
-};
+const router = useRouter();
+const auth = usePixpaxAuth();
 
 const loading = ref(false);
 const error = ref("");
-const data = ref<AnalyticsResponse | null>(null);
+const data = ref<PixPaxAnalyticsResponse | null>(null);
 
 const limitInput = ref("");
 const collectionIdFilter = ref("");
@@ -67,37 +31,41 @@ function toLocaleDate(value: string | null | undefined) {
 }
 
 async function loadAnalytics() {
+  const token = String(auth.token.value || "").trim();
+  if (!token) {
+    await router.replace({
+      path: "/pixpax/control/login",
+      query: { redirect: "/pixpax/control/analytics" },
+    });
+    return;
+  }
+
   loading.value = true;
   error.value = "";
 
   try {
-    const params = new URLSearchParams();
-    const parsedLimit = Number(limitInput.value);
-    if (Number.isFinite(parsedLimit) && parsedLimit > 0) {
-      params.set("limit", String(Math.floor(parsedLimit)));
+    let parsedLimit: number | null = null;
+    const rawLimit = Number(limitInput.value);
+    if (Number.isFinite(rawLimit) && rawLimit > 0) {
+      parsedLimit = Math.floor(rawLimit);
     }
-    if (collectionIdFilter.value.trim()) {
-      params.set("collectionId", collectionIdFilter.value.trim());
-    }
-
-    const query = params.toString();
-    const response = await fetch(
-      buildApiUrl(`/v1/pixpax/analytics/packs${query ? `?${query}` : ""}`),
+    data.value = await getPackAnalytics(
       {
-        headers: {
-          Accept: "application/json",
-        },
+        limit: parsedLimit,
+        collectionId: collectionIdFilter.value.trim() || undefined,
       },
+      token,
     );
-
-    if (!response.ok) {
-      const text = await response.text();
-      throw new Error(`${response.status} ${response.statusText}: ${text || "request failed"}`);
+  } catch (nextError: unknown) {
+    if (nextError instanceof PixPaxApiError && nextError.status === 401) {
+      auth.logout();
+      await router.replace({
+        path: "/pixpax/control/login",
+        query: { redirect: "/pixpax/control/analytics" },
+      });
+      return;
     }
-
-    data.value = (await response.json()) as AnalyticsResponse;
-  } catch (nextError: any) {
-    error.value = nextError?.message || String(nextError);
+    error.value = String((nextError as Error)?.message || nextError);
     data.value = null;
   } finally {
     loading.value = false;
@@ -114,7 +82,7 @@ onMounted(() => {
     <div class="flex flex-col gap-3">
       <h1 class="text-xl md:text-2xl font-semibold tracking-tight">PixPax Pack Analytics</h1>
       <p class="text-sm text-[var(--ui-fg-muted)]">
-        Public S3-backed issuance analytics with no user-identifying fields.
+        Authenticated S3-backed issuance analytics with no user-identifying fields.
       </p>
     </div>
 

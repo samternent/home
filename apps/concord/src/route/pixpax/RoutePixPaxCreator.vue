@@ -1,20 +1,18 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
+import { useRouter } from "vue-router";
 import { useLocalStorage } from "@vueuse/core";
 import { Button } from "ternent-ui/primitives";
-import CanvasSticker16 from "../../module/pixpax/CanvasSticker16.vue";
 import PixPaxStickerCard from "../../module/pixpax/PixPaxStickerCard.vue";
 import type { PackPalette16, Sticker } from "../../module/pixpax/sticker-types";
 import { argbToCss, packIndicesToIdx4Base64 } from "../../module/pixpax/pixel";
-
-const apiBase = import.meta.env.DEV
-  ? ""
-  : import.meta.env.VITE_TERNENT_API_URL || "https://api.ternent.dev";
-
-function buildApiUrl(path: string) {
-  if (!apiBase) return path;
-  return new URL(path, apiBase).toString();
-}
+import {
+  PixPaxApiError,
+  putCardJson,
+  putCollectionJson,
+  putIndexJson,
+} from "../../module/pixpax/api/client";
+import { usePixpaxAuth } from "../../module/pixpax/auth/usePixpaxAuth";
 
 type DraftCard = {
   cardId: string;
@@ -84,10 +82,8 @@ const project = useLocalStorage<DraftProject>(
   createDefaultProject(),
 );
 const selectedCardId = useLocalStorage("pixpax/creator/selectedCardId", "");
-
-const savedAdminToken = useLocalStorage("pixpax/admin/token", "");
-const loginToken = ref(savedAdminToken.value);
-const loginStatus = ref("");
+const router = useRouter();
+const auth = usePixpaxAuth();
 
 const activeColorIndex = ref(1);
 const painting = ref(false);
@@ -98,6 +94,8 @@ const uploadStatus = ref("");
 const uploadError = ref("");
 const uploading = ref(false);
 const uploadStep = ref("");
+const canPublish = computed(() => auth.hasPermission("pixpax.creator.publish"));
+const drawerOpen = useLocalStorage("pixpax/creator/drawerOpen", true);
 
 function ensurePalette() {
   if (!project.value.palette) {
@@ -357,17 +355,6 @@ function handleShinyChange(event: Event) {
   toggleShiny(target.value === "true");
 }
 
-function login() {
-  savedAdminToken.value = String(loginToken.value || "").trim();
-  loginStatus.value = savedAdminToken.value ? "Admin token saved locally." : "";
-}
-
-function logout() {
-  savedAdminToken.value = "";
-  loginToken.value = "";
-  loginStatus.value = "Logged out.";
-}
-
 const activePalette = computed<PackPalette16>(() => ({
   id: project.value.palette.id,
   colors: project.value.palette.colors.map((value) => Number(value) >>> 0),
@@ -541,27 +528,17 @@ function validateProject() {
   return "";
 }
 
-async function putJson(path: string, payload: unknown, token: string) {
-  const response = await fetch(buildApiUrl(path), {
-    method: "PUT",
-    headers: {
-      "content-type": "application/json",
-      authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(payload),
-  });
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(
-      `${response.status} ${response.statusText}: ${text || "request failed"}`,
-    );
-  }
-}
-
 async function uploadAll() {
-  const token = String(savedAdminToken.value || "").trim();
+  const allowed = await auth.ensurePermission("pixpax.creator.publish");
+  if (!allowed) {
+    uploadError.value =
+      "Publishing requires admin permission. Login in Control to continue.";
+    return;
+  }
+
+  const token = String(auth.token.value || "").trim();
   if (!token) {
-    uploadError.value = "Please login with your admin token first.";
+    uploadError.value = "Admin token is not available.";
     return;
   }
 
@@ -576,24 +553,19 @@ async function uploadAll() {
   uploadStatus.value = "";
 
   try {
-    const encodedCollectionId = encodeURIComponent(
-      project.value.collectionId.trim(),
-    );
-    const encodedVersion = encodeURIComponent(project.value.version.trim());
+    const collectionId = project.value.collectionId.trim();
+    const version = project.value.version.trim();
 
     uploadStep.value = "Uploading collection.json";
-    await putJson(
-      `/v1/pixpax/collections/${encodedCollectionId}/${encodedVersion}/collection`,
+    await putCollectionJson(
+      collectionId,
+      version,
       buildCollectionPayload(),
       token,
     );
 
     uploadStep.value = "Uploading index.json";
-    await putJson(
-      `/v1/pixpax/collections/${encodedCollectionId}/${encodedVersion}/index`,
-      buildIndexPayload(),
-      token,
-    );
+    await putIndexJson(collectionId, version, buildIndexPayload(), token);
 
     uploadStep.value = "Uploading cards";
     for (let i = 0; i < project.value.cards.length; i += 1) {
@@ -601,10 +573,10 @@ async function uploadAll() {
       uploadStep.value = `Uploading ${card.cardId} (${i + 1}/${
         project.value.cards.length
       })`;
-      await putJson(
-        `/v1/pixpax/collections/${encodedCollectionId}/${encodedVersion}/cards/${encodeURIComponent(
-          card.cardId,
-        )}`,
+      await putCardJson(
+        collectionId,
+        version,
+        card.cardId,
         buildCardPayload(card, i),
         token,
       );
@@ -612,12 +584,26 @@ async function uploadAll() {
 
     uploadStatus.value =
       "Upload complete. Collection is now stored server-side.";
-  } catch (error: any) {
-    uploadError.value = error?.message || "Upload failed.";
+  } catch (error: unknown) {
+    if (error instanceof PixPaxApiError && error.status === 401) {
+      auth.logout();
+      uploadError.value = "Admin session expired. Login in Control and retry.";
+    } else {
+      uploadError.value = String((error as Error)?.message || "Upload failed.");
+    }
   } finally {
     uploading.value = false;
     uploadStep.value = "";
   }
+}
+
+function openControlLogin() {
+  router.push({
+    path: "/pixpax/control/login",
+    query: {
+      redirect: "/pixpax/control/creator",
+    },
+  });
 }
 
 function copyEnvSnippet() {
@@ -638,6 +624,7 @@ function copyEnvSnippet() {
 }
 
 onMounted(() => {
+  void auth.validateToken();
   window.addEventListener("pointerup", stopPainting);
 });
 
@@ -647,183 +634,175 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="mx-auto flex w-full max-w-6xl flex-col gap-6 p-4">
-    <section class="rounded-xl border border-[var(--ui-border)] p-4">
-      <h1 class="text-xl font-semibold mb-2">PixPax Studio</h1>
-      <p class="text-sm text-[var(--ui-fg-muted)]">
-        Create sticker art, manage palette, and upload collections. Drafts save
-        locally, so you can work over multiple sessions.
-      </p>
-    </section>
+  <div class="creator-shell">
+    <main class="flex flex-1 p-8">
+      <button
+        v-if="!drawerOpen"
+        type="button"
+        class="drawer-fab"
+        @click="drawerOpen = true"
+      >
+        Open Controls
+      </button>
 
-    <section class="rounded-xl border border-[var(--ui-border)] p-4">
-      <h2 class="text-lg font-medium mb-3">Admin Token</h2>
-      <div class="grid gap-2 md:grid-cols-[1fr_auto_auto]">
-        <label class="field">
-          <span>Admin token</span>
-          <input
-            v-model="loginToken"
-            type="password"
-            autocomplete="off"
-            placeholder="Paste PIX_PAX_ADMIN_TOKEN"
-          />
-        </label>
-        <div class="flex items-end">
-          <Button class="!px-4 !py-2" @click="login">Login</Button>
+      <div class="flex flex-1 max-h-full" @contextmenu.prevent>
+        <div
+          class="pointer-events-none absolute inset-0 z-[0] animate-[atmoDrift_12s_ease-in-out_infinite_alternate] bg-[radial-gradient(circle_at_18%_22%,color-mix(in_srgb,var(--ui-accent)_35%,transparent)_0%,transparent_46%),radial-gradient(circle_at_78%_70%,color-mix(in_srgb,var(--ui-primary)_28%,transparent)_0%,transparent_52%)]"
+        />
+        <div class="editor-grid mx-auto max-w-120 max-h-120">
+          <button
+            v-for="(_, index) in 256"
+            :key="`cell-${index}`"
+            type="button"
+            class="editor-cell z-[1]"
+            :style="{ background: cellColor(index) }"
+            @pointerdown.prevent="startPainting(index)"
+            @pointerenter.prevent="handlePointerEnter(index)"
+          ></button>
         </div>
-        <div class="flex items-end">
-          <Button class="!px-4 !py-2" @click="logout">Logout</Button>
-        </div>
       </div>
-      <p class="mt-2 text-xs text-[var(--ui-fg-muted)]">
-        Status:
-        {{ savedAdminToken ? "token saved locally" : "not logged in" }}
-      </p>
-      <p v-if="loginStatus" class="mt-2 text-xs text-[var(--ui-fg-muted)]">
-        {{ loginStatus }}
-      </p>
-    </section>
+    </main>
 
-    <section class="rounded-xl border border-[var(--ui-border)] p-4">
-      <h2 class="text-lg font-medium mb-3">Collection Settings</h2>
-      <div class="grid gap-3 md:grid-cols-2">
-        <label class="field">
-          <span>Collection id</span>
-          <input v-model="project.collectionId" type="text" />
-        </label>
-        <label class="field">
-          <span>Version</span>
-          <input v-model="project.version" type="text" />
-        </label>
-        <label class="field">
-          <span>Name</span>
-          <input v-model="project.name" type="text" />
-        </label>
-        <label class="field">
-          <span>Palette id</span>
-          <input v-model="project.palette.id" type="text" />
-        </label>
-        <label class="field md:col-span-2">
-          <span>Description</span>
-          <textarea v-model="project.description" rows="2"></textarea>
-        </label>
+    <aside class="creator-drawer" :class="{ open: drawerOpen }">
+      <div class="drawer-header">
+        <button
+          type="button"
+          class="drawer-toggle"
+          @click="drawerOpen = !drawerOpen"
+        >
+          {{ drawerOpen ? "Close" : "Open" }}
+        </button>
       </div>
 
-      <div class="mt-4 grid gap-3 md:grid-cols-3">
-        <label class="field">
-          <span>Series id (single for now)</span>
-          <input v-model="project.series.seriesId" type="text" />
-        </label>
-        <label class="field">
-          <span>Series name</span>
-          <input v-model="project.series.name" type="text" />
-        </label>
-        <label class="field">
-          <span>Shiny limit (per series)</span>
-          <input
-            v-model.number="project.series.shinyLimit"
-            type="number"
-            min="0"
-            max="200"
-          />
-        </label>
-      </div>
-      <p class="mt-2 text-xs text-[var(--ui-fg-muted)]">
-        Shiny count: {{ shinyCount }} / {{ shinyLimit || "∞" }}
-      </p>
-      <p class="text-xs text-[var(--ui-fg-muted)]">Set to 0 for unlimited.</p>
-    </section>
+      <div v-if="drawerOpen" class="drawer-scroll">
+        <section class="drawer-section">
+          <h1 class="text-xl font-semibold">PixPax Studio</h1>
+          <p class="mt-2 text-xs text-[var(--ui-fg-muted)]">
+            Create sticker art on the canvas. All settings and publishing
+            actions are in this drawer.
+          </p>
+          <p class="mt-2 text-xs text-[var(--ui-fg-muted)]">
+            Status: {{ canPublish ? "publish enabled" : "edit/export only" }}
+          </p>
+          <Button
+            v-if="!canPublish"
+            class="!mt-3 !px-4 !py-2"
+            type="button"
+            @click="openControlLogin"
+          >
+            Login to publish
+          </Button>
+        </section>
 
-    <div class="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-      <section class="rounded-xl border border-[var(--ui-border)] p-4">
-        <h2 class="text-lg font-medium mb-3">Palette + Editor</h2>
-        <div class="grid gap-4 lg:grid-cols-[minmax(0,200px)_minmax(0,1fr)]">
-          <div class="grid gap-2">
-            <div
-              class="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--ui-fg-muted)]"
+        <section class="drawer-section">
+          <h2 class="section-title">Palette</h2>
+          <div class="grid grid-cols-4 gap-2">
+            <button
+              v-for="(color, index) in paletteOptions"
+              :key="`palette-${index}`"
+              type="button"
+              class="palette-chip"
+              :class="{
+                active: index === activeColorIndex,
+                transparent: index === 0,
+              }"
+              :style="{ background: argbToCss(color) }"
+              @click="selectColor(index)"
             >
-              Palette
-            </div>
-            <div class="grid grid-cols-4 gap-2">
-              <button
-                v-for="(color, index) in paletteOptions"
-                :key="`palette-${index}`"
-                type="button"
-                class="palette-chip"
-                :class="{
-                  active: index === activeColorIndex,
-                  transparent: index === 0,
-                }"
-                :style="{ background: argbToCss(color) }"
-                @click="selectColor(index)"
-              >
-                <span>{{ index }}</span>
-              </button>
-            </div>
-
-            <div class="grid gap-2">
-              <div
-                v-for="(color, index) in paletteOptions"
-                :key="`palette-edit-${index}`"
-                class="palette-edit"
-              >
-                <span class="text-xs text-[var(--ui-fg-muted)]">{{
-                  index
-                }}</span>
-                <input
-                  v-if="index !== 0"
-                  type="color"
-                  :value="hexFromArgb(color)"
-                  @input="handlePaletteInput(index, $event)"
-                />
-                <input
-                  v-else
-                  type="text"
-                  value="transparent"
-                  readonly
-                  class="mono"
-                />
-                <span class="mono text-[11px]">{{ hexFromArgb(color) }}</span>
-              </div>
-            </div>
+              <span>{{ index }}</span>
+            </button>
+          </div>
+          <p class="mt-2 text-xs text-[var(--ui-fg-muted)]">
+            Active color index: {{ activeColorIndex }}
+          </p>
+          <div class="mt-3 flex flex-wrap items-center gap-2">
+            <Button class="!px-3 !py-2" @click="clearArt">Clear</Button>
+            <Button class="!px-3 !py-2" @click="fillArt">Fill</Button>
           </div>
 
-          <div class="grid gap-4">
-            <div class="flex flex-wrap items-center gap-2">
-              <Button class="!px-3 !py-2" @click="clearArt">Clear</Button>
-              <Button class="!px-3 !py-2" @click="fillArt">Fill</Button>
-              <span class="text-xs text-[var(--ui-fg-muted)]">
-                Active color index: {{ activeColorIndex }}
-              </span>
-            </div>
-
-            <div class="editor-grid" @contextmenu.prevent>
-              <button
-                v-for="(_, index) in 256"
-                :key="`cell-${index}`"
-                type="button"
-                class="editor-cell"
-                :style="{ background: cellColor(index) }"
-                @pointerdown.prevent="startPainting(index)"
-                @pointerenter.prevent="handlePointerEnter(index)"
-              ></button>
+          <div class="mt-3 grid gap-2">
+            <div
+              v-for="(color, index) in paletteOptions"
+              :key="`palette-edit-${index}`"
+              class="palette-edit"
+            >
+              <span class="text-xs text-[var(--ui-fg-muted)]">{{ index }}</span>
+              <input
+                v-if="index !== 0"
+                type="color"
+                :value="hexFromArgb(color)"
+                @input="handlePaletteInput(index, $event)"
+              />
+              <input
+                v-else
+                type="text"
+                value="transparent"
+                readonly
+                class="mono"
+              />
+              <span class="mono text-[11px]">{{ hexFromArgb(color) }}</span>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section class="rounded-xl border border-[var(--ui-border)] p-4">
-        <h2 class="text-lg font-medium mb-3">Cards</h2>
-        <div class="grid gap-2">
+        <section class="drawer-section">
+          <h2 class="section-title">Collection Settings</h2>
+          <div class="grid gap-3">
+            <label class="field">
+              <span>Collection id</span>
+              <input v-model="project.collectionId" type="text" />
+            </label>
+            <label class="field">
+              <span>Version</span>
+              <input v-model="project.version" type="text" />
+            </label>
+            <label class="field">
+              <span>Name</span>
+              <input v-model="project.name" type="text" />
+            </label>
+            <label class="field">
+              <span>Palette id</span>
+              <input v-model="project.palette.id" type="text" />
+            </label>
+            <label class="field">
+              <span>Description</span>
+              <textarea v-model="project.description" rows="2"></textarea>
+            </label>
+            <label class="field">
+              <span>Series id</span>
+              <input v-model="project.series.seriesId" type="text" />
+            </label>
+            <label class="field">
+              <span>Series name</span>
+              <input v-model="project.series.name" type="text" />
+            </label>
+            <label class="field">
+              <span>Shiny limit</span>
+              <input
+                v-model.number="project.series.shinyLimit"
+                type="number"
+                min="0"
+                max="200"
+              />
+            </label>
+            <p class="text-xs text-[var(--ui-fg-muted)]">
+              Shiny count: {{ shinyCount }} / {{ shinyLimit || "∞" }} (set 0 for
+              unlimited)
+            </p>
+          </div>
+        </section>
+
+        <section class="drawer-section">
+          <h2 class="section-title">Cards</h2>
           <div class="flex flex-wrap gap-2">
-            <Button class="!px-3 !py-2" @click="addCard">Add card</Button>
+            <Button class="!px-3 !py-2" @click="addCard">Add</Button>
             <Button class="!px-3 !py-2" @click="duplicateCard"
               >Duplicate</Button
             >
             <Button class="!px-3 !py-2" @click="removeCard">Delete</Button>
           </div>
 
-          <div class="grid gap-2 max-h-[240px] overflow-auto">
+          <div class="mt-3 grid gap-2 max-h-[220px] overflow-auto">
             <button
               v-for="card in project.cards"
               :key="card.cardId"
@@ -839,121 +818,147 @@ onUnmounted(() => {
               <span v-if="card.shiny" class="badge">Shiny</span>
             </button>
           </div>
-        </div>
-        <div class="grid gap-3">
-          <div
-            class="text-xs uppercase tracking-[0.2em] text-[var(--ui-fg-muted)]"
-          >
-            Preview
+
+          <div v-if="currentCard" class="mt-3 grid gap-3">
+            <label class="field">
+              <span>Card id</span>
+              <input v-model="cardIdInput" type="text" @blur="updateCardId" />
+            </label>
+            <p v-if="cardIdError" class="text-xs text-red-600">
+              {{ cardIdError }}
+            </p>
+            <label class="field">
+              <span>Title</span>
+              <input v-model="currentCard.label" type="text" />
+            </label>
+            <label class="field">
+              <span>Role</span>
+              <input v-model="currentCard.role" type="text" />
+            </label>
+            <label class="field">
+              <span>Shiny</span>
+              <select :value="currentCard.shiny" @change="handleShinyChange">
+                <option :value="false">No</option>
+                <option :value="true">Yes</option>
+              </select>
+            </label>
+            <p v-if="shinyError" class="text-xs text-red-600">
+              {{ shinyError }}
+            </p>
           </div>
-          <PixPaxStickerCard
-            :sticker="previewSticker"
-            :palette="activePalette"
-            :animated="true"
-            :sparkles="previewSticker.meta.shiny"
-            :glow="previewSticker.meta.shiny"
-            :shimmer="true"
-            class="max-w-48"
-          />
-        </div>
 
-        <div v-if="currentCard" class="mt-4 grid gap-3">
-          <label class="field">
-            <span>Card id</span>
-            <input v-model="cardIdInput" type="text" @blur="updateCardId" />
-          </label>
-          <p v-if="cardIdError" class="text-xs text-red-600">
-            {{ cardIdError }}
+          <div class="mt-3 grid gap-2">
+            <div class="section-title">Preview</div>
+            <PixPaxStickerCard
+              :sticker="previewSticker"
+              :palette="activePalette"
+              :animated="true"
+              :sparkles="previewSticker.meta.shiny"
+              :glow="previewSticker.meta.shiny"
+              :shimmer="true"
+              class="max-w-48"
+            />
+          </div>
+        </section>
+
+        <section class="drawer-section">
+          <h2 class="section-title">Export + Publish</h2>
+          <div class="flex flex-wrap gap-2">
+            <Button class="!px-3 !py-2" @click="exportProject">
+              Download draft
+            </Button>
+            <Button class="!px-3 !py-2" @click="exportUploadBundle">
+              Download bundle
+            </Button>
+            <Button class="!px-3 !py-2" @click="triggerImport">
+              Import draft
+            </Button>
+            <input
+              ref="importInputRef"
+              type="file"
+              class="hidden"
+              accept="application/json"
+              @change="handleImport"
+            />
+          </div>
+
+          <div class="mt-3 flex flex-wrap items-center gap-2">
+            <Button
+              class="!px-4 !py-2 !bg-[var(--ui-accent)]"
+              :disabled="uploading || !canPublish"
+              @click="uploadAll"
+            >
+              {{ uploading ? "Uploading..." : "Publish collection" }}
+            </Button>
+            <Button class="!px-3 !py-2" @click="copyEnvSnippet">
+              Copy env snippet
+            </Button>
+          </div>
+
+          <p v-if="uploadStep" class="mt-3 text-xs text-[var(--ui-fg-muted)]">
+            {{ uploadStep }}
           </p>
-          <label class="field">
-            <span>Title</span>
-            <input v-model="currentCard.label" type="text" />
-          </label>
-          <label class="field">
-            <span>Role</span>
-            <input v-model="currentCard.role" type="text" />
-          </label>
-          <label class="field">
-            <span>Shiny</span>
-            <select :value="currentCard.shiny" @change="handleShinyChange">
-              <option :value="false">No</option>
-              <option :value="true">Yes</option>
-            </select>
-          </label>
-          <p v-if="shinyError" class="text-xs text-red-600">
-            {{ shinyError }}
+          <p v-if="uploadError" class="mt-2 text-xs font-semibold text-red-600">
+            {{ uploadError }}
           </p>
-        </div>
-      </section>
-    </div>
+          <p v-if="uploadStatus" class="mt-2 text-xs text-[var(--ui-fg-muted)]">
+            {{ uploadStatus }}
+          </p>
 
-    <section class="rounded-xl border border-[var(--ui-border)] p-4">
-      <h2 class="text-lg font-medium mb-3">Export + Upload</h2>
-      <div class="flex flex-wrap gap-2">
-        <Button class="!px-4 !py-2" @click="exportProject">
-          Download draft JSON
-        </Button>
-        <Button class="!px-4 !py-2" @click="exportUploadBundle">
-          Download upload bundle
-        </Button>
-        <Button class="!px-4 !py-2" @click="triggerImport">
-          Import draft JSON
-        </Button>
-        <input
-          ref="importInputRef"
-          type="file"
-          class="hidden"
-          accept="application/json"
-          @change="handleImport"
-        />
+          <ul
+            class="mt-3 list-disc list-inside text-xs text-[var(--ui-fg-muted)]"
+          >
+            <li>Upload collection, index, and cards.</li>
+            <li>Add it to `VITE_PIXPAX_PUBLIC_COLLECTIONS` and rebuild.</li>
+            <li>Verify rendering in `/pixpax/collections`.</li>
+          </ul>
+        </section>
       </div>
-
-      <div class="mt-4 flex flex-wrap items-center gap-3">
-        <Button
-          class="!px-5 !py-2 !bg-[var(--ui-accent)]"
-          :disabled="uploading"
-          @click="uploadAll"
-        >
-          {{ uploading ? "Uploading..." : "Upload collection" }}
-        </Button>
-        <Button class="!px-4 !py-2" @click="copyEnvSnippet">
-          Copy env snippet
-        </Button>
-      </div>
-      <p v-if="uploadStep" class="mt-3 text-xs text-[var(--ui-fg-muted)]">
-        {{ uploadStep }}
-      </p>
-      <p v-if="uploadError" class="mt-3 text-sm font-semibold text-red-600">
-        {{ uploadError }}
-      </p>
-      <p v-if="uploadStatus" class="mt-3 text-sm text-[var(--ui-fg-muted)]">
-        {{ uploadStatus }}
-      </p>
-
-      <div class="mt-4 rounded-lg border border-[var(--ui-border)] p-3">
-        <div
-          class="text-xs uppercase tracking-[0.2em] text-[var(--ui-fg-muted)]"
-        >
-          Deploy Checklist
-        </div>
-        <ul
-          class="mt-2 text-xs text-[var(--ui-fg-muted)] list-disc list-inside"
-        >
-          <li>Upload collection, index, and cards (button above).</li>
-          <li>
-            Add the collection to `VITE_PIXPAX_PUBLIC_COLLECTIONS` and rebuild
-            the app.
-          </li>
-          <li>
-            Use `/pixpax/collections` to verify cards render with the palette.
-          </li>
-        </ul>
-      </div>
-    </section>
+    </aside>
   </div>
 </template>
 
 <style scoped>
+.creator-shell {
+  position: relative;
+  display: flex;
+  height: 100%;
+  min-height: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+.creator-main {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  padding: clamp(8px, 2vw, 20px);
+}
+
+.canvas-stage {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  display: grid;
+  place-items: center;
+}
+
+.canvas-frame {
+  width: min(100%, 920px);
+  max-height: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 16px;
+  border: 1px solid var(--ui-border);
+  background: color-mix(in srgb, var(--ui-bg) 84%, transparent);
+  padding: clamp(8px, 1vw, 14px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.16);
+}
+
 .field {
   display: grid;
   gap: 6px;
@@ -1027,15 +1032,19 @@ onUnmounted(() => {
 .editor-grid {
   display: grid;
   grid-template-columns: repeat(16, minmax(0, 1fr));
-  gap: 2px;
+  gap: 1px;
   background: var(--ui-border);
   padding: 4px;
   border-radius: 12px;
 }
 
+.editor-grid--canvas {
+  width: 100%;
+  height: 100%;
+}
+
 .editor-cell {
   aspect-ratio: 1 / 1;
-  border-radius: 2px;
   border: 1px solid rgba(0, 0, 0, 0.08);
   cursor: crosshair;
 }
@@ -1063,5 +1072,95 @@ onUnmounted(() => {
   padding: 4px 6px;
   border-radius: 999px;
   border: 1px solid var(--ui-border);
+}
+
+.creator-drawer {
+  width: min(430px, 42vw);
+  min-width: 56px;
+  height: 100%;
+  border-left: 1px solid var(--ui-border);
+  background: color-mix(in srgb, var(--ui-bg) 92%, transparent);
+  backdrop-filter: blur(12px);
+  transition: width 180ms ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.creator-drawer:not(.open) {
+  width: 56px;
+}
+
+.drawer-header {
+  padding: 10px;
+  border-bottom: 1px solid var(--ui-border);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.drawer-toggle {
+  border: 1px solid var(--ui-border);
+  border-radius: 999px;
+  font-size: 11px;
+  padding: 6px 10px;
+}
+
+.drawer-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 10px;
+  display: grid;
+  gap: 10px;
+}
+
+.drawer-section {
+  border: 1px solid var(--ui-border);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--ui-bg) 88%, transparent);
+  padding: 10px;
+}
+
+.section-title {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--ui-fg-muted);
+  margin-bottom: 8px;
+}
+
+.drawer-fab {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  z-index: 10;
+  border: 1px solid var(--ui-border);
+  border-radius: 999px;
+  background: var(--ui-bg);
+  padding: 8px 12px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 1023px) {
+  .creator-drawer {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: min(90vw, 420px);
+    transform: translateX(100%);
+    transition: transform 180ms ease;
+    z-index: 20;
+  }
+
+  .creator-drawer.open {
+    transform: translateX(0);
+  }
+
+  .creator-drawer:not(.open) {
+    width: min(90vw, 420px);
+    transform: translateX(100%);
+  }
 }
 </style>

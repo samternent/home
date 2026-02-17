@@ -96,6 +96,48 @@ test("admin endpoints require bearer token", async () => {
   assert.equal(response.statusCode, 401);
 });
 
+test("admin session endpoint validates token and returns permissions", async () => {
+  const router = createRouterHarness();
+  process.env.PIX_PAX_ADMIN_TOKEN = "test-token";
+  pixpaxCollectionRoutes(router, { createStore });
+
+  const unauthorized = await router.invoke("GET", "/v1/pixpax/admin/session");
+  assert.equal(unauthorized.statusCode, 401);
+  assert.deepEqual(unauthorized.body, {
+    ok: false,
+    authenticated: false,
+    error: "Unauthorized.",
+  });
+
+  const authorized = await router.invoke("GET", "/v1/pixpax/admin/session", {
+    headers: { authorization: "Bearer test-token" },
+  });
+  assert.equal(authorized.statusCode, 200);
+  assert.equal(authorized.body.ok, true);
+  assert.equal(authorized.body.authenticated, true);
+  assert.deepEqual(authorized.body.permissions, [
+    "pixpax.admin.manage",
+    "pixpax.analytics.read",
+    "pixpax.creator.publish",
+    "pixpax.creator.view",
+  ]);
+});
+
+test("analytics endpoint requires bearer token", async () => {
+  const router = createRouterHarness();
+  process.env.PIX_PAX_ADMIN_TOKEN = "test-token";
+  pixpaxCollectionRoutes(router, { createStore });
+
+  const unauthorized = await router.invoke("GET", "/v1/pixpax/analytics/packs");
+  assert.equal(unauthorized.statusCode, 401);
+
+  const authorized = await router.invoke("GET", "/v1/pixpax/analytics/packs", {
+    headers: { authorization: "Bearer test-token" },
+  });
+  assert.equal(authorized.statusCode, 200);
+  assert.equal(authorized.body.ok, true);
+});
+
 test("collection upload validates payload and enforces immutability", async () => {
   const router = createRouterHarness();
   process.env.PIX_PAX_ADMIN_TOKEN = "test-token";

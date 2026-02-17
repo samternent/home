@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useFavicon, useTitle } from "@vueuse/core";
+import { useRoute } from "vue-router";
 import PixPaxLogoRaw from "../../module/pixpax/ui/assets/PixPaxLogo.svg?raw";
 import Concord from "../../module/concord/Concord.vue";
 import RoutePixPaxMainLayout from "./RoutePixPaxMainLayout.vue";
@@ -35,13 +36,17 @@ const themedSvg = computed(() => {
 });
 
 useFavicon(computed(() => svgToDataUrl(themedSvg.value)));
+
+const route = useRoute();
+const isControlRoute = computed(() => route.path.includes("/control"));
 </script>
 <template>
   <ClientOnly>
     <Concord>
-      <RoutePixPaxMainLayout>
+      <RoutePixPaxMainLayout v-if="!isControlRoute">
         <RouterView />
       </RoutePixPaxMainLayout>
+      <RouterView v-else />
     </Concord>
     <template #fallback>
       <div

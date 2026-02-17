@@ -107,6 +107,9 @@ Concord protocol notes to mirror in PixPax:
 - Admin or privileged actions must be explicit and auditable (events).
 - Do not introduce hidden "backdoors" (e.g. mutating pack status in DB).
 - Do not store secrets in ledger payloads.
+- Permissions are capability checks; UI gating must not replace server authorization.
+- Creator local editing/import/export is public, but publish/mint actions are privileged.
+- Token validation endpoints are read-only checks and MUST NOT emit domain events.
 
 ## Testing Tripwires (Must Keep Passing)
 

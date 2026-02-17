@@ -104,6 +104,12 @@ function isTruthyEnv(value) {
 const DEFAULT_PACK_COUNT = 5;
 const DEFAULT_OVERRIDE_CODE_TTL_SECONDS = 14 * 24 * 60 * 60;
 const MAX_OVERRIDE_CODE_TTL_SECONDS = 30 * 24 * 60 * 60;
+const PIXPAX_ADMIN_PERMISSIONS = Object.freeze([
+  "pixpax.admin.manage",
+  "pixpax.analytics.read",
+  "pixpax.creator.publish",
+  "pixpax.creator.view",
+]);
 
 function encodeBase64Url(value) {
   const bytes = Buffer.isBuffer(value) ? value : Buffer.from(String(value), "utf8");
@@ -489,21 +495,61 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
     return event;
   }
 
-  function requireAdminToken(req, res) {
+  function resolveAdminAccess(req) {
     const expectedToken = resolveAdminToken();
     if (!expectedToken) {
-      res.status(503).send({
-        error: "PIX_PAX_ADMIN_TOKEN is not configured.",
-      });
-      return false;
+      return {
+        ok: false,
+        statusCode: 503,
+        payload: {
+          error: "PIX_PAX_ADMIN_TOKEN is not configured.",
+        },
+      };
     }
     const provided = extractBearerToken(req?.headers?.authorization);
     if (!provided || provided !== expectedToken) {
-      res.status(401).send({ error: "Unauthorized." });
+      return {
+        ok: false,
+        statusCode: 401,
+        payload: { error: "Unauthorized." },
+      };
+    }
+    return {
+      ok: true,
+      statusCode: 200,
+      permissions: [...PIXPAX_ADMIN_PERMISSIONS],
+    };
+  }
+
+  function requireAdminToken(req, res) {
+    const access = resolveAdminAccess(req);
+    if (!access.ok) {
+      res.status(access.statusCode).send(access.payload);
       return false;
     }
     return true;
   }
+
+  router.get("/v1/pixpax/admin/session", (req, res) => {
+    const access = resolveAdminAccess(req);
+    if (!access.ok) {
+      if (access.statusCode === 401) {
+        res.status(401).send({
+          ok: false,
+          authenticated: false,
+          error: "Unauthorized.",
+        });
+        return;
+      }
+      res.status(access.statusCode).send(access.payload);
+      return;
+    }
+    res.status(200).send({
+      ok: true,
+      authenticated: true,
+      permissions: access.permissions,
+    });
+  });
 
   router.put("/v1/pixpax/collections/:collectionId/:version/collection", async (req, res) => {
     if (!requireAdminToken(req, res)) return;
@@ -955,6 +1001,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
   });
 
   router.get("/v1/pixpax/analytics/packs", async (req, res) => {
+    if (!requireAdminToken(req, res)) return;
     const collectionIdFilter = String(req.query?.collectionId || "").trim();
     const versionFilter = String(req.query?.version || "").trim();
     const dropIdFilter = String(req.query?.dropId || "").trim();
