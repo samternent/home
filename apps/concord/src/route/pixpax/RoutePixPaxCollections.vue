@@ -642,33 +642,35 @@ async function fetchJson<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(buildApiUrl(path), init);
   if (!response.ok) {
     const text = await response.text();
-    throw new Error(
+    const error = new Error(
       `${response.status} ${response.statusText}: ${text || "request failed"}`,
-    );
+    ) as Error & { status?: number; responseText?: string };
+    error.status = response.status;
+    error.responseText = text;
+    throw error;
   }
   return response.json() as Promise<T>;
 }
 
-async function fetchCollectionBundle(refEntry: CollectionRef): Promise<Collection> {
-  const encodedCollectionId = encodeURIComponent(refEntry.collectionId);
-  const encodedVersion = encodeURIComponent(refEntry.version);
-  const bundle = await fetchJson<ApiCollectionBundle>(
-    `/v1/pixpax/collections/${encodedCollectionId}/${encodedVersion}/bundle`,
-  );
-  const collectionJson = bundle.collection || {};
-  const indexJson = bundle.index || {};
-  const cards = Array.isArray(bundle.cards) ? bundle.cards : [];
-  const missingCardIds = Array.isArray(bundle.missingCardIds)
-    ? bundle.missingCardIds
+function buildCollectionFromPayloads(args: {
+  refEntry: CollectionRef;
+  collectionJson: any;
+  indexJson: any;
+  cards: ApiCard[];
+  missingCardIds?: string[];
+}): Collection {
+  const { refEntry, collectionJson, indexJson, cards } = args;
+  const missingCardIds = Array.isArray(args.missingCardIds)
+    ? args.missingCardIds
     : [];
 
   indexByCollection.value[refEntry.collectionId] = indexJson;
 
   const collection: Collection = {
     id: refEntry.collectionId,
-    name: String(collectionJson.name || refEntry.collectionId),
-    series: String(collectionJson.description || ""),
-    palette: normalizePalette(collectionJson.palette),
+    name: String(collectionJson?.name || refEntry.collectionId),
+    series: String(collectionJson?.description || ""),
+    palette: normalizePalette(collectionJson?.palette),
     stickers: [],
   };
 
@@ -682,7 +684,7 @@ async function fetchCollectionBundle(refEntry: CollectionRef): Promise<Collectio
       .filter(Boolean) as Array<readonly [string, ApiCard]>,
   );
 
-  const cardIds = Array.isArray(indexJson.cards)
+  const cardIds = Array.isArray(indexJson?.cards)
     ? indexJson.cards.map((value) => String(value || "").trim()).filter(Boolean)
     : Array.from(cardsById.keys());
 
@@ -690,7 +692,7 @@ async function fetchCollectionBundle(refEntry: CollectionRef): Promise<Collectio
     .map((cardId) => {
       const card = cardsById.get(cardId);
       if (!card) return null;
-      const mapping = indexJson.cardMap?.[cardId];
+      const mapping = indexJson?.cardMap?.[cardId];
       return toSticker({
         collection,
         card: {
@@ -706,7 +708,7 @@ async function fetchCollectionBundle(refEntry: CollectionRef): Promise<Collectio
     .filter(Boolean) as Sticker[];
 
   if (missingCardIds.length) {
-    setStatus("Collection bundle is missing card payloads.", {
+    setStatus("Collection is missing card payloads.", {
       collectionId: refEntry.collectionId,
       version: refEntry.version,
       missingCardIds,
@@ -714,6 +716,86 @@ async function fetchCollectionBundle(refEntry: CollectionRef): Promise<Collectio
   }
 
   return collection;
+}
+
+async function fetchCollectionLegacy(refEntry: CollectionRef): Promise<Collection> {
+  const encodedCollectionId = encodeURIComponent(refEntry.collectionId);
+  const encodedVersion = encodeURIComponent(refEntry.version);
+
+  const [collectionJson, indexJson] = await Promise.all([
+    fetchJson<any>(
+      `/v1/pixpax/collections/${encodedCollectionId}/${encodedVersion}/collection`,
+    ),
+    fetchJson<any>(
+      `/v1/pixpax/collections/${encodedCollectionId}/${encodedVersion}/index`,
+    ),
+  ]);
+
+  const cardIds = Array.isArray(indexJson?.cards)
+    ? indexJson.cards.map((value) => String(value || "").trim()).filter(Boolean)
+    : [];
+  const missingCardIds: string[] = [];
+  const cards = (
+    await Promise.all(
+      cardIds.map(async (cardId) => {
+        try {
+          const payload = await fetchJson<ApiCard>(
+            `/v1/pixpax/collections/${encodedCollectionId}/${encodedVersion}/cards/${encodeURIComponent(
+              cardId,
+            )}`,
+          );
+          return {
+            ...payload,
+            cardId,
+          };
+        } catch (error) {
+          const status = (error as { status?: number })?.status;
+          if (status === 404) {
+            missingCardIds.push(cardId);
+            return null;
+          }
+          throw error;
+        }
+      }),
+    )
+  ).filter(Boolean) as ApiCard[];
+
+  return buildCollectionFromPayloads({
+    refEntry,
+    collectionJson,
+    indexJson,
+    cards,
+    missingCardIds,
+  });
+}
+
+async function fetchCollectionBundle(refEntry: CollectionRef): Promise<Collection> {
+  const encodedCollectionId = encodeURIComponent(refEntry.collectionId);
+  const encodedVersion = encodeURIComponent(refEntry.version);
+  try {
+    const bundle = await fetchJson<ApiCollectionBundle>(
+      `/v1/pixpax/collections/${encodedCollectionId}/${encodedVersion}/bundle`,
+    );
+    return buildCollectionFromPayloads({
+      refEntry,
+      collectionJson: bundle.collection || {},
+      indexJson: bundle.index || {},
+      cards: Array.isArray(bundle.cards) ? bundle.cards : [],
+      missingCardIds: Array.isArray(bundle.missingCardIds)
+        ? bundle.missingCardIds
+        : [],
+    });
+  } catch (error) {
+    const status = (error as { status?: number })?.status;
+    if (status === 404) {
+      setStatus("Bundle endpoint unavailable. Falling back to legacy collection fetch.", {
+        collectionId: refEntry.collectionId,
+        version: refEntry.version,
+      });
+      return fetchCollectionLegacy(refEntry);
+    }
+    throw error;
+  }
 }
 
 function toKitParts(cards: Sticker[]) {
