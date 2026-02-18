@@ -123,9 +123,116 @@ export function getPlatformAccountSession() {
   return requestJson<PlatformAccountSessionResponse>("/v1/account/session");
 }
 
+export type PlatformAuthResult = {
+  token?: string;
+  user?: {
+    id: string;
+    email?: string;
+    name?: string;
+    image?: string | null;
+  };
+};
+
+export function signUpWithEmail(input: {
+  name: string;
+  email: string;
+  password: string;
+}) {
+  return requestJson<PlatformAuthResult>("/v1/auth/sign-up/email", {
+    method: "POST",
+    body: input,
+  });
+}
+
+export function signInWithEmail(input: { email: string; password: string }) {
+  return requestJson<PlatformAuthResult>("/v1/auth/sign-in/email", {
+    method: "POST",
+    body: input,
+  });
+}
+
+export function sendSignInOtp(input: { email: string }) {
+  return requestJson<{ success: boolean }>("/v1/auth/email-otp/send-verification-otp", {
+    method: "POST",
+    body: {
+      email: input.email,
+      type: "sign-in",
+    },
+  });
+}
+
+export function signInWithOtp(input: { email: string; otp: string }) {
+  return requestJson<PlatformAuthResult>("/v1/auth/sign-in/email-otp", {
+    method: "POST",
+    body: input,
+  });
+}
+
+export function signOutPlatformSession() {
+  return requestJson<{ ok?: boolean } | null>("/v1/auth/sign-out", {
+    method: "POST",
+  });
+}
+
 export function validateAdminSession(token?: string | null) {
   return requestJson<PixPaxAdminSessionResponse>("/v1/pixpax/admin/session", {
     token: token || undefined,
+  });
+}
+
+export type PixbookCloudSnapshot = {
+  id: string;
+  bookId: string;
+  version: number;
+  ledgerHead: string | null;
+  checksum: string;
+  createdAt: string;
+  payload: unknown;
+};
+
+export type PixbookCloudStateResponse = {
+  ok: boolean;
+  workspaceId: string;
+  managedUser: {
+    id: string;
+    displayName: string;
+    avatarPublicId?: string | null;
+    userKey: string;
+    status: string;
+  };
+  book: {
+    id: string;
+    managedUserId: string;
+    name: string;
+    status: string;
+    currentVersion: number;
+    createdAt?: string;
+    updatedAt?: string;
+  };
+  snapshot: PixbookCloudSnapshot | null;
+};
+
+export function getPixbookCloudState(workspaceId?: string) {
+  const query = new URLSearchParams();
+  if (workspaceId) query.set("workspaceId", workspaceId);
+  const path = `/v1/account/pixbook${query.toString() ? `?${query.toString()}` : ""}`;
+  return requestJson<PixbookCloudStateResponse>(path);
+}
+
+export function savePixbookCloudSnapshot(input: {
+  payload: unknown;
+  ledgerHead?: string;
+  workspaceId?: string;
+}) {
+  const query = new URLSearchParams();
+  if (input.workspaceId) query.set("workspaceId", input.workspaceId);
+  const path = `/v1/account/pixbook/snapshot${query.toString() ? `?${query.toString()}` : ""}`;
+  return requestJson<PixbookCloudStateResponse>(path, {
+    method: "PUT",
+    body: {
+      payload: input.payload,
+      ledgerHead: input.ledgerHead || "",
+    },
   });
 }
 

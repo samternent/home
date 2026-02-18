@@ -20,6 +20,14 @@ function hashValue(value) {
   return createHash("sha256").update(normalized, "utf8").digest("hex");
 }
 
+function toCanonicalJson(value) {
+  return JSON.stringify(value ?? null);
+}
+
+function sha256Hex(value) {
+  return createHash("sha256").update(String(value || ""), "utf8").digest("hex");
+}
+
 export async function getPrimaryWorkspaceForUser(userId) {
   const resolvedUserId = String(userId || "").trim();
   if (!resolvedUserId) return null;
@@ -416,4 +424,242 @@ export async function updateBook(userId, workspaceId, bookId, input) {
   );
 
   return result.rowCount > 0 ? { id: result.rows[0].id } : null;
+}
+
+export async function ensurePersonalPixbook(userId, workspaceId = "", defaults = {}) {
+  const workspace = await resolveWorkspaceForUser(userId, workspaceId);
+  if (!workspace) return null;
+
+  const canonicalUserId = String(userId || "").trim();
+  if (!canonicalUserId) return null;
+
+  const userKey = `auth:${canonicalUserId}`;
+  const defaultName = String(defaults?.displayName || defaults?.email || "My Pixbook").trim();
+
+  let managedUser = null;
+  const existingManaged = await dbQuery(
+    `
+    SELECT id, display_name, avatar_public_id, user_key, status, created_at, updated_at
+    FROM platform_managed_users
+    WHERE workspace_id = $1
+      AND user_key = $2
+      AND status != 'deleted'
+    ORDER BY created_at ASC
+    LIMIT 1
+    `,
+    [workspace.id, userKey]
+  );
+
+  if (existingManaged.rowCount > 0) {
+    managedUser = existingManaged.rows[0];
+  } else {
+    const managedUserId = createId("managed-user");
+    const managedUserDisplayName = defaultName || "My Pixbook";
+    await dbQuery(
+      `
+      INSERT INTO platform_managed_users
+        (id, workspace_id, display_name, avatar_public_id, user_key, status)
+      VALUES
+        ($1, $2, $3, NULL, $4, 'active')
+      `,
+      [managedUserId, workspace.id, managedUserDisplayName, userKey]
+    );
+    managedUser = {
+      id: managedUserId,
+      display_name: managedUserDisplayName,
+      avatar_public_id: null,
+      user_key: userKey,
+      status: "active",
+    };
+  }
+
+  let book = null;
+  const existingBook = await dbQuery(
+    `
+    SELECT id, managed_user_id, name, status, current_version, created_at, updated_at
+    FROM platform_books
+    WHERE workspace_id = $1
+      AND managed_user_id = $2
+      AND status != 'deleted'
+    ORDER BY created_at ASC
+    LIMIT 1
+    `,
+    [workspace.id, managedUser.id]
+  );
+
+  if (existingBook.rowCount > 0) {
+    book = existingBook.rows[0];
+  } else {
+    const bookId = createId("book");
+    await dbQuery(
+      `
+      INSERT INTO platform_books
+        (id, workspace_id, managed_user_id, name, status, current_version)
+      VALUES
+        ($1, $2, $3, $4, 'active', 0)
+      `,
+      [bookId, workspace.id, managedUser.id, "My Pixbook"]
+    );
+    book = {
+      id: bookId,
+      managed_user_id: managedUser.id,
+      name: "My Pixbook",
+      status: "active",
+      current_version: 0,
+    };
+  }
+
+  return {
+    workspace,
+    managedUser: {
+      id: managedUser.id,
+      displayName: managedUser.display_name,
+      avatarPublicId: managedUser.avatar_public_id,
+      userKey: managedUser.user_key,
+      status: managedUser.status,
+    },
+    book: {
+      id: book.id,
+      managedUserId: book.managed_user_id,
+      name: book.name,
+      status: book.status,
+      currentVersion: Number(book.current_version || 0),
+      createdAt: book.created_at,
+      updatedAt: book.updated_at,
+    },
+  };
+}
+
+export async function getLatestBookSnapshot(bookId) {
+  const canonicalBookId = String(bookId || "").trim();
+  if (!canonicalBookId) return null;
+
+  const result = await dbQuery(
+    `
+    SELECT
+      id,
+      book_id,
+      version,
+      cipher_object_key,
+      cipher_sha256,
+      wrapped_dek,
+      ledger_head,
+      payload_json,
+      created_at
+    FROM platform_book_snapshots
+    WHERE book_id = $1
+    ORDER BY version DESC
+    LIMIT 1
+    `,
+    [canonicalBookId]
+  );
+
+  if (result.rowCount === 0) return null;
+  const row = result.rows[0];
+  return {
+    id: row.id,
+    bookId: row.book_id,
+    version: Number(row.version || 0),
+    ledgerHead: row.ledger_head || null,
+    checksum: row.cipher_sha256 || "",
+    createdAt: row.created_at,
+    payload: row.payload_json ?? null,
+  };
+}
+
+export async function saveBookSnapshot(userId, workspaceId, bookId, input) {
+  const workspace = await resolveWorkspaceForUser(userId, workspaceId);
+  if (!workspace) return null;
+
+  const canonicalBookId = String(bookId || "").trim();
+  if (!canonicalBookId) throw new Error("bookId is required.");
+
+  const payload = input?.payload;
+  if (payload == null || typeof payload !== "object") {
+    throw new Error("payload object is required.");
+  }
+
+  const ledgerHead = String(input?.ledgerHead || "").trim() || null;
+  const payloadJson = toCanonicalJson(payload);
+  const checksum = sha256Hex(payloadJson);
+
+  const saved = await dbTx(async (client) => {
+    const ownedBook = await client.query(
+      `
+      SELECT id, workspace_id, current_version
+      FROM platform_books
+      WHERE id = $1
+        AND workspace_id = $2
+        AND status != 'deleted'
+      FOR UPDATE
+      `,
+      [canonicalBookId, workspace.id]
+    );
+
+    if (ownedBook.rowCount === 0) {
+      throw new Error("Book not found for workspace.");
+    }
+
+    const currentVersion = Number(ownedBook.rows[0].current_version || 0);
+    const nextVersion = currentVersion + 1;
+    const snapshotId = createId("book-snap");
+
+    await client.query(
+      `
+      INSERT INTO platform_book_snapshots
+        (id, book_id, version, cipher_object_key, cipher_sha256, wrapped_dek, ledger_head, payload_json)
+      VALUES
+        ($1, $2, $3, $4, $5, $6, $7, $8::jsonb)
+      `,
+      [
+        snapshotId,
+        canonicalBookId,
+        nextVersion,
+        "inline:json:v1",
+        checksum,
+        "none",
+        ledgerHead,
+        payloadJson,
+      ]
+    );
+
+    await client.query(
+      `
+      UPDATE platform_books
+      SET current_version = $2,
+          updated_at = NOW()
+      WHERE id = $1
+      `,
+      [canonicalBookId, nextVersion]
+    );
+
+    await client.query(
+      `
+      INSERT INTO platform_audit_events (id, workspace_id, actor_user_id, event_type, payload)
+      VALUES ($1, $2, $3, $4, $5::jsonb)
+      `,
+      [
+        createId("audit"),
+        workspace.id,
+        String(userId || "").trim() || null,
+        "book.snapshot.saved",
+        JSON.stringify({
+          bookId: canonicalBookId,
+          version: nextVersion,
+          ledgerHead,
+          checksum,
+        }),
+      ]
+    );
+
+    return {
+      id: snapshotId,
+      bookId: canonicalBookId,
+      version: nextVersion,
+      ledgerHead,
+      checksum,
+    };
+  });
+
+  return saved;
 }

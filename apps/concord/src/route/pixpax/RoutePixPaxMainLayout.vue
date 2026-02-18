@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { shallowRef, computed, onMounted, watch } from "vue";
+import { shallowRef, computed, onMounted, onUnmounted, watch } from "vue";
 import { onClickOutside, useLocalStorage } from "@vueuse/core";
 import {
   createIdentity,
@@ -22,6 +22,12 @@ import {
 import Logo from "../../module/brand/Logo.vue";
 import PixPaxLogo from "../../module/pixpax/ui/assets/PixPaxLogo.svg?component";
 import PixPaxLogoText from "../../module/pixpax/ui/assets/PixPaxLogoText.svg?component";
+import { usePixpaxAccount } from "../../module/pixpax/auth/usePixpaxAccount";
+import {
+  PixPaxApiError,
+  getPixbookCloudState,
+  savePixbookCloudSnapshot,
+} from "../../module/pixpax/api/client";
 
 type PixbookExport =
   | {
@@ -125,6 +131,25 @@ const pixbookHead = computed(() => {
 const storageChecked = shallowRef(false);
 const creatingPixbook = shallowRef(false);
 const shouldAutoCreatePixbook = shallowRef(true);
+const account = usePixpaxAccount();
+const authMode = useLocalStorage<"signin" | "signup">("pixpax/auth/mode", "signin");
+const authEmail = shallowRef("");
+const authPassword = shallowRef("");
+const authName = shallowRef("");
+const authOtp = shallowRef("");
+const authBusy = shallowRef(false);
+const authMessage = shallowRef("");
+const cloudAutoSync = useLocalStorage("pixpax/pixbook/cloudAutoSync", true);
+const cloudSyncing = shallowRef(false);
+const cloudSyncStatus = shallowRef("");
+const cloudSyncError = shallowRef("");
+const cloudSnapshotVersion = shallowRef<number | null>(null);
+const cloudSnapshotAt = shallowRef("");
+const cloudWorkspaceId = shallowRef("");
+const cloudBookId = shallowRef("");
+const cloudSnapshotPayload = shallowRef<unknown | null>(null);
+const lastCloudSyncHead = shallowRef("");
+let cloudSyncTimer: number | null = null;
 const viewingIdentityKey = computed(() => {
   return viewedPixbookProfile.value?.identity?.publicKey || "";
 });
@@ -142,7 +167,209 @@ const hasPublicView = computed(() => {
   );
 });
 
+const canCloudSync = computed(() => {
+  return account.isAuthenticated.value && !pixbookReadOnly.value && Boolean(ledger.value);
+});
+
+function resetCloudSyncState() {
+  cloudSyncStatus.value = "";
+  cloudSyncError.value = "";
+  cloudSnapshotVersion.value = null;
+  cloudSnapshotAt.value = "";
+  cloudWorkspaceId.value = "";
+  cloudBookId.value = "";
+  cloudSnapshotPayload.value = null;
+  lastCloudSyncHead.value = "";
+}
+
+async function refreshCloudSnapshot() {
+  if (!account.isAuthenticated.value) {
+    resetCloudSyncState();
+    return;
+  }
+
+  cloudSyncError.value = "";
+  try {
+    const response = await getPixbookCloudState(account.workspace.value?.workspaceId || undefined);
+    cloudWorkspaceId.value = response.workspaceId || "";
+    cloudBookId.value = response.book?.id || "";
+    cloudSnapshotVersion.value = response.snapshot?.version ?? null;
+    cloudSnapshotAt.value = response.snapshot?.createdAt || "";
+    cloudSnapshotPayload.value = response.snapshot?.payload ?? null;
+  } catch (error: unknown) {
+    if (error instanceof PixPaxApiError && error.status === 401) {
+      resetCloudSyncState();
+      return;
+    }
+    cloudSyncError.value = String((error as Error)?.message || "Failed to load cloud snapshot.");
+  }
+}
+
+async function saveCloudSnapshot(options: { silent?: boolean } = {}) {
+  if (!canCloudSync.value || !ledger.value) return false;
+  if (cloudSyncing.value) return false;
+
+  cloudSyncing.value = true;
+  if (!options.silent) cloudSyncStatus.value = "Saving pixbook to cloud...";
+  cloudSyncError.value = "";
+  try {
+    const payload = buildPixbook("private");
+    const response = await savePixbookCloudSnapshot({
+      payload,
+      ledgerHead: ledger.value?.head || "",
+      workspaceId: account.workspace.value?.workspaceId || undefined,
+    });
+    cloudWorkspaceId.value = response.workspaceId || "";
+    cloudBookId.value = response.book?.id || "";
+    cloudSnapshotVersion.value = response.snapshot?.version ?? null;
+    cloudSnapshotAt.value = response.snapshot?.createdAt || "";
+    cloudSnapshotPayload.value = response.snapshot?.payload ?? payload;
+    lastCloudSyncHead.value = ledger.value?.head || "";
+    if (!options.silent) {
+      cloudSyncStatus.value = `Cloud save complete (v${cloudSnapshotVersion.value ?? 0}).`;
+    }
+    return true;
+  } catch (error: unknown) {
+    cloudSyncError.value = String((error as Error)?.message || "Cloud save failed.");
+    return false;
+  } finally {
+    cloudSyncing.value = false;
+  }
+}
+
+async function restoreCloudSnapshot() {
+  if (!account.isAuthenticated.value) {
+    cloudSyncError.value = "Sign in to restore cloud pixbooks.";
+    return;
+  }
+
+  cloudSyncError.value = "";
+  cloudSyncStatus.value = "Loading cloud snapshot...";
+  try {
+    const response = await getPixbookCloudState(account.workspace.value?.workspaceId || undefined);
+    const payload = response.snapshot?.payload as PixbookExport | null;
+    if (!payload || typeof payload !== "object") {
+      throw new Error("No cloud snapshot found yet.");
+    }
+    if (payload.format !== PIXBOOK_FORMAT || payload.version !== PIXBOOK_VERSION) {
+      throw new Error("Cloud snapshot format is invalid.");
+    }
+
+    if (payload.kind === "public") {
+      pixbookReadOnly.value = true;
+      viewedPixbookProfile.value = payload.profile as PublicProfile;
+      publicLedgerSnapshot.value = JSON.stringify(payload.ledger);
+      await api.load(payload.ledger, [], true, true);
+      await api.replay();
+      cloudSyncStatus.value = "Public cloud pixbook loaded (read-only).";
+      return;
+    }
+
+    const privateProfile = payload.profile as PrivateProfile;
+    if (privateProfile?.format !== "concord-profile-private") {
+      throw new Error("Cloud snapshot private profile is missing.");
+    }
+
+    pixbookReadOnly.value = false;
+    viewedPixbookProfile.value = null;
+    publicLedgerSnapshot.value = "";
+    await impersonateIdentity(privateProfile);
+    await impersonateEncryption(privateProfile);
+    profile.replaceProfileMeta(privateProfile.metadata);
+    profile.setProfileId(privateProfile.profileId);
+    await api.load(payload.ledger, [], true, true);
+    await reauthAndReplay();
+    cloudSyncStatus.value = `Cloud pixbook restored (v${response.snapshot?.version || 0}).`;
+    if (ledger.value?.head) {
+      lastCloudSyncHead.value = ledger.value.head;
+    }
+    await refreshCloudSnapshot();
+  } catch (error: unknown) {
+    cloudSyncError.value = String((error as Error)?.message || "Cloud restore failed.");
+    cloudSyncStatus.value = "";
+  }
+}
+
+async function submitAccountAuth() {
+  authBusy.value = true;
+  authMessage.value = "";
+  cloudSyncError.value = "";
+  try {
+    if (authMode.value === "signup") {
+      await account.registerWithEmail({
+        name: authName.value,
+        email: authEmail.value,
+        password: authPassword.value,
+      });
+      authMessage.value = "Account created and signed in.";
+    } else {
+      await account.loginWithEmail({
+        email: authEmail.value,
+        password: authPassword.value,
+      });
+      authMessage.value = "Signed in.";
+    }
+    authPassword.value = "";
+    authOtp.value = "";
+    await refreshCloudSnapshot();
+  } catch (error: unknown) {
+    authMessage.value = String((error as Error)?.message || "Authentication failed.");
+  } finally {
+    authBusy.value = false;
+  }
+}
+
+async function sendOtpCode() {
+  authBusy.value = true;
+  authMessage.value = "";
+  try {
+    await account.requestLoginOtp(authEmail.value);
+    authMessage.value = "Verification code sent.";
+  } catch (error: unknown) {
+    authMessage.value = String((error as Error)?.message || "Failed to send OTP.");
+  } finally {
+    authBusy.value = false;
+  }
+}
+
+async function submitOtpCode() {
+  authBusy.value = true;
+  authMessage.value = "";
+  try {
+    await account.loginWithOtp({
+      email: authEmail.value,
+      otp: authOtp.value,
+    });
+    authMessage.value = "Signed in with OTP.";
+    authOtp.value = "";
+    await refreshCloudSnapshot();
+  } catch (error: unknown) {
+    authMessage.value = String((error as Error)?.message || "OTP sign-in failed.");
+  } finally {
+    authBusy.value = false;
+  }
+}
+
+async function signOutAccount() {
+  authBusy.value = true;
+  authMessage.value = "";
+  try {
+    await account.logout();
+    resetCloudSyncState();
+    authPassword.value = "";
+    authOtp.value = "";
+    authMessage.value = "Signed out.";
+  } catch (error: unknown) {
+    authMessage.value = String((error as Error)?.message || "Sign-out failed.");
+  } finally {
+    authBusy.value = false;
+  }
+}
+
 onMounted(async () => {
+  await account.refreshSession({ force: true });
+  await refreshCloudSnapshot();
+
   if (
     pixbookReadOnly.value &&
     (!viewedPixbookProfile.value || !publicLedgerSnapshot.value)
@@ -199,6 +426,47 @@ watch(
   },
   { immediate: true },
 );
+
+watch(
+  () => account.isAuthenticated.value,
+  async (next) => {
+    if (!next) {
+      resetCloudSyncState();
+      return;
+    }
+    await refreshCloudSnapshot();
+  },
+  { immediate: true }
+);
+
+watch(
+  () =>
+    [
+      account.isAuthenticated.value,
+      cloudAutoSync.value,
+      pixbookReadOnly.value,
+      ledger.value?.head || "",
+    ] as const,
+  ([authenticated, autoSyncEnabled, readOnly, head]) => {
+    if (!authenticated || !autoSyncEnabled || readOnly || !head) return;
+    if (head === lastCloudSyncHead.value) return;
+    if (cloudSyncTimer != null) {
+      window.clearTimeout(cloudSyncTimer);
+      cloudSyncTimer = null;
+    }
+    cloudSyncTimer = window.setTimeout(() => {
+      void saveCloudSnapshot({ silent: true });
+    }, 1400);
+  },
+  { immediate: false }
+);
+
+onUnmounted(() => {
+  if (cloudSyncTimer != null) {
+    window.clearTimeout(cloudSyncTimer);
+    cloudSyncTimer = null;
+  }
+});
 
 function downloadText(
   filename: string,
@@ -331,6 +599,7 @@ async function handlePixbookUpload(event: Event) {
       await api.load(parsed.ledger, [], true, true);
       await api.replay();
       pixbookUploadStatus.value = "Public pixbook loaded (read-only).";
+      lastCloudSyncHead.value = "";
       return;
     }
 
@@ -351,6 +620,7 @@ async function handlePixbookUpload(event: Event) {
     await api.load(parsed.ledger, [], true, true);
     await reauthAndReplay();
     pixbookUploadStatus.value = "Private pixbook imported.";
+    lastCloudSyncHead.value = ledger.value?.head || "";
   } finally {
     shouldAutoCreatePixbook.value = true;
   }
@@ -420,6 +690,7 @@ async function createNewPixbook() {
     await api.auth(privateKey.value, publicKey.value);
   }
   await api.create();
+  lastCloudSyncHead.value = "";
   shouldAutoCreatePixbook.value = true;
 }
 
@@ -440,6 +711,7 @@ async function returnToMyPixbook() {
   }
   shouldAutoCreatePixbook.value = true;
   await ensurePixbook();
+  lastCloudSyncHead.value = ledger.value?.head || "";
 }
 
 async function eraseLocalPixbook() {
@@ -456,6 +728,7 @@ async function eraseLocalPixbook() {
   window.localStorage.removeItem(TAMPER_LEDGER_KEY);
   window.localStorage.removeItem(TAMPER_ACTIVE_KEY);
   await ensurePixbook();
+  lastCloudSyncHead.value = "";
 }
 </script>
 <template>
@@ -517,13 +790,13 @@ async function eraseLocalPixbook() {
 
               <div
                 v-if="userMenuOpen"
-                class="border border-[var(--ui-border)] absolute p-2 bg-[var(--ui-surface)] rounded mt-2 w-64 right-0 shadow top-12"
+                class="border border-[var(--ui-border)] absolute p-3 bg-[var(--ui-surface)] rounded mt-2 w-[22rem] right-0 shadow top-12 max-h-[80vh] overflow-auto"
               >
-                <div class="flex flex-col gap-2 py-2">
+                <div class="flex flex-col gap-3 py-1">
                   <IdentityAvatar
                     :identity="publicKeyPEM"
                     size="lg"
-                    class="mx-auto my-4"
+                    class="mx-auto mt-1"
                   />
                   <span class="p-2 text-center font-thin"
                     >@{{ profileUsername }}</span
@@ -531,57 +804,191 @@ async function eraseLocalPixbook() {
 
                   <div
                     v-if="!hasProfile"
-                    class="flex flex-col justify-center items-center absolute h-full w-full backdrop-blur-md top-0 left-0 right-0 bottom-0"
+                    class="flex flex-col gap-2 rounded-md border border-[var(--ui-border)] bg-[var(--ui-bg)]/60 p-2"
                   >
-                    <div class="flex flex-col gap-2">
-                      <div
-                        class="flex flex-col items-center gap-2 rounded-lg bg-[var(--ui-bg)] border border-[var(--ui-border)]"
+                    <p class="text-xs text-[var(--ui-fg-muted)]">
+                      Set a display handle for your local Pixbook identity.
+                    </p>
+                    <input
+                      v-model="username"
+                      type="text"
+                      placeholder="Display name"
+                      class="border border-[var(--ui-border)] px-3 py-2 rounded-md bg-[var(--ui-bg)] text-xs"
+                    />
+                    <div class="grid grid-cols-2 gap-2">
+                      <button
+                        class="border border-[var(--ui-border)] px-3 py-2 text-xs rounded-md"
+                        @click="setProfile"
                       >
-                        <IdentityAvatar
-                          :identity="publicKeyPEM"
-                          size="lg"
-                          class="mx-auto my-4"
-                        />
-                      </div>
-
+                        Set handle
+                      </button>
                       <button
                         @click="generateNewIdentity"
                         @animationend="
                           (e) => e.currentTarget?.classList.remove('spin')
                         "
-                        class="spin-target size-8 flex items-center justify-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-bg)] p-2 mx-auto"
+                        class="spin-target border border-[var(--ui-border)] px-3 py-2 text-xs rounded-md"
                       >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke-width="1.5"
-                          stroke="currentColor"
-                          class="size-4"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
-                          />
-                        </svg>
-                      </button>
-
-                      <input
-                        v-model="username"
-                        type="text"
-                        placeholder="Display name"
-                        class="border border-[var(--ui-border)] px-4 py-2 rounded-full bg-[var(--ui-bg)]"
-                      />
-                      <button
-                        class="border border-[var(--ui-border)] px-4 py-2 text-sm rounded-full"
-                        @click="setProfile"
-                      >
-                        Set handle
+                        New identity
                       </button>
                     </div>
                   </div>
-                  <div class="flex flex-col gap-2">
+
+                  <section class="flex flex-col gap-2 rounded-md border border-[var(--ui-border)] p-2">
+                    <h3 class="text-xs uppercase tracking-wide text-[var(--ui-fg-muted)]">
+                      Account
+                    </h3>
+                    <p
+                      v-if="account.isAuthenticated.value"
+                      class="text-xs text-green-600"
+                    >
+                      Signed in as {{ account.user.value?.email || account.user.value?.name || account.user.value?.id }}
+                    </p>
+                    <template v-if="!account.isAuthenticated.value">
+                      <div class="grid grid-cols-2 gap-2 text-xs">
+                        <button
+                          type="button"
+                          class="rounded-md border px-2 py-1"
+                          :class="authMode === 'signin' ? 'border-[var(--ui-accent)]' : 'border-[var(--ui-border)]'"
+                          @click="authMode = 'signin'"
+                        >
+                          Sign in
+                        </button>
+                        <button
+                          type="button"
+                          class="rounded-md border px-2 py-1"
+                          :class="authMode === 'signup' ? 'border-[var(--ui-accent)]' : 'border-[var(--ui-border)]'"
+                          @click="authMode = 'signup'"
+                        >
+                          Sign up
+                        </button>
+                      </div>
+                      <input
+                        v-model="authEmail"
+                        type="email"
+                        placeholder="Email"
+                        class="border border-[var(--ui-border)] px-3 py-2 rounded-md bg-[var(--ui-bg)] text-xs"
+                      />
+                      <input
+                        v-if="authMode === 'signup'"
+                        v-model="authName"
+                        type="text"
+                        placeholder="Display name"
+                        class="border border-[var(--ui-border)] px-3 py-2 rounded-md bg-[var(--ui-bg)] text-xs"
+                      />
+                      <input
+                        v-model="authPassword"
+                        type="password"
+                        placeholder="Password"
+                        class="border border-[var(--ui-border)] px-3 py-2 rounded-md bg-[var(--ui-bg)] text-xs"
+                      />
+                      <button
+                        type="button"
+                        class="w-full text-left text-xs px-3 py-2 rounded-lg border border-[var(--ui-border)] hover:bg-[var(--ui-fg)]/5 transition-colors disabled:opacity-50"
+                        :disabled="authBusy"
+                        @click="submitAccountAuth"
+                      >
+                        {{ authBusy ? "Working..." : authMode === "signup" ? "Create account" : "Sign in" }}
+                      </button>
+
+                      <div class="border-t border-[var(--ui-border)] pt-2 flex flex-col gap-2">
+                        <p class="text-[11px] text-[var(--ui-fg-muted)]">Email code sign-in</p>
+                        <input
+                          v-model="authOtp"
+                          type="text"
+                          placeholder="6-digit code"
+                          class="border border-[var(--ui-border)] px-3 py-2 rounded-md bg-[var(--ui-bg)] text-xs"
+                        />
+                        <div class="grid grid-cols-2 gap-2">
+                          <button
+                            type="button"
+                            class="text-xs px-2 py-2 rounded-md border border-[var(--ui-border)] hover:bg-[var(--ui-fg)]/5 disabled:opacity-50"
+                            :disabled="authBusy"
+                            @click="sendOtpCode"
+                          >
+                            Send code
+                          </button>
+                          <button
+                            type="button"
+                            class="text-xs px-2 py-2 rounded-md border border-[var(--ui-border)] hover:bg-[var(--ui-fg)]/5 disabled:opacity-50"
+                            :disabled="authBusy"
+                            @click="submitOtpCode"
+                          >
+                            Verify code
+                          </button>
+                        </div>
+                      </div>
+                    </template>
+                    <button
+                      v-else
+                      type="button"
+                      class="w-full text-left text-xs px-3 py-2 rounded-lg border border-[var(--ui-border)] hover:bg-[var(--ui-fg)]/5 transition-colors disabled:opacity-50"
+                      :disabled="authBusy"
+                      @click="signOutAccount"
+                    >
+                      {{ authBusy ? "Signing out..." : "Sign out" }}
+                    </button>
+                    <p v-if="authMessage" class="text-xs text-[var(--ui-fg-muted)]">
+                      {{ authMessage }}
+                    </p>
+                    <p
+                      v-if="account.error.value && account.status.value === 'error'"
+                      class="text-xs text-red-600"
+                    >
+                      {{ account.error.value }}
+                    </p>
+                  </section>
+
+                  <section class="flex flex-col gap-2 rounded-md border border-[var(--ui-border)] p-2">
+                    <h3 class="text-xs uppercase tracking-wide text-[var(--ui-fg-muted)]">
+                      Cloud Sync
+                    </h3>
+                    <p class="text-xs text-[var(--ui-fg-muted)]">
+                      Save your private Pixbook to your account so it follows you across devices.
+                    </p>
+                    <div v-if="account.isAuthenticated.value" class="flex flex-col gap-2">
+                      <label class="flex items-center gap-2 text-xs">
+                        <input v-model="cloudAutoSync" type="checkbox" />
+                        Auto-sync on changes
+                      </label>
+                      <button
+                        type="button"
+                        class="w-full text-left text-xs px-3 py-2 rounded-lg border border-[var(--ui-border)] hover:bg-[var(--ui-fg)]/5 transition-colors disabled:opacity-50"
+                        :disabled="!canCloudSync || cloudSyncing"
+                        @click="saveCloudSnapshot()"
+                      >
+                        {{ cloudSyncing ? "Saving..." : "Save to cloud now" }}
+                      </button>
+                      <button
+                        type="button"
+                        class="w-full text-left text-xs px-3 py-2 rounded-lg border border-[var(--ui-border)] hover:bg-[var(--ui-fg)]/5 transition-colors disabled:opacity-50"
+                        :disabled="cloudSyncing"
+                        @click="restoreCloudSnapshot"
+                      >
+                        Restore from cloud
+                      </button>
+                      <p
+                        v-if="cloudSnapshotVersion !== null"
+                        class="text-xs text-[var(--ui-fg-muted)]"
+                      >
+                        Latest cloud snapshot: v{{ cloudSnapshotVersion }} {{ cloudSnapshotAt ? `(${new Date(cloudSnapshotAt).toLocaleString()})` : "" }}
+                      </p>
+                    </div>
+                    <p v-else class="text-xs text-[var(--ui-fg-muted)]">
+                      Sign in to enable cloud Pixbook storage.
+                    </p>
+                    <p v-if="cloudSyncStatus" class="text-xs text-green-600">
+                      {{ cloudSyncStatus }}
+                    </p>
+                    <p v-if="cloudSyncError" class="text-xs text-red-600">
+                      {{ cloudSyncError }}
+                    </p>
+                  </section>
+
+                  <div class="flex flex-col gap-2 rounded-md border border-[var(--ui-border)] p-2">
+                    <h3 class="text-xs uppercase tracking-wide text-[var(--ui-fg-muted)]">
+                      Local Pixbook
+                    </h3>
                     <p class="text-xs text-[var(--ui-fg-muted)]">
                       Your pixbook lives in this browser. If you delete it or
                       clear storage without exporting, it is gone forever.

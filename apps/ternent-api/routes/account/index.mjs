@@ -3,11 +3,14 @@ import { requirePermission } from "../../services/auth/permissions.mjs";
 import {
   createBook,
   createManagedUser,
+  ensurePersonalPixbook,
   ensureWorkspaceForUser,
+  getLatestBookSnapshot,
   getWorkspaceSummary,
   listBooks,
   listManagedUsers,
   renameWorkspace,
+  saveBookSnapshot,
   updateBook,
   updateManagedUser,
 } from "../../services/account/platform-account-store.mjs";
@@ -176,4 +179,89 @@ export default function accountRoutes(router) {
       }
     }
   );
+
+  router.get("/v1/account/pixbook", requireSession, async (req, res) => {
+    try {
+      await upsertAuthUserShadow(req.platformSession);
+      await ensureWorkspaceForUser(req.platformSession);
+    } catch (error) {
+      console.error("[account] ensure pixbook workspace failed:", error);
+    }
+
+    const profile = ensurePersonalPixbook(
+      sessionUserId(req),
+      resolveWorkspaceId(req),
+      {
+        displayName: req.platformSession?.user?.name || req.platformSession?.user?.email || "My Pixbook",
+        email: req.platformSession?.user?.email || "",
+      }
+    );
+
+    const resolved = await profile;
+    if (!resolved) {
+      res.status(404).send({ ok: false, error: "Workspace not found." });
+      return;
+    }
+
+    const snapshot = await getLatestBookSnapshot(resolved.book.id);
+
+    res.status(200).send({
+      ok: true,
+      workspaceId: resolved.workspace.id,
+      managedUser: resolved.managedUser,
+      book: resolved.book,
+      snapshot,
+    });
+  });
+
+  router.put("/v1/account/pixbook/snapshot", requireSession, async (req, res) => {
+    try {
+      await upsertAuthUserShadow(req.platformSession);
+      await ensureWorkspaceForUser(req.platformSession);
+    } catch (error) {
+      console.error("[account] ensure pixbook workspace failed:", error);
+    }
+
+    const resolved = await ensurePersonalPixbook(
+      sessionUserId(req),
+      resolveWorkspaceId(req),
+      {
+        displayName: req.platformSession?.user?.name || req.platformSession?.user?.email || "My Pixbook",
+        email: req.platformSession?.user?.email || "",
+      }
+    );
+
+    if (!resolved) {
+      res.status(404).send({ ok: false, error: "Workspace not found." });
+      return;
+    }
+
+    try {
+      const saved = await saveBookSnapshot(
+        sessionUserId(req),
+        resolved.workspace.id,
+        resolved.book.id,
+        {
+          payload: req.body?.payload,
+          ledgerHead: req.body?.ledgerHead,
+        }
+      );
+
+      res.status(200).send({
+        ok: true,
+        workspaceId: resolved.workspace.id,
+        managedUser: resolved.managedUser,
+        book: {
+          ...resolved.book,
+          currentVersion: saved?.version ?? resolved.book.currentVersion,
+        },
+        snapshot: saved,
+      });
+    } catch (error) {
+      res.status(400).send({
+        ok: false,
+        error: error?.message || "Unable to save pixbook snapshot.",
+      });
+    }
+  });
 }
