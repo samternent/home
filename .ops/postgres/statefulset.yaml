@@ -14,10 +14,39 @@ spec:
       labels:
         app: ternent-postgres
     spec:
+      initContainers:
+        - name: install-wal-g
+          image: curlimages/curl:8.12.1
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "-lc"]
+          args:
+            - >-
+              set -euo pipefail &&
+              curl -fsSL -o /wal-g-bin/wal-g
+              "https://github.com/wal-g/wal-g/releases/download/${WALG_VERSION:-v3.0.8}/wal-g-pg-20.04-amd64" &&
+              cp /etc/ssl/certs/ca-certificates.crt /wal-g-certs/ca-certificates.crt &&
+              chmod +x /wal-g-bin/wal-g
+          env:
+            - name: WALG_VERSION
+              value: "v3.0.8"
+          volumeMounts:
+            - name: wal-g-bin
+              mountPath: /wal-g-bin
+            - name: wal-g-certs
+              mountPath: /wal-g-certs
       containers:
         - name: postgres
           image: postgres:17
           imagePullPolicy: IfNotPresent
+          args:
+            - -c
+            - wal_level=replica
+            - -c
+            - archive_mode=on
+            - -c
+            - archive_timeout=60
+            - -c
+            - archive_command=/usr/local/bin/wal-g wal-push %p
           ports:
             - containerPort: 5432
               name: postgres
@@ -39,6 +68,41 @@ spec:
                 secretKeyRef:
                   name: ternent-postgres
                   key: postgres-db
+            - name: WALG_S3_PREFIX
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-postgres-backup
+                  key: WALG_S3_PREFIX
+            - name: AWS_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-postgres-backup
+                  key: AWS_ENDPOINT
+            - name: AWS_REGION
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-postgres-backup
+                  key: AWS_REGION
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-postgres-backup
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-postgres-backup
+                  key: AWS_SECRET_ACCESS_KEY
+            - name: WALG_COMPRESSION_METHOD
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-postgres-backup
+                  key: WALG_COMPRESSION_METHOD
+                  optional: true
+            - name: PGSSLMODE
+              value: disable
+            - name: SSL_CERT_FILE
+              value: /etc/ssl/certs/ca-certificates.crt
           resources:
             requests:
               cpu: 50m
@@ -49,6 +113,19 @@ spec:
           volumeMounts:
             - name: pg-data
               mountPath: /var/lib/postgresql/data
+            - name: wal-g-bin
+              mountPath: /usr/local/bin/wal-g
+              subPath: wal-g
+              readOnly: true
+            - name: wal-g-certs
+              mountPath: /etc/ssl/certs/ca-certificates.crt
+              subPath: ca-certificates.crt
+              readOnly: true
+      volumes:
+        - name: wal-g-bin
+          emptyDir: {}
+        - name: wal-g-certs
+          emptyDir: {}
   volumeClaimTemplates:
     - metadata:
         name: pg-data

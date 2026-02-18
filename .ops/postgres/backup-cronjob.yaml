@@ -26,12 +26,41 @@ spec:
                   topologyKey: kubernetes.io/hostname
           containers:
             - name: backup
-              image: ghcr.io/wal-g/wal-g:latest
+              image: postgres:17
               command: ["/bin/sh", "-lc"]
               args:
                 - >-
-                  wal-g backup-push /var/lib/postgresql/data
+                  set -euo pipefail &&
+                  apt-get update &&
+                  apt-get install -y --no-install-recommends ca-certificates curl &&
+                  rm -rf /var/lib/apt/lists/* &&
+                  curl -fsSL -o /usr/local/bin/wal-g "https://github.com/wal-g/wal-g/releases/download/${WALG_VERSION:-v3.0.8}/wal-g-pg-20.04-amd64" &&
+                  chmod +x /usr/local/bin/wal-g &&
+                  wal-g backup-push /var/lib/postgresql/data/pgdata
               env:
+                - name: WALG_VERSION
+                  value: "v3.0.8"
+                - name: PGHOST
+                  value: ternent-postgres.backend.svc.cluster.local
+                - name: PGPORT
+                  value: "5432"
+                - name: PGUSER
+                  valueFrom:
+                    secretKeyRef:
+                      name: ternent-postgres
+                      key: postgres-user
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ternent-postgres
+                      key: postgres-password
+                - name: PGDATABASE
+                  valueFrom:
+                    secretKeyRef:
+                      name: ternent-postgres
+                      key: postgres-db
+                - name: PGSSLMODE
+                  value: disable
                 - name: WALG_S3_PREFIX
                   valueFrom:
                     secretKeyRef:
@@ -57,6 +86,12 @@ spec:
                     secretKeyRef:
                       name: ternent-postgres-backup
                       key: AWS_SECRET_ACCESS_KEY
+                - name: WALG_COMPRESSION_METHOD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ternent-postgres-backup
+                      key: WALG_COMPRESSION_METHOD
+                      optional: true
               volumeMounts:
                 - name: pg-data
                   mountPath: /var/lib/postgresql/data

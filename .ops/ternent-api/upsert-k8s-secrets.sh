@@ -86,8 +86,12 @@ if [[ "$WITH_POSTGRES" == "true" ]]; then
   local_aws_region="${AWS_REGION:-${LEDGER_REGION:-}}"
   local_aws_access_key_id="${AWS_ACCESS_KEY_ID:-${LEDGER_ACCESS_KEY_ID:-}}"
   local_aws_secret_access_key="${AWS_SECRET_ACCESS_KEY:-${LEDGER_SECRET_ACCESS_KEY:-}}"
+  local_walg_s3_prefix="${WALG_S3_PREFIX:-}"
+  if [[ -z "$local_walg_s3_prefix" && -n "${LEDGER_BUCKET:-}" ]]; then
+    local_walg_s3_prefix="s3://${LEDGER_BUCKET}/postgres"
+  fi
 
-  patch_key "$NAMESPACE" "ternent-postgres-backup" "WALG_S3_PREFIX" "${WALG_S3_PREFIX:-}"
+  patch_key "$NAMESPACE" "ternent-postgres-backup" "WALG_S3_PREFIX" "$local_walg_s3_prefix"
   patch_key "$NAMESPACE" "ternent-postgres-backup" "AWS_ENDPOINT" "$local_aws_endpoint"
   patch_key "$NAMESPACE" "ternent-postgres-backup" "AWS_REGION" "$local_aws_region"
   patch_key "$NAMESPACE" "ternent-postgres-backup" "AWS_ACCESS_KEY_ID" "$local_aws_access_key_id"
@@ -95,7 +99,7 @@ if [[ "$WITH_POSTGRES" == "true" ]]; then
   patch_key "$NAMESPACE" "ternent-postgres-backup" "WALG_COMPRESSION_METHOD" "${WALG_COMPRESSION_METHOD:-brotli}"
 
   if kubectl get namespace backend-dr >/dev/null 2>&1; then
-    patch_key "backend-dr" "ternent-postgres-backup" "WALG_S3_PREFIX" "${WALG_S3_PREFIX:-}"
+    patch_key "backend-dr" "ternent-postgres-backup" "WALG_S3_PREFIX" "$local_walg_s3_prefix"
     patch_key "backend-dr" "ternent-postgres-backup" "AWS_ENDPOINT" "$local_aws_endpoint"
     patch_key "backend-dr" "ternent-postgres-backup" "AWS_REGION" "$local_aws_region"
     patch_key "backend-dr" "ternent-postgres-backup" "AWS_ACCESS_KEY_ID" "$local_aws_access_key_id"

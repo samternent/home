@@ -93,19 +93,17 @@ async function buildRuntime() {
   let betterAuthNode;
   let passkeyMod;
   let pluginsMod;
-  let pgAdapterMod;
 
   try {
     betterAuthMod = await import("better-auth");
     betterAuthNode = await import("better-auth/node");
     passkeyMod = await import("@better-auth/passkey");
     pluginsMod = await import("better-auth/plugins");
-    pgAdapterMod = await import("better-auth/adapters/pg");
   } catch (error) {
     return {
       ok: false,
       reason:
-        "Better Auth dependencies are missing. Install better-auth, @better-auth/passkey, and adapter dependencies.",
+        "Better Auth dependencies are missing. Install better-auth and @better-auth/passkey.",
       cause: error,
     };
   }
@@ -114,7 +112,6 @@ async function buildRuntime() {
   const { toNodeHandler, fromNodeHeaders } = betterAuthNode;
   const { passkey } = passkeyMod;
   const { emailOTP } = pluginsMod;
-  const { pgAdapter } = pgAdapterMod;
 
   const pool = await getPlatformDbPool();
   if (!pool) {
@@ -136,9 +133,7 @@ async function buildRuntime() {
     baseURL: String(process.env.AUTH_BASE_URL || "").trim(),
     basePath: "/v1/auth",
     trustedOrigins,
-    database: pgAdapter(pool, {
-      provider: "pg",
-    }),
+    database: pool,
     advanced: {
       useSecureCookies: true,
       defaultCookieAttributes: {

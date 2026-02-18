@@ -14,14 +14,27 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: restore-drill
-              image: ghcr.io/wal-g/wal-g:latest
+              image: postgres:17
               command: ["/bin/sh", "-lc"]
               args:
                 - >-
+                  set -euo pipefail &&
+                  apt-get update &&
+                  apt-get install -y --no-install-recommends ca-certificates curl &&
+                  rm -rf /var/lib/apt/lists/* &&
+                  curl -fsSL -o /usr/local/bin/wal-g "https://github.com/wal-g/wal-g/releases/download/${WALG_VERSION:-v3.0.8}/wal-g-pg-20.04-amd64" &&
+                  chmod +x /usr/local/bin/wal-g &&
                   echo "Starting restore drill" &&
                   wal-g backup-list &&
-                  echo "Restore drill completed (backup inventory validated)."
+                  mkdir -p /tmp/restore-data &&
+                  wal-g backup-fetch /tmp/restore-data LATEST &&
+                  test -f /tmp/restore-data/PG_VERSION &&
+                  test -f /tmp/restore-data/global/pg_control &&
+                  test -f /tmp/restore-data/backup_label &&
+                  echo "Restore drill completed (backup fetch + control file validation)."
               env:
+                - name: WALG_VERSION
+                  value: "v3.0.8"
                 - name: WALG_S3_PREFIX
                   valueFrom:
                     secretKeyRef:
@@ -47,3 +60,9 @@ spec:
                     secretKeyRef:
                       name: ternent-postgres-backup
                       key: AWS_SECRET_ACCESS_KEY
+                - name: WALG_COMPRESSION_METHOD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ternent-postgres-backup
+                      key: WALG_COMPRESSION_METHOD
+                      optional: true

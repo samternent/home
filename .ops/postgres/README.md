@@ -19,10 +19,17 @@ This directory provisions a low-cost Postgres deployment in the existing `backen
 ## Notes
 
 - This is intentionally a single replica to keep cost low.
-- WAL archiving is enabled via `archive_command` with WAL-G.
-- The backup cronjob mounts the same PVC and runs `wal-g backup-push` once per day.
+- The Postgres StatefulSet installs `wal-g` at startup and enables `archive_mode=on` with `archive_command=wal-g wal-push %p` for continuous WAL shipping.
+- The backup/drill CronJobs install `wal-g` at runtime and run against Spaces.
+- The backup cronjob mounts the same PVC and runs `wal-g backup-push` once per day against `/var/lib/postgresql/data/pgdata`.
   It uses required pod affinity to schedule on the same node as Postgres (RWO PVC constraint).
-- The restore drill cron currently verifies backup inventory; expand it to full restore + SQL smoke checks once your storage credentials are stable.
+- The restore drill cron fetches `LATEST` into a disposable workspace and validates key control files (`PG_VERSION`, `global/pg_control`, `backup_label`).
+- The monthly PITR drill is currently an inventory baseline; extend it with timestamped restore + SQL smoke checks.
+
+Quick validation after rollout:
+
+1. `kubectl -n backend exec statefulset/ternent-postgres -- sh -lc 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "show archive_mode;" -c "show archive_command;"'`
+2. `kubectl -n backend exec statefulset/ternent-postgres -- sh -lc 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "select archived_count,failed_count,last_archived_wal,last_archived_time from pg_stat_archiver;"'`
 
 ## Recovery (manual runbook)
 
