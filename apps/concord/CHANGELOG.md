@@ -1,5 +1,11 @@
 # concord
 
+## 0.3.32
+
+### Patch Changes
+
+- [`22cdc69030e21656e07f175e7e71567e58a2d7ce`](https://github.com/samternent/home/commit/22cdc69030e21656e07f175e7e71567e58a2d7ce) Thanks [@samternent](https://github.com/samternent)! - Adds backend auth
+
 ## 0.3.31
 
 ### Patch Changes
