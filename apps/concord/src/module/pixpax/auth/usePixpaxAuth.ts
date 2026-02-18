@@ -1,6 +1,11 @@
 import { computed, shallowRef } from "vue";
 import { useLocalStorage } from "@vueuse/core";
-import { PixPaxApiError, validateAdminSession } from "../api/client";
+import {
+  PixPaxApiError,
+  getPlatformAccountSession,
+  getPlatformAuthSession,
+  validateAdminSession,
+} from "../api/client";
 
 export type PixPaxPermission =
   | "pixpax.admin.manage"
@@ -9,11 +14,13 @@ export type PixPaxPermission =
   | "pixpax.creator.view";
 
 type AuthStatus = "guest" | "validating" | "authenticated" | "invalid" | "error";
+type AuthSource = "guest" | "platform-session" | "bearer-token";
 
 const GUEST_PERMISSIONS: PixPaxPermission[] = ["pixpax.creator.view"];
 
 const token = useLocalStorage("pixpax/admin/token", "");
 const status = shallowRef<AuthStatus>("guest");
+const source = shallowRef<AuthSource>("guest");
 const permissions = shallowRef<PixPaxPermission[]>([...GUEST_PERMISSIONS]);
 const error = shallowRef("");
 const lastValidatedToken = shallowRef("");
@@ -38,6 +45,7 @@ function toUniquePermissions(input: string[]) {
 
 function applyGuest(nextStatus: AuthStatus = "guest", nextError = "") {
   status.value = nextStatus;
+  source.value = "guest";
   permissions.value = [...GUEST_PERMISSIONS];
   error.value = nextError;
   if (!token.value) {
@@ -45,25 +53,26 @@ function applyGuest(nextStatus: AuthStatus = "guest", nextError = "") {
   }
 }
 
-function applyAuthenticated(nextPermissions: string[]) {
+function applyAuthenticated(nextPermissions: string[], nextSource: AuthSource) {
   status.value = "authenticated";
+  source.value = nextSource;
   permissions.value = toUniquePermissions(nextPermissions);
   error.value = "";
-  lastValidatedToken.value = String(token.value || "").trim();
+  if (nextSource === "bearer-token") {
+    lastValidatedToken.value = String(token.value || "").trim();
+  }
 }
 
-async function validateToken(options: { force?: boolean } = {}) {
+async function validateToken(options: { force?: boolean; preferToken?: boolean } = {}) {
   const force = options.force === true;
+  const preferToken = options.preferToken === true;
   const normalizedToken = String(token.value || "").trim();
-  if (!normalizedToken) {
-    applyGuest("guest");
-    return false;
-  }
 
   if (
     !force &&
     status.value === "authenticated" &&
-    lastValidatedToken.value === normalizedToken
+    (source.value === "platform-session" ||
+      (source.value === "bearer-token" && lastValidatedToken.value === normalizedToken))
   ) {
     return true;
   }
@@ -75,19 +84,59 @@ async function validateToken(options: { force?: boolean } = {}) {
   status.value = "validating";
   error.value = "";
   const currentRun = (async () => {
+    let hasPlatformSession = false;
+
     try {
-      const response = await validateAdminSession(normalizedToken);
-      if (!response?.authenticated) {
-        applyGuest("invalid", "Unauthorized.");
-        return false;
+      if (!preferToken || !normalizedToken) {
+        try {
+          const authSession = await getPlatformAuthSession();
+          if (authSession?.authenticated) {
+            try {
+              const accountSession = await getPlatformAccountSession();
+              hasPlatformSession = true;
+              applyAuthenticated(accountSession?.workspace?.capabilities || [], "platform-session");
+              if (!normalizedToken) {
+                return true;
+              }
+            } catch (accountError: unknown) {
+              if (!(accountError instanceof PixPaxApiError) || accountError.status !== 401) {
+                throw accountError;
+              }
+            }
+          }
+        } catch (sessionError: unknown) {
+          if (!(sessionError instanceof PixPaxApiError) || sessionError.status !== 401) {
+            throw sessionError;
+          }
+        }
       }
-      applyAuthenticated(response.permissions || []);
-      return true;
+
+      if (normalizedToken) {
+        try {
+          const response = await validateAdminSession(normalizedToken);
+          if (response?.authenticated) {
+            applyAuthenticated(response.permissions || [], "bearer-token");
+            return true;
+          }
+        } catch (tokenError: unknown) {
+          if (!(tokenError instanceof PixPaxApiError) || tokenError.status !== 401) {
+            throw tokenError;
+          }
+          if (!hasPlatformSession) {
+            applyGuest("invalid", "Unauthorized.");
+            return false;
+          }
+          return true;
+        }
+      }
+
+      if (hasPlatformSession) {
+        return true;
+      }
+
+      applyGuest("guest");
+      return false;
     } catch (nextError: unknown) {
-      if (nextError instanceof PixPaxApiError && nextError.status === 401) {
-        applyGuest("invalid", "Unauthorized.");
-        return false;
-      }
       applyGuest("error", String((nextError as Error)?.message || "Auth request failed."));
       return false;
     } finally {
@@ -114,7 +163,7 @@ async function ensurePermission(permission: PixPaxPermission) {
 
 async function login(nextToken: string) {
   token.value = String(nextToken || "").trim();
-  return validateToken({ force: true });
+  return validateToken({ force: true, preferToken: true });
 }
 
 function logout() {
@@ -132,9 +181,12 @@ export function usePixpaxAuth() {
   return {
     token,
     status: computed(() => status.value),
+    source: computed(() => source.value),
     permissions: computed(() => permissions.value),
     error: computed(() => error.value),
-    isAuthenticated: computed(() => status.value === "authenticated"),
+    isAuthenticated: computed(
+      () => status.value === "authenticated" && source.value !== "guest"
+    ),
     hasPermission,
     validateToken,
     ensurePermission,

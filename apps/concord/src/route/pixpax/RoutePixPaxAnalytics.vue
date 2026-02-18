@@ -31,15 +31,6 @@ function toLocaleDate(value: string | null | undefined) {
 }
 
 async function loadAnalytics() {
-  const token = String(auth.token.value || "").trim();
-  if (!token) {
-    await router.replace({
-      path: "/pixpax/control/login",
-      query: { redirect: "/pixpax/control/analytics" },
-    });
-    return;
-  }
-
   loading.value = true;
   error.value = "";
 
@@ -54,10 +45,13 @@ async function loadAnalytics() {
         limit: parsedLimit,
         collectionId: collectionIdFilter.value.trim() || undefined,
       },
-      token,
+      auth.token.value || undefined,
     );
   } catch (nextError: unknown) {
-    if (nextError instanceof PixPaxApiError && nextError.status === 401) {
+    if (
+      nextError instanceof PixPaxApiError &&
+      (nextError.status === 401 || nextError.status === 403)
+    ) {
       auth.logout();
       await router.replace({
         path: "/pixpax/control/login",

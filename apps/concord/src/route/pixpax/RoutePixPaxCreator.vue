@@ -536,12 +536,6 @@ async function uploadAll() {
     return;
   }
 
-  const token = String(auth.token.value || "").trim();
-  if (!token) {
-    uploadError.value = "Admin token is not available.";
-    return;
-  }
-
   const validation = validateProject();
   if (validation) {
     uploadError.value = validation;
@@ -561,11 +555,11 @@ async function uploadAll() {
       collectionId,
       version,
       buildCollectionPayload(),
-      token,
+      auth.token.value || undefined,
     );
 
     uploadStep.value = "Uploading index.json";
-    await putIndexJson(collectionId, version, buildIndexPayload(), token);
+    await putIndexJson(collectionId, version, buildIndexPayload(), auth.token.value || undefined);
 
     uploadStep.value = "Uploading cards";
     for (let i = 0; i < project.value.cards.length; i += 1) {
@@ -578,14 +572,14 @@ async function uploadAll() {
         version,
         card.cardId,
         buildCardPayload(card, i),
-        token,
+        auth.token.value || undefined,
       );
     }
 
     uploadStatus.value =
       "Upload complete. Collection is now stored server-side.";
   } catch (error: unknown) {
-    if (error instanceof PixPaxApiError && error.status === 401) {
+    if (error instanceof PixPaxApiError && (error.status === 401 || error.status === 403)) {
       auth.logout();
       uploadError.value = "Admin session expired. Login in Control and retry.";
     } else {

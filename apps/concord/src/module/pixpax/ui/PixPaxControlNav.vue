@@ -36,8 +36,14 @@ const items: NavItem[] = [
 ];
 
 const authLabel = computed(() => {
+  if (auth.status.value === "authenticated" && auth.source.value === "platform-session") {
+    return "platform session";
+  }
+  if (auth.status.value === "authenticated" && auth.source.value === "bearer-token") {
+    return "token session";
+  }
   if (auth.status.value === "authenticated") return "authenticated";
-  if (auth.status.value === "validating") return "checking token";
+  if (auth.status.value === "validating") return "checking auth";
   if (auth.status.value === "invalid") return "token invalid";
   if (auth.status.value === "error") return "auth error";
   return "guest";
@@ -70,12 +76,12 @@ onMounted(() => {
       </div>
       <div class="mt-2 text-xs text-[var(--ui-fg-muted)]">Status: {{ authLabel }}</div>
       <button
-        v-if="auth.isAuthenticated.value"
+        v-if="auth.source.value === 'bearer-token'"
         type="button"
         class="mt-2 rounded border border-[var(--ui-border)] px-2 py-1 text-xs hover:bg-[var(--ui-fg)]/5"
         @click="auth.logout()"
       >
-        Logout
+        Clear token
       </button>
     </div>
 

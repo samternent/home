@@ -10,6 +10,7 @@ const auth = usePixpaxAuth();
 
 const tokenInput = ref(auth.token.value);
 const submitting = ref(false);
+const checkingSession = ref(false);
 const message = ref("");
 
 const redirectTo = computed(() => {
@@ -18,6 +19,17 @@ const redirectTo = computed(() => {
   if (value.startsWith("/pixpax/control/")) return value;
   return "/pixpax/control/admin";
 });
+
+function resolvePostLoginPath() {
+  const target = redirectTo.value;
+  if (target === "/pixpax/control/analytics" && !auth.hasPermission("pixpax.analytics.read")) {
+    return "/pixpax/control/creator";
+  }
+  if (target === "/pixpax/control/admin" && !auth.hasPermission("pixpax.admin.manage")) {
+    return "/pixpax/control/creator";
+  }
+  return target;
+}
 
 async function submit() {
   submitting.value = true;
@@ -29,13 +41,25 @@ async function submit() {
     message.value = auth.error.value || "Token validation failed.";
     return;
   }
-  await router.replace(redirectTo.value);
+  await router.replace(resolvePostLoginPath());
+}
+
+async function continueWithSession() {
+  checkingSession.value = true;
+  message.value = "";
+  const ok = await auth.validateToken({ force: true });
+  checkingSession.value = false;
+  if (!ok || !auth.isAuthenticated.value) {
+    message.value = auth.error.value || "No active platform session found.";
+    return;
+  }
+  await router.replace(resolvePostLoginPath());
 }
 
 onMounted(async () => {
-  const ok = await auth.validateToken();
-  if (ok) {
-    await router.replace(redirectTo.value);
+  const ok = await auth.validateToken({ force: true });
+  if (ok && auth.isAuthenticated.value) {
+    await router.replace(resolvePostLoginPath());
   }
 });
 </script>
@@ -45,8 +69,14 @@ onMounted(async () => {
     <section class="rounded-xl border border-[var(--ui-border)] bg-[var(--ui-bg)] p-6">
       <h1 class="text-xl font-semibold">PixPax Control Login</h1>
       <p class="mt-2 text-sm text-[var(--ui-fg-muted)]">
-        Enter the admin token to unlock protected control routes.
+        Use your platform session first. Admin token is optional fallback.
       </p>
+
+      <div class="mt-4 flex flex-wrap items-center gap-2">
+        <Button class="!px-4 !py-2" :disabled="checkingSession" @click="continueWithSession">
+          {{ checkingSession ? "Checking session..." : "Continue with platform session" }}
+        </Button>
+      </div>
 
       <div class="mt-4 grid gap-3 md:grid-cols-[1fr_auto]">
         <label class="field">
@@ -55,12 +85,12 @@ onMounted(async () => {
             v-model="tokenInput"
             type="password"
             autocomplete="off"
-            placeholder="Paste PIX_PAX_ADMIN_TOKEN"
+            placeholder="Optional: paste PIX_PAX_ADMIN_TOKEN"
           />
         </label>
         <div class="flex items-end">
           <Button class="!px-4 !py-2" :disabled="submitting" @click="submit">
-            {{ submitting ? "Checking..." : "Login" }}
+            {{ submitting ? "Checking..." : "Use token" }}
           </Button>
         </div>
       </div>

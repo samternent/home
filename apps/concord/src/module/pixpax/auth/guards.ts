@@ -17,6 +17,14 @@ export function requirePixPaxPermission(
     const auth = usePixpaxAuth();
     const ok = await auth.ensurePermission(permission);
     if (ok) return true;
+    if (auth.isAuthenticated.value) {
+      return {
+        path: "/pixpax/control/creator",
+        query: {
+          denied: permission,
+        },
+      };
+    }
     return loginRedirect(to.fullPath);
   };
 }

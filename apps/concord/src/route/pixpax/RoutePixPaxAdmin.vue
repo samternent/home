@@ -118,11 +118,6 @@ async function mintOverrideCode() {
     });
     return;
   }
-  const token = String(auth.token.value || "").trim();
-  if (!token) {
-    mintError.value = "Admin token is not available.";
-    return;
-  }
 
   const { collectionId, version } = activeRef.value;
   if (!collectionId || !version) {
@@ -152,12 +147,12 @@ async function mintOverrideCode() {
         count: Number(count.value || 0),
         expiresInSeconds: Number(expiresInSeconds.value || 0),
       },
-      token,
+      auth.token.value || undefined,
     );
     minted.value = payload;
     mintStatus.value = `Code minted for ${payload.collectionId}/${payload.version} (${payload.dropId}).`;
   } catch (error: unknown) {
-    if (error instanceof PixPaxApiError && error.status === 401) {
+    if (error instanceof PixPaxApiError && (error.status === 401 || error.status === 403)) {
       auth.logout();
       mintError.value = "Admin session expired. Login again.";
       await router.replace({
