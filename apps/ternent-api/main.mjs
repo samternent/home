@@ -25,6 +25,7 @@ function parseCsv(input) {
 }
 
 const corsAllowOrigins = parseCsv(process.env.CORS_ALLOW_ORIGINS);
+const localhostOriginPattern = /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(?::\d+)?$/i;
 
 app.use(
   cors({
@@ -36,12 +37,17 @@ app.use(
         return;
       }
 
+      if (localhostOriginPattern.test(origin)) {
+        callback(null, true);
+        return;
+      }
+
       if (corsAllowOrigins.length === 0 || corsAllowOrigins.includes(origin)) {
         callback(null, true);
         return;
       }
 
-      callback(new Error("Origin is not allowed by CORS policy."));
+      callback(new Error(`Origin is not allowed by CORS policy: ${origin}`));
     },
   })
 );

@@ -1,3 +1,5 @@
+import { platformAuthClient } from "../auth/platform-auth-client";
+
 export class PixPaxApiError extends Error {
   status: number;
   body: unknown;
@@ -116,62 +118,36 @@ export type PlatformAccountSessionResponse = {
 };
 
 export function getPlatformAuthSession() {
-  return requestJson<PlatformAuthSessionResponse>("/v1/auth/session");
+  return platformAuthClient.getSession().then((result) => {
+    if (result.error) {
+      throw new PixPaxApiError(
+        result.error.message || "Platform auth session request failed.",
+        Number(result.error.status || 500),
+        result.error
+      );
+    }
+
+    if (!result.data?.user?.id) {
+      return {
+        ok: false,
+        authenticated: false,
+        error: "Unauthorized.",
+      } satisfies PlatformAuthSessionResponse;
+    }
+
+    return {
+      ok: true,
+      authenticated: true,
+      session: {
+        user: result.data.user,
+        session: result.data.session || {},
+      },
+    } satisfies PlatformAuthSessionResponse;
+  });
 }
 
 export function getPlatformAccountSession() {
   return requestJson<PlatformAccountSessionResponse>("/v1/account/session");
-}
-
-export type PlatformAuthResult = {
-  token?: string;
-  user?: {
-    id: string;
-    email?: string;
-    name?: string;
-    image?: string | null;
-  };
-};
-
-export function signUpWithEmail(input: {
-  name: string;
-  email: string;
-  password: string;
-}) {
-  return requestJson<PlatformAuthResult>("/v1/auth/sign-up/email", {
-    method: "POST",
-    body: input,
-  });
-}
-
-export function signInWithEmail(input: { email: string; password: string }) {
-  return requestJson<PlatformAuthResult>("/v1/auth/sign-in/email", {
-    method: "POST",
-    body: input,
-  });
-}
-
-export function sendSignInOtp(input: { email: string }) {
-  return requestJson<{ success: boolean }>("/v1/auth/email-otp/send-verification-otp", {
-    method: "POST",
-    body: {
-      email: input.email,
-      type: "sign-in",
-    },
-  });
-}
-
-export function signInWithOtp(input: { email: string; otp: string }) {
-  return requestJson<PlatformAuthResult>("/v1/auth/sign-in/email-otp", {
-    method: "POST",
-    body: input,
-  });
-}
-
-export function signOutPlatformSession() {
-  return requestJson<{ ok?: boolean } | null>("/v1/auth/sign-out", {
-    method: "POST",
-  });
 }
 
 export function validateAdminSession(token?: string | null) {

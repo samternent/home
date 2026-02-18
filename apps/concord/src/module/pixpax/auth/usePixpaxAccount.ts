@@ -2,13 +2,8 @@ import { computed, shallowRef } from "vue";
 import {
   PixPaxApiError,
   getPlatformAccountSession,
-  getPlatformAuthSession,
-  sendSignInOtp,
-  signInWithEmail,
-  signInWithOtp,
-  signOutPlatformSession,
-  signUpWithEmail,
 } from "../api/client";
+import { platformAuthClient } from "./platform-auth-client";
 import { usePixpaxAuth } from "./usePixpaxAuth";
 
 type PixpaxAccountStatus = "loading" | "authenticated" | "guest" | "error";
@@ -35,6 +30,19 @@ const workspace = shallowRef<WorkspaceSummary>(null);
 const error = shallowRef("");
 let refreshInFlight: Promise<boolean> | null = null;
 
+function assertAuthSuccess<T extends { data: unknown; error: unknown }>(
+  result: T,
+  fallback: string
+) {
+  if (!result || !("error" in result) || !("data" in result)) {
+    throw new Error(fallback);
+  }
+  const { error: resultError } = result as { error: { message?: string } | null };
+  if (resultError) {
+    throw new Error(resultError.message || fallback);
+  }
+}
+
 function applyGuest(nextStatus: PixpaxAccountStatus = "guest", nextError = "") {
   status.value = nextStatus;
   sessionUser.value = null;
@@ -59,8 +67,8 @@ async function refreshSession(options: { force?: boolean } = {}) {
     status.value = "loading";
     error.value = "";
     try {
-      const authSession = await getPlatformAuthSession();
-      if (!authSession?.authenticated) {
+      const authSession = await platformAuthClient.getSession();
+      if (authSession.error || !authSession.data?.user?.id) {
         applyGuest("guest");
         await pixpaxAuth.validateToken({ force: true });
         return false;
@@ -68,7 +76,15 @@ async function refreshSession(options: { force?: boolean } = {}) {
 
       try {
         const accountSession = await getPlatformAccountSession();
-        applyAuthenticated(accountSession.user, accountSession.workspace);
+        applyAuthenticated(
+          {
+            id: String(authSession.data.user.id || ""),
+            email: authSession.data.user.email,
+            name: authSession.data.user.name,
+            image: authSession.data.user.image,
+          },
+          accountSession.workspace
+        );
       } catch (accountError: unknown) {
         if (accountError instanceof PixPaxApiError && accountError.status === 401) {
           applyGuest("guest");
@@ -100,41 +116,41 @@ async function refreshSession(options: { force?: boolean } = {}) {
   return run;
 }
 
-async function registerWithEmail(input: { name: string; email: string; password: string }) {
-  await signUpWithEmail({
-    name: String(input.name || "").trim(),
-    email: String(input.email || "").trim().toLowerCase(),
-    password: String(input.password || ""),
-  });
-  return refreshSession({ force: true });
-}
-
-async function loginWithEmail(input: { email: string; password: string }) {
-  await signInWithEmail({
-    email: String(input.email || "").trim().toLowerCase(),
-    password: String(input.password || ""),
-  });
-  return refreshSession({ force: true });
-}
-
 async function requestLoginOtp(email: string) {
-  await sendSignInOtp({
+  const result = await platformAuthClient.emailOtp.sendVerificationOtp({
     email: String(email || "").trim().toLowerCase(),
+    type: "sign-in",
   });
+  assertAuthSuccess(result, "Unable to send email verification code.");
 }
 
 async function loginWithOtp(input: { email: string; otp: string }) {
-  await signInWithOtp({
+  const result = await platformAuthClient.signIn.emailOtp({
     email: String(input.email || "").trim().toLowerCase(),
     otp: String(input.otp || "").trim(),
   });
+  assertAuthSuccess(result, "Unable to verify code.");
   return refreshSession({ force: true });
+}
+
+async function loginWithPasskey() {
+  const result = await platformAuthClient.signIn.passkey();
+  assertAuthSuccess(result, "Unable to sign in with passkey.");
+  return refreshSession({ force: true });
+}
+
+async function registerPasskey(name = "PixPax device") {
+  const normalized = String(name || "").trim();
+  const result = await platformAuthClient.passkey.addPasskey({
+    name: normalized || undefined,
+  });
+  assertAuthSuccess(result, "Unable to register passkey.");
 }
 
 async function logout() {
   const pixpaxAuth = usePixpaxAuth();
   try {
-    await signOutPlatformSession();
+    await platformAuthClient.signOut();
   } catch {
     // no-op; continue clearing local auth caches.
   }
@@ -150,10 +166,10 @@ export function usePixpaxAccount() {
     error: computed(() => error.value),
     isAuthenticated: computed(() => status.value === "authenticated"),
     refreshSession,
-    registerWithEmail,
-    loginWithEmail,
     requestLoginOtp,
     loginWithOtp,
+    loginWithPasskey,
+    registerPasskey,
     logout,
   };
 }

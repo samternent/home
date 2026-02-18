@@ -31,6 +31,39 @@ function isConfigured() {
 }
 
 async function createOtpSender() {
+  const resendApiKey = String(process.env.RESEND_API_KEY || "").trim();
+  const resendFrom = String(process.env.RESEND_FROM || "").trim();
+  const resendReplyTo = String(process.env.RESEND_REPLY_TO || "").trim();
+  const resendApiBase = String(process.env.RESEND_API_BASE || "https://api.resend.com")
+    .trim()
+    .replace(/\/+$/, "");
+
+  if (resendApiKey && resendFrom) {
+    return async ({ email, otp, type }) => {
+      const response = await fetch(`${resendApiBase}/emails`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${resendApiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from: resendFrom,
+          to: [email],
+          ...(resendReplyTo ? { reply_to: resendReplyTo } : {}),
+          subject: `Your Ternent verification code (${type})`,
+          text: `Your verification code is ${otp}. It expires in 5 minutes.`,
+        }),
+      });
+
+      if (!response.ok) {
+        const body = await response.text();
+        throw new Error(
+          `[platform-auth] Resend OTP send failed (${response.status}): ${body || "unknown error"}`
+        );
+      }
+    };
+  }
+
   const host = String(process.env.SMTP_HOST || "").trim();
   const port = Number.parseInt(String(process.env.SMTP_PORT || "587"), 10);
   const user = String(process.env.SMTP_USER || "").trim();

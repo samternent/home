@@ -8,6 +8,7 @@ import {
   getPlatformDbPool,
   getPlatformDbStatus,
 } from "../services/platform-db/index.mjs";
+import { getPlatformAuthRuntime } from "../services/auth/platform-auth.mjs";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 const migrationsDir = join(__dirname, "../data/migrations");
@@ -78,6 +79,18 @@ async function main() {
   for (const migration of migrations) {
     await applyMigration(migration);
   }
+
+  const authRuntime = await getPlatformAuthRuntime();
+  if (!authRuntime.ok) {
+    throw new Error(`Better Auth runtime is unavailable: ${authRuntime.reason}`);
+  }
+  const authContext = await authRuntime.auth.$context;
+  if (!authContext || typeof authContext.runMigrations !== "function") {
+    throw new Error("Better Auth migration context is unavailable.");
+  }
+  await authContext.runMigrations();
+  console.log("[platform-migrate] better-auth schema migration complete");
+
   console.log(`[platform-migrate] complete (${migrations.length} migration files scanned)`);
 }
 

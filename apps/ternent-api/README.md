@@ -149,12 +149,21 @@ Recommended:
 
 Email OTP fallback (optional, but recommended):
 
+- `RESEND_API_KEY`
+- `RESEND_FROM`
+- `RESEND_REPLY_TO` (optional)
+- `RESEND_API_BASE` (optional; defaults to `https://api.resend.com`)
+
+SMTP alternative (optional):
+
 - `SMTP_HOST`
 - `SMTP_PORT`
 - `SMTP_SECURE`
 - `SMTP_USER`
 - `SMTP_PASS`
 - `SMTP_FROM`
+
+Delivery order: Resend first (if configured), otherwise SMTP, otherwise OTP code fallback in API logs.
 
 ### Database migrations
 

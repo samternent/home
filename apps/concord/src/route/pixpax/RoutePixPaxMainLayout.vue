@@ -132,10 +132,7 @@ const storageChecked = shallowRef(false);
 const creatingPixbook = shallowRef(false);
 const shouldAutoCreatePixbook = shallowRef(true);
 const account = usePixpaxAccount();
-const authMode = useLocalStorage<"signin" | "signup">("pixpax/auth/mode", "signin");
 const authEmail = shallowRef("");
-const authPassword = shallowRef("");
-const authName = shallowRef("");
 const authOtp = shallowRef("");
 const authBusy = shallowRef(false);
 const authMessage = shallowRef("");
@@ -169,6 +166,10 @@ const hasPublicView = computed(() => {
 
 const canCloudSync = computed(() => {
   return account.isAuthenticated.value && !pixbookReadOnly.value && Boolean(ledger.value);
+});
+const canUsePasskey = computed(() => {
+  if (typeof window === "undefined") return false;
+  return Boolean(window.isSecureContext && "PublicKeyCredential" in window);
 });
 
 function resetCloudSyncState() {
@@ -290,35 +291,6 @@ async function restoreCloudSnapshot() {
   }
 }
 
-async function submitAccountAuth() {
-  authBusy.value = true;
-  authMessage.value = "";
-  cloudSyncError.value = "";
-  try {
-    if (authMode.value === "signup") {
-      await account.registerWithEmail({
-        name: authName.value,
-        email: authEmail.value,
-        password: authPassword.value,
-      });
-      authMessage.value = "Account created and signed in.";
-    } else {
-      await account.loginWithEmail({
-        email: authEmail.value,
-        password: authPassword.value,
-      });
-      authMessage.value = "Signed in.";
-    }
-    authPassword.value = "";
-    authOtp.value = "";
-    await refreshCloudSnapshot();
-  } catch (error: unknown) {
-    authMessage.value = String((error as Error)?.message || "Authentication failed.");
-  } finally {
-    authBusy.value = false;
-  }
-}
-
 async function sendOtpCode() {
   authBusy.value = true;
   authMessage.value = "";
@@ -350,13 +322,39 @@ async function submitOtpCode() {
   }
 }
 
+async function signInWithPasskey() {
+  authBusy.value = true;
+  authMessage.value = "";
+  try {
+    await account.loginWithPasskey();
+    authMessage.value = "Signed in with passkey.";
+    await refreshCloudSnapshot();
+  } catch (error: unknown) {
+    authMessage.value = String((error as Error)?.message || "Passkey sign-in failed.");
+  } finally {
+    authBusy.value = false;
+  }
+}
+
+async function registerPasskeyForAccount() {
+  authBusy.value = true;
+  authMessage.value = "";
+  try {
+    await account.registerPasskey();
+    authMessage.value = "Passkey added for this device.";
+  } catch (error: unknown) {
+    authMessage.value = String((error as Error)?.message || "Passkey setup failed.");
+  } finally {
+    authBusy.value = false;
+  }
+}
+
 async function signOutAccount() {
   authBusy.value = true;
   authMessage.value = "";
   try {
     await account.logout();
     resetCloudSyncState();
-    authPassword.value = "";
     authOtp.value = "";
     authMessage.value = "Signed out.";
   } catch (error: unknown) {
@@ -845,51 +843,12 @@ async function eraseLocalPixbook() {
                       Signed in as {{ account.user.value?.email || account.user.value?.name || account.user.value?.id }}
                     </p>
                     <template v-if="!account.isAuthenticated.value">
-                      <div class="grid grid-cols-2 gap-2 text-xs">
-                        <button
-                          type="button"
-                          class="rounded-md border px-2 py-1"
-                          :class="authMode === 'signin' ? 'border-[var(--ui-accent)]' : 'border-[var(--ui-border)]'"
-                          @click="authMode = 'signin'"
-                        >
-                          Sign in
-                        </button>
-                        <button
-                          type="button"
-                          class="rounded-md border px-2 py-1"
-                          :class="authMode === 'signup' ? 'border-[var(--ui-accent)]' : 'border-[var(--ui-border)]'"
-                          @click="authMode = 'signup'"
-                        >
-                          Sign up
-                        </button>
-                      </div>
                       <input
                         v-model="authEmail"
                         type="email"
                         placeholder="Email"
                         class="border border-[var(--ui-border)] px-3 py-2 rounded-md bg-[var(--ui-bg)] text-xs"
                       />
-                      <input
-                        v-if="authMode === 'signup'"
-                        v-model="authName"
-                        type="text"
-                        placeholder="Display name"
-                        class="border border-[var(--ui-border)] px-3 py-2 rounded-md bg-[var(--ui-bg)] text-xs"
-                      />
-                      <input
-                        v-model="authPassword"
-                        type="password"
-                        placeholder="Password"
-                        class="border border-[var(--ui-border)] px-3 py-2 rounded-md bg-[var(--ui-bg)] text-xs"
-                      />
-                      <button
-                        type="button"
-                        class="w-full text-left text-xs px-3 py-2 rounded-lg border border-[var(--ui-border)] hover:bg-[var(--ui-fg)]/5 transition-colors disabled:opacity-50"
-                        :disabled="authBusy"
-                        @click="submitAccountAuth"
-                      >
-                        {{ authBusy ? "Working..." : authMode === "signup" ? "Create account" : "Sign in" }}
-                      </button>
 
                       <div class="border-t border-[var(--ui-border)] pt-2 flex flex-col gap-2">
                         <p class="text-[11px] text-[var(--ui-fg-muted)]">Email code sign-in</p>
@@ -917,17 +876,44 @@ async function eraseLocalPixbook() {
                             Verify code
                           </button>
                         </div>
+                        <p class="text-[11px] text-[var(--ui-fg-muted)]">
+                          Self-hosted without SMTP/Resend configured? OTP codes fall back to API logs.
+                        </p>
+                      </div>
+
+                      <div class="border-t border-[var(--ui-border)] pt-2 flex flex-col gap-2">
+                        <p class="text-[11px] text-[var(--ui-fg-muted)]">Passkey sign-in</p>
+                        <button
+                          type="button"
+                          class="w-full text-left text-xs px-3 py-2 rounded-lg border border-[var(--ui-border)] hover:bg-[var(--ui-fg)]/5 transition-colors disabled:opacity-50"
+                          :disabled="authBusy || !canUsePasskey"
+                          @click="signInWithPasskey"
+                        >
+                          {{ authBusy ? "Working..." : "Sign in with passkey" }}
+                        </button>
+                        <p v-if="!canUsePasskey" class="text-[11px] text-[var(--ui-fg-muted)]">
+                          Passkeys need HTTPS and a compatible browser/device.
+                        </p>
                       </div>
                     </template>
-                    <button
-                      v-else
-                      type="button"
-                      class="w-full text-left text-xs px-3 py-2 rounded-lg border border-[var(--ui-border)] hover:bg-[var(--ui-fg)]/5 transition-colors disabled:opacity-50"
-                      :disabled="authBusy"
-                      @click="signOutAccount"
-                    >
-                      {{ authBusy ? "Signing out..." : "Sign out" }}
-                    </button>
+                    <template v-else>
+                      <button
+                        type="button"
+                        class="w-full text-left text-xs px-3 py-2 rounded-lg border border-[var(--ui-border)] hover:bg-[var(--ui-fg)]/5 transition-colors disabled:opacity-50"
+                        :disabled="authBusy || !canUsePasskey"
+                        @click="registerPasskeyForAccount"
+                      >
+                        {{ authBusy ? "Working..." : "Add passkey to this device" }}
+                      </button>
+                      <button
+                        type="button"
+                        class="w-full text-left text-xs px-3 py-2 rounded-lg border border-[var(--ui-border)] hover:bg-[var(--ui-fg)]/5 transition-colors disabled:opacity-50"
+                        :disabled="authBusy"
+                        @click="signOutAccount"
+                      >
+                        {{ authBusy ? "Signing out..." : "Sign out" }}
+                      </button>
+                    </template>
                     <p v-if="authMessage" class="text-xs text-[var(--ui-fg-muted)]">
                       {{ authMessage }}
                     </p>
