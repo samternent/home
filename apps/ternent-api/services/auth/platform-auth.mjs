@@ -142,6 +142,10 @@ async function buildRuntime() {
         secure: true,
       },
     },
+    emailAndPassword: {
+      enabled: true,
+      requireEmailVerification: false,
+    },
     session: {
       expiresIn: numberEnv("AUTH_SESSION_IDLE_SECONDS", DEFAULT_IDLE_SECONDS),
       updateAge: numberEnv("AUTH_SESSION_ROLLING_SECONDS", DEFAULT_ROLLING_SECONDS),
