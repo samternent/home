@@ -1,5 +1,11 @@
 # ternent-api
 
+## 0.2.14
+
+### Patch Changes
+
+- [`22cdc69030e21656e07f175e7e71567e58a2d7ce`](https://github.com/samternent/home/commit/22cdc69030e21656e07f175e7e71567e58a2d7ce) Thanks [@samternent](https://github.com/samternent)! - Adds backend auth
+
 ## 0.2.13
 
 ### Patch Changes
