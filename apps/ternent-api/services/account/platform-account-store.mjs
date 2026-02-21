@@ -402,18 +402,18 @@ export async function updateManagedUser(userId, workspaceId, managedUserId, inpu
     `
     UPDATE platform_managed_users
     SET
-      display_name = COALESCE(NULLIF($4, ''), display_name),
+      display_name = COALESCE(NULLIF($3, ''), display_name),
       avatar_public_id = CASE
-        WHEN $5::text = '__clear__' THEN NULL
-        WHEN NULLIF($5::text, '') IS NULL THEN avatar_public_id
-        ELSE $5
+        WHEN $4::text = '__clear__' THEN NULL
+        WHEN NULLIF($4::text, '') IS NULL THEN avatar_public_id
+        ELSE $4
       END,
-      status = COALESCE(NULLIF($6, ''), status),
-      profile_id = COALESCE(NULLIF($7, ''), profile_id),
-      identity_public_key = COALESCE(NULLIF($8, ''), identity_public_key),
+      status = COALESCE(NULLIF($5, ''), status),
+      profile_id = COALESCE(NULLIF($6, ''), profile_id),
+      identity_public_key = COALESCE(NULLIF($7, ''), identity_public_key),
       identity_key_fingerprint = CASE
-        WHEN NULLIF($8, '') IS NULL THEN identity_key_fingerprint
-        ELSE $9
+        WHEN NULLIF($7, '') IS NULL THEN identity_key_fingerprint
+        ELSE $8
       END,
       updated_at = NOW()
     WHERE id = $1

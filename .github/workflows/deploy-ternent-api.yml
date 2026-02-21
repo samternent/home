@@ -12,16 +12,10 @@ jobs:
   Deploy-Production:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
       - name: Checkout repo
-        uses: actions/checkout@master
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          persist-credentials: false
-
-      - name: Get node version
-        id: nvmrc
-        run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
 
       - name: Setup PNPM
         uses: pnpm/action-setup@v2
@@ -48,5 +42,53 @@ jobs:
       - name: Save DigitalOcean kubeconfig Production
         run: doctl kubernetes cluster kubeconfig save ${{ secrets.DIGITALOCEAN_K8S_CLUSTER_ID }}
 
+      - name: Validate Kubernetes secret coverage
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          check_key() {
+            local namespace="$1"
+            local secret="$2"
+            local key="$3"
+            local value
+            value="$(kubectl -n "$namespace" get secret "$secret" -o "go-template={{index .data \"$key\"}}" 2>/dev/null || true)"
+            if [[ -z "$value" ]]; then
+              echo "Missing required secret key: $namespace/$secret:$key" >&2
+              exit 1
+            fi
+          }
+
+          # Required for current deployment startup path.
+          check_key backend ternent-api-env digitalocean-token
+          check_key backend ternent-api-env issuer-private-key-pem
+          check_key backend ternent-api-env issuer-master-seed
+
+          check_key backend ternent-api-ledger ledger-s3-endpoint
+          check_key backend ternent-api-ledger ledger-bucket
+          check_key backend ternent-api-ledger ledger-prefix
+          check_key backend ternent-api-ledger ledger-access-key-id
+          check_key backend ternent-api-ledger ledger-secret-access-key
+          check_key backend ternent-api-ledger ledger-region
+
+          check_key backend ternent-api-pixpax-content pix-pax-admin-token
+          check_key backend ternent-api-pixpax-content ledger-content-prefix
+
+          check_key backend ternent-api-auth database-url
+          check_key backend ternent-api-auth auth-secret
+
+          # Required for passkey behavior in production.
+          check_key backend ternent-api-auth auth-passkey-rp-id
+          check_key backend ternent-api-auth auth-passkey-rp-name
+          check_key backend ternent-api-auth auth-passkey-origins
+
+          echo "Kubernetes secrets validated."
+
       - name: Kubernetes rollout the latest image
         run: kubectl -n backend rollout restart deployment ternent-api
+
+      - name: Wait for rollout
+        run: kubectl -n backend rollout status deployment/ternent-api --timeout=180s
+
+      - name: Run platform migrations
+        run: kubectl -n backend exec deploy/ternent-api -- sh -lc "cd /app/apps/ternent-api && node scripts/platform-migrate.mjs"
