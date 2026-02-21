@@ -1,5 +1,13 @@
 # concord
 
+## 0.3.35
+
+### Patch Changes
+
+- [`c8199553719b3da5952e07e30dc9704dc63d6d08`](https://github.com/samternent/home/commit/c8199553719b3da5952e07e30dc9704dc63d6d08) Thanks [@samternent](https://github.com/samternent)! - Adds individual packs
+
+- [`a113654934d9903b74f1f5738d581da495853947`](https://github.com/samternent/home/commit/a113654934d9903b74f1f5738d581da495853947) Thanks [@samternent](https://github.com/samternent)! - Fix pixpax routing
+
 ## 0.3.34
 
 ### Patch Changes
