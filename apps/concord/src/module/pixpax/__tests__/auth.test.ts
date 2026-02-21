@@ -11,7 +11,7 @@ import {
 
 vi.mock("../api/client", async () => {
   const actual = await vi.importActual<typeof import("../api/client")>(
-    "../api/client"
+    "../api/client",
   );
   return {
     ...actual,
@@ -51,7 +51,11 @@ describe("usePixpaxAuth", () => {
         status: "active",
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        capabilities: ["pixpax.admin.manage", "pixpax.analytics.read", "pixpax.creator.publish"],
+        capabilities: [
+          "pixpax.admin.manage",
+          "pixpax.analytics.read",
+          "pixpax.creator.publish",
+        ],
       },
     });
 
@@ -71,12 +75,16 @@ describe("usePixpaxAuth", () => {
 
   it("falls back to bearer token when no platform session exists", async () => {
     vi.mocked(getPlatformAuthSession).mockRejectedValue(
-      new PixPaxApiError("Unauthorized.", 401, { error: "Unauthorized." })
+      new PixPaxApiError("Unauthorized.", 401, { error: "Unauthorized." }),
     );
     vi.mocked(validateAdminSession).mockResolvedValue({
       ok: true,
       authenticated: true,
-      permissions: ["pixpax.admin.manage", "pixpax.analytics.read", "pixpax.creator.publish"],
+      permissions: [
+        "pixpax.admin.manage",
+        "pixpax.analytics.read",
+        "pixpax.creator.publish",
+      ],
     });
 
     const auth = usePixpaxAuth();
@@ -89,10 +97,10 @@ describe("usePixpaxAuth", () => {
 
   it("falls back to guest permission when token is rejected", async () => {
     vi.mocked(getPlatformAuthSession).mockRejectedValue(
-      new PixPaxApiError("Unauthorized.", 401, { error: "Unauthorized." })
+      new PixPaxApiError("Unauthorized.", 401, { error: "Unauthorized." }),
     );
     vi.mocked(validateAdminSession).mockRejectedValue(
-      new PixPaxApiError("Unauthorized.", 401, { error: "Unauthorized." })
+      new PixPaxApiError("Unauthorized.", 401, { error: "Unauthorized." }),
     );
     const auth = usePixpaxAuth();
     auth.token.value = "bad-token";
@@ -116,14 +124,14 @@ describe("pixpax permission guards", () => {
   it("redirects to login with redirect query when missing permission", async () => {
     const guard = requirePixPaxPermission("pixpax.analytics.read");
     const result = await guard(
-      { fullPath: "/pixpax/control/analytics" } as any,
-      {} as any
+      { fullPath: "/control/analytics" } as any,
+      {} as any,
     );
 
     expect(result).toEqual({
-      path: "/pixpax/control/login",
+      name: "pixpax-control-login",
       query: {
-        redirect: "/pixpax/control/analytics",
+        redirect: "/control/analytics",
       },
     });
   });

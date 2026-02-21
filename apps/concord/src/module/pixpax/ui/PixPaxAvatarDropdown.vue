@@ -168,7 +168,7 @@ async function handleSignOut() {
         </section>
 
         <RouterLink
-          to="/pixpax/settings/home"
+          :to="{ name: 'pixpax-settings-home' }"
           class="w-full text-left text-xs px-3 py-2 rounded-lg border border-[var(--ui-border)] hover:bg-[var(--ui-fg)]/5 transition-colors"
         >
           Settings...

@@ -149,7 +149,10 @@ async function redeem() {
           .filter(Boolean)
       : [];
     await router.push({
-      path: `/pixpax/collections/${encodeURIComponent(String(response.collectionId || "").trim())}`,
+      name: "pixpax-collection",
+      params: {
+        collectionId: String(response.collectionId || "").trim(),
+      },
       query: {
         ...(newCards.length ? { newCards: newCards.join(",") } : {}),
       },

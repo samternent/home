@@ -5,7 +5,16 @@ import pixpaxRoutes, { pixpaxChildren } from "./pixpax/routes";
 
 const pixpaxHosts = new Set(["pixpax.xyz", "www.pixpax.xyz"]);
 const isPixpaxHost =
-  typeof window !== "undefined" && pixpaxHosts.has(window.location.hostname);
+  typeof window !== "undefined" &&
+  (pixpaxHosts.has(window.location.hostname) ||
+    window.location.hostname.startsWith("pixpax."));
+const normalizedBaseUrl = String(import.meta.env.BASE_URL || "/").replace(
+  /\/+$/,
+  "",
+) || "/";
+const hasPixpaxBasePrefix =
+  normalizedBaseUrl === "/pixpax" || normalizedBaseUrl.endsWith("/pixpax");
+const useStandalonePixpaxRoutes = isPixpaxHost || hasPixpaxBasePrefix;
 
 function cloneRouteRecord(record: any): any {
   return {
@@ -24,11 +33,15 @@ const pixpaxHostRoutes = [
     component: () => import("./pixpax/RoutePixPax.vue"),
     children: pixpaxHostChildren,
   },
-  {
-    path: "/pixpax",
-    component: () => import("./pixpax/RoutePixPax.vue"),
-    children: pixpaxHostChildren,
-  },
+  ...(!hasPixpaxBasePrefix
+    ? [
+        {
+          path: "/pixpax",
+          component: () => import("./pixpax/RoutePixPax.vue"),
+          children: pixpaxHostChildren,
+        },
+      ]
+    : []),
   {
     path: "/:pathMatch(.*)*",
     component: () => import("./pixpax/RoutePixPax.vue"),
@@ -41,7 +54,7 @@ const pixpaxHostRoutes = [
   },
 ];
 
-export const routes = isPixpaxHost
+export const routes = useStandalonePixpaxRoutes
   ? pixpaxHostRoutes
   : [...docRoutes, ...workspaceRoutes, ...pixpaxRoutes];
 

@@ -3,7 +3,7 @@ import { usePixpaxAuth, type PixPaxPermission } from "./usePixpaxAuth";
 
 function loginRedirect(fullPath: string) {
   return {
-    path: "/pixpax/control/login",
+    name: "pixpax-control-login",
     query: {
       redirect: fullPath,
     },
@@ -19,7 +19,7 @@ export function requirePixPaxPermission(
     if (ok) return true;
     if (auth.isAuthenticated.value) {
       return {
-        path: "/pixpax/control/creator",
+        name: "pixpax-control-creator",
         query: {
           denied: permission,
         },
@@ -33,7 +33,7 @@ export const redirectPixPaxControlEntry: NavigationGuardWithThis<undefined> = as
   const auth = usePixpaxAuth();
   const ok = await auth.ensurePermission("pixpax.admin.manage");
   if (ok) {
-    return { path: "/pixpax/control/admin" };
+    return { name: "pixpax-control-admin" };
   }
-  return { path: "/pixpax/control/creator" };
+  return { name: "pixpax-control-creator" };
 };

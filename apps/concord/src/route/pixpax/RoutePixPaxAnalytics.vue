@@ -54,8 +54,10 @@ async function loadAnalytics() {
     ) {
       auth.logout();
       await router.replace({
-        path: "/pixpax/control/login",
-        query: { redirect: "/pixpax/control/analytics" },
+        name: "pixpax-control-login",
+        query: {
+          redirect: router.resolve({ name: "pixpax-control-analytics" }).fullPath,
+        },
       });
       return;
     }

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { usePixpaxAuth, type PixPaxPermission } from "../auth/usePixpaxAuth";
 
 type NavItem = {
@@ -10,36 +10,43 @@ type NavItem = {
 };
 
 const route = useRoute();
+const router = useRouter();
 const auth = usePixpaxAuth();
 
 const items: NavItem[] = [
   {
     label: "Login",
-    to: "/pixpax/control/login",
+    to: "pixpax-control-login",
     permission: "pixpax.creator.view",
   },
   {
     label: "Creator",
-    to: "/pixpax/control/creator",
+    to: "pixpax-control-creator",
     permission: "pixpax.creator.view",
   },
   {
     label: "Analytics",
-    to: "/pixpax/control/analytics",
+    to: "pixpax-control-analytics",
     permission: "pixpax.analytics.read",
   },
   {
     label: "Admin",
-    to: "/pixpax/control/admin",
+    to: "pixpax-control-admin",
     permission: "pixpax.admin.manage",
   },
 ];
 
 const authLabel = computed(() => {
-  if (auth.status.value === "authenticated" && auth.source.value === "platform-session") {
+  if (
+    auth.status.value === "authenticated" &&
+    auth.source.value === "platform-session"
+  ) {
     return "platform session";
   }
-  if (auth.status.value === "authenticated" && auth.source.value === "bearer-token") {
+  if (
+    auth.status.value === "authenticated" &&
+    auth.source.value === "bearer-token"
+  ) {
     return "token session";
   }
   if (auth.status.value === "authenticated") return "authenticated";
@@ -54,10 +61,12 @@ function canAccess(item: NavItem) {
 }
 
 function linkFor(item: NavItem) {
-  if (canAccess(item)) return item.to;
+  if (canAccess(item)) return { name: item.to };
   return {
-    path: "/pixpax/control/login",
-    query: { redirect: item.to },
+    name: "pixpax-control-login",
+    query: {
+      redirect: router.resolve({ name: item.to }).fullPath,
+    },
   };
 }
 
@@ -71,10 +80,14 @@ onMounted(() => {
     class="h-full w-64 shrink-0 border-r border-[var(--ui-border)] bg-[var(--ui-bg)]"
   >
     <div class="border-b border-[var(--ui-border)] p-3">
-      <div class="text-xs uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
+      <div
+        class="text-xs uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]"
+      >
         PixPax Control
       </div>
-      <div class="mt-2 text-xs text-[var(--ui-fg-muted)]">Status: {{ authLabel }}</div>
+      <div class="mt-2 text-xs text-[var(--ui-fg-muted)]">
+        Status: {{ authLabel }}
+      </div>
       <button
         v-if="auth.source.value === 'bearer-token'"
         type="button"
@@ -92,7 +105,7 @@ onMounted(() => {
         :to="linkFor(item)"
         class="flex items-center justify-between rounded px-3 py-2 transition-colors"
         :class="{
-          'bg-[var(--ui-fg)]/10': route.path === item.to,
+          'bg-[var(--ui-fg)]/10': route.name === item.to,
           'text-[var(--ui-fg-muted)]': !canAccess(item),
         }"
       >

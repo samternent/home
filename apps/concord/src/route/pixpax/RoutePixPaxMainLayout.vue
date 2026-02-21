@@ -7,9 +7,7 @@ import IdentityAvatar from "../../module/identity/IdentityAvatar.vue";
 import PixPaxAvatarDropdown from "../../module/pixpax/ui/PixPaxAvatarDropdown.vue";
 import PixPaxLogoText from "../../module/pixpax/ui/assets/PixPaxLogoText.svg?component";
 import { providePixpaxCloudSync } from "../../module/pixpax/context/usePixpaxCloudSync";
-import {
-  providePixpaxContextStore,
-} from "../../module/pixpax/context/usePixpaxContextStore";
+import { providePixpaxContextStore } from "../../module/pixpax/context/usePixpaxContextStore";
 import { providePixpaxSwitchContext } from "../../module/pixpax/context/usePixpaxSwitchContext";
 
 const themeMode = useLocalStorage("app/themeMode", "light");
@@ -37,7 +35,7 @@ const {
       >
         <div class="mx-auto flex items-center w-full justify-between px-4 py-2">
           <div class="hidden lg:block flex-1" />
-          <RouterLink to="/"><PixPaxLogoText class="h-4 lg:h-6" /></RouterLink>
+          <RouterLink :to="{ name: 'pixpax-main' }"><PixPaxLogoText class="h-4 lg:h-6" /></RouterLink>
 
           <div class="flex-1 flex justify-end">
             <PixPaxAvatarDropdown />
@@ -93,32 +91,32 @@ const {
           </a>
           <div class="flex items-center gap-3">
             <RouterLink
-              to="about"
+              :to="{ name: 'pixpax-about' }"
               class="opacity-80 hover:opacity-100 text-xs font-mono font-thin -translate-y-1 hover:-translate-y-0.5 transition-all duration-300"
               >About</RouterLink
             >
             <RouterLink
-              to="/pixpax/my-collections"
+              :to="{ name: 'pixpax-my-collections' }"
               class="opacity-80 hover:opacity-100 text-xs font-mono font-thin -translate-y-1 hover:-translate-y-0.5 transition-all duration-300"
               >My Collections</RouterLink
             >
             <RouterLink
-              to="/pixpax/settings/home"
+              :to="{ name: 'pixpax-settings-home' }"
               class="opacity-80 hover:opacity-100 text-xs font-mono font-thin -translate-y-1 hover:-translate-y-0.5 transition-all duration-300"
               >Settings</RouterLink
             >
             <RouterLink
-              to="/pixpax/control/creator"
+              :to="{ name: 'pixpax-control-creator' }"
               class="opacity-80 hover:opacity-100 text-xs font-mono font-thin -translate-y-1 hover:-translate-y-0.5 transition-all duration-300"
               >Creator</RouterLink
             >
             <RouterLink
-              to="/pixpax/control/analytics"
+              :to="{ name: 'pixpax-control-analytics' }"
               class="opacity-80 hover:opacity-100 text-xs font-mono font-thin -translate-y-1 hover:-translate-y-0.5 transition-all duration-300"
               >Analytics</RouterLink
             >
             <RouterLink
-              to="/pixpax/control/admin"
+              :to="{ name: 'pixpax-control-admin' }"
               class="opacity-80 hover:opacity-100 text-xs font-mono font-thin -translate-y-1 hover:-translate-y-0.5 transition-all duration-300"
               >Admin</RouterLink
             >

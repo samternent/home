@@ -93,7 +93,9 @@ const workspaceLabel = computed(() => {
   return `${ws.name} (${ws.workspaceId.slice(0, 8)})`;
 });
 const hasAccountManage = computed(() =>
-  Boolean(account.workspace.value?.capabilities?.includes("platform.account.manage")),
+  Boolean(
+    account.workspace.value?.capabilities?.includes("platform.account.manage"),
+  ),
 );
 
 const profiles = ref<AccountManagedUser[]>([]);
@@ -134,7 +136,12 @@ function ensureSelectedRef() {
     return;
   }
   const current = String(selectedRef.value || "").trim();
-  if (current && available.some((entry) => `${entry.collectionId}::${entry.version}` === current)) {
+  if (
+    current &&
+    available.some(
+      (entry) => `${entry.collectionId}::${entry.version}` === current,
+    )
+  ) {
     return;
   }
   selectedRef.value = `${available[0].collectionId}::${available[0].version}`;
@@ -144,7 +151,9 @@ async function loadAdminCollectionRefs() {
   refsLoading.value = true;
   refsError.value = "";
   try {
-    const response = await listPixpaxAdminCollections(auth.token.value || undefined);
+    const response = await listPixpaxAdminCollections(
+      auth.token.value || undefined,
+    );
     const nextRefs = Array.isArray(response?.refs)
       ? response.refs
           .map((entry) => ({
@@ -156,7 +165,8 @@ async function loadAdminCollectionRefs() {
     refs.value = nextRefs.length ? nextRefs : parseCollectionRefs();
   } catch (error) {
     refs.value = parseCollectionRefs();
-    refsError.value = "Unable to load all admin collections. Showing fallback list.";
+    refsError.value =
+      "Unable to load all admin collections. Showing fallback list.";
   } finally {
     refsLoading.value = false;
     ensureSelectedRef();
@@ -175,23 +185,26 @@ const activeRef = computed(() => {
 
 const isFixedCardMint = computed(() => mintKind.value === "fixed-card");
 
-const redeemCode = computed(() =>
-  String(minted.value?.token || "").trim(),
-);
+const redeemCode = computed(() => String(minted.value?.token || "").trim());
 
 const shareLink = computed(() => {
   if (!redeemCode.value) return "";
-  const encoded = encodeURIComponent(redeemCode.value);
-  if (typeof window === "undefined") return `/pixpax/redeem?token=${encoded}`;
-  return `${window.location.origin}/pixpax/redeem?token=${encoded}`;
+  const resolved = router.resolve({
+    name: "pixpax-redeem",
+    query: { token: redeemCode.value },
+  });
+  if (typeof window === "undefined") return resolved.fullPath;
+  return `${window.location.origin}${resolved.fullPath}`;
 });
 
 async function ensureAdmin() {
   const ok = await auth.ensurePermission("pixpax.admin.manage");
   if (!ok) {
     await router.replace({
-      path: "/pixpax/control/login",
-      query: { redirect: "/pixpax/control/admin" },
+      name: "pixpax-control-login",
+      query: {
+        redirect: router.resolve({ name: "pixpax-control-admin" }).fullPath,
+      },
     });
     return false;
   }
@@ -203,7 +216,9 @@ async function loadProfiles() {
   loadingProfiles.value = true;
   profileError.value = "";
   try {
-    const response = await listAccountManagedUsers(workspaceId.value || undefined);
+    const response = await listAccountManagedUsers(
+      workspaceId.value || undefined,
+    );
     profiles.value = response.users || [];
     if (!newBookManagedUserId.value && profiles.value.length) {
       newBookManagedUserId.value = profiles.value[0].id;
@@ -238,7 +253,9 @@ async function refreshAccountCollections() {
 async function createProfile() {
   const displayName = String(newProfileName.value || "").trim();
   const profileId = String(newProfileId.value || "").trim();
-  const identityPublicKey = String(newProfileIdentityPublicKey.value || "").trim();
+  const identityPublicKey = String(
+    newProfileIdentityPublicKey.value || "",
+  ).trim();
   if (!displayName) {
     profileError.value = "Display name is required.";
     return;
@@ -274,7 +291,10 @@ async function createProfile() {
 }
 
 async function renameProfile(user: AccountManagedUser) {
-  const nextName = window.prompt("New profile display name", user.displayName || "");
+  const nextName = window.prompt(
+    "New profile display name",
+    user.displayName || "",
+  );
   if (!nextName || nextName.trim() === user.displayName) return;
   profileActionBusyId.value = user.id;
   profileError.value = "";
@@ -308,7 +328,10 @@ async function toggleProfileStatus(user: AccountManagedUser) {
     profileStatus.value = `Profile marked ${nextStatus}.`;
     await loadProfiles();
   } catch (error: unknown) {
-    profileError.value = extractError(error, "Unable to change profile status.");
+    profileError.value = extractError(
+      error,
+      "Unable to change profile status.",
+    );
   } finally {
     profileActionBusyId.value = "";
   }
@@ -341,7 +364,10 @@ async function attachProfileIdentity(user: AccountManagedUser) {
     profileStatus.value = "Profile identity attached.";
     await loadProfiles();
   } catch (error: unknown) {
-    profileError.value = extractError(error, "Unable to attach profile identity.");
+    profileError.value = extractError(
+      error,
+      "Unable to attach profile identity.",
+    );
   } finally {
     profileActionBusyId.value = "";
   }
@@ -435,8 +461,10 @@ async function mintOverrideCode() {
   if (!canMint) {
     mintError.value = "Admin permission required.";
     await router.replace({
-      path: "/pixpax/control/login",
-      query: { redirect: "/pixpax/control/admin" },
+      name: "pixpax-control-login",
+      query: {
+        redirect: router.resolve({ name: "pixpax-control-admin" }).fullPath,
+      },
     });
     return;
   }
@@ -458,7 +486,10 @@ async function mintOverrideCode() {
         mintError.value = "cardId is required for fixed-card mint.";
         return;
       }
-    } else if (!Number.isInteger(Number(count.value || 0)) || Number(count.value || 0) < 1) {
+    } else if (
+      !Number.isInteger(Number(count.value || 0)) ||
+      Number(count.value || 0) < 1
+    ) {
       mintError.value = "Card count must be at least 1.";
       return;
     }
@@ -482,17 +513,28 @@ async function mintOverrideCode() {
     const payloadDropId = String(payload?.payload?.dropId || "").trim();
     const payloadKind = String(payload?.payload?.kind || mintKind.value);
     const payloadCardId = String(payload?.payload?.cardId || "").trim();
-    mintStatus.value = `Token minted (${payloadKind}${payloadCardId ? `:${payloadCardId}` : ""}) for ${payload.collectionId}/${payload.version}${payloadDropId ? ` (${payloadDropId})` : ""}.`;
+    mintStatus.value = `Token minted (${payloadKind}${
+      payloadCardId ? `:${payloadCardId}` : ""
+    }) for ${payload.collectionId}/${payload.version}${
+      payloadDropId ? ` (${payloadDropId})` : ""
+    }.`;
   } catch (error: unknown) {
-    if (error instanceof PixPaxApiError && (error.status === 401 || error.status === 403)) {
+    if (
+      error instanceof PixPaxApiError &&
+      (error.status === 401 || error.status === 403)
+    ) {
       auth.logout();
       mintError.value = "Admin session expired. Login again.";
       await router.replace({
-        path: "/pixpax/control/login",
-        query: { redirect: "/pixpax/control/admin" },
+        name: "pixpax-control-login",
+        query: {
+          redirect: router.resolve({ name: "pixpax-control-admin" }).fullPath,
+        },
       });
     } else {
-      mintError.value = String((error as Error)?.message || "Failed to mint override code.");
+      mintError.value = String(
+        (error as Error)?.message || "Failed to mint override code.",
+      );
     }
   } finally {
     minting.value = false;
@@ -515,19 +557,33 @@ onMounted(async () => {
         Explicit account control. No auto mutation, no hidden sync.
       </p>
       <p class="text-xs text-[var(--ui-fg-muted)]">
-        Auth: {{ loggedIn ? "authenticated" : "not authenticated" }} | Workspace: {{ workspaceLabel }}
+        Auth: {{ loggedIn ? "authenticated" : "not authenticated" }} |
+        Workspace: {{ workspaceLabel }}
       </p>
       <p v-if="!hasAccountManage" class="text-xs text-amber-600 mt-2">
-        Your current workspace session does not include `platform.account.manage`, so profile/book actions may be blocked.
+        Your current workspace session does not include
+        `platform.account.manage`, so profile/book actions may be blocked.
       </p>
       <div class="mt-4 flex flex-wrap gap-2">
-        <Button class="!px-4 !py-2" :class="{ active: activePanel === 'profiles' }" @click="activePanel = 'profiles'">
+        <Button
+          class="!px-4 !py-2"
+          :class="{ active: activePanel === 'profiles' }"
+          @click="activePanel = 'profiles'"
+        >
           Profiles
         </Button>
-        <Button class="!px-4 !py-2" :class="{ active: activePanel === 'books' }" @click="activePanel = 'books'">
+        <Button
+          class="!px-4 !py-2"
+          :class="{ active: activePanel === 'books' }"
+          @click="activePanel = 'books'"
+        >
           Books
         </Button>
-        <Button class="!px-4 !py-2" :class="{ active: activePanel === 'codes' }" @click="activePanel = 'codes'">
+        <Button
+          class="!px-4 !py-2"
+          :class="{ active: activePanel === 'codes' }"
+          @click="activePanel = 'codes'"
+        >
           Gift Codes
         </Button>
         <Button class="!px-4 !py-2" @click="refreshAccountCollections">
@@ -536,7 +592,10 @@ onMounted(async () => {
       </div>
     </section>
 
-    <section v-if="activePanel === 'profiles'" class="rounded-xl border border-[var(--ui-border)] p-4">
+    <section
+      v-if="activePanel === 'profiles'"
+      class="rounded-xl border border-[var(--ui-border)] p-4"
+    >
       <h2 class="text-lg font-medium mb-3">Profiles</h2>
       <p class="text-xs text-[var(--ui-fg-muted)] mb-4">
         Profile = identity owner bucket. Each profile can have multiple books.
@@ -545,11 +604,19 @@ onMounted(async () => {
       <div class="grid gap-3 md:grid-cols-2">
         <label class="field">
           <span>Profile display name</span>
-          <input v-model="newProfileName" type="text" placeholder="Sam / Kid A / Kid B" />
+          <input
+            v-model="newProfileName"
+            type="text"
+            placeholder="Sam / Kid A / Kid B"
+          />
         </label>
         <label class="field">
           <span>User key (optional)</span>
-          <input v-model="newProfileUserKey" type="text" placeholder="public:kid-a" />
+          <input
+            v-model="newProfileUserKey"
+            type="text"
+            placeholder="public:kid-a"
+          />
         </label>
         <label class="field">
           <span>Concord profile id</span>
@@ -565,45 +632,86 @@ onMounted(async () => {
         </label>
       </div>
       <div class="mt-3 flex items-center gap-2">
-        <Button class="!px-4 !py-2" :disabled="profileActionBusyId === 'create-profile'" @click="createProfile">
-          {{ profileActionBusyId === "create-profile" ? "Creating..." : "Create profile" }}
+        <Button
+          class="!px-4 !py-2"
+          :disabled="profileActionBusyId === 'create-profile'"
+          @click="createProfile"
+        >
+          {{
+            profileActionBusyId === "create-profile"
+              ? "Creating..."
+              : "Create profile"
+          }}
         </Button>
       </div>
 
       <div class="mt-5 grid gap-2">
-        <div v-if="loadingProfiles" class="text-xs text-[var(--ui-fg-muted)]">Loading profiles...</div>
-        <div v-else-if="profiles.length === 0" class="text-xs text-[var(--ui-fg-muted)]">No profiles yet.</div>
+        <div v-if="loadingProfiles" class="text-xs text-[var(--ui-fg-muted)]">
+          Loading profiles...
+        </div>
+        <div
+          v-else-if="profiles.length === 0"
+          class="text-xs text-[var(--ui-fg-muted)]"
+        >
+          No profiles yet.
+        </div>
         <div v-for="user in profiles" :key="user.id" class="item-card">
           <div class="item-main">
             <p class="item-title">{{ user.displayName }}</p>
             <p class="item-sub">
-              id {{ user.id.slice(0, 12) }} | key {{ user.userKey }} | status {{ user.status }}
+              id {{ user.id.slice(0, 12) }} | key {{ user.userKey }} | status
+              {{ user.status }}
             </p>
             <p class="item-sub">
-              profile {{ user.profileId || "missing" }} | identity {{ user.identityKeyFingerprint ? user.identityKeyFingerprint.slice(0, 16) : "missing" }}
+              profile {{ user.profileId || "missing" }} | identity
+              {{
+                user.identityKeyFingerprint
+                  ? user.identityKeyFingerprint.slice(0, 16)
+                  : "missing"
+              }}
             </p>
           </div>
           <div class="item-actions">
-            <Button class="!px-3 !py-1" :disabled="profileActionBusyId === user.id" @click="renameProfile(user)">
+            <Button
+              class="!px-3 !py-1"
+              :disabled="profileActionBusyId === user.id"
+              @click="renameProfile(user)"
+            >
               Rename
             </Button>
-            <Button class="!px-3 !py-1" :disabled="profileActionBusyId === user.id" @click="attachProfileIdentity(user)">
+            <Button
+              class="!px-3 !py-1"
+              :disabled="profileActionBusyId === user.id"
+              @click="attachProfileIdentity(user)"
+            >
               Attach identity
             </Button>
-            <Button class="!px-3 !py-1" :disabled="profileActionBusyId === user.id" @click="toggleProfileStatus(user)">
+            <Button
+              class="!px-3 !py-1"
+              :disabled="profileActionBusyId === user.id"
+              @click="toggleProfileStatus(user)"
+            >
               {{ user.status === "active" ? "Pause" : "Activate" }}
             </Button>
           </div>
         </div>
       </div>
-      <p v-if="profileStatus" class="mt-3 text-xs text-green-600">{{ profileStatus }}</p>
-      <p v-if="profileError" class="mt-2 text-xs text-red-600">{{ profileError }}</p>
+      <p v-if="profileStatus" class="mt-3 text-xs text-green-600">
+        {{ profileStatus }}
+      </p>
+      <p v-if="profileError" class="mt-2 text-xs text-red-600">
+        {{ profileError }}
+      </p>
     </section>
 
-    <section v-if="activePanel === 'books'" class="rounded-xl border border-[var(--ui-border)] p-4">
+    <section
+      v-if="activePanel === 'books'"
+      class="rounded-xl border border-[var(--ui-border)] p-4"
+    >
       <h2 class="text-lg font-medium mb-3">Books</h2>
       <p class="text-xs text-[var(--ui-fg-muted)] mb-4">
-        Books are explicit datasets under a profile. Checkout/restore remains manual.
+        Books are explicit datasets under a profile. Checkout/restore remains
+        manual.
       </p>
       <div class="grid gap-3 md:grid-cols-2">
         <label class="field">
@@ -620,36 +728,67 @@ onMounted(async () => {
         </label>
       </div>
       <div class="mt-3 flex items-center gap-2">
-        <Button class="!px-4 !py-2" :disabled="bookActionBusyId === 'create-book' || profiles.length === 0" @click="createBookForProfile">
-          {{ bookActionBusyId === "create-book" ? "Creating..." : "Create book" }}
+        <Button
+          class="!px-4 !py-2"
+          :disabled="
+            bookActionBusyId === 'create-book' || profiles.length === 0
+          "
+          @click="createBookForProfile"
+        >
+          {{
+            bookActionBusyId === "create-book" ? "Creating..." : "Create book"
+          }}
         </Button>
       </div>
       <div class="mt-5 grid gap-2">
-        <div v-if="loadingBooks" class="text-xs text-[var(--ui-fg-muted)]">Loading books...</div>
-        <div v-else-if="books.length === 0" class="text-xs text-[var(--ui-fg-muted)]">No books yet.</div>
+        <div v-if="loadingBooks" class="text-xs text-[var(--ui-fg-muted)]">
+          Loading books...
+        </div>
+        <div
+          v-else-if="books.length === 0"
+          class="text-xs text-[var(--ui-fg-muted)]"
+        >
+          No books yet.
+        </div>
         <div v-for="book in books" :key="book.id" class="item-card">
           <div class="item-main">
             <p class="item-title">{{ book.name }}</p>
             <p class="item-sub">
-              id {{ book.id.slice(0, 12) }} | owner {{ book.managedUserDisplayName || book.managedUserId.slice(0, 6) }}
+              id {{ book.id.slice(0, 12) }} | owner
+              {{
+                book.managedUserDisplayName || book.managedUserId.slice(0, 6)
+              }}
               | v{{ book.currentVersion }} | status {{ book.status }}
             </p>
           </div>
           <div class="item-actions">
-            <Button class="!px-3 !py-1" :disabled="bookActionBusyId === book.id" @click="renameBook(book)">
+            <Button
+              class="!px-3 !py-1"
+              :disabled="bookActionBusyId === book.id"
+              @click="renameBook(book)"
+            >
               Rename
             </Button>
-            <Button class="!px-3 !py-1" :disabled="bookActionBusyId === book.id" @click="toggleBookStatus(book)">
+            <Button
+              class="!px-3 !py-1"
+              :disabled="bookActionBusyId === book.id"
+              @click="toggleBookStatus(book)"
+            >
               {{ book.status === "active" ? "Pause" : "Activate" }}
             </Button>
           </div>
         </div>
       </div>
-      <p v-if="bookStatus" class="mt-3 text-xs text-green-600">{{ bookStatus }}</p>
+      <p v-if="bookStatus" class="mt-3 text-xs text-green-600">
+        {{ bookStatus }}
+      </p>
       <p v-if="bookError" class="mt-2 text-xs text-red-600">{{ bookError }}</p>
     </section>
 
-    <section v-if="activePanel === 'codes'" class="rounded-xl border border-[var(--ui-border)] p-4">
+    <section
+      v-if="activePanel === 'codes'"
+      class="rounded-xl border border-[var(--ui-border)] p-4"
+    >
       <h2 class="text-lg font-medium mb-3">Mint Redeem Token</h2>
       <div class="grid gap-3 md:grid-cols-2">
         <label class="field">
@@ -662,9 +801,14 @@ onMounted(async () => {
 
         <label class="field">
           <span>Collection/version</span>
-          <select v-model="selectedRef" :disabled="refsLoading || refs.length === 0">
+          <select
+            v-model="selectedRef"
+            :disabled="refsLoading || refs.length === 0"
+          >
             <option v-if="refsLoading" value="">Loading collections...</option>
-            <option v-else-if="refs.length === 0" value="">No collections found</option>
+            <option v-else-if="refs.length === 0" value="">
+              No collections found
+            </option>
             <option
               v-for="entry in refs"
               :key="`${entry.collectionId}::${entry.version}`"
@@ -674,7 +818,9 @@ onMounted(async () => {
             </option>
           </select>
         </label>
-        <p v-if="refsError" class="text-xs text-amber-600 md:col-span-2">{{ refsError }}</p>
+        <p v-if="refsError" class="text-xs text-amber-600 md:col-span-2">
+          {{ refsError }}
+        </p>
 
         <label class="field">
           <span>Drop id</span>
@@ -708,7 +854,13 @@ onMounted(async () => {
           :disabled="minting"
           @click="mintOverrideCode"
         >
-          {{ minting ? "Minting..." : isFixedCardMint ? "Mint fixed-card token" : "Mint pack token" }}
+          {{
+            minting
+              ? "Minting..."
+              : isFixedCardMint
+              ? "Mint fixed-card token"
+              : "Mint pack token"
+          }}
         </Button>
       </div>
 

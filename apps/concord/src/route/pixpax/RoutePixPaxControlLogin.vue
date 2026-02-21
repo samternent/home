@@ -13,22 +13,47 @@ const submitting = ref(false);
 const checkingSession = ref(false);
 const message = ref("");
 
-const redirectTo = computed(() => {
+const controlRouteNames = new Set([
+  "pixpax-control-login",
+  "pixpax-control-creator",
+  "pixpax-control-analytics",
+  "pixpax-control-admin",
+]);
+
+function getDefaultRedirectPath() {
+  return router.resolve({ name: "pixpax-control-admin" }).fullPath;
+}
+
+function parseRedirectRouteName() {
   const raw = route.query.redirect;
-  const value = typeof raw === "string" ? raw : "";
-  if (value.startsWith("/pixpax/control/")) return value;
-  return "/pixpax/control/admin";
+  if (typeof raw !== "string" || !raw.trim()) return "pixpax-control-admin";
+  const resolved = router.resolve(raw);
+  if (!controlRouteNames.has(String(resolved.name || ""))) {
+    return "pixpax-control-admin";
+  }
+  return String(resolved.name);
+}
+
+const redirectTo = computed(() => {
+  const routeName = parseRedirectRouteName();
+  return router.resolve({ name: routeName }).fullPath;
 });
 
 function resolvePostLoginPath() {
-  const target = redirectTo.value;
-  if (target === "/pixpax/control/analytics" && !auth.hasPermission("pixpax.analytics.read")) {
-    return "/pixpax/control/creator";
+  const targetName = parseRedirectRouteName();
+  if (
+    targetName === "pixpax-control-analytics" &&
+    !auth.hasPermission("pixpax.analytics.read")
+  ) {
+    return router.resolve({ name: "pixpax-control-creator" }).fullPath;
   }
-  if (target === "/pixpax/control/admin" && !auth.hasPermission("pixpax.admin.manage")) {
-    return "/pixpax/control/creator";
+  if (
+    targetName === "pixpax-control-admin" &&
+    !auth.hasPermission("pixpax.admin.manage")
+  ) {
+    return router.resolve({ name: "pixpax-control-creator" }).fullPath;
   }
-  return target;
+  return router.resolve({ name: targetName }).fullPath || getDefaultRedirectPath();
 }
 
 async function submit() {

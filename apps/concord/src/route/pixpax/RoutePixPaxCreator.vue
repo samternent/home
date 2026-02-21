@@ -632,9 +632,9 @@ async function uploadAll() {
 
 function openControlLogin() {
   router.push({
-    path: "/pixpax/control/login",
+    name: "pixpax-control-login",
     query: {
-      redirect: "/pixpax/control/creator",
+      redirect: router.resolve({ name: "pixpax-control-creator" }).fullPath,
     },
   });
 }
@@ -962,7 +962,7 @@ onUnmounted(() => {
           >
             <li>Upload collection, index, and cards.</li>
             <li>Add it to `VITE_PIXPAX_PUBLIC_COLLECTIONS` and rebuild.</li>
-            <li>Verify rendering in `/pixpax/collections`.</li>
+            <li>Verify rendering in the Collections page.</li>
           </ul>
         </section>
       </div>

@@ -98,7 +98,10 @@ watch(
       <RouterLink
         v-for="row in rows"
         :key="`${row.collectionId}:${row.resolvedVersion}`"
-        :to="`/pixpax/collections/${encodeURIComponent(row.collectionId)}`"
+        :to="{
+          name: 'pixpax-collection',
+          params: { collectionId: row.collectionId },
+        }"
         class="rounded-xl border border-[var(--ui-border)] bg-[var(--ui-bg)]/70 p-4 transition hover:border-[var(--ui-fg)]/30"
       >
         <h2 class="text-lg font-semibold text-[var(--ui-fg)]">{{ row.name }}</h2>

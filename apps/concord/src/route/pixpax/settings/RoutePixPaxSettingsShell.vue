@@ -1,11 +1,17 @@
 <script setup lang="ts">
 const links = [
-  { to: "/pixpax/settings/home", label: "Home" },
-  { to: "/pixpax/settings/identity-devices", label: "Identity & Devices" },
-  { to: "/pixpax/settings/pixbooks", label: "Pixbooks" },
-  { to: "/pixpax/settings/sync-backup", label: "Sync / Backup" },
-  { to: "/pixpax/settings/import-export", label: "Import / Export" },
-  { to: "/pixpax/settings/danger", label: "Danger Zone" },
+  { to: { name: "pixpax-settings-home" }, label: "Home" },
+  {
+    to: { name: "pixpax-settings-identity-devices" },
+    label: "Identity & Devices",
+  },
+  { to: { name: "pixpax-settings-pixbooks" }, label: "Pixbooks" },
+  { to: { name: "pixpax-settings-sync-backup" }, label: "Sync / Backup" },
+  {
+    to: { name: "pixpax-settings-import-export" },
+    label: "Import / Export",
+  },
+  { to: { name: "pixpax-settings-danger" }, label: "Danger Zone" },
 ];
 </script>
 
@@ -18,7 +24,7 @@ const links = [
       <nav class="flex flex-col gap-1 text-xs">
         <RouterLink
           v-for="link in links"
-          :key="link.to"
+          :key="link.label"
           :to="link.to"
           class="rounded-md px-3 py-2 transition-colors hover:bg-[var(--ui-fg)]/5"
           active-class="bg-[var(--ui-fg)]/10"

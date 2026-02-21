@@ -54,7 +54,10 @@ onMounted(() => {
       <RouterLink
         v-for="row in collections"
         :key="`${row.collectionId}:${row.resolvedVersion}`"
-        :to="`/pixpax/collections/${encodeURIComponent(row.collectionId)}`"
+        :to="{
+          name: 'pixpax-collection',
+          params: { collectionId: row.collectionId },
+        }"
         class="rounded-xl border border-[var(--ui-border)] bg-[var(--ui-bg)]/70 p-4 transition hover:border-[var(--ui-fg)]/30"
       >
         <div class="flex flex-col gap-1">
