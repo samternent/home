@@ -9,6 +9,7 @@ import {
   createAccountBook,
   createAccountManagedUser,
   createOverrideCode,
+  listPixpaxAdminCollections,
   listAccountBooks,
   listAccountManagedUsers,
   updateAccountBook,
@@ -78,9 +79,11 @@ function extractError(error: unknown, fallback: string) {
 const router = useRouter();
 const auth = usePixpaxAuth();
 const account = usePixpaxAccount();
-const refs = parseCollectionRefs();
-const selectedRef = ref(`${refs[0].collectionId}::${refs[0].version}`);
+const refs = ref<CollectionRef[]>(parseCollectionRefs());
+const selectedRef = ref("");
 const activePanel = ref<"profiles" | "books" | "codes">("profiles");
+const refsLoading = ref(false);
+const refsError = ref("");
 
 const loggedIn = computed(() => auth.isAuthenticated.value);
 const workspaceId = computed(() => account.workspace.value?.workspaceId || "");
@@ -123,6 +126,44 @@ const mintError = ref("");
 const mintStatus = ref("");
 const minted = ref<Awaited<ReturnType<typeof createOverrideCode>> | null>(null);
 const copied = ref<"" | "code" | "link">("");
+
+function ensureSelectedRef() {
+  const available = refs.value;
+  if (!available.length) {
+    selectedRef.value = "";
+    return;
+  }
+  const current = String(selectedRef.value || "").trim();
+  if (current && available.some((entry) => `${entry.collectionId}::${entry.version}` === current)) {
+    return;
+  }
+  selectedRef.value = `${available[0].collectionId}::${available[0].version}`;
+}
+
+async function loadAdminCollectionRefs() {
+  refsLoading.value = true;
+  refsError.value = "";
+  try {
+    const response = await listPixpaxAdminCollections(auth.token.value || undefined);
+    const nextRefs = Array.isArray(response?.refs)
+      ? response.refs
+          .map((entry) => ({
+            collectionId: String(entry?.collectionId || "").trim(),
+            version: String(entry?.version || "").trim(),
+          }))
+          .filter((entry) => entry.collectionId && entry.version)
+      : [];
+    refs.value = nextRefs.length ? nextRefs : parseCollectionRefs();
+  } catch (error) {
+    refs.value = parseCollectionRefs();
+    refsError.value = "Unable to load all admin collections. Showing fallback list.";
+  } finally {
+    refsLoading.value = false;
+    ensureSelectedRef();
+  }
+}
+
+ensureSelectedRef();
 
 const activeRef = computed(() => {
   const [collectionId, version] = String(selectedRef.value || "").split("::");
@@ -462,7 +503,7 @@ onMounted(async () => {
   const ok = await ensureAdmin();
   if (!ok) return;
   await account.refreshSession({ force: true });
-  await refreshAccountCollections();
+  await Promise.all([refreshAccountCollections(), loadAdminCollectionRefs()]);
 });
 </script>
 
@@ -621,7 +662,9 @@ onMounted(async () => {
 
         <label class="field">
           <span>Collection/version</span>
-          <select v-model="selectedRef">
+          <select v-model="selectedRef" :disabled="refsLoading || refs.length === 0">
+            <option v-if="refsLoading" value="">Loading collections...</option>
+            <option v-else-if="refs.length === 0" value="">No collections found</option>
             <option
               v-for="entry in refs"
               :key="`${entry.collectionId}::${entry.version}`"
@@ -631,6 +674,7 @@ onMounted(async () => {
             </option>
           </select>
         </label>
+        <p v-if="refsError" class="text-xs text-amber-600 md:col-span-2">{{ refsError }}</p>
 
         <label class="field">
           <span>Drop id</span>

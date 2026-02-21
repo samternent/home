@@ -13,6 +13,11 @@ import {
   hashRender,
   hashStickerArt,
 } from "../domain/hash";
+import {
+  deriveOwnedCardIdsForCollectionVersion,
+  deriveOwnedCollectionIdsFromPacks,
+  pickCollectionRouteTarget,
+} from "../domain/collection-discovery";
 
 function buildIndices(seed = 0): Uint8Array {
   const out = new Uint8Array(16 * 16);
@@ -116,5 +121,102 @@ describe("pixpax protocol invariants", () => {
 
     expect(rootA).toBe(rootB);
     expect(commitmentA).toBe(commitmentB);
+  });
+});
+
+describe("pixpax collection discovery helpers", () => {
+  it("resolves preferred route target deterministically", () => {
+    expect(
+      pickCollectionRouteTarget({
+        forcedCollectionId: "forced",
+        routeCollectionId: "route",
+        houseCollectionId: "house",
+      })
+    ).toBe("forced");
+    expect(
+      pickCollectionRouteTarget({
+        forcedCollectionId: "",
+        routeCollectionId: "route",
+        houseCollectionId: "house",
+      })
+    ).toBe("route");
+    expect(
+      pickCollectionRouteTarget({
+        routeCollectionId: "",
+        houseCollectionId: "house",
+      })
+    ).toBe("house");
+  });
+
+  it("derives owned collection ids from ledger packs without fetching all collections", () => {
+    const packs = [
+      {
+        data: {
+          issuerIssuePayload: {
+            packModel: "album",
+            collectionId: "dragons",
+            collectionVersion: "v1",
+            cardIds: ["d-1"],
+          },
+        },
+      },
+      {
+        data: {
+          issuerIssuePayload: {
+            packModel: "album",
+            collectionId: "house",
+            collectionVersion: "v2",
+            cardIds: ["h-1"],
+          },
+        },
+      },
+      {
+        data: {
+          issuerIssuePayload: {
+            packModel: "album",
+            collectionId: "dragons",
+            collectionVersion: "v1",
+            cardIds: ["d-2"],
+          },
+        },
+      },
+    ];
+
+    expect(deriveOwnedCollectionIdsFromPacks(packs as any[])).toEqual([
+      "dragons",
+      "house",
+    ]);
+  });
+
+  it("derives owned card ids per collection and version", () => {
+    const packs = [
+      {
+        data: {
+          issuerIssuePayload: {
+            packModel: "album",
+            collectionId: "dragons",
+            collectionVersion: "v1",
+            cardIds: ["d-1", "d-2"],
+          },
+        },
+      },
+      {
+        data: {
+          issuerIssuePayload: {
+            packModel: "album",
+            collectionId: "dragons",
+            collectionVersion: "v2",
+            cardIds: ["d-3"],
+          },
+        },
+      },
+    ];
+
+    const ownedV1 = deriveOwnedCardIdsForCollectionVersion(
+      packs as any[],
+      "dragons",
+      "v1"
+    );
+    expect(Array.from(ownedV1.values()).sort()).toEqual(["d-1", "d-2"]);
   });
 });

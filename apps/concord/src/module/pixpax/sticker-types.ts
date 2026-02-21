@@ -36,4 +36,13 @@ export type Collection = {
   series?: string;
   palette: PackPalette16;
   stickers: Sticker[];
+  issuer?: {
+    name: string;
+    avatarUrl?: string;
+  };
+  settings?: {
+    visibility: "public" | "unlisted";
+    issuanceMode: "scheduled" | "codes-only";
+    [key: string]: unknown;
+  };
 };

@@ -105,6 +105,36 @@ PixPax v2 redeem uses ECDSA P-256 signed tokens:
 - `GET /v1/pixpax/issuers/:issuerKeyId`
 - `GET /v1/pixpax/receipt-keys`
 - `GET /v1/pixpax/receipt-keys/:receiptKeyId`
+- `GET /v1/pixpax/collections/:collectionId/resolve`
+  - deterministic collection routing response:
+    - `collectionId`
+    - `resolvedVersion`
+    - `settings`
+    - `issuer` display metadata
+- `GET /v1/pixpax/collections/:collectionId/settings`
+- `PUT /v1/pixpax/collections/:collectionId/settings` (admin)
+- `GET /v1/pixpax/collections/catalog` (public-only listing)
+
+### Collection settings model
+
+Collection behavior settings are mutable and stored at collection scope:
+
+- `pixpax/collections/<collectionId>/settings.json`
+
+Known enum fields:
+
+- `visibility`: `public | unlisted`
+- `issuanceMode`: `scheduled | codes-only`
+
+Validation policy:
+
+- known enum values are strictly validated
+- unknown keys are allowed and preserved (forward compatible)
+
+Catalog/listing behavior:
+
+- `/catalog` returns only collections with `visibility="public"`
+- collector collection pages resolve via `/resolve` and then load versioned bundle content
 
 ### Canonical signing rules
 

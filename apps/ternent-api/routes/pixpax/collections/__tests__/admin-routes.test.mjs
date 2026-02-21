@@ -17,12 +17,12 @@ function createRouterHarness() {
     post(path, handler) {
       routes.set(`POST:${path}`, handler);
     },
-    async invoke(method, path, { body = {}, params = {}, headers = {} } = {}) {
+    async invoke(method, path, { body = {}, params = {}, headers = {}, query = {} } = {}) {
       const handler = routes.get(`${method}:${path}`);
       assert.ok(handler, `Missing handler ${method}:${path}`);
       let statusCode = 200;
       let sent;
-      const req = { body, params, headers };
+      const req = { body, params, headers, query };
       const res = {
         status(code) {
           statusCode = code;
@@ -151,6 +151,61 @@ test("analytics endpoint requires bearer token", async () => {
   });
   assert.equal(authorized.statusCode, 200);
   assert.equal(authorized.body.ok, true);
+});
+
+test("admin collections endpoint returns all collection/version refs including unlisted collections", async () => {
+  const router = createRouterHarness();
+  process.env.PIX_PAX_ADMIN_TOKEN = "test-token";
+  pixpaxCollectionRoutes(router, { createStore });
+  const headers = { authorization: "Bearer test-token" };
+
+  const putCollection = async (collectionId, version) => {
+    const response = await router.invoke(
+      "PUT",
+      "/v1/pixpax/collections/:collectionId/:version/collection",
+      {
+        headers,
+        params: { collectionId, version },
+        body: { name: collectionId, gridSize: 16, version },
+      }
+    );
+    assert.equal(response.statusCode, 201);
+  };
+
+  await putCollection("pixel-animals", "v2");
+  await putCollection("kid-dragons", "v1");
+
+  const unlistedSetting = await router.invoke(
+    "PUT",
+    "/v1/pixpax/collections/:collectionId/settings",
+    {
+      headers,
+      params: { collectionId: "kid-dragons" },
+      body: { visibility: "unlisted", issuanceMode: "codes-only" },
+    }
+  );
+  assert.equal(unlistedSetting.statusCode, 200);
+
+  const listedSetting = await router.invoke(
+    "PUT",
+    "/v1/pixpax/collections/:collectionId/settings",
+    {
+      headers,
+      params: { collectionId: "pixel-animals" },
+      body: { visibility: "public", issuanceMode: "scheduled" },
+    }
+  );
+  assert.equal(listedSetting.statusCode, 200);
+
+  const response = await router.invoke("GET", "/v1/pixpax/admin/collections", {
+    headers,
+  });
+  assert.equal(response.statusCode, 200);
+  assert.equal(response.body.ok, true);
+  assert.deepEqual(
+    response.body.refs.map((entry) => `${entry.collectionId}:${entry.version}`),
+    ["kid-dragons:v1", "pixel-animals:v2"]
+  );
 });
 
 test("collection upload validates payload and enforces immutability", async () => {
@@ -397,6 +452,175 @@ test("public read endpoints return seeded collection content", async () => {
     { params: { ...params, cardId: "arsenal-02" } }
   );
   assert.equal(missingCard.statusCode, 404);
+});
+
+test("collection-level settings endpoints validate enums and preserve unknown keys", async () => {
+  const router = createRouterHarness();
+  process.env.PIX_PAX_ADMIN_TOKEN = "test-token";
+  pixpaxCollectionRoutes(router, { createStore });
+  const headers = { authorization: "Bearer test-token" };
+
+  const invalid = await router.invoke(
+    "PUT",
+    "/v1/pixpax/collections/:collectionId/settings",
+    {
+      headers,
+      params: { collectionId: "pixel-animals" },
+      body: {
+        visibility: "friends-only",
+        issuanceMode: "weekly",
+      },
+    }
+  );
+  assert.equal(invalid.statusCode, 400);
+
+  const saved = await router.invoke(
+    "PUT",
+    "/v1/pixpax/collections/:collectionId/settings",
+    {
+      headers,
+      params: { collectionId: "pixel-animals" },
+      body: {
+        visibility: "unlisted",
+        issuanceMode: "codes-only",
+        customLabel: "dragon-drop",
+      },
+    }
+  );
+  assert.equal(saved.statusCode, 200);
+  assert.equal(saved.body.settings.visibility, "unlisted");
+  assert.equal(saved.body.settings.issuanceMode, "codes-only");
+  assert.equal(saved.body.settings.customLabel, "dragon-drop");
+
+  const loaded = await router.invoke(
+    "GET",
+    "/v1/pixpax/collections/:collectionId/settings",
+    {
+      params: { collectionId: "pixel-animals" },
+    }
+  );
+  assert.equal(loaded.statusCode, 200);
+  assert.equal(loaded.body.settings.visibility, "unlisted");
+  assert.equal(loaded.body.settings.issuanceMode, "codes-only");
+  assert.equal(loaded.body.settings.customLabel, "dragon-drop");
+});
+
+test("resolve endpoint returns deterministic version, settings, and issuer fallback", async () => {
+  const router = createRouterHarness();
+  process.env.PIX_PAX_ADMIN_TOKEN = "test-token";
+  pixpaxCollectionRoutes(router, { createStore });
+  const headers = { authorization: "Bearer test-token" };
+
+  const v1Params = { collectionId: "pixel-animals", version: "v1" };
+  const v2Params = { collectionId: "pixel-animals", version: "v2" };
+  const collectionBase = { name: "Pixel Animals", gridSize: 16 };
+
+  const upV1 = await router.invoke(
+    "PUT",
+    "/v1/pixpax/collections/:collectionId/:version/collection",
+    {
+      headers,
+      params: v1Params,
+      body: {
+        ...collectionBase,
+        issuer: { name: "Sam" },
+      },
+    }
+  );
+  assert.equal(upV1.statusCode, 201);
+
+  const upV2 = await router.invoke(
+    "PUT",
+    "/v1/pixpax/collections/:collectionId/:version/collection",
+    {
+      headers,
+      params: v2Params,
+      body: collectionBase,
+    }
+  );
+  assert.equal(upV2.statusCode, 201);
+
+  const savedSettings = await router.invoke(
+    "PUT",
+    "/v1/pixpax/collections/:collectionId/settings",
+    {
+      headers,
+      params: { collectionId: "pixel-animals" },
+      body: { visibility: "public", issuanceMode: "scheduled" },
+    }
+  );
+  assert.equal(savedSettings.statusCode, 200);
+
+  const resolvedDefault = await router.invoke(
+    "GET",
+    "/v1/pixpax/collections/:collectionId/resolve",
+    {
+      params: { collectionId: "pixel-animals" },
+    }
+  );
+  assert.equal(resolvedDefault.statusCode, 200);
+  assert.equal(resolvedDefault.body.collectionId, "pixel-animals");
+  assert.equal(resolvedDefault.body.resolvedVersion, "v2");
+  assert.equal(resolvedDefault.body.settings.visibility, "public");
+  assert.equal(resolvedDefault.body.settings.issuanceMode, "scheduled");
+  assert.equal(resolvedDefault.body.issuer.name, "PixPax");
+
+  const resolvedV1 = await router.invoke(
+    "GET",
+    "/v1/pixpax/collections/:collectionId/resolve",
+    {
+      params: { collectionId: "pixel-animals" },
+      query: { version: "v1" },
+    }
+  );
+  assert.equal(resolvedV1.statusCode, 200);
+  assert.equal(resolvedV1.body.resolvedVersion, "v1");
+  assert.equal(resolvedV1.body.issuer.name, "Sam");
+});
+
+test("catalog endpoint only includes public collections", async () => {
+  const router = createRouterHarness();
+  process.env.PIX_PAX_ADMIN_TOKEN = "test-token";
+  pixpaxCollectionRoutes(router, { createStore });
+  const headers = { authorization: "Bearer test-token" };
+
+  const seedCollection = async (collectionId, version, visibility) => {
+    const upload = await router.invoke(
+      "PUT",
+      "/v1/pixpax/collections/:collectionId/:version/collection",
+      {
+        headers,
+        params: { collectionId, version },
+        body: { name: collectionId, gridSize: 16 },
+      }
+    );
+    assert.equal(upload.statusCode, 201);
+
+    const settings = await router.invoke(
+      "PUT",
+      "/v1/pixpax/collections/:collectionId/settings",
+      {
+        headers,
+        params: { collectionId },
+        body: {
+          visibility,
+          issuanceMode: "scheduled",
+        },
+      }
+    );
+    assert.equal(settings.statusCode, 200);
+  };
+
+  await seedCollection("house-animals", "v1", "public");
+  await seedCollection("kid-dragons", "v1", "unlisted");
+
+  const catalog = await router.invoke("GET", "/v1/pixpax/collections/catalog");
+  assert.equal(catalog.statusCode, 200);
+  assert.equal(catalog.body.ok, true);
+  assert.equal(Array.isArray(catalog.body.collections), true);
+  assert.equal(catalog.body.collections.length, 1);
+  assert.equal(catalog.body.collections[0].collectionId, "house-animals");
+  assert.equal(catalog.body.collections[0].settings.visibility, "public");
 });
 
 test("mutating admin endpoints emit PixPax domain events", async () => {

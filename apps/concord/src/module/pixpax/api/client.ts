@@ -526,6 +526,108 @@ export function redeemPixpaxToken(input: {
   });
 }
 
+export type PixPaxCollectionSettings = {
+  visibility: "public" | "unlisted";
+  issuanceMode: "scheduled" | "codes-only";
+  [key: string]: unknown;
+};
+
+export type PixPaxIssuerDisplay = {
+  name: string;
+  avatarUrl?: string;
+};
+
+export type PixPaxCollectionResolveResponse = {
+  ok: boolean;
+  collectionId: string;
+  resolvedVersion: string;
+  settings: PixPaxCollectionSettings;
+  issuer: PixPaxIssuerDisplay;
+};
+
+export type PixPaxCollectionSettingsResponse = {
+  ok: boolean;
+  collectionId: string;
+  settings: PixPaxCollectionSettings;
+};
+
+export type PixPaxCollectionCatalogResponse = {
+  ok: boolean;
+  collections: Array<{
+    collectionId: string;
+    resolvedVersion: string;
+    settings: PixPaxCollectionSettings;
+    issuer: PixPaxIssuerDisplay;
+    name: string;
+    description?: string;
+  }>;
+};
+
+export type PixPaxAdminCollectionsResponse = {
+  ok: boolean;
+  refs: Array<{
+    collectionId: string;
+    version: string;
+  }>;
+};
+
+export function resolvePixpaxCollection(collectionId: string, version?: string) {
+  const query = new URLSearchParams();
+  if (version) query.set("version", String(version || "").trim());
+  return requestJson<PixPaxCollectionResolveResponse>(
+    `/v1/pixpax/collections/${encodeURIComponent(collectionId)}/resolve${
+      query.toString() ? `?${query.toString()}` : ""
+    }`
+  );
+}
+
+export function getPixpaxCollectionSettings(collectionId: string) {
+  return requestJson<PixPaxCollectionSettingsResponse>(
+    `/v1/pixpax/collections/${encodeURIComponent(collectionId)}/settings`
+  );
+}
+
+export function putPixpaxCollectionSettings(
+  collectionId: string,
+  payload: Record<string, unknown>,
+  token?: string | null
+) {
+  return requestJson<PixPaxCollectionSettingsResponse>(
+    `/v1/pixpax/collections/${encodeURIComponent(collectionId)}/settings`,
+    {
+      method: "PUT",
+      token: token || undefined,
+      body: payload,
+    }
+  );
+}
+
+export function listPixpaxCollectionCatalog() {
+  return requestJson<PixPaxCollectionCatalogResponse>("/v1/pixpax/collections/catalog");
+}
+
+export function listPixpaxAdminCollections(token?: string | null) {
+  return requestJson<PixPaxAdminCollectionsResponse>("/v1/pixpax/admin/collections", {
+    token: token || undefined,
+  });
+}
+
+export function getPixpaxCollectionBundle(collectionId: string, version: string) {
+  return requestJson<{
+    collection?: Record<string, unknown>;
+    index?: {
+      cards?: string[];
+    };
+    settings?: PixPaxCollectionSettings;
+    cards?: Array<Record<string, unknown>>;
+    missingCardIds?: string[];
+  }>(
+    `/v1/pixpax/collections/${encodeURIComponent(collectionId)}/${encodeURIComponent(
+      version
+    )}/bundle`
+  );
+}
+
 export function putCollectionJson(
   collectionId: string,
   version: string,

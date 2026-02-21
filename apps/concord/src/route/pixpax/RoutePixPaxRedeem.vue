@@ -2,7 +2,7 @@
 import { computed, onMounted, ref, watch } from "vue";
 import { useLocalStorage } from "@vueuse/core";
 import { Button } from "ternent-ui/primitives";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { stripIdentityKey } from "ternent-utils";
 import {
   listPixpaxIssuers,
@@ -18,6 +18,7 @@ import { useIdentity } from "../../module/identity/useIdentity";
 import { usePixbook } from "../../module/pixpax/state/usePixbook";
 
 const route = useRoute();
+const router = useRouter();
 const { publicKey, recordPackAndCommit } = usePixbook();
 const anonCollector = useLocalStorage("pixpax/redeem/anon-collector", "");
 
@@ -141,6 +142,18 @@ async function redeem() {
         issuerKeyId,
       });
     }
+
+    const newCards = Array.isArray(response.cards)
+      ? response.cards
+          .map((card) => String(card?.cardId || "").trim())
+          .filter(Boolean)
+      : [];
+    await router.push({
+      path: `/pixpax/collections/${encodeURIComponent(String(response.collectionId || "").trim())}`,
+      query: {
+        ...(newCards.length ? { newCards: newCards.join(",") } : {}),
+      },
+    });
   } catch (error: any) {
     if (error instanceof PixPaxApiError) {
       const body = error.body as any;

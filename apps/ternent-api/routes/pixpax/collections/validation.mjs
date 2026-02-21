@@ -11,6 +11,9 @@ function isNonNegativeInt(value) {
   return Number.isInteger(value) && value >= 0;
 }
 
+const COLLECTION_VISIBILITY_VALUES = new Set(["public", "unlisted"]);
+const COLLECTION_ISSUANCE_MODE_VALUES = new Set(["scheduled", "codes-only"]);
+
 export function validateCollectionPayload(payload) {
   const errors = [];
   if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
@@ -20,6 +23,30 @@ export function validateCollectionPayload(payload) {
   if (!isPositiveInt(payload.gridSize)) {
     errors.push("collection.gridSize must be a positive integer.");
   }
+  return { ok: errors.length === 0, errors };
+}
+
+export function validateCollectionSettingsPayload(payload) {
+  const errors = [];
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    errors.push("Body must be a JSON object.");
+    return { ok: false, errors };
+  }
+
+  if (payload.visibility !== undefined) {
+    const normalizedVisibility = String(payload.visibility || "").trim().toLowerCase();
+    if (!COLLECTION_VISIBILITY_VALUES.has(normalizedVisibility)) {
+      errors.push("settings.visibility must be one of: public, unlisted.");
+    }
+  }
+
+  if (payload.issuanceMode !== undefined) {
+    const normalizedIssuanceMode = String(payload.issuanceMode || "").trim().toLowerCase();
+    if (!COLLECTION_ISSUANCE_MODE_VALUES.has(normalizedIssuanceMode)) {
+      errors.push("settings.issuanceMode must be one of: scheduled, codes-only.");
+    }
+  }
+
   return { ok: errors.length === 0, errors };
 }
 

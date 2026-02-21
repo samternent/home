@@ -83,6 +83,35 @@ test("CollectionContentStore put/get round-trip and writes JSON content type", a
   assert.match(gateway.writes[2].key, /cards\/arsenal-01\.json$/);
 });
 
+test("CollectionContentStore stores collection-level settings and lists ids/versions", async () => {
+  const gateway = createMemoryGateway();
+  const store = new CollectionContentStore({
+    bucket: "content-bucket",
+    prefix: "pixpax/collections",
+    gateway,
+  });
+
+  await store.putCollection("pixel-animals", "v1", { name: "Pixel Animals", gridSize: 16 });
+  await store.putCollection("pixel-animals", "v2", { name: "Pixel Animals", gridSize: 16 });
+  await store.putCollection("dragon-club", "v1", { name: "Dragon Club", gridSize: 16 });
+  await store.putCollectionSettings("pixel-animals", {
+    visibility: "public",
+    issuanceMode: "scheduled",
+    featured: true,
+  });
+
+  const settings = await store.getCollectionSettings("pixel-animals");
+  assert.equal(settings.visibility, "public");
+  assert.equal(settings.issuanceMode, "scheduled");
+  assert.equal(settings.featured, true);
+
+  const versions = await store.listCollectionVersions("pixel-animals");
+  assert.deepEqual(versions, ["v1", "v2"]);
+
+  const collectionIds = await store.listCollectionIds();
+  assert.deepEqual(collectionIds, ["dragon-club", "pixel-animals"]);
+});
+
 test("createCollectionContentGatewayFromS3Client maps not-found errors to NoSuchKey:*", async () => {
   class GetObjectCommand {
     constructor(input) {

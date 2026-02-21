@@ -14,6 +14,7 @@ import { parseSegmentJsonl } from "../../stickerbook/issuer-audit-ledger.mjs";
 import {
   validateCardPayload,
   validateCollectionPayload,
+  validateCollectionSettingsPayload,
   validateIndexPayload,
 } from "./validation.mjs";
 import {
@@ -62,6 +63,10 @@ function missingContentConfigError(error) {
   return String(error?.message || "").includes(
     "Content store configuration is incomplete"
   );
+}
+
+function unsupportedListObjectsError(error) {
+  return String(error?.message || "").includes("does not support listObjects");
 }
 
 function resolveRedeemConfigError(error) {
@@ -138,12 +143,78 @@ const DEFAULT_PACK_COUNT = 5;
 const DEFAULT_REDEEM_TOKEN_TTL_SECONDS = 14 * 24 * 60 * 60;
 const MAX_REDEEM_TOKEN_TTL_SECONDS = 30 * 24 * 60 * 60;
 const DEFAULT_TOKEN_EXP_LEEWAY_SECONDS = 60;
+const DEFAULT_COLLECTION_VISIBILITY = "public";
+const DEFAULT_COLLECTION_ISSUANCE_MODE = "scheduled";
+const COLLECTION_VISIBILITY_VALUES = new Set(["public", "unlisted"]);
+const COLLECTION_ISSUANCE_MODE_VALUES = new Set(["scheduled", "codes-only"]);
 const PIXPAX_ADMIN_PERMISSIONS = Object.freeze([
   "pixpax.admin.manage",
   "pixpax.analytics.read",
   "pixpax.creator.publish",
   "pixpax.creator.view",
 ]);
+
+function normalizeCollectionSettings(input) {
+  const source =
+    input && typeof input === "object" && !Array.isArray(input)
+      ? input
+      : {};
+  const normalized = { ...source };
+
+  const visibility = String(source.visibility || "")
+    .trim()
+    .toLowerCase();
+  normalized.visibility = COLLECTION_VISIBILITY_VALUES.has(visibility)
+    ? visibility
+    : DEFAULT_COLLECTION_VISIBILITY;
+
+  const issuanceMode = String(source.issuanceMode || "")
+    .trim()
+    .toLowerCase();
+  normalized.issuanceMode = COLLECTION_ISSUANCE_MODE_VALUES.has(issuanceMode)
+    ? issuanceMode
+    : DEFAULT_COLLECTION_ISSUANCE_MODE;
+
+  return normalized;
+}
+
+function parseVersionLabel(version) {
+  const normalized = String(version || "").trim().toLowerCase();
+  const match = normalized.match(/^v(\d+)$/);
+  if (!match) return null;
+  const number = Number(match[1]);
+  if (!Number.isFinite(number)) return null;
+  return number;
+}
+
+function compareCollectionVersionsDesc(a, b) {
+  const aNumeric = parseVersionLabel(a);
+  const bNumeric = parseVersionLabel(b);
+  const aHasNumeric = Number.isFinite(aNumeric);
+  const bHasNumeric = Number.isFinite(bNumeric);
+
+  if (aHasNumeric && bHasNumeric && aNumeric !== bNumeric) {
+    return bNumeric - aNumeric;
+  }
+  if (aHasNumeric && !bHasNumeric) return -1;
+  if (!aHasNumeric && bHasNumeric) return 1;
+  return String(b || "").localeCompare(String(a || ""));
+}
+
+function resolveIssuerDisplayFromCollection(collection) {
+  const issuer =
+    collection?.issuer &&
+    typeof collection.issuer === "object" &&
+    !Array.isArray(collection.issuer)
+      ? collection.issuer
+      : {};
+  const issuerName = String(issuer.name || "").trim() || "PixPax";
+  const avatarUrl = String(issuer.avatarUrl || "").trim();
+  return {
+    name: issuerName,
+    ...(avatarUrl ? { avatarUrl } : {}),
+  };
+}
 
 function clampRedeemTokenTtlSeconds(value) {
   const parsed = Number(value ?? DEFAULT_REDEEM_TOKEN_TTL_SECONDS);
@@ -527,6 +598,80 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
     return true;
   }
 
+  async function getCollectionSettingsWithDefaults(store, collectionId) {
+    try {
+      const stored = await store.getCollectionSettings(collectionId);
+      return normalizeCollectionSettings(stored);
+    } catch (error) {
+      if (isNoSuchKeyError(error)) {
+        return normalizeCollectionSettings({});
+      }
+      throw error;
+    }
+  }
+
+  async function resolveCollectionVersion(store, collectionId, requestedVersion = "") {
+    const normalizedCollectionId = String(collectionId || "").trim();
+    const normalizedRequestedVersion = String(requestedVersion || "").trim();
+
+    if (!normalizedCollectionId) {
+      throw new Error("collectionId is required.");
+    }
+
+    if (normalizedRequestedVersion) {
+      await store.getCollection(normalizedCollectionId, normalizedRequestedVersion);
+      return normalizedRequestedVersion;
+    }
+
+    const versions = await store.listCollectionVersions(normalizedCollectionId);
+    if (!versions.length) {
+      throw new Error(`NoSuchKey:${normalizedCollectionId}`);
+    }
+    versions.sort(compareCollectionVersionsDesc);
+    return String(versions[0] || "").trim();
+  }
+
+  async function resolveCollectionState(store, collectionId, requestedVersion = "") {
+    const resolvedVersion = await resolveCollectionVersion(
+      store,
+      collectionId,
+      requestedVersion
+    );
+    const [collection, settings] = await Promise.all([
+      store.getCollection(collectionId, resolvedVersion),
+      getCollectionSettingsWithDefaults(store, collectionId),
+    ]);
+    const issuer = resolveIssuerDisplayFromCollection(collection);
+    return {
+      collectionId: String(collectionId || "").trim(),
+      resolvedVersion,
+      collection,
+      settings,
+      issuer,
+    };
+  }
+
+  async function listAdminCollectionVersionRefs(store) {
+    const collectionIds = await store.listCollectionIds();
+    const rows = [];
+    for (const collectionId of collectionIds) {
+      const versions = await store.listCollectionVersions(collectionId);
+      versions.sort(compareCollectionVersionsDesc);
+      for (const version of versions) {
+        rows.push({
+          collectionId,
+          version,
+        });
+      }
+    }
+    rows.sort((a, b) => {
+      const byCollection = String(a.collectionId || "").localeCompare(String(b.collectionId || ""));
+      if (byCollection !== 0) return byCollection;
+      return compareCollectionVersionsDesc(a.version, b.version);
+    });
+    return rows;
+  }
+
   router.get("/v1/pixpax/admin/session", async (req, res) => {
     const access = await resolveAdminAccess(req);
     if (!access.ok) {
@@ -546,6 +691,34 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
       authenticated: true,
       permissions: access.permissions,
     });
+  });
+
+  router.get("/v1/pixpax/admin/collections", async (req, res) => {
+    if (!(await requireAdminToken(req, res))) return;
+    try {
+      const store = await getStore();
+      const refs = await listAdminCollectionVersionRefs(store);
+      res.status(200).send({
+        ok: true,
+        refs,
+      });
+    } catch (error) {
+      if (missingContentConfigError(error)) {
+        res.status(503).send({
+          error:
+            "Content store configuration is incomplete. Use LEDGER_* connection vars and LEDGER_CONTENT_PREFIX.",
+        });
+        return;
+      }
+      if (unsupportedListObjectsError(error)) {
+        res.status(503).send({
+          error: "Content store gateway does not support admin collection listing.",
+        });
+        return;
+      }
+      console.error("[pixpax/collections] admin collections list failed:", error);
+      res.status(500).send({ error: "Failed to load admin collections." });
+    }
   });
 
   router.put("/v1/pixpax/collections/:collectionId/:version/collection", async (req, res) => {
@@ -622,6 +795,171 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
       }
       console.error("[pixpax/collections] get collection failed:", error);
       res.status(500).send({ error: "Failed to load collection.json." });
+    }
+  });
+
+  router.get("/v1/pixpax/collections/:collectionId/settings", async (req, res) => {
+    const collectionId = String(req.params?.collectionId || "").trim();
+    if (!collectionId) {
+      res.status(400).send({ error: "collectionId is required." });
+      return;
+    }
+    try {
+      const store = await getStore();
+      const settings = await getCollectionSettingsWithDefaults(store, collectionId);
+      res.status(200).send({
+        ok: true,
+        collectionId,
+        settings,
+      });
+    } catch (error) {
+      if (missingContentConfigError(error)) {
+        res.status(503).send({
+          error:
+            "Content store configuration is incomplete. Use LEDGER_* connection vars and LEDGER_CONTENT_PREFIX.",
+        });
+        return;
+      }
+      if (unsupportedListObjectsError(error)) {
+        res.status(503).send({
+          error: "Content store gateway does not support listing collection settings.",
+        });
+        return;
+      }
+      console.error("[pixpax/collections] get settings failed:", error);
+      res.status(500).send({ error: "Failed to load collection settings." });
+    }
+  });
+
+  router.put("/v1/pixpax/collections/:collectionId/settings", async (req, res) => {
+    if (!(await requireAdminToken(req, res))) return;
+    const collectionId = String(req.params?.collectionId || "").trim();
+    if (!collectionId) {
+      res.status(400).send({ error: "collectionId is required." });
+      return;
+    }
+
+    const validation = validateCollectionSettingsPayload(req.body);
+    if (!validation.ok) {
+      res.status(400).send({
+        error: "Invalid collection settings payload.",
+        details: validation.errors,
+      });
+      return;
+    }
+
+    try {
+      const store = await getStore();
+      const existing = await getCollectionSettingsWithDefaults(store, collectionId);
+      const next = normalizeCollectionSettings({
+        ...existing,
+        ...(req.body || {}),
+      });
+      const result = await store.putCollectionSettings(collectionId, next);
+      res.status(200).send({
+        ok: true,
+        collectionId,
+        settings: next,
+        key: result.key,
+      });
+    } catch (error) {
+      if (missingContentConfigError(error)) {
+        res.status(503).send({
+          error:
+            "Content store configuration is incomplete. Use LEDGER_* connection vars and LEDGER_CONTENT_PREFIX.",
+        });
+        return;
+      }
+      console.error("[pixpax/collections] put settings failed:", error);
+      res.status(500).send({ error: "Failed to store collection settings." });
+    }
+  });
+
+  router.get("/v1/pixpax/collections/:collectionId/resolve", async (req, res) => {
+    const collectionId = String(req.params?.collectionId || "").trim();
+    const requestedVersion = String(req.query?.version || "").trim();
+    if (!collectionId) {
+      res.status(400).send({ error: "collectionId is required." });
+      return;
+    }
+    try {
+      const store = await getStore();
+      const resolved = await resolveCollectionState(store, collectionId, requestedVersion);
+      res.status(200).send({
+        ok: true,
+        collectionId: resolved.collectionId,
+        resolvedVersion: resolved.resolvedVersion,
+        settings: resolved.settings,
+        issuer: resolved.issuer,
+      });
+    } catch (error) {
+      if (missingContentConfigError(error)) {
+        res.status(503).send({
+          error:
+            "Content store configuration is incomplete. Use LEDGER_* connection vars and LEDGER_CONTENT_PREFIX.",
+        });
+        return;
+      }
+      if (unsupportedListObjectsError(error)) {
+        res.status(503).send({
+          error: "Content store gateway does not support collection version resolution.",
+        });
+        return;
+      }
+      if (isNoSuchKeyError(error)) {
+        res.status(404).send({ error: "Collection content is missing for this collection." });
+        return;
+      }
+      console.error("[pixpax/collections] resolve failed:", error);
+      res.status(500).send({ error: "Failed to resolve collection." });
+    }
+  });
+
+  router.get("/v1/pixpax/collections/catalog", async (req, res) => {
+    try {
+      const store = await getStore();
+      const collectionIds = await store.listCollectionIds();
+      const rows = [];
+      for (const collectionId of collectionIds) {
+        try {
+          const resolved = await resolveCollectionState(store, collectionId, "");
+          if (String(resolved.settings?.visibility || "") !== "public") continue;
+          rows.push({
+            collectionId: resolved.collectionId,
+            resolvedVersion: resolved.resolvedVersion,
+            settings: resolved.settings,
+            issuer: resolved.issuer,
+            name: String(resolved.collection?.name || resolved.collectionId),
+            description: String(resolved.collection?.description || ""),
+          });
+        } catch (error) {
+          if (!isNoSuchKeyError(error)) {
+            throw error;
+          }
+        }
+      }
+
+      rows.sort((a, b) => a.collectionId.localeCompare(b.collectionId));
+      res.status(200).send({
+        ok: true,
+        collections: rows,
+      });
+    } catch (error) {
+      if (missingContentConfigError(error)) {
+        res.status(503).send({
+          error:
+            "Content store configuration is incomplete. Use LEDGER_* connection vars and LEDGER_CONTENT_PREFIX.",
+        });
+        return;
+      }
+      if (unsupportedListObjectsError(error)) {
+        res.status(503).send({
+          error: "Content store gateway does not support collection catalog listing.",
+        });
+        return;
+      }
+      console.error("[pixpax/collections] catalog failed:", error);
+      res.status(500).send({ error: "Failed to load collection catalog." });
     }
   });
 
@@ -889,9 +1227,10 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
     const { collectionId, version } = req.params || {};
     try {
       const store = await getStore();
-      const [collection, index] = await Promise.all([
+      const [collection, index, settings] = await Promise.all([
         store.getCollection(collectionId, version),
         store.getIndex(collectionId, version),
+        getCollectionSettingsWithDefaults(store, collectionId),
       ]);
 
       const cardIds = Array.isArray(index?.cards)
@@ -918,6 +1257,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
       res.status(200).send({
         collection,
         index,
+        settings,
         cards: cardRows.filter(Boolean),
         missingCardIds: missingCardIds.sort((a, b) => a.localeCompare(b)),
       });

@@ -33,6 +33,15 @@ root
 - `docs/pixpax-drops/PLAN.md`
 - `docs/pixpax-drops/CHECKLIST.md`
 
+### PixPax Collection UX Notes
+
+- Public listing: `GET /v1/pixpax/collections/catalog` (public only)
+- Collection route resolution: `GET /v1/pixpax/collections/:collectionId/resolve`
+- Collection behavior settings are collection-level:
+  - `visibility`: `public | unlisted`
+  - `issuanceMode`: `scheduled | codes-only`
+- Unlisted collections are discoverable via direct route and My Collections after ownership.
+
 ### Conventions
 
 - **Workspace**: pnpm; **versioning**: changesets

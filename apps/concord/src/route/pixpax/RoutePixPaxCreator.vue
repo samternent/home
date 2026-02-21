@@ -10,6 +10,7 @@ import {
   PixPaxApiError,
   putCardJson,
   putCollectionJson,
+  putPixpaxCollectionSettings,
   putIndexJson,
 } from "../../module/pixpax/api/client";
 import { usePixpaxAuth } from "../../module/pixpax/auth/usePixpaxAuth";
@@ -25,6 +26,8 @@ type DraftCard = {
 type DraftProject = {
   collectionId: string;
   version: string;
+  visibility: "public" | "unlisted";
+  issuanceMode: "scheduled" | "codes-only";
   name: string;
   description: string;
   createdAt: string;
@@ -64,6 +67,8 @@ function createDefaultProject(): DraftProject {
   return {
     collectionId: "my-collection",
     version: "v1",
+    visibility: "unlisted",
+    issuanceMode: "codes-only",
     name: "My PixPax Collection",
     description: "",
     createdAt: new Date().toISOString(),
@@ -96,6 +101,13 @@ const uploading = ref(false);
 const uploadStep = ref("");
 const canPublish = computed(() => auth.hasPermission("pixpax.creator.publish"));
 const drawerOpen = useLocalStorage("pixpax/creator/drawerOpen", true);
+const advancedOpen = useLocalStorage("pixpax/creator/advancedOpen", false);
+
+function handleAdvancedToggle(event: Event) {
+  const target = event.target as HTMLDetailsElement | null;
+  if (!target) return;
+  advancedOpen.value = target.open;
+}
 
 function ensurePalette() {
   if (!project.value.palette) {
@@ -134,9 +146,21 @@ function ensureCards() {
   }
 }
 
+function ensureProjectSettings() {
+  const visibility = String(project.value.visibility || "").trim().toLowerCase();
+  if (visibility !== "public" && visibility !== "unlisted") {
+    project.value.visibility = "unlisted";
+  }
+  const issuanceMode = String(project.value.issuanceMode || "").trim().toLowerCase();
+  if (issuanceMode !== "scheduled" && issuanceMode !== "codes-only") {
+    project.value.issuanceMode = "codes-only";
+  }
+}
+
 watch(
   () => project.value,
   () => {
+    ensureProjectSettings();
     ensurePalette();
     ensureCards();
     if (!selectedCardId.value && project.value.cards[0]) {
@@ -404,6 +428,13 @@ function buildCollectionPayload() {
   };
 }
 
+function buildCollectionSettingsPayload() {
+  return {
+    visibility: project.value.visibility,
+    issuanceMode: project.value.issuanceMode,
+  };
+}
+
 function buildIndexPayload() {
   const cards = project.value.cards.map((card) => card.cardId);
   const cardMap: Record<
@@ -448,11 +479,12 @@ function buildCardPayload(card: DraftCard, slotIndex: number) {
 
 function buildUploadBundle() {
   const collection = buildCollectionPayload();
+  const settings = buildCollectionSettingsPayload();
   const index = buildIndexPayload();
   const cards = project.value.cards.map((card, idx) =>
     buildCardPayload(card, idx),
   );
-  return { collection, index, cards };
+  return { collection, settings, index, cards };
 }
 
 function downloadJson(filename: string, payload: unknown) {
@@ -556,6 +588,13 @@ async function uploadAll() {
       version,
       buildCollectionPayload(),
       auth.token.value || undefined,
+    );
+
+    uploadStep.value = "Uploading collection settings";
+    await putPixpaxCollectionSettings(
+      collectionId,
+      buildCollectionSettingsPayload(),
+      auth.token.value || undefined
     );
 
     uploadStep.value = "Uploading index.json";
@@ -747,12 +786,22 @@ onUnmounted(() => {
               <input v-model="project.collectionId" type="text" />
             </label>
             <label class="field">
-              <span>Version</span>
-              <input v-model="project.version" type="text" />
-            </label>
-            <label class="field">
               <span>Name</span>
               <input v-model="project.name" type="text" />
+            </label>
+            <label class="field">
+              <span>Visibility</span>
+              <select v-model="project.visibility">
+                <option value="unlisted">Unlisted</option>
+                <option value="public">Public</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Issuance mode</span>
+              <select v-model="project.issuanceMode">
+                <option value="codes-only">Codes only</option>
+                <option value="scheduled">Scheduled</option>
+              </select>
             </label>
             <label class="field">
               <span>Palette id</span>
@@ -783,6 +832,15 @@ onUnmounted(() => {
               Shiny count: {{ shinyCount }} / {{ shinyLimit || "∞" }} (set 0 for
               unlimited)
             </p>
+            <details class="rounded-lg border border-[var(--ui-border)] p-2" :open="advancedOpen" @toggle="handleAdvancedToggle">
+              <summary class="cursor-pointer text-xs uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]">
+                Advanced
+              </summary>
+              <label class="field mt-2">
+                <span>Version</span>
+                <input v-model="project.version" type="text" />
+              </label>
+            </details>
           </div>
         </section>
 

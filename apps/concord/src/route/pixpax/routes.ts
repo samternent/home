@@ -43,6 +43,14 @@ export const pixpaxChildren = [
     component: () => import("./RoutePixPaxCollections.vue"),
   },
   {
+    path: "collections/:collectionId",
+    component: () => import("./RoutePixPaxCollection.vue"),
+  },
+  {
+    path: "my-collections",
+    component: () => import("./RoutePixPaxMyCollections.vue"),
+  },
+  {
     path: "redeem",
     component: () => import("./RoutePixPaxRedeem.vue"),
   },

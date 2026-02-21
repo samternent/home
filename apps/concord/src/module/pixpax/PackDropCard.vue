@@ -3,6 +3,7 @@ import { computed, ref, watch } from "vue";
 import { Button } from "ternent-ui/primitives";
 
 type PackDropCardProps = {
+  primaryAction?: "open-pack" | "redeem-code";
   ctaLabel: string;
   ctaSubtext?: string;
   ctaDisabled?: boolean;
@@ -17,6 +18,7 @@ type PackDropCardProps = {
 };
 
 const props = withDefaults(defineProps<PackDropCardProps>(), {
+  primaryAction: "open-pack",
   ctaSubtext: "",
   ctaDisabled: false,
   ctaChip: null,
@@ -78,6 +80,16 @@ async function redeemCode() {
     redeemBusy.value = false;
   }
 }
+
+async function handlePrimaryAction() {
+  if (props.primaryAction === "redeem-code") {
+    redeemOpen.value = true;
+    redeemError.value = "";
+    redeemSuccess.value = "";
+    return;
+  }
+  await props.onOpenPack();
+}
 </script>
 
 <template>
@@ -88,7 +100,7 @@ async function redeemCode() {
       <button
         class="group relative flex w-full flex-col items-center justify-center gap-1 overflow-hidden rounded-full border-2 border-[var(--ui-border)] bg-[var(--ui-accent)] px-6 py-3 text-left text-sm font-semibold text-[var(--ui-fg-on-accent)] shadow-[0_10px_30px_-20px_rgba(0,0,0,0.6)] transition hover:-translate-y-[1px] hover:shadow-[0_16px_36px_-24px_rgba(0,0,0,0.75)] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto packdrop-shimmer"
         :disabled="props.ctaDisabled"
-        @click="props.onOpenPack"
+        @click="handlePrimaryAction"
       >
         <span
           class="relative z-10 flex items-center gap-2 text-[var(--ui-on-accent)]"

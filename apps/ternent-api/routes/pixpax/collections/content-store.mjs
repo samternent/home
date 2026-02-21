@@ -162,6 +162,14 @@ function buildObjectKey(prefix, collectionId, version, filename) {
   return `${scopedPrefix}/${filename}`;
 }
 
+function buildCollectionScopedObjectKey(prefix, collectionId, filename) {
+  const scopedPrefix = [prefix, collectionId]
+    .map((part) => trimSegment(part))
+    .filter(Boolean)
+    .join("/");
+  return `${scopedPrefix}/${filename}`;
+}
+
 function dateForPath(isoTimestamp) {
   const date = new Date(String(isoTimestamp || ""));
   if (!Number.isFinite(date.getTime())) {
@@ -234,6 +242,10 @@ export class CollectionContentStore {
 
   buildIndexKey(collectionId, version) {
     return buildObjectKey(this.prefix, collectionId, version, "index.json");
+  }
+
+  buildCollectionSettingsKey(collectionId) {
+    return buildCollectionScopedObjectKey(this.prefix, collectionId, "settings.json");
   }
 
   buildCardKey(collectionId, version, cardId) {
@@ -320,6 +332,12 @@ export class CollectionContentStore {
     return { bucket: this.bucket, key, created: result.created };
   }
 
+  async putCollectionSettings(collectionId, settingsJson) {
+    const key = this.buildCollectionSettingsKey(collectionId);
+    await putJson(this.gateway, this.bucket, key, settingsJson);
+    return { bucket: this.bucket, key };
+  }
+
   async putCard(collectionId, version, cardId, cardJson) {
     const key = this.buildCardKey(collectionId, version, cardId);
     await putJson(this.gateway, this.bucket, key, cardJson);
@@ -345,6 +363,11 @@ export class CollectionContentStore {
 
   async getIndex(collectionId, version) {
     const key = this.buildIndexKey(collectionId, version);
+    return getJson(this.gateway, this.bucket, key);
+  }
+
+  async getCollectionSettings(collectionId) {
+    const key = this.buildCollectionSettingsKey(collectionId);
     return getJson(this.gateway, this.bucket, key);
   }
 
@@ -427,6 +450,70 @@ export class CollectionContentStore {
   async replayEvents(collectionId, version, options = {}) {
     const listed = await this.listEvents(collectionId, version, options);
     return listed.events;
+  }
+
+  async listCollectionVersions(collectionId, options = {}) {
+    if (typeof this.gateway.listObjects !== "function") {
+      throw new Error("Collection content gateway does not support listObjects.");
+    }
+
+    const prefix = `${[this.prefix, collectionId]
+      .map((part) => trimSegment(part))
+      .filter(Boolean)
+      .join("/")}/`;
+    const versions = new Set();
+    let cursor = options.cursor || null;
+
+    do {
+      const listed = await this.gateway.listObjects({
+        bucket: this.bucket,
+        prefix,
+        cursor,
+        maxKeys: options.limit || 1000,
+      });
+      const keys = Array.isArray(listed?.keys) ? listed.keys : [];
+      for (const key of keys) {
+        const relative = String(key).slice(prefix.length);
+        const match = relative.match(/^([^/]+)\/collection\.json$/);
+        if (match?.[1]) {
+          versions.add(match[1]);
+        }
+      }
+      cursor = listed?.nextCursor || null;
+    } while (cursor);
+
+    return Array.from(versions).sort((a, b) => a.localeCompare(b));
+  }
+
+  async listCollectionIds(options = {}) {
+    if (typeof this.gateway.listObjects !== "function") {
+      throw new Error("Collection content gateway does not support listObjects.");
+    }
+
+    const normalizedPrefix = trimSegment(this.prefix);
+    const prefix = `${normalizedPrefix}/`;
+    const collectionIds = new Set();
+    let cursor = options.cursor || null;
+
+    do {
+      const listed = await this.gateway.listObjects({
+        bucket: this.bucket,
+        prefix,
+        cursor,
+        maxKeys: options.limit || 1000,
+      });
+      const keys = Array.isArray(listed?.keys) ? listed.keys : [];
+      for (const key of keys) {
+        const relative = String(key).slice(prefix.length);
+        const match = relative.match(/^([^/]+)\/([^/]+)\/collection\.json$/);
+        if (match?.[1] && match?.[2]) {
+          collectionIds.add(match[1]);
+        }
+      }
+      cursor = listed?.nextCursor || null;
+    } while (cursor);
+
+    return Array.from(collectionIds).sort((a, b) => a.localeCompare(b));
   }
 }
 
