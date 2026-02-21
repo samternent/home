@@ -150,6 +150,116 @@ export function getPlatformAccountSession() {
   return requestJson<PlatformAccountSessionResponse>("/v1/account/session");
 }
 
+export type AccountManagedUser = {
+  id: string;
+  displayName: string;
+  avatarPublicId?: string | null;
+  userKey: string;
+  profileId?: string | null;
+  identityPublicKey?: string | null;
+  identityKeyFingerprint?: string | null;
+  status: string;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type AccountBook = {
+  id: string;
+  managedUserId: string;
+  managedUserDisplayName?: string;
+  name: string;
+  status: string;
+  currentVersion: number;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type AccountUsersResponse = {
+  ok: boolean;
+  workspaceId: string;
+  users: AccountManagedUser[];
+};
+
+export type AccountBooksResponse = {
+  ok: boolean;
+  workspaceId: string;
+  books: AccountBook[];
+};
+
+function withWorkspaceQuery(path: string, workspaceId?: string) {
+  const query = new URLSearchParams();
+  if (workspaceId) query.set("workspaceId", workspaceId);
+  return `${path}${query.toString() ? `?${query.toString()}` : ""}`;
+}
+
+export function listAccountManagedUsers(workspaceId?: string) {
+  return requestJson<AccountUsersResponse>(withWorkspaceQuery("/v1/account/users", workspaceId));
+}
+
+export function createAccountManagedUser(
+  input: {
+    displayName: string;
+    profileId: string;
+    identityPublicKey: string;
+    userKey?: string;
+    avatarPublicId?: string;
+  },
+  workspaceId?: string
+) {
+  return requestJson<{ ok: boolean; id: string }>(withWorkspaceQuery("/v1/account/users", workspaceId), {
+    method: "POST",
+    body: input,
+  });
+}
+
+export function updateAccountManagedUser(
+  userId: string,
+  input: {
+    displayName?: string;
+    status?: string;
+    avatarPublicId?: string;
+    profileId?: string;
+    identityPublicKey?: string;
+  },
+  workspaceId?: string
+) {
+  return requestJson<{ ok: boolean; id: string }>(
+    withWorkspaceQuery(`/v1/account/users/${encodeURIComponent(userId)}`, workspaceId),
+    {
+      method: "PATCH",
+      body: input,
+    }
+  );
+}
+
+export function listAccountBooks(workspaceId?: string) {
+  return requestJson<AccountBooksResponse>(withWorkspaceQuery("/v1/account/books", workspaceId));
+}
+
+export function createAccountBook(
+  input: { managedUserId: string; name: string },
+  workspaceId?: string
+) {
+  return requestJson<{ ok: boolean; id: string }>(withWorkspaceQuery("/v1/account/books", workspaceId), {
+    method: "POST",
+    body: input,
+  });
+}
+
+export function updateAccountBook(
+  bookId: string,
+  input: { name?: string; status?: string },
+  workspaceId?: string
+) {
+  return requestJson<{ ok: boolean; id: string }>(
+    withWorkspaceQuery(`/v1/account/books/${encodeURIComponent(bookId)}`, workspaceId),
+    {
+      method: "PATCH",
+      body: input,
+    }
+  );
+}
+
 export function validateAdminSession(token?: string | null) {
   return requestJson<PixPaxAdminSessionResponse>("/v1/pixpax/admin/session", {
     token: token || undefined,
@@ -188,9 +298,41 @@ export type PixbookCloudStateResponse = {
   snapshot: PixbookCloudSnapshot | null;
 };
 
-export function getPixbookCloudState(workspaceId?: string) {
+export type PixbookCloudBinding = {
+  profileId: string;
+  identityPublicKey: string;
+  profileDisplayName?: string;
+};
+
+function toPixbookBinding(binding?: PixbookCloudBinding) {
+  if (!binding) return null;
+  const profileId = String(binding.profileId || "").trim();
+  const identityPublicKey = String(binding.identityPublicKey || "").trim();
+  const profileDisplayName = String(binding.profileDisplayName || "").trim();
+  if (!profileId || !identityPublicKey) return null;
+  return {
+    profileId,
+    identityPublicKey,
+    ...(profileDisplayName ? { profileDisplayName } : {}),
+  };
+}
+
+export function getPixbookCloudState(
+  workspaceId?: string,
+  binding?: PixbookCloudBinding,
+  bookId?: string
+) {
   const query = new URLSearchParams();
   if (workspaceId) query.set("workspaceId", workspaceId);
+  if (bookId) query.set("bookId", String(bookId || "").trim());
+  const normalizedBinding = toPixbookBinding(binding);
+  if (normalizedBinding?.profileId) query.set("profileId", normalizedBinding.profileId);
+  if (normalizedBinding?.identityPublicKey) {
+    query.set("identityPublicKey", normalizedBinding.identityPublicKey);
+  }
+  if (normalizedBinding?.profileDisplayName) {
+    query.set("profileDisplayName", normalizedBinding.profileDisplayName);
+  }
   const path = `/v1/account/pixbook${query.toString() ? `?${query.toString()}` : ""}`;
   return requestJson<PixbookCloudStateResponse>(path);
 }
@@ -198,16 +340,27 @@ export function getPixbookCloudState(workspaceId?: string) {
 export function savePixbookCloudSnapshot(input: {
   payload: unknown;
   ledgerHead?: string;
+  expectedVersion?: number | null;
+  expectedLedgerHead?: string | null;
   workspaceId?: string;
+  bookId?: string;
+  binding?: PixbookCloudBinding;
 }) {
   const query = new URLSearchParams();
   if (input.workspaceId) query.set("workspaceId", input.workspaceId);
+  if (input.bookId) query.set("bookId", String(input.bookId || "").trim());
+  const normalizedBinding = toPixbookBinding(input.binding);
   const path = `/v1/account/pixbook/snapshot${query.toString() ? `?${query.toString()}` : ""}`;
   return requestJson<PixbookCloudStateResponse>(path, {
     method: "PUT",
     body: {
       payload: input.payload,
       ledgerHead: input.ledgerHead || "",
+      expectedVersion: input.expectedVersion,
+      expectedLedgerHead: input.expectedLedgerHead || "",
+      profileId: normalizedBinding?.profileId || "",
+      identityPublicKey: normalizedBinding?.identityPublicKey || "",
+      profileDisplayName: normalizedBinding?.profileDisplayName || "",
     },
   });
 }

@@ -38,6 +38,14 @@ const sizeVariant = computed(() => {
       classes: "w-32 h-32",
     };
   }
+  if (props.size === "xl") {
+    return {
+      classes: "w-64 h-64",
+    };
+  }
+  return {
+    classes: "w-8 h-8",
+  };
 });
 </script>
 <template>

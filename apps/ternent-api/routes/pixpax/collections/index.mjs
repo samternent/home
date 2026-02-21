@@ -1287,6 +1287,187 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
     }
   );
 
+  router.post("/v1/pixpax/packs/verify-bulk", async (req, res) => {
+    const rawPacks = Array.isArray(req.body?.packs) ? req.body.packs : [];
+    if (!rawPacks.length) {
+      res.status(400).send({
+        ok: false,
+        error: "packs[] is required.",
+      });
+      return;
+    }
+    if (rawPacks.length > 500) {
+      res.status(400).send({
+        ok: false,
+        error: "packs[] exceeds maximum size (500).",
+      });
+      return;
+    }
+
+    try {
+      const store = await getStore();
+      let receiptLedger = null;
+
+      const getReceiptLedger = async () => {
+        if (receiptLedger) return receiptLedger;
+        const keys = await loadIssuerKeys();
+        receiptLedger = await ensureIssuerAuditLedger({
+          publicKeyPem: keys.publicKeyPem,
+          issuerKeyId: keys.issuerKeyId,
+        });
+        return receiptLedger;
+      };
+
+      const results = await mapWithConcurrency(rawPacks, 12, async (row, index) => {
+        const packId = String(row?.packId || "").trim();
+        const collectionId = String(row?.collectionId || "").trim();
+        const collectionVersion = String(
+          row?.collectionVersion || row?.version || ""
+        ).trim();
+        const segmentKey = String(row?.segmentKey || "").trim();
+
+        const base = {
+          index,
+          packId,
+          collectionId,
+          collectionVersion,
+          segmentKey: segmentKey || null,
+          ok: false,
+          method: "pack-verify",
+          reason: "invalid-input",
+          summary: "Invalid verification input.",
+          packVerify: null,
+          receiptVerify: null,
+        };
+
+        if (!packId || !collectionId || !collectionVersion) {
+          return {
+            ...base,
+            reason: "missing-pack-scope",
+            summary: "Pack verification requires packId, collectionId, and collectionVersion.",
+          };
+        }
+
+        const packVerify = await verifyPack({
+          store,
+          packId,
+          collectionId,
+          version: collectionVersion,
+        });
+        const isUntracked = packVerify?.checks?.signature === "skipped-untracked";
+
+        if (!packVerify?.ok) {
+          return {
+            ...base,
+            reason: String(packVerify?.reason || "pack-verify-failed"),
+            summary: `Pack verify failed: ${String(packVerify?.reason || "unknown")}.`,
+            packVerify,
+          };
+        }
+
+        if (!segmentKey || isUntracked) {
+          return {
+            ...base,
+            ok: true,
+            method: "pack-verify",
+            reason: isUntracked ? "dev-untracked" : "no-segment-key",
+            summary: isUntracked
+              ? "Dev-untracked pack verified (content+structure). Receipt proof is intentionally not expected."
+              : "Pack verified (content+structure). Receipt segment key not available yet.",
+            packVerify,
+          };
+        }
+
+        try {
+          const ledger = await getReceiptLedger();
+          if (ledger?.options?.disabled) {
+            return {
+              ...base,
+              ok: true,
+              method: "pack-verify",
+              reason: "ledger-disabled",
+              summary:
+                "Pack verified (content+structure). Receipt verifier ledger is disabled.",
+              packVerify,
+            };
+          }
+          const receiptVerify = await ledger.fetchReceiptProof(packId, segmentKey);
+          if (receiptVerify?.ok) {
+            return {
+              ...base,
+              ok: true,
+              method: "receipt-proof",
+              reason: "ok",
+              summary: "Receipt proof verified against issuer segment chain.",
+              packVerify,
+              receiptVerify,
+            };
+          }
+          return {
+            ...base,
+            ok: true,
+            method: "pack-verify",
+            reason: String(receiptVerify?.reason || "receipt-proof-failed"),
+            summary:
+              "Pack verified (content+structure), but receipt proof is not currently valid from head.",
+            packVerify,
+            receiptVerify,
+          };
+        } catch (error) {
+          return {
+            ...base,
+            ok: true,
+            method: "pack-verify",
+            reason: "receipt-proof-error",
+            summary:
+              "Pack verified (content+structure). Receipt proof request failed; check ledger availability.",
+            packVerify,
+            receiptVerify: {
+              ok: false,
+              reason: "internal-error",
+              error: String(error?.message || error),
+            },
+          };
+        }
+      });
+
+      const okCount = results.filter((entry) => entry.ok).length;
+      const receiptProofCount = results.filter(
+        (entry) => entry.method === "receipt-proof" && entry.ok
+      ).length;
+      const untrackedCount = results.filter(
+        (entry) => entry.reason === "dev-untracked"
+      ).length;
+
+      res.status(200).send({
+        ok: true,
+        count: results.length,
+        okCount,
+        receiptProofCount,
+        untrackedCount,
+        results,
+      });
+    } catch (error) {
+      if (missingContentConfigError(error)) {
+        res.status(503).send({
+          ok: false,
+          error:
+            "Content store configuration is incomplete. Use LEDGER_* connection vars and LEDGER_CONTENT_PREFIX.",
+        });
+        return;
+      }
+      if (String(error?.message || "").startsWith("NoSuchKey:")) {
+        res.status(404).send({
+          ok: false,
+          error: "Collection content is missing for one or more packs.",
+        });
+        return;
+      }
+      console.error("[pixpax/collections] verify bulk failed:", error);
+      res.status(500).send({ ok: false, error: "Failed to verify packs." });
+    }
+  });
+
   router.post("/v1/pixpax/collections/:collectionId/:version/packs", async (req, res) => {
     const { collectionId, version } = req.params || {};
     const rawUserKey = req.body?.userKey;

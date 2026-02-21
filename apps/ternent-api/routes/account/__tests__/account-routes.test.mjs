@@ -48,6 +48,9 @@ function createRouterHarness() {
     post(path, ...handlers) {
       register("POST", path, handlers);
     },
+    put(path, ...handlers) {
+      register("PUT", path, handlers);
+    },
     patch(path, ...handlers) {
       register("PATCH", path, handlers);
     },

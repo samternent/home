@@ -1,10 +1,13 @@
 import { requireSession, upsertAuthUserShadow } from "../../services/auth/platform-auth.mjs";
 import { requirePermission } from "../../services/auth/permissions.mjs";
 import {
+  BookSnapshotConflictError,
   createBook,
   createManagedUser,
+  derivePersonalPixbookUserKey,
   ensurePersonalPixbook,
   ensureWorkspaceForUser,
+  getBookForWorkspace,
   getLatestBookSnapshot,
   getWorkspaceSummary,
   listBooks,
@@ -23,6 +26,42 @@ function resolveWorkspaceId(req) {
 
 function sessionUserId(req) {
   return String(req?.platformSession?.user?.id || "").trim();
+}
+
+function resolveBookId(req) {
+  return String(
+    req?.headers?.["x-book-id"] ||
+      req?.query?.bookId ||
+      req?.body?.bookId ||
+      ""
+  ).trim();
+}
+
+function resolveProfileBinding(req) {
+  const profileId = String(
+    req?.headers?.["x-pixbook-profile-id"] ||
+      req?.query?.profileId ||
+      req?.body?.profileId ||
+      ""
+  ).trim();
+  const identityPublicKey = String(
+    req?.headers?.["x-pixbook-identity-key"] ||
+      req?.query?.identityPublicKey ||
+      req?.body?.identityPublicKey ||
+      ""
+  ).trim();
+  const profileDisplayName = String(
+    req?.headers?.["x-pixbook-profile-name"] ||
+      req?.query?.profileDisplayName ||
+      req?.body?.profileDisplayName ||
+      ""
+  ).trim();
+  return {
+    profileId,
+    identityPublicKey,
+    profileDisplayName,
+    isBound: Boolean(profileId && identityPublicKey),
+  };
 }
 
 export default function accountRoutes(router) {
@@ -188,18 +227,39 @@ export default function accountRoutes(router) {
       console.error("[account] ensure pixbook workspace failed:", error);
     }
 
-    const profile = ensurePersonalPixbook(
-      sessionUserId(req),
-      resolveWorkspaceId(req),
-      {
-        displayName: req.platformSession?.user?.name || req.platformSession?.user?.email || "My Pixbook",
-        email: req.platformSession?.user?.email || "",
-      }
-    );
+    const profileBinding = resolveProfileBinding(req);
+    const requestedBookId = resolveBookId(req);
+    if (!requestedBookId && !profileBinding.isBound) {
+      res.status(400).send({
+        ok: false,
+        error: "profileId and identityPublicKey are required for pixbook profile resolution.",
+        code: "PIXBOOK_PROFILE_BINDING_REQUIRED",
+      });
+      return;
+    }
 
-    const resolved = await profile;
+    const resolved = requestedBookId
+      ? await getBookForWorkspace(
+          sessionUserId(req),
+          resolveWorkspaceId(req),
+          requestedBookId
+        )
+      : await ensurePersonalPixbook(
+          sessionUserId(req),
+          resolveWorkspaceId(req),
+          {
+            displayName:
+              profileBinding.profileDisplayName ||
+              req.platformSession?.user?.name ||
+              req.platformSession?.user?.email ||
+              "My Pixbook",
+            email: req.platformSession?.user?.email || "",
+          },
+          profileBinding
+        );
+
     if (!resolved) {
-      res.status(404).send({ ok: false, error: "Workspace not found." });
+      res.status(404).send({ ok: false, error: "Pixbook not found." });
       return;
     }
 
@@ -222,14 +282,59 @@ export default function accountRoutes(router) {
       console.error("[account] ensure pixbook workspace failed:", error);
     }
 
-    const resolved = await ensurePersonalPixbook(
-      sessionUserId(req),
-      resolveWorkspaceId(req),
-      {
-        displayName: req.platformSession?.user?.name || req.platformSession?.user?.email || "My Pixbook",
-        email: req.platformSession?.user?.email || "",
+    const profileBinding = resolveProfileBinding(req);
+    if (!profileBinding.isBound) {
+      res.status(400).send({
+        ok: false,
+        error: "profileId and identityPublicKey are required to save cloud pixbook snapshots.",
+        code: "PIXBOOK_PROFILE_BINDING_REQUIRED",
+      });
+      return;
+    }
+
+    const requestedBookId = resolveBookId(req);
+
+    let resolved = null;
+    if (requestedBookId) {
+      const byBookId = await getBookForWorkspace(
+        sessionUserId(req),
+        resolveWorkspaceId(req),
+        requestedBookId
+      );
+      if (!byBookId) {
+        res.status(404).send({ ok: false, error: "Book not found." });
+        return;
       }
-    );
+
+      const expectedUserKey = derivePersonalPixbookUserKey(
+        sessionUserId(req),
+        profileBinding
+      );
+      if (byBookId.managedUser.userKey !== expectedUserKey) {
+        res.status(409).send({
+          ok: false,
+          code: "PIXBOOK_BOOK_PROFILE_MISMATCH",
+          error:
+            "Selected book belongs to a different profile identity. Load that profile first.",
+        });
+        return;
+      }
+      resolved = byBookId;
+    } else {
+      resolved = await ensurePersonalPixbook(
+        sessionUserId(req),
+        resolveWorkspaceId(req),
+        {
+          displayName:
+            profileBinding.profileDisplayName ||
+            req.platformSession?.user?.name ||
+            req.platformSession?.user?.email ||
+            "My Pixbook",
+          email: req.platformSession?.user?.email || "",
+        },
+        profileBinding
+      );
+    }
 
     if (!resolved) {
       res.status(404).send({ ok: false, error: "Workspace not found." });
@@ -244,6 +349,8 @@ export default function accountRoutes(router) {
         {
           payload: req.body?.payload,
           ledgerHead: req.body?.ledgerHead,
+          expectedVersion: req.body?.expectedVersion,
+          expectedLedgerHead: req.body?.expectedLedgerHead,
         }
       );
 
@@ -258,6 +365,15 @@ export default function accountRoutes(router) {
         snapshot: saved,
       });
     } catch (error) {
+      if (error instanceof BookSnapshotConflictError) {
+        res.status(409).send({
+          ok: false,
+          error: error.message,
+          code: error.code,
+          conflict: error.details || null,
+        });
+        return;
+      }
       res.status(400).send({
         ok: false,
         error: error?.message || "Unable to save pixbook snapshot.",

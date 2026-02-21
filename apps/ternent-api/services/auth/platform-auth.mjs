@@ -23,6 +23,12 @@ function numberEnv(name, fallback) {
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
 }
 
+function parsePasskeyOrigins() {
+  const configured = parseCsv(process.env.AUTH_PASSKEY_ORIGINS || process.env.AUTH_PASSKEY_ORIGIN);
+  if (configured.length === 0) return null;
+  return configured.length === 1 ? configured[0] : configured;
+}
+
 function isConfigured() {
   const secret = String(process.env.AUTH_SECRET || "").trim();
   const baseUrl = String(process.env.AUTH_BASE_URL || "").trim();
@@ -157,6 +163,9 @@ async function buildRuntime() {
   const trustedOrigins = parseCsv(
     process.env.AUTH_TRUSTED_ORIGINS || process.env.CORS_ALLOW_ORIGINS || process.env.AUTH_BASE_URL
   );
+  const passkeyRpID = String(process.env.AUTH_PASSKEY_RP_ID || "").trim();
+  const passkeyRpName = String(process.env.AUTH_PASSKEY_RP_NAME || "Ternent").trim();
+  const passkeyOrigin = parsePasskeyOrigins();
 
   const sendOtp = await createOtpSender();
 
@@ -184,7 +193,11 @@ async function buildRuntime() {
       updateAge: numberEnv("AUTH_SESSION_ROLLING_SECONDS", DEFAULT_ROLLING_SECONDS),
     },
     plugins: [
-      passkey(),
+      passkey({
+        ...(passkeyRpID ? { rpID: passkeyRpID } : {}),
+        ...(passkeyRpName ? { rpName: passkeyRpName } : {}),
+        ...(passkeyOrigin ? { origin: passkeyOrigin } : {}),
+      }),
       emailOTP({
         expiresIn: numberEnv("AUTH_EMAIL_OTP_EXPIRY_SECONDS", 5 * 60),
         async sendVerificationOTP({ email, otp, type }) {

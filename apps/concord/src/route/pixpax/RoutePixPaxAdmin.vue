@@ -4,10 +4,19 @@ import { useRouter } from "vue-router";
 import { useLocalStorage } from "@vueuse/core";
 import { Button } from "ternent-ui/primitives";
 import {
+  type AccountBook,
+  type AccountManagedUser,
   PixPaxApiError,
+  createAccountBook,
+  createAccountManagedUser,
   createOverrideCode,
+  listAccountBooks,
+  listAccountManagedUsers,
+  updateAccountBook,
+  updateAccountManagedUser,
 } from "../../module/pixpax/api/client";
 import { usePixpaxAuth } from "../../module/pixpax/auth/usePixpaxAuth";
+import { usePixpaxAccount } from "../../module/pixpax/auth/usePixpaxAccount";
 
 function toIsoWeek(date = new Date()) {
   const utc = new Date(
@@ -58,11 +67,52 @@ function parseCollectionRefs(): CollectionRef[] {
   return [{ collectionId: "pixel-animals", version: "v2" }];
 }
 
-const refs = parseCollectionRefs();
-const selectedRef = ref(`${refs[0].collectionId}::${refs[0].version}`);
+function extractError(error: unknown, fallback: string) {
+  if (error instanceof PixPaxApiError) {
+    const body = error.body as { error?: string } | null;
+    const message = String(body?.error || error.message || "").trim();
+    if (message) return message;
+  }
+  return String((error as Error)?.message || fallback);
+}
 
 const router = useRouter();
 const auth = usePixpaxAuth();
+const account = usePixpaxAccount();
+const refs = parseCollectionRefs();
+const selectedRef = ref(`${refs[0].collectionId}::${refs[0].version}`);
+const activePanel = ref<"profiles" | "books" | "codes">("profiles");
+
+const loggedIn = computed(() => auth.isAuthenticated.value);
+const workspaceId = computed(() => account.workspace.value?.workspaceId || "");
+const workspaceLabel = computed(() => {
+  const ws = account.workspace.value;
+  if (!ws) return "No workspace loaded";
+  return `${ws.name} (${ws.workspaceId.slice(0, 8)})`;
+});
+const hasAccountManage = computed(() =>
+  Boolean(account.workspace.value?.capabilities?.includes("platform.account.manage")),
+);
+
+const profiles = ref<AccountManagedUser[]>([]);
+const books = ref<AccountBook[]>([]);
+const loadingProfiles = ref(false);
+const loadingBooks = ref(false);
+const profileError = ref("");
+const bookError = ref("");
+const profileStatus = ref("");
+const bookStatus = ref("");
+const profileActionBusyId = ref("");
+const bookActionBusyId = ref("");
+
+const newProfileName = ref("");
+const newProfileUserKey = ref("");
+const newProfileId = ref("");
+const newProfileIdentityPublicKey = ref("");
+
+const newBookName = ref("My Pixbook");
+const newBookManagedUserId = ref("");
+
 const userKey = useLocalStorage("pixpax/admin/userKey", "public:demo-user");
 const bindToUser = ref(true);
 const dropId = ref(`week-${toIsoWeek(new Date())}`);
@@ -83,7 +133,6 @@ const activeRef = computed(() => {
   };
 });
 
-const loggedIn = computed(() => auth.isAuthenticated.value);
 const redeemCode = computed(() =>
   String(minted.value?.giftCode || minted.value?.code || "").trim(),
 );
@@ -94,6 +143,237 @@ const shareLink = computed(() => {
   if (typeof window === "undefined") return `?code=${code}`;
   return `${window.location.origin}?code=${code}`;
 });
+
+async function ensureAdmin() {
+  const ok = await auth.ensurePermission("pixpax.admin.manage");
+  if (!ok) {
+    await router.replace({
+      path: "/pixpax/control/login",
+      query: { redirect: "/pixpax/control/admin" },
+    });
+    return false;
+  }
+  return true;
+}
+
+async function loadProfiles() {
+  if (!loggedIn.value) return;
+  loadingProfiles.value = true;
+  profileError.value = "";
+  try {
+    const response = await listAccountManagedUsers(workspaceId.value || undefined);
+    profiles.value = response.users || [];
+    if (!newBookManagedUserId.value && profiles.value.length) {
+      newBookManagedUserId.value = profiles.value[0].id;
+    }
+  } catch (error: unknown) {
+    profileError.value = extractError(error, "Unable to load profiles.");
+  } finally {
+    loadingProfiles.value = false;
+  }
+}
+
+async function loadBooks() {
+  if (!loggedIn.value) return;
+  loadingBooks.value = true;
+  bookError.value = "";
+  try {
+    const response = await listAccountBooks(workspaceId.value || undefined);
+    books.value = response.books || [];
+  } catch (error: unknown) {
+    bookError.value = extractError(error, "Unable to load books.");
+  } finally {
+    loadingBooks.value = false;
+  }
+}
+
+async function refreshAccountCollections() {
+  profileStatus.value = "";
+  bookStatus.value = "";
+  await Promise.all([loadProfiles(), loadBooks()]);
+}
+
+async function createProfile() {
+  const displayName = String(newProfileName.value || "").trim();
+  const profileId = String(newProfileId.value || "").trim();
+  const identityPublicKey = String(newProfileIdentityPublicKey.value || "").trim();
+  if (!displayName) {
+    profileError.value = "Display name is required.";
+    return;
+  }
+  if (!profileId || !identityPublicKey) {
+    profileError.value = "profileId and identity public key are required.";
+    return;
+  }
+  profileActionBusyId.value = "create-profile";
+  profileError.value = "";
+  profileStatus.value = "";
+  try {
+    await createAccountManagedUser(
+      {
+        displayName,
+        profileId,
+        identityPublicKey,
+        userKey: String(newProfileUserKey.value || "").trim() || undefined,
+      },
+      workspaceId.value || undefined,
+    );
+    newProfileName.value = "";
+    newProfileUserKey.value = "";
+    newProfileId.value = "";
+    newProfileIdentityPublicKey.value = "";
+    profileStatus.value = "Profile created.";
+    await loadProfiles();
+  } catch (error: unknown) {
+    profileError.value = extractError(error, "Unable to create profile.");
+  } finally {
+    profileActionBusyId.value = "";
+  }
+}
+
+async function renameProfile(user: AccountManagedUser) {
+  const nextName = window.prompt("New profile display name", user.displayName || "");
+  if (!nextName || nextName.trim() === user.displayName) return;
+  profileActionBusyId.value = user.id;
+  profileError.value = "";
+  profileStatus.value = "";
+  try {
+    await updateAccountManagedUser(
+      user.id,
+      { displayName: nextName.trim() },
+      workspaceId.value || undefined,
+    );
+    profileStatus.value = "Profile updated.";
+    await loadProfiles();
+  } catch (error: unknown) {
+    profileError.value = extractError(error, "Unable to rename profile.");
+  } finally {
+    profileActionBusyId.value = "";
+  }
+}
+
+async function toggleProfileStatus(user: AccountManagedUser) {
+  const nextStatus = user.status === "active" ? "paused" : "active";
+  profileActionBusyId.value = user.id;
+  profileError.value = "";
+  profileStatus.value = "";
+  try {
+    await updateAccountManagedUser(
+      user.id,
+      { status: nextStatus },
+      workspaceId.value || undefined,
+    );
+    profileStatus.value = `Profile marked ${nextStatus}.`;
+    await loadProfiles();
+  } catch (error: unknown) {
+    profileError.value = extractError(error, "Unable to change profile status.");
+  } finally {
+    profileActionBusyId.value = "";
+  }
+}
+
+async function attachProfileIdentity(user: AccountManagedUser) {
+  const nextProfileId = window.prompt(
+    "Concord profile id",
+    String(user.profileId || ""),
+  );
+  if (!nextProfileId) return;
+  const nextIdentityPublicKey = window.prompt(
+    "Concord identity public key (PEM)",
+    String(user.identityPublicKey || ""),
+  );
+  if (!nextIdentityPublicKey) return;
+
+  profileActionBusyId.value = user.id;
+  profileError.value = "";
+  profileStatus.value = "";
+  try {
+    await updateAccountManagedUser(
+      user.id,
+      {
+        profileId: nextProfileId.trim(),
+        identityPublicKey: nextIdentityPublicKey.trim(),
+      },
+      workspaceId.value || undefined,
+    );
+    profileStatus.value = "Profile identity attached.";
+    await loadProfiles();
+  } catch (error: unknown) {
+    profileError.value = extractError(error, "Unable to attach profile identity.");
+  } finally {
+    profileActionBusyId.value = "";
+  }
+}
+
+async function createBookForProfile() {
+  const managedUserId = String(newBookManagedUserId.value || "").trim();
+  const name = String(newBookName.value || "").trim();
+  if (!managedUserId) {
+    bookError.value = "Select a profile first.";
+    return;
+  }
+  if (!name) {
+    bookError.value = "Book name is required.";
+    return;
+  }
+  bookActionBusyId.value = "create-book";
+  bookError.value = "";
+  bookStatus.value = "";
+  try {
+    await createAccountBook(
+      { managedUserId, name },
+      workspaceId.value || undefined,
+    );
+    newBookName.value = "My Pixbook";
+    bookStatus.value = "Book created.";
+    await loadBooks();
+  } catch (error: unknown) {
+    bookError.value = extractError(error, "Unable to create book.");
+  } finally {
+    bookActionBusyId.value = "";
+  }
+}
+
+async function renameBook(book: AccountBook) {
+  const nextName = window.prompt("New book name", book.name || "");
+  if (!nextName || nextName.trim() === book.name) return;
+  bookActionBusyId.value = book.id;
+  bookError.value = "";
+  bookStatus.value = "";
+  try {
+    await updateAccountBook(
+      book.id,
+      { name: nextName.trim() },
+      workspaceId.value || undefined,
+    );
+    bookStatus.value = "Book renamed.";
+    await loadBooks();
+  } catch (error: unknown) {
+    bookError.value = extractError(error, "Unable to rename book.");
+  } finally {
+    bookActionBusyId.value = "";
+  }
+}
+
+async function toggleBookStatus(book: AccountBook) {
+  const nextStatus = book.status === "active" ? "paused" : "active";
+  bookActionBusyId.value = book.id;
+  bookError.value = "";
+  bookStatus.value = "";
+  try {
+    await updateAccountBook(
+      book.id,
+      { status: nextStatus },
+      workspaceId.value || undefined,
+    );
+    bookStatus.value = `Book marked ${nextStatus}.`;
+    await loadBooks();
+  } catch (error: unknown) {
+    bookError.value = extractError(error, "Unable to change book status.");
+  } finally {
+    bookActionBusyId.value = "";
+  }
+}
 
 async function copyText(value: string, kind: "code" | "link") {
   if (!value) return;
@@ -168,30 +448,156 @@ async function mintOverrideCode() {
 }
 
 onMounted(async () => {
-  const ok = await auth.ensurePermission("pixpax.admin.manage");
-  if (!ok) {
-    await router.replace({
-      path: "/pixpax/control/login",
-      query: { redirect: "/pixpax/control/admin" },
-    });
-  }
+  const ok = await ensureAdmin();
+  if (!ok) return;
+  await account.refreshSession({ force: true });
+  await refreshAccountCollections();
 });
 </script>
 
 <template>
-  <div class="mx-auto flex w-full max-w-4xl flex-col gap-6 p-4">
+  <div class="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4">
     <section class="rounded-xl border border-[var(--ui-border)] p-4">
       <h1 class="text-xl font-semibold mb-2">PixPax Admin</h1>
-      <p class="text-sm text-[var(--ui-fg-muted)] mb-4">
-        Mint one-time pack override codes. This route requires admin permission
-        and is server-verified.
+      <p class="text-sm text-[var(--ui-fg-muted)] mb-3">
+        Explicit account control. No auto mutation, no hidden sync.
       </p>
-      <p class="mt-2 text-xs text-[var(--ui-fg-muted)]">
-        Status: {{ loggedIn ? "authenticated" : "not authenticated" }}
+      <p class="text-xs text-[var(--ui-fg-muted)]">
+        Auth: {{ loggedIn ? "authenticated" : "not authenticated" }} | Workspace: {{ workspaceLabel }}
       </p>
+      <p v-if="!hasAccountManage" class="text-xs text-amber-600 mt-2">
+        Your current workspace session does not include `platform.account.manage`, so profile/book actions may be blocked.
+      </p>
+      <div class="mt-4 flex flex-wrap gap-2">
+        <Button class="!px-4 !py-2" :class="{ active: activePanel === 'profiles' }" @click="activePanel = 'profiles'">
+          Profiles
+        </Button>
+        <Button class="!px-4 !py-2" :class="{ active: activePanel === 'books' }" @click="activePanel = 'books'">
+          Books
+        </Button>
+        <Button class="!px-4 !py-2" :class="{ active: activePanel === 'codes' }" @click="activePanel = 'codes'">
+          Gift Codes
+        </Button>
+        <Button class="!px-4 !py-2" @click="refreshAccountCollections">
+          Refresh
+        </Button>
+      </div>
     </section>
 
-    <section class="rounded-xl border border-[var(--ui-border)] p-4">
+    <section v-if="activePanel === 'profiles'" class="rounded-xl border border-[var(--ui-border)] p-4">
+      <h2 class="text-lg font-medium mb-3">Profiles</h2>
+      <p class="text-xs text-[var(--ui-fg-muted)] mb-4">
+        Profile = identity owner bucket. Each profile can have multiple books.
+      </p>
+
+      <div class="grid gap-3 md:grid-cols-2">
+        <label class="field">
+          <span>Profile display name</span>
+          <input v-model="newProfileName" type="text" placeholder="Sam / Kid A / Kid B" />
+        </label>
+        <label class="field">
+          <span>User key (optional)</span>
+          <input v-model="newProfileUserKey" type="text" placeholder="public:kid-a" />
+        </label>
+        <label class="field">
+          <span>Concord profile id</span>
+          <input v-model="newProfileId" type="text" placeholder="profile_..." />
+        </label>
+        <label class="field md:col-span-2">
+          <span>Concord identity public key (PEM)</span>
+          <textarea
+            v-model="newProfileIdentityPublicKey"
+            rows="4"
+            placeholder="-----BEGIN PUBLIC KEY-----"
+          />
+        </label>
+      </div>
+      <div class="mt-3 flex items-center gap-2">
+        <Button class="!px-4 !py-2" :disabled="profileActionBusyId === 'create-profile'" @click="createProfile">
+          {{ profileActionBusyId === "create-profile" ? "Creating..." : "Create profile" }}
+        </Button>
+      </div>
+
+      <div class="mt-5 grid gap-2">
+        <div v-if="loadingProfiles" class="text-xs text-[var(--ui-fg-muted)]">Loading profiles...</div>
+        <div v-else-if="profiles.length === 0" class="text-xs text-[var(--ui-fg-muted)]">No profiles yet.</div>
+        <div v-for="user in profiles" :key="user.id" class="item-card">
+          <div class="item-main">
+            <p class="item-title">{{ user.displayName }}</p>
+            <p class="item-sub">
+              id {{ user.id.slice(0, 12) }} | key {{ user.userKey }} | status {{ user.status }}
+            </p>
+            <p class="item-sub">
+              profile {{ user.profileId || "missing" }} | identity {{ user.identityKeyFingerprint ? user.identityKeyFingerprint.slice(0, 16) : "missing" }}
+            </p>
+          </div>
+          <div class="item-actions">
+            <Button class="!px-3 !py-1" :disabled="profileActionBusyId === user.id" @click="renameProfile(user)">
+              Rename
+            </Button>
+            <Button class="!px-3 !py-1" :disabled="profileActionBusyId === user.id" @click="attachProfileIdentity(user)">
+              Attach identity
+            </Button>
+            <Button class="!px-3 !py-1" :disabled="profileActionBusyId === user.id" @click="toggleProfileStatus(user)">
+              {{ user.status === "active" ? "Pause" : "Activate" }}
+            </Button>
+          </div>
+        </div>
+      </div>
+      <p v-if="profileStatus" class="mt-3 text-xs text-green-600">{{ profileStatus }}</p>
+      <p v-if="profileError" class="mt-2 text-xs text-red-600">{{ profileError }}</p>
+    </section>
+
+    <section v-if="activePanel === 'books'" class="rounded-xl border border-[var(--ui-border)] p-4">
+      <h2 class="text-lg font-medium mb-3">Books</h2>
+      <p class="text-xs text-[var(--ui-fg-muted)] mb-4">
+        Books are explicit datasets under a profile. Checkout/restore remains manual.
+      </p>
+      <div class="grid gap-3 md:grid-cols-2">
+        <label class="field">
+          <span>Owner profile</span>
+          <select v-model="newBookManagedUserId">
+            <option v-for="user in profiles" :key="user.id" :value="user.id">
+              {{ user.displayName }} ({{ user.id.slice(0, 6) }})
+            </option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Book name</span>
+          <input v-model="newBookName" type="text" placeholder="My Pixbook" />
+        </label>
+      </div>
+      <div class="mt-3 flex items-center gap-2">
+        <Button class="!px-4 !py-2" :disabled="bookActionBusyId === 'create-book' || profiles.length === 0" @click="createBookForProfile">
+          {{ bookActionBusyId === "create-book" ? "Creating..." : "Create book" }}
+        </Button>
+      </div>
+      <div class="mt-5 grid gap-2">
+        <div v-if="loadingBooks" class="text-xs text-[var(--ui-fg-muted)]">Loading books...</div>
+        <div v-else-if="books.length === 0" class="text-xs text-[var(--ui-fg-muted)]">No books yet.</div>
+        <div v-for="book in books" :key="book.id" class="item-card">
+          <div class="item-main">
+            <p class="item-title">{{ book.name }}</p>
+            <p class="item-sub">
+              id {{ book.id.slice(0, 12) }} | owner {{ book.managedUserDisplayName || book.managedUserId.slice(0, 6) }}
+              | v{{ book.currentVersion }} | status {{ book.status }}
+            </p>
+          </div>
+          <div class="item-actions">
+            <Button class="!px-3 !py-1" :disabled="bookActionBusyId === book.id" @click="renameBook(book)">
+              Rename
+            </Button>
+            <Button class="!px-3 !py-1" :disabled="bookActionBusyId === book.id" @click="toggleBookStatus(book)">
+              {{ book.status === "active" ? "Pause" : "Activate" }}
+            </Button>
+          </div>
+        </div>
+      </div>
+      <p v-if="bookStatus" class="mt-3 text-xs text-green-600">{{ bookStatus }}</p>
+      <p v-if="bookError" class="mt-2 text-xs text-red-600">{{ bookError }}</p>
+    </section>
+
+    <section v-if="activePanel === 'codes'" class="rounded-xl border border-[var(--ui-border)] p-4">
       <h2 class="text-lg font-medium mb-3">Mint Override Code</h2>
       <div class="grid gap-3 md:grid-cols-2">
         <label class="field">
@@ -313,5 +719,40 @@ onMounted(async () => {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
     "Liberation Mono", "Courier New", monospace;
   font-size: 12px;
+}
+
+.item-card {
+  border: 1px solid var(--ui-border);
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.item-main {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.item-title {
+  font-size: 13px;
+  color: var(--ui-fg);
+  margin: 0;
+}
+
+.item-sub {
+  font-size: 11px;
+  color: var(--ui-fg-muted);
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.item-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
 </style>

@@ -144,6 +144,24 @@ spec:
                   name: ternent-api-auth
                   key: auth-trusted-origins
                   optional: true
+            - name: AUTH_PASSKEY_RP_ID
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-auth
+                  key: auth-passkey-rp-id
+                  optional: true
+            - name: AUTH_PASSKEY_RP_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-auth
+                  key: auth-passkey-rp-name
+                  optional: true
+            - name: AUTH_PASSKEY_ORIGINS
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-auth
+                  key: auth-passkey-origins
+                  optional: true
             - name: AUTH_SESSION_IDLE_SECONDS
               valueFrom:
                 secretKeyRef:

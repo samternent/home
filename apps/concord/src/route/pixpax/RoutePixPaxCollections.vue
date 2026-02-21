@@ -13,6 +13,9 @@ import type {
   StickerMeta,
 } from "../../module/pixpax/sticker-types";
 import { usePixbook } from "../../module/pixpax/state/usePixbook";
+import { usePixpaxActivityLock } from "../../module/pixpax/context/usePixpaxActivityLock";
+import { usePixpaxCloudSync } from "../../module/pixpax/context/usePixpaxCloudSync";
+import { useLedger } from "../../module/ledger/useLedger";
 
 function resolveApiBase() {
   if (import.meta.env.DEV) return "";
@@ -188,6 +191,9 @@ const revealDismissed = ref(false);
 const packOwnedCountSnapshot = ref<Map<string, number> | null>(null);
 const anonUserKey = useLocalStorage("pixpax/collections/anon-user-key", "");
 const { publicKey, receivedPacks, recordPackAndCommit } = usePixbook();
+const activityLock = usePixpaxActivityLock();
+const cloudSync = usePixpaxCloudSync();
+const { ledger } = useLedger();
 const route = useRoute();
 const router = useRouter();
 const overrideCode = ref("");
@@ -1025,6 +1031,9 @@ async function openPack() {
       packRoot: response.packRoot,
       cardCount: response.cards?.length || 0,
     });
+    if (commitRecorded) {
+      cloudSync.notePackLedgerMutation(String(ledger.value?.head || "").trim());
+    }
     if (normalizedOverrideCode) {
       overrideCode.value = "";
       if (route.query?.code) {
@@ -1096,6 +1105,7 @@ onMounted(async () => {
 
 onUnmounted(() => {
   if (nowTimer) window.clearInterval(nowTimer);
+  activityLock.setActivityLock("pack-open", false);
 });
 
 watch(
@@ -1118,6 +1128,14 @@ watch(
       overrideCode.value = "";
     }
   },
+);
+
+watch(
+  () => isPackRevealOpen.value,
+  (open) => {
+    activityLock.setActivityLock("pack-open", open);
+  },
+  { immediate: true }
 );
 </script>
 

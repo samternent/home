@@ -12,7 +12,8 @@
     "pixpax:derive-issuer-key-formats": "node scripts/derive-issuer-key-formats.mjs",
     "pixpax:seed": "node scripts/pixpax-seed-collection.mjs",
     "pixpax:generate-public": "node scripts/pixpax-generate-public-collection.mjs",
-    "platform:migrate": "node scripts/platform-migrate.mjs"
+    "platform:migrate": "node scripts/platform-migrate.mjs",
+    "db:check": "node scripts/platform-db-check.mjs"
   },
   "dependencies": {
     "@better-auth/passkey": "^1.3.7",

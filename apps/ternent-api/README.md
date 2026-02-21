@@ -144,6 +144,9 @@ Recommended:
 
 - `AUTH_TRUSTED_ORIGINS` (comma-separated)
 - `CORS_ALLOW_ORIGINS` (comma-separated)
+- `AUTH_PASSKEY_RP_ID` (required when frontend origin differs from `AUTH_BASE_URL` host)
+- `AUTH_PASSKEY_RP_NAME` (optional; defaults to `Ternent`)
+- `AUTH_PASSKEY_ORIGINS` (optional comma-separated exact origins for WebAuthn)
 - `AUTH_SESSION_IDLE_SECONDS`
 - `AUTH_SESSION_ROLLING_SECONDS`
 
@@ -172,6 +175,10 @@ Run:
 ```bash
 pnpm --filter ternent-api platform:migrate
 ```
+
+For operator DB client/tunnel workflow (dev + prod), see:
+
+- `.ops/ternent-api/DB_ACCESS.md`
 
 Migration files:
 
