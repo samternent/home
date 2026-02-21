@@ -1,5 +1,11 @@
 # ternent-api
 
+## 0.2.17
+
+### Patch Changes
+
+- [`f118ba0428fca73f092b5dfb0398afb4f5c966c3`](https://github.com/samternent/home/commit/f118ba0428fca73f092b5dfb0398afb4f5c966c3) Thanks [@samternent](https://github.com/samternent)! - Adds single card drop
+
 ## 0.2.16
 
 ### Patch Changes
