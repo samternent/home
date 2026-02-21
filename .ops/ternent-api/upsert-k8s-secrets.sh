@@ -81,6 +81,28 @@ patch_key "$NAMESPACE" "ternent-api-auth" "cors-allow-origins" "${CORS_ALLOW_ORI
 echo "auth secret upsert complete"
 
 # -----------------------------------------------------------------------------
+# ternent-api runtime/env secret (issuer + pixpax signing keys)
+# -----------------------------------------------------------------------------
+patch_key "$NAMESPACE" "ternent-api-env" "digitalocean-token" "${DIGITALOCEAN_TOKEN:-}"
+patch_key "$NAMESPACE" "ternent-api-env" "issuer-private-key-pem" "${ISSUER_PRIVATE_KEY_PEM:-}"
+patch_key "$NAMESPACE" "ternent-api-env" "issuer-master-seed" "${ISSUER_MASTER_SEED:-}"
+patch_key "$NAMESPACE" "ternent-api-env" "pix-pax-receipt-private-key-pem" "${PIX_PAX_RECEIPT_PRIVATE_KEY_PEM:-}"
+patch_key "$NAMESPACE" "ternent-api-env" "pix-pax-receipt-public-key-pem" "${PIX_PAX_RECEIPT_PUBLIC_KEY_PEM:-}"
+patch_key "$NAMESPACE" "ternent-api-env" "pix-pax-receipt-key-id" "${PIX_PAX_RECEIPT_KEY_ID:-}"
+
+echo "runtime env secret upsert complete"
+
+# -----------------------------------------------------------------------------
+# pixpax content/admin secret
+# -----------------------------------------------------------------------------
+patch_key "$NAMESPACE" "ternent-api-pixpax-content" "pix-pax-override-code-secret" "${PIX_PAX_OVERRIDE_CODE_SECRET:-}"
+patch_key "$NAMESPACE" "ternent-api-pixpax-content" "pix-pax-admin-token" "${PIX_PAX_ADMIN_TOKEN:-}"
+patch_key "$NAMESPACE" "ternent-api-pixpax-content" "ledger-content-prefix" "${LEDGER_CONTENT_PREFIX:-}"
+patch_key "$NAMESPACE" "ternent-api-pixpax-content" "ledger-content-bucket" "${LEDGER_CONTENT_BUCKET:-}"
+
+echo "pixpax content secret upsert complete"
+
+# -----------------------------------------------------------------------------
 # Optional postgres + backup secrets for manifests under .ops/postgres/
 # Enable with: WITH_POSTGRES=true
 # -----------------------------------------------------------------------------

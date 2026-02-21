@@ -31,6 +31,23 @@ spec:
                 secretKeyRef:
                   name: ternent-api-env
                   key: issuer-private-key-pem
+            - name: PIX_PAX_RECEIPT_PRIVATE_KEY_PEM
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-env
+                  key: pix-pax-receipt-private-key-pem
+            - name: PIX_PAX_RECEIPT_PUBLIC_KEY_PEM
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-env
+                  key: pix-pax-receipt-public-key-pem
+                  optional: true
+            - name: PIX_PAX_RECEIPT_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-env
+                  key: pix-pax-receipt-key-id
+                  optional: true
             - name: ISSUER_MASTER_SEED
               valueFrom:
                 secretKeyRef:
