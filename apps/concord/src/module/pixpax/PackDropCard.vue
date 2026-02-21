@@ -21,8 +21,8 @@ const props = withDefaults(defineProps<PackDropCardProps>(), {
   ctaDisabled: false,
   ctaChip: null,
   canRedeem: true,
-  redeemPlaceholder: "PPX-XXXX-XXXX",
-  redeemMinLength: 8,
+  redeemPlaceholder: "payload.signature",
+  redeemMinLength: 24,
   prefillCode: "",
   showDevOptions: false,
 });
@@ -34,19 +34,14 @@ const redeemError = ref("");
 const redeemSuccess = ref("");
 const redeemBusy = ref(false);
 
-function normalizeCode(value: string) {
-  const cleaned = String(value || "")
-    .toUpperCase()
-    .replace(/[^A-Z0-9]/g, "");
-  if (!cleaned) return "";
-  const groups = cleaned.match(/.{1,4}/g) || [];
-  return groups.join("-");
+function normalizeToken(value: string) {
+  return String(value || "").trim();
 }
 
 watch(
   () => props.prefillCode,
   (next) => {
-    const normalized = normalizeCode(next);
+    const normalized = normalizeToken(next);
     if (!redeemInput.value && normalized) {
       redeemInput.value = normalized;
     }
@@ -54,17 +49,14 @@ watch(
   { immediate: true },
 );
 
-const normalizedRedeemCode = computed(() => normalizeCode(redeemInput.value));
-const normalizedRedeemValue = computed(() =>
-  normalizedRedeemCode.value.replace(/-/g, ""),
-);
+const normalizedRedeemCode = computed(() => normalizeToken(redeemInput.value));
 const redeemValid = computed(
-  () => normalizedRedeemValue.value.length >= props.redeemMinLength,
+  () => normalizedRedeemCode.value.length >= props.redeemMinLength,
 );
 
 function handleRedeemInput(event: Event) {
   const target = event.target as HTMLInputElement | null;
-  const nextValue = normalizeCode(target?.value || "");
+  const nextValue = normalizeToken(target?.value || "");
   redeemInput.value = nextValue;
   redeemError.value = "";
   redeemSuccess.value = "";
@@ -79,7 +71,7 @@ async function redeemCode() {
     await props.onRedeemCode(normalizedRedeemCode.value);
     redeemOpen.value = false;
     redeemInput.value = "";
-    redeemSuccess.value = "Gift code redeemed.";
+    redeemSuccess.value = "Token redeemed.";
   } catch (error: any) {
     redeemError.value = error?.message || "Redeem failed.";
   } finally {
@@ -118,7 +110,7 @@ async function redeemCode() {
           :aria-expanded="redeemOpen"
           @click="redeemOpen = !redeemOpen"
         >
-          <span>Redeem pack code</span>
+          <span>Redeem token</span>
           <span class="text-base leading-none">
             {{ redeemOpen ? "▾" : "▸" }}
           </span>
@@ -129,14 +121,13 @@ async function redeemCode() {
           :class="redeemOpen ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'"
         >
           <div class="flex flex-col gap-2 pt-2">
-            <label class="sr-only" for="redeem-code">Gift code</label>
+            <label class="sr-only" for="redeem-code">Token</label>
             <div class="flex flex-col gap-2 sm:flex-row">
               <input
                 id="redeem-code"
-                class="flex h-11 w-full rounded-full border border-[var(--ui-border)] bg-transparent px-4 text-xs font-mono tracking-[0.28em] text-[var(--ui-fg)] placeholder:text-[var(--ui-fg-muted)]"
+                class="flex h-11 w-full rounded-full border border-[var(--ui-border)] bg-transparent px-4 text-xs font-mono text-[var(--ui-fg)] placeholder:text-[var(--ui-fg-muted)]"
                 :placeholder="props.redeemPlaceholder"
                 :value="redeemInput"
-                :disabled="!props.canRedeem"
                 autocomplete="off"
                 spellcheck="false"
                 @input="handleRedeemInput"

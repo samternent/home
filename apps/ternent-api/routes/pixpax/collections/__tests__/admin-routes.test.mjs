@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { generateKeyPairSync } from "node:crypto";
 import pixpaxCollectionRoutes from "../index.mjs";
 import { CollectionContentStore } from "../content-store.mjs";
 import { PIXPAX_EVENT_TYPES, createPixpaxEvent } from "../../domain/events.mjs";
@@ -77,6 +78,20 @@ function createStore() {
     prefix: "pixpax/collections",
     gateway: createMemoryGateway(),
   });
+}
+
+function createIssuerAndReceiptKeyEnv() {
+  const { privateKey } = generateKeyPairSync("ec", { namedCurve: "prime256v1" });
+  process.env.ISSUER_PRIVATE_KEY_PEM = privateKey
+    .export({ type: "pkcs8", format: "pem" })
+    .toString();
+
+  const { privateKey: receiptPrivateKey } = generateKeyPairSync("ec", {
+    namedCurve: "prime256v1",
+  });
+  process.env.PIX_PAX_RECEIPT_PRIVATE_KEY_PEM = receiptPrivateKey
+    .export({ type: "pkcs8", format: "pem" })
+    .toString();
 }
 
 test("admin endpoints require bearer token", async () => {
@@ -386,8 +401,8 @@ test("public read endpoints return seeded collection content", async () => {
 
 test("mutating admin endpoints emit PixPax domain events", async () => {
   const router = createRouterHarness();
+  createIssuerAndReceiptKeyEnv();
   process.env.PIX_PAX_ADMIN_TOKEN = "test-token";
-  process.env.PIX_PAX_OVERRIDE_CODE_SECRET = "override-secret-for-tests";
   const events = [];
   pixpaxCollectionRoutes(router, {
     createStore,

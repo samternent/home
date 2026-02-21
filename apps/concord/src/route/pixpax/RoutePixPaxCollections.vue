@@ -3,6 +3,7 @@ import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { Button } from "ternent-ui/primitives";
 import { SSegmentedControl } from "ternent-ui/components";
 import { useLocalStorage } from "@vueuse/core";
+import { stripIdentityKey } from "ternent-utils";
 import { useRoute, useRouter } from "vue-router";
 import PackDropCard from "../../module/pixpax/PackDropCard.vue";
 import PixPaxStickerCard from "../../module/pixpax/PixPaxStickerCard.vue";
@@ -16,6 +17,8 @@ import { usePixbook } from "../../module/pixpax/state/usePixbook";
 import { usePixpaxActivityLock } from "../../module/pixpax/context/usePixpaxActivityLock";
 import { usePixpaxCloudSync } from "../../module/pixpax/context/usePixpaxCloudSync";
 import { useLedger } from "../../module/ledger/useLedger";
+import { useIdentity } from "../../module/identity/useIdentity";
+import { signCollectorProofFromTokenHash } from "../../module/pixpax/domain/code-token";
 
 function resolveApiBase() {
   if (import.meta.env.DEV) return "";
@@ -191,12 +194,13 @@ const revealDismissed = ref(false);
 const packOwnedCountSnapshot = ref<Map<string, number> | null>(null);
 const anonUserKey = useLocalStorage("pixpax/collections/anon-user-key", "");
 const { publicKey, receivedPacks, recordPackAndCommit } = usePixbook();
+const identity = useIdentity() as any;
 const activityLock = usePixpaxActivityLock();
 const cloudSync = usePixpaxCloudSync();
 const { ledger } = useLedger();
 const route = useRoute();
 const router = useRouter();
-const overrideCode = ref("");
+const redeemToken = ref("");
 const devUntrackedPackEnabled =
   import.meta.env.DEV ||
   String(import.meta.env.VITE_PIXPAX_DEV_UNTRACKED_PACKS || "")
@@ -491,7 +495,7 @@ const canOpenPack = computed(
     selectedCollection.value.stickers.length > 0 &&
     (packMode.value === "dev-untracked" ||
       !openedForCurrentDrop.value ||
-      !!overrideCode.value.trim()) &&
+      !!redeemToken.value.trim()) &&
     packPhase.value !== "opening" &&
     packPhase.value !== "reveal",
 );
@@ -501,7 +505,7 @@ const openPackLabel = computed(() => {
     return "Opening pack...";
   }
   if (packMode.value === "dev-untracked") return "Open dev pack";
-  if (overrideCode.value.trim()) return "Redeem code pack";
+  if (redeemToken.value.trim()) return "Redeem token pack";
   if (openedForCurrentDrop.value) return "Open next weekly pack";
   return "Open pack";
 });
@@ -532,7 +536,7 @@ const packCtaLabel = computed(() => {
   if (
     packMode.value !== "dev-untracked" &&
     openedForCurrentDrop.value &&
-    !overrideCode.value.trim() &&
+    !redeemToken.value.trim() &&
     !canOpenPack.value
   ) {
     return "Next pack";
@@ -545,7 +549,7 @@ const packCtaSubtext = computed(() => {
   if (
     packMode.value !== "dev-untracked" &&
     openedForCurrentDrop.value &&
-    !overrideCode.value.trim() &&
+    !redeemToken.value.trim() &&
     !canOpenPack.value
   ) {
     return `Available in ${nextDropLabel.value}`;
@@ -572,6 +576,38 @@ function resolveIssuedUserKey() {
     anonUserKey.value = `anon:${Math.random().toString(36).slice(2, 12)}`;
   }
   return anonUserKey.value;
+}
+
+function resolveCollectorPubKeyForRedeem() {
+  const normalizedPublicKey = String(publicKey.value || "").trim();
+  if (normalizedPublicKey) return normalizedPublicKey;
+  if (!anonUserKey.value) {
+    anonUserKey.value = `anon:${Math.random().toString(36).slice(2, 12)}`;
+  }
+  return anonUserKey.value;
+}
+
+function base64UrlDecodeToBytes(input: string) {
+  const normalized = String(input || "").replace(/-/g, "+").replace(/_/g, "/");
+  const pad = normalized.length % 4 === 0 ? "" : "=".repeat(4 - (normalized.length % 4));
+  const binary = atob(`${normalized}${pad}`);
+  const out = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i += 1) {
+    out[i] = binary.charCodeAt(i);
+  }
+  return out;
+}
+
+async function computeTokenHashHexFromToken(token: string) {
+  const parts = String(token || "").trim().split(".");
+  if (parts.length !== 2) {
+    throw new Error("Invalid token format.");
+  }
+  const payloadBytes = base64UrlDecodeToBytes(parts[0] || "");
+  const digest = await crypto.subtle.digest("SHA-256", payloadBytes);
+  return Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 }
 
 function normalizePalette(input?: ApiCollection["palette"]): PackPalette16 {
@@ -888,21 +924,55 @@ async function openPack() {
       userKey: resolveIssuedUserKey(),
       issuanceMode: packMode.value,
     };
-    const normalizedOverrideCode = overrideCode.value.trim();
-    if (normalizedOverrideCode && packMode.value !== "dev-untracked") {
-      (payload as any).overrideCode = normalizedOverrideCode;
-    }
+    const normalizedRedeemToken = redeemToken.value.trim();
 
-    const response = await fetchJson<ApiPackResponse>(
-      `/v1/pixpax/collections/${encodeURIComponent(
-        refEntry.collectionId,
-      )}/${encodeURIComponent(refEntry.version)}/packs`,
-      {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(payload),
-      },
-    );
+    const response =
+      normalizedRedeemToken
+        ? await fetchJson<ApiPackResponse>("/v1/pixpax/redeem", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify(
+              await (async () => {
+                const collectorPubKey = resolveCollectorPubKeyForRedeem();
+                let collectorSig: string | undefined;
+                try {
+                  const tokenHash = await computeTokenHashHexFromToken(normalizedRedeemToken);
+                  const identityPrivateKey = identity?.privateKey?.value as CryptoKey | null;
+                  const identityPublicKey = String(
+                    stripIdentityKey(String(identity?.publicKeyPEM?.value || ""))
+                  ).trim();
+                  if (
+                    tokenHash &&
+                    identityPrivateKey &&
+                    identityPublicKey &&
+                    identityPublicKey === collectorPubKey
+                  ) {
+                    collectorSig = await signCollectorProofFromTokenHash({
+                      tokenHash,
+                      privateKey: identityPrivateKey,
+                    });
+                  }
+                } catch {
+                  // Redeem can proceed without collector proof.
+                }
+                return {
+                  token: normalizedRedeemToken,
+                  collectorPubKey,
+                  ...(collectorSig ? { collectorSig } : {}),
+                };
+              })(),
+            ),
+          })
+        : await fetchJson<ApiPackResponse>(
+            `/v1/pixpax/collections/${encodeURIComponent(
+              refEntry.collectionId,
+            )}/${encodeURIComponent(refEntry.version)}/packs`,
+            {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify(payload),
+            },
+          );
 
     const index = indexByCollection.value[selectedCollection.value.id];
     const existingById = new Map(
@@ -1034,11 +1104,11 @@ async function openPack() {
     if (commitRecorded) {
       cloudSync.notePackLedgerMutation(String(ledger.value?.head || "").trim());
     }
-    if (normalizedOverrideCode) {
-      overrideCode.value = "";
-      if (route.query?.code) {
+    if (normalizedRedeemToken) {
+      redeemToken.value = "";
+      if (route.query?.token) {
         const nextQuery = { ...route.query };
-        delete (nextQuery as any).code;
+        delete (nextQuery as any).token;
         router.replace({ query: nextQuery });
       }
     }
@@ -1051,11 +1121,8 @@ async function openPack() {
   }
 }
 
-async function redeemPack(code: string) {
-  if (packMode.value === "dev-untracked") {
-    throw new Error("Gift codes are unavailable for dev packs.");
-  }
-  overrideCode.value = code;
+async function redeemPack(token: string) {
+  redeemToken.value = token;
   if (!canOpenPack.value || !selectedCollection.value) {
     throw new Error("Pack not available yet.");
   }
@@ -1094,11 +1161,11 @@ onMounted(async () => {
     now.value = Date.now();
   }, 1000);
 
-  const queryCode = route.query?.code;
-  if (typeof queryCode === "string" && queryCode.trim()) {
-    overrideCode.value = queryCode.trim();
-  } else if (Array.isArray(queryCode) && queryCode[0]?.trim()) {
-    overrideCode.value = String(queryCode[0]).trim();
+  const queryToken = route.query?.token;
+  if (typeof queryToken === "string" && queryToken.trim()) {
+    redeemToken.value = queryToken.trim();
+  } else if (Array.isArray(queryToken) && queryToken[0]?.trim()) {
+    redeemToken.value = String(queryToken[0]).trim();
   }
   await loadCollections();
 });
@@ -1109,23 +1176,14 @@ onUnmounted(() => {
 });
 
 watch(
-  () => route.query?.code,
-  (queryCode) => {
-    if (typeof queryCode === "string" && queryCode.trim()) {
-      overrideCode.value = queryCode.trim();
+  () => route.query?.token,
+  (queryToken) => {
+    if (typeof queryToken === "string" && queryToken.trim()) {
+      redeemToken.value = queryToken.trim();
       return;
     }
-    if (Array.isArray(queryCode) && queryCode[0]?.trim()) {
-      overrideCode.value = String(queryCode[0]).trim();
-    }
-  },
-);
-
-watch(
-  () => packMode.value,
-  (mode) => {
-    if (mode === "dev-untracked") {
-      overrideCode.value = "";
+    if (Array.isArray(queryToken) && queryToken[0]?.trim()) {
+      redeemToken.value = String(queryToken[0]).trim();
     }
   },
 );
@@ -1174,8 +1232,8 @@ watch(
             :cta-subtext="packCtaSubtext"
             :cta-disabled="!canOpenPack"
             :cta-chip="packCtaChip"
-            :prefill-code="overrideCode"
-            :can-redeem="packMode !== 'dev-untracked'"
+            :prefill-code="redeemToken"
+            :can-redeem="true"
             :show-dev-options="devUntrackedPackEnabled"
             :on-open-pack="openPack"
             :on-redeem-code="redeemPack"

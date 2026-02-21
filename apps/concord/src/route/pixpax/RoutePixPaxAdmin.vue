@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-import { useLocalStorage } from "@vueuse/core";
 import { Button } from "ternent-ui/primitives";
 import {
   type AccountBook,
@@ -113,10 +112,10 @@ const newProfileIdentityPublicKey = ref("");
 const newBookName = ref("My Pixbook");
 const newBookManagedUserId = ref("");
 
-const userKey = useLocalStorage("pixpax/admin/userKey", "public:demo-user");
-const bindToUser = ref(true);
+const mintKind = ref<"pack" | "fixed-card">("pack");
 const dropId = ref(`week-${toIsoWeek(new Date())}`);
 const count = ref(5);
+const fixedCardId = ref("");
 const expiresInSeconds = ref(86400);
 
 const minting = ref(false);
@@ -133,15 +132,17 @@ const activeRef = computed(() => {
   };
 });
 
+const isFixedCardMint = computed(() => mintKind.value === "fixed-card");
+
 const redeemCode = computed(() =>
-  String(minted.value?.giftCode || minted.value?.code || "").trim(),
+  String(minted.value?.token || "").trim(),
 );
 
 const shareLink = computed(() => {
   if (!redeemCode.value) return "";
-  const code = encodeURIComponent(redeemCode.value);
-  if (typeof window === "undefined") return `?code=${code}`;
-  return `${window.location.origin}?code=${code}`;
+  const encoded = encodeURIComponent(redeemCode.value);
+  if (typeof window === "undefined") return `/pixpax/redeem?token=${encoded}`;
+  return `${window.location.origin}/pixpax/redeem?token=${encoded}`;
 });
 
 async function ensureAdmin() {
@@ -405,32 +406,42 @@ async function mintOverrideCode() {
     return;
   }
 
-  const normalizedUserKey = String(userKey.value || "").trim();
-  if (bindToUser.value && !normalizedUserKey) {
-    mintError.value = "userKey is required when bind to user is enabled.";
-    return;
-  }
-
   minting.value = true;
   mintError.value = "";
   mintStatus.value = "";
   minted.value = null;
 
   try {
+    if (isFixedCardMint.value) {
+      if (!String(fixedCardId.value || "").trim()) {
+        mintError.value = "cardId is required for fixed-card mint.";
+        return;
+      }
+    } else if (!Number.isInteger(Number(count.value || 0)) || Number(count.value || 0) < 1) {
+      mintError.value = "Card count must be at least 1.";
+      return;
+    }
+
+    const requestPayload = {
+      kind: mintKind.value,
+      dropId: String(dropId.value || "").trim(),
+      expiresInSeconds: Number(expiresInSeconds.value || 0),
+      ...(isFixedCardMint.value
+        ? { cardId: String(fixedCardId.value || "").trim() }
+        : { count: Number(count.value || 0) }),
+    };
+
     const payload = await createOverrideCode(
       collectionId,
       version,
-      {
-        userKey: normalizedUserKey || undefined,
-        bindToUser: bindToUser.value,
-        dropId: String(dropId.value || "").trim(),
-        count: Number(count.value || 0),
-        expiresInSeconds: Number(expiresInSeconds.value || 0),
-      },
+      requestPayload,
       auth.token.value || undefined,
     );
     minted.value = payload;
-    mintStatus.value = `Code minted for ${payload.collectionId}/${payload.version} (${payload.dropId}).`;
+    const payloadDropId = String(payload?.payload?.dropId || "").trim();
+    const payloadKind = String(payload?.payload?.kind || mintKind.value);
+    const payloadCardId = String(payload?.payload?.cardId || "").trim();
+    mintStatus.value = `Token minted (${payloadKind}${payloadCardId ? `:${payloadCardId}` : ""}) for ${payload.collectionId}/${payload.version}${payloadDropId ? ` (${payloadDropId})` : ""}.`;
   } catch (error: unknown) {
     if (error instanceof PixPaxApiError && (error.status === 401 || error.status === 403)) {
       auth.logout();
@@ -598,8 +609,16 @@ onMounted(async () => {
     </section>
 
     <section v-if="activePanel === 'codes'" class="rounded-xl border border-[var(--ui-border)] p-4">
-      <h2 class="text-lg font-medium mb-3">Mint Override Code</h2>
+      <h2 class="text-lg font-medium mb-3">Mint Redeem Token</h2>
       <div class="grid gap-3 md:grid-cols-2">
+        <label class="field">
+          <span>Token kind</span>
+          <select v-model="mintKind">
+            <option value="pack">Pack</option>
+            <option value="fixed-card">Fixed card</option>
+          </select>
+        </label>
+
         <label class="field">
           <span>Collection/version</span>
           <select v-model="selectedRef">
@@ -614,32 +633,18 @@ onMounted(async () => {
         </label>
 
         <label class="field">
-          <span>User key</span>
-          <input
-            v-model="userKey"
-            type="text"
-            placeholder="public:demo-user"
-            autocomplete="off"
-            :disabled="!bindToUser"
-          />
-        </label>
-
-        <label class="field">
-          <span>Bind to user</span>
-          <select v-model="bindToUser">
-            <option :value="true">Yes (recipient locked)</option>
-            <option :value="false">No (gift code)</option>
-          </select>
-        </label>
-
-        <label class="field">
           <span>Drop id</span>
           <input v-model="dropId" type="text" placeholder="week-2026-W06" />
         </label>
 
-        <label class="field">
+        <label v-if="!isFixedCardMint" class="field">
           <span>Card count</span>
           <input v-model.number="count" type="number" min="1" max="50" />
+        </label>
+
+        <label v-else class="field">
+          <span>Card id</span>
+          <input v-model="fixedCardId" type="text" placeholder="arsenal-01" />
         </label>
 
         <label class="field">
@@ -659,7 +664,7 @@ onMounted(async () => {
           :disabled="minting"
           @click="mintOverrideCode"
         >
-          {{ minting ? "Minting..." : "Mint code" }}
+          {{ minting ? "Minting..." : isFixedCardMint ? "Mint fixed-card token" : "Mint pack token" }}
         </Button>
       </div>
 
@@ -672,20 +677,17 @@ onMounted(async () => {
 
       <div v-if="minted" class="mt-4 grid gap-3">
         <label class="field">
-          <span>Gift code (one-time)</span>
+          <span>Signed token</span>
           <input :value="redeemCode" readonly class="mono" />
         </label>
         <div class="flex flex-wrap items-center gap-2">
           <Button class="!px-4 !py-2" @click="copyText(redeemCode, 'code')">
-            {{ copied === "code" ? "Copied code" : "Copy code" }}
+            {{ copied === "code" ? "Copied token" : "Copy token" }}
           </Button>
           <Button class="!px-4 !py-2" @click="copyText(shareLink, 'link')">
             {{ copied === "link" ? "Copied link" : "Copy redeem link" }}
           </Button>
         </div>
-        <p class="text-xs text-[var(--ui-fg-muted)]">
-          Format: <code>PPX-XXXX-XXXX-XXXX-XXXX-XXXX-XXXX</code>
-        </p>
         <label class="field">
           <span>Redeem link</span>
           <input :value="shareLink" readonly class="mono" />

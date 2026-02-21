@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { generateKeyPairSync } from "node:crypto";
+import { generateKeyPairSync, sign as signWithNode } from "node:crypto";
 import pixpaxCollectionRoutes from "../index.mjs";
 import { CollectionContentStore } from "../content-store.mjs";
 import { PACK_MODELS } from "../../models/pack-models.mjs";
@@ -75,6 +75,35 @@ function createIssuerKeyEnv() {
   process.env.ISSUER_PRIVATE_KEY_PEM = privateKey
     .export({ type: "pkcs8", format: "pem" })
     .toString();
+
+  const { privateKey: receiptPrivateKey } = generateKeyPairSync("ec", {
+    namedCurve: "prime256v1",
+  });
+  process.env.PIX_PAX_RECEIPT_PRIVATE_KEY_PEM = receiptPrivateKey
+    .export({ type: "pkcs8", format: "pem" })
+    .toString();
+}
+
+function createCollectorKeyPair() {
+  const { privateKey, publicKey } = generateKeyPairSync("ec", { namedCurve: "prime256v1" });
+  return {
+    privateKeyPem: privateKey.export({ type: "pkcs8", format: "pem" }).toString(),
+    publicKeyPem: publicKey.export({ type: "spki", format: "pem" }).toString(),
+  };
+}
+
+function base64UrlEncode(bytes) {
+  return Buffer.from(bytes)
+    .toString("base64")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/g, "");
+}
+
+function signCollectorProofTokenHash(tokenHash, collectorPrivateKeyPem) {
+  const hashBytes = Buffer.from(String(tokenHash || ""), "hex");
+  const signatureDer = signWithNode("sha256", hashBytes, collectorPrivateKeyPem);
+  return base64UrlEncode(signatureDer);
 }
 
 async function seedCollection(store) {
@@ -498,10 +527,10 @@ test("album pack endpoint supports admin override for extra issuance", async () 
   assert.notEqual(issued[0], issued[1]);
 });
 
-test("admin can mint one-time override code and code can be redeemed once", async () => {
+test("admin can mint signed token and redeem once via /redeem", async () => {
   createIssuerKeyEnv();
   process.env.PIX_PAX_ADMIN_TOKEN = "admin-token";
-  process.env.PIX_PAX_OVERRIDE_CODE_SECRET = "override-secret-for-tests";
+  const collector = createCollectorKeyPair();
   const store = new CollectionContentStore({
     bucket: "content",
     prefix: "pixpax/collections",
@@ -529,7 +558,7 @@ test("admin can mint one-time override code and code can be redeemed once", asyn
       headers: { authorization: "Bearer admin-token" },
       params: { collectionId: "premier-league-2026", version: "v1" },
       body: {
-        userKey: "school:user:abc123",
+        kind: "pack",
         dropId: "week-2026-W06",
         count: 8,
         expiresInSeconds: 86400,
@@ -537,40 +566,59 @@ test("admin can mint one-time override code and code can be redeemed once", asyn
     }
   );
   assert.equal(mint.statusCode, 201);
-  assert.ok(mint.body.code);
-  assert.ok(mint.body.giftCode);
-  assert.equal(mint.body.count, 8);
+  assert.ok(mint.body.token);
+  assert.equal(mint.body.payload.kind, "pack");
+  assert.equal(mint.body.payload.count, 8);
 
   const firstUse = await router.invoke(
     "POST",
-    "/v1/pixpax/collections/:collectionId/:version/packs",
+    "/v1/pixpax/redeem",
     {
-      params: { collectionId: "premier-league-2026", version: "v1" },
       body: {
-        userKey: "school:user:abc123",
-        overrideCode: mint.body.giftCode,
+        token: mint.body.token,
+        collectorPubKey: collector.publicKeyPem,
+        collectorSig: signCollectorProofTokenHash(mint.body.tokenHash, collector.privateKeyPem),
       },
     }
   );
   assert.equal(firstUse.statusCode, 200);
   assert.equal(firstUse.body.cards.length, 8);
-  assert.equal(firstUse.body.issuance.mode, "override-code");
+  assert.equal(firstUse.body.issuance.mode, "redeem-token");
   assert.equal(firstUse.body.issuance.override, true);
   assert.equal(firstUse.body.issuance.reused, false);
+  assert.ok(firstUse.body.receipt?.payload?.receiptKeyId);
+  assert.equal(firstUse.body.receipt?.payload?.receiptKeyId, firstUse.body.receipt?.receiptKeyId);
+  assert.equal(firstUse.body.receipt?.payload?.tokenHash, mint.body.tokenHash);
+  assert.equal(firstUse.body.receipt?.tokenHash, mint.body.tokenHash);
+  assert.ok(firstUse.body.receipt?.signature);
+  assert.equal(firstUse.body.collector?.sigProvided, true);
+  assert.equal(firstUse.body.collector?.sigVerified, true);
 
   const secondUse = await router.invoke(
     "POST",
-    "/v1/pixpax/collections/:collectionId/:version/packs",
+    "/v1/pixpax/redeem",
     {
-      params: { collectionId: "premier-league-2026", version: "v1" },
       body: {
-        userKey: "school:user:abc123",
-        overrideCode: mint.body.giftCode,
+        token: mint.body.token,
+        collectorPubKey: collector.publicKeyPem,
       },
     }
   );
   assert.equal(secondUse.statusCode, 409);
-  assert.equal(secondUse.body.error, "Override code has already been used.");
+  assert.deepEqual(Object.keys(secondUse.body).sort(), ["claimed", "error", "ok", "status"]);
+  assert.equal(secondUse.body.ok, false);
+  assert.equal(secondUse.body.status, "already-claimed");
+  assert.equal(secondUse.body.error, "Already claimed.");
+  assert.deepEqual(Object.keys(secondUse.body.claimed).sort(), [
+    "codeId",
+    "dropId",
+    "mintRef",
+    "usedAt",
+  ]);
+  assert.equal(secondUse.body.claimed.codeId, mint.body.codeId);
+  assert.equal(secondUse.body.claimed.dropId, mint.body.payload.dropId);
+  assert.equal(secondUse.body.claimed.mintRef, firstUse.body.packId);
+  assert.equal(typeof secondUse.body.claimed.usedAt, "string");
   assert.deepEqual(
     events.map((event) => event.type),
     [
@@ -581,10 +629,11 @@ test("admin can mint one-time override code and code can be redeemed once", asyn
   );
 });
 
-test("override code cannot be redeemed by another user", async () => {
+test("redeem rejects invalid collector signature proof", async () => {
   createIssuerKeyEnv();
   process.env.PIX_PAX_ADMIN_TOKEN = "admin-token";
-  process.env.PIX_PAX_OVERRIDE_CODE_SECRET = "override-secret-for-tests";
+  const collector = createCollectorKeyPair();
+  const wrongCollector = createCollectorKeyPair();
   const store = new CollectionContentStore({
     bucket: "content",
     prefix: "pixpax/collections",
@@ -607,34 +656,31 @@ test("override code cannot be redeemed by another user", async () => {
       headers: { authorization: "Bearer admin-token" },
       params: { collectionId: "premier-league-2026", version: "v1" },
       body: {
-        userKey: "school:user:abc123",
-        dropId: "week-2026-W06",
-        count: 8,
+        kind: "pack",
+        count: 5,
       },
     }
   );
   assert.equal(mint.statusCode, 201);
-  assert.ok(mint.body.giftCode);
 
-  const wrongUser = await router.invoke(
+  const redeem = await router.invoke(
     "POST",
-    "/v1/pixpax/collections/:collectionId/:version/packs",
+    "/v1/pixpax/redeem",
     {
-      params: { collectionId: "premier-league-2026", version: "v1" },
       body: {
-        userKey: "school:user:other-user",
-        overrideCode: mint.body.giftCode,
+        token: mint.body.token,
+        collectorPubKey: collector.publicKeyPem,
+        collectorSig: signCollectorProofTokenHash(mint.body.tokenHash, wrongCollector.privateKeyPem),
       },
     }
   );
-  assert.equal(wrongUser.statusCode, 403);
-  assert.equal(wrongUser.body.error, "Override code is not valid for this user.");
+  assert.equal(redeem.statusCode, 422);
+  assert.equal(redeem.body.reason, "collector-proof-invalid");
 });
 
-test("unbound gift override code can be redeemed by any user once", async () => {
+test("redeem endpoint enforces token-only contract", async () => {
   createIssuerKeyEnv();
   process.env.PIX_PAX_ADMIN_TOKEN = "admin-token";
-  process.env.PIX_PAX_OVERRIDE_CODE_SECRET = "override-secret-for-tests";
   const store = new CollectionContentStore({
     bucket: "content",
     prefix: "pixpax/collections",
@@ -657,46 +703,130 @@ test("unbound gift override code can be redeemed by any user once", async () => 
       headers: { authorization: "Bearer admin-token" },
       params: { collectionId: "premier-league-2026", version: "v1" },
       body: {
-        bindToUser: false,
-        dropId: "week-2026-W06",
-        count: 8,
+        kind: "pack",
+        count: 5,
       },
     }
   );
   assert.equal(mint.statusCode, 201);
-  assert.equal(mint.body.bindToUser, false);
-  assert.equal(mint.body.issuedTo, null);
-  assert.ok(mint.body.giftCode);
+  assert.ok(mint.body.token);
+
+  const bad = await router.invoke(
+    "POST",
+    "/v1/pixpax/redeem",
+    {
+      body: {
+        token: mint.body.token,
+        collectorPubKey: "collector:key:test",
+        code: "legacy-alias",
+      },
+    }
+  );
+  assert.equal(bad.statusCode, 400);
+  assert.match(String(bad.body.error || ""), /Token-only redeem contract/);
+
+  const unsupported = await router.invoke(
+    "POST",
+    "/v1/pixpax/redeem",
+    {
+      body: {
+        token: mint.body.token,
+        collectorPubKey: "collector:key:test",
+        notAllowed: true,
+      },
+    }
+  );
+  assert.equal(unsupported.statusCode, 400);
+  assert.match(String(unsupported.body.error || ""), /Unsupported redeem payload field/);
+});
+
+test("fixed-card token invariants are enforced server-side", async () => {
+  createIssuerKeyEnv();
+  process.env.PIX_PAX_ADMIN_TOKEN = "admin-token";
+  const store = new CollectionContentStore({
+    bucket: "content",
+    prefix: "pixpax/collections",
+    gateway: createMemoryGateway(),
+  });
+  await seedCollection(store);
+  const router = createRouterHarness();
+
+  pixpaxCollectionRoutes(router, {
+    createStore: () => store,
+    pickRandomIndex: (max) => (max > 1 ? 1 : 0),
+    now: () => new Date("2026-02-07T12:00:00.000Z"),
+    issueLedgerEntry: async () => ({ segmentKey: "pixpax/ledger/segments/day/seg_deadbeef.jsonl.gz", segmentHash: "deadbeef" }),
+  });
+
+  const missingCardId = await router.invoke(
+    "POST",
+    "/v1/pixpax/collections/:collectionId/:version/override-codes",
+    {
+      headers: { authorization: "Bearer admin-token" },
+      params: { collectionId: "premier-league-2026", version: "v1" },
+      body: {
+        kind: "fixed-card",
+      },
+    }
+  );
+  assert.equal(missingCardId.statusCode, 400);
+
+  const badCount = await router.invoke(
+    "POST",
+    "/v1/pixpax/collections/:collectionId/:version/override-codes",
+    {
+      headers: { authorization: "Bearer admin-token" },
+      params: { collectionId: "premier-league-2026", version: "v1" },
+      body: {
+        kind: "fixed-card",
+        cardId: "arsenal-01",
+        count: 2,
+      },
+    }
+  );
+  assert.equal(badCount.statusCode, 400);
+
+  const mint = await router.invoke(
+    "POST",
+    "/v1/pixpax/collections/:collectionId/:version/override-codes",
+    {
+      headers: { authorization: "Bearer admin-token" },
+      params: { collectionId: "premier-league-2026", version: "v1" },
+      body: {
+        kind: "fixed-card",
+        cardId: "arsenal-01",
+        dropId: "week-2026-W06",
+      },
+    }
+  );
+  assert.equal(mint.statusCode, 201);
 
   const firstUse = await router.invoke(
     "POST",
-    "/v1/pixpax/collections/:collectionId/:version/packs",
+    "/v1/pixpax/redeem",
     {
-      params: { collectionId: "premier-league-2026", version: "v1" },
       body: {
-        userKey: "school:user:recipient-a",
-        overrideCode: mint.body.giftCode,
+        token: mint.body.token,
+        collectorPubKey: "collector:key:recipient-a",
       },
     }
   );
   assert.equal(firstUse.statusCode, 200);
-  assert.equal(firstUse.body.issuance.mode, "override-code");
-  assert.equal(firstUse.body.issuance.bindToUser, false);
-  assert.equal(firstUse.body.cards.length, 8);
+  assert.equal(firstUse.body.cards.length, 1);
+  assert.equal(firstUse.body.cards[0].cardId, "arsenal-01");
 
   const secondUse = await router.invoke(
     "POST",
-    "/v1/pixpax/collections/:collectionId/:version/packs",
+    "/v1/pixpax/redeem",
     {
-      params: { collectionId: "premier-league-2026", version: "v1" },
       body: {
-        userKey: "school:user:recipient-b",
-        overrideCode: mint.body.giftCode,
+        token: mint.body.token,
+        collectorPubKey: "collector:key:recipient-b",
       },
     }
   );
   assert.equal(secondUse.statusCode, 409);
-  assert.equal(secondUse.body.error, "Override code has already been used.");
+  assert.equal(secondUse.body.status, "already-claimed");
 });
 
 test("verify-pack route returns ok for a clean dev-untracked pack", async () => {

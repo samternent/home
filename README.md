@@ -25,6 +25,14 @@ root
 └─ README.md
 ```
 
+### PixPax Drops Docs
+
+- `docs/pixpax-drops/README.md`
+- `docs/pixpax-drops/AI.md`
+- `docs/pixpax-drops/SPEC.md`
+- `docs/pixpax-drops/PLAN.md`
+- `docs/pixpax-drops/CHECKLIST.md`
+
 ### Conventions
 
 - **Workspace**: pnpm; **versioning**: changesets

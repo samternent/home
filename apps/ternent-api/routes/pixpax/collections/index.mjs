@@ -4,7 +4,7 @@ import {
 } from "./content-store.mjs";
 import { PACK_MODELS } from "../models/pack-models.mjs";
 import { canonicalStringify, deriveEntryId, getEntrySigningPayload } from "@ternent/concord-protocol";
-import { createHash, createHmac, randomBytes, timingSafeEqual, webcrypto } from "node:crypto";
+import { createHash, randomBytes, webcrypto } from "node:crypto";
 import { gunzipSync } from "node:zlib";
 import {
   ensureIssuerAuditLedger,
@@ -26,6 +26,19 @@ import { IssuancePolicyError, resolveIssuancePolicy } from "../domain/issuance-p
 import { verifyPack } from "../domain/verify-pack.mjs";
 import { rebuildCollectionSnapshotFromEvents } from "../domain/rebuild-from-events.mjs";
 import { isPlatformAuthReady, requestHasCapability } from "../../../services/auth/permissions.mjs";
+import {
+  computePolicyHash,
+  signTokenV2,
+  verifyTokenV2,
+  signReceiptV1,
+  computeTokenHashFromPayloadBytes,
+  verifyP256Sha256Signature,
+} from "../domain/code-signing.mjs";
+import {
+  resolveActiveIssuerByKeyId,
+  resolveTokenIssuerSignerFromEnv,
+  resolveReceiptSignerFromEnv,
+} from "../issuers/registry.mjs";
 
 function hashCanonical(value) {
   return createHash("sha256").update(canonicalStringify(value), "utf8").digest("hex");
@@ -45,14 +58,25 @@ function resolveAdminToken() {
   return String(process.env.PIX_PAX_ADMIN_TOKEN || "").trim();
 }
 
-function resolveOverrideCodeSecret() {
-  return String(process.env.PIX_PAX_OVERRIDE_CODE_SECRET || "").trim();
-}
-
 function missingContentConfigError(error) {
   return String(error?.message || "").includes(
     "Content store configuration is incomplete"
   );
+}
+
+function resolveRedeemConfigError(error) {
+  const message = String(error?.message || "");
+  if (message.includes("PIX_PAX_RECEIPT_PRIVATE_KEY_PEM is required for receipt signing.")) {
+    return "Redeem is not configured: set PIX_PAX_RECEIPT_PRIVATE_KEY_PEM in API env.";
+  }
+  if (message.includes("ISSUER_PRIVATE_KEY_PEM is required")) {
+    return "Redeem is not configured: issuer signing key is missing.";
+  }
+  return "";
+}
+
+function isNoSuchKeyError(error) {
+  return String(error?.message || "").startsWith("NoSuchKey:");
 }
 
 function canonicalizeUserKey(value) {
@@ -67,6 +91,14 @@ function canonicalizeUserKey(value) {
 function hashIssuedToUserKey(userKey) {
   const canonical = canonicalizeUserKey(userKey);
   return createHash("sha256").update(`pixpax:user:${canonical}`, "utf8").digest("hex");
+}
+
+function decodeHex32(value, label) {
+  const normalized = String(value || "").trim().toLowerCase();
+  if (!/^[a-f0-9]{64}$/.test(normalized)) {
+    throw new Error(`${label} must be a 32-byte hex string.`);
+  }
+  return Buffer.from(normalized, "hex");
 }
 
 function toIsoWeek(isoDate = new Date()) {
@@ -103,8 +135,9 @@ function isTruthyEnv(value) {
 }
 
 const DEFAULT_PACK_COUNT = 5;
-const DEFAULT_OVERRIDE_CODE_TTL_SECONDS = 14 * 24 * 60 * 60;
-const MAX_OVERRIDE_CODE_TTL_SECONDS = 30 * 24 * 60 * 60;
+const DEFAULT_REDEEM_TOKEN_TTL_SECONDS = 14 * 24 * 60 * 60;
+const MAX_REDEEM_TOKEN_TTL_SECONDS = 30 * 24 * 60 * 60;
+const DEFAULT_TOKEN_EXP_LEEWAY_SECONDS = 60;
 const PIXPAX_ADMIN_PERMISSIONS = Object.freeze([
   "pixpax.admin.manage",
   "pixpax.analytics.read",
@@ -112,86 +145,20 @@ const PIXPAX_ADMIN_PERMISSIONS = Object.freeze([
   "pixpax.creator.view",
 ]);
 
-function encodeBase64Url(value) {
-  const bytes = Buffer.isBuffer(value) ? value : Buffer.from(String(value), "utf8");
-  return bytes
-    .toString("base64")
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/g, "");
-}
-
-function decodeBase64Url(value) {
-  const normalized = String(value || "").replace(/-/g, "+").replace(/_/g, "/");
-  const pad = normalized.length % 4 === 0 ? "" : "=".repeat(4 - (normalized.length % 4));
-  return Buffer.from(`${normalized}${pad}`, "base64");
-}
-
-function clampOverrideCodeTtlSeconds(value) {
-  const parsed = Number(value ?? DEFAULT_OVERRIDE_CODE_TTL_SECONDS);
-  if (!Number.isFinite(parsed)) return DEFAULT_OVERRIDE_CODE_TTL_SECONDS;
+function clampRedeemTokenTtlSeconds(value) {
+  const parsed = Number(value ?? DEFAULT_REDEEM_TOKEN_TTL_SECONDS);
+  if (!Number.isFinite(parsed)) return DEFAULT_REDEEM_TOKEN_TTL_SECONDS;
   const rounded = Math.trunc(parsed);
   if (rounded < 60) return 60;
-  return Math.min(rounded, MAX_OVERRIDE_CODE_TTL_SECONDS);
+  return Math.min(rounded, MAX_REDEEM_TOKEN_TTL_SECONDS);
 }
 
-function signOverridePayloadB64(payloadB64, secret) {
-  return createHmac("sha256", secret).update(payloadB64, "utf8").digest();
-}
-
-function createOverrideCode(payload, secret) {
-  const payloadB64 = encodeBase64Url(JSON.stringify(payload));
-  const signatureB64 = encodeBase64Url(signOverridePayloadB64(payloadB64, secret));
-  return `${payloadB64}.${signatureB64}`;
-}
-
-function codeIdToGiftCode(codeId) {
-  const normalized = String(codeId || "").trim().toUpperCase();
-  if (!/^[A-F0-9]{24}$/.test(normalized)) {
-    throw new Error("codeId must be 24 hex chars.");
-  }
-  const groups = normalized.match(/.{1,4}/g) || [];
-  return `PPX-${groups.join("-")}`;
-}
-
-function giftCodeToCodeId(input) {
-  const raw = String(input || "").trim().toUpperCase();
-  if (!raw) return "";
-  const compact = raw.replace(/[^A-F0-9]/g, "");
-  if (!/^[A-F0-9]{24}$/.test(compact)) return "";
-  return compact.toLowerCase();
-}
-
-function parseOverrideCode(code, secret, nowSeconds) {
-  const raw = String(code || "").trim();
-  const parts = raw.split(".");
-  if (parts.length !== 2) throw new Error("Invalid override code format.");
-  const [payloadB64, signatureB64] = parts;
-  const expected = signOverridePayloadB64(payloadB64, secret);
-  const provided = decodeBase64Url(signatureB64);
-  if (provided.length !== expected.length || !timingSafeEqual(provided, expected)) {
-    throw new Error("Override code signature mismatch.");
-  }
-  const payload = JSON.parse(decodeBase64Url(payloadB64).toString("utf8"));
-  if (!payload || payload.v !== 1) throw new Error("Unsupported override code payload.");
-  if (!payload.codeId) throw new Error("Override code is missing codeId.");
-  if (!payload.collectionId || !payload.version || !payload.dropId) {
-    throw new Error("Override code is missing scope fields.");
-  }
-  if (typeof payload.bindToUser !== "boolean") {
-    throw new Error("Override code is missing bindToUser flag.");
-  }
-  if (!Number.isInteger(payload.count) || payload.count < 1 || payload.count > 50) {
-    throw new Error("Override code count is invalid.");
-  }
-  if (!Number.isInteger(payload.exp)) throw new Error("Override code expiry is invalid.");
-  if (payload.bindToUser) {
-    if (!payload.issuedTo) throw new Error("Override code is missing issuedTo.");
-  } else if (payload.issuedTo !== null) {
-    throw new Error("Unbound override code must set issuedTo=null.");
-  }
-  if (payload.exp <= nowSeconds) throw new Error("Override code is expired.");
-  return payload;
+function resolveTokenExpLeewaySeconds() {
+  const raw = Number(process.env.PIX_PAX_TOKEN_EXP_LEEWAY_SECONDS);
+  if (!Number.isFinite(raw)) return DEFAULT_TOKEN_EXP_LEEWAY_SECONDS;
+  const rounded = Math.floor(raw);
+  if (rounded < 0) return 0;
+  return rounded;
 }
 
 function privatePemToDer(pem) {
@@ -660,74 +627,111 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
 
   router.post("/v1/pixpax/collections/:collectionId/:version/override-codes", async (req, res) => {
     if (!(await requireAdminToken(req, res))) return;
-    const secret = resolveOverrideCodeSecret();
-    if (!secret) {
-      res.status(503).send({ error: "PIX_PAX_OVERRIDE_CODE_SECRET is not configured." });
-      return;
-    }
+    try {
+      const { collectionId, version } = req.params || {};
+      const issuedAt = now().toISOString();
+      const ttlSeconds = clampRedeemTokenTtlSeconds(req.body?.expiresInSeconds);
+      const exp = Math.floor(Date.parse(issuedAt) / 1000) + ttlSeconds;
+      const kind = String(req.body?.kind || "pack").trim().toLowerCase();
 
-    const { collectionId, version } = req.params || {};
-    const bindToUser = req.body?.bindToUser !== false;
-    const normalizedUserKey = canonicalizeUserKey(req.body?.userKey);
-    if (bindToUser && !normalizedUserKey) {
-      res.status(400).send({ error: "userKey is required when bindToUser=true." });
-      return;
-    }
-    const count = clampPackCardCount(req.body?.count);
-    if (!Number.isInteger(count) || count < 1 || count > 50) {
-      res.status(400).send({ error: "count must be an integer between 1 and 50." });
-      return;
-    }
-    const issuedAt = now().toISOString();
-    const dropId = String(req.body?.dropId || `week-${toIsoWeek(new Date(issuedAt))}`).trim();
-    const ttlSeconds = clampOverrideCodeTtlSeconds(req.body?.expiresInSeconds);
-    const exp = Math.floor(Date.parse(issuedAt) / 1000) + ttlSeconds;
-    const issuedTo = bindToUser ? hashIssuedToUserKey(normalizedUserKey) : null;
-    const payload = {
-      v: 1,
-      codeId: createNonceHex(24),
-      collectionId,
-      version,
-      dropId,
-      bindToUser,
-      issuedTo,
-      count,
-      exp,
-    };
-    const store = await getStore();
-    await emitDomainEvent(
-      PIXPAX_EVENT_TYPES.GIFTCODE_CREATED,
-      {
+      const signer = resolveTokenIssuerSignerFromEnv();
+      const dropId = String(req.body?.dropId || `week-${toIsoWeek(new Date(issuedAt))}`).trim();
+      const codeId = createNonceHex(24);
+      const waveRaw = req.body?.wave;
+      const wave = Number.isInteger(waveRaw) && Number(waveRaw) > 0 ? Number(waveRaw) : undefined;
+
+      let payload;
+      if (kind === "fixed-card") {
+        const cardId = String(req.body?.cardId || "").trim();
+        const count = req.body?.count;
+        if (!cardId) {
+          res.status(400).send({ error: "cardId is required when kind='fixed-card'." });
+          return;
+        }
+        if (count !== undefined && Number(count) !== 1) {
+          res.status(400).send({ error: "count must be absent or 1 when kind='fixed-card'." });
+          return;
+        }
+        payload = {
+          v: 2,
+          issuerKeyId: signer.issuerKeyId,
+          codeId,
+          collectionId,
+          version,
+          kind: "fixed-card",
+          cardId,
+          dropId,
+          exp,
+          ...(wave ? { wave } : {}),
+        };
+      } else if (kind === "pack") {
+        const count = clampPackCardCount(req.body?.count);
+        if (!Number.isInteger(count) || count < 1 || count > 50) {
+          res.status(400).send({ error: "count must be an integer between 1 and 50." });
+          return;
+        }
+        payload = {
+          v: 2,
+          issuerKeyId: signer.issuerKeyId,
+          codeId,
+          collectionId,
+          version,
+          kind: "pack",
+          count,
+          dropId,
+          exp,
+          ...(wave ? { wave } : {}),
+        };
+      } else {
+        res.status(400).send({ error: "kind must be 'pack' or 'fixed-card'." });
+        return;
+      }
+
+      const policyHash = computePolicyHash({
+        kind: payload.kind,
+        count: payload.count ?? null,
+        cardId: payload.cardId ?? null,
+        dropId: payload.dropId ?? null,
+        wave: payload.wave ?? null,
+      });
+      payload.policyHash = policyHash;
+
+      const tokenSigned = await signTokenV2(payload, signer.privateKeyPem);
+      const store = await getStore();
+      await store.putOverrideCodeRecord(collectionId, version, payload.codeId, {
+        createdAt: issuedAt,
+        payload,
+        token: tokenSigned.token,
+        tokenHash: tokenSigned.tokenHash,
+      });
+
+      await emitDomainEvent(
+        PIXPAX_EVENT_TYPES.GIFTCODE_CREATED,
+        {
+          codeId: payload.codeId,
+          collectionId: String(collectionId),
+          version: String(version),
+          dropId: payload.dropId,
+          count: payload.count ?? 1,
+        },
+        issuedAt
+      );
+
+      res.status(201).send({
+        ok: true,
+        token: tokenSigned.token,
+        tokenHash: tokenSigned.tokenHash,
+        payload,
         codeId: payload.codeId,
-        collectionId: String(collectionId),
-        version: String(version),
-        dropId: payload.dropId,
-        count: payload.count,
-        bindToUser: payload.bindToUser,
-        issuedTo: payload.issuedTo,
-      },
-      issuedAt
-    );
-    await store.putOverrideCodeRecord(collectionId, version, payload.codeId, {
-      createdAt: issuedAt,
-      payload,
-    });
-    const code = createOverrideCode(payload, secret);
-    const giftCode = codeIdToGiftCode(payload.codeId);
-    res.status(201).send({
-      ok: true,
-      code,
-      giftCode,
-      codeId: payload.codeId,
-      collectionId,
-      version,
-      dropId,
-      count,
-      bindToUser,
-      issuedTo,
-      expiresAt: new Date(exp * 1000).toISOString(),
-      issuedAt,
-    });
+        collectionId,
+        version,
+        expiresAt: new Date(exp * 1000).toISOString(),
+        issuedAt,
+      });
+    } catch (error) {
+      console.error("[pixpax/collections] create code token failed:", error);
+      res.status(500).send({ error: "Failed to create code token." });
+    }
   });
 
   router.put("/v1/pixpax/collections/:collectionId/:version/index", async (req, res) => {
@@ -1468,16 +1472,384 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
     }
   });
 
+  router.post("/v1/pixpax/redeem", async (req, res) => {
+    const body =
+      req.body && typeof req.body === "object" && !Array.isArray(req.body)
+        ? req.body
+        : null;
+    if (!body) {
+      res.status(400).send({ error: "redeem payload must be a JSON object." });
+      return;
+    }
+
+    const allowedRedeemFields = new Set(["token", "collectorPubKey", "collectorSig"]);
+    for (const key of Object.keys(body)) {
+      if (allowedRedeemFields.has(key)) continue;
+      if (key === "code" || key === "giftCode" || key === "overrideCode") {
+        res.status(400).send({
+          error: "Token-only redeem contract: provide token and collectorPubKey.",
+        });
+        return;
+      }
+      res.status(400).send({ error: `Unsupported redeem payload field: ${key}.` });
+      return;
+    }
+
+    const token = String(body.token || "").trim();
+    const collectorPubKey = String(body.collectorPubKey || "").trim();
+    const collectorSig = String(body.collectorSig || "").trim() || null;
+    const issuedAt = now().toISOString();
+    const nowSeconds = Math.floor(Date.parse(issuedAt) / 1000);
+
+    if (!token) {
+      res.status(400).send({ error: "token is required." });
+      return;
+    }
+    if (!collectorPubKey) {
+      res.status(400).send({ error: "collectorPubKey is required." });
+      return;
+    }
+    function sendAlreadyClaimed(existingUse) {
+      res.status(409).send({
+        ok: false,
+        status: "already-claimed",
+        error: "Already claimed.",
+        claimed: {
+          codeId: existingUse?.codeId || null,
+          usedAt: existingUse?.usedAt || null,
+          mintRef: existingUse?.packId || null,
+          dropId: existingUse?.dropId || null,
+        },
+      });
+    }
+
+    try {
+      const verification = await verifyTokenV2(token, {
+        resolveIssuer: resolveActiveIssuerByKeyId,
+        nowSeconds,
+        expLeewaySeconds: resolveTokenExpLeewaySeconds(),
+      });
+      if (!verification.ok) {
+        const reason = String(verification.reason || "invalid-token");
+        const statusCode =
+          reason === "token-expired"
+            ? 410
+            : reason === "issuer-resolution-failed" || reason === "signature-verify-error"
+            ? 500
+            : 422;
+        res.status(statusCode).send({
+          ok: false,
+          error: "Token verification failed.",
+          reason,
+          details: verification.error || null,
+        });
+        return;
+      }
+
+      const tokenPayload = verification.payload;
+      const collectionId = String(tokenPayload.collectionId || "").trim();
+      const version = String(tokenPayload.version || "").trim();
+      const kind = String(tokenPayload.kind || "").trim();
+      const codeId = String(tokenPayload.codeId || "").trim();
+      const dropId = String(tokenPayload.dropId || "").trim() || `redeem-${codeId}`;
+      const tokenHash = verification.tokenHash;
+
+      let collectorSigVerified = false;
+      if (collectorSig) {
+        const tokenHashBytes = decodeHex32(tokenHash, "tokenHash");
+        const proofOk = await verifyP256Sha256Signature(
+          collectorPubKey,
+          tokenHashBytes,
+          collectorSig
+        );
+        if (!proofOk) {
+          res.status(422).send({
+            ok: false,
+            error: "collectorSig verification failed.",
+            reason: "collector-proof-invalid",
+          });
+          return;
+        }
+        collectorSigVerified = true;
+      }
+
+      if (kind === "fixed-card") {
+        if (!String(tokenPayload.cardId || "").trim()) {
+          res.status(400).send({ error: "fixed-card token is missing cardId." });
+          return;
+        }
+        if (tokenPayload.count !== undefined && Number(tokenPayload.count) !== 1) {
+          res.status(400).send({ error: "fixed-card token count must be absent or 1." });
+          return;
+        }
+      }
+
+      const store = await getStore();
+      try {
+        const existingUse = await store.getOverrideCodeUse(collectionId, version, codeId);
+        if (existingUse) {
+          sendAlreadyClaimed(existingUse);
+          return;
+        }
+      } catch (error) {
+        if (!isNoSuchKeyError(error)) throw error;
+      }
+
+      const index = await store.getIndex(collectionId, version);
+      const allCardIds = Array.isArray(index?.cards)
+        ? index.cards.map((cardId) => String(cardId || "").trim()).filter(Boolean)
+        : [];
+      if (!allCardIds.length) {
+        res.status(422).send({ error: "Collection index has no cards." });
+        return;
+      }
+
+      let selectedCardIds = [];
+      if (kind === "fixed-card") {
+        const cardId = String(tokenPayload.cardId || "").trim();
+        if (!allCardIds.includes(cardId) || !index?.cardMap?.[cardId]) {
+          res.status(422).send({ error: "fixed-card token cardId is not part of this collection version." });
+          return;
+        }
+        selectedCardIds = [cardId];
+      } else {
+        const count = Number(tokenPayload.count);
+        if (!Number.isInteger(count) || count < 1 || count > 50) {
+          res.status(400).send({ error: "pack token count must be an integer between 1 and 50." });
+          return;
+        }
+
+        const events = await store.replayEvents(collectionId, version);
+        const snapshot = rebuildCollectionSnapshotFromEvents(events);
+        const retiredSeriesIds = new Set(
+          (Array.isArray(snapshot?.retiredSeriesIds) ? snapshot.retiredSeriesIds : [])
+            .map((seriesId) => String(seriesId || "").trim())
+            .filter(Boolean)
+        );
+        const cardPool = allCardIds.filter((cardId) => {
+          if (!retiredSeriesIds.size) return true;
+          const seriesId = String(index?.cardMap?.[cardId]?.seriesId || "").trim();
+          return !seriesId || !retiredSeriesIds.has(seriesId);
+        });
+        if (!cardPool.length) {
+          res.status(422).send({ error: "All series are retired for this collection version." });
+          return;
+        }
+        selectedCardIds = new Array(count)
+          .fill(null)
+          .map((_, slotIndex) =>
+            cardPool[
+              rngSource.nextInt(cardPool.length, {
+                collectionId,
+                version,
+                dropId,
+                slotIndex,
+                count,
+              })
+            ]
+          );
+      }
+
+      const cards = await mapWithConcurrency(selectedCardIds, 8, async (cardId) => {
+        const card = await store.getCard(collectionId, version, cardId);
+        return {
+          cardId,
+          seriesId: card?.seriesId ?? null,
+          slotIndex: card?.slotIndex ?? null,
+          role: card?.role ?? null,
+          renderPayload: card?.renderPayload || null,
+        };
+      });
+      const itemHashes = cards.map((card) =>
+        hashAlbumCard({
+          collectionId,
+          collectionVersion: version,
+          cardId: card.cardId,
+          renderPayload: card.renderPayload || {},
+        })
+      );
+      const packRoot = computeMerkleRootFromItemHashes(itemHashes);
+      const packId = createNonceHex(24);
+      const contentsCommitment = hashCanonical({
+        itemHashes,
+        count: cards.length,
+        packRoot,
+      });
+      const issuedTo = createHash("sha256")
+        .update(`pixpax:collector:${collectorPubKey}`, "utf8")
+        .digest("hex");
+
+      const claimResult = await store.putOverrideCodeUseIfAbsent(collectionId, version, codeId, {
+        codeId,
+        usedAt: issuedAt,
+        packId,
+        dropId,
+        issuedTo,
+        count: cards.length,
+        kind,
+        tokenHash,
+      });
+      if (!claimResult.created) {
+        const existingUse = await store.getOverrideCodeUse(collectionId, version, codeId);
+        sendAlreadyClaimed(existingUse);
+        return;
+      }
+
+      const issuerKeys = await loadIssuerKeys();
+      const payload = {
+        type: "pack.issued",
+        packModel: PACK_MODELS.ALBUM,
+        packId,
+        issuedAt,
+        issuerKeyId: issuerKeys.issuerKeyId,
+        issuedBy: issuerKeys.author,
+        issuedTo,
+        userKeyHash: issuedTo,
+        dropId,
+        collectionId,
+        collectionVersion: version,
+        cardIds: selectedCardIds,
+        count: selectedCardIds.length,
+        packRoot,
+        itemHashes,
+        contentsCommitment,
+      };
+      const entryCore = {
+        kind: "pack.issued",
+        timestamp: issuedAt,
+        author: issuerKeys.author,
+        payload,
+      };
+      const signature = await signPayload(issuerKeys.privateKeyPem, getEntrySigningPayload(entryCore));
+      const entry = { ...entryCore, signature };
+
+      let appendResult = null;
+      const entryId = await deriveEntryId(entry);
+      appendResult = await issueLedgerEntry({ entryId, entry, issuerKeys });
+
+      const receiptSigner = resolveReceiptSignerFromEnv();
+      const receiptPayload = {
+        v: 1,
+        receiptKeyId: receiptSigner.receiptKeyId,
+        tokenHash: computeTokenHashFromPayloadBytes(verification.payloadBytes),
+        issuerKeyId: String(tokenPayload.issuerKeyId || "").trim(),
+        collectorPubKey,
+        mintRef: packId,
+        serverTime: nowSeconds,
+        collectionId,
+        version,
+        kind,
+        codeId,
+      };
+      const signedReceipt = await signReceiptV1(receiptPayload, receiptSigner.privateKeyPem);
+
+      await emitDomainEvent(
+        PIXPAX_EVENT_TYPES.PACK_ISSUED,
+        {
+          packId,
+          collectionId: String(collectionId),
+          collectionVersion: String(version),
+          dropId,
+          issuedTo,
+          cardIds: selectedCardIds,
+          count: cards.length,
+          packRoot,
+          itemHashes,
+          contentsCommitment,
+          issuerKeyId: payload.issuerKeyId || null,
+          issuerAuthor: entry?.author || null,
+          issuerSignature: entry?.signature || null,
+          entryTimestamp: entry?.timestamp || issuedAt,
+          signedEntryPayload: payload,
+          issuanceMode: "redeem-token",
+          untracked: false,
+        },
+        issuedAt
+      );
+      await emitDomainEvent(
+        PIXPAX_EVENT_TYPES.GIFTCODE_REDEEMED,
+        {
+          codeId,
+          packId,
+          collectionId: String(collectionId),
+          version: String(version),
+          issuedTo,
+          dropId,
+        },
+        issuedAt
+      );
+
+      res.status(200).send({
+        ok: true,
+        packId,
+        packModel: PACK_MODELS.ALBUM,
+        collectionId,
+        collectionVersion: version,
+        dropId,
+        issuedAt,
+        entry,
+        cards,
+        receipt: {
+          payload: signedReceipt.payload,
+          signature: signedReceipt.signature,
+          receiptKeyId: signedReceipt.payload.receiptKeyId,
+          tokenHash: signedReceipt.payload.tokenHash,
+          segmentKey: appendResult?.segmentKey || null,
+          segmentHash: appendResult?.segmentHash || null,
+        },
+        packRoot,
+        itemHashes,
+        issuance: {
+          mode: "redeem-token",
+          reused: false,
+          override: true,
+          untracked: false,
+          codeId,
+          dropId,
+        },
+        redeemedToken: {
+          kind,
+          codeId,
+          issuerKeyId: tokenPayload.issuerKeyId,
+          exp: tokenPayload.exp ?? null,
+          policyHash: tokenPayload.policyHash ?? null,
+        },
+        collector: {
+          pubKey: collectorPubKey,
+          sigProvided: Boolean(collectorSig),
+          sigVerified: collectorSig ? collectorSigVerified : null,
+        },
+      });
+    } catch (error) {
+      if (missingContentConfigError(error)) {
+        res.status(503).send({
+          error:
+            "Content store configuration is incomplete. Use LEDGER_* connection vars and LEDGER_CONTENT_PREFIX.",
+        });
+        return;
+      }
+      const configError = resolveRedeemConfigError(error);
+      if (configError) {
+        res.status(503).send({ error: configError });
+        return;
+      }
+      if (isNoSuchKeyError(error)) {
+        res.status(404).send({ error: "Collection content is missing for this version." });
+        return;
+      }
+      console.error("[pixpax/redeem] failed:", error);
+      res.status(500).send({ error: "Failed to redeem token." });
+    }
+  });
+
   router.post("/v1/pixpax/collections/:collectionId/:version/packs", async (req, res) => {
     const { collectionId, version } = req.params || {};
     const rawUserKey = req.body?.userKey;
     const normalizedUserKey = canonicalizeUserKey(rawUserKey);
     const requestedIssuanceMode = String(req.body?.issuanceMode || "").trim().toLowerCase();
     const wantsDevUntrackedPack = requestedIssuanceMode === "dev-untracked";
-    const overrideCodeRaw = String(req.body?.overrideCode || "").trim();
     const wantsOverride = req.body?.override === true;
     const issuedAt = now().toISOString();
-    const nowSeconds = Math.floor(Date.parse(issuedAt) / 1000);
     const requestedDropId = String(req.body?.dropId || "").trim();
 
     if (!normalizedUserKey) {
@@ -1488,48 +1860,9 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
     try {
       const store = await getStore();
 
-      let overridePayload = null;
-      if (overrideCodeRaw) {
-        const giftCodeId = giftCodeToCodeId(overrideCodeRaw);
-        if (giftCodeId) {
-          try {
-            const codeRecord = await store.getOverrideCodeRecord(collectionId, version, giftCodeId);
-            overridePayload = codeRecord?.payload || null;
-            if (!overridePayload) {
-              res.status(400).send({ error: "Invalid override code." });
-              return;
-            }
-            if (!Number.isInteger(overridePayload.exp) || overridePayload.exp <= nowSeconds) {
-              res.status(400).send({ error: "Override code is expired." });
-              return;
-            }
-          } catch (error) {
-            if (String(error?.message || "").startsWith("NoSuchKey:")) {
-              res.status(400).send({ error: "Invalid override code." });
-              return;
-            }
-            throw error;
-          }
-        } else {
-          const secret = resolveOverrideCodeSecret();
-          if (!secret) {
-            res.status(503).send({ error: "PIX_PAX_OVERRIDE_CODE_SECRET is not configured." });
-            return;
-          }
-          try {
-            overridePayload = parseOverrideCode(overrideCodeRaw, secret, nowSeconds);
-          } catch (error) {
-            res.status(400).send({ error: error?.message || "Invalid override code." });
-            return;
-          }
-        }
-      }
-
       const issuancePolicy = resolveIssuancePolicy({
         wantsDevUntrackedPack,
         wantsOverride,
-        overrideCodeRaw,
-        overridePayload,
         allowDevUntrackedPacks,
         requestedDropId,
         requestedCount: req.body?.count,

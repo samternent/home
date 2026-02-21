@@ -5,7 +5,7 @@
   "scripts": {
     "build": "docker build -f ./Dockerfile ../../ -t samternent/ternent-api",
     "start": "node main.mjs",
-    "start:dev": "nodemon --ignore persisted/** --ignore data/** main.mjs",
+    "start:dev": "nodemon --ignore 'persisted/**' --ignore 'data/**' main.mjs",
     "test:stickerbook": "node --test routes/stickerbook/__tests__/*.test.mjs",
     "pixpax:verify": "node scripts/pixpax-verify.mjs",
     "pixpax:verify-pack": "node scripts/pixpax-verify-pack.mjs",

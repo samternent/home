@@ -88,6 +88,47 @@ Verifier checks:
 - parent chain (`prevSegmentHash`/`prevSegmentKey`)
 - entry signature against trusted issuer keys
 
+## PixPax v2 signed redeem (token-only)
+
+PixPax v2 redeem uses ECDSA P-256 signed tokens:
+
+- token format: `<payloadB64Url>.<signatureB64Url>`
+- payload bytes are canonical JSON bytes from `canonicalStringify`
+- signature bytes are raw 64-byte ECDSA (`r||s`)
+
+### Endpoints
+
+- `POST /v1/pixpax/redeem`
+  - request: `{ token, collectorPubKey, collectorSig? }`
+  - token-only contract: alias/code fields are rejected
+- `GET /v1/pixpax/issuers`
+- `GET /v1/pixpax/issuers/:issuerKeyId`
+- `GET /v1/pixpax/receipt-keys`
+- `GET /v1/pixpax/receipt-keys/:receiptKeyId`
+
+### Canonical signing rules
+
+Use concord canonical JSON helpers for all signed/hashed payloads:
+
+- token payload bytes
+- receipt payload bytes
+- `tokenHash` (`sha256(canonical-token-payload-bytes)`)
+- `policyHash`
+
+Do not use `JSON.stringify` for signed/hash inputs.
+
+### Separate signing keys
+
+- Issuer key signs token payloads.
+- Receipt key signs redemption receipts.
+- Receipt signing must not reuse issuer private key.
+
+Required receipt signing env vars:
+
+- `PIX_PAX_RECEIPT_PRIVATE_KEY_PEM` (required for redeem)
+- `PIX_PAX_RECEIPT_KEY_ID` (optional; derived from receipt public key if missing)
+- `PIX_PAX_RECEIPT_PUBLIC_KEY_PEM` (optional; derived from private key if missing)
+
 ### Kubernetes secret mapping
 
 Deployment uses explicit `env` + `secretKeyRef` (not `envFrom`).

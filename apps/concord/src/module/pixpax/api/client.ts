@@ -423,15 +423,12 @@ export function createOverrideCode(
 ) {
   return requestJson<{
     ok: boolean;
-    code: string;
-    giftCode?: string;
+    token: string;
+    tokenHash: string;
+    payload: Record<string, unknown>;
     codeId: string;
     collectionId: string;
     version: string;
-    dropId: string;
-    count: number;
-    bindToUser?: boolean;
-    issuedTo?: string | null;
     expiresAt: string;
     issuedAt: string;
   }>(
@@ -444,6 +441,89 @@ export function createOverrideCode(
       body: payload,
     }
   );
+}
+
+export type PixPaxIssuerRegistryResponse = {
+  ok: boolean;
+  issuers: Array<{
+    issuerKeyId: string;
+    name: string;
+    status: "active" | "revoked";
+    publicKeyPem: string;
+    createdAt?: string | null;
+    notes?: string | null;
+  }>;
+};
+
+export type PixPaxReceiptKeyRegistryResponse = {
+  ok: boolean;
+  receiptKeys: Array<{
+    receiptKeyId: string;
+    name: string;
+    status: "active" | "revoked";
+    publicKeyPem: string;
+    createdAt?: string | null;
+    notes?: string | null;
+  }>;
+};
+
+export function listPixpaxIssuers() {
+  return requestJson<PixPaxIssuerRegistryResponse>("/v1/pixpax/issuers");
+}
+
+export function listPixpaxReceiptKeys() {
+  return requestJson<PixPaxReceiptKeyRegistryResponse>("/v1/pixpax/receipt-keys");
+}
+
+export type PixPaxRedeemResponse = {
+  ok: boolean;
+  packId: string;
+  packModel: string;
+  collectionId: string;
+  collectionVersion: string;
+  dropId: string;
+  issuedAt: string;
+  entry?: {
+    kind?: string;
+    payload?: Record<string, any>;
+    signature?: string;
+  };
+  cards: Array<{
+    cardId: string;
+    seriesId?: string | null;
+    slotIndex?: number | null;
+    role?: string | null;
+    renderPayload?: Record<string, unknown> | null;
+  }>;
+  receipt: {
+    payload: Record<string, any>;
+    signature: string;
+    receiptKeyId: string;
+    tokenHash: string;
+    segmentKey?: string | null;
+    segmentHash?: string | null;
+  };
+  packRoot: string;
+  itemHashes: string[];
+  issuance: {
+    mode: string;
+    reused: boolean;
+    override: boolean;
+    untracked: boolean;
+    codeId: string;
+    dropId: string;
+  };
+};
+
+export function redeemPixpaxToken(input: {
+  token: string;
+  collectorPubKey: string;
+  collectorSig?: string;
+}) {
+  return requestJson<PixPaxRedeemResponse>("/v1/pixpax/redeem", {
+    method: "POST",
+    body: input,
+  });
 }
 
 export function putCollectionJson(
