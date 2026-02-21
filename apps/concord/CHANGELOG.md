@@ -1,5 +1,11 @@
 # concord
 
+## 0.3.33
+
+### Patch Changes
+
+- [`4751a8f9a4c7a897f76d2cac279fd2485a2dc1ea`](https://github.com/samternent/home/commit/4751a8f9a4c7a897f76d2cac279fd2485a2dc1ea) Thanks [@samternent](https://github.com/samternent)! - Adds usr auth
+
 ## 0.3.32
 
 ### Patch Changes
