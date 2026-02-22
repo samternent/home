@@ -1,5 +1,11 @@
 # concord
 
+## 0.3.47
+
+### Patch Changes
+
+- [`7d5c7e6276a21c7aacac54b3212a042b75b64bc0`](https://github.com/samternent/home/commit/7d5c7e6276a21c7aacac54b3212a042b75b64bc0) Thanks [@samternent](https://github.com/samternent)! - redirect gain?
+
 ## 0.3.46
 
 ### Patch Changes
