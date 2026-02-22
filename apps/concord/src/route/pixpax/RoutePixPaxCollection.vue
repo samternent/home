@@ -209,6 +209,8 @@ const { ledger } = useLedger();
 const route = useRoute();
 const router = useRouter();
 const redeemToken = ref("");
+const redeemFromLink = ref(false);
+const redeemEntryOverlayOpen = ref(false);
 const devUntrackedPackEnabled =
   import.meta.env.DEV ||
   String(import.meta.env.VITE_PIXPAX_DEV_UNTRACKED_PACKS || "")
@@ -501,6 +503,9 @@ const revealComplete = computed(
 );
 const isPackRevealOpen = computed(
   () => !revealDismissed.value && packPhase.value !== "idle",
+);
+const isAnyPackOverlayOpen = computed(
+  () => redeemEntryOverlayOpen.value || isPackRevealOpen.value,
 );
 const remainingPackCards = computed(() =>
   revealNeeds.value.slice(packRevealIndex.value),
@@ -1186,11 +1191,8 @@ async function openPack() {
     }
     if (normalizedRedeemToken) {
       redeemToken.value = "";
-      if (route.query?.token) {
-        const nextQuery = { ...route.query };
-        delete (nextQuery as any).token;
-        router.replace({ query: nextQuery });
-      }
+      redeemFromLink.value = false;
+      void clearRedeemTokenFromRoute();
     }
   } catch (error: any) {
     packOwnedCountSnapshot.value = null;
@@ -1210,6 +1212,27 @@ async function redeemPack(token: string) {
   if (packError.value) {
     throw new Error(packError.value);
   }
+}
+
+async function clearRedeemTokenFromRoute() {
+  const hasQueryToken = typeof route.query?.token !== "undefined";
+  if (!hasQueryToken) return;
+  const nextQuery = { ...route.query };
+  delete (nextQuery as Record<string, unknown>).token;
+  delete (nextQuery as Record<string, unknown>).redeem;
+  await router.replace({ query: nextQuery });
+}
+
+async function dismissRedeemEntryOverlay() {
+  redeemEntryOverlayOpen.value = false;
+  redeemFromLink.value = false;
+  redeemToken.value = "";
+  await clearRedeemTokenFromRoute();
+}
+
+async function redeemFromEntryOverlay() {
+  redeemEntryOverlayOpen.value = false;
+  await openPack();
 }
 
 function collectNextPackCard() {
@@ -1268,8 +1291,10 @@ onMounted(async () => {
   const queryToken = route.query?.token;
   if (typeof queryToken === "string" && queryToken.trim()) {
     redeemToken.value = queryToken.trim();
+    redeemFromLink.value = true;
   } else if (Array.isArray(queryToken) && queryToken[0]?.trim()) {
     redeemToken.value = String(queryToken[0]).trim();
+    redeemFromLink.value = true;
   }
   await loadCollection();
 });
@@ -1284,11 +1309,16 @@ watch(
   (queryToken) => {
     if (typeof queryToken === "string" && queryToken.trim()) {
       redeemToken.value = queryToken.trim();
+      redeemFromLink.value = true;
       return;
     }
     if (Array.isArray(queryToken) && queryToken[0]?.trim()) {
       redeemToken.value = String(queryToken[0]).trim();
+      redeemFromLink.value = true;
+      return;
     }
+    redeemToken.value = "";
+    redeemFromLink.value = false;
   },
 );
 
@@ -1300,7 +1330,30 @@ watch(
 );
 
 watch(
-  () => isPackRevealOpen.value,
+  () => [
+    redeemFromLink.value,
+    redeemToken.value,
+    packPhase.value,
+    selectedCollection.value?.id || "",
+  ],
+  () => {
+    if (!redeemFromLink.value) {
+      redeemEntryOverlayOpen.value = false;
+      return;
+    }
+    if (packPhase.value !== "idle") {
+      redeemEntryOverlayOpen.value = false;
+      return;
+    }
+    const hasToken = Boolean(String(redeemToken.value || "").trim());
+    const hasCollection = Boolean(selectedCollection.value);
+    redeemEntryOverlayOpen.value = hasToken && hasCollection;
+  },
+  { immediate: true },
+);
+
+watch(
+  () => isAnyPackOverlayOpen.value,
   (open) => {
     activityLock.setActivityLock("pack-open", open);
   },
@@ -1403,7 +1456,7 @@ watch(
         v-if="activeTab === 'book'"
         class="mx-auto w-full max-w-4xl pb-8"
       >
-        <div class="flex flex-col gap-6" v-if="!isPackRevealOpen">
+        <div class="flex flex-col gap-6" v-if="!isAnyPackOverlayOpen">
           <p v-if="packError" class="text-sm font-semibold text-red-600">
             {{ packError }}
           </p>
@@ -1534,10 +1587,38 @@ watch(
       </section>
 
       <div
-        v-if="isPackRevealOpen"
+        v-if="isAnyPackOverlayOpen"
         class="absolute inset-0 z-50 flex items-center justify-center px-4 py-10 backdrop-blur-lg"
       >
         <div class="flex w-full max-w-3xl flex-col gap-6">
+          <div
+            v-if="redeemEntryOverlayOpen"
+            class="mx-auto flex w-full max-w-md flex-col items-center gap-4 rounded-2xl border border-[var(--ui-border)] p-6 text-center"
+          >
+            <div class="redeem-entry-stack">
+              <div class="redeem-entry-card redeem-entry-card--back"></div>
+              <div class="redeem-entry-card redeem-entry-card--mid"></div>
+              <div class="redeem-entry-card redeem-entry-card--front">
+                <span class="redeem-entry-chip">Redeem pack</span>
+              </div>
+            </div>
+            <p class="text-xs uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]">
+              Code ready
+            </p>
+            <p class="text-sm text-[var(--ui-fg)]">
+              Tap redeem to open your pack.
+            </p>
+            <div class="flex flex-wrap items-center justify-center gap-2">
+              <Button size="sm" variant="secondary" @click="dismissRedeemEntryOverlay">
+                Not now
+              </Button>
+              <Button size="sm" @click="redeemFromEntryOverlay">
+                Redeem
+              </Button>
+            </div>
+          </div>
+
+          <template v-else>
           <div
             v-if="packPhase === 'opening'"
             class="mx-auto flex w-full max-w-md flex-col items-center gap-3 rounded-2xl border border-[var(--ui-border)] p-6 text-center"
@@ -1666,6 +1747,7 @@ watch(
               </Button>
             </div>
           </template>
+          </template>
         </div>
       </div>
     </div>
@@ -1768,6 +1850,51 @@ watch(
 
 .sticky-controls.is-compact .override-input {
   max-width: 270px;
+}
+
+.redeem-entry-stack {
+  position: relative;
+  width: 220px;
+  height: 160px;
+}
+
+.redeem-entry-card {
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--ui-border);
+  border-radius: 18px;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--ui-accent) 22%, transparent),
+    color-mix(in srgb, var(--ui-primary) 30%, transparent)
+  );
+  box-shadow: 0 18px 30px color-mix(in srgb, #0f172a 28%, transparent);
+}
+
+.redeem-entry-card--back {
+  transform: translateX(14px) translateY(10px) rotate(6deg);
+  opacity: 0.55;
+}
+
+.redeem-entry-card--mid {
+  transform: translateX(8px) translateY(5px) rotate(3deg);
+  opacity: 0.72;
+}
+
+.redeem-entry-card--front {
+  display: grid;
+  place-items: center;
+}
+
+.redeem-entry-chip {
+  border-radius: 9999px;
+  border: 1px solid color-mix(in srgb, var(--ui-fg) 18%, transparent);
+  background: color-mix(in srgb, var(--ui-bg) 78%, transparent);
+  color: var(--ui-fg);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  padding: 6px 10px;
+  text-transform: uppercase;
 }
 
 @keyframes revealFlip {

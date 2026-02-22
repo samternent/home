@@ -8,6 +8,49 @@ const route = useRoute();
 const router = useRouter();
 const status = ref("Resolving redeem code...");
 
+function tryExtractCodeIdFromToken(token: string) {
+  const raw = String(token || "").trim();
+  if (!raw) return "";
+  const parts = raw.split(".");
+  if (parts.length !== 2) return "";
+  const payloadPart = String(parts[0] || "").trim();
+  if (!payloadPart) return "";
+  try {
+    const normalized = payloadPart.replace(/-/g, "+").replace(/_/g, "/");
+    const pad = normalized.length % 4 === 0 ? "" : "=".repeat(4 - (normalized.length % 4));
+    const binary = atob(`${normalized}${pad}`);
+    const payload = JSON.parse(binary) as { c?: unknown };
+    return String(payload?.c || "").trim();
+  } catch {
+    return "";
+  }
+}
+
+async function goToCollectionRedeem(params: {
+  collectionId?: string | null;
+  version?: string | null;
+  token: string;
+}) {
+  const collectionId = String(params.collectionId || "").trim();
+  if (!collectionId) {
+    await router.replace({
+      name: "pixpax-redeem",
+      query: { token: params.token },
+    });
+    return;
+  }
+  const version = String(params.version || "").trim();
+  await router.replace({
+    name: "pixpax-collection",
+    params: { collectionId },
+    query: {
+      token: params.token,
+      ...(version ? { version } : {}),
+      redeem: "1",
+    },
+  });
+}
+
 onMounted(async () => {
   const resolved = resolveShortRedeemInput({
     queryT: route.query?.t,
@@ -17,6 +60,20 @@ onMounted(async () => {
   });
 
   if (resolved.token) {
+    const codeId = tryExtractCodeIdFromToken(resolved.token);
+    if (codeId) {
+      try {
+        const resolvedCode = await resolvePixpaxRedeemCode(codeId);
+        await goToCollectionRedeem({
+          collectionId: resolvedCode.collectionId || null,
+          version: resolvedCode.version || null,
+          token: resolved.token,
+        });
+        return;
+      } catch {
+        // Fallback to token-only redeem screen below.
+      }
+    }
     await router.replace({
       name: "pixpax-redeem",
       query: { token: resolved.token },
@@ -32,9 +89,10 @@ onMounted(async () => {
 
   try {
     const response = await resolvePixpaxRedeemCode(resolved.code);
-    await router.replace({
-      name: "pixpax-redeem",
-      query: { token: response.token },
+    await goToCollectionRedeem({
+      collectionId: response.collectionId || null,
+      version: response.version || null,
+      token: response.token,
     });
   } catch (error: any) {
     if (error instanceof PixPaxApiError) {

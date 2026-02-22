@@ -21,7 +21,7 @@
         { "type": "host", "value": "pixpax.xyz" },
         { "type": "query", "key": "t", "value": "(?<token>.*)" }
       ],
-      "destination": "/pixpax/redeem?token=:token",
+      "destination": "/pixpax/r?t=:token",
       "permanent": false
     },
     {
@@ -30,7 +30,7 @@
         { "type": "host", "value": "www.pixpax.xyz" },
         { "type": "query", "key": "t", "value": "(?<token>.*)" }
       ],
-      "destination": "/pixpax/redeem?token=:token",
+      "destination": "/pixpax/r?t=:token",
       "permanent": false
     }
   ],
