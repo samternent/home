@@ -1,5 +1,11 @@
 # concord
 
+## 0.3.45
+
+### Patch Changes
+
+- [`17e880c255e83d7073ab126bab496a27f1cfdbe4`](https://github.com/samternent/home/commit/17e880c255e83d7073ab126bab496a27f1cfdbe4) Thanks [@samternent](https://github.com/samternent)! - finally fix routing
+
 ## 0.3.44
 
 ### Patch Changes
