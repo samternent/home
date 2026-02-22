@@ -1,5 +1,11 @@
 # footballsocial
 
+## 0.15.21
+
+### Patch Changes
+
+- [`06c17978d8665ae3921040a64a6b4eb17f8cee80`](https://github.com/samternent/home/commit/06c17978d8665ae3921040a64a6b4eb17f8cee80) Thanks [@samternent](https://github.com/samternent)! - reture football social
+
 ## 0.15.20
 
 ### Patch Changes
