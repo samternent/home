@@ -270,13 +270,8 @@ export class CollectionContentStore {
     );
   }
 
-  buildOverrideCodeRecordKey(collectionId, version, codeId) {
-    return buildObjectKey(
-      this.prefix,
-      collectionId,
-      version,
-      `override-codes/${trimSegment(codeId)}.json`
-    );
+  buildGlobalCodeRecordKey(codeId) {
+    return buildCollectionScopedObjectKey(this.prefix, "__codes", `${trimSegment(codeId)}.json`);
   }
 
   buildEventsPrefix(collectionId, version) {
@@ -398,14 +393,14 @@ export class CollectionContentStore {
     return getJson(this.gateway, this.bucket, key);
   }
 
-  async putOverrideCodeRecord(collectionId, version, codeId, payload) {
-    const key = this.buildOverrideCodeRecordKey(collectionId, version, codeId);
-    await putJson(this.gateway, this.bucket, key, payload);
-    return { bucket: this.bucket, key };
+  async putGlobalCodeRecordIfAbsent(codeId, payload) {
+    const key = this.buildGlobalCodeRecordKey(codeId);
+    const result = await putJsonIfAbsent(this.gateway, this.bucket, key, payload);
+    return { bucket: this.bucket, key, created: result.created };
   }
 
-  async getOverrideCodeRecord(collectionId, version, codeId) {
-    const key = this.buildOverrideCodeRecordKey(collectionId, version, codeId);
+  async getGlobalCodeRecord(codeId) {
+    const key = this.buildGlobalCodeRecordKey(codeId);
     return getJson(this.gateway, this.bucket, key);
   }
 

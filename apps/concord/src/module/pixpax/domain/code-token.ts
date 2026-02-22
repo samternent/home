@@ -1,20 +1,10 @@
 import { canonicalStringify } from "@ternent/concord-protocol";
 
-type TokenKind = "pack" | "fixed-card";
-
 export type PixPaxTokenPayload = {
-  v: 2;
-  issuerKeyId: string;
-  codeId: string;
-  collectionId: string;
-  version: string;
-  kind: TokenKind;
-  dropId?: string;
-  exp?: number;
-  wave?: number;
-  policyHash?: string;
-  count?: number;
-  cardId?: string;
+  v: 3;
+  k: string;
+  c: string;
+  e: number;
 };
 
 export type TokenVerifyResult = {
@@ -136,51 +126,27 @@ async function verifyRaw64Signature(publicKeyPem: string, payloadBytes: Uint8Arr
 }
 
 function assertStrictPayload(payload: Record<string, any>) {
-  const allowed = new Set([
-    "v",
-    "issuerKeyId",
-    "codeId",
-    "collectionId",
-    "version",
-    "kind",
-    "dropId",
-    "exp",
-    "wave",
-    "policyHash",
-    "count",
-    "cardId",
-  ]);
+  const allowed = new Set(["v", "k", "c", "e"]);
   for (const key of Object.keys(payload || {})) {
     if (!allowed.has(key)) {
       throw new Error(`unsupported token payload field: ${key}`);
     }
   }
-  if (payload.v !== 2) throw new Error("token payload v must be 2");
-  if (payload.kind !== "pack" && payload.kind !== "fixed-card") {
-    throw new Error("token payload kind must be pack or fixed-card");
+  if (payload.v !== 3) throw new Error("token payload v must be 3");
+  if (!payload.k || typeof payload.k !== "string") {
+    throw new Error("token payload k is required");
   }
-  if (!payload.issuerKeyId || !payload.codeId || !payload.collectionId || !payload.version) {
-    throw new Error("token payload missing required string fields");
+  if (!payload.c || typeof payload.c !== "string") {
+    throw new Error("token payload c is required");
   }
-  if (payload.kind === "pack") {
-    if (!Number.isInteger(payload.count) || payload.count < 1 || payload.count > 50) {
-      throw new Error("pack token count must be integer 1..50");
-    }
-    if (payload.cardId !== undefined) throw new Error("pack token cannot include cardId");
-  }
-  if (payload.kind === "fixed-card") {
-    if (!payload.cardId || typeof payload.cardId !== "string") {
-      throw new Error("fixed-card token requires cardId");
-    }
-    if (payload.count !== undefined && Number(payload.count) !== 1) {
-      throw new Error("fixed-card token count must be absent or 1");
-    }
+  if (!Number.isInteger(payload.e) || payload.e < 1) {
+    throw new Error("token payload e must be epoch seconds integer");
   }
 }
 
 export async function verifyPixpaxTokenOffline(input: {
   token: string;
-  issuerPublicKeysById: Record<string, string>;
+  issuerPublicKeysByKid: Record<string, string>;
   nowSeconds?: number;
   expLeewaySeconds?: number;
 }): Promise<TokenVerifyResult> {
@@ -198,6 +164,13 @@ export async function verifyPixpaxTokenOffline(input: {
     payloadBytes = base64UrlDecodeToBytes(payloadB64);
     signatureBytes = base64UrlDecodeToBytes(signatureB64);
     payload = JSON.parse(decodeUtf8(payloadBytes)) as PixPaxTokenPayload;
+    if (Number((payload as any)?.v) !== 3) {
+      return {
+        ok: false,
+        official: false,
+        reason: "legacy-token-unsupported",
+      };
+    }
     assertStrictPayload(payload as any);
   } catch (error: any) {
     return {
@@ -217,7 +190,7 @@ export async function verifyPixpaxTokenOffline(input: {
     }
   }
 
-  const publicKeyPem = input.issuerPublicKeysById[String(payload.issuerKeyId || "").trim()] || "";
+  const publicKeyPem = input.issuerPublicKeysByKid[String(payload.k || "").trim()] || "";
   if (!publicKeyPem) {
     return { ok: false, official: false, reason: "issuer-missing" };
   }
@@ -234,8 +207,7 @@ export async function verifyPixpaxTokenOffline(input: {
     ? Math.max(0, Math.floor(Number(input.expLeewaySeconds)))
     : 60;
 
-  const isExpired =
-    Number.isInteger(payload.exp) && Number(payload.exp) + expLeewaySeconds < nowSeconds;
+  const isExpired = Number(payload.e) + expLeewaySeconds < nowSeconds;
   const tokenHash = await sha256Hex(payloadBytes);
 
   return {

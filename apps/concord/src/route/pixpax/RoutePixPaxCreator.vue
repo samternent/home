@@ -29,6 +29,10 @@ type DraftProject = {
   visibility: "public" | "unlisted";
   issuanceMode: "scheduled" | "codes-only";
   name: string;
+  issuer: {
+    name: string;
+    avatarUrl: string;
+  };
   description: string;
   createdAt: string;
   palette: PackPalette16;
@@ -70,6 +74,10 @@ function createDefaultProject(): DraftProject {
     visibility: "unlisted",
     issuanceMode: "codes-only",
     name: "My PixPax Collection",
+    issuer: {
+      name: "PixPax",
+      avatarUrl: "",
+    },
     description: "",
     createdAt: new Date().toISOString(),
     palette: { id: DEFAULT_PALETTE.id, colors: [...DEFAULT_PALETTE.colors] },
@@ -155,6 +163,12 @@ function ensureProjectSettings() {
   if (issuanceMode !== "scheduled" && issuanceMode !== "codes-only") {
     project.value.issuanceMode = "codes-only";
   }
+  if (!project.value.issuer || typeof project.value.issuer !== "object") {
+    project.value.issuer = { name: "PixPax", avatarUrl: "" };
+  }
+  const issuerName = String(project.value.issuer.name || "").trim();
+  project.value.issuer.name = issuerName || "PixPax";
+  project.value.issuer.avatarUrl = String(project.value.issuer.avatarUrl || "").trim();
 }
 
 watch(
@@ -414,10 +428,16 @@ const previewSticker = computed<Sticker>(() => {
 });
 
 function buildCollectionPayload() {
+  const issuerName = String(project.value.issuer?.name || "").trim() || "PixPax";
+  const issuerAvatarUrl = String(project.value.issuer?.avatarUrl || "").trim();
   return {
     collectionId: project.value.collectionId,
     version: project.value.version,
     name: project.value.name,
+    issuer: {
+      name: issuerName,
+      ...(issuerAvatarUrl ? { avatarUrl: issuerAvatarUrl } : {}),
+    },
     description: project.value.description,
     gridSize: 16,
     createdAt: project.value.createdAt,
@@ -547,8 +567,10 @@ async function handleImport(event: Event) {
 function validateProject() {
   const collectionId = String(project.value.collectionId || "").trim();
   const version = String(project.value.version || "").trim();
+  const issuerName = String(project.value.issuer?.name || "").trim();
   if (!collectionId) return "Collection id is required.";
   if (!version) return "Version is required.";
+  if (!issuerName) return "Issuer name is required.";
   if (!project.value.cards.length) return "Add at least one card.";
   const ids = new Set<string>();
   for (const card of project.value.cards) {
@@ -788,6 +810,14 @@ onUnmounted(() => {
             <label class="field">
               <span>Name</span>
               <input v-model="project.name" type="text" />
+            </label>
+            <label class="field">
+              <span>Issuer name</span>
+              <input v-model="project.issuer.name" type="text" />
+            </label>
+            <label class="field">
+              <span>Issuer avatar URL (optional)</span>
+              <input v-model="project.issuer.avatarUrl" type="text" />
             </label>
             <label class="field">
               <span>Visibility</span>

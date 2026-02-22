@@ -415,23 +415,56 @@ export function getPackAnalytics(
   return requestJson<PixPaxAnalyticsResponse>(path, { token: token || undefined });
 }
 
-export function createOverrideCode(
+export type PixPaxCodeTokenResponse = {
+  ok: boolean;
+  token: string;
+  tokenHash: string;
+  payload: Record<string, unknown>;
+  codeId: string;
+  collectionId: string;
+  version: string;
+  expiresAt: string;
+  issuedAt: string;
+  label: string;
+  kind: "pack" | "fixed-card";
+  cardId?: string | null;
+  count?: number | null;
+  dropId?: string | null;
+  kid?: string;
+  redeemUrl: string;
+  qrSvg: string;
+  qrErrorCorrection: string;
+  qrQuietZoneModules: number;
+};
+
+export type PixPaxCodeCardItem = {
+  token: string;
+  tokenHash: string;
+  label: string;
+  redeemUrl: string;
+  qrSvg: string;
+  qrErrorCorrection: string;
+  qrQuietZoneModules: number;
+  codeId: string;
+  issuedAt: string;
+  expiresAt: string;
+  collectionId: string;
+  version: string;
+  kind: "pack" | "fixed-card";
+  cardId?: string;
+  count?: number;
+  dropId?: string;
+  seriesTitle?: string;
+  issuerName?: string;
+};
+
+export function createCodeToken(
   collectionId: string,
   version: string,
   payload: unknown,
   token?: string | null
 ) {
-  return requestJson<{
-    ok: boolean;
-    token: string;
-    tokenHash: string;
-    payload: Record<string, unknown>;
-    codeId: string;
-    collectionId: string;
-    version: string;
-    expiresAt: string;
-    issuedAt: string;
-  }>(
+  return requestJson<PixPaxCodeTokenResponse>(
     `/v1/pixpax/collections/${encodeURIComponent(collectionId)}/${encodeURIComponent(
       version
     )}/override-codes`,
@@ -443,10 +476,40 @@ export function createOverrideCode(
   );
 }
 
+export const createOverrideCode = createCodeToken;
+
+export function createCodeCardsJson(
+  collectionId: string,
+  version: string,
+  payload: unknown,
+  token?: string | null
+) {
+  return requestJson<{
+    ok: boolean;
+    collectionId: string;
+    version: string;
+    quantity: number;
+    items: PixPaxCodeCardItem[];
+  }>(
+    `/v1/pixpax/collections/${encodeURIComponent(collectionId)}/${encodeURIComponent(
+      version
+    )}/code-cards`,
+    {
+      method: "POST",
+      token: token || undefined,
+      body: {
+        ...(payload && typeof payload === "object" ? payload : {}),
+        format: "json",
+      },
+    }
+  );
+}
+
 export type PixPaxIssuerRegistryResponse = {
   ok: boolean;
   issuers: Array<{
     issuerKeyId: string;
+    kid: string;
     name: string;
     status: "active" | "revoked";
     publicKeyPem: string;
@@ -524,6 +587,23 @@ export function redeemPixpaxToken(input: {
     method: "POST",
     body: input,
   });
+}
+
+export type PixPaxRedeemCodeResolveResponse = {
+  ok: boolean;
+  codeId: string;
+  token: string;
+  label?: string;
+  kind?: "pack" | "fixed-card";
+  collectionId?: string | null;
+  version?: string | null;
+  expiresAt?: string | null;
+};
+
+export function resolvePixpaxRedeemCode(codeId: string) {
+  return requestJson<PixPaxRedeemCodeResolveResponse>(
+    `/v1/pixpax/redeem-code/${encodeURIComponent(String(codeId || "").trim())}`
+  );
 }
 
 export type PixPaxCollectionSettings = {

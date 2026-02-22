@@ -11,6 +11,7 @@ export default function pixpaxIssuerRoutes(router) {
         .filter((entry) => entry.status === "active")
         .map((entry) => ({
           issuerKeyId: entry.issuerKeyId,
+          kid: entry.kid,
           name: entry.name,
           status: entry.status,
           publicKeyPem: entry.publicKeyPem,
@@ -76,4 +77,3 @@ export default function pixpaxIssuerRoutes(router) {
     }
   });
 }
-

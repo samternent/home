@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { createHash, generateKeyPairSync, sign as nodeSign, verify as nodeVerify } from "node:crypto";
 import {
-  signTokenV2,
-  verifyTokenV2,
+  signTokenV3,
+  verifyTokenV3,
   signReceiptV1,
   verifyReceiptV1,
   deriveKeyIdFromPublicKey,
@@ -20,17 +20,12 @@ function createEcKeyPair() {
   };
 }
 
-function buildPackPayload(issuerKeyId) {
+function buildCompactPayload(kid) {
   return {
-    v: 2,
-    issuerKeyId,
-    codeId: "abcdabcdabcdabcdabcdabcd",
-    collectionId: "premier-league-2026",
-    version: "v1",
-    kind: "pack",
-    count: 5,
-    dropId: "week-2026-W08",
-    exp: 1770000000,
+    v: 3,
+    k: kid,
+    c: "abcdabcdabcdabcd",
+    e: 1770000000,
   };
 }
 
@@ -45,27 +40,28 @@ function toBase64Url(bytes) {
 test("canonicalization stability + single-byte mutation for token signatures", async () => {
   const issuer = createEcKeyPair();
   const issuerKeyId = deriveKeyIdFromPublicKey(issuer.publicKeyPem);
+  const kid = `i_${issuerKeyId.slice(0, 12)}`;
 
-  const payloadA = buildPackPayload(issuerKeyId);
+  const payloadA = buildCompactPayload(kid);
   const payloadB = {
-    kind: "pack",
-    exp: 1770000000,
-    version: "v1",
-    collectionId: "premier-league-2026",
-    codeId: "abcdabcdabcdabcdabcdabcd",
-    count: 5,
-    issuerKeyId,
-    v: 2,
-    dropId: "week-2026-W08",
+    e: 1770000000,
+    c: "abcdabcdabcdabcd",
+    k: kid,
+    v: 3,
   };
 
-  const signedA = await signTokenV2(payloadA, issuer.privateKeyPem);
-  const signedB = await signTokenV2(payloadB, issuer.privateKeyPem);
+  const signedA = await signTokenV3(payloadA, issuer.privateKeyPem);
+  const signedB = await signTokenV3(payloadB, issuer.privateKeyPem);
 
   assert.deepEqual(Buffer.from(signedA.payloadBytes), Buffer.from(signedB.payloadBytes));
 
-  const verifyOk = await verifyTokenV2(signedA.token, {
-    resolveIssuer: async () => ({ status: "active", publicKeyPem: issuer.publicKeyPem }),
+  const verifyOk = await verifyTokenV3(signedA.token, {
+    resolveIssuerByKid: async () => ({
+      status: "active",
+      publicKeyPem: issuer.publicKeyPem,
+      issuerKeyId,
+      kid,
+    }),
     nowSeconds: 1760000000,
     expLeewaySeconds: 0,
   });
@@ -80,8 +76,13 @@ test("canonicalization stability + single-byte mutation for token signatures", a
     .replace(/\//g, "_")
     .replace(/=+$/g, "")}.${parts[1]}`;
 
-  const verifyTampered = await verifyTokenV2(tamperedToken, {
-    resolveIssuer: async () => ({ status: "active", publicKeyPem: issuer.publicKeyPem }),
+  const verifyTampered = await verifyTokenV3(tamperedToken, {
+    resolveIssuerByKid: async () => ({
+      status: "active",
+      publicKeyPem: issuer.publicKeyPem,
+      issuerKeyId,
+      kid,
+    }),
     nowSeconds: 1760000000,
   });
   assert.equal(verifyTampered.ok, false);
@@ -105,10 +106,10 @@ test("canonicalization stability + single-byte mutation for receipt signatures",
     collectionId: "premier-league-2026",
     version: "v1",
     kind: "pack",
-    codeId: "abcdabcdabcdabcdabcdabcd",
+    codeId: "abcdabcdabcdabcd",
   };
   const receiptPayloadB = {
-    codeId: "abcdabcdabcdabcdabcdabcd",
+    codeId: "abcdabcdabcdabcd",
     kind: "pack",
     version: "v1",
     collectionId: "premier-league-2026",
@@ -155,7 +156,10 @@ test("canonicalization stability + single-byte mutation for receipt signatures",
 test("raw-64 signature handling interoperates with Node verify path", async () => {
   const issuer = createEcKeyPair();
   const issuerKeyId = deriveKeyIdFromPublicKey(issuer.publicKeyPem);
-  const signed = await signTokenV2(buildPackPayload(issuerKeyId), issuer.privateKeyPem);
+  const signed = await signTokenV3(
+    buildCompactPayload(`i_${issuerKeyId.slice(0, 12)}`),
+    issuer.privateKeyPem
+  );
   const { der, subtleOk } = await verifyRaw64WithNode(
     issuer.publicKeyPem,
     signed.payloadBytes,
@@ -170,23 +174,24 @@ test("raw-64 signature handling interoperates with Node verify path", async () =
 test("token exp verification honors configurable leeway", async () => {
   const issuer = createEcKeyPair();
   const issuerKeyId = deriveKeyIdFromPublicKey(issuer.publicKeyPem);
-  const signed = await signTokenV2(
+  const kid = `i_${issuerKeyId.slice(0, 12)}`;
+  const signed = await signTokenV3(
     {
-      ...buildPackPayload(issuerKeyId),
-      exp: 1000,
+      ...buildCompactPayload(kid),
+      e: 1000,
     },
     issuer.privateKeyPem
   );
 
-  const withLeeway = await verifyTokenV2(signed.token, {
-    resolveIssuer: async () => ({ status: "active", publicKeyPem: issuer.publicKeyPem }),
+  const withLeeway = await verifyTokenV3(signed.token, {
+    resolveIssuerByKid: async () => ({ status: "active", publicKeyPem: issuer.publicKeyPem }),
     nowSeconds: 1030,
     expLeewaySeconds: 60,
   });
   assert.equal(withLeeway.ok, true);
 
-  const withoutEnoughLeeway = await verifyTokenV2(signed.token, {
-    resolveIssuer: async () => ({ status: "active", publicKeyPem: issuer.publicKeyPem }),
+  const withoutEnoughLeeway = await verifyTokenV3(signed.token, {
+    resolveIssuerByKid: async () => ({ status: "active", publicKeyPem: issuer.publicKeyPem }),
     nowSeconds: 1030,
     expLeewaySeconds: 10,
   });
@@ -197,12 +202,13 @@ test("token exp verification honors configurable leeway", async () => {
 test("strict payload field rules reject unknown token and receipt fields", async () => {
   const issuer = createEcKeyPair();
   const issuerKeyId = deriveKeyIdFromPublicKey(issuer.publicKeyPem);
+  const kid = `i_${issuerKeyId.slice(0, 12)}`;
 
   await assert.rejects(
     () =>
-      signTokenV2(
+      signTokenV3(
         {
-          ...buildPackPayload(issuerKeyId),
+          ...buildCompactPayload(kid),
           unknown: "nope",
         },
         issuer.privateKeyPem
@@ -211,16 +217,28 @@ test("strict payload field rules reject unknown token and receipt fields", async
   );
 
   const invalidTokenPayload = {
-    ...buildPackPayload(issuerKeyId),
+    ...buildCompactPayload(kid),
     unknown: "nope",
   };
   const invalidToken = `${toBase64Url(Buffer.from(JSON.stringify(invalidTokenPayload), "utf8"))}.${toBase64Url(Buffer.alloc(64, 0x01))}`;
-  const invalidVerify = await verifyTokenV2(invalidToken, {
-    resolveIssuer: async () => ({ status: "active", publicKeyPem: issuer.publicKeyPem }),
+  const invalidVerify = await verifyTokenV3(invalidToken, {
+    resolveIssuerByKid: async () => ({ status: "active", publicKeyPem: issuer.publicKeyPem }),
     nowSeconds: 1760000000,
   });
   assert.equal(invalidVerify.ok, false);
   assert.equal(invalidVerify.reason, "invalid-token-payload");
+
+  const legacyPayload = {
+    v: 2,
+    issuerKeyId,
+    codeId: "abcdabcdabcdabcdabcdabcd",
+  };
+  const legacyToken = `${toBase64Url(Buffer.from(JSON.stringify(legacyPayload), "utf8"))}.${toBase64Url(Buffer.alloc(64, 0x01))}`;
+  const legacyVerify = await verifyTokenV3(legacyToken, {
+    resolveIssuerByKid: async () => ({ status: "active", publicKeyPem: issuer.publicKeyPem }),
+  });
+  assert.equal(legacyVerify.ok, false);
+  assert.equal(legacyVerify.reason, "legacy-token-unsupported");
 
   const receiptSigner = createEcKeyPair();
   const receiptKeyId = deriveKeyIdFromPublicKey(receiptSigner.publicKeyPem);
@@ -238,7 +256,7 @@ test("strict payload field rules reject unknown token and receipt fields", async
           collectionId: "premier-league-2026",
           version: "v1",
           kind: "pack",
-          codeId: "abcdabcdabcdabcdabcdabcd",
+          codeId: "abcdabcdabcdabcd",
           unknown: "nope",
         },
         receiptSigner.privateKeyPem
@@ -264,7 +282,7 @@ test("receipt key separation: issuer key must not verify receipt signature", asy
       collectionId: "premier-league-2026",
       version: "v1",
       kind: "pack",
-      codeId: "abcdabcdabcdabcdabcdabcd",
+      codeId: "abcdabcdabcdabcd",
     },
     receiptSigner.privateKeyPem
   );
@@ -287,8 +305,8 @@ test("receipt key separation: issuer key must not verify receipt signature", asy
 test("collector proof verifier accepts DER and raw-64 signature encodings", async () => {
   const signer = createEcKeyPair();
   const issuerKeyId = deriveKeyIdFromPublicKey(signer.publicKeyPem);
-  const payload = buildPackPayload(issuerKeyId);
-  const token = await signTokenV2(payload, signer.privateKeyPem);
+  const payload = buildCompactPayload(`i_${issuerKeyId.slice(0, 12)}`);
+  const token = await signTokenV3(payload, signer.privateKeyPem);
   const message = Buffer.from("collector-proof-message", "utf8");
 
   const der = nodeSign("sha256", message, signer.privateKeyPem);

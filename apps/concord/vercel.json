@@ -2,6 +2,26 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/r",
+      "has": [
+        { "type": "host", "value": "pixpax.xyz" },
+        { "type": "query", "key": "t", "value": "(?<token>.*)" }
+      ],
+      "destination": "/pixpax/redeem?token=:token",
+      "permanent": false
+    },
+    {
+      "source": "/r",
+      "has": [
+        { "type": "host", "value": "www.pixpax.xyz" },
+        { "type": "query", "key": "t", "value": "(?<token>.*)" }
+      ],
+      "destination": "/pixpax/redeem?token=:token",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
       "source": "/assets/:path*",

@@ -23,6 +23,22 @@ export function validateCollectionPayload(payload) {
   if (!isPositiveInt(payload.gridSize)) {
     errors.push("collection.gridSize must be a positive integer.");
   }
+  if (payload.issuer !== undefined) {
+    if (!payload.issuer || typeof payload.issuer !== "object" || Array.isArray(payload.issuer)) {
+      errors.push("collection.issuer must be an object when provided.");
+    } else {
+      const issuerName = asNonEmptyString(payload.issuer.name);
+      if (!issuerName) {
+        errors.push("collection.issuer.name must be a non-empty string when issuer is provided.");
+      }
+      if (
+        payload.issuer.avatarUrl !== undefined &&
+        typeof payload.issuer.avatarUrl !== "string"
+      ) {
+        errors.push("collection.issuer.avatarUrl must be a string when provided.");
+      }
+    }
+  }
   return { ok: errors.length === 0, errors };
 }
 

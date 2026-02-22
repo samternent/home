@@ -66,6 +66,16 @@ export const pixpaxChildren = [
     component: () => import("./RoutePixPaxRedeem.vue"),
   },
   {
+    path: "r",
+    name: "pixpax-short-redeem",
+    component: () => import("./RoutePixPaxShortRedeem.vue"),
+  },
+  {
+    path: "r/:code(.*)",
+    name: "pixpax-short-redeem-code",
+    component: () => import("./RoutePixPaxShortRedeem.vue"),
+  },
+  {
     path: "settings",
     name: "pixpax-settings",
     component: () => import("./settings/RoutePixPaxSettingsShell.vue"),

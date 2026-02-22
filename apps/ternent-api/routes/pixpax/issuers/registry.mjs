@@ -11,6 +11,12 @@ const ROOT = join(__dirname, "..", "..", "..", "persisted", "pixpax");
 const ISSUER_FILE = join(ROOT, "issuers.json");
 const RECEIPT_FILE = join(ROOT, "receipt-keys.json");
 
+function deriveKidFromIssuerKeyId(issuerKeyId) {
+  const normalized = String(issuerKeyId || "").trim().toLowerCase();
+  if (!normalized) return "";
+  return `i_${normalized.slice(0, 12)}`;
+}
+
 function normalizePem(pem) {
   if (!pem) return "";
   const normalized = String(pem).includes("\\n") ? String(pem).replace(/\\n/g, "\n") : String(pem);
@@ -41,13 +47,15 @@ export async function loadIssuerRegistry() {
       const name = String(row?.name || "").trim() || issuerKeyId;
       const status = String(row?.status || "active").trim().toLowerCase();
       const publicKeyPem = ensurePublicPem(row?.publicKeyPem || row?.publicKeyJwk || "");
+      const kid = String(row?.kid || "").trim() || deriveKidFromIssuerKeyId(issuerKeyId);
       const derivedKeyId = publicKeyPem ? deriveKeyIdFromPublicKey(publicKeyPem) : "";
-      if (!issuerKeyId || !publicKeyPem) return null;
+      if (!issuerKeyId || !publicKeyPem || !kid) return null;
       if (derivedKeyId && derivedKeyId !== issuerKeyId) {
         throw new Error(`Issuer key id mismatch for ${issuerKeyId}.`);
       }
       return {
         issuerKeyId,
+        kid,
         name,
         status: status === "revoked" ? "revoked" : "active",
         publicKeyPem,
@@ -62,6 +70,7 @@ export async function loadIssuerRegistry() {
     if (!mapped.find((entry) => entry.issuerKeyId === signer.issuerKeyId)) {
       mapped.push({
         issuerKeyId: signer.issuerKeyId,
+        kid: signer.kid,
         name: "env-issuer",
         status: "active",
         publicKeyPem: ensurePublicPem(signer.publicKeyPem),
@@ -71,6 +80,15 @@ export async function loadIssuerRegistry() {
     }
   } catch {
     // Registry-only mode if env signer isn't configured.
+  }
+
+  const seenKids = new Map();
+  for (const entry of mapped) {
+    const existing = seenKids.get(entry.kid);
+    if (existing && existing !== entry.issuerKeyId) {
+      throw new Error(`Issuer kid collision for ${entry.kid}.`);
+    }
+    seenKids.set(entry.kid, entry.issuerKeyId);
   }
 
   return mapped;
@@ -128,6 +146,15 @@ export async function resolveActiveIssuerByKeyId(issuerKeyId) {
   );
 }
 
+export async function resolveActiveIssuerByKid(kid) {
+  const issuers = await loadIssuerRegistry();
+  return (
+    issuers.find(
+      (entry) => entry.kid === String(kid || "").trim() && entry.status === "active"
+    ) || null
+  );
+}
+
 export async function resolveActiveReceiptKeyById(receiptKeyId) {
   const keys = await loadReceiptKeyRegistry();
   return (
@@ -145,8 +172,10 @@ export function resolveTokenIssuerSignerFromEnv() {
   const publicKeyPem = derivePublicKeyFromPrivateKey(privateKeyPem);
   const issuerKeyId =
     String(process.env.ISSUER_KEY_ID || "").trim() || deriveKeyIdFromPublicKey(publicKeyPem);
+  const kid = String(process.env.ISSUER_KID || "").trim() || deriveKidFromIssuerKeyId(issuerKeyId);
   return {
     issuerKeyId,
+    kid,
     privateKeyPem,
     publicKeyPem,
   };

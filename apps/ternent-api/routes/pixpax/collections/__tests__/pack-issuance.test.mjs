@@ -567,8 +567,8 @@ test("admin can mint signed token and redeem once via /redeem", async () => {
   );
   assert.equal(mint.statusCode, 201);
   assert.ok(mint.body.token);
-  assert.equal(mint.body.payload.kind, "pack");
-  assert.equal(mint.body.payload.count, 8);
+  assert.equal(mint.body.kind, "pack");
+  assert.equal(mint.body.count, 8);
 
   const firstUse = await router.invoke(
     "POST",
@@ -616,7 +616,7 @@ test("admin can mint signed token and redeem once via /redeem", async () => {
     "usedAt",
   ]);
   assert.equal(secondUse.body.claimed.codeId, mint.body.codeId);
-  assert.equal(secondUse.body.claimed.dropId, mint.body.payload.dropId);
+  assert.equal(secondUse.body.claimed.dropId, mint.body.dropId);
   assert.equal(secondUse.body.claimed.mintRef, firstUse.body.packId);
   assert.equal(typeof secondUse.body.claimed.usedAt, "string");
   assert.deepEqual(
@@ -738,6 +738,49 @@ test("redeem endpoint enforces token-only contract", async () => {
   );
   assert.equal(unsupported.statusCode, 400);
   assert.match(String(unsupported.body.error || ""), /Unsupported redeem payload field/);
+});
+
+test("redeem rejects legacy compact token versions with deterministic error contract", async () => {
+  createIssuerKeyEnv();
+  const store = new CollectionContentStore({
+    bucket: "content",
+    prefix: "pixpax/collections",
+    gateway: createMemoryGateway(),
+  });
+  await seedCollection(store);
+  const router = createRouterHarness();
+
+  pixpaxCollectionRoutes(router, {
+    createStore: () => store,
+    pickRandomIndex: (max) => (max > 1 ? 1 : 0),
+    now: () => new Date("2026-02-07T12:00:00.000Z"),
+    issueLedgerEntry: async () => ({
+      segmentKey: "pixpax/ledger/segments/day/seg_deadbeef.jsonl.gz",
+      segmentHash: "deadbeef",
+    }),
+  });
+
+  const legacyPayload = {
+    v: 2,
+    issuerKeyId: "legacy-issuer",
+    codeId: "legacy-code",
+    exp: 1790000000,
+  };
+  const legacyToken = `${base64UrlEncode(
+    Buffer.from(JSON.stringify(legacyPayload), "utf8")
+  )}.${base64UrlEncode(Buffer.alloc(64, 0x01))}`;
+
+  const legacyRedeem = await router.invoke("POST", "/v1/pixpax/redeem", {
+    body: {
+      token: legacyToken,
+      collectorPubKey: "collector:key:test",
+    },
+  });
+
+  assert.equal(legacyRedeem.statusCode, 422);
+  assert.equal(legacyRedeem.body.ok, false);
+  assert.equal(legacyRedeem.body.reason, "legacy-token-unsupported");
+  assert.equal(legacyRedeem.body.code, "legacy_token_unsupported");
 });
 
 test("fixed-card token invariants are enforced server-side", async () => {

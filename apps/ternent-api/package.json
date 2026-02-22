@@ -33,6 +33,7 @@
     "pg": "^8.16.3",
     "ternent-identity": "workspace:*",
     "ternent-utils": "workspace:*",
+    "uqr": "^0.1.2",
     "ws": "^8.18.0"
   }
 }

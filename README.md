@@ -41,6 +41,12 @@ root
   - `visibility`: `public | unlisted`
   - `issuanceMode`: `scheduled | codes-only`
 - Unlisted collections are discoverable via direct route and My Collections after ownership.
+- Admin code-token printing:
+  - single mint endpoint enriches response with `redeemUrl` + `qrSvg`
+  - bulk printable endpoint: `POST /v1/pixpax/collections/:collectionId/:version/code-cards`
+  - endpoint returns JSON `items[]` (QR + metadata) for frontend rendering/printing
+  - compact redeem tokens use signed handle claims (`v=3`, `kid`, `codeId`, `exp`) with server lookup
+  - printed QR links use `https://pixpax.xyz/r/<codeId>` and resolve to `/pixpax/redeem?token=...`
 
 ### Conventions
 

@@ -26,17 +26,19 @@ import { createCryptoRngSource, createDelegateRngSource } from "../domain/rng-so
 import { IssuancePolicyError, resolveIssuancePolicy } from "../domain/issuance-policy.mjs";
 import { verifyPack } from "../domain/verify-pack.mjs";
 import { rebuildCollectionSnapshotFromEvents } from "../domain/rebuild-from-events.mjs";
+import { buildCodeCardDataset } from "../domain/code-card-dataset.mjs";
 import { isPlatformAuthReady, requestHasCapability } from "../../../services/auth/permissions.mjs";
 import {
   computePolicyHash,
-  signTokenV2,
-  verifyTokenV2,
+  signTokenV3,
+  verifyTokenV3,
   signReceiptV1,
   computeTokenHashFromPayloadBytes,
+  base64UrlEncode,
   verifyP256Sha256Signature,
 } from "../domain/code-signing.mjs";
 import {
-  resolveActiveIssuerByKeyId,
+  resolveActiveIssuerByKid,
   resolveTokenIssuerSignerFromEnv,
   resolveReceiptSignerFromEnv,
 } from "../issuers/registry.mjs";
@@ -47,6 +49,10 @@ function hashCanonical(value) {
 
 function createNonceHex(length = 16) {
   return randomBytes(Math.ceil(length / 2)).toString("hex").slice(0, length);
+}
+
+function createCompactCodeId(bytes = 12) {
+  return base64UrlEncode(randomBytes(Math.max(12, Number(bytes) || 12)));
 }
 
 function extractBearerToken(headerValue) {
@@ -316,6 +322,84 @@ function normalizePathPrefix(value, fallback = "") {
 function resolvePublicId(payload) {
   const publicId = String(payload?.issuedTo || payload?.userKeyHash || "").trim();
   return publicId || null;
+}
+
+function parseMintWave(value) {
+  if (!Number.isInteger(value)) return undefined;
+  const wave = Number(value);
+  return wave > 0 ? wave : undefined;
+}
+
+function normalizeMintKind(value) {
+  const kind = String(value || "pack").trim().toLowerCase();
+  if (kind !== "pack" && kind !== "fixed-card") {
+    throw new Error("kind must be 'pack' or 'fixed-card'.");
+  }
+  return kind;
+}
+
+function buildCodeTokenLabel(kind, params = {}) {
+  if (kind === "fixed-card") {
+    const explicit = String(params.cardLabel || "").trim();
+    if (explicit) return explicit;
+    const cardId = String(params.cardId || "").trim();
+    return cardId || "Fixed Card";
+  }
+  const count = Number.isInteger(params.count) ? Number(params.count) : 1;
+  return `Pack (${count} ${count === 1 ? "card" : "cards"})`;
+}
+
+function buildCodeThumbnail(collection, card) {
+  const palette = Array.isArray(collection?.palette?.colors)
+    ? collection.palette.colors.map((value) => Number(value) >>> 0)
+    : [];
+  const renderPayload = card?.renderPayload;
+  const gridB64 = String(renderPayload?.gridB64 || "").trim();
+  const gridSize = Number(renderPayload?.gridSize);
+  if (!palette.length || !gridB64 || !Number.isInteger(gridSize) || gridSize < 4 || gridSize > 64) {
+    return null;
+  }
+  return {
+    gridSize,
+    gridB64,
+    palette,
+  };
+}
+
+async function resolveFixedCardDetails(store, collectionId, version, cardId) {
+  const normalizedCardId = String(cardId || "").trim();
+  if (!normalizedCardId) {
+    throw new Error("cardId is required when kind='fixed-card'.");
+  }
+  const [index, card, collection] = await Promise.all([
+    store.getIndex(collectionId, version),
+    store.getCard(collectionId, version, normalizedCardId),
+    store.getCollection(collectionId, version),
+  ]);
+  const cardMap = index?.cardMap && typeof index.cardMap === "object" ? index.cardMap : {};
+  if (!cardMap[normalizedCardId]) {
+    throw new Error("cardId must exist in this collection/version index.");
+  }
+  const label = String(card?.label || normalizedCardId).trim() || normalizedCardId;
+  return {
+    label,
+    thumbnail: buildCodeThumbnail(collection, card),
+  };
+}
+
+async function resolveCollectionDisplayMetadata(store, collectionId, version) {
+  try {
+    const collection = await store.getCollection(collectionId, version);
+    return {
+      seriesTitle: String(collection?.name || collectionId).trim() || collectionId,
+      issuerName: resolveIssuerDisplayFromCollection(collection).name || "PixPax",
+    };
+  } catch {
+    return {
+      seriesTitle: collectionId,
+      issuerName: "PixPax",
+    };
+  }
 }
 
 function buildPackAnalyticsRow(params) {
@@ -672,6 +756,146 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
     return rows;
   }
 
+  async function issueCodeTokenRecord(params) {
+    const {
+      store,
+      collectionId,
+      version,
+      body,
+      issuedAtIso,
+      signer,
+    } = params;
+    const issuedAt = String(issuedAtIso || "").trim();
+    const exp = Math.floor(Date.parse(issuedAt) / 1000) + clampRedeemTokenTtlSeconds(body?.expiresInSeconds);
+    const kind = normalizeMintKind(body?.kind);
+    const dropId = String(body?.dropId || `week-${toIsoWeek(new Date(issuedAt))}`).trim();
+    const wave = parseMintWave(body?.wave);
+
+    let policy;
+    let label;
+    let thumbnail = null;
+
+    if (kind === "fixed-card") {
+      const cardId = String(body?.cardId || "").trim();
+      const count = body?.count;
+      if (!cardId) {
+        throw new Error("cardId is required when kind='fixed-card'.");
+      }
+      if (count !== undefined && Number(count) !== 1) {
+        throw new Error("count must be absent or 1 when kind='fixed-card'.");
+      }
+
+      const fixedCardDetails = await resolveFixedCardDetails(store, collectionId, version, cardId);
+      label = buildCodeTokenLabel("fixed-card", {
+        cardId,
+        cardLabel: fixedCardDetails.label,
+      });
+      thumbnail = fixedCardDetails.thumbnail;
+
+      policy = {
+        kind: "fixed-card",
+        cardId,
+        dropId,
+        ...(wave ? { wave } : {}),
+      };
+    } else {
+      const count = clampPackCardCount(body?.count);
+      if (!Number.isInteger(count) || count < 1 || count > 50) {
+        throw new Error("count must be an integer between 1 and 50.");
+      }
+      label = buildCodeTokenLabel("pack", { count });
+      policy = {
+        kind: "pack",
+        count,
+        dropId,
+        ...(wave ? { wave } : {}),
+      };
+    }
+
+    const policyHash = computePolicyHash({
+      kind: policy.kind,
+      count: policy.count ?? null,
+      cardId: policy.cardId ?? null,
+      dropId: policy.dropId ?? null,
+      wave: policy.wave ?? null,
+    });
+
+    let codeId = "";
+    let tokenSigned = null;
+    let persisted = false;
+    const maxAttempts = 8;
+    for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+      codeId = createCompactCodeId(12);
+      const compactPayload = {
+        v: 3,
+        k: signer.kid,
+        c: codeId,
+        e: exp,
+      };
+      tokenSigned = await signTokenV3(compactPayload, signer.privateKeyPem);
+      const record = {
+        codeId,
+        createdAt: issuedAt,
+        exp,
+        expiresAt: new Date(exp * 1000).toISOString(),
+        token: tokenSigned.token,
+        issuerKeyId: signer.issuerKeyId,
+        kid: signer.kid,
+        collectionId,
+        version,
+        kind: policy.kind,
+        cardId: policy.cardId ?? null,
+        count: policy.count ?? null,
+        dropId: policy.dropId ?? null,
+        wave: policy.wave ?? null,
+        label,
+        policyHash,
+        tokenHash: tokenSigned.tokenHash,
+      };
+      const putResult = await store.putGlobalCodeRecordIfAbsent(codeId, record);
+      if (putResult.created) {
+        persisted = true;
+        break;
+      }
+    }
+
+    if (!persisted || !tokenSigned || !codeId) {
+      throw new Error("Failed to allocate unique compact codeId.");
+    }
+
+    await emitDomainEvent(
+      PIXPAX_EVENT_TYPES.GIFTCODE_CREATED,
+      {
+        codeId,
+        collectionId: String(collectionId),
+        version: String(version),
+        dropId: policy.dropId,
+        count: policy.count ?? 1,
+      },
+      issuedAt
+    );
+
+    return {
+      token: tokenSigned.token,
+      tokenHash: tokenSigned.tokenHash,
+      payload: tokenSigned.payload,
+      codeId,
+      collectionId: String(collectionId),
+      version: String(version),
+      expiresAt: new Date(exp * 1000).toISOString(),
+      issuedAt,
+      label,
+      kind: policy.kind,
+      cardId: policy.cardId ?? null,
+      count: policy.count ?? null,
+      dropId: policy.dropId ?? null,
+      issuerKeyId: signer.issuerKeyId,
+      kid: signer.kid,
+      policyHash,
+      ...(thumbnail ? { thumbnail } : {}),
+    };
+  }
+
   router.get("/v1/pixpax/admin/session", async (req, res) => {
     const access = await resolveAdminAccess(req);
     if (!access.ok) {
@@ -967,108 +1191,126 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
     if (!(await requireAdminToken(req, res))) return;
     try {
       const { collectionId, version } = req.params || {};
-      const issuedAt = now().toISOString();
-      const ttlSeconds = clampRedeemTokenTtlSeconds(req.body?.expiresInSeconds);
-      const exp = Math.floor(Date.parse(issuedAt) / 1000) + ttlSeconds;
-      const kind = String(req.body?.kind || "pack").trim().toLowerCase();
-
-      const signer = resolveTokenIssuerSignerFromEnv();
-      const dropId = String(req.body?.dropId || `week-${toIsoWeek(new Date(issuedAt))}`).trim();
-      const codeId = createNonceHex(24);
-      const waveRaw = req.body?.wave;
-      const wave = Number.isInteger(waveRaw) && Number(waveRaw) > 0 ? Number(waveRaw) : undefined;
-
-      let payload;
-      if (kind === "fixed-card") {
-        const cardId = String(req.body?.cardId || "").trim();
-        const count = req.body?.count;
-        if (!cardId) {
-          res.status(400).send({ error: "cardId is required when kind='fixed-card'." });
-          return;
-        }
-        if (count !== undefined && Number(count) !== 1) {
-          res.status(400).send({ error: "count must be absent or 1 when kind='fixed-card'." });
-          return;
-        }
-        payload = {
-          v: 2,
-          issuerKeyId: signer.issuerKeyId,
-          codeId,
-          collectionId,
-          version,
-          kind: "fixed-card",
-          cardId,
-          dropId,
-          exp,
-          ...(wave ? { wave } : {}),
-        };
-      } else if (kind === "pack") {
-        const count = clampPackCardCount(req.body?.count);
-        if (!Number.isInteger(count) || count < 1 || count > 50) {
-          res.status(400).send({ error: "count must be an integer between 1 and 50." });
-          return;
-        }
-        payload = {
-          v: 2,
-          issuerKeyId: signer.issuerKeyId,
-          codeId,
-          collectionId,
-          version,
-          kind: "pack",
-          count,
-          dropId,
-          exp,
-          ...(wave ? { wave } : {}),
-        };
-      } else {
-        res.status(400).send({ error: "kind must be 'pack' or 'fixed-card'." });
-        return;
-      }
-
-      const policyHash = computePolicyHash({
-        kind: payload.kind,
-        count: payload.count ?? null,
-        cardId: payload.cardId ?? null,
-        dropId: payload.dropId ?? null,
-        wave: payload.wave ?? null,
-      });
-      payload.policyHash = policyHash;
-
-      const tokenSigned = await signTokenV2(payload, signer.privateKeyPem);
       const store = await getStore();
-      await store.putOverrideCodeRecord(collectionId, version, payload.codeId, {
-        createdAt: issuedAt,
-        payload,
-        token: tokenSigned.token,
-        tokenHash: tokenSigned.tokenHash,
+      const signer = resolveTokenIssuerSignerFromEnv();
+      const minted = await issueCodeTokenRecord({
+        store,
+        collectionId,
+        version,
+        body: req.body || {},
+        issuedAtIso: now().toISOString(),
+        signer,
       });
-
-      await emitDomainEvent(
-        PIXPAX_EVENT_TYPES.GIFTCODE_CREATED,
-        {
-          codeId: payload.codeId,
-          collectionId: String(collectionId),
-          version: String(version),
-          dropId: payload.dropId,
-          count: payload.count ?? 1,
-        },
-        issuedAt
-      );
+      const display = await resolveCollectionDisplayMetadata(store, collectionId, version);
+      const [datasetItem] = await buildCodeCardDataset({
+        items: [minted],
+        seriesTitle: display.seriesTitle,
+        issuerName: display.issuerName,
+      });
+      const artifact = datasetItem || {};
 
       res.status(201).send({
         ok: true,
-        token: tokenSigned.token,
-        tokenHash: tokenSigned.tokenHash,
-        payload,
-        codeId: payload.codeId,
-        collectionId,
-        version,
-        expiresAt: new Date(exp * 1000).toISOString(),
-        issuedAt,
+        token: minted.token,
+        tokenHash: minted.tokenHash,
+        payload: minted.payload,
+        codeId: minted.codeId,
+        collectionId: minted.collectionId,
+        version: minted.version,
+        expiresAt: minted.expiresAt,
+        issuedAt: minted.issuedAt,
+        label: artifact.label || minted.label,
+        kind: minted.kind,
+        cardId: minted.cardId,
+        count: minted.count,
+        dropId: minted.dropId,
+        kid: minted.kid,
+        redeemUrl: artifact.redeemUrl,
+        qrSvg: artifact.qrSvg,
+        qrErrorCorrection: artifact.qrErrorCorrection,
+        qrQuietZoneModules: artifact.qrQuietZoneModules,
       });
     } catch (error) {
+      if (String(error?.message || "").includes("kind must be")) {
+        res.status(400).send({ error: String(error.message) });
+        return;
+      }
+      if (
+        String(error?.message || "").includes("cardId is required when kind='fixed-card'.") ||
+        String(error?.message || "").includes("count must be absent or 1 when kind='fixed-card'.") ||
+        String(error?.message || "").includes("count must be an integer between 1 and 50.") ||
+        String(error?.message || "").includes("cardId must exist in this collection/version index.")
+      ) {
+        res.status(400).send({ error: String(error.message) });
+        return;
+      }
       console.error("[pixpax/collections] create code token failed:", error);
       res.status(500).send({ error: "Failed to create code token." });
+    }
+  });
+
+  router.post("/v1/pixpax/collections/:collectionId/:version/code-cards", async (req, res) => {
+    if (!(await requireAdminToken(req, res))) return;
+    try {
+      const { collectionId, version } = req.params || {};
+      const quantityRaw = Number(req.body?.quantity ?? 1);
+      const quantity = Number.isFinite(quantityRaw) ? Math.floor(quantityRaw) : 1;
+      if (!Number.isInteger(quantity) || quantity < 1 || quantity > 500) {
+        res.status(400).send({ error: "quantity must be an integer between 1 and 500." });
+        return;
+      }
+
+      const format = String(req.body?.format || "json")
+        .trim()
+        .toLowerCase();
+      if (format && format !== "json") {
+        res.status(400).send({ error: "format must be 'json' when provided." });
+        return;
+      }
+
+      const store = await getStore();
+      const signer = resolveTokenIssuerSignerFromEnv();
+      const display = await resolveCollectionDisplayMetadata(store, collectionId, version);
+      const minted = [];
+      for (let index = 0; index < quantity; index += 1) {
+        const issuedAt = now().toISOString();
+        const item = await issueCodeTokenRecord({
+          store,
+          collectionId,
+          version,
+          body: req.body || {},
+          issuedAtIso: issuedAt,
+          signer,
+        });
+        minted.push(item);
+      }
+
+      const items = await buildCodeCardDataset({
+        items: minted,
+        seriesTitle: display.seriesTitle,
+        issuerName: display.issuerName,
+      });
+
+      res.status(200).send({
+        ok: true,
+        collectionId: String(collectionId || "").trim(),
+        version: String(version || "").trim(),
+        quantity: items.length,
+        items,
+      });
+    } catch (error) {
+      if (
+        String(error?.message || "").includes("kind must be") ||
+        String(error?.message || "").includes("cardId is required when kind='fixed-card'.") ||
+        String(error?.message || "").includes("count must be absent or 1 when kind='fixed-card'.") ||
+        String(error?.message || "").includes("count must be an integer between 1 and 50.") ||
+        String(error?.message || "").includes("cardId must exist in this collection/version index.")
+      ) {
+        res.status(400).send({ error: String(error.message) });
+        return;
+      }
+      console.error("[pixpax/collections] code-cards generation failed:", error);
+      res.status(500).send({ error: "Failed to generate code cards." });
     }
   });
 
@@ -1812,6 +2054,67 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
     }
   });
 
+  router.get("/v1/pixpax/redeem-code/:codeId", async (req, res) => {
+    const codeId = String(req.params?.codeId || "").trim();
+    if (!codeId) {
+      res.status(400).send({ ok: false, error: "codeId is required." });
+      return;
+    }
+
+    try {
+      const store = await getStore();
+      const record = await store.getGlobalCodeRecord(codeId);
+      const token = String(record?.token || "").trim();
+      if (!token) {
+        res.status(422).send({
+          ok: false,
+          error: "Code record does not include a redeem token.",
+          reason: "code-token-missing",
+        });
+        return;
+      }
+
+      const kind = String(record?.kind || "").trim();
+      const count = Number(record?.count);
+      const label =
+        String(record?.label || "").trim() ||
+        buildCodeTokenLabel(kind, {
+          cardId: String(record?.cardId || "").trim() || null,
+          count: Number.isInteger(count) ? count : null,
+        });
+
+      res.status(200).send({
+        ok: true,
+        codeId,
+        token,
+        label,
+        kind,
+        collectionId: String(record?.collectionId || "").trim() || null,
+        version: String(record?.version || "").trim() || null,
+        expiresAt: String(record?.expiresAt || "").trim() || null,
+      });
+    } catch (error) {
+      if (isNoSuchKeyError(error)) {
+        res.status(404).send({
+          ok: false,
+          error: "Redeem code was not found.",
+          reason: "code-not-found",
+        });
+        return;
+      }
+      if (missingContentConfigError(error)) {
+        res.status(503).send({
+          ok: false,
+          error:
+            "Content store configuration is incomplete. Use LEDGER_* connection vars and LEDGER_CONTENT_PREFIX.",
+        });
+        return;
+      }
+      console.error("[pixpax/redeem-code] resolve failed:", error);
+      res.status(500).send({ ok: false, error: "Failed to resolve redeem code." });
+    }
+  });
+
   router.post("/v1/pixpax/redeem", async (req, res) => {
     const body =
       req.body && typeof req.body === "object" && !Array.isArray(req.body)
@@ -1864,35 +2167,84 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
     }
 
     try {
-      const verification = await verifyTokenV2(token, {
-        resolveIssuer: resolveActiveIssuerByKeyId,
+      const verification = await verifyTokenV3(token, {
+        resolveIssuerByKid: resolveActiveIssuerByKid,
         nowSeconds,
         expLeewaySeconds: resolveTokenExpLeewaySeconds(),
       });
       if (!verification.ok) {
         const reason = String(verification.reason || "invalid-token");
         const statusCode =
-          reason === "token-expired"
+          reason === "legacy-token-unsupported"
+            ? 422
+            : reason === "token-expired"
             ? 410
             : reason === "issuer-resolution-failed" || reason === "signature-verify-error"
             ? 500
             : 422;
         res.status(statusCode).send({
           ok: false,
-          error: "Token verification failed.",
+          error:
+            reason === "legacy-token-unsupported"
+              ? "Legacy token format is no longer supported. Remint a new code token."
+              : "Token verification failed.",
           reason,
+          code:
+            reason === "legacy-token-unsupported" ? "legacy_token_unsupported" : undefined,
           details: verification.error || null,
         });
         return;
       }
 
       const tokenPayload = verification.payload;
-      const collectionId = String(tokenPayload.collectionId || "").trim();
-      const version = String(tokenPayload.version || "").trim();
-      const kind = String(tokenPayload.kind || "").trim();
-      const codeId = String(tokenPayload.codeId || "").trim();
-      const dropId = String(tokenPayload.dropId || "").trim() || `redeem-${codeId}`;
+      const codeId = String(tokenPayload.c || "").trim();
       const tokenHash = verification.tokenHash;
+      const store = await getStore();
+      let codeRecord = null;
+      try {
+        codeRecord = await store.getGlobalCodeRecord(codeId);
+      } catch (error) {
+        if (isNoSuchKeyError(error)) {
+          res.status(422).send({
+            ok: false,
+            error: "Code token lookup record was not found.",
+            reason: "code-record-missing",
+          });
+          return;
+        }
+        throw error;
+      }
+
+      const codeRecordKid = String(codeRecord?.kid || "").trim();
+      const codeRecordIssuerKeyId = String(codeRecord?.issuerKeyId || "").trim();
+      const codeRecordExp = Number(codeRecord?.exp);
+      if (
+        !codeRecordKid ||
+        !codeRecordIssuerKeyId ||
+        !Number.isInteger(codeRecordExp) ||
+        codeRecordKid !== String(tokenPayload.k || "").trim() ||
+        codeRecordExp !== Number(tokenPayload.e)
+      ) {
+        res.status(422).send({
+          ok: false,
+          error: "Code token lookup record does not match signed token claims.",
+          reason: "code-record-mismatch",
+        });
+        return;
+      }
+
+      const collectionId = String(codeRecord?.collectionId || "").trim();
+      const version = String(codeRecord?.version || "").trim();
+      const kind = String(codeRecord?.kind || "").trim();
+      const dropId = String(codeRecord?.dropId || "").trim() || `redeem-${codeId}`;
+      if (!collectionId || !version || (kind !== "pack" && kind !== "fixed-card")) {
+        res.status(422).send({
+          ok: false,
+          error: "Code lookup record is malformed.",
+          reason: "code-record-invalid",
+        });
+        return;
+      }
 
       let collectorSigVerified = false;
       if (collectorSig) {
@@ -1914,17 +2266,16 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
       }
 
       if (kind === "fixed-card") {
-        if (!String(tokenPayload.cardId || "").trim()) {
+        if (!String(codeRecord?.cardId || "").trim()) {
           res.status(400).send({ error: "fixed-card token is missing cardId." });
           return;
         }
-        if (tokenPayload.count !== undefined && Number(tokenPayload.count) !== 1) {
+        if (codeRecord?.count !== undefined && codeRecord?.count !== null && Number(codeRecord.count) !== 1) {
           res.status(400).send({ error: "fixed-card token count must be absent or 1." });
           return;
         }
       }
 
-      const store = await getStore();
       try {
         const existingUse = await store.getOverrideCodeUse(collectionId, version, codeId);
         if (existingUse) {
@@ -1946,14 +2297,14 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
 
       let selectedCardIds = [];
       if (kind === "fixed-card") {
-        const cardId = String(tokenPayload.cardId || "").trim();
+        const cardId = String(codeRecord?.cardId || "").trim();
         if (!allCardIds.includes(cardId) || !index?.cardMap?.[cardId]) {
           res.status(422).send({ error: "fixed-card token cardId is not part of this collection version." });
           return;
         }
         selectedCardIds = [cardId];
       } else {
-        const count = Number(tokenPayload.count);
+        const count = Number(codeRecord?.count);
         if (!Number.isInteger(count) || count < 1 || count > 50) {
           res.status(400).send({ error: "pack token count must be an integer between 1 and 50." });
           return;
@@ -2072,7 +2423,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
         v: 1,
         receiptKeyId: receiptSigner.receiptKeyId,
         tokenHash: computeTokenHashFromPayloadBytes(verification.payloadBytes),
-        issuerKeyId: String(tokenPayload.issuerKeyId || "").trim(),
+        issuerKeyId: codeRecordIssuerKeyId,
         collectorPubKey,
         mintRef: packId,
         serverTime: nowSeconds,
@@ -2150,9 +2501,9 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
         redeemedToken: {
           kind,
           codeId,
-          issuerKeyId: tokenPayload.issuerKeyId,
-          exp: tokenPayload.exp ?? null,
-          policyHash: tokenPayload.policyHash ?? null,
+          issuerKeyId: codeRecordIssuerKeyId,
+          exp: tokenPayload.e ?? null,
+          policyHash: codeRecord?.policyHash ?? null,
         },
         collector: {
           pubKey: collectorPubKey,

@@ -256,6 +256,46 @@ test("collection upload validates payload and enforces immutability", async () =
   assert.equal(second.statusCode, 409);
 });
 
+test("collection upload validates optional issuer metadata shape", async () => {
+  const router = createRouterHarness();
+  process.env.PIX_PAX_ADMIN_TOKEN = "test-token";
+  pixpaxCollectionRoutes(router, { createStore });
+  const headers = { authorization: "Bearer test-token" };
+
+  const invalidIssuer = await router.invoke(
+    "PUT",
+    "/v1/pixpax/collections/:collectionId/:version/collection",
+    {
+      headers,
+      params: { collectionId: "kid-dragons", version: "v1" },
+      body: {
+        name: "Kid Dragons",
+        gridSize: 16,
+        issuer: "PixPax",
+      },
+    }
+  );
+  assert.equal(invalidIssuer.statusCode, 400);
+
+  const validIssuer = await router.invoke(
+    "PUT",
+    "/v1/pixpax/collections/:collectionId/:version/collection",
+    {
+      headers,
+      params: { collectionId: "kid-dragons", version: "v2" },
+      body: {
+        name: "Kid Dragons",
+        gridSize: 16,
+        issuer: {
+          name: "PixPax",
+          avatarUrl: "https://pixpax.xyz/avatar.png",
+        },
+      },
+    }
+  );
+  assert.equal(validIssuer.statusCode, 201);
+});
+
 test("index and card endpoints validate references and collection grid size", async () => {
   const router = createRouterHarness();
   process.env.PIX_PAX_ADMIN_TOKEN = "test-token";
@@ -623,6 +663,212 @@ test("catalog endpoint only includes public collections", async () => {
   assert.equal(catalog.body.collections[0].settings.visibility, "public");
 });
 
+test("code token mint response includes label, redeemUrl, and qrSvg", async () => {
+  const router = createRouterHarness();
+  createIssuerAndReceiptKeyEnv();
+  process.env.PIX_PAX_ADMIN_TOKEN = "test-token";
+  pixpaxCollectionRoutes(router, { createStore });
+  const headers = { authorization: "Bearer test-token" };
+  const params = { collectionId: "kid-dragons", version: "v1" };
+
+  const collectionUpload = await router.invoke(
+    "PUT",
+    "/v1/pixpax/collections/:collectionId/:version/collection",
+    {
+      headers,
+      params,
+      body: { name: "Kid Dragons", gridSize: 16, issuer: { name: "PixPax" } },
+    }
+  );
+  assert.equal(collectionUpload.statusCode, 201);
+
+  const indexUpload = await router.invoke(
+    "PUT",
+    "/v1/pixpax/collections/:collectionId/:version/index",
+    {
+      headers,
+      params,
+      body: {
+        series: [{ seriesId: "dragons" }],
+        cards: ["dragon-001"],
+        cardMap: {
+          "dragon-001": { seriesId: "dragons", slotIndex: 0, role: "card" },
+        },
+      },
+    }
+  );
+  assert.equal(indexUpload.statusCode, 201);
+
+  const cardUpload = await router.invoke(
+    "PUT",
+    "/v1/pixpax/collections/:collectionId/:version/cards/:cardId",
+    {
+      headers,
+      params: { ...params, cardId: "dragon-001" },
+      body: {
+        cardId: "dragon-001",
+        seriesId: "dragons",
+        slotIndex: 0,
+        role: "card",
+        label: "Dragon One",
+        renderPayload: { gridSize: 16, gridB64: "AAECAw==" },
+      },
+    }
+  );
+  assert.equal(cardUpload.statusCode, 201);
+
+  const minted = await router.invoke(
+    "POST",
+    "/v1/pixpax/collections/:collectionId/:version/override-codes",
+    {
+      headers,
+      params,
+      body: {
+        kind: "fixed-card",
+        cardId: "dragon-001",
+        dropId: "dragon-wave",
+      },
+    }
+  );
+
+  assert.equal(minted.statusCode, 201);
+  assert.equal(typeof minted.body.token, "string");
+  assert.equal(typeof minted.body.tokenHash, "string");
+  assert.equal(minted.body.label, "Dragon One");
+  assert.equal(typeof minted.body.redeemUrl, "string");
+  assert.match(minted.body.redeemUrl, /\/r\//);
+  assert.equal(minted.body.qrErrorCorrection, "M");
+  assert.equal(minted.body.qrQuietZoneModules, 4);
+  assert.equal(typeof minted.body.qrSvg, "string");
+  assert.match(minted.body.qrSvg, /<svg/i);
+
+  const resolved = await router.invoke(
+    "GET",
+    "/v1/pixpax/redeem-code/:codeId",
+    {
+      params: { codeId: minted.body.codeId },
+    }
+  );
+  assert.equal(resolved.statusCode, 200);
+  assert.equal(resolved.body.ok, true);
+  assert.equal(resolved.body.codeId, minted.body.codeId);
+  assert.equal(resolved.body.token, minted.body.token);
+  assert.equal(resolved.body.kind, "fixed-card");
+
+  const missing = await router.invoke(
+    "GET",
+    "/v1/pixpax/redeem-code/:codeId",
+    {
+      params: { codeId: "does-not-exist" },
+    }
+  );
+  assert.equal(missing.statusCode, 404);
+  assert.equal(missing.body.reason, "code-not-found");
+});
+
+test("code cards endpoint returns shared items dataset as json only", async () => {
+  const router = createRouterHarness();
+  createIssuerAndReceiptKeyEnv();
+  process.env.PIX_PAX_ADMIN_TOKEN = "test-token";
+  pixpaxCollectionRoutes(router, { createStore });
+  const headers = { authorization: "Bearer test-token" };
+  const params = { collectionId: "house-animals", version: "v1" };
+
+  const collectionUpload = await router.invoke(
+    "PUT",
+    "/v1/pixpax/collections/:collectionId/:version/collection",
+    {
+      headers,
+      params,
+      body: {
+        name: "House Animals",
+        gridSize: 16,
+        palette: { id: "house", colors: [0, ...new Array(15).fill(0xffffffff)] },
+      },
+    }
+  );
+  assert.equal(collectionUpload.statusCode, 201);
+
+  const indexUpload = await router.invoke(
+    "PUT",
+    "/v1/pixpax/collections/:collectionId/:version/index",
+    {
+      headers,
+      params,
+      body: {
+        series: [{ seriesId: "animals" }],
+        cards: ["fox-001"],
+        cardMap: {
+          "fox-001": { seriesId: "animals", slotIndex: 0, role: "card" },
+        },
+      },
+    }
+  );
+  assert.equal(indexUpload.statusCode, 201);
+
+  const cardUpload = await router.invoke(
+    "PUT",
+    "/v1/pixpax/collections/:collectionId/:version/cards/:cardId",
+    {
+      headers,
+      params: { ...params, cardId: "fox-001" },
+      body: {
+        cardId: "fox-001",
+        seriesId: "animals",
+        slotIndex: 0,
+        role: "card",
+        label: "Fox",
+        renderPayload: {
+          gridSize: 16,
+          gridB64: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+        },
+      },
+    }
+  );
+  assert.equal(cardUpload.statusCode, 201);
+
+  const jsonResponse = await router.invoke(
+    "POST",
+    "/v1/pixpax/collections/:collectionId/:version/code-cards",
+    {
+      headers,
+      params,
+      body: {
+        kind: "fixed-card",
+        cardId: "fox-001",
+        quantity: 2,
+        format: "json",
+      },
+    }
+  );
+  assert.equal(jsonResponse.statusCode, 200);
+  assert.equal(jsonResponse.body.ok, true);
+  assert.equal(jsonResponse.body.quantity, 2);
+  assert.equal(Array.isArray(jsonResponse.body.items), true);
+  assert.equal(jsonResponse.body.items.length, 2);
+  assert.equal(typeof jsonResponse.body.items[0].token, "string");
+  assert.equal(typeof jsonResponse.body.items[0].redeemUrl, "string");
+  assert.equal(typeof jsonResponse.body.items[0].qrSvg, "string");
+  assert.equal(jsonResponse.body.items[0].label, "Fox");
+
+  const unsupportedPdf = await router.invoke(
+    "POST",
+    "/v1/pixpax/collections/:collectionId/:version/code-cards",
+    {
+      headers,
+      params,
+      body: {
+        kind: "pack",
+        count: 3,
+        quantity: 13,
+        format: "pdf",
+      },
+    }
+  );
+  assert.equal(unsupportedPdf.statusCode, 400);
+  assert.match(String(unsupportedPdf.body?.error || ""), /format must be 'json'/);
+});
+
 test("mutating admin endpoints emit PixPax domain events", async () => {
   const router = createRouterHarness();
   createIssuerAndReceiptKeyEnv();
@@ -699,6 +945,9 @@ test("mutating admin endpoints emit PixPax domain events", async () => {
     }
   );
   assert.equal(codeCreate.statusCode, 201);
+  assert.equal(typeof codeCreate.body.redeemUrl, "string");
+  assert.equal(typeof codeCreate.body.qrSvg, "string");
+  assert.equal(typeof codeCreate.body.label, "string");
 
   assert.equal(events.length, 4);
   assert.deepEqual(
@@ -713,7 +962,7 @@ test("mutating admin endpoints emit PixPax domain events", async () => {
   assert.equal(events[0].payload.collectionId, "premier-league-2026");
   assert.equal(events[1].payload.seriesIds[0], "arsenal");
   assert.equal(events[2].payload.cardId, "arsenal-01");
-  assert.equal(events[3].payload.codeId.length, 24);
+  assert.equal(events[3].payload.codeId.length, 16);
 });
 
 test("series retirement endpoint emits event and prevents duplicate retirement", async () => {

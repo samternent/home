@@ -209,23 +209,7 @@ export function derivePublicKeyFromPrivateKey(privateKeyPem) {
   return pub.export({ type: "spki", format: "pem" }).toString();
 }
 
-const TOKEN_REQUIRED_FIELDS = new Set([
-  "v",
-  "issuerKeyId",
-  "codeId",
-  "collectionId",
-  "version",
-  "kind",
-]);
-
-const TOKEN_OPTIONAL_FIELDS = new Set([
-  "dropId",
-  "exp",
-  "wave",
-  "policyHash",
-  "count",
-  "cardId",
-]);
+const TOKEN_V3_REQUIRED_FIELDS = new Set(["v", "k", "c", "e"]);
 
 function assertNoExtraFields(payload, allowedFields, label) {
   for (const key of Object.keys(payload || {})) {
@@ -241,63 +225,26 @@ function assertNonEmptyString(value, label) {
   }
 }
 
-function assertStrictTokenPayload(payload) {
+function assertStrictTokenV3Payload(payload) {
   if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
     throw new Error("token payload must be an object.");
   }
 
-  const allowed = new Set([...TOKEN_REQUIRED_FIELDS, ...TOKEN_OPTIONAL_FIELDS]);
-  assertNoExtraFields(payload, allowed, "token payload");
-
-  for (const field of TOKEN_REQUIRED_FIELDS) {
+  assertNoExtraFields(payload, TOKEN_V3_REQUIRED_FIELDS, "token payload");
+  for (const field of TOKEN_V3_REQUIRED_FIELDS) {
     if (!(field in payload)) {
       throw new Error(`token payload missing required field: ${field}`);
     }
   }
 
-  if (payload.v !== 2) {
-    throw new Error("token payload v must be 2.");
+  if (payload.v !== 3) {
+    throw new Error("token payload v must be 3.");
   }
 
-  assertNonEmptyString(payload.issuerKeyId, "token payload.issuerKeyId");
-  assertNonEmptyString(payload.codeId, "token payload.codeId");
-  assertNonEmptyString(payload.collectionId, "token payload.collectionId");
-  assertNonEmptyString(payload.version, "token payload.version");
-
-  const kind = String(payload.kind || "").trim();
-  if (kind !== "pack" && kind !== "fixed-card") {
-    throw new Error("token payload.kind must be 'pack' or 'fixed-card'.");
-  }
-
-  if (payload.dropId !== undefined) assertNonEmptyString(payload.dropId, "token payload.dropId");
-  if (payload.policyHash !== undefined) assertNonEmptyString(payload.policyHash, "token payload.policyHash");
-
-  if (payload.wave !== undefined) {
-    if (!Number.isInteger(payload.wave) || payload.wave < 1) {
-      throw new Error("token payload.wave must be a positive integer when provided.");
-    }
-  }
-
-  if (payload.exp !== undefined) {
-    if (!Number.isInteger(payload.exp) || payload.exp < 1) {
-      throw new Error("token payload.exp must be epoch seconds integer when provided.");
-    }
-  }
-
-  if (kind === "pack") {
-    if (!Number.isInteger(payload.count) || payload.count < 1 || payload.count > 50) {
-      throw new Error("token payload.count must be an integer between 1 and 50 for pack.");
-    }
-    if (payload.cardId !== undefined) {
-      throw new Error("token payload.cardId is not allowed for pack.");
-    }
-    return;
-  }
-
-  // fixed-card invariants
-  assertNonEmptyString(payload.cardId, "token payload.cardId");
-  if (payload.count !== undefined && payload.count !== 1) {
-    throw new Error("token payload.count must be absent or 1 for fixed-card.");
+  assertNonEmptyString(payload.k, "token payload.k");
+  assertNonEmptyString(payload.c, "token payload.c");
+  if (!Number.isInteger(payload.e) || payload.e < 1) {
+    throw new Error("token payload.e must be epoch seconds integer.");
   }
 }
 
@@ -346,8 +293,8 @@ export function computePolicyHash(policyObject) {
   return canonicalSha256Hex(policyObject);
 }
 
-export async function signTokenV2(payload, privateKeyPem) {
-  assertStrictTokenPayload(payload);
+export async function signTokenV3(payload, privateKeyPem) {
+  assertStrictTokenV3Payload(payload);
   const normalizedPayload = { ...payload };
   const payloadBytes = canonicalBytes(normalizedPayload);
   const signatureRaw64 = await signRaw64(privateKeyPem, payloadBytes);
@@ -361,7 +308,7 @@ export async function signTokenV2(payload, privateKeyPem) {
   };
 }
 
-export async function verifyTokenV2(token, options = {}) {
+export async function verifyTokenV3(token, options = {}) {
   const parts = String(token || "").trim().split(".");
   if (parts.length !== 2) {
     return { ok: false, reason: "invalid-token-format" };
@@ -376,7 +323,14 @@ export async function verifyTokenV2(token, options = {}) {
     payloadBytes = base64UrlDecode(payloadB64);
     signatureRaw64 = base64UrlDecode(sigB64);
     payload = JSON.parse(payloadBytes.toString("utf8"));
-    assertStrictTokenPayload(payload);
+    if (Number(payload?.v) !== 3) {
+      return {
+        ok: false,
+        reason: "legacy-token-unsupported",
+        payloadVersion: Number(payload?.v) || null,
+      };
+    }
+    assertStrictTokenV3Payload(payload);
     const canonicalPayloadBytes = canonicalBytes(payload);
     if (!Buffer.from(payloadBytes).equals(Buffer.from(canonicalPayloadBytes))) {
       return { ok: false, reason: "non-canonical-payload-bytes" };
@@ -387,19 +341,19 @@ export async function verifyTokenV2(token, options = {}) {
 
   let issuer = null;
   try {
-    issuer = await options.resolveIssuer?.(payload.issuerKeyId);
+    issuer = await options.resolveIssuerByKid?.(payload.k);
   } catch (error) {
     return { ok: false, reason: "issuer-resolution-failed", error: String(error?.message || error) };
   }
 
   if (!issuer || issuer.status !== "active" || !issuer.publicKeyPem) {
-    return { ok: false, reason: "issuer-not-active", issuerKeyId: payload.issuerKeyId };
+    return { ok: false, reason: "issuer-not-active", kid: payload.k };
   }
 
   try {
     const signatureValid = await verifyRaw64(issuer.publicKeyPem, payloadBytes, signatureRaw64);
     if (!signatureValid) {
-      return { ok: false, reason: "signature-invalid", issuerKeyId: payload.issuerKeyId };
+      return { ok: false, reason: "signature-invalid", kid: payload.k };
     }
   } catch (error) {
     return { ok: false, reason: "signature-verify-error", error: String(error?.message || error) };
@@ -412,11 +366,11 @@ export async function verifyTokenV2(token, options = {}) {
     ? Math.floor(Number(options.nowSeconds))
     : Math.floor(Date.now() / 1000);
 
-  if (Number.isInteger(payload.exp) && payload.exp + expLeewaySeconds < nowSeconds) {
+  if (payload.e + expLeewaySeconds < nowSeconds) {
     return {
       ok: false,
       reason: "token-expired",
-      exp: payload.exp,
+      exp: payload.e,
       nowSeconds,
       expLeewaySeconds,
     };

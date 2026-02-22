@@ -31,7 +31,7 @@ const redeeming = ref(false);
 const redeemError = ref("");
 const redeemInfo = ref("");
 const redeemResult = ref<PixPaxRedeemResponse | null>(null);
-const issuerPublicKeysById = ref<Record<string, string>>({});
+const issuerPublicKeysByKid = ref<Record<string, string>>({});
 const identity = useIdentity() as any;
 
 const collectorPubKey = computed(() => {
@@ -50,10 +50,10 @@ async function loadIssuers() {
   const nextMap: Record<string, string> = {};
   for (const issuer of response.issuers || []) {
     if (issuer.status !== "active") continue;
-    if (!issuer.issuerKeyId || !issuer.publicKeyPem) continue;
-    nextMap[String(issuer.issuerKeyId)] = String(issuer.publicKeyPem);
+    if (!issuer.kid || !issuer.publicKeyPem) continue;
+    nextMap[String(issuer.kid)] = String(issuer.publicKeyPem);
   }
-  issuerPublicKeysById.value = nextMap;
+  issuerPublicKeysByKid.value = nextMap;
 }
 
 async function verifyOffline() {
@@ -69,12 +69,15 @@ async function verifyOffline() {
   try {
     const verified = await verifyPixpaxTokenOffline({
       token: value,
-      issuerPublicKeysById: issuerPublicKeysById.value,
+      issuerPublicKeysByKid: issuerPublicKeysByKid.value,
     });
     tokenHash.value = String(verified.tokenHash || "");
     if (!verified.ok || !verified.official) {
       offlineStatus.value = "not-official";
-      offlineDetail.value = "Not official. Signature could not be verified.";
+      offlineDetail.value =
+        verified.reason === "legacy-token-unsupported"
+          ? "Legacy token format is no longer supported. Remint a new code token."
+          : "Not official. Signature could not be verified.";
       return;
     }
     if (verified.isExpired) {
@@ -160,6 +163,12 @@ async function redeem() {
   } catch (error: any) {
     if (error instanceof PixPaxApiError) {
       const body = error.body as any;
+      const reason = String(body?.reason || "").trim();
+      if (reason === "legacy-token-unsupported" || body?.code === "legacy_token_unsupported") {
+        redeemError.value =
+          "This code uses a retired legacy format. Remint a new code token and try again.";
+        return;
+      }
       redeemError.value = String(body?.error || error.message || "Redeem failed.");
       return;
     }

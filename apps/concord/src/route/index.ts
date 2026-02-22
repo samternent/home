@@ -54,9 +54,20 @@ const pixpaxHostRoutes = [
   },
 ];
 
+const pixpaxShortRedeemRoutes = [
+  {
+    path: "/r",
+    component: () => import("./pixpax/RoutePixPaxShortRedeem.vue"),
+  },
+  {
+    path: "/r/:code(.*)",
+    component: () => import("./pixpax/RoutePixPaxShortRedeem.vue"),
+  },
+];
+
 export const routes = useStandalonePixpaxRoutes
   ? pixpaxHostRoutes
-  : [...docRoutes, ...workspaceRoutes, ...pixpaxRoutes];
+  : [...pixpaxShortRedeemRoutes, ...docRoutes, ...workspaceRoutes, ...pixpaxRoutes];
 
 export function createAppRouter() {
   return createRouter({

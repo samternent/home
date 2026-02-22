@@ -88,20 +88,33 @@ Verifier checks:
 - parent chain (`prevSegmentHash`/`prevSegmentKey`)
 - entry signature against trusted issuer keys
 
-## PixPax v2 signed redeem (token-only)
+## PixPax v3 compact signed redeem (token-only)
 
-PixPax v2 redeem uses ECDSA P-256 signed tokens:
+PixPax v3 redeem uses compact ECDSA P-256 signed handle tokens:
 
 - token format: `<payloadB64Url>.<signatureB64Url>`
 - payload bytes are canonical JSON bytes from `canonicalStringify`
 - signature bytes are raw 64-byte ECDSA (`r||s`)
+- payload schema: `{ v: 3, k: "<issuerKid>", c: "<codeId>", e: <expEpochSeconds> }`
+- redeem policy is resolved server-side from `codeId` lookup records (`__codes/<codeId>.json`)
+- non-v3 tokens are rejected with `legacy_token_unsupported`
 
 ### Endpoints
 
 - `POST /v1/pixpax/redeem`
   - request: `{ token, collectorPubKey, collectorSig? }`
   - token-only contract: alias/code fields are rejected
+- `POST /v1/pixpax/collections/:collectionId/:version/override-codes` (admin)
+  - mints one signed **code token** (path name retained for compatibility)
+  - response includes `label`, `redeemUrl`, `qrSvg`, `qrErrorCorrection`, `qrQuietZoneModules`
+- `POST /v1/pixpax/collections/:collectionId/:version/code-cards` (admin)
+  - request supports `kind`, `quantity`, `cardId|count`, `dropId?`, `expiresInSeconds?`, `wave?`, `format?`
+  - returns canonical `items[]` with `{ token, redeemUrl, qrSvg, ... }` for frontend print rendering
+  - `format` currently supports `json` only
+- `GET /v1/pixpax/redeem-code/:codeId`
+  - resolves short redeem `codeId` to a signed token
 - `GET /v1/pixpax/issuers`
+  - returns active issuer keys including compact key reference `kid`
 - `GET /v1/pixpax/issuers/:issuerKeyId`
 - `GET /v1/pixpax/receipt-keys`
 - `GET /v1/pixpax/receipt-keys/:receiptKeyId`
@@ -136,11 +149,27 @@ Catalog/listing behavior:
 - `/catalog` returns only collections with `visibility="public"`
 - collector collection pages resolve via `/resolve` and then load versioned bundle content
 
+### Code token QR redirect
+
+Printed/mobile QR links default to short lookup path:
+
+- `https://pixpax.xyz/r/<codeId>`
+
+Compat route is also supported:
+
+- `https://pixpax.xyz/r?t=<token>`
+
+Both redirect to canonical redeem URL:
+
+- `/pixpax/redeem?token=<token>`
+
+Set `PIX_PAX_QR_BASE_URL` to override the default QR base URL.
+
 ### Canonical signing rules
 
 Use concord canonical JSON helpers for all signed/hashed payloads:
 
-- token payload bytes
+- compact token payload bytes (`{v,k,c,e}`)
 - receipt payload bytes
 - `tokenHash` (`sha256(canonical-token-payload-bytes)`)
 - `policyHash`

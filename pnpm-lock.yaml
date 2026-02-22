@@ -355,6 +355,9 @@ importers:
       ternent-utils:
         specifier: workspace:*
         version: link:../../packages/utils
+      uqr:
+        specifier: ^0.1.2
+        version: 0.1.2
       ws:
         specifier: ^8.18.0
         version: 8.18.0

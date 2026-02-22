@@ -18,6 +18,7 @@ import {
   deriveOwnedCollectionIdsFromPacks,
   pickCollectionRouteTarget,
 } from "../domain/collection-discovery";
+import { resolveShortRedeemInput } from "../domain/short-redeem";
 
 function buildIndices(seed = 0): Uint8Array {
   const out = new Uint8Array(16 * 16);
@@ -218,5 +219,51 @@ describe("pixpax collection discovery helpers", () => {
       "v1"
     );
     expect(Array.from(ownedV1.values()).sort()).toEqual(["d-1", "d-2"]);
+  });
+});
+
+describe("pixpax short redeem helpers", () => {
+  it("prefers query t token over path code", () => {
+    expect(
+      resolveShortRedeemInput({
+        queryT: "query-token",
+        paramCode: "path-code",
+      })
+    ).toEqual({ token: "query-token" });
+  });
+
+  it("falls back to legacy query token, then code query/path", () => {
+    expect(
+      resolveShortRedeemInput({
+        queryT: "",
+        queryToken: "legacy-token",
+        queryCode: "query-code",
+        paramCode: "path-code",
+      })
+    ).toEqual({ token: "legacy-token" });
+    expect(
+      resolveShortRedeemInput({
+        queryT: "",
+        queryToken: "",
+        queryCode: "query-code",
+        paramCode: "path-code",
+      })
+    ).toEqual({ code: "query-code" });
+    expect(
+      resolveShortRedeemInput({
+        queryT: "",
+        queryToken: "",
+        queryCode: "",
+        paramCode: "path-code",
+      })
+    ).toEqual({ code: "path-code" });
+    expect(
+      resolveShortRedeemInput({
+        queryT: "",
+        queryToken: "",
+        queryCode: "",
+        paramCode: "eyJ2IjozfQ.ZXlKaGJHY2lPaUpJVXpJMU5pSjku",
+      })
+    ).toEqual({ token: "eyJ2IjozfQ.ZXlKaGJHY2lPaUpJVXpJMU5pSjku" });
   });
 });
