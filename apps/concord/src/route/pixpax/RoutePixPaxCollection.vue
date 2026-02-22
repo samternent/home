@@ -193,8 +193,14 @@ const tabItems = [
 ];
 const isSeriesSelectionDisabled = computed(() => activeTab.value === "swaps");
 
-const packPhase = ref<"idle" | "opening" | "reveal" | "done">("idle");
+const packPhase = ref<"idle" | "opening" | "reveal" | "done" | "error">("idle");
 const packError = ref("");
+const packClaimedInfo = ref<{
+  codeId?: string | null;
+  usedAt?: string | null;
+  mintRef?: string | null;
+  dropId?: string | null;
+} | null>(null);
 const packCards = ref<Sticker[]>([]);
 const packMeta = ref<{ packId: string } | null>(null);
 const packRevealIndex = ref(0);
@@ -510,6 +516,13 @@ const isAnyPackOverlayOpen = computed(
 const remainingPackCards = computed(() =>
   revealNeeds.value.slice(packRevealIndex.value),
 );
+const claimedUsedAtLabel = computed(() => {
+  const raw = String(packClaimedInfo.value?.usedAt || "").trim();
+  if (!raw) return "";
+  const parsed = new Date(raw);
+  if (Number.isNaN(parsed.getTime())) return raw;
+  return parsed.toLocaleString();
+});
 
 const canOpenPack = computed(
   () => {
@@ -988,6 +1001,7 @@ async function openPack() {
   if (!canOpenPack.value || !selectedCollection.value) return;
 
   packError.value = "";
+  packClaimedInfo.value = null;
   packCards.value = [];
   packMeta.value = null;
   packRevealIndex.value = 0;
@@ -1197,9 +1211,43 @@ async function openPack() {
   } catch (error: any) {
     packOwnedCountSnapshot.value = null;
     packMeta.value = null;
+    let parsedBody: Record<string, any> | null = null;
+    const responseText = String(error?.responseText || "").trim();
+    if (responseText) {
+      try {
+        parsedBody = JSON.parse(responseText) as Record<string, any>;
+      } catch {
+        parsedBody = null;
+      }
+    }
+
+    const isAlreadyClaimed =
+      Number(error?.status) === 409 &&
+      String(parsedBody?.status || "").trim() === "already-claimed";
+
+    if (isAlreadyClaimed) {
+      packPhase.value = "error";
+      packError.value = "This code has already been redeemed.";
+      packClaimedInfo.value = {
+        codeId: String(parsedBody?.claimed?.codeId || "").trim() || null,
+        usedAt: String(parsedBody?.claimed?.usedAt || "").trim() || null,
+        mintRef: String(parsedBody?.claimed?.mintRef || "").trim() || null,
+        dropId: String(parsedBody?.claimed?.dropId || "").trim() || null,
+      };
+      setStatus("Redeem token already claimed.", {
+        status: parsedBody?.status || null,
+        claimed: parsedBody?.claimed || null,
+      });
+      return;
+    }
+
     packPhase.value = "idle";
-    packError.value = error?.message || "Pack opening failed.";
-    setStatus("Failed to open pack.", { error: packError.value });
+    packError.value = String(parsedBody?.error || error?.message || "Pack opening failed.");
+    setStatus("Failed to open pack.", {
+      status: error?.status || null,
+      error: packError.value,
+      body: parsedBody,
+    });
   }
 }
 
@@ -1247,9 +1295,16 @@ function skipPackReveal() {
 function closePackReveal() {
   revealDismissed.value = true;
   packPhase.value = "idle";
+  packError.value = "";
+  packClaimedInfo.value = null;
   packCards.value = [];
   packMeta.value = null;
   packOwnedCountSnapshot.value = null;
+  if (redeemFromLink.value || redeemToken.value.trim()) {
+    redeemFromLink.value = false;
+    redeemToken.value = "";
+    void clearRedeemTokenFromRoute();
+  }
 }
 
 function isOwned(stickerId: string): boolean {
@@ -1629,6 +1684,30 @@ watch(
               Opening pack
             </p>
             <p class="text-sm text-[var(--ui-fg)]">Preparing reveal...</p>
+          </div>
+          <div
+            v-else-if="packPhase === 'error'"
+            class="mx-auto flex w-full max-w-md flex-col items-center gap-3 rounded-2xl border border-[var(--ui-border)] p-6 text-center"
+          >
+            <p
+              class="text-xs uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]"
+            >
+              Code already used
+            </p>
+            <p class="text-sm text-[var(--ui-fg)]">
+              {{ packError || "This code has already been redeemed." }}
+            </p>
+            <p
+              v-if="claimedUsedAtLabel"
+              class="text-xs text-[var(--ui-fg-muted)]"
+            >
+              Redeemed on {{ claimedUsedAtLabel }}.
+            </p>
+            <div class="mt-2 flex flex-wrap items-center justify-center gap-2">
+              <Button size="sm" variant="secondary" @click="closePackReveal">
+                Back to collection
+              </Button>
+            </div>
           </div>
 
           <template v-else>
