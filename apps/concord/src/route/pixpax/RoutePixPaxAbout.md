@@ -1,57 +1,85 @@
-PixPax is a collection of pixel stickers.
+PixPax is a collection of pixel cards.
 
 You open packs.  
-You discover what’s inside.  
-You keep the ones you like.
+You scan codes.  
+You collect what matters to you.
 
-Some are simple.  
-Some are rare.  
-Some feel special the moment you see them.
+Some come from weekly drops.  
+Some are given by friends.  
+Some are issued for a moment and never again.
 
-Each sticker is made from tiny pixels, inspired by old games and trading cards — small, playful, and full of character.
+Every card is small.  
+Every card is deliberate.  
+Every card belongs to a series — issued by someone.
 
 ---
 
 ## Opening Packs
 
-Every PixPax pack is a surprise.
+Some collections release packs on a schedule.
 
-You don’t choose what you get.  
+You don’t choose what’s inside.  
 You don’t know what’s coming.
 
 That’s part of the fun.
 
-Sometimes you get something ordinary.  
-Sometimes you get something that feels _just right_.  
-Sometimes you get something you’ll never forget.
+A pack might contain something you expected.  
+Or something you didn’t even know you wanted.  
+Sometimes you find something you’ll never forget.
 
 ---
 
-## How the Stickers Are Made
+## Redeeming Codes
 
-PixPax stickers aren’t drawn one by one.
+Some collections don’t use scheduled drops at all.
 
-They’re **generated**.
+They live in the real world.
 
-Each sticker is created by a set of rules — like a recipe — that decides how the pixels come together. The same rules apply to every pack, but the outcomes are always different.
+A friend hands you a printed code.  
+A page in a small homemade book.  
+A card someone made for their own series.
 
-> It’s like shaking a kaleidoscope.  
-> The pieces are the same, the patterns never are.
+You scan.  
+You collect.
 
-No one sits there designing a “rare” sticker.  
-Rarity emerges naturally from how the pixels combine.
+One code. One issuance.
+
+No tricks.  
+No duplicates from the same code.
+
+Just a small, verifiable moment.
+
+---
+
+## How the Cards Are Made
+
+PixPax cards are built on a simple grid.
+
+Tiny pixels.  
+A fixed format.  
+Clear rules.
+
+The system defines the canvas.  
+The issuer defines the collection.
+
+Sometimes that’s PixPax.  
+Sometimes it’s a child making dragons.  
+Sometimes it’s someone you know.
+
+The format stays consistent.  
+The meaning comes from who issued it.
 
 ---
 
 ## What Makes Them Real
 
-Each PixPax sticker is backed by a bit of careful maths that makes it:
+Each PixPax card is backed by a bit of careful maths that makes it:
 
-- **Real**
-- **Unique**
+- **Official**
+- **Verifiable**
 - **Provably yours**
 
-This works like an invisible stamp that records what the sticker is, when it was created, and who owns it.
+Every card carries a signature that proves it was genuinely issued and hasn’t been altered.
 
 Even if the image is copied, the _original_ can always be recognised.
 
@@ -61,37 +89,48 @@ Even if the image is copied, the _original_ can always be recognised.
 
 Because collecting feels better when it’s fair.
 
-Rarity actually means something.  
-Ownership isn’t just a promise.  
-What you collect stays consistent over time.
+A code can only be redeemed once.  
+A pack follows the same rules for everyone.  
+An issuer can’t quietly change the past.
 
-The rules don’t change depending on who you are — they apply equally to every pack, every sticker, every collector.
+Ownership isn’t just a promise.  
+It’s recorded.
+
+The rules apply equally — whether you’re collecting a public series or a set your friend made.
 
 ---
 
-## A Living System
+## A Growing World
 
-PixPax isn’t finished.
+PixPax isn’t just one collection.
 
-The rules that generate stickers can evolve over time — becoming more expressive, more surprising, more beautiful — while still respecting what already exists.
+It’s a platform for collections.
 
-Early stickers remain early stickers.  
-New ones explore new spaces.
+Some are public.  
+Some are unlisted.  
+Some are discovered only when you redeem your first code.
 
-Like a growing language, not a reset.
+Early cards remain early cards.  
+New ones build on what came before.
+
+Nothing resets.  
+It just grows.
 
 ---
 
 ## In the End
 
-PixPax is about small moments:
+PixPax is about small, real moments:
 
 Opening a pack  
-Watching pixels come together  
-Finding something that feels like it was meant for you
+Scanning a code  
+Collecting something someone chose to issue
 
 Tiny pixels.  
-Generated with care.  
+Clear rules.  
+Shared meaning.
+
+Built to be simple.  
 Built to last.
 
 That’s PixPax.
