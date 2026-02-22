@@ -4,21 +4,8 @@ import workspaceRoutes from "./workspace/routes";
 import pixpaxRoutes, { pixpaxChildren } from "./pixpax/routes";
 
 const pixpaxHosts = new Set(["pixpax.xyz", "www.pixpax.xyz"]);
-function isPixpaxHostname(hostname: string) {
-  const normalized = String(hostname || "").toLowerCase();
-  return pixpaxHosts.has(normalized) || normalized.startsWith("pixpax.");
-}
-
 const isPixpaxHost =
-  typeof window !== "undefined" &&
-  isPixpaxHostname(window.location.hostname);
-const normalizedBaseUrl = String(import.meta.env.BASE_URL || "/").replace(
-  /\/+$/,
-  "",
-) || "/";
-const hasPixpaxBasePrefix =
-  normalizedBaseUrl === "/pixpax" || normalizedBaseUrl.endsWith("/pixpax");
-const useStandalonePixpaxRoutes = isPixpaxHost || hasPixpaxBasePrefix;
+  typeof window !== "undefined" && pixpaxHosts.has(window.location.hostname);
 
 function cloneRouteRecord(record: any): any {
   return {
@@ -29,23 +16,68 @@ function cloneRouteRecord(record: any): any {
   };
 }
 
-const pixpaxHostChildren = pixpaxChildren.map((child) => cloneRouteRecord(child));
+const pixpaxHostChildren = pixpaxChildren.map((child) =>
+  cloneRouteRecord(child),
+);
+const pixpaxHostChildrenWithoutShortRedeem = pixpaxHostChildren.filter(
+  (child) => child.path !== "r" && child.path !== "r/:code(.*)",
+);
+
+const pixpaxHostShortRedeemRoutes = [
+  {
+    path: "/r",
+    component: () => import("./pixpax/RoutePixPax.vue"),
+    children: [
+      {
+        path: "",
+        component: () => import("./pixpax/RoutePixPaxShortRedeem.vue"),
+      },
+    ],
+  },
+  {
+    path: "/r/:code(.*)",
+    component: () => import("./pixpax/RoutePixPax.vue"),
+    children: [
+      {
+        path: "",
+        component: () => import("./pixpax/RoutePixPaxShortRedeem.vue"),
+      },
+    ],
+  },
+  {
+    path: "/pixpax/r",
+    component: () => import("./pixpax/RoutePixPax.vue"),
+    children: [
+      {
+        path: "",
+        component: () => import("./pixpax/RoutePixPaxShortRedeem.vue"),
+      },
+    ],
+  },
+  {
+    path: "/pixpax/r/:code(.*)",
+    component: () => import("./pixpax/RoutePixPax.vue"),
+    children: [
+      {
+        path: "",
+        component: () => import("./pixpax/RoutePixPaxShortRedeem.vue"),
+      },
+    ],
+  },
+];
 
 const pixpaxHostRoutes = [
+  ...pixpaxHostShortRedeemRoutes,
   {
     path: "/",
     component: () => import("./pixpax/RoutePixPax.vue"),
-    children: pixpaxHostChildren,
+    children: pixpaxHostChildrenWithoutShortRedeem,
   },
-  ...(!hasPixpaxBasePrefix
-    ? [
-        {
-          path: "/pixpax",
-          component: () => import("./pixpax/RoutePixPax.vue"),
-          children: pixpaxHostChildren,
-        },
-      ]
-    : []),
+  {
+    path: "/pixpax",
+    component: () => import("./pixpax/RoutePixPax.vue"),
+    children: pixpaxHostChildrenWithoutShortRedeem,
+  },
   {
     path: "/:pathMatch(.*)*",
     component: () => import("./pixpax/RoutePixPax.vue"),
@@ -58,33 +90,13 @@ const pixpaxHostRoutes = [
   },
 ];
 
-const pixpaxShortRedeemRoutes = [
-  {
-    path: "/r",
-    component: () => import("./pixpax/RoutePixPaxShortRedeem.vue"),
-  },
-  {
-    path: "/r/:code(.*)",
-    component: () => import("./pixpax/RoutePixPaxShortRedeem.vue"),
-  },
-];
-
-export const routes = useStandalonePixpaxRoutes
+export const routes = isPixpaxHost
   ? pixpaxHostRoutes
-  : [...pixpaxShortRedeemRoutes, ...docRoutes, ...workspaceRoutes, ...pixpaxRoutes];
-
-export function resolveRouterBase() {
-  if (typeof window !== "undefined") {
-    if (isPixpaxHostname(window.location.hostname)) {
-      return "/";
-    }
-  }
-  return import.meta.env.BASE_URL;
-}
+  : [...docRoutes, ...workspaceRoutes, ...pixpaxRoutes];
 
 export function createAppRouter() {
   return createRouter({
-    history: createWebHistory(resolveRouterBase()),
+    history: createWebHistory(),
     routes,
     scrollBehavior() {
       return { top: 0 };
