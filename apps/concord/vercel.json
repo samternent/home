@@ -4,33 +4,27 @@
   "trailingSlash": false,
   "redirects": [
     {
-      "source": "/r/:code",
+      "source": "/pixpax",
       "has": [{ "type": "host", "value": "pixpax.xyz" }],
-      "destination": "/pixpax/r/:code",
+      "destination": "/",
       "permanent": false
     },
     {
-      "source": "/r/:code",
+      "source": "/pixpax",
       "has": [{ "type": "host", "value": "www.pixpax.xyz" }],
-      "destination": "/pixpax/r/:code",
+      "destination": "/",
       "permanent": false
     },
     {
-      "source": "/r",
-      "has": [
-        { "type": "host", "value": "pixpax.xyz" },
-        { "type": "query", "key": "t", "value": "(?<token>.*)" }
-      ],
-      "destination": "/pixpax/r?t=:token",
+      "source": "/pixpax/:path*",
+      "has": [{ "type": "host", "value": "pixpax.xyz" }],
+      "destination": "/:path*",
       "permanent": false
     },
     {
-      "source": "/r",
-      "has": [
-        { "type": "host", "value": "www.pixpax.xyz" },
-        { "type": "query", "key": "t", "value": "(?<token>.*)" }
-      ],
-      "destination": "/pixpax/r?t=:token",
+      "source": "/pixpax/:path*",
+      "has": [{ "type": "host", "value": "www.pixpax.xyz" }],
+      "destination": "/:path*",
       "permanent": false
     }
   ],
