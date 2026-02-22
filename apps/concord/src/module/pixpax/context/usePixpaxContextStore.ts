@@ -104,7 +104,10 @@ function makeId(prefix: string) {
 }
 
 function shortFingerprint(publicKeyPem: string) {
-  return stripIdentityKey(String(publicKeyPem || "")).slice(0, 12);
+  const stripped = stripIdentityKey(String(publicKeyPem || "")).trim();
+  if (!stripped) return "";
+  if (stripped.length <= 12) return stripped;
+  return `${stripped.slice(0, 6)}${stripped.slice(-6)}`;
 }
 
 function copyObject(input: unknown) {
@@ -319,9 +322,12 @@ function createPixpaxContextStore() {
   }
 
   function toIdentityRecordId(publicPem: string, profileId: string) {
+    const normalizedProfileId = String(profileId || "").trim();
+    if (normalizedProfileId) {
+      return `identity_${normalizedProfileId}`;
+    }
     const fingerprint = shortFingerprint(publicPem) || "identity";
-    const suffix = String(profileId || "").slice(0, 8);
-    return `identity_${fingerprint}_${suffix || "local"}`;
+    return `identity_${fingerprint}`;
   }
 
   function updateIdentityRecords(next: PixpaxIdentityRecord[]) {
@@ -332,15 +338,76 @@ function createPixpaxContextStore() {
     pixbooks.value = [...next];
   }
 
+  function upsertIdentityRecord(next: PixpaxIdentityRecord) {
+    const normalizedPublicKey = String(next.publicKeyPEM || "").trim();
+
+    const matching = identities.value.filter((entry) => {
+      if (entry.id === next.id) return true;
+      return String(entry.publicKeyPEM || "").trim() === normalizedPublicKey;
+    });
+
+    const obsoleteIds = matching
+      .map((entry) => String(entry.id || "").trim())
+      .filter((id) => id && id !== next.id);
+
+    let merged = { ...next };
+    for (const entry of matching) {
+      const entryCreatedAt = String(entry.createdAt || "").trim();
+      if (entryCreatedAt) {
+        const mergedCreatedAt = String(merged.createdAt || "").trim();
+        if (!mergedCreatedAt || entryCreatedAt < mergedCreatedAt) {
+          merged.createdAt = entryCreatedAt;
+        }
+      }
+
+      if (!hasMetadata(merged.metadata) && hasMetadata(entry.metadata)) {
+        merged.metadata = copyObject(entry.metadata);
+      }
+
+      if (
+        (!String(merged.label || "").trim() ||
+          String(merged.label || "").trim() === "Identity") &&
+        String(entry.label || "").trim()
+      ) {
+        merged.label = String(entry.label || "").trim();
+      }
+    }
+
+    updateIdentityRecords([
+      ...identities.value.filter(
+        (entry) => entry.id !== merged.id && !obsoleteIds.includes(entry.id)
+      ),
+      merged,
+    ]);
+
+    if (obsoleteIds.length > 0) {
+      updatePixbooks(
+        pixbooks.value.map((entry) =>
+          obsoleteIds.includes(String(entry.identityId || "").trim())
+            ? { ...entry, identityId: merged.id, updatedAt: nowIso() }
+            : entry
+        )
+      );
+      if (obsoleteIds.includes(String(currentIdentityId.value || "").trim())) {
+        currentIdentityId.value = merged.id;
+      }
+    }
+
+    return merged;
+  }
+
   async function registerCurrentIdentity(label?: string) {
-    await profile.ensureProfileId();
-    const profileId = String(profile.profileId.value || "").trim();
     const publicPem = String(publicKeyPEM.value || "").trim();
     const privatePem = String(privateKeyPEM.value || "").trim();
     const encryptPub = String(encryptionPublicKey.value || "").trim();
     const encryptPriv = String(encryptionPrivateKey.value || "").trim();
-    if (!profileId || !publicPem || !privatePem || !encryptPub || !encryptPriv) {
+    if (!publicPem || !privatePem || !encryptPub || !encryptPriv) {
       return null;
+    }
+
+    const profileId = await deriveProfileId(publicPem);
+    if (String(profile.profileId.value || "").trim() !== profileId) {
+      profile.setProfileId(profileId);
     }
 
     const id = toIdentityRecordId(publicPem, profileId);
@@ -370,16 +437,9 @@ function createPixpaxContextStore() {
       updatedAt: now,
     };
 
-    if (existing) {
-      updateIdentityRecords(
-        identities.value.map((entry) => (entry.id === id ? next : entry))
-      );
-    } else {
-      updateIdentityRecords([...identities.value, next]);
-    }
-
-    currentIdentityId.value = id;
-    return next;
+    const merged = upsertIdentityRecord(next);
+    currentIdentityId.value = merged.id;
+    return merged;
   }
 
   function ensurePixbookRecord(
@@ -501,7 +561,10 @@ function createPixpaxContextStore() {
     await impersonateEncryption(privateProfile);
 
     profile.replaceProfileMeta(copyObject(privateProfile.metadata));
-    profile.setProfileId(String(privateProfile.profileId || "").trim());
+    const canonicalProfileId = await deriveProfileId(
+      String(privateProfile?.identity?.publicKey || "").trim()
+    );
+    profile.setProfileId(canonicalProfileId);
 
     if (nextLedger) {
       await api.load(nextLedger, [], true, true);
@@ -556,8 +619,7 @@ function createPixpaxContextStore() {
       throw new Error("Imported private pixbook profile is missing identity keys.");
     }
 
-    const importedProfileId = String(privateProfile.profileId || "").trim();
-    const profileId = importedProfileId || (await deriveProfileId(importedPublicPem));
+    const profileId = await deriveProfileId(importedPublicPem);
     const identityId = toIdentityRecordId(importedPublicPem, profileId);
     const existingIdentity = identities.value.find((entry) => entry.id === identityId) || null;
     const metadata = copyObject(privateProfile.metadata);
@@ -580,28 +642,20 @@ function createPixpaxContextStore() {
       updatedAt: now,
     };
 
-    if (existingIdentity) {
-      updateIdentityRecords(
-        identities.value.map((entry) =>
-          entry.id === identityId ? importedIdentity : entry
-        )
-      );
-    } else {
-      updateIdentityRecords([...identities.value, importedIdentity]);
-    }
+    const mergedIdentity = upsertIdentityRecord(importedIdentity);
 
     const snapshot = JSON.stringify(nextLedger);
     const importedHead = String(nextLedger?.head || "").trim();
     const existingPixbook =
       pixbooks.value.find(
         (entry) =>
-          entry.identityId === identityId &&
+          entry.identityId === mergedIdentity.id &&
           normalizeCollectionId(entry.collectionId) === activeCollectionId.value
       ) || null;
 
     const importedPixbook: PixpaxPixbookRecord = {
       id: existingPixbook?.id || makeId("pixbook"),
-      identityId,
+      identityId: mergedIdentity.id,
       collectionId: activeCollectionId.value,
       name: existingPixbook?.name || "Imported Pixbook",
       isDefault: true,
@@ -614,7 +668,7 @@ function createPixpaxContextStore() {
     const withoutCurrentCollectionBooks = pixbooks.value.filter(
       (entry) =>
         !(
-          entry.identityId === identityId &&
+          entry.identityId === mergedIdentity.id &&
           normalizeCollectionId(entry.collectionId) === activeCollectionId.value
         )
     );
@@ -650,11 +704,16 @@ function createPixpaxContextStore() {
     if (!next) {
       throw new Error("Identity not found on this device.");
     }
+    const canonicalProfileId = await deriveProfileId(next.publicKeyPEM);
+    const canonicalIdentityId = toIdentityRecordId(
+      next.publicKeyPEM,
+      canonicalProfileId
+    );
 
     const privateProfile: PrivateProfile = {
       format: "concord-profile-private",
       version: "1.0",
-      profileId: next.profileId,
+      profileId: canonicalProfileId,
       identity: {
         type: "ecdsa-p256",
         publicKey: next.publicKeyPEM,
@@ -677,16 +736,16 @@ function createPixpaxContextStore() {
     };
 
     await applyPrivateProfile(privateProfile, null);
-    currentIdentityId.value = next.id;
+    currentIdentityId.value = canonicalIdentityId;
 
     const defaultBook =
       pixbooks.value.find(
         (entry) =>
-          entry.identityId === next.id &&
+          entry.identityId === canonicalIdentityId &&
           normalizeCollectionId(entry.collectionId) === activeCollectionId.value &&
           entry.isDefault
       ) ||
-      ensurePixbookRecord(next.id, {
+      ensurePixbookRecord(canonicalIdentityId, {
         collectionId: activeCollectionId.value,
       });
 
@@ -763,23 +822,17 @@ function createPixpaxContextStore() {
       updatedAt: now,
     };
 
-    if (existing) {
-      updateIdentityRecords(
-        identities.value.map((entry) => (entry.id === next.id ? next : entry))
-      );
-    } else {
-      updateIdentityRecords([...identities.value, next]);
-    }
+    const mergedIdentity = upsertIdentityRecord(next);
 
     const hasCollectionBook = pixbooks.value.some(
       (entry) =>
-        entry.identityId === next.id &&
+        entry.identityId === mergedIdentity.id &&
         normalizeCollectionId(entry.collectionId) === activeCollectionId.value
     );
     if (!hasCollectionBook) {
       const record: PixpaxPixbookRecord = {
         id: makeId("pixbook"),
-        identityId: next.id,
+        identityId: mergedIdentity.id,
         collectionId: activeCollectionId.value,
         name: "My Pixbook",
         isDefault: true,

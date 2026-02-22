@@ -35,7 +35,9 @@ const {
       >
         <div class="mx-auto flex items-center w-full justify-between px-4 py-2">
           <div class="hidden lg:block flex-1" />
-          <RouterLink :to="{ name: 'pixpax-main' }"><PixPaxLogoText class="h-4 lg:h-6" /></RouterLink>
+          <RouterLink :to="{ name: 'pixpax-main' }"
+            ><PixPaxLogoText class="h-4 lg:h-6"
+          /></RouterLink>
 
           <div class="flex-1 flex justify-end">
             <PixPaxAvatarDropdown />
@@ -95,17 +97,13 @@ const {
               class="opacity-80 hover:opacity-100 text-xs font-mono font-thin -translate-y-1 hover:-translate-y-0.5 transition-all duration-300"
               >About</RouterLink
             >
-            <RouterLink
-              :to="{ name: 'pixpax-my-collections' }"
-              class="opacity-80 hover:opacity-100 text-xs font-mono font-thin -translate-y-1 hover:-translate-y-0.5 transition-all duration-300"
-              >My Collections</RouterLink
-            >
-            <RouterLink
+
+            <!-- <RouterLink
               :to="{ name: 'pixpax-settings-home' }"
               class="opacity-80 hover:opacity-100 text-xs font-mono font-thin -translate-y-1 hover:-translate-y-0.5 transition-all duration-300"
               >Settings</RouterLink
-            >
-            <RouterLink
+            > -->
+            <!-- <RouterLink
               :to="{ name: 'pixpax-control-creator' }"
               class="opacity-80 hover:opacity-100 text-xs font-mono font-thin -translate-y-1 hover:-translate-y-0.5 transition-all duration-300"
               >Creator</RouterLink
@@ -114,7 +112,7 @@ const {
               :to="{ name: 'pixpax-control-analytics' }"
               class="opacity-80 hover:opacity-100 text-xs font-mono font-thin -translate-y-1 hover:-translate-y-0.5 transition-all duration-300"
               >Analytics</RouterLink
-            >
+            > -->
             <RouterLink
               :to="{ name: 'pixpax-control-admin' }"
               class="opacity-80 hover:opacity-100 text-xs font-mono font-thin -translate-y-1 hover:-translate-y-0.5 transition-all duration-300"

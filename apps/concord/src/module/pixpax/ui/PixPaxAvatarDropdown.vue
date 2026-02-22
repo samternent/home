@@ -32,19 +32,19 @@ onClickOutside(menuRef, () => {
 
 const sortedIdentities = computed(() => {
   return [...context.identities.value].sort((a, b) =>
-    getIdentityName(a).localeCompare(getIdentityName(b))
+    getIdentityName(a).localeCompare(getIdentityName(b)),
   );
 });
 
 const currentIdentity = computed(
   () =>
     context.identities.value.find(
-      (entry) => entry.id === context.currentIdentityId.value
-    ) || null
+      (entry) => entry.id === context.currentIdentityId.value,
+    ) || null,
 );
 
 const canSwitchPixbook = computed(
-  () => context.activeIdentityPixbooks.value.length > 1
+  () => context.activeIdentityPixbooks.value.length > 1,
 );
 
 async function handleSwitchIdentity(identityId: string) {
@@ -67,7 +67,11 @@ async function handleSignOut() {
 
 <template>
   <div ref="menuRef" class="relative flex justify-end items-center">
-    <button @click="toggleMenu" class="flex items-center gap-2" :class="{ active: menuOpen }">
+    <button
+      @click="toggleMenu"
+      class="flex items-center gap-2"
+      :class="{ active: menuOpen }"
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -83,7 +87,9 @@ async function handleSignOut() {
           d="M19.5 8.25l-7.5 7.5-7.5-7.5"
         />
       </svg>
-      <div class="rounded-full overflow-hidden border border-[var(--ui-border)]">
+      <div
+        class="rounded-full overflow-hidden border border-[var(--ui-border)]"
+      >
         <IdentityAvatar :identity="context.publicKeyPEM.value" size="sm" />
       </div>
       <span
@@ -99,11 +105,15 @@ async function handleSignOut() {
       class="border border-[var(--ui-border)] absolute p-3 bg-[var(--ui-surface)] rounded mt-2 w-[24rem] right-0 shadow top-12 max-h-[80vh] overflow-auto"
     >
       <div class="flex flex-col gap-3 py-1">
-        <div class="rounded-md border border-[var(--ui-border)] bg-[var(--ui-bg)]/50 p-3">
+        <div
+          class="rounded-md border border-[var(--ui-border)] bg-[var(--ui-bg)]/50 p-3"
+        >
           <div class="flex items-center gap-3">
             <IdentityAvatar :identity="context.publicKeyPEM.value" size="sm" />
             <div class="flex flex-col min-w-0">
-              <span class="text-[10px] uppercase tracking-[0.18em] text-[var(--ui-fg-muted)]">
+              <span
+                class="text-[10px] uppercase tracking-[0.18em] text-[var(--ui-fg-muted)]"
+              >
                 Identity
               </span>
               <span class="text-xs font-semibold truncate">
@@ -134,7 +144,10 @@ async function handleSignOut() {
               :key="entry.id"
               type="button"
               class="w-full text-left text-xs px-2 py-2 rounded-md border border-transparent hover:border-[var(--ui-border)] hover:bg-[var(--ui-fg)]/5"
-              :class="{ 'bg-[var(--ui-fg)]/10 border-[var(--ui-border)]': entry.id === context.currentIdentityId.value }"
+              :class="{
+                'bg-[var(--ui-fg)]/10 border-[var(--ui-border)]':
+                  entry.id === context.currentIdentityId.value,
+              }"
               :disabled="switchContext.switchBusy.value"
               @click="handleSwitchIdentity(entry.id)"
             >
@@ -143,7 +156,10 @@ async function handleSignOut() {
           </div>
         </section>
 
-        <section v-if="canSwitchPixbook" class="rounded-md border border-[var(--ui-border)] p-2">
+        <section
+          v-if="canSwitchPixbook"
+          class="rounded-md border border-[var(--ui-border)] p-2"
+        >
           <button
             type="button"
             class="w-full text-left text-xs px-2 py-2 rounded-md hover:bg-[var(--ui-fg)]/5"
@@ -157,16 +173,29 @@ async function handleSignOut() {
               :key="entry.id"
               type="button"
               class="w-full text-left text-xs px-2 py-2 rounded-md border border-transparent hover:border-[var(--ui-border)] hover:bg-[var(--ui-fg)]/5"
-              :class="{ 'bg-[var(--ui-fg)]/10 border-[var(--ui-border)]': entry.id === context.currentPixbookId.value }"
+              :class="{
+                'bg-[var(--ui-fg)]/10 border-[var(--ui-border)]':
+                  entry.id === context.currentPixbookId.value,
+              }"
               :disabled="switchContext.switchBusy.value"
               @click="handleSwitchPixbook(entry.id)"
             >
               <span class="font-semibold">{{ entry.name }}</span>
-              <span v-if="entry.isDefault" class="text-[11px] text-[var(--ui-fg-muted)]"> · default</span>
+              <span
+                v-if="entry.isDefault"
+                class="text-[11px] text-[var(--ui-fg-muted)]"
+              >
+                · default</span
+              >
             </button>
           </div>
         </section>
 
+        <RouterLink
+          :to="{ name: 'pixpax-my-collections' }"
+          class="w-full text-left text-xs px-3 py-2 rounded-lg border border-[var(--ui-border)] hover:bg-[var(--ui-fg)]/5 transition-colors"
+          >My Collections</RouterLink
+        >
         <RouterLink
           :to="{ name: 'pixpax-settings-home' }"
           class="w-full text-left text-xs px-3 py-2 rounded-lg border border-[var(--ui-border)] hover:bg-[var(--ui-fg)]/5 transition-colors"
@@ -183,10 +212,16 @@ async function handleSignOut() {
           {{ cloudSync.authBusy.value ? "Signing out..." : "Sign out" }}
         </button>
 
-        <p v-if="switchContext.switchMessage.value" class="text-xs text-green-600">
+        <p
+          v-if="switchContext.switchMessage.value"
+          class="text-xs text-green-600"
+        >
           {{ switchContext.switchMessage.value }}
         </p>
-        <p v-if="switchContext.switchWarning.value" class="text-xs text-amber-600">
+        <p
+          v-if="switchContext.switchWarning.value"
+          class="text-xs text-amber-600"
+        >
           {{ switchContext.switchWarning.value }}
         </p>
         <p v-if="switchContext.switchError.value" class="text-xs text-red-600">
