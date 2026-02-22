@@ -1,5 +1,11 @@
 # concord
 
+## 0.3.36
+
+### Patch Changes
+
+- [`217437d420ee5d909cecf490449b5edda54cfefc`](https://github.com/samternent/home/commit/217437d420ee5d909cecf490449b5edda54cfefc) Thanks [@samternent](https://github.com/samternent)! - Adds pack generation with shorter redemtion codes
+
 ## 0.3.35
 
 ### Patch Changes
