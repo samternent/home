@@ -63,10 +63,13 @@ export const createApp = ViteSSG(
     const host = window.location.hostname;
     if (host !== "pixpax.xyz" && host !== "www.pixpax.xyz") return;
 
-    router.isReady().then(() => {
-      document.documentElement.classList.remove("pixpax-preload");
-      const loader = document.getElementById("pixpax-preload");
-      if (loader) loader.remove();
-    });
+    router
+      .isReady()
+      .catch(() => undefined)
+      .finally(() => {
+        document.documentElement.classList.remove("pixpax-preload");
+        const loader = document.getElementById("pixpax-preload");
+        if (loader) loader.remove();
+      });
   },
 );

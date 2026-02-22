@@ -19,64 +19,27 @@ function cloneRouteRecord(record: any): any {
 const pixpaxHostChildren = pixpaxChildren.map((child) =>
   cloneRouteRecord(child),
 );
-const pixpaxHostChildrenWithoutShortRedeem = pixpaxHostChildren.filter(
-  (child) => child.path !== "r" && child.path !== "r/:code(.*)",
-);
-
-const pixpaxHostShortRedeemRoutes = [
-  {
-    path: "/r",
-    component: () => import("./pixpax/RoutePixPax.vue"),
-    children: [
-      {
-        path: "",
-        component: () => import("./pixpax/RoutePixPaxShortRedeem.vue"),
-      },
-    ],
-  },
-  {
-    path: "/r/:code(.*)",
-    component: () => import("./pixpax/RoutePixPax.vue"),
-    children: [
-      {
-        path: "",
-        component: () => import("./pixpax/RoutePixPaxShortRedeem.vue"),
-      },
-    ],
-  },
-  {
-    path: "/pixpax/r",
-    component: () => import("./pixpax/RoutePixPax.vue"),
-    children: [
-      {
-        path: "",
-        component: () => import("./pixpax/RoutePixPaxShortRedeem.vue"),
-      },
-    ],
-  },
-  {
-    path: "/pixpax/r/:code(.*)",
-    component: () => import("./pixpax/RoutePixPax.vue"),
-    children: [
-      {
-        path: "",
-        component: () => import("./pixpax/RoutePixPaxShortRedeem.vue"),
-      },
-    ],
-  },
-];
 
 const pixpaxHostRoutes = [
-  ...pixpaxHostShortRedeemRoutes,
+  {
+    path: "/pixpax/:pathMatch(.*)*",
+    redirect: (to) => {
+      const raw = to.params.pathMatch;
+      const rest = Array.isArray(raw)
+        ? raw.join("/")
+        : String(raw || "").trim();
+      const canonicalPath = rest ? `/${rest}` : "/";
+      return {
+        path: canonicalPath,
+        query: to.query,
+        hash: to.hash,
+      };
+    },
+  },
   {
     path: "/",
     component: () => import("./pixpax/RoutePixPax.vue"),
-    children: pixpaxHostChildrenWithoutShortRedeem,
-  },
-  {
-    path: "/pixpax",
-    component: () => import("./pixpax/RoutePixPax.vue"),
-    children: pixpaxHostChildrenWithoutShortRedeem,
+    children: pixpaxHostChildren,
   },
   {
     path: "/:pathMatch(.*)*",
