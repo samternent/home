@@ -1,5 +1,11 @@
 # concord
 
+## 0.3.39
+
+### Patch Changes
+
+- [`06d3e56a98320a0552b01408c950df9eb8244976`](https://github.com/samternent/home/commit/06d3e56a98320a0552b01408c950df9eb8244976) Thanks [@samternent](https://github.com/samternent)! - Error handling in reveal
+
 ## 0.3.38
 
 ### Patch Changes
