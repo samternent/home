@@ -1,5 +1,11 @@
 # concord
 
+## 0.3.41
+
+### Patch Changes
+
+- [`b4e97a5a28b02cdf474503da41106dc24b21bc5d`](https://github.com/samternent/home/commit/b4e97a5a28b02cdf474503da41106dc24b21bc5d) Thanks [@samternent](https://github.com/samternent)! - Fix profile switching
+
 ## 0.3.40
 
 ### Patch Changes
