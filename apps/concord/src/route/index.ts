@@ -69,9 +69,19 @@ export const routes = useStandalonePixpaxRoutes
   ? pixpaxHostRoutes
   : [...pixpaxShortRedeemRoutes, ...docRoutes, ...workspaceRoutes, ...pixpaxRoutes];
 
+function resolveRouterBase() {
+  if (typeof window !== "undefined") {
+    const host = String(window.location.hostname || "").toLowerCase();
+    if (pixpaxHosts.has(host) || host.startsWith("pixpax.")) {
+      return "/";
+    }
+  }
+  return import.meta.env.BASE_URL;
+}
+
 export function createAppRouter() {
   return createRouter({
-    history: createWebHistory(),
+    history: createWebHistory(resolveRouterBase()),
     routes,
     scrollBehavior() {
       return { top: 0 };

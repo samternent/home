@@ -4,6 +4,18 @@
   "trailingSlash": false,
   "redirects": [
     {
+      "source": "/r/:code",
+      "has": [{ "type": "host", "value": "pixpax.xyz" }],
+      "destination": "/pixpax/r/:code",
+      "permanent": false
+    },
+    {
+      "source": "/r/:code",
+      "has": [{ "type": "host", "value": "www.pixpax.xyz" }],
+      "destination": "/pixpax/r/:code",
+      "permanent": false
+    },
+    {
       "source": "/r",
       "has": [
         { "type": "host", "value": "pixpax.xyz" },
