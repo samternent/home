@@ -191,9 +191,6 @@ importers:
       semver:
         specifier: ^7.6.3
         version: 7.6.3
-      ternent-ui:
-        specifier: workspace:*
-        version: link:../../packages/ternent-ui
       vite-plugin-ejs:
         specifier: ^1.7.0
         version: 1.7.0(vite@4.5.3)

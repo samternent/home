@@ -1,13 +1,12 @@
-<script setup>
-import AppSetup from "@/module/app/AppSetup.vue";
-import ApiSetup from "@/module/app/ApiSetup.vue";
-import AppShell from "@/module/app/AppShell.vue";
-</script>
+<script setup></script>
 
 <template>
-  <AppSetup>
-    <ApiSetup>
-      <AppShell />
-    </ApiSetup>
-  </AppSetup>
+  <div class="flex flex-col justify-center items-center size-full h-screen">
+    <h1 class="text-3xl my-6">
+      <strong>FootballSocial</strong> is now closed.
+    </h1>
+    <p class="text-xl mb-2">Thanks for playing.</p>
+    <p>Sam</p>
+    <p>x</p>
+  </div>
 </template>

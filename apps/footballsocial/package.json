@@ -15,7 +15,6 @@
     "axios": "^1.7.5",
     "luxon": "^3.5.0",
     "semver": "^7.6.3",
-    "ternent-ui": "workspace:*",
     "vite-plugin-ejs": "^1.7.0",
     "vue": "^3.4.38",
     "vue-router": "^4.4.3"
