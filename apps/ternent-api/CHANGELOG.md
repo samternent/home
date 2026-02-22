@@ -1,5 +1,11 @@
 # ternent-api
 
+## 0.2.20
+
+### Patch Changes
+
+- [`038838228ce693f068e7750c95888493dc37ce24`](https://github.com/samternent/home/commit/038838228ce693f068e7750c95888493dc37ce24) Thanks [@samternent](https://github.com/samternent)! - improve cloud sync
+
 ## 0.2.19
 
 ### Patch Changes
