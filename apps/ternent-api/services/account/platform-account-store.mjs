@@ -9,13 +9,21 @@ const OWNER_DEFAULT_CAPABILITIES = Object.freeze([
   "pixpax.creator.publish",
   "pixpax.creator.view",
 ]);
+const DEFAULT_COLLECTION_ID = "primary";
 
 function normalizeWorkspaceId(value) {
   return String(value || "").trim();
 }
 
+function normalizeCollectionId(value) {
+  const normalized = String(value || "").trim();
+  return normalized || DEFAULT_COLLECTION_ID;
+}
+
 function hashValue(value) {
-  const normalized = String(value || "").trim().toLowerCase();
+  const normalized = String(value || "")
+    .trim()
+    .toLowerCase();
   if (!normalized) return "";
   return createHash("sha256").update(normalized, "utf8").digest("hex");
 }
@@ -25,7 +33,9 @@ function toCanonicalJson(value) {
 }
 
 function sha256Hex(value) {
-  return createHash("sha256").update(String(value || ""), "utf8").digest("hex");
+  return createHash("sha256")
+    .update(String(value || ""), "utf8")
+    .digest("hex");
 }
 
 function parseExpectedVersion(value) {
@@ -39,7 +49,8 @@ function parseExpectedVersion(value) {
 
 function parseExpectedLedgerHead(input) {
   if (!input || typeof input !== "object") return null;
-  if (!Object.prototype.hasOwnProperty.call(input, "expectedLedgerHead")) return null;
+  if (!Object.prototype.hasOwnProperty.call(input, "expectedLedgerHead"))
+    return null;
   return String(input.expectedLedgerHead || "").trim();
 }
 
@@ -111,7 +122,7 @@ export async function getPrimaryWorkspaceForUser(userId) {
     ORDER BY m.created_at ASC
     LIMIT 1
     `,
-    [resolvedUserId]
+    [resolvedUserId],
   );
 
   return result.rows[0] || null;
@@ -136,13 +147,15 @@ export async function ensureWorkspaceForUser(session) {
       name = COALESCE(NULLIF(EXCLUDED.name, ''), auth_users.name),
       updated_at = NOW()
     `,
-    [userId, email, name]
+    [userId, email, name],
   );
 
   const existing = await getPrimaryWorkspaceForUser(userId);
   if (existing) return existing;
 
-  const defaultName = email ? `${email.split("@")[0]}'s workspace` : "My workspace";
+  const defaultName = email
+    ? `${email.split("@")[0]}'s workspace`
+    : "My workspace";
 
   return dbTx(async (client) => {
     const workspaceId = createId("ws");
@@ -153,7 +166,7 @@ export async function ensureWorkspaceForUser(session) {
       INSERT INTO platform_workspaces (id, name)
       VALUES ($1, $2)
       `,
-      [workspaceId, defaultName]
+      [workspaceId, defaultName],
     );
 
     await client.query(
@@ -161,7 +174,7 @@ export async function ensureWorkspaceForUser(session) {
       INSERT INTO platform_workspace_members (id, workspace_id, user_id, role, status)
       VALUES ($1, $2, $3, 'owner', 'active')
       `,
-      [memberId, workspaceId, userId]
+      [memberId, workspaceId, userId],
     );
 
     for (const capability of OWNER_DEFAULT_CAPABILITIES) {
@@ -171,7 +184,7 @@ export async function ensureWorkspaceForUser(session) {
         VALUES ($1, $2, $3)
         ON CONFLICT (member_id, capability) DO NOTHING
         `,
-        [createId("perm"), memberId, capability]
+        [createId("perm"), memberId, capability],
       );
     }
 
@@ -186,7 +199,7 @@ export async function ensureWorkspaceForUser(session) {
         userId,
         "workspace.created",
         JSON.stringify({ workspaceId, memberId }),
-      ]
+      ],
     );
 
     return {
@@ -198,7 +211,10 @@ export async function ensureWorkspaceForUser(session) {
   });
 }
 
-export async function resolveWorkspaceForUser(userId, requestedWorkspaceId = "") {
+export async function resolveWorkspaceForUser(
+  userId,
+  requestedWorkspaceId = "",
+) {
   const resolvedUserId = String(userId || "").trim();
   if (!resolvedUserId) return null;
 
@@ -223,7 +239,7 @@ export async function resolveWorkspaceForUser(userId, requestedWorkspaceId = "")
       AND m.status = 'active'
     LIMIT 1
     `,
-    [resolvedUserId, requested]
+    [resolvedUserId, requested],
   );
 
   return result.rows[0] || null;
@@ -237,7 +253,7 @@ export async function listCapabilitiesForMember(memberId) {
     WHERE member_id = $1
     ORDER BY capability ASC
     `,
-    [String(memberId || "").trim()]
+    [String(memberId || "").trim()],
   );
 
   return result.rows.map((row) => String(row.capability || "")).filter(Boolean);
@@ -256,7 +272,7 @@ export async function userHasCapability(userId, capability, workspaceId = "") {
     WHERE member_id = $1 AND capability = $2
     LIMIT 1
     `,
-    [workspace.member_id, String(capability || "").trim()]
+    [workspace.member_id, String(capability || "").trim()],
   );
 
   return {
@@ -296,7 +312,7 @@ export async function renameWorkspace(userId, workspaceId, name) {
         updated_at = NOW()
     WHERE id = $1
     `,
-    [workspace.id, nextName]
+    [workspace.id, nextName],
   );
 
   return getWorkspaceSummary(userId, workspace.id);
@@ -313,7 +329,7 @@ export async function listManagedUsers(userId, workspaceId = "") {
     WHERE workspace_id = $1
     ORDER BY created_at ASC
     `,
-    [workspace.id]
+    [workspace.id],
   );
 
   return {
@@ -349,7 +365,10 @@ export async function createManagedUser(userId, workspaceId, input) {
   const rawUserKey = String(input?.userKey || "").trim();
   const userKey =
     rawUserKey ||
-    `concord:${binding.profileId}:${binding.identityKeyFingerprint.slice(0, 24)}`;
+    `concord:${binding.profileId}:${binding.identityKeyFingerprint.slice(
+      0,
+      24,
+    )}`;
 
   const id = createId("managed-user");
   await dbQuery(
@@ -378,13 +397,18 @@ export async function createManagedUser(userId, workspaceId, input) {
       binding.profileId,
       binding.identityPublicKey,
       binding.identityKeyFingerprint,
-    ]
+    ],
   );
 
   return { id };
 }
 
-export async function updateManagedUser(userId, workspaceId, managedUserId, input) {
+export async function updateManagedUser(
+  userId,
+  workspaceId,
+  managedUserId,
+  input,
+) {
   const workspace = await resolveWorkspaceForUser(userId, workspaceId);
   if (!workspace) return null;
   const profileId = String(input?.profileId || "").trim();
@@ -392,7 +416,9 @@ export async function updateManagedUser(userId, workspaceId, managedUserId, inpu
     .replace(/\r/g, "")
     .trim();
   if ((profileId && !identityPublicKey) || (!profileId && identityPublicKey)) {
-    throw new Error("profileId and identityPublicKey must be provided together.");
+    throw new Error(
+      "profileId and identityPublicKey must be provided together.",
+    );
   }
   const identityKeyFingerprint = identityPublicKey
     ? hashIdentityPublicKey(identityPublicKey)
@@ -430,7 +456,7 @@ export async function updateManagedUser(userId, workspaceId, managedUserId, inpu
       profileId,
       identityPublicKey,
       identityKeyFingerprint,
-    ]
+    ],
   );
 
   return result.rowCount > 0 ? { id: result.rows[0].id } : null;
@@ -445,6 +471,7 @@ export async function listBooks(userId, workspaceId = "") {
     SELECT
       b.id,
       b.managed_user_id,
+      b.collection_id,
       b.name,
       b.status,
       b.current_version,
@@ -457,7 +484,7 @@ export async function listBooks(userId, workspaceId = "") {
       AND b.status != 'deleted'
     ORDER BY b.created_at ASC
     `,
-    [workspace.id]
+    [workspace.id],
   );
 
   return {
@@ -465,6 +492,7 @@ export async function listBooks(userId, workspaceId = "") {
     books: result.rows.map((row) => ({
       id: row.id,
       managedUserId: row.managed_user_id,
+      collectionId: normalizeCollectionId(row.collection_id),
       managedUserDisplayName: row.managed_user_display_name,
       name: row.name,
       status: row.status,
@@ -475,7 +503,11 @@ export async function listBooks(userId, workspaceId = "") {
   };
 }
 
-export async function getBookForWorkspace(userId, workspaceId = "", bookId = "") {
+export async function getBookForWorkspace(
+  userId,
+  workspaceId = "",
+  bookId = "",
+) {
   const workspace = await resolveWorkspaceForUser(userId, workspaceId);
   if (!workspace) return null;
 
@@ -487,6 +519,7 @@ export async function getBookForWorkspace(userId, workspaceId = "", bookId = "")
     SELECT
       b.id,
       b.managed_user_id,
+      b.collection_id,
       b.name,
       b.status,
       b.current_version,
@@ -495,6 +528,9 @@ export async function getBookForWorkspace(userId, workspaceId = "", bookId = "")
       u.display_name AS managed_user_display_name,
       u.avatar_public_id,
       u.user_key,
+      u.profile_id,
+      u.identity_public_key,
+      u.identity_key_fingerprint,
       u.status AS managed_user_status
     FROM platform_books b
     INNER JOIN platform_managed_users u ON u.id = b.managed_user_id
@@ -504,7 +540,7 @@ export async function getBookForWorkspace(userId, workspaceId = "", bookId = "")
       AND u.status != 'deleted'
     LIMIT 1
     `,
-    [workspace.id, canonicalBookId]
+    [workspace.id, canonicalBookId],
   );
 
   if (result.rowCount === 0) return null;
@@ -517,11 +553,15 @@ export async function getBookForWorkspace(userId, workspaceId = "", bookId = "")
       displayName: row.managed_user_display_name,
       avatarPublicId: row.avatar_public_id || null,
       userKey: row.user_key,
+      profileId: row.profile_id || null,
+      identityPublicKey: row.identity_public_key || null,
+      identityKeyFingerprint: row.identity_key_fingerprint || null,
       status: row.managed_user_status,
     },
     book: {
       id: row.id,
       managedUserId: row.managed_user_id,
+      collectionId: normalizeCollectionId(row.collection_id),
       name: row.name,
       status: row.status,
       currentVersion: Number(row.current_version || 0),
@@ -537,6 +577,7 @@ export async function createBook(userId, workspaceId, input) {
 
   const managedUserId = String(input?.managedUserId || "").trim();
   const name = String(input?.name || "").trim();
+  const collectionId = normalizeCollectionId(input?.collectionId);
 
   if (!managedUserId) throw new Error("managedUserId is required.");
   if (!name) throw new Error("name is required.");
@@ -547,22 +588,40 @@ export async function createBook(userId, workspaceId, input) {
     WHERE id = $1 AND workspace_id = $2 AND status = 'active'
     LIMIT 1
     `,
-    [managedUserId, workspace.id]
+    [managedUserId, workspace.id],
   );
 
   if (owner.rowCount === 0) {
     throw new Error("managedUserId is not valid for this workspace.");
   }
 
+  const existing = await dbQuery(
+    `
+    SELECT id
+    FROM platform_books
+    WHERE workspace_id = $1
+      AND managed_user_id = $2
+      AND collection_id = $3
+      AND status != 'deleted'
+    LIMIT 1
+    `,
+    [workspace.id, managedUserId, collectionId],
+  );
+  if (existing.rowCount > 0) {
+    throw new Error(
+      "A pixbook already exists for this identity in the requested collection.",
+    );
+  }
+
   const id = createId("book");
   await dbQuery(
     `
     INSERT INTO platform_books
-      (id, workspace_id, managed_user_id, name, status, current_version)
+      (id, workspace_id, managed_user_id, collection_id, name, status, current_version)
     VALUES
-      ($1, $2, $3, $4, 'active', 0)
+      ($1, $2, $3, $4, $5, 'active', 0)
     `,
-    [id, workspace.id, managedUserId, name]
+    [id, workspace.id, managedUserId, collectionId, name],
   );
 
   return { id };
@@ -576,8 +635,8 @@ export async function updateBook(userId, workspaceId, bookId, input) {
     `
     UPDATE platform_books
     SET
-      name = COALESCE(NULLIF($4, ''), name),
-      status = COALESCE(NULLIF($5, ''), status),
+      name = COALESCE(NULLIF($3, ''), name),
+      status = COALESCE(NULLIF($4, ''), status),
       updated_at = NOW()
     WHERE id = $1 AND workspace_id = $2
     RETURNING id
@@ -587,13 +646,19 @@ export async function updateBook(userId, workspaceId, bookId, input) {
       workspace.id,
       String(input?.name || "").trim(),
       String(input?.status || "").trim(),
-    ]
+    ],
   );
 
   return result.rowCount > 0 ? { id: result.rows[0].id } : null;
 }
 
-export async function ensurePersonalPixbook(userId, workspaceId = "", defaults = {}, binding = {}) {
+export async function ensurePersonalPixbook(
+  userId,
+  workspaceId = "",
+  defaults = {},
+  binding = {},
+  options = {},
+) {
   const workspace = await resolveWorkspaceForUser(userId, workspaceId);
   if (!workspace) return null;
 
@@ -602,110 +667,139 @@ export async function ensurePersonalPixbook(userId, workspaceId = "", defaults =
 
   const normalizedBinding = normalizeIdentityBinding(binding || {});
   const userKey = resolvePersonalUserKey(canonicalUserId, normalizedBinding);
-  const defaultName = String(defaults?.displayName || defaults?.email || "My Pixbook").trim();
-
-  let managedUser = null;
-  const existingManaged = await dbQuery(
-    `
-    SELECT id, display_name, avatar_public_id, user_key, profile_id, identity_public_key, identity_key_fingerprint, status, created_at, updated_at
-    FROM platform_managed_users
-    WHERE workspace_id = $1
-      AND user_key = $2
-      AND status != 'deleted'
-    ORDER BY created_at ASC
-    LIMIT 1
-    `,
-    [workspace.id, userKey]
+  const defaultName = String(
+    defaults?.displayName || defaults?.email || "My Pixbook",
+  ).trim();
+  const collectionId = normalizeCollectionId(
+    options?.collectionId || defaults?.collectionId,
   );
 
-  if (existingManaged.rowCount > 0) {
-    managedUser = existingManaged.rows[0];
-    if (
-      normalizedBinding.isBound &&
-      (!managedUser.profile_id ||
-        !managedUser.identity_public_key ||
-        !managedUser.identity_key_fingerprint)
-    ) {
-      await dbQuery(
-        `
-        UPDATE platform_managed_users
-        SET
-          profile_id = COALESCE(NULLIF($3, ''), profile_id),
-          identity_public_key = COALESCE(NULLIF($4, ''), identity_public_key),
-          identity_key_fingerprint = COALESCE(NULLIF($5, ''), identity_key_fingerprint),
-          updated_at = NOW()
-        WHERE id = $1
-          AND workspace_id = $2
-        `,
-        [
-          managedUser.id,
-          workspace.id,
-          normalizedBinding.profileId,
-          normalizedBinding.identityPublicKey,
-          normalizedBinding.identityKeyFingerprint,
-        ]
-      );
-      managedUser = {
-        ...managedUser,
-        profile_id: normalizedBinding.profileId,
-        identity_public_key: normalizedBinding.identityPublicKey,
-        identity_key_fingerprint: normalizedBinding.identityKeyFingerprint,
-      };
-    }
-  } else {
-    const managedUserId = createId("managed-user");
-    const managedUserDisplayName = defaultName || "My Pixbook";
-    await dbQuery(
+  const loadManagedUser = async () => {
+    const result = await dbQuery(
       `
-      INSERT INTO platform_managed_users
-        (
-          id,
-          workspace_id,
-          display_name,
-          avatar_public_id,
-          user_key,
-          profile_id,
-          identity_public_key,
-          identity_key_fingerprint,
-          status
+      SELECT id, display_name, avatar_public_id, user_key, profile_id, identity_public_key, identity_key_fingerprint, status, created_at, updated_at
+      FROM platform_managed_users
+      WHERE workspace_id = $1
+        AND (
+          user_key = $2
+          OR (
+            $3::text IS NOT NULL
+            AND profile_id = $3
+            AND identity_key_fingerprint = $4
+          )
         )
-      VALUES
-        ($1, $2, $3, NULL, $4, $5, $6, $7, 'active')
+      ORDER BY
+        CASE WHEN status = 'active' THEN 0 ELSE 1 END,
+        CASE WHEN user_key = $2 THEN 0 ELSE 1 END,
+        created_at ASC
+      LIMIT 1
       `,
       [
-        managedUserId,
         workspace.id,
-        managedUserDisplayName,
         userKey,
         normalizedBinding.profileId || null,
-        normalizedBinding.identityPublicKey || null,
         normalizedBinding.identityKeyFingerprint || null,
-      ]
+      ],
     );
-    managedUser = {
-      id: managedUserId,
-      display_name: managedUserDisplayName,
-      avatar_public_id: null,
-      user_key: userKey,
-      profile_id: normalizedBinding.profileId || null,
-      identity_public_key: normalizedBinding.identityPublicKey || null,
-      identity_key_fingerprint: normalizedBinding.identityKeyFingerprint || null,
-      status: "active",
-    };
+    return result.rowCount > 0 ? result.rows[0] : null;
+  };
+
+  let managedUser = await loadManagedUser();
+  if (!managedUser) {
+    const managedUserId = createId("managed-user");
+    const managedUserDisplayName = defaultName || "My Pixbook";
+    try {
+      await dbQuery(
+        `
+        INSERT INTO platform_managed_users
+          (
+            id,
+            workspace_id,
+            display_name,
+            avatar_public_id,
+            user_key,
+            profile_id,
+            identity_public_key,
+            identity_key_fingerprint,
+            status
+          )
+        VALUES
+          ($1, $2, $3, NULL, $4, $5, $6, $7, 'active')
+        `,
+        [
+          managedUserId,
+          workspace.id,
+          managedUserDisplayName,
+          userKey,
+          normalizedBinding.profileId || null,
+          normalizedBinding.identityPublicKey || null,
+          normalizedBinding.identityKeyFingerprint || null,
+        ],
+      );
+      managedUser = {
+        id: managedUserId,
+        display_name: managedUserDisplayName,
+        avatar_public_id: null,
+        user_key: userKey,
+        profile_id: normalizedBinding.profileId || null,
+        identity_public_key: normalizedBinding.identityPublicKey || null,
+        identity_key_fingerprint:
+          normalizedBinding.identityKeyFingerprint || null,
+        status: "active",
+      };
+    } catch (error) {
+      if (String(error?.code || "") !== "23505") throw error;
+      managedUser = await loadManagedUser();
+      if (!managedUser) throw error;
+    }
+  }
+
+  if (
+    managedUser.status === "deleted" ||
+    (normalizedBinding.isBound &&
+      (!managedUser.profile_id ||
+        !managedUser.identity_public_key ||
+        !managedUser.identity_key_fingerprint))
+  ) {
+    const refreshed = await dbQuery(
+      `
+      UPDATE platform_managed_users
+      SET
+        status = 'active',
+        profile_id = COALESCE(NULLIF($3, ''), profile_id),
+        identity_public_key = COALESCE(NULLIF($4, ''), identity_public_key),
+        identity_key_fingerprint = COALESCE(NULLIF($5, ''), identity_key_fingerprint),
+        updated_at = NOW()
+      WHERE id = $1
+        AND workspace_id = $2
+      RETURNING id, display_name, avatar_public_id, user_key, profile_id, identity_public_key, identity_key_fingerprint, status, created_at, updated_at
+      `,
+      [
+        managedUser.id,
+        workspace.id,
+        normalizedBinding.profileId,
+        normalizedBinding.identityPublicKey,
+        normalizedBinding.identityKeyFingerprint,
+      ],
+    );
+    if (refreshed.rowCount > 0) {
+      managedUser = refreshed.rows[0];
+    }
   }
 
   let book = null;
   const existingBook = await dbQuery(
     `
-    SELECT id, managed_user_id, name, status, current_version, created_at, updated_at
+    SELECT id, managed_user_id, collection_id, name, status, current_version, created_at, updated_at
     FROM platform_books
     WHERE workspace_id = $1
       AND managed_user_id = $2
+      AND collection_id = $3
       AND status != 'deleted'
     ORDER BY created_at ASC
     LIMIT 1
     `,
-    [workspace.id, managedUser.id]
+    [workspace.id, managedUser.id, collectionId],
   );
 
   if (existingBook.rowCount > 0) {
@@ -715,15 +809,16 @@ export async function ensurePersonalPixbook(userId, workspaceId = "", defaults =
     await dbQuery(
       `
       INSERT INTO platform_books
-        (id, workspace_id, managed_user_id, name, status, current_version)
+        (id, workspace_id, managed_user_id, collection_id, name, status, current_version)
       VALUES
-        ($1, $2, $3, $4, 'active', 0)
+        ($1, $2, $3, $4, $5, 'active', 0)
       `,
-      [bookId, workspace.id, managedUser.id, "My Pixbook"]
+      [bookId, workspace.id, managedUser.id, collectionId, "My Pixbook"],
     );
     book = {
       id: bookId,
       managed_user_id: managedUser.id,
+      collection_id: collectionId,
       name: "My Pixbook",
       status: "active",
       current_version: 0,
@@ -745,6 +840,7 @@ export async function ensurePersonalPixbook(userId, workspaceId = "", defaults =
     book: {
       id: book.id,
       managedUserId: book.managed_user_id,
+      collectionId: normalizeCollectionId(book.collection_id),
       name: book.name,
       status: book.status,
       currentVersion: Number(book.current_version || 0),
@@ -752,6 +848,87 @@ export async function ensurePersonalPixbook(userId, workspaceId = "", defaults =
       updatedAt: book.updated_at,
     },
   };
+}
+
+export async function removeManagedUserIdentity(
+  userId,
+  workspaceId,
+  managedUserId,
+) {
+  const workspace = await resolveWorkspaceForUser(userId, workspaceId);
+  if (!workspace) return null;
+
+  const targetId = String(managedUserId || "").trim();
+  if (!targetId) throw new Error("managedUserId is required.");
+
+  return dbTx(async (client) => {
+    const existing = await client.query(
+      `
+      SELECT id
+      FROM platform_managed_users
+      WHERE id = $1
+        AND workspace_id = $2
+        AND status != 'deleted'
+      LIMIT 1
+      FOR UPDATE
+      `,
+      [targetId, workspace.id],
+    );
+    if (existing.rowCount === 0) return null;
+
+    const removedBooks = await client.query(
+      `
+      UPDATE platform_books
+      SET status = 'deleted',
+          updated_at = NOW()
+      WHERE workspace_id = $1
+        AND managed_user_id = $2
+        AND status != 'deleted'
+      RETURNING id
+      `,
+      [workspace.id, targetId],
+    );
+
+    const removedUser = await client.query(
+      `
+      UPDATE platform_managed_users
+      SET status = 'deleted',
+          updated_at = NOW()
+      WHERE id = $1
+        AND workspace_id = $2
+        AND status != 'deleted'
+      RETURNING id
+      `,
+      [targetId, workspace.id],
+    );
+    if (removedUser.rowCount === 0) return null;
+
+    const removedBookIds = removedBooks.rows
+      .map((row) => String(row.id || "").trim())
+      .filter(Boolean);
+
+    await client.query(
+      `
+      INSERT INTO platform_audit_events (id, workspace_id, actor_user_id, event_type, payload)
+      VALUES ($1, $2, $3, $4, $5::jsonb)
+      `,
+      [
+        createId("audit"),
+        workspace.id,
+        String(userId || "").trim() || null,
+        "managed-user.identity.removed",
+        JSON.stringify({
+          managedUserId: targetId,
+          removedBookIds,
+        }),
+      ],
+    );
+
+    return {
+      id: targetId,
+      removedBookIds,
+    };
+  });
 }
 
 export async function getLatestBookSnapshot(bookId) {
@@ -775,7 +952,7 @@ export async function getLatestBookSnapshot(bookId) {
     ORDER BY version DESC
     LIMIT 1
     `,
-    [canonicalBookId]
+    [canonicalBookId],
   );
 
   if (result.rowCount === 0) return null;
@@ -819,7 +996,7 @@ export async function saveBookSnapshot(userId, workspaceId, bookId, input) {
         AND status != 'deleted'
       FOR UPDATE
       `,
-      [canonicalBookId, workspace.id]
+      [canonicalBookId, workspace.id],
     );
 
     if (ownedBook.rowCount === 0) {
@@ -835,7 +1012,7 @@ export async function saveBookSnapshot(userId, workspaceId, bookId, input) {
       ORDER BY version DESC
       LIMIT 1
       `,
-      [canonicalBookId]
+      [canonicalBookId],
     );
     const latestSnapshot =
       latestSnapshotResult.rowCount > 0
@@ -855,7 +1032,7 @@ export async function saveBookSnapshot(userId, workspaceId, bookId, input) {
           expectedVersion,
           currentVersion,
           latestSnapshot,
-        }
+        },
       );
     }
 
@@ -869,7 +1046,7 @@ export async function saveBookSnapshot(userId, workspaceId, bookId, input) {
             currentLedgerHead,
             currentVersion,
             latestSnapshot,
-          }
+          },
         );
       }
     }
@@ -894,7 +1071,7 @@ export async function saveBookSnapshot(userId, workspaceId, bookId, input) {
         "none",
         ledgerHead,
         payloadJson,
-      ]
+      ],
     );
 
     await client.query(
@@ -904,7 +1081,7 @@ export async function saveBookSnapshot(userId, workspaceId, bookId, input) {
           updated_at = NOW()
       WHERE id = $1
       `,
-      [canonicalBookId, nextVersion]
+      [canonicalBookId, nextVersion],
     );
 
     await client.query(
@@ -923,7 +1100,7 @@ export async function saveBookSnapshot(userId, workspaceId, bookId, input) {
           ledgerHead,
           checksum,
         }),
-      ]
+      ],
     );
 
     return {

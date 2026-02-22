@@ -53,6 +53,10 @@ function setIdentityUsername(
 async function removeIdentity(identityId: string) {
   const entry = context.identities.value.find((candidate) => candidate.id === identityId);
   if (!entry) return;
+  if (context.identities.value.length <= 1) {
+    context.setError("At least one local identity must remain on this device.");
+    return;
+  }
   if (!cloudSync.account.isAuthenticated.value) {
     context.setError("Sign in with your account to remove identities.");
     return;
@@ -75,13 +79,14 @@ async function removeIdentity(identityId: string) {
   }
 
   const confirmed = window.confirm(
-    "Remove this identity from your account? This is a backend action and removes its account pixbook."
+    "Remove this identity from your account and this device? Its account pixbooks are removed as part of this action."
   );
   if (!confirmed) return;
   try {
     const ok = await cloudSync.removeCloudIdentity(cloudIdentity.id);
     if (ok) {
-      context.setStatus("Identity removed from account.");
+      await context.removeIdentityLocal(identityId);
+      context.setStatus("Identity removed from account and this device.");
     }
   } catch (error: unknown) {
     context.setError(String((error as Error)?.message || "Unable to remove identity from account."));
@@ -101,7 +106,7 @@ function saveHandle() {
   <div class="flex flex-col gap-4">
     <h1 class="text-lg font-semibold">Identity & Devices</h1>
     <p class="text-xs text-[var(--ui-fg-muted)]">
-      This identity owns your packs. Changing identity changes ownership context.
+      Account -> Identities -> Pixbook (per collection). Changing identity changes ownership context.
     </p>
 
     <section class="rounded-lg border border-[var(--ui-border)] p-3 flex flex-col gap-3">
@@ -254,7 +259,7 @@ function saveHandle() {
     <section class="rounded-lg border border-[var(--ui-border)] p-3 flex flex-col gap-2">
       <h2 class="text-sm font-semibold">Manage Identities</h2>
       <p class="text-xs text-[var(--ui-fg-muted)]">
-        Identity management is account-backed. Removed identities stay removed from your account unless you explicitly add them again.
+        Removing an identity deletes it from your account and this device for private pixbook usage.
       </p>
       <button
         type="button"
@@ -295,10 +300,10 @@ function saveHandle() {
           <button
             type="button"
             class="rounded-md border border-[var(--ui-border)] px-2 py-1 text-xs text-red-600 hover:bg-[var(--ui-critical)]/10 disabled:opacity-50"
-            :disabled="!cloudSync.account.isAuthenticated.value"
+            :disabled="!cloudSync.account.isAuthenticated.value || context.identities.value.length <= 1"
             @click="removeIdentity(entry.id)"
           >
-            Remove from account
+            Remove identity (account + this device)
           </button>
         </div>
       </div>

@@ -30,7 +30,7 @@ const switchContext = usePixpaxSwitchContext();
         <p class="text-[10px] uppercase tracking-[0.2em] text-[var(--ui-fg-muted)]">Current pixbook</p>
         <p class="text-sm font-semibold">{{ context.currentPixbookLabel.value }}</p>
         <p class="text-xs text-[var(--ui-fg-muted)]">
-          One pixbook for this identity in the active collection
+          One pixbook for this identity in collection <code>{{ context.currentCollectionId.value }}</code>
         </p>
       </div>
     </div>

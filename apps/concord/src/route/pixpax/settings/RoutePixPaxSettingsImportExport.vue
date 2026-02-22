@@ -24,7 +24,7 @@ async function onImportFile(event: Event) {
   <div class="flex flex-col gap-4">
     <h1 class="text-lg font-semibold">Import / Export</h1>
     <p class="text-xs text-[var(--ui-fg-muted)]">
-      Export before destructive changes. Private exports contain signing and encryption secrets.
+      Export before destructive changes. Private exports contain signing and encryption secrets. Importing private pixbooks adds a separate local identity.
     </p>
 
     <section class="rounded-lg border border-[var(--ui-border)] p-3 flex flex-col gap-2">

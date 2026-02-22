@@ -452,40 +452,9 @@ function downloadVerificationBundle() {
         </button>
       </div>
 
-      <div class="grid gap-2 md:grid-cols-2">
-        <label class="text-xs flex flex-col gap-1">
-          <span class="text-[var(--ui-fg-muted)]">Identity profile</span>
-          <select
-            v-model="cloudSync.selectedCloudProfileId.value"
-            class="rounded-md border border-[var(--ui-border)] bg-[var(--ui-bg)] px-2 py-1 text-xs"
-          >
-            <option value="">Select profile</option>
-            <option
-              v-for="entry in cloudSync.cloudProfiles.value"
-              :key="entry.id"
-              :value="entry.id"
-            >
-              {{ entry.displayName || "Identity" }}
-            </option>
-          </select>
-        </label>
-        <label class="text-xs flex flex-col gap-1">
-          <span class="text-[var(--ui-fg-muted)]">Pixbook</span>
-          <select
-            v-model="cloudSync.selectedCloudBookId.value"
-            class="rounded-md border border-[var(--ui-border)] bg-[var(--ui-bg)] px-2 py-1 text-xs"
-          >
-            <option value="">Select pixbook</option>
-            <option
-              v-for="entry in cloudSync.filteredCloudBooks.value"
-              :key="entry.id"
-              :value="entry.id"
-            >
-              {{ entry.name }} (v{{ entry.currentVersion }})
-            </option>
-          </select>
-        </label>
-      </div>
+      <p class="text-xs text-[var(--ui-fg-muted)]">
+        Active collection: <code>{{ cloudSync.activeCollectionId.value }}</code>
+      </p>
 
       <div class="flex gap-2">
         <button
@@ -495,14 +464,6 @@ function downloadVerificationBundle() {
           @click="cloudSync.refreshCloudLibrary()"
         >
           {{ cloudSync.cloudLibraryLoading.value ? "Refreshing..." : "Refresh library" }}
-        </button>
-        <button
-          type="button"
-          class="rounded-md border border-[var(--ui-border)] px-3 py-2 text-xs hover:bg-[var(--ui-fg)]/5 disabled:opacity-50"
-          :disabled="cloudSync.cloudSyncing.value || !cloudSync.selectedCloudBookId.value"
-          @click="cloudSync.openSelectedCloudBook()"
-        >
-          Open selected pixbook
         </button>
       </div>
 

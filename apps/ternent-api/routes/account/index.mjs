@@ -12,11 +12,14 @@ import {
   getWorkspaceSummary,
   listBooks,
   listManagedUsers,
+  removeManagedUserIdentity,
   renameWorkspace,
   saveBookSnapshot,
   updateBook,
   updateManagedUser,
 } from "../../services/account/platform-account-store.mjs";
+
+const DEFAULT_COLLECTION_ID = "primary";
 
 function resolveWorkspaceId(req) {
   const header = String(req?.headers?.["x-workspace-id"] || "").trim();
@@ -35,6 +38,17 @@ function resolveBookId(req) {
       req?.body?.bookId ||
       ""
   ).trim();
+}
+
+function resolveCollectionId(req) {
+  return (
+    String(
+      req?.headers?.["x-pixbook-collection-id"] ||
+        req?.query?.collectionId ||
+        req?.body?.collectionId ||
+        ""
+    ).trim() || DEFAULT_COLLECTION_ID
+  );
 }
 
 function resolveProfileBinding(req) {
@@ -168,6 +182,34 @@ export default function accountRoutes(router) {
     }
   );
 
+  router.delete(
+    "/v1/account/users/:userId/identity",
+    requirePermission("platform.account.manage"),
+    async (req, res) => {
+      try {
+        const removed = await removeManagedUserIdentity(
+          sessionUserId(req),
+          resolveWorkspaceId(req),
+          req.params?.userId
+        );
+        if (!removed) {
+          res.status(404).send({ ok: false, error: "Managed user not found." });
+          return;
+        }
+        res.status(200).send({
+          ok: true,
+          id: removed.id,
+          removedBookIds: removed.removedBookIds || [],
+        });
+      } catch (error) {
+        res.status(400).send({
+          ok: false,
+          error: error?.message || "Unable to remove managed identity.",
+        });
+      }
+    }
+  );
+
   router.get("/v1/account/books", requirePermission("platform.account.manage"), async (req, res) => {
     const data = await listBooks(sessionUserId(req), resolveWorkspaceId(req));
     if (!data) {
@@ -229,7 +271,8 @@ export default function accountRoutes(router) {
 
     const profileBinding = resolveProfileBinding(req);
     const requestedBookId = resolveBookId(req);
-    if (!requestedBookId && !profileBinding.isBound) {
+    const requestedCollectionId = resolveCollectionId(req);
+    if (!profileBinding.isBound) {
       res.status(400).send({
         ok: false,
         error: "profileId and identityPublicKey are required for pixbook profile resolution.",
@@ -239,11 +282,7 @@ export default function accountRoutes(router) {
     }
 
     const resolved = requestedBookId
-      ? await getBookForWorkspace(
-          sessionUserId(req),
-          resolveWorkspaceId(req),
-          requestedBookId
-        )
+      ? await getBookForWorkspace(sessionUserId(req), resolveWorkspaceId(req), requestedBookId)
       : await ensurePersonalPixbook(
           sessionUserId(req),
           resolveWorkspaceId(req),
@@ -255,11 +294,39 @@ export default function accountRoutes(router) {
               "My Pixbook",
             email: req.platformSession?.user?.email || "",
           },
-          profileBinding
+          profileBinding,
+          { collectionId: requestedCollectionId }
         );
 
     if (!resolved) {
       res.status(404).send({ ok: false, error: "Pixbook not found." });
+      return;
+    }
+
+    const expectedUserKey = derivePersonalPixbookUserKey(
+      sessionUserId(req),
+      profileBinding
+    );
+    const matchesIdentityBinding =
+      String(resolved.managedUser.profileId || "") === profileBinding.profileId &&
+      String(resolved.managedUser.identityKeyFingerprint || "") ===
+        profileBinding.identityKeyFingerprint;
+    if (resolved.managedUser.userKey !== expectedUserKey && !matchesIdentityBinding) {
+      res.status(409).send({
+        ok: false,
+        code: "PIXBOOK_BOOK_PROFILE_MISMATCH",
+        error:
+          "Selected book belongs to a different profile identity. Load that profile first.",
+      });
+      return;
+    }
+    if (String(resolved.book.collectionId || "").trim() !== requestedCollectionId) {
+      res.status(409).send({
+        ok: false,
+        code: "PIXBOOK_BOOK_COLLECTION_MISMATCH",
+        error:
+          "Selected book belongs to a different collection. Switch collection before opening this pixbook.",
+      });
       return;
     }
 
@@ -293,6 +360,7 @@ export default function accountRoutes(router) {
     }
 
     const requestedBookId = resolveBookId(req);
+    const requestedCollectionId = resolveCollectionId(req);
 
     let resolved = null;
     if (requestedBookId) {
@@ -310,12 +378,25 @@ export default function accountRoutes(router) {
         sessionUserId(req),
         profileBinding
       );
-      if (byBookId.managedUser.userKey !== expectedUserKey) {
+      const matchesIdentityBinding =
+        String(byBookId.managedUser.profileId || "") === profileBinding.profileId &&
+        String(byBookId.managedUser.identityKeyFingerprint || "") ===
+          profileBinding.identityKeyFingerprint;
+      if (byBookId.managedUser.userKey !== expectedUserKey && !matchesIdentityBinding) {
         res.status(409).send({
           ok: false,
           code: "PIXBOOK_BOOK_PROFILE_MISMATCH",
           error:
             "Selected book belongs to a different profile identity. Load that profile first.",
+        });
+        return;
+      }
+      if (String(byBookId.book.collectionId || "").trim() !== requestedCollectionId) {
+        res.status(409).send({
+          ok: false,
+          code: "PIXBOOK_BOOK_COLLECTION_MISMATCH",
+          error:
+            "Selected book belongs to a different collection. Switch collection before saving.",
         });
         return;
       }
@@ -332,7 +413,8 @@ export default function accountRoutes(router) {
             "My Pixbook",
           email: req.platformSession?.user?.email || "",
         },
-        profileBinding
+        profileBinding,
+        { collectionId: requestedCollectionId }
       );
     }
 

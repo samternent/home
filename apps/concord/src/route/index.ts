@@ -4,10 +4,14 @@ import workspaceRoutes from "./workspace/routes";
 import pixpaxRoutes, { pixpaxChildren } from "./pixpax/routes";
 
 const pixpaxHosts = new Set(["pixpax.xyz", "www.pixpax.xyz"]);
+function isPixpaxHostname(hostname: string) {
+  const normalized = String(hostname || "").toLowerCase();
+  return pixpaxHosts.has(normalized) || normalized.startsWith("pixpax.");
+}
+
 const isPixpaxHost =
   typeof window !== "undefined" &&
-  (pixpaxHosts.has(window.location.hostname) ||
-    window.location.hostname.startsWith("pixpax."));
+  isPixpaxHostname(window.location.hostname);
 const normalizedBaseUrl = String(import.meta.env.BASE_URL || "/").replace(
   /\/+$/,
   "",
@@ -69,10 +73,9 @@ export const routes = useStandalonePixpaxRoutes
   ? pixpaxHostRoutes
   : [...pixpaxShortRedeemRoutes, ...docRoutes, ...workspaceRoutes, ...pixpaxRoutes];
 
-function resolveRouterBase() {
+export function resolveRouterBase() {
   if (typeof window !== "undefined") {
-    const host = String(window.location.hostname || "").toLowerCase();
-    if (pixpaxHosts.has(host) || host.startsWith("pixpax.")) {
+    if (isPixpaxHostname(window.location.hostname)) {
       return "/";
     }
   }

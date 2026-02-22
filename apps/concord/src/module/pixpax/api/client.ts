@@ -166,6 +166,7 @@ export type AccountManagedUser = {
 export type AccountBook = {
   id: string;
   managedUserId: string;
+  collectionId: string;
   managedUserDisplayName?: string;
   name: string;
   status: string;
@@ -237,7 +238,7 @@ export function listAccountBooks(workspaceId?: string) {
 }
 
 export function createAccountBook(
-  input: { managedUserId: string; name: string },
+  input: { managedUserId: string; name: string; collectionId?: string },
   workspaceId?: string
 ) {
   return requestJson<{ ok: boolean; id: string }>(withWorkspaceQuery("/v1/account/books", workspaceId), {
@@ -256,6 +257,18 @@ export function updateAccountBook(
     {
       method: "PATCH",
       body: input,
+    }
+  );
+}
+
+export function removeAccountManagedIdentity(userId: string, workspaceId?: string) {
+  return requestJson<{ ok: boolean; id: string; removedBookIds: string[] }>(
+    withWorkspaceQuery(
+      `/v1/account/users/${encodeURIComponent(userId)}/identity`,
+      workspaceId
+    ),
+    {
+      method: "DELETE",
     }
   );
 }
@@ -289,6 +302,7 @@ export type PixbookCloudStateResponse = {
   book: {
     id: string;
     managedUserId: string;
+    collectionId: string;
     name: string;
     status: string;
     currentVersion: number;
@@ -320,11 +334,13 @@ function toPixbookBinding(binding?: PixbookCloudBinding) {
 export function getPixbookCloudState(
   workspaceId?: string,
   binding?: PixbookCloudBinding,
-  bookId?: string
+  bookId?: string,
+  collectionId?: string
 ) {
   const query = new URLSearchParams();
   if (workspaceId) query.set("workspaceId", workspaceId);
   if (bookId) query.set("bookId", String(bookId || "").trim());
+  if (collectionId) query.set("collectionId", String(collectionId || "").trim());
   const normalizedBinding = toPixbookBinding(binding);
   if (normalizedBinding?.profileId) query.set("profileId", normalizedBinding.profileId);
   if (normalizedBinding?.identityPublicKey) {
@@ -344,11 +360,15 @@ export function savePixbookCloudSnapshot(input: {
   expectedLedgerHead?: string | null;
   workspaceId?: string;
   bookId?: string;
+  collectionId?: string;
   binding?: PixbookCloudBinding;
 }) {
   const query = new URLSearchParams();
   if (input.workspaceId) query.set("workspaceId", input.workspaceId);
   if (input.bookId) query.set("bookId", String(input.bookId || "").trim());
+  if (input.collectionId) {
+    query.set("collectionId", String(input.collectionId || "").trim());
+  }
   const normalizedBinding = toPixbookBinding(input.binding);
   const path = `/v1/account/pixbook/snapshot${query.toString() ? `?${query.toString()}` : ""}`;
   return requestJson<PixbookCloudStateResponse>(path, {
@@ -358,6 +378,7 @@ export function savePixbookCloudSnapshot(input: {
       ledgerHead: input.ledgerHead || "",
       expectedVersion: input.expectedVersion,
       expectedLedgerHead: input.expectedLedgerHead || "",
+      collectionId: input.collectionId || "",
       profileId: normalizedBinding?.profileId || "",
       identityPublicKey: normalizedBinding?.identityPublicKey || "",
       profileDisplayName: normalizedBinding?.profileDisplayName || "",

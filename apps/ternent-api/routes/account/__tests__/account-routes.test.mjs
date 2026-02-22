@@ -54,6 +54,9 @@ function createRouterHarness() {
     patch(path, ...handlers) {
       register("PATCH", path, handlers);
     },
+    delete(path, ...handlers) {
+      register("DELETE", path, handlers);
+    },
     invoke,
   };
 }

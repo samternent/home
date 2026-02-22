@@ -1,4 +1,7 @@
-data
+data/*
+!data/migrations/
+data/migrations/*
+!data/migrations/0004_platform_books_collection.sql
 persisted/stickerbook/packs/
 persisted/stickerbook/issuer-ledger.json
 persisted/stickerbook/issuer-pending.json

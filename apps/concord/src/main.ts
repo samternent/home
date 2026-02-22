@@ -15,7 +15,7 @@ import "ternent-ui/themes/aurora.css";
 
 import "./style.css";
 import App from "./App.vue";
-import { routes } from "./route/index";
+import { routes, resolveRouterBase } from "./route/index";
 
 const theme = useLocalStorage("app/theme", "spruce");
 const themeMode = useLocalStorage("app/themeMode", "");
@@ -54,7 +54,10 @@ if (typeof document !== "undefined") {
 
 export const createApp = ViteSSG(
   App,
-  { routes },
+  {
+    routes,
+    base: resolveRouterBase(),
+  },
   // SSG options
   ({ isClient, router }) => {
     if (!isClient || typeof window === "undefined") return;

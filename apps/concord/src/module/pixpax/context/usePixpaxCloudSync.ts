@@ -18,8 +18,8 @@ import {
   getPixbookCloudState,
   listAccountBooks,
   listAccountManagedUsers,
+  removeAccountManagedIdentity,
   savePixbookCloudSnapshot,
-  updateAccountBook,
   updateAccountManagedUser,
 } from "../api/client";
 import { usePixpaxAccount } from "../auth/usePixpaxAccount";
@@ -35,6 +35,7 @@ export type PixpaxCloudSync = ReturnType<typeof createPixpaxCloudSync>;
 
 const PIXBOOK_FORMAT = "pixpax-pixbook";
 const PIXBOOK_VERSION = "1.0";
+const DEFAULT_COLLECTION_ID = "primary";
 
 type CreatePixpaxCloudSyncOptions = {
   context?: PixpaxContextStore;
@@ -91,6 +92,15 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
   let cloudSyncTimer: ReturnType<typeof setTimeout> | null = null;
   let identitySyncTimer: ReturnType<typeof setTimeout> | null = null;
 
+  function normalizeCollectionId(value: unknown) {
+    const normalized = String(value || "").trim();
+    return normalized || DEFAULT_COLLECTION_ID;
+  }
+
+  const activeCollectionId = computed(() =>
+    normalizeCollectionId(context.currentCollectionId.value)
+  );
+
   const canUsePasskey = computed(() => {
     if (typeof window === "undefined") return false;
     return Boolean(window.isSecureContext && "PublicKeyCredential" in window);
@@ -129,8 +139,13 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
 
   const filteredCloudBooks = computed(() => {
     const profileId = String(selectedCloudProfileId.value || "").trim();
-    if (!profileId) return cloudBooks.value;
-    return cloudBooks.value.filter((entry) => entry.managedUserId === profileId);
+    return cloudBooks.value.filter((entry) => {
+      if (normalizeCollectionId(entry.collectionId) !== activeCollectionId.value) {
+        return false;
+      }
+      if (!profileId) return true;
+      return entry.managedUserId === profileId;
+    });
   });
 
   function resetCloudSyncState() {
@@ -287,15 +302,13 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
         existingByBinding.set(toIdentityBindingKey(profileId, identityPublicKey), entry);
       }
 
-      const activeBookCountByManagedUser = new Map<string, number>();
+      const activeBookByManagedUserCollection = new Set<string>();
       for (const book of cloudBooks.value) {
         if (String(book.status || "").trim() === "deleted") continue;
-        const key = String(book.managedUserId || "").trim();
-        if (!key) continue;
-        activeBookCountByManagedUser.set(
-          key,
-          (activeBookCountByManagedUser.get(key) || 0) + 1
-        );
+        const managedUserId = String(book.managedUserId || "").trim();
+        const collectionId = normalizeCollectionId(book.collectionId);
+        if (!managedUserId || !collectionId) continue;
+        activeBookByManagedUserCollection.add(`${managedUserId}::${collectionId}`);
       }
 
       for (const identity of context.identities.value) {
@@ -344,16 +357,32 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
         }
 
         if (!managedUserId) continue;
-        if ((activeBookCountByManagedUser.get(managedUserId) || 0) > 0) continue;
 
-        await createAccountBook(
-          {
-            managedUserId,
-            name: "My Pixbook",
-          },
-          workspaceId
-        );
-        activeBookCountByManagedUser.set(managedUserId, 1);
+        const localCollectionIds = new Set<string>();
+        for (const pixbook of context.pixbooks.value) {
+          if (String(pixbook.identityId || "").trim() !== String(identity.id || "").trim()) {
+            continue;
+          }
+          localCollectionIds.add(normalizeCollectionId(pixbook.collectionId));
+        }
+        if (localCollectionIds.size === 0) {
+          localCollectionIds.add(activeCollectionId.value);
+        }
+
+        for (const collectionId of localCollectionIds) {
+          const bindingCollectionKey = `${managedUserId}::${collectionId}`;
+          if (activeBookByManagedUserCollection.has(bindingCollectionKey)) continue;
+
+          await createAccountBook(
+            {
+              managedUserId,
+              name: "My Pixbook",
+              collectionId,
+            },
+            workspaceId
+          );
+          activeBookByManagedUserCollection.add(bindingCollectionKey);
+        }
       }
 
       await refreshCloudLibrary();
@@ -394,7 +423,8 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
       const response = await getPixbookCloudState(
         account.workspace.value?.workspaceId || undefined,
         binding,
-        selectedCloudBookId.value || cloudBookId.value || undefined
+        undefined,
+        activeCollectionId.value
       );
 
       cloudWorkspaceId.value = response.workspaceId || "";
@@ -450,7 +480,7 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
         expectedVersion: cloudSnapshotVersion.value ?? 0,
         expectedLedgerHead: cloudSnapshotLedgerHead.value,
         workspaceId: account.workspace.value?.workspaceId || undefined,
-        bookId: selectedCloudBookId.value || cloudBookId.value || undefined,
+        collectionId: activeCollectionId.value,
         binding,
       });
 
@@ -514,7 +544,8 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
       const response = await getPixbookCloudState(
         account.workspace.value?.workspaceId || undefined,
         binding,
-        selectedCloudBookId.value || cloudBookId.value || undefined
+        undefined,
+        activeCollectionId.value
       );
 
       const payload = response.snapshot?.payload as PixbookExport | null;
@@ -567,6 +598,39 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
       return false;
     }
 
+    const selectedBook = cloudBooks.value.find(
+      (entry) => String(entry.id || "").trim() === String(selectedCloudBookId.value || "").trim()
+    );
+    if (!selectedBook) {
+      cloudSyncError.value = "Selected cloud pixbook was not found.";
+      return false;
+    }
+    if (normalizeCollectionId(selectedBook.collectionId) !== activeCollectionId.value) {
+      cloudSyncError.value =
+        "Selected cloud pixbook belongs to another collection.";
+      return false;
+    }
+
+    const binding = cloudBinding.value;
+    if (!binding) {
+      cloudSyncError.value =
+        "Private cloud restore requires your active identity in this browser.";
+      return false;
+    }
+    const boundManagedUser = cloudProfiles.value.find((entry) => {
+      return (
+        String(entry.profileId || "").trim() === String(binding.profileId || "").trim() &&
+        String(entry.identityPublicKey || "").trim() ===
+          String(binding.identityPublicKey || "").trim() &&
+        String(entry.status || "").trim() !== "deleted"
+      );
+    });
+    if (!boundManagedUser || boundManagedUser.id !== selectedBook.managedUserId) {
+      cloudSyncError.value =
+        "Private cross-identity cloud restore is blocked. Switch identity first.";
+      return false;
+    }
+
     cloudBookId.value = selectedCloudBookId.value;
     return restoreCloudSnapshot();
   }
@@ -601,25 +665,7 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
         String(profileToRemove?.profileId || "").trim(),
         String(profileToRemove?.identityPublicKey || "").trim()
       );
-      const relatedBooks = cloudBooks.value.filter(
-        (entry) =>
-          String(entry.managedUserId || "").trim() === targetId &&
-          String(entry.status || "").trim() !== "deleted"
-      );
-
-      for (const book of relatedBooks) {
-        await updateAccountBook(
-          String(book.id || "").trim(),
-          { status: "deleted" },
-          workspaceId
-        );
-      }
-
-      await updateAccountManagedUser(
-        targetId,
-        { status: "deleted" },
-        workspaceId
-      );
+      const removed = await removeAccountManagedIdentity(targetId, workspaceId);
 
       suppressIdentityBinding(bindingKey);
 
@@ -628,8 +674,10 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
         selectedCloudBookId.value = "";
       }
 
-      const removedBook = relatedBooks.find((entry) => entry.id === cloudBookId.value);
-      if (removedBook) {
+      if (
+        Array.isArray(removed?.removedBookIds) &&
+        removed.removedBookIds.includes(cloudBookId.value)
+      ) {
         cloudBookId.value = "";
       }
 
@@ -764,6 +812,7 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
         account.isAuthenticated.value,
         cloudBinding.value?.profileId || "",
         cloudBinding.value?.identityPublicKey || "",
+        activeCollectionId.value,
       ] as const,
     async ([authenticated]) => {
       if (!authenticated) return;
@@ -771,6 +820,21 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
       await refreshCloudLibrary();
       await syncLocalIdentitiesToCloud();
     }
+  );
+
+  watch(
+    () => context.pixbooks.value,
+    () => {
+      if (!account.isAuthenticated.value) return;
+      if (identitySyncTimer) {
+        clearTimeout(identitySyncTimer);
+        identitySyncTimer = null;
+      }
+      identitySyncTimer = setTimeout(() => {
+        void syncLocalIdentitiesToCloud();
+      }, 900);
+    },
+    { deep: true }
   );
 
   watch(
@@ -889,6 +953,7 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
 
     cloudBinding,
     canCloudSync,
+    activeCollectionId,
 
     refreshCloudLibrary,
     refreshCloudSnapshot,
