@@ -1,5 +1,11 @@
 # concord
 
+## 0.3.37
+
+### Patch Changes
+
+- [`8abdbe422f2ae2ccc5d7446ffea2b0057444a9ff`](https://github.com/samternent/home/commit/8abdbe422f2ae2ccc5d7446ffea2b0057444a9ff) Thanks [@samternent](https://github.com/samternent)! - Fix redeem redirection
+
 ## 0.3.36
 
 ### Patch Changes
