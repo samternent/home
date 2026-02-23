@@ -1,5 +1,11 @@
 # ternent-api
 
+## 0.2.23
+
+### Patch Changes
+
+- [`a2e4c1f5e7ea3541a06246df0de88c0f28e6bf25`](https://github.com/samternent/home/commit/a2e4c1f5e7ea3541a06246df0de88c0f28e6bf25) Thanks [@samternent](https://github.com/samternent)! - update email branding
+
 ## 0.2.22
 
 ### Patch Changes
