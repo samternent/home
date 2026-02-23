@@ -13,7 +13,11 @@
     "pixpax:seed": "node scripts/pixpax-seed-collection.mjs",
     "pixpax:generate-public": "node scripts/pixpax-generate-public-collection.mjs",
     "platform:migrate": "node scripts/platform-migrate.mjs",
-    "db:check": "node scripts/platform-db-check.mjs"
+    "db:check": "node scripts/platform-db-check.mjs",
+    "accounts:v2:recon": "node scripts/recon-accounts-v2.mjs",
+    "accounts:v2:backfill": "node scripts/backfill-accounts-v2.mjs",
+    "accounts:v2:verify": "node scripts/verify-schema-v2.mjs --reconcile",
+    "accounts:v2:verify-reads": "node scripts/verify-account-v2-reads.mjs"
   },
   "dependencies": {
     "@better-auth/passkey": "^1.3.7",

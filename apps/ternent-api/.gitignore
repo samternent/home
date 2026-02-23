@@ -2,6 +2,9 @@ data/*
 !data/migrations/
 data/migrations/*
 !data/migrations/0004_platform_books_collection.sql
+!data/migrations/0005_accounts_v2_schema.sql
+!data/migrations/manual/
+!data/migrations/manual/0009_legacy_archive_platform_tables.sql
 persisted/stickerbook/packs/
 persisted/stickerbook/issuer-ledger.json
 persisted/stickerbook/issuer-pending.json

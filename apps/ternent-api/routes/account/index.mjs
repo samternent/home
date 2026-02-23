@@ -13,18 +13,21 @@ import {
   listBooks,
   listManagedUsers,
   removeManagedUserIdentity,
+  removeBook,
   renameWorkspace,
   saveBookSnapshot,
   updateBook,
   updateManagedUser,
-} from "../../services/account/platform-account-store.mjs";
+} from "../../services/account/platform-account-store-switch.mjs";
+import {
+  asAccountAliasPayload,
+  resolveRequestedAccountId,
+} from "../../services/account/account-schema-flags.mjs";
 
 const DEFAULT_COLLECTION_ID = "primary";
 
-function resolveWorkspaceId(req) {
-  const header = String(req?.headers?.["x-workspace-id"] || "").trim();
-  if (header) return header;
-  return String(req?.query?.workspaceId || req?.body?.workspaceId || "").trim();
+function resolveAccountId(req) {
+  return resolveRequestedAccountId(req);
 }
 
 function sessionUserId(req) {
@@ -88,7 +91,7 @@ export default function accountRoutes(router) {
     }
 
     const user = req.platformSession?.user || null;
-    const workspace = await getWorkspaceSummary(sessionUserId(req), resolveWorkspaceId(req));
+    const workspace = await getWorkspaceSummary(sessionUserId(req), resolveAccountId(req));
 
     res.status(200).send({
       ok: true,
@@ -101,7 +104,7 @@ export default function accountRoutes(router) {
     "/v1/account/workspace",
     requirePermission("platform.account.manage"),
     async (req, res) => {
-      const workspace = await getWorkspaceSummary(sessionUserId(req), resolveWorkspaceId(req));
+      const workspace = await getWorkspaceSummary(sessionUserId(req), resolveAccountId(req));
       if (!workspace) {
         res.status(404).send({ ok: false, error: "Workspace not found." });
         return;
@@ -117,7 +120,7 @@ export default function accountRoutes(router) {
       try {
         const workspace = await renameWorkspace(
           sessionUserId(req),
-          resolveWorkspaceId(req),
+          resolveAccountId(req),
           req.body?.name
         );
         if (!workspace) {
@@ -132,13 +135,14 @@ export default function accountRoutes(router) {
   );
 
   router.get("/v1/account/users", requirePermission("platform.account.manage"), async (req, res) => {
-    const data = await listManagedUsers(sessionUserId(req), resolveWorkspaceId(req));
+    const data = await listManagedUsers(sessionUserId(req), resolveAccountId(req));
     if (!data) {
       res.status(404).send({ ok: false, error: "Workspace not found." });
       return;
     }
     res.status(200).send({
       ok: true,
+      accountId: data.workspace.id,
       workspaceId: data.workspace.id,
       users: data.users,
     });
@@ -146,7 +150,7 @@ export default function accountRoutes(router) {
 
   router.post("/v1/account/users", requirePermission("platform.account.manage"), async (req, res) => {
     try {
-      const created = await createManagedUser(sessionUserId(req), resolveWorkspaceId(req), req.body);
+      const created = await createManagedUser(sessionUserId(req), resolveAccountId(req), req.body);
       if (!created) {
         res.status(404).send({ ok: false, error: "Workspace not found." });
         return;
@@ -167,7 +171,7 @@ export default function accountRoutes(router) {
       try {
         const updated = await updateManagedUser(
           sessionUserId(req),
-          resolveWorkspaceId(req),
+          resolveAccountId(req),
           req.params?.userId,
           req.body
         );
@@ -189,7 +193,7 @@ export default function accountRoutes(router) {
       try {
         const removed = await removeManagedUserIdentity(
           sessionUserId(req),
-          resolveWorkspaceId(req),
+          resolveAccountId(req),
           req.params?.userId
         );
         if (!removed) {
@@ -210,14 +214,103 @@ export default function accountRoutes(router) {
     }
   );
 
+  router.get(
+    "/v1/account/identities",
+    requirePermission("platform.account.manage"),
+    async (req, res) => {
+      const data = await listManagedUsers(sessionUserId(req), resolveAccountId(req));
+      if (!data) {
+        res.status(404).send({ ok: false, error: "Workspace not found." });
+        return;
+      }
+      res.status(200).send({
+        ok: true,
+        accountId: data.workspace.id,
+        workspaceId: data.workspace.id,
+        identities: data.users,
+      });
+    }
+  );
+
+  router.post(
+    "/v1/account/identities",
+    requirePermission("platform.account.manage"),
+    async (req, res) => {
+      try {
+        const created = await createManagedUser(sessionUserId(req), resolveAccountId(req), req.body);
+        if (!created) {
+          res.status(404).send({ ok: false, error: "Workspace not found." });
+          return;
+        }
+        res.status(201).send({
+          ok: true,
+          id: created.id,
+        });
+      } catch (error) {
+        res.status(400).send({ ok: false, error: error?.message || "Unable to create identity." });
+      }
+    }
+  );
+
+  router.patch(
+    "/v1/account/identities/:identityId",
+    requirePermission("platform.account.manage"),
+    async (req, res) => {
+      try {
+        const updated = await updateManagedUser(
+          sessionUserId(req),
+          resolveAccountId(req),
+          req.params?.identityId,
+          req.body
+        );
+        if (!updated) {
+          res.status(404).send({ ok: false, error: "Identity not found." });
+          return;
+        }
+        res.status(200).send({ ok: true, id: updated.id });
+      } catch (error) {
+        res.status(400).send({ ok: false, error: error?.message || "Unable to update identity." });
+      }
+    }
+  );
+
+  router.delete(
+    "/v1/account/identities/:identityId",
+    requirePermission("platform.account.manage"),
+    async (req, res) => {
+      try {
+        const removed = await removeManagedUserIdentity(
+          sessionUserId(req),
+          resolveAccountId(req),
+          req.params?.identityId
+        );
+        if (!removed) {
+          res.status(404).send({ ok: false, error: "Identity not found." });
+          return;
+        }
+        res.status(200).send({
+          ok: true,
+          id: removed.id,
+          removedBookIds: removed.removedBookIds || [],
+        });
+      } catch (error) {
+        res.status(400).send({
+          ok: false,
+          error: error?.message || "Unable to remove identity.",
+        });
+      }
+    }
+  );
+
   router.get("/v1/account/books", requirePermission("platform.account.manage"), async (req, res) => {
-    const data = await listBooks(sessionUserId(req), resolveWorkspaceId(req));
+    const data = await listBooks(sessionUserId(req), resolveAccountId(req));
     if (!data) {
       res.status(404).send({ ok: false, error: "Workspace not found." });
       return;
     }
     res.status(200).send({
       ok: true,
+      accountId: data.workspace.id,
       workspaceId: data.workspace.id,
       books: data.books,
     });
@@ -225,7 +318,7 @@ export default function accountRoutes(router) {
 
   router.post("/v1/account/books", requirePermission("platform.account.manage"), async (req, res) => {
     try {
-      const created = await createBook(sessionUserId(req), resolveWorkspaceId(req), req.body);
+      const created = await createBook(sessionUserId(req), resolveAccountId(req), req.body);
       if (!created) {
         res.status(404).send({ ok: false, error: "Workspace not found." });
         return;
@@ -246,7 +339,7 @@ export default function accountRoutes(router) {
       try {
         const updated = await updateBook(
           sessionUserId(req),
-          resolveWorkspaceId(req),
+          resolveAccountId(req),
           req.params?.bookId,
           req.body
         );
@@ -257,6 +350,124 @@ export default function accountRoutes(router) {
         res.status(200).send({ ok: true, id: updated.id });
       } catch (error) {
         res.status(400).send({ ok: false, error: error?.message || "Unable to update book." });
+      }
+    }
+  );
+
+  router.delete(
+    "/v1/account/books/:bookId",
+    requirePermission("platform.account.manage"),
+    async (req, res) => {
+      try {
+        const removed = await removeBook(
+          sessionUserId(req),
+          resolveAccountId(req),
+          req.params?.bookId
+        );
+        if (!removed) {
+          res.status(404).send({ ok: false, error: "Book not found." });
+          return;
+        }
+        res.status(200).send({
+          ok: true,
+          id: removed.id,
+          managedUserId: removed.managedUserId || null,
+          collectionId: removed.collectionId || null,
+        });
+      } catch (error) {
+        res.status(400).send({
+          ok: false,
+          error: error?.message || "Unable to remove book.",
+        });
+      }
+    }
+  );
+
+  router.get(
+    "/v1/account/pixbooks",
+    requirePermission("platform.account.manage"),
+    async (req, res) => {
+      const data = await listBooks(sessionUserId(req), resolveAccountId(req));
+      if (!data) {
+        res.status(404).send({ ok: false, error: "Workspace not found." });
+        return;
+      }
+      res.status(200).send({
+        ok: true,
+        accountId: data.workspace.id,
+        workspaceId: data.workspace.id,
+        pixbooks: data.books,
+      });
+    }
+  );
+
+  router.post(
+    "/v1/account/pixbooks",
+    requirePermission("platform.account.manage"),
+    async (req, res) => {
+      try {
+        const created = await createBook(sessionUserId(req), resolveAccountId(req), req.body);
+        if (!created) {
+          res.status(404).send({ ok: false, error: "Workspace not found." });
+          return;
+        }
+        res.status(201).send({
+          ok: true,
+          id: created.id,
+        });
+      } catch (error) {
+        res.status(400).send({ ok: false, error: error?.message || "Unable to create pixbook." });
+      }
+    }
+  );
+
+  router.patch(
+    "/v1/account/pixbooks/:pixbookId",
+    requirePermission("platform.account.manage"),
+    async (req, res) => {
+      try {
+        const updated = await updateBook(
+          sessionUserId(req),
+          resolveAccountId(req),
+          req.params?.pixbookId,
+          req.body
+        );
+        if (!updated) {
+          res.status(404).send({ ok: false, error: "Pixbook not found." });
+          return;
+        }
+        res.status(200).send({ ok: true, id: updated.id });
+      } catch (error) {
+        res.status(400).send({ ok: false, error: error?.message || "Unable to update pixbook." });
+      }
+    }
+  );
+
+  router.delete(
+    "/v1/account/pixbooks/:pixbookId",
+    requirePermission("platform.account.manage"),
+    async (req, res) => {
+      try {
+        const removed = await removeBook(
+          sessionUserId(req),
+          resolveAccountId(req),
+          req.params?.pixbookId
+        );
+        if (!removed) {
+          res.status(404).send({ ok: false, error: "Pixbook not found." });
+          return;
+        }
+        res.status(200).send({
+          ok: true,
+          id: removed.id,
+          managedUserId: removed.managedUserId || null,
+          collectionId: removed.collectionId || null,
+        });
+      } catch (error) {
+        res.status(400).send({
+          ok: false,
+          error: error?.message || "Unable to remove pixbook.",
+        });
       }
     }
   );
@@ -282,10 +493,10 @@ export default function accountRoutes(router) {
     }
 
     const resolved = requestedBookId
-      ? await getBookForWorkspace(sessionUserId(req), resolveWorkspaceId(req), requestedBookId)
+      ? await getBookForWorkspace(sessionUserId(req), resolveAccountId(req), requestedBookId)
       : await ensurePersonalPixbook(
           sessionUserId(req),
-          resolveWorkspaceId(req),
+          resolveAccountId(req),
           {
             displayName:
               profileBinding.profileDisplayName ||
@@ -334,7 +545,7 @@ export default function accountRoutes(router) {
 
     res.status(200).send({
       ok: true,
-      workspaceId: resolved.workspace.id,
+      ...asAccountAliasPayload(resolved.workspace.id),
       managedUser: resolved.managedUser,
       book: resolved.book,
       snapshot,
@@ -366,7 +577,7 @@ export default function accountRoutes(router) {
     if (requestedBookId) {
       const byBookId = await getBookForWorkspace(
         sessionUserId(req),
-        resolveWorkspaceId(req),
+        resolveAccountId(req),
         requestedBookId
       );
       if (!byBookId) {
@@ -404,7 +615,7 @@ export default function accountRoutes(router) {
     } else {
       resolved = await ensurePersonalPixbook(
         sessionUserId(req),
-        resolveWorkspaceId(req),
+        resolveAccountId(req),
         {
           displayName:
             profileBinding.profileDisplayName ||
@@ -438,7 +649,7 @@ export default function accountRoutes(router) {
 
       res.status(200).send({
         ok: true,
-        workspaceId: resolved.workspace.id,
+        ...asAccountAliasPayload(resolved.workspace.id),
         managedUser: resolved.managedUser,
         book: {
           ...resolved.book,
@@ -447,7 +658,7 @@ export default function accountRoutes(router) {
         snapshot: saved,
       });
     } catch (error) {
-      if (error instanceof BookSnapshotConflictError) {
+      if (error instanceof BookSnapshotConflictError || error?.code === "BOOK_SNAPSHOT_CONFLICT") {
         res.status(409).send({
           ok: false,
           error: error.message,

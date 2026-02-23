@@ -18,6 +18,7 @@ import {
   getPixbookCloudState,
   listAccountBooks,
   listAccountManagedUsers,
+  removeAccountBook,
   removeAccountManagedIdentity,
   savePixbookCloudSnapshot,
   updateAccountManagedUser,
@@ -693,6 +694,44 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
     }
   }
 
+  async function removeCloudPixbook(bookId: string) {
+    if (!account.isAuthenticated.value) {
+      cloudSyncError.value = "Sign in to remove pixbooks from your account.";
+      return false;
+    }
+
+    const targetId = String(bookId || "").trim();
+    if (!targetId) {
+      cloudSyncError.value = "Pixbook id is required.";
+      return false;
+    }
+
+    cloudSyncError.value = "";
+    cloudSyncStatus.value = "Removing pixbook from account...";
+
+    try {
+      const workspaceId = account.workspace.value?.workspaceId || undefined;
+      await removeAccountBook(targetId, workspaceId);
+
+      if (selectedCloudBookId.value === targetId) {
+        selectedCloudBookId.value = "";
+      }
+      if (cloudBookId.value === targetId) {
+        cloudBookId.value = "";
+      }
+
+      await refreshCloudLibrary();
+      cloudSyncStatus.value = "Pixbook removed from account.";
+      return true;
+    } catch (error: unknown) {
+      cloudSyncError.value = String(
+        (error as Error)?.message || "Failed to remove pixbook from account."
+      );
+      cloudSyncStatus.value = "";
+      return false;
+    }
+  }
+
   async function sendOtpCode() {
     authBusy.value = true;
     authMessage.value = "";
@@ -962,6 +1001,7 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
     openSelectedCloudBook,
     notePackLedgerMutation,
     removeCloudIdentity,
+    removeCloudPixbook,
     syncLocalIdentitiesToCloud,
 
     sendOtpCode,

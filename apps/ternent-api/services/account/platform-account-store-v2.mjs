@@ -9,6 +9,10 @@ const OWNER_DEFAULT_CAPABILITIES = Object.freeze([
   "pixpax.creator.publish",
   "pixpax.creator.view",
 ]);
+const MEMBER_DEFAULT_CAPABILITIES = Object.freeze([
+  "pixpax.analytics.read",
+  "pixpax.creator.view",
+]);
 const DEFAULT_COLLECTION_ID = "primary";
 
 function normalizeWorkspaceId(value) {
@@ -120,8 +124,8 @@ export async function getPrimaryWorkspaceForUser(userId) {
       w.updated_at,
       m.id AS member_id,
       m.role
-    FROM platform_workspace_members m
-    INNER JOIN platform_workspaces w ON w.id = m.workspace_id
+    FROM account_members m
+    INNER JOIN accounts w ON w.id = m.account_id
     WHERE m.user_id = $1
       AND m.status = 'active'
     ORDER BY m.created_at ASC
@@ -168,7 +172,7 @@ export async function ensureWorkspaceForUser(session, options = {}) {
 
     await client.query(
       `
-      INSERT INTO platform_workspaces (id, name)
+      INSERT INTO accounts (id, name)
       VALUES ($1, $2)
       `,
       [workspaceId, defaultName],
@@ -176,26 +180,15 @@ export async function ensureWorkspaceForUser(session, options = {}) {
 
     await client.query(
       `
-      INSERT INTO platform_workspace_members (id, workspace_id, user_id, role, status)
+      INSERT INTO account_members (id, account_id, user_id, role, status)
       VALUES ($1, $2, $3, 'owner', 'active')
       `,
       [memberId, workspaceId, userId],
     );
 
-    for (const capability of OWNER_DEFAULT_CAPABILITIES) {
-      await client.query(
-        `
-        INSERT INTO platform_permissions (id, member_id, capability)
-        VALUES ($1, $2, $3)
-        ON CONFLICT (member_id, capability) DO NOTHING
-        `,
-        [createId("perm"), memberId, capability],
-      );
-    }
-
     await client.query(
       `
-      INSERT INTO platform_audit_events (id, workspace_id, actor_user_id, event_type, payload)
+      INSERT INTO audit_events (id, account_id, actor_user_id, event_type, payload)
       VALUES ($1, $2, $3, $4, $5::jsonb)
       `,
       [
@@ -237,10 +230,10 @@ export async function resolveWorkspaceForUser(
       w.updated_at,
       m.id AS member_id,
       m.role
-    FROM platform_workspace_members m
-    INNER JOIN platform_workspaces w ON w.id = m.workspace_id
+    FROM account_members m
+    INNER JOIN accounts w ON w.id = m.account_id
     WHERE m.user_id = $1
-      AND m.workspace_id = $2
+      AND m.account_id = $2
       AND m.status = 'active'
     LIMIT 1
     `,
@@ -253,15 +246,19 @@ export async function resolveWorkspaceForUser(
 export async function listCapabilitiesForMember(memberId) {
   const result = await dbQuery(
     `
-    SELECT capability
-    FROM platform_permissions
-    WHERE member_id = $1
-    ORDER BY capability ASC
+    SELECT role
+    FROM account_members
+    WHERE id = $1
+      AND status = 'active'
+    LIMIT 1
     `,
-    [String(memberId || "").trim()],
+    [String(memberId || "").trim()]
   );
 
-  return result.rows.map((row) => String(row.capability || "")).filter(Boolean);
+  if (result.rowCount === 0) return [];
+  const role = String(result.rows[0]?.role || "").trim().toLowerCase();
+  if (role === "owner") return [...OWNER_DEFAULT_CAPABILITIES];
+  return [...MEMBER_DEFAULT_CAPABILITIES];
 }
 
 export async function userHasCapability(userId, capability, workspaceId = "") {
@@ -269,20 +266,13 @@ export async function userHasCapability(userId, capability, workspaceId = "") {
   if (!workspace?.member_id) {
     return { ok: false, reason: "workspace-not-found" };
   }
-
-  const result = await dbQuery(
-    `
-    SELECT 1
-    FROM platform_permissions
-    WHERE member_id = $1 AND capability = $2
-    LIMIT 1
-    `,
-    [workspace.member_id, String(capability || "").trim()],
-  );
+  const capabilities = await listCapabilitiesForMember(workspace.member_id);
+  const requestedCapability = String(capability || "").trim();
+  const granted = capabilities.includes(requestedCapability);
 
   return {
-    ok: result.rowCount > 0,
-    reason: result.rowCount > 0 ? "granted" : "denied",
+    ok: granted,
+    reason: granted ? "granted" : "denied",
     workspace,
   };
 }
@@ -313,7 +303,7 @@ export async function renameWorkspace(userId, workspaceId, name) {
 
   await dbQuery(
     `
-    UPDATE platform_workspaces
+    UPDATE accounts
     SET name = $2,
         updated_at = NOW()
     WHERE id = $1
@@ -331,8 +321,8 @@ export async function listManagedUsers(userId, workspaceId = "") {
   const result = await dbQuery(
     `
     SELECT id, display_name, avatar_public_id, user_key, profile_id, identity_public_key, identity_key_fingerprint, status, created_at, updated_at
-    FROM platform_managed_users
-    WHERE workspace_id = $1
+    FROM identities
+    WHERE account_id = $1
     ORDER BY created_at ASC
     `,
     [workspace.id],
@@ -379,10 +369,10 @@ export async function createManagedUser(userId, workspaceId, input) {
   const id = normalizeIdOverride(input?.id, "managed-user");
   await dbQuery(
     `
-    INSERT INTO platform_managed_users
+    INSERT INTO identities
       (
         id,
-        workspace_id,
+        account_id,
         display_name,
         avatar_public_id,
         user_key,
@@ -432,7 +422,7 @@ export async function updateManagedUser(
 
   const result = await dbQuery(
     `
-    UPDATE platform_managed_users
+    UPDATE identities
     SET
       display_name = COALESCE(NULLIF($3, ''), display_name),
       avatar_public_id = CASE
@@ -449,7 +439,7 @@ export async function updateManagedUser(
       END,
       updated_at = NOW()
     WHERE id = $1
-      AND workspace_id = $2
+      AND account_id = $2
       AND status != 'deleted'
     RETURNING id
     `,
@@ -476,7 +466,7 @@ export async function listBooks(userId, workspaceId = "") {
     `
     SELECT
       b.id,
-      b.managed_user_id,
+      b.identity_id,
       b.collection_id,
       b.name,
       b.status,
@@ -484,9 +474,9 @@ export async function listBooks(userId, workspaceId = "") {
       b.created_at,
       b.updated_at,
       u.display_name AS managed_user_display_name
-    FROM platform_books b
-    INNER JOIN platform_managed_users u ON u.id = b.managed_user_id
-    WHERE b.workspace_id = $1
+    FROM pixbooks b
+    INNER JOIN identities u ON u.id = b.identity_id
+    WHERE b.account_id = $1
       AND b.status != 'deleted'
     ORDER BY b.created_at ASC
     `,
@@ -497,7 +487,7 @@ export async function listBooks(userId, workspaceId = "") {
     workspace,
     books: result.rows.map((row) => ({
       id: row.id,
-      managedUserId: row.managed_user_id,
+      managedUserId: row.identity_id,
       collectionId: normalizeCollectionId(row.collection_id),
       managedUserDisplayName: row.managed_user_display_name,
       name: row.name,
@@ -524,7 +514,7 @@ export async function getBookForWorkspace(
     `
     SELECT
       b.id,
-      b.managed_user_id,
+      b.identity_id,
       b.collection_id,
       b.name,
       b.status,
@@ -538,9 +528,9 @@ export async function getBookForWorkspace(
       u.identity_public_key,
       u.identity_key_fingerprint,
       u.status AS managed_user_status
-    FROM platform_books b
-    INNER JOIN platform_managed_users u ON u.id = b.managed_user_id
-    WHERE b.workspace_id = $1
+    FROM pixbooks b
+    INNER JOIN identities u ON u.id = b.identity_id
+    WHERE b.account_id = $1
       AND b.id = $2
       AND b.status != 'deleted'
       AND u.status != 'deleted'
@@ -555,7 +545,7 @@ export async function getBookForWorkspace(
   return {
     workspace,
     managedUser: {
-      id: row.managed_user_id,
+      id: row.identity_id,
       displayName: row.managed_user_display_name,
       avatarPublicId: row.avatar_public_id || null,
       userKey: row.user_key,
@@ -566,7 +556,7 @@ export async function getBookForWorkspace(
     },
     book: {
       id: row.id,
-      managedUserId: row.managed_user_id,
+      managedUserId: row.identity_id,
       collectionId: normalizeCollectionId(row.collection_id),
       name: row.name,
       status: row.status,
@@ -590,8 +580,8 @@ export async function createBook(userId, workspaceId, input) {
 
   const owner = await dbQuery(
     `
-    SELECT id FROM platform_managed_users
-    WHERE id = $1 AND workspace_id = $2 AND status = 'active'
+    SELECT id FROM identities
+    WHERE id = $1 AND account_id = $2 AND status = 'active'
     LIMIT 1
     `,
     [managedUserId, workspace.id],
@@ -604,9 +594,9 @@ export async function createBook(userId, workspaceId, input) {
   const existing = await dbQuery(
     `
     SELECT id
-    FROM platform_books
-    WHERE workspace_id = $1
-      AND managed_user_id = $2
+    FROM pixbooks
+    WHERE account_id = $1
+      AND identity_id = $2
       AND collection_id = $3
       AND status != 'deleted'
     LIMIT 1
@@ -622,8 +612,8 @@ export async function createBook(userId, workspaceId, input) {
   const id = normalizeIdOverride(input?.id, "book");
   await dbQuery(
     `
-    INSERT INTO platform_books
-      (id, workspace_id, managed_user_id, collection_id, name, status, current_version)
+    INSERT INTO pixbooks
+      (id, account_id, identity_id, collection_id, name, status, current_version)
     VALUES
       ($1, $2, $3, $4, $5, 'active', 0)
     `,
@@ -639,12 +629,12 @@ export async function updateBook(userId, workspaceId, bookId, input) {
 
   const result = await dbQuery(
     `
-    UPDATE platform_books
+    UPDATE pixbooks
     SET
       name = COALESCE(NULLIF($3, ''), name),
       status = COALESCE(NULLIF($4, ''), status),
       updated_at = NOW()
-    WHERE id = $1 AND workspace_id = $2
+    WHERE id = $1 AND account_id = $2
     RETURNING id
     `,
     [
@@ -668,13 +658,13 @@ export async function removeBook(userId, workspaceId, bookId) {
   return dbTx(async (client) => {
     const removed = await client.query(
       `
-      UPDATE platform_books
+      UPDATE pixbooks
       SET status = 'deleted',
           updated_at = NOW()
       WHERE id = $1
-        AND workspace_id = $2
+        AND account_id = $2
         AND status != 'deleted'
-      RETURNING id, managed_user_id, collection_id
+      RETURNING id, identity_id, collection_id
       `,
       [canonicalBookId, workspace.id]
     );
@@ -684,7 +674,7 @@ export async function removeBook(userId, workspaceId, bookId) {
 
     await client.query(
       `
-      INSERT INTO platform_audit_events (id, workspace_id, actor_user_id, event_type, payload)
+      INSERT INTO audit_events (id, account_id, actor_user_id, event_type, payload)
       VALUES ($1, $2, $3, $4, $5::jsonb)
       `,
       [
@@ -694,7 +684,7 @@ export async function removeBook(userId, workspaceId, bookId) {
         "book.removed",
         JSON.stringify({
           bookId: row.id || canonicalBookId,
-          managedUserId: row.managed_user_id || null,
+          managedUserId: row.identity_id || null,
           collectionId: normalizeCollectionId(row.collection_id),
         }),
       ]
@@ -702,7 +692,7 @@ export async function removeBook(userId, workspaceId, bookId) {
 
     return {
       id: row.id || canonicalBookId,
-      managedUserId: row.managed_user_id || null,
+      managedUserId: row.identity_id || null,
       collectionId: normalizeCollectionId(row.collection_id),
     };
   });
@@ -734,8 +724,8 @@ export async function ensurePersonalPixbook(
     const result = await dbQuery(
       `
       SELECT id, display_name, avatar_public_id, user_key, profile_id, identity_public_key, identity_key_fingerprint, status, created_at, updated_at
-      FROM platform_managed_users
-      WHERE workspace_id = $1
+      FROM identities
+      WHERE account_id = $1
         AND (
           user_key = $2
           OR (
@@ -767,10 +757,10 @@ export async function ensurePersonalPixbook(
     try {
       await dbQuery(
         `
-        INSERT INTO platform_managed_users
+        INSERT INTO identities
           (
             id,
-            workspace_id,
+            account_id,
             display_name,
             avatar_public_id,
             user_key,
@@ -819,7 +809,7 @@ export async function ensurePersonalPixbook(
   ) {
     const refreshed = await dbQuery(
       `
-      UPDATE platform_managed_users
+      UPDATE identities
       SET
         status = 'active',
         profile_id = COALESCE(NULLIF($3, ''), profile_id),
@@ -827,7 +817,7 @@ export async function ensurePersonalPixbook(
         identity_key_fingerprint = COALESCE(NULLIF($5, ''), identity_key_fingerprint),
         updated_at = NOW()
       WHERE id = $1
-        AND workspace_id = $2
+        AND account_id = $2
       RETURNING id, display_name, avatar_public_id, user_key, profile_id, identity_public_key, identity_key_fingerprint, status, created_at, updated_at
       `,
       [
@@ -846,10 +836,10 @@ export async function ensurePersonalPixbook(
   let book = null;
   const existingBook = await dbQuery(
     `
-    SELECT id, managed_user_id, collection_id, name, status, current_version, created_at, updated_at
-    FROM platform_books
-    WHERE workspace_id = $1
-      AND managed_user_id = $2
+    SELECT id, identity_id, collection_id, name, status, current_version, created_at, updated_at
+    FROM pixbooks
+    WHERE account_id = $1
+      AND identity_id = $2
       AND collection_id = $3
       AND status != 'deleted'
     ORDER BY created_at ASC
@@ -864,8 +854,8 @@ export async function ensurePersonalPixbook(
     const bookId = normalizeIdOverride(options?.bookId, "book");
     await dbQuery(
       `
-      INSERT INTO platform_books
-        (id, workspace_id, managed_user_id, collection_id, name, status, current_version)
+      INSERT INTO pixbooks
+        (id, account_id, identity_id, collection_id, name, status, current_version)
       VALUES
         ($1, $2, $3, $4, $5, 'active', 0)
       `,
@@ -873,7 +863,7 @@ export async function ensurePersonalPixbook(
     );
     book = {
       id: bookId,
-      managed_user_id: managedUser.id,
+      identity_id: managedUser.id,
       collection_id: collectionId,
       name: "My Pixbook",
       status: "active",
@@ -895,7 +885,7 @@ export async function ensurePersonalPixbook(
     },
     book: {
       id: book.id,
-      managedUserId: book.managed_user_id,
+      managedUserId: book.identity_id,
       collectionId: normalizeCollectionId(book.collection_id),
       name: book.name,
       status: book.status,
@@ -921,9 +911,9 @@ export async function removeManagedUserIdentity(
     const existing = await client.query(
       `
       SELECT id
-      FROM platform_managed_users
+      FROM identities
       WHERE id = $1
-        AND workspace_id = $2
+        AND account_id = $2
         AND status != 'deleted'
       LIMIT 1
       FOR UPDATE
@@ -934,11 +924,11 @@ export async function removeManagedUserIdentity(
 
     const removedBooks = await client.query(
       `
-      UPDATE platform_books
+      UPDATE pixbooks
       SET status = 'deleted',
           updated_at = NOW()
-      WHERE workspace_id = $1
-        AND managed_user_id = $2
+      WHERE account_id = $1
+        AND identity_id = $2
         AND status != 'deleted'
       RETURNING id
       `,
@@ -947,11 +937,11 @@ export async function removeManagedUserIdentity(
 
     const removedUser = await client.query(
       `
-      UPDATE platform_managed_users
+      UPDATE identities
       SET status = 'deleted',
           updated_at = NOW()
       WHERE id = $1
-        AND workspace_id = $2
+        AND account_id = $2
         AND status != 'deleted'
       RETURNING id
       `,
@@ -965,7 +955,7 @@ export async function removeManagedUserIdentity(
 
     await client.query(
       `
-      INSERT INTO platform_audit_events (id, workspace_id, actor_user_id, event_type, payload)
+      INSERT INTO audit_events (id, account_id, actor_user_id, event_type, payload)
       VALUES ($1, $2, $3, $4, $5::jsonb)
       `,
       [
@@ -995,7 +985,7 @@ export async function getLatestBookSnapshot(bookId) {
     `
     SELECT
       id,
-      book_id,
+      pixbook_id,
       version,
       cipher_object_key,
       cipher_sha256,
@@ -1003,8 +993,8 @@ export async function getLatestBookSnapshot(bookId) {
       ledger_head,
       payload_json,
       created_at
-    FROM platform_book_snapshots
-    WHERE book_id = $1
+    FROM pixbook_snapshots
+    WHERE pixbook_id = $1
     ORDER BY version DESC
     LIMIT 1
     `,
@@ -1015,7 +1005,7 @@ export async function getLatestBookSnapshot(bookId) {
   const row = result.rows[0];
   return {
     id: row.id,
-    bookId: row.book_id,
+    bookId: row.pixbook_id,
     version: Number(row.version || 0),
     ledgerHead: row.ledger_head || null,
     checksum: row.cipher_sha256 || "",
@@ -1045,10 +1035,10 @@ export async function saveBookSnapshot(userId, workspaceId, bookId, input) {
   const saved = await dbTx(async (client) => {
     const ownedBook = await client.query(
       `
-      SELECT id, workspace_id, current_version
-      FROM platform_books
+      SELECT id, account_id, current_version
+      FROM pixbooks
       WHERE id = $1
-        AND workspace_id = $2
+        AND account_id = $2
         AND status != 'deleted'
       FOR UPDATE
       `,
@@ -1063,8 +1053,8 @@ export async function saveBookSnapshot(userId, workspaceId, bookId, input) {
     const latestSnapshotResult = await client.query(
       `
       SELECT id, version, ledger_head, cipher_sha256, created_at
-      FROM platform_book_snapshots
-      WHERE book_id = $1
+      FROM pixbook_snapshots
+      WHERE pixbook_id = $1
       ORDER BY version DESC
       LIMIT 1
       `,
@@ -1112,8 +1102,8 @@ export async function saveBookSnapshot(userId, workspaceId, bookId, input) {
 
     const insertedSnapshot = await client.query(
       `
-      INSERT INTO platform_book_snapshots
-        (id, book_id, version, cipher_object_key, cipher_sha256, wrapped_dek, ledger_head, payload_json)
+      INSERT INTO pixbook_snapshots
+        (id, pixbook_id, version, cipher_object_key, cipher_sha256, wrapped_dek, ledger_head, payload_json)
       VALUES
         ($1, $2, $3, $4, $5, $6, $7, $8::jsonb)
       RETURNING created_at
@@ -1132,7 +1122,7 @@ export async function saveBookSnapshot(userId, workspaceId, bookId, input) {
 
     await client.query(
       `
-      UPDATE platform_books
+      UPDATE pixbooks
       SET current_version = $2,
           updated_at = NOW()
       WHERE id = $1
@@ -1142,7 +1132,7 @@ export async function saveBookSnapshot(userId, workspaceId, bookId, input) {
 
     await client.query(
       `
-      INSERT INTO platform_audit_events (id, workspace_id, actor_user_id, event_type, payload)
+      INSERT INTO audit_events (id, account_id, actor_user_id, event_type, payload)
       VALUES ($1, $2, $3, $4, $5::jsonb)
       `,
       [

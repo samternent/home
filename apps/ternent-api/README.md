@@ -284,6 +284,13 @@ Migration files:
 
 - `apps/ternent-api/data/migrations/*.sql`
 
+Accounts v2 migration tooling:
+
+- `pnpm --filter ternent-api accounts:v2:recon`
+- `pnpm --filter ternent-api accounts:v2:backfill`
+- `pnpm --filter ternent-api accounts:v2:verify`
+- `apps/ternent-api/MIGRATION.md`
+
 ### Notes
 
 - Better Auth dependencies must be installed in `ternent-api`.

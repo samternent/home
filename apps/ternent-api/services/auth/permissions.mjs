@@ -1,12 +1,9 @@
 import { getPlatformAuthRuntime, getPlatformSession } from "./platform-auth.mjs";
-import { ensureWorkspaceForUser, userHasCapability } from "../account/platform-account-store.mjs";
+import { ensureWorkspaceForUser, userHasCapability } from "../account/platform-account-store-switch.mjs";
+import { resolveRequestedAccountId } from "../account/account-schema-flags.mjs";
 
 function resolveWorkspaceFromRequest(req) {
-  const headerWorkspace = String(req?.headers?.["x-workspace-id"] || "").trim();
-  if (headerWorkspace) return headerWorkspace;
-  const queryWorkspace = String(req?.query?.workspaceId || "").trim();
-  if (queryWorkspace) return queryWorkspace;
-  return "";
+  return resolveRequestedAccountId(req);
 }
 
 export async function isPlatformAuthReady() {

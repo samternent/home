@@ -177,12 +177,14 @@ export type AccountBook = {
 
 export type AccountUsersResponse = {
   ok: boolean;
+  accountId?: string;
   workspaceId: string;
   users: AccountManagedUser[];
 };
 
 export type AccountBooksResponse = {
   ok: boolean;
+  accountId?: string;
   workspaceId: string;
   books: AccountBook[];
 };
@@ -267,6 +269,15 @@ export function removeAccountManagedIdentity(userId: string, workspaceId?: strin
       `/v1/account/users/${encodeURIComponent(userId)}/identity`,
       workspaceId
     ),
+    {
+      method: "DELETE",
+    }
+  );
+}
+
+export function removeAccountBook(bookId: string, workspaceId?: string) {
+  return requestJson<{ ok: boolean; id: string; managedUserId?: string | null; collectionId?: string | null }>(
+    withWorkspaceQuery(`/v1/account/books/${encodeURIComponent(bookId)}`, workspaceId),
     {
       method: "DELETE",
     }

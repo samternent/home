@@ -1,12 +1,29 @@
 <script setup lang="ts">
 import { usePixpaxContextStore } from "../../../module/pixpax/context/usePixpaxContextStore";
+import { usePixpaxCloudSync } from "../../../module/pixpax/context/usePixpaxCloudSync";
 
 const context = usePixpaxContextStore();
+const cloudSync = usePixpaxCloudSync();
 
 function renamePixbook(pixbookId: string, currentName: string) {
   const next = window.prompt("Pixbook name", currentName || "");
   if (!next || next.trim() === currentName) return;
   context.renamePixbook(pixbookId, next.trim());
+}
+
+async function removePixbookFromAccount(pixbookId: string, currentName: string) {
+  const confirmed = window.confirm(
+    `Remove '${currentName || "this pixbook"}' from your account? This only removes the cloud/account record.`
+  );
+  if (!confirmed) return;
+
+  const removed = await cloudSync.removeCloudPixbook(pixbookId);
+  if (!removed) {
+    context.setError(cloudSync.cloudSyncError.value || "Unable to remove pixbook from account.");
+    return;
+  }
+
+  context.setStatus("Pixbook removed from account.");
 }
 </script>
 
@@ -48,6 +65,19 @@ function renamePixbook(pixbookId: string, currentName: string) {
             @click="renamePixbook(context.activePixbook.value.id, context.activePixbook.value.name)"
           >
             Rename
+          </button>
+          <button
+            type="button"
+            class="rounded-md border border-red-300 px-2 py-1 text-xs text-red-700 hover:bg-red-50 disabled:opacity-60"
+            :disabled="!cloudSync.account.isAuthenticated.value || cloudSync.cloudSyncing.value"
+            @click="
+              removePixbookFromAccount(
+                context.activePixbook.value.id,
+                context.activePixbook.value.name
+              )
+            "
+          >
+            Remove from account
           </button>
         </div>
       </div>
