@@ -1,5 +1,11 @@
 # ternent-api
 
+## 0.2.22
+
+### Patch Changes
+
+- [`4c347fc660196c5e369738f35ed24cdbd492bf56`](https://github.com/samternent/home/commit/4c347fc660196c5e369738f35ed24cdbd492bf56) Thanks [@samternent](https://github.com/samternent)! - fix prod auth
+
 ## 0.2.21
 
 ### Patch Changes
