@@ -1,4 +1,8 @@
-import { dbQuery, getPlatformDbPool, getPlatformDbStatus } from "../platform-db/index.mjs";
+import {
+  dbQuery,
+  getPlatformDbPool,
+  getPlatformDbStatus,
+} from "../platform-db/index.mjs";
 
 const DEFAULT_IDLE_SECONDS = 60 * 60 * 24 * 7;
 const DEFAULT_ROLLING_SECONDS = 60 * 30;
@@ -13,7 +17,9 @@ function parseCsv(input) {
 }
 
 function boolEnv(name, fallback = false) {
-  const raw = String(process.env[name] || "").trim().toLowerCase();
+  const raw = String(process.env[name] || "")
+    .trim()
+    .toLowerCase();
   if (!raw) return fallback;
   return raw === "1" || raw === "true" || raw === "yes" || raw === "on";
 }
@@ -24,7 +30,9 @@ function numberEnv(name, fallback) {
 }
 
 function parsePasskeyOrigins() {
-  const configured = parseCsv(process.env.AUTH_PASSKEY_ORIGINS || process.env.AUTH_PASSKEY_ORIGIN);
+  const configured = parseCsv(
+    process.env.AUTH_PASSKEY_ORIGINS || process.env.AUTH_PASSKEY_ORIGIN,
+  );
   if (configured.length === 0) return null;
   return configured.length === 1 ? configured[0] : configured;
 }
@@ -40,7 +48,9 @@ async function createOtpSender() {
   const resendApiKey = String(process.env.RESEND_API_KEY || "").trim();
   const resendFrom = String(process.env.RESEND_FROM || "").trim();
   const resendReplyTo = String(process.env.RESEND_REPLY_TO || "").trim();
-  const resendApiBase = String(process.env.RESEND_API_BASE || "https://api.resend.com")
+  const resendApiBase = String(
+    process.env.RESEND_API_BASE || "https://api.resend.com",
+  )
     .trim()
     .replace(/\/+$/, "");
 
@@ -56,7 +66,7 @@ async function createOtpSender() {
           from: resendFrom,
           to: [email],
           ...(resendReplyTo ? { reply_to: resendReplyTo } : {}),
-          subject: `Your Ternent verification code (${type})`,
+          subject: `Your PixPax verification code (${type})`,
           text: `Your verification code is ${otp}. It expires in 5 minutes.`,
         }),
       });
@@ -64,7 +74,9 @@ async function createOtpSender() {
       if (!response.ok) {
         const body = await response.text();
         throw new Error(
-          `[platform-auth] Resend OTP send failed (${response.status}): ${body || "unknown error"}`
+          `[platform-auth] Resend OTP send failed (${response.status}): ${
+            body || "unknown error"
+          }`,
         );
       }
     };
@@ -80,7 +92,7 @@ async function createOtpSender() {
     return async ({ email, otp, type }) => {
       console.warn(
         "[platform-auth] SMTP is not configured; OTP fallback code emitted to logs only.",
-        JSON.stringify({ email, type, otp })
+        JSON.stringify({ email, type, otp }),
       );
     };
   }
@@ -89,9 +101,15 @@ async function createOtpSender() {
   try {
     nodemailer = await import("nodemailer");
   } catch (error) {
-    console.warn("[platform-auth] nodemailer not installed; OTP fallback code emitted to logs only.", error);
+    console.warn(
+      "[platform-auth] nodemailer not installed; OTP fallback code emitted to logs only.",
+      error,
+    );
     return async ({ email, otp, type }) => {
-      console.warn("[platform-auth] OTP fallback", JSON.stringify({ email, type, otp }));
+      console.warn(
+        "[platform-auth] OTP fallback",
+        JSON.stringify({ email, type, otp }),
+      );
     };
   }
 
@@ -106,7 +124,7 @@ async function createOtpSender() {
     await transporter.sendMail({
       from,
       to: email,
-      subject: `Your Ternent verification code (${type})`,
+      subject: `Your PixPax verification code (${type})`,
       text: `Your verification code is ${otp}. It expires in 5 minutes.`,
     });
   };
@@ -116,7 +134,8 @@ async function buildRuntime() {
   if (!isConfigured()) {
     return {
       ok: false,
-      reason: "Platform auth is not configured (AUTH_SECRET, AUTH_BASE_URL, DATABASE_URL).",
+      reason:
+        "Platform auth is not configured (AUTH_SECRET, AUTH_BASE_URL, DATABASE_URL).",
     };
   }
 
@@ -161,10 +180,14 @@ async function buildRuntime() {
   }
 
   const trustedOrigins = parseCsv(
-    process.env.AUTH_TRUSTED_ORIGINS || process.env.CORS_ALLOW_ORIGINS || process.env.AUTH_BASE_URL
+    process.env.AUTH_TRUSTED_ORIGINS ||
+      process.env.CORS_ALLOW_ORIGINS ||
+      process.env.AUTH_BASE_URL,
   );
   const passkeyRpID = String(process.env.AUTH_PASSKEY_RP_ID || "").trim();
-  const passkeyRpName = String(process.env.AUTH_PASSKEY_RP_NAME || "Ternent").trim();
+  const passkeyRpName = String(
+    process.env.AUTH_PASSKEY_RP_NAME || "Ternent",
+  ).trim();
   const passkeyOrigin = parsePasskeyOrigins();
 
   const sendOtp = await createOtpSender();
@@ -190,7 +213,10 @@ async function buildRuntime() {
     },
     session: {
       expiresIn: numberEnv("AUTH_SESSION_IDLE_SECONDS", DEFAULT_IDLE_SECONDS),
-      updateAge: numberEnv("AUTH_SESSION_ROLLING_SECONDS", DEFAULT_ROLLING_SECONDS),
+      updateAge: numberEnv(
+        "AUTH_SESSION_ROLLING_SECONDS",
+        DEFAULT_ROLLING_SECONDS,
+      ),
     },
     plugins: [
       passkey({
@@ -296,6 +322,6 @@ export async function upsertAuthUserShadow(session) {
       name = COALESCE(NULLIF(EXCLUDED.name, ''), auth_users.name),
       updated_at = NOW()
     `,
-    [userId, email, name]
+    [userId, email, name],
   );
 }
