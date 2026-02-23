@@ -1,5 +1,11 @@
 # ternent-api
 
+## 0.2.21
+
+### Patch Changes
+
+- [`ee644d9aa2895eec6366c555eca16cf132dddd96`](https://github.com/samternent/home/commit/ee644d9aa2895eec6366c555eca16cf132dddd96) Thanks [@samternent](https://github.com/samternent)! - Adds auth endpoints
+
 ## 0.2.20
 
 ### Patch Changes
