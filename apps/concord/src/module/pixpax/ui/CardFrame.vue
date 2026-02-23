@@ -95,13 +95,13 @@ const backdropFill = computed(() => {
 
 <template>
   <div
-    class="flex flex-col items-center justify-center gap-2 text-center w-full rounded-sm overflow-hidden"
+    class="flex flex-col items-center justify-center gap-2 text-center w-full rounded-lg overflow-hidden"
     :class="[isCompact ? 'gap-2' : 'gap-3', !missing ? 'shadow ' : '']"
   >
     <div
       :class="[
         'relative w-full   overflow-hidden sticker-frame-card',
-        { 'shimmer-border mythic-border p-0.5': showAccentBorder },
+        { 'shimmer-border mythic-border': showAccentBorder },
         missing ? 'opacity-100 blur-[2px] grayscale' : '',
       ]"
       :style="
@@ -269,7 +269,7 @@ const backdropFill = computed(() => {
           y="1"
           width="98"
           height="148"
-          rx="6"
+          rx="4"
           :fill="backdropFill"
           :filter="showAccentGlow ? `url(#frame-glow-${frameId})` : undefined"
         />
@@ -279,7 +279,7 @@ const backdropFill = computed(() => {
           y="1"
           width="100"
           height="150"
-          rx="6"
+          rx="4"
           :fill="`url(#dots-${frameId})`"
           opacity="0.45"
         />
@@ -289,7 +289,7 @@ const backdropFill = computed(() => {
           y="1"
           width="100"
           height="150"
-          rx="6"
+          rx="4"
           :fill="`url(#shimmer-${frameId})`"
           opacity="0.45"
         />

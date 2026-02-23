@@ -28,7 +28,7 @@ const {
 <template>
   <AppBootstrap :read-only="pixbookReadOnly">
     <div
-      class="dark flex flex-col flex-1 w-screen h-screen overflow-auto font-mono bg-[image:var(--bg-pixpax)]"
+      class="dark flex flex-col flex-1 font-mono bg-[image:var(--bg-pixpax)]"
     >
       <header
         class="sticky top-0 z-30 w-full backdrop-blur-[12px] border-b border-[var(--ui-border)]"

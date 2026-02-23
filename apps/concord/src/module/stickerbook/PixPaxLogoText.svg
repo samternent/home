@@ -3,7 +3,7 @@
             viewBox="0 0 368 48"
             role="img"
             aria-label="PIXPAX"
-            fill="var(--ui-fg)"
+            fill="current"
           >
             <!--
     Grid rules:

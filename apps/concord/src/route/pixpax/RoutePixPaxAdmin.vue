@@ -3,8 +3,10 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { Button } from "ternent-ui/primitives";
 import CanvasSticker16 from "../../module/pixpax/CanvasSticker16.vue";
+import PixPaxRedeemCodeCard from "../../module/pixpax/ui/PixPaxRedeemCodeCard.vue";
 import {
   type AccountBook,
+  type PixPaxCodeCardItem,
   type AccountManagedUser,
   getPixpaxCollectionBundle,
   PixPaxApiError,
@@ -20,7 +22,10 @@ import {
 } from "../../module/pixpax/api/client";
 import { usePixpaxAuth } from "../../module/pixpax/auth/usePixpaxAuth";
 import { usePixpaxAccount } from "../../module/pixpax/auth/usePixpaxAccount";
-import type { PackPalette16, StickerArt16 } from "../../module/pixpax/sticker-types";
+import type {
+  PackPalette16,
+  StickerArt16,
+} from "../../module/pixpax/sticker-types";
 
 function toIsoWeek(date = new Date()) {
   const utc = new Date(
@@ -82,9 +87,8 @@ type GeneratedSheetArtifact = {
 const DEFAULT_PALETTE: PackPalette16 = {
   id: "pixpax-default",
   colors: [
-    0x00000000, 0xff1f2937, 0xfff9fafb, 0xff9ca3af,
-    0xff111827, 0xff2563eb, 0xff16a34a, 0xfff59e0b,
-    0xffef4444, 0xff8b5cf6, 0xff06b6d4, 0xfffff0c2,
+    0x00000000, 0xff1f2937, 0xfff9fafb, 0xff9ca3af, 0xff111827, 0xff2563eb,
+    0xff16a34a, 0xfff59e0b, 0xffef4444, 0xff8b5cf6, 0xff06b6d4, 0xfffff0c2,
     0xff4b5563, 0xffe5e7eb, 0xfff97316, 0xff22c55e,
   ],
 };
@@ -203,6 +207,7 @@ const cardsError = ref("");
 const collectionCards = ref<CollectionCardOption[]>([]);
 const collectionPalette = ref<PackPalette16>(DEFAULT_PALETTE);
 const generatedSheet = ref<GeneratedSheetArtifact | null>(null);
+const isSheetPrintDialogOpen = ref(false);
 
 function ensureSelectedRef() {
   const available = refs.value;
@@ -274,15 +279,43 @@ const shareLink = computed(() => {
   return `${window.location.origin}${resolved.fullPath}`;
 });
 
-const mintedQrDataUrl = computed(() => {
-  const qrSvg = String(minted.value?.qrSvg || "").trim();
-  if (!qrSvg) return "";
-  return `data:image/svg+xml;utf8,${encodeURIComponent(qrSvg)}`;
+const mintedCodeCardItem = computed<PixPaxCodeCardItem | null>(() => {
+  const value = minted.value;
+  if (!value) return null;
+  return {
+    token: value.token,
+    tokenHash: value.tokenHash,
+    label: value.label,
+    redeemUrl: value.redeemUrl,
+    qrSvg: value.qrSvg,
+    qrErrorCorrection: value.qrErrorCorrection,
+    qrQuietZoneModules: value.qrQuietZoneModules,
+    codeId: value.codeId,
+    issuedAt: value.issuedAt,
+    expiresAt: value.expiresAt,
+    collectionId: value.collectionId,
+    version: value.version,
+    kind: value.kind,
+    cardId: String(value.cardId || "").trim() || undefined,
+    count:
+      typeof value.count === "number" && Number.isFinite(value.count)
+        ? value.count
+        : undefined,
+    dropId: String(value.dropId || "").trim() || undefined,
+  };
+});
+
+const mintedCodeCardArt = computed<StickerArt16 | null>(() => {
+  const value = mintedCodeCardItem.value;
+  if (!value || value.kind !== "fixed-card") return null;
+  return getCollectionCardById(value.cardId)?.art || null;
 });
 
 function toStickerArtFromRenderPayload(payload: unknown): StickerArt16 | null {
   if (!payload || typeof payload !== "object") return null;
-  const gridB64 = String((payload as { gridB64?: unknown }).gridB64 || "").trim();
+  const gridB64 = String(
+    (payload as { gridB64?: unknown }).gridB64 || "",
+  ).trim();
   const gridSize = Number((payload as { gridSize?: unknown }).gridSize || 16);
   if (!gridB64 || gridSize !== 16) return null;
   return {
@@ -294,15 +327,10 @@ function toStickerArtFromRenderPayload(payload: unknown): StickerArt16 | null {
   };
 }
 
-function qrSvgToDataUrl(svg: string) {
-  const normalized = String(svg || "").trim();
-  if (!normalized) return "";
-  return `data:image/svg+xml;utf8,${encodeURIComponent(normalized)}`;
-}
-
 function normalizePalette(input: unknown): PackPalette16 {
   if (!input || typeof input !== "object") return DEFAULT_PALETTE;
-  const id = String((input as { id?: unknown }).id || "palette").trim() || "palette";
+  const id =
+    String((input as { id?: unknown }).id || "palette").trim() || "palette";
   const colorsRaw = (input as { colors?: unknown }).colors;
   if (!Array.isArray(colorsRaw) || colorsRaw.length !== 16) {
     return DEFAULT_PALETTE;
@@ -315,8 +343,11 @@ function normalizeCollectionCard(input: unknown): CollectionCardOption | null {
   if (!input || typeof input !== "object") return null;
   const cardId = String((input as { cardId?: unknown }).cardId || "").trim();
   if (!cardId) return null;
-  const label = String((input as { label?: unknown }).label || cardId).trim() || cardId;
-  const seriesId = String((input as { seriesId?: unknown }).seriesId || "").trim();
+  const label =
+    String((input as { label?: unknown }).label || cardId).trim() || cardId;
+  const seriesId = String(
+    (input as { seriesId?: unknown }).seriesId || "",
+  ).trim();
   const slotValue = Number((input as { slotIndex?: unknown }).slotIndex);
   const slotIndex = Number.isFinite(slotValue) ? slotValue : null;
   const art = toStickerArtFromRenderPayload(
@@ -338,7 +369,9 @@ function getDefaultCardId() {
 function getCollectionCardById(cardId: string | undefined) {
   const normalized = String(cardId || "").trim();
   if (!normalized) return null;
-  return collectionCards.value.find((entry) => entry.cardId === normalized) || null;
+  return (
+    collectionCards.value.find((entry) => entry.cardId === normalized) || null
+  );
 }
 
 function getSheetItemArt(item: GeneratedSheetItem): StickerArt16 | null {
@@ -701,6 +734,20 @@ function removeSheetLine(lineId: number) {
   sheetLines.value = sheetLines.value.filter((line) => line.id !== lineId);
 }
 
+function openSheetPrintDialog() {
+  if (!generatedSheet.value?.items?.length) return;
+  isSheetPrintDialogOpen.value = true;
+}
+
+function closeSheetPrintDialog() {
+  isSheetPrintDialogOpen.value = false;
+}
+
+function printGeneratedSheet() {
+  if (typeof window === "undefined") return;
+  window.print();
+}
+
 function validateExpiresInSeconds() {
   const expires = Number(expiresInSeconds.value || 0);
   if (!Number.isInteger(expires) || expires < 60 || expires > 2592000) {
@@ -744,7 +791,11 @@ async function mintSingleCodeToken(kind: "pack" | "fixed-card") {
       mintError.value = "cardId is required for a designated card.";
       return;
     }
-    if (kind === "pack" && (!Number.isInteger(Number(count.value || 0)) || Number(count.value || 0) < 1)) {
+    if (
+      kind === "pack" &&
+      (!Number.isInteger(Number(count.value || 0)) ||
+        Number(count.value || 0) < 1)
+    ) {
       mintError.value = "Card count must be at least 1.";
       return;
     }
@@ -832,12 +883,20 @@ async function generateCodeCardsJsonArtifact() {
     }
 
     for (const line of lines) {
-      if (!Number.isInteger(line.quantity) || line.quantity < 1 || line.quantity > 500) {
+      if (
+        !Number.isInteger(line.quantity) ||
+        line.quantity < 1 ||
+        line.quantity > 500
+      ) {
         cardError.value = `Line ${line.id}: quantity must be between 1 and 500.`;
         return;
       }
       if (line.kind === "pack") {
-        if (!Number.isInteger(line.count) || line.count < 1 || line.count > 50) {
+        if (
+          !Number.isInteger(line.count) ||
+          line.count < 1 ||
+          line.count > 50
+        ) {
           cardError.value = `Line ${line.id}: pack card count must be between 1 and 50.`;
           return;
         }
@@ -857,9 +916,11 @@ async function generateCodeCardsJsonArtifact() {
           quantity: line.quantity,
           dropId: String(dropId.value || "").trim(),
           expiresInSeconds: Number(expiresInSeconds.value || 0),
-          ...(line.kind === "fixed-card" ? { cardId: line.cardId } : { count: line.count }),
+          ...(line.kind === "fixed-card"
+            ? { cardId: line.cardId }
+            : { count: line.count }),
         },
-        auth.token.value || undefined
+        auth.token.value || undefined,
       );
       responses.push({
         line,
@@ -873,7 +934,7 @@ async function generateCodeCardsJsonArtifact() {
             ...item,
             lineId: entry.line.id,
           }))
-        : []
+        : [],
     );
     const response = {
       ok: true,
@@ -894,13 +955,23 @@ async function generateCodeCardsJsonArtifact() {
       items,
     };
     generatedSheet.value = response;
+    isSheetPrintDialogOpen.value = true;
     cardStatus.value = `Generated ${response.quantity} code cards across ${responses.length} line(s). Preview rendered below.`;
   } catch (error: unknown) {
-    cardError.value = extractError(error, "Failed to generate code cards JSON.");
+    cardError.value = extractError(
+      error,
+      "Failed to generate code cards JSON.",
+    );
   } finally {
     generatingCards.value = false;
   }
 }
+
+watch(generatedSheet, (nextValue) => {
+  if (!nextValue?.items?.length) {
+    isSheetPrintDialogOpen.value = false;
+  }
+});
 
 onMounted(async () => {
   const ok = await ensureAdmin();
@@ -919,7 +990,7 @@ watch(
 </script>
 
 <template>
-  <div class="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4">
+  <div class="pixpax-admin-root mx-auto flex w-full max-w-5xl flex-col gap-6 p-4">
     <section class="rounded-xl border border-[var(--ui-border)] p-4">
       <h1 class="text-xl font-semibold mb-2">PixPax Admin</h1>
       <p class="text-sm text-[var(--ui-fg-muted)] mb-3">
@@ -1255,6 +1326,12 @@ watch(
       </p>
 
       <div v-if="minted" class="mt-4 grid gap-3">
+        <PixPaxRedeemCodeCard
+          v-if="mintedCodeCardItem"
+          :item="mintedCodeCardItem"
+          :art="mintedCodeCardArt"
+          :palette="collectionPalette"
+        />
         <label class="field">
           <span>Label</span>
           <input :value="minted.label" readonly />
@@ -1275,20 +1352,13 @@ watch(
           <span>Redeem link</span>
           <input :value="shareLink" readonly class="mono" />
         </label>
-        <div v-if="mintedQrDataUrl" class="field">
-          <span>QR preview</span>
-          <img
-            :src="mintedQrDataUrl"
-            alt="Redeem code QR"
-            class="h-40 w-40 rounded border border-[var(--ui-border)] bg-white p-2"
-          />
-        </div>
       </div>
 
       <div class="mt-6 rounded-lg border border-[var(--ui-border)] p-3">
         <h3 class="text-sm font-semibold">Collection Card Preview</h3>
         <p class="mt-1 text-xs text-[var(--ui-fg-muted)]">
-          Source for designated card ids. Shows available cards and basic metadata.
+          Source for designated card ids. Shows available cards and basic
+          metadata.
         </p>
         <p v-if="cardsLoading" class="mt-2 text-xs text-[var(--ui-fg-muted)]">
           Loading card previews...
@@ -1296,7 +1366,10 @@ watch(
         <p v-else-if="cardsError" class="mt-2 text-xs text-red-700">
           {{ cardsError }}
         </p>
-        <p v-else-if="!hasCollectionCards" class="mt-2 text-xs text-[var(--ui-fg-muted)]">
+        <p
+          v-else-if="!hasCollectionCards"
+          class="mt-2 text-xs text-[var(--ui-fg-muted)]"
+        >
           No cards found for the selected collection/version.
         </p>
         <div v-else class="card-preview-grid mt-3">
@@ -1328,8 +1401,9 @@ watch(
       <div class="mt-6 rounded-lg border border-[var(--ui-border)] p-3">
         <h3 class="text-sm font-semibold">Sheet Builder (Mixed)</h3>
         <p class="mt-1 text-xs text-[var(--ui-fg-muted)]">
-          Build mixed issuance lines, for example 4x packs, 10x card A, 5x card B.
-          Generate one combined response and render all QR/meta items below for print preview.
+          Build mixed issuance lines, for example 4x packs, 10x card A, 5x card
+          B. Generate one combined response and render all QR/meta items below
+          for print preview.
         </p>
 
         <div class="mt-3 grid gap-3 md:grid-cols-2">
@@ -1339,7 +1413,9 @@ watch(
               v-model="selectedRef"
               :disabled="refsLoading || refs.length === 0"
             >
-              <option v-if="refsLoading" value="">Loading collections...</option>
+              <option v-if="refsLoading" value="">
+                Loading collections...
+              </option>
               <option v-else-if="refs.length === 0" value="">
                 No collections found
               </option>
@@ -1367,7 +1443,10 @@ watch(
           <div v-for="line in sheetLines" :key="line.id" class="sheet-line">
             <label class="field">
               <span>Kind</span>
-              <select v-model="line.kind" @change="handleSheetLineKindChange(line)">
+              <select
+                v-model="line.kind"
+                @change="handleSheetLineKindChange(line)"
+              >
                 <option value="pack">Pack</option>
                 <option value="fixed-card">Designated card</option>
               </select>
@@ -1375,12 +1454,22 @@ watch(
 
             <label class="field">
               <span>Quantity</span>
-              <input v-model.number="line.quantity" type="number" min="1" max="500" />
+              <input
+                v-model.number="line.quantity"
+                type="number"
+                min="1"
+                max="500"
+              />
             </label>
 
             <label v-if="line.kind === 'pack'" class="field">
               <span>Pack card count</span>
-              <input v-model.number="line.count" type="number" min="1" max="50" />
+              <input
+                v-model.number="line.count"
+                type="number"
+                min="1"
+                max="50"
+              />
             </label>
             <label v-else class="field">
               <span>Card id</span>
@@ -1427,8 +1516,13 @@ watch(
             }}
           </Button>
         </div>
-        <p v-if="cardError" class="mt-2 text-sm text-red-700">{{ cardError }}</p>
-        <p v-else-if="cardStatus" class="mt-2 text-xs text-[var(--ui-fg-muted)]">
+        <p v-if="cardError" class="mt-2 text-sm text-red-700">
+          {{ cardError }}
+        </p>
+        <p
+          v-else-if="cardStatus"
+          class="mt-2 text-xs text-[var(--ui-fg-muted)]"
+        >
           {{ cardStatus }}
         </p>
 
@@ -1441,43 +1535,63 @@ watch(
             {{ generatedSheet.collectionId }} / {{ generatedSheet.version }} ·
             {{ generatedSheet.quantity }} code(s)
           </p>
+          <div class="mt-3 flex flex-wrap items-center gap-2">
+            <Button class="!px-4 !py-2" @click="openSheetPrintDialog">
+              Open print dialog
+            </Button>
+          </div>
           <div class="sheet-preview-grid mt-3">
-            <article
+            <PixPaxRedeemCodeCard
+              class="bg-white text-black p-4"
               v-for="(item, idx) in generatedSheet.items"
               :key="`${item.codeId}-${idx}`"
-              class="sheet-preview-card"
-            >
-              <div class="sheet-preview-top">
-                <div class="sheet-preview-art">
-                  <CanvasSticker16
-                    v-if="hasSheetItemArt(item)"
-                    :art="getSheetItemArtOrDefault(item)"
-                    :palette="collectionPalette"
-                    :scale="5"
-                    class="sheet-preview-canvas"
-                  />
-                  <div v-else class="sheet-preview-pack">
-                    {{ item.kind === "pack" ? "Pack code" : "Card preview unavailable" }}
-                  </div>
-                </div>
-                <img
-                  :src="qrSvgToDataUrl(item.qrSvg)"
-                  alt="Code card QR"
-                  class="sheet-preview-qr"
-                />
-              </div>
-              <p class="item-title">{{ item.label }}</p>
-              <p class="item-sub mono">{{ item.codeId }}</p>
-              <p class="item-sub">
-                line {{ item.lineId }} · {{ item.kind === "pack" ? `pack (${item.count || 1})` : `card ${item.cardId || "?"}` }}
-              </p>
-              <p class="item-sub">expires {{ item.expiresAt }}</p>
-              <p class="item-sub sheet-preview-link mono">{{ item.redeemUrl }}</p>
-            </article>
+              :item="item"
+              :art="hasSheetItemArt(item) ? getSheetItemArtOrDefault(item) : null"
+              :palette="collectionPalette"
+            />
           </div>
         </div>
       </div>
     </section>
+
+    <div
+      v-if="isSheetPrintDialogOpen && generatedSheet?.items?.length"
+      class="sheet-print-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Sheet print preview"
+    >
+      <div class="sheet-print-dialog">
+        <header class="sheet-print-toolbar">
+          <div class="sheet-print-heading">
+            <h4 class="text-sm font-semibold">Sheet print preview</h4>
+            <p class="text-xs text-[var(--ui-fg-muted)]">
+              {{ generatedSheet.collectionId }} / {{ generatedSheet.version }} ·
+              {{ generatedSheet.quantity }} code(s)
+            </p>
+          </div>
+          <div class="sheet-print-actions">
+            <Button class="!px-4 !py-2" @click="printGeneratedSheet">
+              Print
+            </Button>
+            <Button class="!px-4 !py-2" @click="closeSheetPrintDialog">
+              Close
+            </Button>
+          </div>
+        </header>
+        <div class="sheet-print-body">
+          <div class="sheet-print-grid">
+            <PixPaxRedeemCodeCard
+              v-for="(item, idx) in generatedSheet.items"
+              :key="`print-${item.codeId}-${idx}`"
+              :item="item"
+              :art="hasSheetItemArt(item) ? getSheetItemArtOrDefault(item) : null"
+              :palette="collectionPalette"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -1556,51 +1670,61 @@ watch(
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
 }
 
-.sheet-preview-card {
-  border: 1px solid var(--ui-border);
-  border-radius: 10px;
-  padding: 10px;
-  display: grid;
-  gap: 6px;
+.sheet-print-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: flex;
+  padding: 1rem;
+  background: color-mix(in oklch, var(--ui-bg) 78%, black);
 }
 
-.sheet-preview-top {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 8px;
-  align-items: center;
-}
-
-.sheet-preview-art {
-  height: 90px;
+.sheet-print-dialog {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  overflow: hidden;
   border: 1px solid var(--ui-border);
-  border-radius: 8px;
+  border-radius: 14px;
   background: var(--ui-bg);
+}
+
+.sheet-print-toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--ui-border);
+}
+
+.sheet-print-heading {
   display: grid;
-  place-items: center;
+  gap: 0.25rem;
 }
 
-.sheet-preview-canvas {
-  width: 80px;
-  height: 80px;
+.sheet-print-heading h4,
+.sheet-print-heading p {
+  margin: 0;
 }
 
-.sheet-preview-pack {
-  font-size: 11px;
-  color: var(--ui-fg-muted);
+.sheet-print-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
-.sheet-preview-qr {
-  width: 96px;
-  height: 96px;
-  border: 1px solid var(--ui-border);
-  border-radius: 8px;
+.sheet-print-body {
+  flex: 1;
+  overflow: auto;
+  padding: 1rem;
   background: #fff;
-  padding: 4px;
 }
 
-.sheet-preview-link {
-  overflow-wrap: anywhere;
+.sheet-print-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 }
 
 .card-preview-grid {
@@ -1640,6 +1764,38 @@ watch(
 @media (min-width: 768px) {
   .sheet-line {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media print {
+  .pixpax-admin-root > :not(.sheet-print-overlay) {
+    display: none !important;
+  }
+
+  .sheet-print-overlay {
+    position: static;
+    inset: auto;
+    padding: 0;
+    background: #fff;
+  }
+
+  .sheet-print-dialog {
+    border: 0;
+    border-radius: 0;
+  }
+
+  .sheet-print-toolbar {
+    display: none !important;
+  }
+
+  .sheet-print-body {
+    overflow: visible;
+    padding: 0;
+  }
+
+  .sheet-print-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6mm;
   }
 }
 </style>

@@ -235,17 +235,17 @@ const selectedCollection = computed(
       (entry) => entry.id === selectedCollectionId.value,
     ) || null,
 );
-const selectedCollectionRef = computed(
-  () => {
-    if (!selectedCollectionId.value || !selectedCollectionVersion.value) return null;
-    return {
-      collectionId: selectedCollectionId.value,
-      version: selectedCollectionVersion.value,
-    };
-  },
-);
+const selectedCollectionRef = computed(() => {
+  if (!selectedCollectionId.value || !selectedCollectionVersion.value)
+    return null;
+  return {
+    collectionId: selectedCollectionId.value,
+    version: selectedCollectionVersion.value,
+  };
+});
 const selectedCollectionIssuanceMode = computed(() =>
-  String(selectedCollectionSettings.value?.issuanceMode || "scheduled") === "codes-only"
+  String(selectedCollectionSettings.value?.issuanceMode || "scheduled") ===
+  "codes-only"
     ? "codes-only"
     : "scheduled",
 );
@@ -524,19 +524,25 @@ const claimedUsedAtLabel = computed(() => {
   return parsed.toLocaleString();
 });
 
-const canOpenPack = computed(
-  () => {
-    if (!selectedCollection.value || selectedCollection.value.stickers.length === 0) return false;
-    if (packPhase.value === "opening" || packPhase.value === "reveal") return false;
-    if (packMode.value === "dev-untracked") return true;
-    if (selectedCollectionIssuanceMode.value === "codes-only") {
-      return Boolean(redeemToken.value.trim());
-    }
-    return !openedForCurrentDrop.value || !!redeemToken.value.trim();
-  },
-);
+const canOpenPack = computed(() => {
+  if (
+    !selectedCollection.value ||
+    selectedCollection.value.stickers.length === 0
+  )
+    return false;
+  if (packPhase.value === "opening" || packPhase.value === "reveal")
+    return false;
+  if (packMode.value === "dev-untracked") return true;
+  if (selectedCollectionIssuanceMode.value === "codes-only") {
+    return Boolean(redeemToken.value.trim());
+  }
+  return !openedForCurrentDrop.value || !!redeemToken.value.trim();
+});
 const canUsePackCta = computed(() => {
-  if (selectedCollectionIssuanceMode.value === "codes-only" && packMode.value !== "dev-untracked") {
+  if (
+    selectedCollectionIssuanceMode.value === "codes-only" &&
+    packMode.value !== "dev-untracked"
+  ) {
     return true;
   }
   return canOpenPack.value;
@@ -575,7 +581,10 @@ const nextDropLabel = computed(() => {
   return parts.join(" ");
 });
 const packCtaLabel = computed(() => {
-  if (selectedCollectionIssuanceMode.value === "codes-only" && packMode.value !== "dev-untracked") {
+  if (
+    selectedCollectionIssuanceMode.value === "codes-only" &&
+    packMode.value !== "dev-untracked"
+  ) {
     return "Redeem code";
   }
   if (
@@ -590,7 +599,10 @@ const packCtaLabel = computed(() => {
 });
 
 const packCtaSubtext = computed(() => {
-  if (selectedCollectionIssuanceMode.value === "codes-only" && packMode.value !== "dev-untracked") {
+  if (
+    selectedCollectionIssuanceMode.value === "codes-only" &&
+    packMode.value !== "dev-untracked"
+  ) {
     return "Redeem a code to collect from this series";
   }
   if (packMode.value === "dev-untracked") return "";
@@ -636,8 +648,11 @@ function resolveCollectorPubKeyForRedeem() {
 }
 
 function base64UrlDecodeToBytes(input: string) {
-  const normalized = String(input || "").replace(/-/g, "+").replace(/_/g, "/");
-  const pad = normalized.length % 4 === 0 ? "" : "=".repeat(4 - (normalized.length % 4));
+  const normalized = String(input || "")
+    .replace(/-/g, "+")
+    .replace(/_/g, "/");
+  const pad =
+    normalized.length % 4 === 0 ? "" : "=".repeat(4 - (normalized.length % 4));
   const binary = atob(`${normalized}${pad}`);
   const out = new Uint8Array(binary.length);
   for (let i = 0; i < binary.length; i += 1) {
@@ -647,7 +662,9 @@ function base64UrlDecodeToBytes(input: string) {
 }
 
 async function computeTokenHashHexFromToken(token: string) {
-  const parts = String(token || "").trim().split(".");
+  const parts = String(token || "")
+    .trim()
+    .split(".");
   if (parts.length !== 2) {
     throw new Error("Invalid token format.");
   }
@@ -813,7 +830,9 @@ function buildCollectionFromPayloads(args: {
   return collection;
 }
 
-async function fetchCollectionLegacy(refEntry: CollectionRef): Promise<Collection> {
+async function fetchCollectionLegacy(
+  refEntry: CollectionRef,
+): Promise<Collection> {
   const encodedCollectionId = encodeURIComponent(refEntry.collectionId);
   const encodedVersion = encodeURIComponent(refEntry.version);
 
@@ -864,7 +883,9 @@ async function fetchCollectionLegacy(refEntry: CollectionRef): Promise<Collectio
   });
 }
 
-async function fetchCollectionBundle(refEntry: CollectionRef): Promise<Collection> {
+async function fetchCollectionBundle(
+  refEntry: CollectionRef,
+): Promise<Collection> {
   const encodedCollectionId = encodeURIComponent(refEntry.collectionId);
   const encodedVersion = encodeURIComponent(refEntry.version);
   try {
@@ -883,10 +904,13 @@ async function fetchCollectionBundle(refEntry: CollectionRef): Promise<Collectio
   } catch (error) {
     const status = (error as { status?: number })?.status;
     if (status === 404) {
-      setStatus("Bundle endpoint unavailable. Falling back to legacy collection fetch.", {
-        collectionId: refEntry.collectionId,
-        version: refEntry.version,
-      });
+      setStatus(
+        "Bundle endpoint unavailable. Falling back to legacy collection fetch.",
+        {
+          collectionId: refEntry.collectionId,
+          version: refEntry.version,
+        },
+      );
       return fetchCollectionLegacy(refEntry);
     }
     throw error;
@@ -909,7 +933,9 @@ function resolveRequestedCollectionId() {
   return pickCollectionRouteTarget({
     forcedCollectionId: props.forcedCollectionId,
     routeCollectionId: String(route.params?.collectionId || "").trim(),
-    houseCollectionId: String(import.meta.env.VITE_PIXPAX_HOUSE_COLLECTION_ID || "").trim(),
+    houseCollectionId: String(
+      import.meta.env.VITE_PIXPAX_HOUSE_COLLECTION_ID || "",
+    ).trim(),
     fallbackCollectionId: "pixel-animals",
   });
 }
@@ -917,8 +943,12 @@ function resolveRequestedCollectionId() {
 function normalizeSettings(input?: Record<string, unknown>) {
   const source =
     input && typeof input === "object" && !Array.isArray(input) ? input : {};
-  const visibility = String(source.visibility || "").trim().toLowerCase();
-  const issuanceMode = String(source.issuanceMode || "").trim().toLowerCase();
+  const visibility = String(source.visibility || "")
+    .trim()
+    .toLowerCase();
+  const issuanceMode = String(source.issuanceMode || "")
+    .trim()
+    .toLowerCase();
   return {
     ...source,
     visibility: visibility === "unlisted" ? "unlisted" : "public",
@@ -936,11 +966,15 @@ async function loadCollection() {
     const resolveQuery = new URLSearchParams();
     if (requestedVersion) resolveQuery.set("version", requestedVersion);
     const resolve = await fetchJson<ApiCollectionResolve>(
-      `/v1/pixpax/collections/${encodeURIComponent(requestedCollectionId)}/resolve${
+      `/v1/pixpax/collections/${encodeURIComponent(
+        requestedCollectionId,
+      )}/resolve${
         resolveQuery.toString() ? `?${resolveQuery.toString()}` : ""
       }`,
     );
-    const resolvedCollectionId = String(resolve.collectionId || requestedCollectionId).trim();
+    const resolvedCollectionId = String(
+      resolve.collectionId || requestedCollectionId,
+    ).trim();
     const resolvedVersion = String(resolve.resolvedVersion || "").trim();
     if (!resolvedCollectionId || !resolvedVersion) {
       throw new Error("Collection resolve returned an invalid payload.");
@@ -1025,53 +1059,55 @@ async function openPack() {
     };
     const normalizedRedeemToken = redeemToken.value.trim();
 
-    const response =
-      normalizedRedeemToken
-        ? await fetchJson<ApiPackResponse>("/v1/pixpax/redeem", {
+    const response = normalizedRedeemToken
+      ? await fetchJson<ApiPackResponse>("/v1/pixpax/redeem", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(
+            await (async () => {
+              const collectorPubKey = resolveCollectorPubKeyForRedeem();
+              let collectorSig: string | undefined;
+              try {
+                const tokenHash = await computeTokenHashHexFromToken(
+                  normalizedRedeemToken,
+                );
+                const identityPrivateKey = identity?.privateKey
+                  ?.value as CryptoKey | null;
+                const identityPublicKey = String(
+                  stripIdentityKey(String(identity?.publicKeyPEM?.value || "")),
+                ).trim();
+                if (
+                  tokenHash &&
+                  identityPrivateKey &&
+                  identityPublicKey &&
+                  identityPublicKey === collectorPubKey
+                ) {
+                  collectorSig = await signCollectorProofFromTokenHash({
+                    tokenHash,
+                    privateKey: identityPrivateKey,
+                  });
+                }
+              } catch {
+                // Redeem can proceed without collector proof.
+              }
+              return {
+                token: normalizedRedeemToken,
+                collectorPubKey,
+                ...(collectorSig ? { collectorSig } : {}),
+              };
+            })(),
+          ),
+        })
+      : await fetchJson<ApiPackResponse>(
+          `/v1/pixpax/collections/${encodeURIComponent(
+            refEntry.collectionId,
+          )}/${encodeURIComponent(refEntry.version)}/packs`,
+          {
             method: "POST",
             headers: { "content-type": "application/json" },
-            body: JSON.stringify(
-              await (async () => {
-                const collectorPubKey = resolveCollectorPubKeyForRedeem();
-                let collectorSig: string | undefined;
-                try {
-                  const tokenHash = await computeTokenHashHexFromToken(normalizedRedeemToken);
-                  const identityPrivateKey = identity?.privateKey?.value as CryptoKey | null;
-                  const identityPublicKey = String(
-                    stripIdentityKey(String(identity?.publicKeyPEM?.value || ""))
-                  ).trim();
-                  if (
-                    tokenHash &&
-                    identityPrivateKey &&
-                    identityPublicKey &&
-                    identityPublicKey === collectorPubKey
-                  ) {
-                    collectorSig = await signCollectorProofFromTokenHash({
-                      tokenHash,
-                      privateKey: identityPrivateKey,
-                    });
-                  }
-                } catch {
-                  // Redeem can proceed without collector proof.
-                }
-                return {
-                  token: normalizedRedeemToken,
-                  collectorPubKey,
-                  ...(collectorSig ? { collectorSig } : {}),
-                };
-              })(),
-            ),
-          })
-        : await fetchJson<ApiPackResponse>(
-            `/v1/pixpax/collections/${encodeURIComponent(
-              refEntry.collectionId,
-            )}/${encodeURIComponent(refEntry.version)}/packs`,
-            {
-              method: "POST",
-              headers: { "content-type": "application/json" },
-              body: JSON.stringify(payload),
-            },
-          );
+            body: JSON.stringify(payload),
+          },
+        );
 
     const index = indexByCollection.value[selectedCollection.value.id];
     const existingById = new Map(
@@ -1242,7 +1278,9 @@ async function openPack() {
     }
 
     packPhase.value = "idle";
-    packError.value = String(parsedBody?.error || error?.message || "Pack opening failed.");
+    packError.value = String(
+      parsedBody?.error || error?.message || "Pack opening failed.",
+    );
     setStatus("Failed to open pack.", {
       status: error?.status || null,
       error: packError.value,
@@ -1318,14 +1356,12 @@ const newlyRedeemedCardIdSet = computed(() => {
       raw
         .split(",")
         .map((entry) => String(entry || "").trim())
-        .filter(Boolean)
+        .filter(Boolean),
     );
   }
   if (Array.isArray(raw)) {
     return new Set(
-      raw
-        .map((entry) => String(entry || "").trim())
-        .filter(Boolean)
+      raw.map((entry) => String(entry || "").trim()).filter(Boolean),
     );
   }
   return new Set<string>();
@@ -1378,7 +1414,11 @@ watch(
 );
 
 watch(
-  () => [route.params?.collectionId, route.query?.version, props.forcedCollectionId],
+  () => [
+    route.params?.collectionId,
+    route.query?.version,
+    props.forcedCollectionId,
+  ],
   () => {
     void loadCollection();
   },
@@ -1412,7 +1452,7 @@ watch(
   (open) => {
     activityLock.setActivityLock("pack-open", open);
   },
-  { immediate: true }
+  { immediate: true },
 );
 </script>
 
@@ -1451,7 +1491,12 @@ watch(
             :cta-subtext="packCtaSubtext"
             :cta-disabled="!canUsePackCta"
             :cta-chip="packCtaChip"
-            :primary-action="selectedCollectionIssuanceMode === 'codes-only' && packMode !== 'dev-untracked' ? 'redeem-code' : 'open-pack'"
+            :primary-action="
+              selectedCollectionIssuanceMode === 'codes-only' &&
+              packMode !== 'dev-untracked'
+                ? 'redeem-code'
+                : 'open-pack'
+            "
             :prefill-code="redeemToken"
             :can-redeem="true"
             :show-dev-options="devUntrackedPackEnabled"
@@ -1475,8 +1520,10 @@ watch(
           >
             {{ selectedCollection?.name }}
           </h1>
-          <p class="text-xs text-[var(--ui-fg-muted)]">Issued by {{ issuerDisplay.name || "PixPax" }}</p>
           <div class="flex flex-col gap-2">
+            <p class="text-xs text-[var(--ui-fg-muted)]">
+              Issued by {{ issuerDisplay.name || "PixPax" }}
+            </p>
             <div
               class="h-1 lg:h-1.5 w-full rounded-full bg-[var(--ui-fg)]/10 ring-1 ring-[var(--ui-fg)]/20"
             >
@@ -1518,7 +1565,10 @@ watch(
           <p v-if="loadError" class="text-sm font-semibold text-red-600">
             {{ loadError }}
           </p>
-          <p v-if="loadingCollections" class="text-xs text-[var(--ui-fg-muted)]">
+          <p
+            v-if="loadingCollections"
+            class="text-xs text-[var(--ui-fg-muted)]"
+          >
             Loading collections...
           </p>
           <div
@@ -1533,7 +1583,9 @@ watch(
               :missing="!isOwned(sticker.meta.id)"
               :class="[
                 'w-full max-w-48',
-                isNewlyRedeemed(sticker.meta.id) ? 'ring-2 ring-emerald-300/70 rounded-2xl' : '',
+                isNewlyRedeemed(sticker.meta.id)
+                  ? 'ring-2 ring-emerald-300/70 rounded-2xl'
+                  : '',
               ]"
             />
           </div>
@@ -1576,7 +1628,9 @@ watch(
                   :missing="!isOwned(sticker.meta.id)"
                   :class="[
                     'max-w-38 sm:max-w-48',
-                    isNewlyRedeemed(sticker.meta.id) ? 'ring-2 ring-emerald-300/70 rounded-2xl' : '',
+                    isNewlyRedeemed(sticker.meta.id)
+                      ? 'ring-2 ring-emerald-300/70 rounded-2xl'
+                      : '',
                   ]"
                   :sparkles="sticker.meta.shiny"
                   :glow="sticker.meta.shiny"
@@ -1657,14 +1711,20 @@ watch(
                 <span class="redeem-entry-chip">Redeem pack</span>
               </div>
             </div>
-            <p class="text-xs uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]">
+            <p
+              class="text-xs uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]"
+            >
               Code ready
             </p>
             <p class="text-sm text-[var(--ui-fg)]">
               Tap redeem to open your pack.
             </p>
             <div class="flex flex-wrap items-center justify-center gap-2">
-              <Button size="sm" variant="secondary" @click="dismissRedeemEntryOverlay">
+              <Button
+                size="sm"
+                variant="secondary"
+                @click="dismissRedeemEntryOverlay"
+              >
                 Not now
               </Button>
               <Button size="sm" @click="redeemFromEntryOverlay">
@@ -1674,158 +1734,169 @@ watch(
           </div>
 
           <template v-else>
-          <div
-            v-if="packPhase === 'opening'"
-            class="mx-auto flex w-full max-w-md flex-col items-center gap-3 rounded-2xl border border-[var(--ui-border)] p-6 text-center"
-          >
-            <p
-              class="text-xs uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]"
-            >
-              Opening pack
-            </p>
-            <p class="text-sm text-[var(--ui-fg)]">Preparing reveal...</p>
-          </div>
-          <div
-            v-else-if="packPhase === 'error'"
-            class="mx-auto flex w-full max-w-md flex-col items-center gap-3 rounded-2xl border border-[var(--ui-border)] p-6 text-center"
-          >
-            <p
-              class="text-xs uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]"
-            >
-              Code already used
-            </p>
-            <p class="text-sm text-[var(--ui-fg)]">
-              {{ packError || "This code has already been redeemed." }}
-            </p>
-            <p
-              v-if="claimedUsedAtLabel"
-              class="text-xs text-[var(--ui-fg-muted)]"
-            >
-              Redeemed on {{ claimedUsedAtLabel }}.
-            </p>
-            <div class="mt-2 flex flex-wrap items-center justify-center gap-2">
-              <Button size="sm" variant="secondary" @click="closePackReveal">
-                Back to collection
-              </Button>
-            </div>
-          </div>
-
-          <template v-else>
-            <div class="relative mx-auto flex-1 p-2" v-if="!revealComplete">
-              <div
-                v-for="(card, index) in remainingPackCards"
-                :key="`${card.meta.id}-${index}`"
-                class="w-full absolute inset-0 flex items-center justify-center transition-transform duration-300 ease-out"
-                :style="{
-                  transform: `translateY(${index * 8}px) translateX(${
-                    index * 5
-                  }px) rotate(${index * 1.5}deg)`,
-                  zIndex: remainingPackCards.length - index,
-                }"
-              >
-                <button
-                  type="button"
-                  class="relative rounded-2xl min-w-64 border border-[var(--ui-border)] bg-[var(--ui-surface)] p-4 shadow-[0_16px_28px_rgba(15,23,42,0.22)]"
-                  @click="collectNextPackCard"
-                  :class="{
-                    'reveal-shiny': activePackCard?.meta.shiny && index === 0,
-                  }"
-                  :key="packRevealIndex"
-                >
-                  <span
-                    v-if="activePackCard?.meta.shiny && index === 0"
-                    class="absolute inset-0 rounded-2xl pointer-events-none shiny-glow"
-                  ></span>
-                  <PixPaxStickerCard
-                    :sticker="card"
-                    :palette="selectedCollection!.palette"
-                    :sparkles="card.meta.shiny"
-                    :glow="card.meta.shiny"
-                    :shimmer="card.meta.shiny"
-                    :animated="true"
-                    :finish-fx="true"
-                  />
-                  <span
-                    class="mt-3 block text-[10px] uppercase tracking-[0.18em] text-[var(--ui-fg-muted)]"
-                  >
-                    Tap to collect
-                  </span>
-                </button>
-              </div>
-            </div>
-
             <div
-              v-else
-              class="flex flex-col gap-4 items-center overflow-hidden"
+              v-if="packPhase === 'opening'"
+              class="mx-auto flex w-full max-w-md flex-col items-center gap-3 rounded-2xl border border-[var(--ui-border)] p-6 text-center"
             >
               <p
                 class="text-xs uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]"
               >
-                Pack summary
+                Opening pack
               </p>
-              <div v-if="revealNewGroups.length" class="space-y-2 w-full">
-                <p class="text-sm font-semibold text-[var(--ui-fg)]">
-                  New cards ({{ revealNeeds.length }})
-                </p>
-                <div class="flex flex-nowrap gap-2 overflow-x-auto w-full py-4">
-                  <div
-                    v-for="(group, index) in revealNewGroups"
-                    :key="`new-${group.card.meta.id}-${index}`"
-                    class="min-w-40"
-                  >
-                    <PixPaxStickerCard
-                      :sticker="group.card"
-                      :palette="selectedCollection!.palette"
-                      compact
-                      :sparkles="group.card.meta.shiny"
-                      :glow="group.card.meta.shiny"
-                      :shimmer="group.card.meta.shiny"
-                      :animated="true"
-                      :finish-fx="true"
-                    />
-                  </div>
-                </div>
+              <p class="text-sm text-[var(--ui-fg)]">Preparing reveal...</p>
+            </div>
+            <div
+              v-else-if="packPhase === 'error'"
+              class="mx-auto flex w-full max-w-md flex-col items-center gap-3 rounded-2xl border border-[var(--ui-border)] p-6 text-center"
+            >
+              <p
+                class="text-xs uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]"
+              >
+                Code already used
+              </p>
+              <p class="text-sm text-[var(--ui-fg)]">
+                {{ packError || "This code has already been redeemed." }}
+              </p>
+              <p
+                v-if="claimedUsedAtLabel"
+                class="text-xs text-[var(--ui-fg-muted)]"
+              >
+                Redeemed on {{ claimedUsedAtLabel }}.
+              </p>
+              <div
+                class="mt-2 flex flex-wrap items-center justify-center gap-2"
+              >
+                <Button size="sm" variant="secondary" @click="closePackReveal">
+                  Back to collection
+                </Button>
               </div>
-              <div v-if="revealDuplicateGroups.length" class="space-y-2 w-full">
-                <p class="text-sm font-semibold text-[var(--ui-fg)]">
-                  Owned duplicates ({{ revealDuplicates.length }})
-                </p>
-                <div class="flex flex-nowrap gap-2 overflow-x-auto w-full py-4">
-                  <div
-                    v-for="(group, index) in revealDuplicateGroups"
-                    :key="`dup-${group.card.meta.id}-${index}`"
-                    class="relative min-w-34"
+            </div>
+
+            <template v-else>
+              <div class="relative mx-auto flex-1 p-2" v-if="!revealComplete">
+                <div
+                  v-for="(card, index) in remainingPackCards"
+                  :key="`${card.meta.id}-${index}`"
+                  class="w-full absolute inset-0 flex items-center justify-center transition-transform duration-300 ease-out"
+                  :style="{
+                    transform: `translateY(${index * 8}px) translateX(${
+                      index * 5
+                    }px) rotate(${index * 1.5}deg)`,
+                    zIndex: remainingPackCards.length - index,
+                  }"
+                >
+                  <button
+                    type="button"
+                    class="relative rounded-2xl min-w-64 border border-[var(--ui-border)] bg-[var(--ui-surface)] p-4 shadow-[0_16px_28px_rgba(15,23,42,0.22)]"
+                    @click="collectNextPackCard"
+                    :class="{
+                      'reveal-shiny': activePackCard?.meta.shiny && index === 0,
+                    }"
+                    :key="packRevealIndex"
                   >
                     <span
-                      v-if="group.count > 1"
-                      class="absolute bottom-0 right-0 z-20 rounded-full bg-[var(--ui-fg)] px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.16em] text-[var(--ui-bg)]"
-                    >
-                      x{{ group.count }}
-                    </span>
+                      v-if="activePackCard?.meta.shiny && index === 0"
+                      class="absolute inset-0 rounded-2xl pointer-events-none shiny-glow"
+                    ></span>
                     <PixPaxStickerCard
-                      :sticker="group.card"
+                      :sticker="card"
                       :palette="selectedCollection!.palette"
-                      compact
-                      :sparkles="group.card.meta.shiny"
-                      :glow="group.card.meta.shiny"
-                      :shimmer="group.card.meta.shiny"
+                      :sparkles="card.meta.shiny"
+                      :glow="card.meta.shiny"
+                      :shimmer="card.meta.shiny"
                       :animated="true"
                       :finish-fx="true"
                     />
-                  </div>
+                    <span
+                      class="mt-3 block text-[10px] uppercase tracking-[0.18em] text-[var(--ui-fg-muted)]"
+                    >
+                      Tap to collect
+                    </span>
+                  </button>
                 </div>
               </div>
+
               <div
-                v-if="!revealNewGroups.length && !revealDuplicateGroups.length"
-                class="text-sm text-[var(--ui-fg-muted)]"
+                v-else
+                class="flex flex-col gap-4 items-center overflow-hidden"
               >
-                Pack had no revealable cards.
+                <p
+                  class="text-xs uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]"
+                >
+                  Pack summary
+                </p>
+                <div v-if="revealNewGroups.length" class="space-y-2 w-full">
+                  <p class="text-sm font-semibold text-[var(--ui-fg)]">
+                    New cards ({{ revealNeeds.length }})
+                  </p>
+                  <div
+                    class="flex flex-nowrap gap-2 overflow-x-auto w-full py-4"
+                  >
+                    <div
+                      v-for="(group, index) in revealNewGroups"
+                      :key="`new-${group.card.meta.id}-${index}`"
+                      class="min-w-40"
+                    >
+                      <PixPaxStickerCard
+                        :sticker="group.card"
+                        :palette="selectedCollection!.palette"
+                        compact
+                        :sparkles="group.card.meta.shiny"
+                        :glow="group.card.meta.shiny"
+                        :shimmer="group.card.meta.shiny"
+                        :animated="true"
+                        :finish-fx="true"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div
+                  v-if="revealDuplicateGroups.length"
+                  class="space-y-2 w-full"
+                >
+                  <p class="text-sm font-semibold text-[var(--ui-fg)]">
+                    Owned duplicates ({{ revealDuplicates.length }})
+                  </p>
+                  <div
+                    class="flex flex-nowrap gap-2 overflow-x-auto w-full py-4"
+                  >
+                    <div
+                      v-for="(group, index) in revealDuplicateGroups"
+                      :key="`dup-${group.card.meta.id}-${index}`"
+                      class="relative min-w-34"
+                    >
+                      <span
+                        v-if="group.count > 1"
+                        class="absolute bottom-0 right-0 z-20 rounded-full bg-[var(--ui-fg)] px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.16em] text-[var(--ui-bg)]"
+                      >
+                        x{{ group.count }}
+                      </span>
+                      <PixPaxStickerCard
+                        :sticker="group.card"
+                        :palette="selectedCollection!.palette"
+                        compact
+                        :sparkles="group.card.meta.shiny"
+                        :glow="group.card.meta.shiny"
+                        :shimmer="group.card.meta.shiny"
+                        :animated="true"
+                        :finish-fx="true"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div
+                  v-if="
+                    !revealNewGroups.length && !revealDuplicateGroups.length
+                  "
+                  class="text-sm text-[var(--ui-fg-muted)]"
+                >
+                  Pack had no revealable cards.
+                </div>
+                <Button size="xs" variant="secondary" @click="closePackReveal">
+                  Done
+                </Button>
               </div>
-              <Button size="xs" variant="secondary" @click="closePackReveal">
-                Done
-              </Button>
-            </div>
-          </template>
+            </template>
           </template>
         </div>
       </div>

@@ -3,6 +3,7 @@ import { computed } from "vue";
 import { useFavicon, useTitle } from "@vueuse/core";
 import { useRoute } from "vue-router";
 import PixPaxLogoRaw from "../../module/pixpax/ui/assets/PixPaxLogo.svg?raw";
+import PixPaxLogoText from "../../module/pixpax/ui/assets/PixPaxLogoText.svg?component";
 import Concord from "../../module/concord/Concord.vue";
 import RoutePixPaxMainLayout from "./RoutePixPaxMainLayout.vue";
 
