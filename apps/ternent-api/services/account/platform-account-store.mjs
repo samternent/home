@@ -746,6 +746,14 @@ export async function ensurePersonalPixbook(
         )
       ORDER BY
         CASE WHEN status = 'active' THEN 0 ELSE 1 END,
+        CASE
+          WHEN
+            $3::text IS NOT NULL
+            AND profile_id = $3
+            AND identity_key_fingerprint = $4
+          THEN 0
+          ELSE 1
+        END,
         CASE WHEN user_key = $2 THEN 0 ELSE 1 END,
         created_at ASC
       LIMIT 1

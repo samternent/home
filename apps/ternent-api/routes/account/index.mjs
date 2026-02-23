@@ -492,64 +492,72 @@ export default function accountRoutes(router) {
       return;
     }
 
-    const resolved = requestedBookId
-      ? await getBookForWorkspace(sessionUserId(req), resolveAccountId(req), requestedBookId)
-      : await ensurePersonalPixbook(
-          sessionUserId(req),
-          resolveAccountId(req),
-          {
-            displayName:
-              profileBinding.profileDisplayName ||
-              req.platformSession?.user?.name ||
-              req.platformSession?.user?.email ||
-              "My Pixbook",
-            email: req.platformSession?.user?.email || "",
-          },
-          profileBinding,
-          { collectionId: requestedCollectionId }
-        );
+    try {
+      const resolved = requestedBookId
+        ? await getBookForWorkspace(sessionUserId(req), resolveAccountId(req), requestedBookId)
+        : await ensurePersonalPixbook(
+            sessionUserId(req),
+            resolveAccountId(req),
+            {
+              displayName:
+                profileBinding.profileDisplayName ||
+                req.platformSession?.user?.name ||
+                req.platformSession?.user?.email ||
+                "My Pixbook",
+              email: req.platformSession?.user?.email || "",
+            },
+            profileBinding,
+            { collectionId: requestedCollectionId }
+          );
 
-    if (!resolved) {
-      res.status(404).send({ ok: false, error: "Pixbook not found." });
-      return;
-    }
+      if (!resolved) {
+        res.status(404).send({ ok: false, error: "Pixbook not found." });
+        return;
+      }
 
-    const expectedUserKey = derivePersonalPixbookUserKey(
-      sessionUserId(req),
-      profileBinding
-    );
-    const matchesIdentityBinding =
-      String(resolved.managedUser.profileId || "") === profileBinding.profileId &&
-      String(resolved.managedUser.identityKeyFingerprint || "") ===
-        profileBinding.identityKeyFingerprint;
-    if (resolved.managedUser.userKey !== expectedUserKey && !matchesIdentityBinding) {
-      res.status(409).send({
-        ok: false,
-        code: "PIXBOOK_BOOK_PROFILE_MISMATCH",
-        error:
-          "Selected book belongs to a different profile identity. Load that profile first.",
+      const expectedUserKey = derivePersonalPixbookUserKey(
+        sessionUserId(req),
+        profileBinding
+      );
+      const matchesIdentityBinding =
+        String(resolved.managedUser.profileId || "") === profileBinding.profileId &&
+        String(resolved.managedUser.identityKeyFingerprint || "") ===
+          profileBinding.identityKeyFingerprint;
+      if (resolved.managedUser.userKey !== expectedUserKey && !matchesIdentityBinding) {
+        res.status(409).send({
+          ok: false,
+          code: "PIXBOOK_BOOK_PROFILE_MISMATCH",
+          error:
+            "Selected book belongs to a different profile identity. Load that profile first.",
+        });
+        return;
+      }
+      if (String(resolved.book.collectionId || "").trim() !== requestedCollectionId) {
+        res.status(409).send({
+          ok: false,
+          code: "PIXBOOK_BOOK_COLLECTION_MISMATCH",
+          error:
+            "Selected book belongs to a different collection. Switch collection before opening this pixbook.",
+        });
+        return;
+      }
+
+      const snapshot = await getLatestBookSnapshot(resolved.book.id);
+
+      res.status(200).send({
+        ok: true,
+        ...asAccountAliasPayload(resolved.workspace.id),
+        managedUser: resolved.managedUser,
+        book: resolved.book,
+        snapshot,
       });
-      return;
-    }
-    if (String(resolved.book.collectionId || "").trim() !== requestedCollectionId) {
-      res.status(409).send({
+    } catch (error) {
+      console.error("[account] pixbook resolve failed:", error);
+      res.status(500).send({
         ok: false,
-        code: "PIXBOOK_BOOK_COLLECTION_MISMATCH",
-        error:
-          "Selected book belongs to a different collection. Switch collection before opening this pixbook.",
+        error: "Unable to resolve pixbook.",
       });
-      return;
     }
-
-    const snapshot = await getLatestBookSnapshot(resolved.book.id);
-
-    res.status(200).send({
-      ok: true,
-      ...asAccountAliasPayload(resolved.workspace.id),
-      managedUser: resolved.managedUser,
-      book: resolved.book,
-      snapshot,
-    });
   });
 
   router.put("/v1/account/pixbook/snapshot", requireSession, async (req, res) => {

@@ -736,6 +736,14 @@ export async function ensurePersonalPixbook(
         )
       ORDER BY
         CASE WHEN status = 'active' THEN 0 ELSE 1 END,
+        CASE
+          WHEN
+            $3::text IS NOT NULL
+            AND profile_id = $3
+            AND identity_key_fingerprint = $4
+          THEN 0
+          ELSE 1
+        END,
         CASE WHEN user_key = $2 THEN 0 ELSE 1 END,
         created_at ASC
       LIMIT 1
@@ -807,29 +815,35 @@ export async function ensurePersonalPixbook(
         !managedUser.identity_public_key ||
         !managedUser.identity_key_fingerprint))
   ) {
-    const refreshed = await dbQuery(
-      `
-      UPDATE identities
-      SET
-        status = 'active',
-        profile_id = COALESCE(NULLIF($3, ''), profile_id),
-        identity_public_key = COALESCE(NULLIF($4, ''), identity_public_key),
-        identity_key_fingerprint = COALESCE(NULLIF($5, ''), identity_key_fingerprint),
-        updated_at = NOW()
-      WHERE id = $1
-        AND account_id = $2
-      RETURNING id, display_name, avatar_public_id, user_key, profile_id, identity_public_key, identity_key_fingerprint, status, created_at, updated_at
-      `,
-      [
-        managedUser.id,
-        workspace.id,
-        normalizedBinding.profileId,
-        normalizedBinding.identityPublicKey,
-        normalizedBinding.identityKeyFingerprint,
-      ],
-    );
-    if (refreshed.rowCount > 0) {
-      managedUser = refreshed.rows[0];
+    try {
+      const refreshed = await dbQuery(
+        `
+        UPDATE identities
+        SET
+          status = 'active',
+          profile_id = COALESCE(NULLIF($3, ''), profile_id),
+          identity_public_key = COALESCE(NULLIF($4, ''), identity_public_key),
+          identity_key_fingerprint = COALESCE(NULLIF($5, ''), identity_key_fingerprint),
+          updated_at = NOW()
+        WHERE id = $1
+          AND account_id = $2
+        RETURNING id, display_name, avatar_public_id, user_key, profile_id, identity_public_key, identity_key_fingerprint, status, created_at, updated_at
+        `,
+        [
+          managedUser.id,
+          workspace.id,
+          normalizedBinding.profileId,
+          normalizedBinding.identityPublicKey,
+          normalizedBinding.identityKeyFingerprint,
+        ],
+      );
+      if (refreshed.rowCount > 0) {
+        managedUser = refreshed.rows[0];
+      }
+    } catch (error) {
+      if (String(error?.code || "") !== "23505") throw error;
+      managedUser = await loadManagedUser();
+      if (!managedUser) throw error;
     }
   }
 
