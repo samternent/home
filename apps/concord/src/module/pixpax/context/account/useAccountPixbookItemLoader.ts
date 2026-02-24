@@ -173,7 +173,7 @@ export function createAccountPixbookItemLoader(
             return;
           }
           options.cloudSyncError.value = String(
-            (fallbackError as Error)?.message || "Failed to load cloud snapshot."
+            (fallbackError as Error)?.message || "Failed to load cloud state."
           );
           return;
         }
@@ -188,7 +188,7 @@ export function createAccountPixbookItemLoader(
       }
 
       options.cloudSyncError.value = String(
-        (error as Error)?.message || "Failed to load cloud snapshot."
+        (error as Error)?.message || "Failed to load cloud state."
       );
     }
   }

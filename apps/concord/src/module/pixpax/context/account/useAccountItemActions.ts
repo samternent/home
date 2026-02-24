@@ -341,7 +341,7 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
         }
         options.cloudSyncStatus.value = "";
         options.cloudSyncError.value =
-          "Cloud snapshot conflict detected. Load latest cloud snapshot before saving again.";
+          "Cloud ledger conflict detected. Load latest cloud state before saving again.";
         await options.refreshCloudSnapshot();
         return false;
       }
@@ -368,7 +368,7 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
     }
 
     options.cloudSyncError.value = "";
-    options.cloudSyncStatus.value = "Loading cloud snapshot...";
+    options.cloudSyncStatus.value = "Loading cloud ledger...";
 
     try {
       const targetBookId = String(
@@ -389,10 +389,14 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
 
       const payload = response.snapshot?.payload as PixbookExport | null;
       if (!payload || typeof payload !== "object") {
-        throw new Error("No cloud snapshot found yet.");
+        options.cloudSyncStatus.value =
+          "No cloud ledger saved for this pixbook yet.";
+        options.cloudSyncError.value = "";
+        await options.refreshCloudSnapshot();
+        return true;
       }
       if (payload.format !== PIXBOOK_FORMAT || payload.version !== PIXBOOK_VERSION) {
-        throw new Error("Cloud snapshot format is invalid.");
+        throw new Error("Cloud ledger payload format is invalid.");
       }
 
       const file = new File([JSON.stringify(payload)], "cloud-pixbook.json", {
@@ -514,15 +518,15 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
 
       const payload = response.snapshot?.payload as PixbookExport | null;
       if (!payload || typeof payload !== "object") {
-        throw new Error("No saved snapshot exists for this identity yet.");
+        throw new Error("No saved cloud ledger state exists for this identity yet.");
       }
       if (payload.kind !== "private") {
         throw new Error(
-          "Only private pixbook snapshots can be imported as device identities."
+          "Only private pixbook cloud states can be imported as device identities."
         );
       }
       if (payload.format !== PIXBOOK_FORMAT || payload.version !== PIXBOOK_VERSION) {
-        throw new Error("Saved snapshot format is invalid.");
+        throw new Error("Saved cloud state format is invalid.");
       }
 
       const file = new File([JSON.stringify(payload)], "account-identity.json", {

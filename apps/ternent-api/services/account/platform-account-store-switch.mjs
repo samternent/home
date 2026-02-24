@@ -207,6 +207,7 @@ export async function saveBookSnapshot(...args) {
       {
         ...(input || {}),
         ...(primaryResult?.id ? { snapshotId: primaryResult.id } : {}),
+        ...(primaryResult?.createdAt ? { savedAt: primaryResult.createdAt } : {}),
       },
     ],
   });

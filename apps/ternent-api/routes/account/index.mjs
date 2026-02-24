@@ -581,7 +581,10 @@ export default function accountRoutes(router) {
         return;
       }
 
-      const snapshot = await getLatestBookSnapshot(resolved.book.id);
+      const snapshot = await getLatestBookSnapshot(
+        resolved.book.id,
+        resolved.workspace.id
+      );
 
       res.status(200).send({
         ok: true,
@@ -611,7 +614,7 @@ export default function accountRoutes(router) {
     if (!profileBinding.isBound) {
       res.status(400).send({
         ok: false,
-        error: "profileId and identityPublicKey are required to save cloud pixbook snapshots.",
+        error: "profileId and identityPublicKey are required to save cloud pixbook ledger state.",
         code: "PIXBOOK_PROFILE_BINDING_REQUIRED",
       });
       return;
@@ -722,9 +725,21 @@ export default function accountRoutes(router) {
         });
         return;
       }
+      if (
+        String(error?.message || "").includes(
+          "Pixbook ledger storage is not configured"
+        )
+      ) {
+        res.status(503).send({
+          ok: false,
+          error: error.message,
+          code: "PIXBOOK_LEDGER_STORAGE_UNAVAILABLE",
+        });
+        return;
+      }
       res.status(400).send({
         ok: false,
-        error: error?.message || "Unable to save pixbook snapshot.",
+        error: error?.message || "Unable to save pixbook cloud state.",
       });
     }
   });

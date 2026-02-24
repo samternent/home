@@ -423,10 +423,10 @@ function downloadVerificationBundle() {
   <div class="flex flex-col gap-4">
     <h1 class="text-lg font-semibold">Account Backup</h1>
     <p class="text-xs text-[var(--ui-fg-muted)]">
-      Changes are persisted on this device immediately. Account snapshot save is optional and explicit.
+      Account cloud ledger is the source of truth. This device keeps a local compatibility cache.
     </p>
     <p class="text-xs text-[var(--ui-fg-muted)]">
-      Save identity to account first in Identity &amp; Devices before saving cloud snapshots.
+      Save identity to account first in Identity &amp; Devices before writing cloud ledger state.
     </p>
 
     <section class="rounded-lg border border-[var(--ui-border)] p-3 flex flex-col gap-3">
@@ -466,7 +466,7 @@ function downloadVerificationBundle() {
       </div>
 
       <p v-if="cloudSync.cloudSnapshotVersion.value !== null" class="text-xs text-[var(--ui-fg-muted)]">
-        Latest snapshot v{{ cloudSync.cloudSnapshotVersion.value }}
+        Latest cloud ledger revision v{{ cloudSync.cloudSnapshotVersion.value }}
         <span v-if="cloudSync.cloudSnapshotAt.value">({{ new Date(cloudSync.cloudSnapshotAt.value).toLocaleString() }})</span>
       </p>
       <p v-if="cloudSync.cloudLibraryError.value" class="text-xs text-amber-600">

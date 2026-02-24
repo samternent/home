@@ -1,5 +1,9 @@
 import { createHash } from "node:crypto";
 import { createId, dbQuery, dbTx } from "../platform-db/index.mjs";
+import {
+  readPixbookLedgerState,
+  writePixbookLedgerState,
+} from "./pixbook-ledger-store.mjs";
 
 const OWNER_DEFAULT_CAPABILITIES = Object.freeze([
   "platform.account.manage",
@@ -109,6 +113,66 @@ export class BookSnapshotConflictError extends Error {
     this.statusCode = 409;
     this.details = details;
   }
+}
+
+async function readLegacySnapshot(bookId) {
+  const canonicalBookId = String(bookId || "").trim();
+  if (!canonicalBookId) return null;
+
+  const result = await dbQuery(
+    `
+    SELECT
+      id,
+      pixbook_id,
+      version,
+      cipher_sha256,
+      ledger_head,
+      payload_json,
+      created_at
+    FROM pixbook_snapshots
+    WHERE pixbook_id = $1
+    ORDER BY version DESC
+    LIMIT 1
+    `,
+    [canonicalBookId]
+  );
+  if (result.rowCount === 0) return null;
+
+  const row = result.rows[0];
+  return {
+    id: row.id,
+    bookId: row.pixbook_id,
+    version: Number(row.version || 0),
+    checksum: row.cipher_sha256 || "",
+    ledgerHead: row.ledger_head || null,
+    createdAt: row.created_at || null,
+    payload: row.payload_json ?? null,
+  };
+}
+
+async function hydrateLedgerFromLegacySnapshot(accountId, bookId) {
+  const legacy = await readLegacySnapshot(bookId);
+  if (!legacy) return null;
+  if (!legacy.payload || typeof legacy.payload !== "object") return legacy;
+
+  try {
+    await writePixbookLedgerState({
+      accountId,
+      bookId,
+      version: legacy.version,
+      ledgerHead: legacy.ledgerHead,
+      checksum: legacy.checksum,
+      payload: legacy.payload,
+      updatedAt: legacy.createdAt || new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error(
+      "[account] failed to hydrate pixbook ledger from legacy snapshot:",
+      error
+    );
+  }
+
+  return legacy;
 }
 
 export async function getPrimaryWorkspaceForUser(userId) {
@@ -1053,40 +1117,51 @@ export async function removeManagedUserIdentity(
   });
 }
 
-export async function getLatestBookSnapshot(bookId) {
+export async function getLatestBookSnapshot(bookId, accountIdHint = "") {
   const canonicalBookId = String(bookId || "").trim();
   if (!canonicalBookId) return null;
 
-  const result = await dbQuery(
-    `
-    SELECT
-      id,
-      pixbook_id,
-      version,
-      cipher_object_key,
-      cipher_sha256,
-      wrapped_dek,
-      ledger_head,
-      payload_json,
-      created_at
-    FROM pixbook_snapshots
-    WHERE pixbook_id = $1
-    ORDER BY version DESC
-    LIMIT 1
-    `,
-    [canonicalBookId],
-  );
+  let accountId = String(accountIdHint || "").trim();
+  if (!accountId) {
+    const owner = await dbQuery(
+      `
+      SELECT account_id
+      FROM pixbooks
+      WHERE id = $1
+      LIMIT 1
+      `,
+      [canonicalBookId]
+    );
+    accountId = String(owner.rows?.[0]?.account_id || "").trim();
+  }
+  if (!accountId) return null;
 
-  if (result.rowCount === 0) return null;
-  const row = result.rows[0];
+  const ledgerState = await readPixbookLedgerState({
+    accountId,
+    bookId: canonicalBookId,
+  });
+  if (ledgerState.ok && ledgerState.state) {
+    return {
+      id: ledgerState.state.id,
+      bookId: ledgerState.state.bookId,
+      version: Number(ledgerState.state.version || 0),
+      ledgerHead: ledgerState.state.ledgerHead || null,
+      checksum: ledgerState.state.checksum || "",
+      createdAt: ledgerState.state.createdAt || null,
+      payload: ledgerState.state.payload ?? null,
+    };
+  }
+
+  const legacy = await hydrateLedgerFromLegacySnapshot(accountId, canonicalBookId);
+  if (!legacy) return null;
   return {
-    id: row.id,
-    bookId: row.pixbook_id,
-    version: Number(row.version || 0),
-    ledgerHead: row.ledger_head || null,
-    checksum: row.cipher_sha256 || "",
-    createdAt: row.created_at,
-    payload: row.payload_json ?? null,
+    id: legacy.id || `book-ledger:${legacy.bookId}:v${legacy.version}`,
+    bookId: legacy.bookId,
+    version: Number(legacy.version || 0),
+    ledgerHead: legacy.ledgerHead || null,
+    checksum: legacy.checksum || "",
+    createdAt: legacy.createdAt || null,
+    payload: legacy.payload ?? null,
   };
 }
 
@@ -1126,33 +1201,18 @@ export async function saveBookSnapshot(userId, workspaceId, bookId, input) {
     }
 
     const currentVersion = Number(ownedBook.rows[0].current_version || 0);
-    const latestSnapshotResult = await client.query(
-      `
-      SELECT id, version, ledger_head, cipher_sha256, created_at
-      FROM pixbook_snapshots
-      WHERE pixbook_id = $1
-      ORDER BY version DESC
-      LIMIT 1
-      `,
-      [canonicalBookId],
+    const latestSnapshot = await getLatestBookSnapshot(canonicalBookId, workspace.id);
+    const effectiveCurrentVersion = Math.max(
+      currentVersion,
+      Number(latestSnapshot?.version || 0)
     );
-    const latestSnapshot =
-      latestSnapshotResult.rowCount > 0
-        ? {
-            id: latestSnapshotResult.rows[0].id,
-            version: Number(latestSnapshotResult.rows[0].version || 0),
-            ledgerHead: latestSnapshotResult.rows[0].ledger_head || null,
-            checksum: latestSnapshotResult.rows[0].cipher_sha256 || "",
-            createdAt: latestSnapshotResult.rows[0].created_at || null,
-          }
-        : null;
 
-    if (expectedVersion !== null && expectedVersion !== currentVersion) {
+    if (expectedVersion !== null && expectedVersion !== effectiveCurrentVersion) {
       throw new BookSnapshotConflictError(
-        "Pixbook has changed since you last synced. Load latest cloud snapshot before saving.",
+        "Pixbook has changed since you last synced. Load latest cloud state before saving.",
         {
           expectedVersion,
-          currentVersion,
+          currentVersion: effectiveCurrentVersion,
           latestSnapshot,
         },
       );
@@ -1162,39 +1222,30 @@ export async function saveBookSnapshot(userId, workspaceId, bookId, input) {
       const currentLedgerHead = String(latestSnapshot?.ledgerHead || "").trim();
       if (expectedLedgerHead !== currentLedgerHead) {
         throw new BookSnapshotConflictError(
-          "Pixbook ledger head conflict. Another device saved a different snapshot.",
+          "Pixbook ledger head conflict. Another device saved a different ledger state.",
           {
             expectedLedgerHead,
             currentLedgerHead,
-            currentVersion,
+            currentVersion: effectiveCurrentVersion,
             latestSnapshot,
           },
         );
       }
     }
 
-    const nextVersion = currentVersion + 1;
-    const snapshotId = normalizeIdOverride(input?.snapshotId, "book-snap");
-
-    const insertedSnapshot = await client.query(
-      `
-      INSERT INTO pixbook_snapshots
-        (id, pixbook_id, version, cipher_object_key, cipher_sha256, wrapped_dek, ledger_head, payload_json)
-      VALUES
-        ($1, $2, $3, $4, $5, $6, $7, $8::jsonb)
-      RETURNING created_at
-      `,
-      [
-        snapshotId,
-        canonicalBookId,
-        nextVersion,
-        "inline:json:v1",
-        checksum,
-        "none",
-        ledgerHead,
-        payloadJson,
-      ],
-    );
+    const nextVersion = effectiveCurrentVersion + 1;
+    const writtenAt =
+      String(input?.savedAt || input?.createdAt || "").trim() ||
+      new Date().toISOString();
+    const stored = await writePixbookLedgerState({
+      accountId: workspace.id,
+      bookId: canonicalBookId,
+      version: nextVersion,
+      ledgerHead,
+      checksum,
+      payload,
+      updatedAt: writtenAt,
+    });
 
     await client.query(
       `
@@ -1215,23 +1266,24 @@ export async function saveBookSnapshot(userId, workspaceId, bookId, input) {
         createId("audit"),
         workspace.id,
         String(userId || "").trim() || null,
-        "book.snapshot.saved",
+        "book.ledger.saved",
         JSON.stringify({
           bookId: canonicalBookId,
           version: nextVersion,
           ledgerHead,
           checksum,
+          storageKey: stored.key,
         }),
       ],
     );
 
     return {
-      id: snapshotId,
+      id: `book-ledger:${canonicalBookId}:v${nextVersion}`,
       bookId: canonicalBookId,
       version: nextVersion,
       ledgerHead,
       checksum,
-      createdAt: insertedSnapshot.rows?.[0]?.created_at || null,
+      createdAt: writtenAt,
       payload,
     };
   });

@@ -294,6 +294,20 @@ Accounts v2 migration tooling:
 - `pnpm --filter ternent-api accounts:v2:verify`
 - `apps/ternent-api/MIGRATION.md`
 
+### Pixbook Cloud Ledger Storage
+
+Account pixbook cloud state is stored in object storage as the source of truth. SQL keeps account metadata and book version/head mirrors.
+
+Object key layout:
+
+- `<PIXBOOK_LEDGER_PREFIX>/<accountId>/<bookId>/ledger.json`
+
+Config:
+
+- Uses `LEDGER_*` S3 endpoint/credential variables
+- Optional `PIXBOOK_LEDGER_BUCKET` (defaults to `LEDGER_CONTENT_BUCKET`, then `LEDGER_BUCKET`)
+- Optional `PIXBOOK_LEDGER_PREFIX` (default `pixpax/pixbooks`)
+
 ### Notes
 
 - Better Auth dependencies must be installed in `ternent-api`.
