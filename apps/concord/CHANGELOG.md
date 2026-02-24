@@ -1,5 +1,11 @@
 # concord
 
+## 0.3.50
+
+### Patch Changes
+
+- [`8483d54c6ad3a0b759518025adf19318ec2ada08`](https://github.com/samternent/home/commit/8483d54c6ad3a0b759518025adf19318ec2ada08) Thanks [@samternent](https://github.com/samternent)! - furtehr identity fix persistence
+
 ## 0.3.49
 
 ### Patch Changes
