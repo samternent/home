@@ -1,5 +1,11 @@
 # ternent-api
 
+## 0.2.24
+
+### Patch Changes
+
+- [`775cb28d9db853c311c43781649164df54376f67`](https://github.com/samternent/home/commit/775cb28d9db853c311c43781649164df54376f67) Thanks [@samternent](https://github.com/samternent)! - Fix syncing
+
 ## 0.2.23
 
 ### Patch Changes

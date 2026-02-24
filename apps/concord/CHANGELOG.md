@@ -1,5 +1,11 @@
 # concord
 
+## 0.3.48
+
+### Patch Changes
+
+- [`775cb28d9db853c311c43781649164df54376f67`](https://github.com/samternent/home/commit/775cb28d9db853c311c43781649164df54376f67) Thanks [@samternent](https://github.com/samternent)! - Fix syncing
+
 ## 0.3.47
 
 ### Patch Changes
