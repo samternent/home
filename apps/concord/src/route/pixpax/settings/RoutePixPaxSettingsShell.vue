@@ -6,7 +6,7 @@ const links = [
     label: "Identity & Devices",
   },
   { to: { name: "pixpax-settings-pixbooks" }, label: "Pixbooks" },
-  { to: { name: "pixpax-settings-sync-backup" }, label: "Sync / Backup" },
+  { to: { name: "pixpax-settings-sync-backup" }, label: "Account Backup" },
   {
     to: { name: "pixpax-settings-import-export" },
     label: "Import / Export",

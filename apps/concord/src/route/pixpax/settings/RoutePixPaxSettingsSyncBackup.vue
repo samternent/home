@@ -421,17 +421,15 @@ function downloadVerificationBundle() {
 
 <template>
   <div class="flex flex-col gap-4">
-    <h1 class="text-lg font-semibold">Sync / Backup</h1>
+    <h1 class="text-lg font-semibold">Account Backup</h1>
     <p class="text-xs text-[var(--ui-fg-muted)]">
-      Changes are persisted on this device immediately. Account sync is optional and retries safely.
+      Changes are persisted on this device immediately. Account snapshot save is optional and explicit.
+    </p>
+    <p class="text-xs text-[var(--ui-fg-muted)]">
+      Save identity to account first in Identity &amp; Devices before saving cloud snapshots.
     </p>
 
     <section class="rounded-lg border border-[var(--ui-border)] p-3 flex flex-col gap-3">
-      <label class="flex items-center gap-2 text-xs">
-        <input v-model="cloudSync.cloudAutoSync.value" type="checkbox" />
-        Auto-sync after pack open
-      </label>
-
       <div class="grid gap-2 md:grid-cols-2">
         <button
           type="button"

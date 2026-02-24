@@ -73,7 +73,7 @@ async function removeIdentity(identityId: string) {
 
   if (!cloudIdentity) {
     context.setError(
-      "This identity is not synced to your account yet. Save/sync it first before backend removal."
+      "This identity is not saved to your account yet. Save it first before backend removal."
     );
     return;
   }
@@ -91,6 +91,21 @@ async function removeIdentity(identityId: string) {
   } catch (error: unknown) {
     context.setError(String((error as Error)?.message || "Unable to remove identity from account."));
   }
+}
+
+async function saveIdentity(identityId: string) {
+  if (!cloudSync.account.isAuthenticated.value) {
+    context.setError("Sign in with your account to save identities.");
+    return;
+  }
+  const ok = await cloudSync.saveLocalIdentityToCloud(identityId);
+  if (!ok) {
+    context.setError(
+      cloudSync.identityDirectorySyncError.value || "Unable to save identity."
+    );
+    return;
+  }
+  context.setStatus("Identity saved to account.");
 }
 
 async function switchIdentity(identityId: string) {
@@ -259,7 +274,7 @@ function saveHandle() {
     <section class="rounded-lg border border-[var(--ui-border)] p-3 flex flex-col gap-2">
       <h2 class="text-sm font-semibold">Manage Identities</h2>
       <p class="text-xs text-[var(--ui-fg-muted)]">
-        Removing an identity deletes it from your account and this device for private pixbook usage.
+        Identity records are explicit and deterministic. Nothing is auto-synced in the background.
       </p>
       <button
         type="button"
@@ -267,7 +282,7 @@ function saveHandle() {
         :disabled="!cloudSync.account.isAuthenticated.value || cloudSync.identityDirectorySyncing.value"
         @click="cloudSync.syncLocalIdentitiesToCloud()"
       >
-        {{ cloudSync.identityDirectorySyncing.value ? "Syncing identities..." : "Sync identities to account" }}
+        {{ cloudSync.identityDirectorySyncing.value ? "Saving..." : "Save all local identities to account" }}
       </button>
       <div
         v-for="entry in context.identities.value"
@@ -296,6 +311,14 @@ function saveHandle() {
             @click="setIdentityUsername(entry.id, entry.metadata)"
           >
             Username
+          </button>
+          <button
+            type="button"
+            class="rounded-md border border-[var(--ui-border)] px-2 py-1 text-xs hover:bg-[var(--ui-fg)]/5 disabled:opacity-50"
+            :disabled="!cloudSync.account.isAuthenticated.value || cloudSync.identityDirectorySyncing.value"
+            @click="saveIdentity(entry.id)"
+          >
+            Save to account
           </button>
           <button
             type="button"

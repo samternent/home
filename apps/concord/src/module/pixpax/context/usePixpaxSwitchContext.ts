@@ -1,6 +1,5 @@
 import { computed, inject, provide, shallowRef } from "vue";
 import { usePixpaxActivityLock } from "./usePixpaxActivityLock";
-import { type PixpaxCloudSync, usePixpaxCloudSync } from "./usePixpaxCloudSync";
 import {
   type PixpaxContextStore,
   usePixpaxContextStore,
@@ -20,14 +19,12 @@ export type PixpaxSwitchContext = ReturnType<typeof createPixpaxSwitchContext>;
 
 type CreatePixpaxSwitchContextOptions = {
   context?: PixpaxContextStore;
-  cloudSync?: PixpaxCloudSync;
 };
 
 function createPixpaxSwitchContext(
   options: CreatePixpaxSwitchContextOptions = {}
 ) {
   const context = options.context ?? usePixpaxContextStore();
-  const cloudSync = options.cloudSync ?? usePixpaxCloudSync();
   const activity = usePixpaxActivityLock();
 
   const switchBusy = shallowRef(false);
@@ -70,8 +67,6 @@ function createPixpaxSwitchContext(
       switchWarning.value = "";
       switchError.value = "";
 
-      let warning = "";
-
       try {
         if (context.dirty.value) {
           const persisted = await context.persistCurrentPixbookSnapshot();
@@ -86,15 +81,6 @@ function createPixpaxSwitchContext(
               error,
             };
           }
-
-          if (cloudSync.cloudAutoSync.value && cloudSync.canCloudSync.value) {
-            const cloudSaved = await cloudSync.saveCloudSnapshot();
-            if (!cloudSaved) {
-              warning =
-                "Switched after local save. Cloud sync failed; retry in Settings > Sync / Backup.";
-              switchWarning.value = warning;
-            }
-          }
         }
 
         await action();
@@ -105,7 +91,6 @@ function createPixpaxSwitchContext(
 
         return {
           ok: true,
-          warning: warning || undefined,
           message,
         };
       } catch (error: unknown) {

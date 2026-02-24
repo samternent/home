@@ -1236,9 +1236,6 @@ async function openPack() {
       packRoot: response.packRoot,
       cardCount: response.cards?.length || 0,
     });
-    if (commitRecorded) {
-      cloudSync.notePackLedgerMutation(String(ledger.value?.head || "").trim());
-    }
     if (normalizedRedeemToken) {
       redeemToken.value = "";
       redeemFromLink.value = false;

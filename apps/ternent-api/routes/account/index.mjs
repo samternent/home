@@ -507,11 +507,19 @@ export default function accountRoutes(router) {
               email: req.platformSession?.user?.email || "",
             },
             profileBinding,
-            { collectionId: requestedCollectionId }
+            {
+              collectionId: requestedCollectionId,
+              createIfMissing: false,
+            }
           );
 
       if (!resolved) {
-        res.status(404).send({ ok: false, error: "Pixbook not found." });
+        res.status(404).send({
+          ok: false,
+          error:
+            "No account pixbook exists for this identity. Save identity to account first.",
+          code: "PIXBOOK_NOT_SAVED_TO_ACCOUNT",
+        });
         return;
       }
 
@@ -621,26 +629,34 @@ export default function accountRoutes(router) {
       }
       resolved = byBookId;
     } else {
-      resolved = await ensurePersonalPixbook(
-        sessionUserId(req),
-        resolveAccountId(req),
-        {
-          displayName:
+        resolved = await ensurePersonalPixbook(
+          sessionUserId(req),
+          resolveAccountId(req),
+          {
+            displayName:
             profileBinding.profileDisplayName ||
             req.platformSession?.user?.name ||
             req.platformSession?.user?.email ||
             "My Pixbook",
-          email: req.platformSession?.user?.email || "",
-        },
-        profileBinding,
-        { collectionId: requestedCollectionId }
-      );
-    }
+            email: req.platformSession?.user?.email || "",
+          },
+          profileBinding,
+          {
+            collectionId: requestedCollectionId,
+            createIfMissing: false,
+          }
+        );
+      }
 
-    if (!resolved) {
-      res.status(404).send({ ok: false, error: "Workspace not found." });
-      return;
-    }
+      if (!resolved) {
+        res.status(404).send({
+          ok: false,
+          error:
+            "No account pixbook exists for this identity. Save identity to account first.",
+          code: "PIXBOOK_NOT_SAVED_TO_ACCOUNT",
+        });
+        return;
+      }
 
     try {
       const saved = await saveBookSnapshot(

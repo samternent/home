@@ -719,6 +719,7 @@ export async function ensurePersonalPixbook(
   const collectionId = normalizeCollectionId(
     options?.collectionId || defaults?.collectionId,
   );
+  const allowCreate = options?.createIfMissing !== false;
 
   const loadManagedUser = async () => {
     const result = await dbQuery(
@@ -760,6 +761,7 @@ export async function ensurePersonalPixbook(
 
   let managedUser = await loadManagedUser();
   if (!managedUser) {
+    if (!allowCreate) return null;
     const managedUserId = normalizeIdOverride(options?.managedUserId, "managed-user");
     const managedUserDisplayName = defaultName || "My Pixbook";
     try {
@@ -815,6 +817,7 @@ export async function ensurePersonalPixbook(
         !managedUser.identity_public_key ||
         !managedUser.identity_key_fingerprint))
   ) {
+    if (!allowCreate) return null;
     try {
       const refreshed = await dbQuery(
         `
@@ -865,6 +868,7 @@ export async function ensurePersonalPixbook(
   if (existingBook.rowCount > 0) {
     book = existingBook.rows[0];
   } else {
+    if (!allowCreate) return null;
     const bookId = normalizeIdOverride(options?.bookId, "book");
     await dbQuery(
       `
