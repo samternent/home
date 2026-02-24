@@ -1,5 +1,11 @@
 # concord
 
+## 0.3.51
+
+### Patch Changes
+
+- [`07fc5d5c5ed4011916f409418d9c122129782649`](https://github.com/samternent/home/commit/07fc5d5c5ed4011916f409418d9c122129782649) Thanks [@samternent](https://github.com/samternent)! - DB architecture changes
+
 ## 0.3.50
 
 ### Patch Changes
