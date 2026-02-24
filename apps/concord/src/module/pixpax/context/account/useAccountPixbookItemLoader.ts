@@ -55,6 +55,38 @@ export function createAccountPixbookItemLoader(
     resetCloudSnapshotState();
   }
 
+  function resolveApiErrorCode(error: unknown) {
+    if (!(error instanceof PixPaxApiError)) return "";
+    const body = error.body as { code?: unknown } | null;
+    const code = String(body?.code || "").trim();
+    return code;
+  }
+
+  function applyCloudState(
+    response: Awaited<ReturnType<typeof getPixbookCloudState>>
+  ) {
+    cloudWorkspaceId.value = response.workspaceId || "";
+    options.cloudBookId.value = response.book?.id || "";
+    if (options.cloudBookId.value) {
+      options.selectedCloudBookId.value = options.cloudBookId.value;
+    }
+    if (response.book?.managedUserId) {
+      options.selectedCloudProfileId.value = response.book.managedUserId;
+    }
+
+    cloudSnapshotVersion.value = response.snapshot?.version ?? null;
+    cloudSnapshotAt.value = response.snapshot?.createdAt || "";
+    cloudSnapshotLedgerHead.value = String(response.snapshot?.ledgerHead || "").trim();
+    cloudSnapshotPayload.value = response.snapshot?.payload ?? null;
+  }
+
+  function clearInvalidBookSelection() {
+    options.selectedCloudBookId.value = "";
+    options.cloudBookId.value = "";
+    options.selectedCloudProfileId.value = "";
+    resetCloudSnapshotState();
+  }
+
   async function refreshCloudSnapshot() {
     if (!options.account.isAuthenticated.value) {
       resetCloudReadState();
@@ -86,29 +118,65 @@ export function createAccountPixbookItemLoader(
         requestedBookId,
         options.activeCollectionId.value
       );
-
-      cloudWorkspaceId.value = response.workspaceId || "";
-      options.cloudBookId.value = response.book?.id || "";
-      if (options.cloudBookId.value) {
-        options.selectedCloudBookId.value = options.cloudBookId.value;
-      }
-      if (response.book?.managedUserId) {
-        options.selectedCloudProfileId.value = response.book.managedUserId;
-      }
-
-      cloudSnapshotVersion.value = response.snapshot?.version ?? null;
-      cloudSnapshotAt.value = response.snapshot?.createdAt || "";
-      cloudSnapshotLedgerHead.value = String(
-        response.snapshot?.ledgerHead || ""
-      ).trim();
-      cloudSnapshotPayload.value = response.snapshot?.payload ?? null;
-
+      applyCloudState(response);
       await options.refreshCloudLibrary();
     } catch (error: unknown) {
       if (error instanceof PixPaxApiError && error.status === 401) {
         resetCloudReadState();
         options.resetCloudLibraryState();
         return;
+      }
+      if (
+        error instanceof PixPaxApiError &&
+        error.status === 409 &&
+        (
+          resolveApiErrorCode(error) === "PIXBOOK_BOOK_PROFILE_MISMATCH" ||
+          resolveApiErrorCode(error) === "PIXBOOK_BOOK_COLLECTION_MISMATCH"
+        )
+      ) {
+        const mismatchCode = resolveApiErrorCode(error);
+        clearInvalidBookSelection();
+        options.cloudSyncStatus.value =
+          mismatchCode === "PIXBOOK_BOOK_COLLECTION_MISMATCH"
+            ? "Active collection changed. Account pixbook selection was cleared."
+            : "Active identity changed. Account pixbook selection was cleared.";
+        options.cloudSyncError.value = "";
+        await options.refreshCloudLibrary();
+        try {
+          const fallback = await getPixbookCloudState(
+            options.account.workspace.value?.workspaceId || undefined,
+            binding,
+            undefined,
+            options.activeCollectionId.value
+          );
+          applyCloudState(fallback);
+          options.cloudSyncStatus.value =
+            "Account pixbook switched to the active identity.";
+          await options.refreshCloudLibrary();
+          return;
+        } catch (fallbackError: unknown) {
+          if (
+            fallbackError instanceof PixPaxApiError &&
+            fallbackError.status === 404
+          ) {
+            options.cloudSyncStatus.value =
+              "No cloud pixbook found for this identity. Save identity to account first.";
+            options.cloudSyncError.value = "";
+            return;
+          }
+          if (
+            fallbackError instanceof PixPaxApiError &&
+            fallbackError.status === 401
+          ) {
+            resetCloudReadState();
+            options.resetCloudLibraryState();
+            return;
+          }
+          options.cloudSyncError.value = String(
+            (fallbackError as Error)?.message || "Failed to load cloud snapshot."
+          );
+          return;
+        }
       }
       if (error instanceof PixPaxApiError && error.status === 404) {
         resetCloudSnapshotState();

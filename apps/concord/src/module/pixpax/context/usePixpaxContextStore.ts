@@ -846,6 +846,7 @@ function createPixpaxContextStore() {
 
     discardIdentityCandidate(candidateId);
     setStatus("New identity saved. Switch identity when you are ready.");
+    return mergedIdentity;
   }
 
   function discardIdentityCandidate(candidateId: string) {

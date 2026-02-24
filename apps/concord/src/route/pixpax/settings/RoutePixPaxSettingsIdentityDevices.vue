@@ -74,7 +74,20 @@ async function createCandidate() {
 
 async function confirmCandidate() {
   if (!candidateIdentity.value) return;
-  await context.confirmIdentityCandidate(candidateIdentity.value.id);
+  const createdIdentity = await context.confirmIdentityCandidate(
+    candidateIdentity.value.id
+  );
+  if (!cloudSync.account.isAuthenticated.value) return;
+
+  const saved = await cloudSync.saveLocalIdentityToCloud(createdIdentity.id);
+  if (!saved) {
+    context.setError(
+      cloudSync.identityDirectorySyncError.value ||
+        "Identity was created locally but could not be saved to your account."
+    );
+    return;
+  }
+  context.setStatus("New identity saved to this device and your account.");
 }
 
 function discardCandidate() {
@@ -99,10 +112,6 @@ async function removeIdentity(identityId: string) {
     context.setError("At least one local identity must remain on this device.");
     return;
   }
-  if (!cloudSync.account.isAuthenticated.value) {
-    context.setError("Sign in with your account to remove identities.");
-    return;
-  }
 
   const cloudIdentity = cloudSync.cloudProfiles.value.find((candidate) => {
     const profileId = String(candidate.profileId || "").trim();
@@ -113,25 +122,21 @@ async function removeIdentity(identityId: string) {
     );
   });
 
-  if (!cloudIdentity) {
-    context.setError(
-      "This identity is not saved to your account yet. Save it first before backend removal."
-    );
-    return;
-  }
-
   const confirmed = window.confirm(
-    "Remove this identity from your account and this device? Its account pixbooks are removed as part of this action."
+    cloudIdentity
+      ? "Remove this identity from this device only? It will remain saved in your account."
+      : "Remove this identity from this device?"
   );
   if (!confirmed) return;
   try {
-    const ok = await cloudSync.removeCloudIdentity(cloudIdentity.id);
-    if (ok) {
-      await context.removeIdentityLocal(identityId);
-      context.setStatus("Identity removed from account and this device.");
-    }
+    await context.removeIdentityLocal(identityId);
+    context.setStatus(
+      cloudIdentity
+        ? "Identity removed from this device. It remains saved in your account."
+        : "Identity removed from this device."
+    );
   } catch (error: unknown) {
-    context.setError(String((error as Error)?.message || "Unable to remove identity from account."));
+    context.setError(String((error as Error)?.message || "Unable to remove identity from this device."));
   }
 }
 
@@ -396,10 +401,10 @@ function saveHandle() {
           <button
             type="button"
             class="rounded-md border border-[var(--ui-border)] px-2 py-1 text-xs text-red-600 hover:bg-[var(--ui-critical)]/10 disabled:opacity-50"
-            :disabled="!cloudSync.account.isAuthenticated.value || context.identities.value.length <= 1"
+            :disabled="context.identities.value.length <= 1"
             @click="removeIdentity(entry.id)"
           >
-            Remove identity (account + this device)
+            Remove from this device
           </button>
         </div>
       </div>

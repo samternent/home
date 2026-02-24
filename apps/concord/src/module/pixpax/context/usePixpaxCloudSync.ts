@@ -287,6 +287,7 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
     () =>
       [
         account.isAuthenticated.value,
+        account.workspace.value?.workspaceId || "",
         cloudBinding.value?.profileId || "",
         cloudBinding.value?.identityPublicKey || "",
         activeCollectionId.value,

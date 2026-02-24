@@ -70,6 +70,12 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
     return normalized || DEFAULT_COLLECTION_ID;
   }
 
+  function resolveApiErrorCode(error: unknown) {
+    if (!(error instanceof PixPaxApiError)) return "";
+    const body = error.body as { code?: unknown } | null;
+    return String(body?.code || "").trim();
+  }
+
   function getCloudBindingOrThrow() {
     const binding = options.cloudBinding.value;
     if (!binding) {
@@ -320,6 +326,19 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
       return true;
     } catch (error: unknown) {
       if (error instanceof PixPaxApiError && error.status === 409) {
+        const code = resolveApiErrorCode(error);
+        if (
+          code === "PIXBOOK_BOOK_PROFILE_MISMATCH" ||
+          code === "PIXBOOK_BOOK_COLLECTION_MISMATCH"
+        ) {
+          options.selectedCloudBookId.value = "";
+          options.cloudBookId.value = "";
+          options.cloudSyncStatus.value = "";
+          await options.refreshCloudSnapshot();
+          options.cloudSyncError.value =
+            "Selected account pixbook is no longer valid for this identity. Selection was cleared.";
+          return false;
+        }
         options.cloudSyncStatus.value = "";
         options.cloudSyncError.value =
           "Cloud snapshot conflict detected. Load latest cloud snapshot before saving again.";
