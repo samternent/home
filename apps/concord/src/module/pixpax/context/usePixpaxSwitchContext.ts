@@ -19,6 +19,7 @@ export type PixpaxSwitchContext = ReturnType<typeof createPixpaxSwitchContext>;
 
 type CreatePixpaxSwitchContextOptions = {
   context?: PixpaxContextStore;
+  refreshCloudForActiveIdentity?: () => Promise<void>;
 };
 
 function createPixpaxSwitchContext(
@@ -43,7 +44,7 @@ function createPixpaxSwitchContext(
 
   async function runSwitch(
     action: () => Promise<void>,
-    targetLabel: string
+    successMessage: string
   ): Promise<SwitchResult> {
     if (activity.isActivityLocked("pack-open")) {
       const error =
@@ -85,7 +86,7 @@ function createPixpaxSwitchContext(
 
         await action();
 
-        const message = `Switched to ${targetLabel}.`;
+        const message = successMessage;
         switchMessage.value = message;
         context.setStatus(message);
 
@@ -119,7 +120,10 @@ function createPixpaxSwitchContext(
 
     return runSwitch(async () => {
       await context.switchIdentityLocal(identityId);
-    }, label);
+      if (options.refreshCloudForActiveIdentity) {
+        await options.refreshCloudForActiveIdentity();
+      }
+    }, `Switched to ${label}. Account identity + pixbook selection refreshed.`);
   }
 
   async function switchPixbook(pixbookId: string) {
@@ -130,7 +134,7 @@ function createPixpaxSwitchContext(
 
     return runSwitch(async () => {
       await context.switchPixbookLocal(pixbookId);
-    }, label);
+    }, `Switched to ${label}.`);
   }
 
   function clearSwitchFeedback() {

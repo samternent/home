@@ -6,6 +6,7 @@ import {
   getPixbookCloudState,
   removeAccountBook,
   removeAccountManagedIdentity,
+  resetAccountManagedIdentities,
   savePixbookCloudSnapshot,
   updateAccountManagedUser,
   type AccountBook,
@@ -447,6 +448,84 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
     return restoreCloudSnapshot();
   }
 
+  async function importAccountIdentityToDevice(managedUserId: string) {
+    if (!options.account.isAuthenticated.value) {
+      options.cloudSyncError.value = "Sign in to import identities from your account.";
+      return false;
+    }
+
+    const targetManagedUserId = String(managedUserId || "").trim();
+    if (!targetManagedUserId) {
+      options.cloudSyncError.value = "Identity id is required.";
+      return false;
+    }
+
+    const targetProfile = options.cloudProfiles.value.find(
+      (entry) =>
+        String(entry.id || "").trim() === targetManagedUserId &&
+        String(entry.status || "").trim() !== "deleted"
+    );
+    if (!targetProfile) {
+      options.cloudSyncError.value = "Account identity not found.";
+      return false;
+    }
+
+    const targetBook = options.cloudBooks.value.find(
+      (entry) =>
+        String(entry.managedUserId || "").trim() === targetManagedUserId &&
+        String(entry.status || "").trim() !== "deleted" &&
+        normalizeCollectionId(entry.collectionId) === options.activeCollectionId.value
+    );
+    if (!targetBook) {
+      options.cloudSyncError.value =
+        "No saved pixbook exists for this identity in the active collection.";
+      return false;
+    }
+
+    options.cloudSyncError.value = "";
+    options.cloudSyncStatus.value = "Importing identity from account...";
+
+    try {
+      const response = await getPixbookCloudState(
+        options.account.workspace.value?.workspaceId || undefined,
+        undefined,
+        targetBook.id,
+        options.activeCollectionId.value
+      );
+
+      const payload = response.snapshot?.payload as PixbookExport | null;
+      if (!payload || typeof payload !== "object") {
+        throw new Error("No saved snapshot exists for this identity yet.");
+      }
+      if (payload.kind !== "private") {
+        throw new Error(
+          "Only private pixbook snapshots can be imported as device identities."
+        );
+      }
+      if (payload.format !== PIXBOOK_FORMAT || payload.version !== PIXBOOK_VERSION) {
+        throw new Error("Saved snapshot format is invalid.");
+      }
+
+      const file = new File([JSON.stringify(payload)], "account-identity.json", {
+        type: "application/json",
+      });
+      const ok = await options.context.importPixbookFile(file, { confirm: false });
+      if (!ok) {
+        throw new Error(options.context.uploadError.value || "Identity import failed.");
+      }
+
+      options.cloudSyncStatus.value = "Identity imported to this device.";
+      await options.refreshCloudLibrary();
+      return true;
+    } catch (error: unknown) {
+      options.cloudSyncError.value = String(
+        (error as Error)?.message || "Failed to import identity from account."
+      );
+      options.cloudSyncStatus.value = "";
+      return false;
+    }
+  }
+
   async function removeCloudIdentity(managedUserId: string) {
     if (!options.account.isAuthenticated.value) {
       options.cloudSyncError.value = "Sign in to remove identities from your account.";
@@ -499,6 +578,41 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
     }
   }
 
+  async function resetAccountIdentityData() {
+    if (!options.account.isAuthenticated.value) {
+      options.cloudSyncError.value = "Sign in to reset account identities.";
+      return false;
+    }
+
+    options.cloudSyncError.value = "";
+    options.cloudSyncStatus.value = "Resetting account identity data...";
+
+    try {
+      const workspaceId = options.account.workspace.value?.workspaceId || undefined;
+      const removed = await resetAccountManagedIdentities(workspaceId);
+
+      options.selectedCloudProfileId.value = "";
+      options.selectedCloudBookId.value = "";
+      options.cloudBookId.value = "";
+      options.cloudSnapshotVersion.value = null;
+      options.cloudSnapshotAt.value = "";
+      options.cloudWorkspaceId.value = "";
+      options.cloudSnapshotLedgerHead.value = "";
+      options.cloudSnapshotPayload.value = null;
+
+      await options.refreshCloudLibrary();
+
+      options.cloudSyncStatus.value = `Account reset complete (${removed.removedManagedUsers || 0} identities, ${removed.removedBooks || 0} pixbooks removed).`;
+      return true;
+    } catch (error: unknown) {
+      options.cloudSyncError.value = String(
+        (error as Error)?.message || "Failed to reset account identity data."
+      );
+      options.cloudSyncStatus.value = "";
+      return false;
+    }
+  }
+
   async function removeCloudPixbook(bookId: string) {
     if (!options.account.isAuthenticated.value) {
       options.cloudSyncError.value = "Sign in to remove pixbooks from your account.";
@@ -543,7 +657,9 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
     saveCloudSnapshot,
     restoreCloudSnapshot,
     openSelectedCloudBook,
+    importAccountIdentityToDevice,
     removeCloudIdentity,
+    resetAccountIdentityData,
     removeCloudPixbook,
   };
 }

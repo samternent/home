@@ -13,6 +13,7 @@ import {
   listBooks,
   listManagedUsers,
   removeManagedUserIdentity,
+  resetManagedIdentityData,
   removeBook,
   renameWorkspace,
   saveBookSnapshot,
@@ -275,6 +276,33 @@ export default function accountRoutes(router) {
   );
 
   router.delete(
+    "/v1/account/identities",
+    requirePermission("platform.account.manage"),
+    async (req, res) => {
+      try {
+        const removed = await resetManagedIdentityData(
+          sessionUserId(req),
+          resolveAccountId(req)
+        );
+        if (!removed) {
+          res.status(404).send({ ok: false, error: "Workspace not found." });
+          return;
+        }
+        res.status(200).send({
+          ok: true,
+          removedManagedUsers: removed.removedManagedUsers || 0,
+          removedBooks: removed.removedBooks || 0,
+        });
+      } catch (error) {
+        res.status(400).send({
+          ok: false,
+          error: error?.message || "Unable to reset account identities.",
+        });
+      }
+    }
+  );
+
+  router.delete(
     "/v1/account/identities/:identityId",
     requirePermission("platform.account.manage"),
     async (req, res) => {
@@ -483,7 +511,8 @@ export default function accountRoutes(router) {
     const profileBinding = resolveProfileBinding(req);
     const requestedBookId = resolveBookId(req);
     const requestedCollectionId = resolveCollectionId(req);
-    if (!profileBinding.isBound) {
+    const isExplicitBookLookup = Boolean(requestedBookId);
+    if (!profileBinding.isBound && !isExplicitBookLookup) {
       res.status(400).send({
         ok: false,
         error: "profileId and identityPublicKey are required for pixbook profile resolution.",
@@ -523,22 +552,24 @@ export default function accountRoutes(router) {
         return;
       }
 
-      const expectedUserKey = derivePersonalPixbookUserKey(
-        sessionUserId(req),
-        profileBinding
-      );
-      const matchesIdentityBinding =
-        String(resolved.managedUser.profileId || "") === profileBinding.profileId &&
-        String(resolved.managedUser.identityKeyFingerprint || "") ===
-          profileBinding.identityKeyFingerprint;
-      if (resolved.managedUser.userKey !== expectedUserKey && !matchesIdentityBinding) {
-        res.status(409).send({
-          ok: false,
-          code: "PIXBOOK_BOOK_PROFILE_MISMATCH",
-          error:
-            "Selected book belongs to a different profile identity. Load that profile first.",
-        });
-        return;
+      if (profileBinding.isBound) {
+        const expectedUserKey = derivePersonalPixbookUserKey(
+          sessionUserId(req),
+          profileBinding
+        );
+        const matchesIdentityBinding =
+          String(resolved.managedUser.profileId || "") === profileBinding.profileId &&
+          String(resolved.managedUser.identityKeyFingerprint || "") ===
+            profileBinding.identityKeyFingerprint;
+        if (resolved.managedUser.userKey !== expectedUserKey && !matchesIdentityBinding) {
+          res.status(409).send({
+            ok: false,
+            code: "PIXBOOK_BOOK_PROFILE_MISMATCH",
+            error:
+              "Selected book belongs to a different profile identity. Load that profile first.",
+          });
+          return;
+        }
       }
       if (String(resolved.book.collectionId || "").trim() !== requestedCollectionId) {
         res.status(409).send({

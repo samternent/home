@@ -11,6 +11,7 @@ import {
   createCodeCardsJson,
   createCodeToken,
   listPixpaxAdminCollections,
+  revokePixpaxCode,
 } from "../../module/pixpax/api/client";
 import { usePixpaxAuth } from "../../module/pixpax/auth/usePixpaxAuth";
 import type {
@@ -83,6 +84,7 @@ const DEFAULT_PALETTE: PackPalette16 = {
     0xff4b5563, 0xffe5e7eb, 0xfff97316, 0xff22c55e,
   ],
 };
+const MAX_REDEEM_TOKEN_TTL_SECONDS = 10 * 365 * 24 * 60 * 60;
 
 const EMPTY_ART_16: StickerArt16 = {
   v: 1,
@@ -145,7 +147,7 @@ const loggedIn = computed(() => auth.isAuthenticated.value);
 const dropId = ref(`week-${toIsoWeek(new Date())}`);
 const count = ref(5);
 const fixedCardId = ref("");
-const expiresInSeconds = ref(86400);
+const expiresInSeconds = ref(365 * 24 * 60 * 60);
 const quickMinting = ref<"" | "pack" | "fixed-card">("");
 
 let nextSheetLineId = 1;
@@ -167,6 +169,11 @@ const collectionCards = ref<CollectionCardOption[]>([]);
 const collectionPalette = ref<PackPalette16>(DEFAULT_PALETTE);
 const generatedSheet = ref<GeneratedSheetArtifact | null>(null);
 const isSheetPrintDialogOpen = ref(false);
+const revokingCode = ref(false);
+const revokeCodeId = ref("");
+const revokeReason = ref("");
+const revokeError = ref("");
+const revokeStatus = ref("");
 
 function ensureSelectedRef() {
   const available = refs.value;
@@ -477,10 +484,51 @@ function printGeneratedSheet() {
 
 function validateExpiresInSeconds() {
   const expires = Number(expiresInSeconds.value || 0);
-  if (!Number.isInteger(expires) || expires < 60 || expires > 2592000) {
-    return "Expires in seconds must be between 60 and 2592000.";
+  if (
+    !Number.isInteger(expires) ||
+    expires < 60 ||
+    expires > MAX_REDEEM_TOKEN_TTL_SECONDS
+  ) {
+    return `Expires in seconds must be between 60 and ${MAX_REDEEM_TOKEN_TTL_SECONDS}.`;
   }
   return "";
+}
+
+async function revokeCodeById() {
+  const codeId = String(revokeCodeId.value || "").trim();
+  if (!codeId) {
+    revokeError.value = "Enter a code id to revoke.";
+    return;
+  }
+  const canMint = await auth.ensurePermission("pixpax.admin.manage");
+  if (!canMint) {
+    revokeError.value = "Admin permission required.";
+    await router.replace({
+      name: "pixpax-control-login",
+      query: {
+        redirect: router.resolve({ name: "pixpax-control-admin" }).fullPath,
+      },
+    });
+    return;
+  }
+
+  revokingCode.value = true;
+  revokeError.value = "";
+  revokeStatus.value = "";
+  try {
+    const response = await revokePixpaxCode(
+      codeId,
+      { reason: String(revokeReason.value || "").trim() },
+      auth.token.value || undefined
+    );
+    revokeStatus.value = response.alreadyRevoked
+      ? `Code ${response.codeId} was already revoked.`
+      : `Code ${response.codeId} revoked successfully.`;
+  } catch (error: unknown) {
+    revokeError.value = extractError(error, "Failed to revoke code.");
+  } finally {
+    revokingCode.value = false;
+  }
 }
 
 async function mintSingleCodeToken(kind: "pack" | "fixed-card") {
@@ -543,6 +591,7 @@ async function mintSingleCodeToken(kind: "pack" | "fixed-card") {
       auth.token.value || undefined,
     );
     minted.value = payload;
+    revokeCodeId.value = String(payload.codeId || "").trim();
     const payloadDropId = String(payload?.dropId || "").trim();
     const payloadKind = String(payload?.kind || kind);
     const payloadCardId = String(payload?.cardId || "").trim();
@@ -716,26 +765,8 @@ watch(
 </script>
 
 <template>
-  <div class="pixpax-admin-root mx-auto flex w-full max-w-5xl flex-col gap-6 p-4">
-    <section class="rounded-xl border border-[var(--ui-border)] p-4">
-      <h1 class="text-xl font-semibold mb-2">PixPax Admin</h1>
-      <p class="text-sm text-[var(--ui-fg-muted)] mb-3">
-        Redeem-code issuance and sheet generation tools.
-      </p>
-      <p class="text-xs text-[var(--ui-fg-muted)]">
-        Identity and Pixbook management is available in Settings.
-      </p>
-      <p class="text-xs text-[var(--ui-fg-muted)]">
-        Auth: {{ loggedIn ? "authenticated" : "not authenticated" }}
-      </p>
-      <div class="mt-4 flex flex-wrap gap-2">
-        <Button class="!px-4 !py-2" @click="loadAdminCollectionRefs">
-          Reload Collections
-        </Button>
-      </div>
-    </section>
-
-    <section class="rounded-xl border border-[var(--ui-border)] p-4">
+  <div class="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4">
+    <section class="p-4">
       <h2 class="text-lg font-medium mb-3">Redeem Code Issuance</h2>
       <div class="grid gap-3 md:grid-cols-2">
         <label class="field">
@@ -797,7 +828,7 @@ watch(
             v-model.number="expiresInSeconds"
             type="number"
             min="60"
-            max="2592000"
+            :max="MAX_REDEEM_TOKEN_TTL_SECONDS"
           />
         </label>
       </div>
@@ -862,6 +893,41 @@ watch(
       </div>
 
       <div class="mt-6 rounded-lg border border-[var(--ui-border)] p-3">
+        <h3 class="text-sm font-semibold">Revoke Redeem Code</h3>
+        <p class="mt-1 text-xs text-[var(--ui-fg-muted)]">
+          Revoke a code id immediately. Revoked codes cannot be redeemed.
+        </p>
+        <div class="mt-3 grid gap-3 md:grid-cols-2">
+          <label class="field">
+            <span>Code id</span>
+            <input v-model="revokeCodeId" type="text" placeholder="paste codeId" />
+          </label>
+          <label class="field">
+            <span>Reason (optional)</span>
+            <input v-model="revokeReason" type="text" placeholder="lost batch / leak / test cleanup" />
+          </label>
+        </div>
+        <div class="mt-3">
+          <Button
+            class="!px-4 !py-2"
+            :disabled="revokingCode"
+            @click="revokeCodeById"
+          >
+            {{ revokingCode ? "Revoking..." : "Revoke code" }}
+          </Button>
+        </div>
+        <p v-if="revokeError" class="mt-2 text-sm text-red-700">
+          {{ revokeError }}
+        </p>
+        <p
+          v-else-if="revokeStatus"
+          class="mt-2 text-xs text-[var(--ui-fg-muted)]"
+        >
+          {{ revokeStatus }}
+        </p>
+      </div>
+
+      <!-- <div class="mt-6 rounded-lg border border-[var(--ui-border)] p-3">
         <h3 class="text-sm font-semibold">Collection Card Preview</h3>
         <p class="mt-1 text-xs text-[var(--ui-fg-muted)]">
           Source for designated card ids. Shows available cards and basic
@@ -903,7 +969,7 @@ watch(
             </p>
           </article>
         </div>
-      </div>
+      </div> -->
 
       <div class="mt-6 rounded-lg border border-[var(--ui-border)] p-3">
         <h3 class="text-sm font-semibold">Sheet Builder (Mixed)</h3>
@@ -1053,7 +1119,9 @@ watch(
               v-for="(item, idx) in generatedSheet.items"
               :key="`${item.codeId}-${idx}`"
               :item="item"
-              :art="hasSheetItemArt(item) ? getSheetItemArtOrDefault(item) : null"
+              :art="
+                hasSheetItemArt(item) ? getSheetItemArtOrDefault(item) : null
+              "
               :palette="collectionPalette"
             />
           </div>
@@ -1092,7 +1160,9 @@ watch(
               v-for="(item, idx) in generatedSheet.items"
               :key="`print-${item.codeId}-${idx}`"
               :item="item"
-              :art="hasSheetItemArt(item) ? getSheetItemArtOrDefault(item) : null"
+              :art="
+                hasSheetItemArt(item) ? getSheetItemArtOrDefault(item) : null
+              "
               :palette="collectionPalette"
             />
           </div>

@@ -629,6 +629,66 @@ test("admin can mint signed token and redeem once via /redeem", async () => {
   );
 });
 
+test("revoked code cannot be redeemed", async () => {
+  createIssuerKeyEnv();
+  process.env.PIX_PAX_ADMIN_TOKEN = "admin-token";
+  const store = new CollectionContentStore({
+    bucket: "content",
+    prefix: "pixpax/collections",
+    gateway: createMemoryGateway(),
+  });
+  await seedCollection(store);
+  const router = createRouterHarness();
+
+  pixpaxCollectionRoutes(router, {
+    createStore: () => store,
+    pickRandomIndex: (max) => (max > 1 ? 1 : 0),
+    now: () => new Date("2026-02-07T12:00:00.000Z"),
+    issueLedgerEntry: async () => ({ segmentKey: "pixpax/ledger/segments/day/seg_deadbeef.jsonl.gz", segmentHash: "deadbeef" }),
+  });
+
+  const mint = await router.invoke(
+    "POST",
+    "/v1/pixpax/collections/:collectionId/:version/override-codes",
+    {
+      headers: { authorization: "Bearer admin-token" },
+      params: { collectionId: "premier-league-2026", version: "v1" },
+      body: {
+        kind: "pack",
+        count: 5,
+      },
+    }
+  );
+  assert.equal(mint.statusCode, 201);
+
+  const revoke = await router.invoke(
+    "POST",
+    "/v1/pixpax/admin/codes/:codeId/revoke",
+    {
+      headers: { authorization: "Bearer admin-token" },
+      params: { codeId: mint.body.codeId },
+      body: { reason: "lost physical card" },
+    }
+  );
+  assert.equal(revoke.statusCode, 200);
+  assert.equal(revoke.body.ok, true);
+  assert.equal(revoke.body.status, "revoked");
+
+  const redeem = await router.invoke(
+    "POST",
+    "/v1/pixpax/redeem",
+    {
+      body: {
+        token: mint.body.token,
+        collectorPubKey: "collector:key:test",
+      },
+    }
+  );
+  assert.equal(redeem.statusCode, 410);
+  assert.equal(redeem.body.ok, false);
+  assert.equal(redeem.body.reason, "code-revoked");
+});
+
 test("redeem rejects invalid collector signature proof", async () => {
   createIssuerKeyEnv();
   process.env.PIX_PAX_ADMIN_TOKEN = "admin-token";

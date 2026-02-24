@@ -31,6 +31,16 @@ const kindLabel = computed(() => {
   }
   return `${props.item.label || "?"}`;
 });
+
+function formatDate(
+  iso: string,
+  options: Intl.DateTimeFormatOptions = {
+    dateStyle: "medium",
+    timeStyle: "short",
+  },
+) {
+  return new Intl.DateTimeFormat(undefined, options).format(new Date(iso));
+}
 </script>
 
 <template>
@@ -38,7 +48,7 @@ const kindLabel = computed(() => {
     class="bg-white text-black p-4 break-inside-avoid [page-break-inside:avoid]"
   >
     <div
-      class="border-2 border-dashed border-gray-400 rounded-sm flex flex-col items-center justify-center w-64 mx-auto p-4 relative py-6"
+      class="border-2 border-dashed border-gray-400 rounded-sm flex flex-col items-center justify-center w-64 mx-auto p-4 relative"
     >
       <PixPaxLogoText class="h-6 fill-black z-1" />
 
@@ -46,7 +56,7 @@ const kindLabel = computed(() => {
         v-if="qrDataUrl"
         :src="qrDataUrl"
         alt="Code card QR"
-        class="w-full"
+        class="w-full -my-2"
       />
       <!-- <CanvasSticker16
           v-if="art && palette"
@@ -57,16 +67,17 @@ const kindLabel = computed(() => {
         /> -->
 
       <div class="flex flex-col relative items-center justify-center gap-1">
-        <!-- <p v-if="item.kind === 'pack'" class="mt-6 text-sm uppercase">
-          {{ kindLabel }}
-        </p> -->
+        <p class="text-[10px]">{{ item.collectionId }} {{ item.version }}</p>
+        <p class="mb-2 text-sm uppercase">
+          {{ item.label }}
+        </p>
 
         <p
           class="font-thin tracking-loose text-sm bg-gray-100 px-3 py-1 rounded-full z-1"
         >
           {{ item.codeId }}
         </p>
-        <p class="text-[12px]">Expires {{ item.expiresAt }}</p>
+        <p class="text-[12px]">Expires {{ formatDate(item.expiresAt) }}</p>
         <a :href="item.redeemUrl" class="text-[10px] break-all text-black">
           {{ item.redeemUrl }}
         </a>

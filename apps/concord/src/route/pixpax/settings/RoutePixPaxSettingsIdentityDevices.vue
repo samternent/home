@@ -13,10 +13,52 @@ const profileHandle = shallowRef(context.currentIdentityUsername.value || "");
 const candidateIdentity = computed(
   () => context.candidateIdentities.value[0] || null
 );
+const localIdentityBindingKeys = computed(() => {
+  const keys = new Set<string>();
+  for (const identity of context.identities.value) {
+    const profileId = String(identity.profileId || "").trim();
+    const identityPublicKey = String(identity.publicKeyPEM || "").trim();
+    if (!profileId || !identityPublicKey) continue;
+    keys.add(`${profileId}::${identityPublicKey}`);
+  }
+  return keys;
+});
+const accountSavedIdentities = computed(() => {
+  const deduped = new Map<string, (typeof cloudSync.cloudProfiles.value)[number]>();
+  for (const entry of cloudSync.cloudProfiles.value) {
+    if (String(entry.status || "").trim() === "deleted") continue;
+    const profileId = String(entry.profileId || "").trim();
+    const identityPublicKey = String(entry.identityPublicKey || "").trim();
+    if (!profileId || !identityPublicKey) continue;
+    const key = `${profileId}::${identityPublicKey}`;
+    if (!deduped.has(key)) deduped.set(key, entry);
+  }
+  return Array.from(deduped.values());
+});
 
 function getIdentityName(entry: { metadata?: Record<string, unknown> } | null) {
   const username = String(entry?.metadata?.username || "").trim();
   return username ? `@${username}` : "Identity";
+}
+
+function accountIdentityLabel(entry: {
+  displayName?: string;
+  profileId?: string | null;
+}) {
+  const displayName = String(entry.displayName || "").trim();
+  if (displayName) return displayName.startsWith("@") ? displayName : `@${displayName}`;
+  const profileId = String(entry.profileId || "").trim();
+  return profileId ? `Identity ${profileId.slice(0, 8)}` : "Identity";
+}
+
+function isIdentityOnThisDevice(entry: {
+  profileId?: string | null;
+  identityPublicKey?: string | null;
+}) {
+  const profileId = String(entry.profileId || "").trim();
+  const identityPublicKey = String(entry.identityPublicKey || "").trim();
+  if (!profileId || !identityPublicKey) return false;
+  return localIdentityBindingKeys.value.has(`${profileId}::${identityPublicKey}`);
 }
 
 watch(
@@ -106,6 +148,37 @@ async function saveIdentity(identityId: string) {
     return;
   }
   context.setStatus("Identity saved to account.");
+}
+
+async function importAccountIdentity(managedUserId: string) {
+  const ok = await cloudSync.importAccountIdentityToDevice(managedUserId);
+  if (!ok) {
+    context.setError(
+      cloudSync.cloudSyncError.value || "Unable to import identity from account."
+    );
+    return;
+  }
+  context.setStatus("Identity imported to this device.");
+}
+
+async function removeAccountIdentity(managedUserId: string) {
+  if (!cloudSync.account.isAuthenticated.value) {
+    context.setError("Sign in with your account to remove identities.");
+    return;
+  }
+  const confirmed = window.confirm(
+    "Remove this identity from your account? Any account pixbooks attached to it will also be removed."
+  );
+  if (!confirmed) return;
+
+  const ok = await cloudSync.removeCloudIdentity(managedUserId);
+  if (!ok) {
+    context.setError(
+      cloudSync.cloudSyncError.value || "Unable to remove identity from account."
+    );
+    return;
+  }
+  context.setStatus("Identity removed from account.");
 }
 
 async function switchIdentity(identityId: string) {
@@ -327,6 +400,57 @@ function saveHandle() {
             @click="removeIdentity(entry.id)"
           >
             Remove identity (account + this device)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="rounded-lg border border-[var(--ui-border)] p-3 flex flex-col gap-2">
+      <h2 class="text-sm font-semibold">Saved Account Identities</h2>
+      <p class="text-xs text-[var(--ui-fg-muted)]">
+        These are identities already saved to your account. Import is explicit per identity.
+      </p>
+      <p
+        v-if="!cloudSync.account.isAuthenticated.value"
+        class="text-xs text-amber-600"
+      >
+        Sign in to view and import saved account identities.
+      </p>
+      <p
+        v-else-if="!accountSavedIdentities.length"
+        class="text-xs text-[var(--ui-fg-muted)]"
+      >
+        No saved account identities found.
+      </p>
+      <div
+        v-for="entry in accountSavedIdentities"
+        :key="entry.id"
+        class="rounded-md border border-[var(--ui-border)] p-2 flex items-center justify-between gap-3"
+      >
+        <div class="flex flex-col gap-1">
+          <p class="text-xs font-semibold">
+            {{ accountIdentityLabel(entry) }}
+          </p>
+          <p class="text-[11px] text-[var(--ui-fg-muted)]">
+            {{ isIdentityOnThisDevice(entry) ? "Available on this device" : "Not on this device yet" }}
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            class="rounded-md border border-[var(--ui-border)] px-2 py-1 text-xs hover:bg-[var(--ui-fg)]/5 disabled:opacity-50"
+            :disabled="!cloudSync.account.isAuthenticated.value || isIdentityOnThisDevice(entry)"
+            @click="importAccountIdentity(entry.id)"
+          >
+            {{ isIdentityOnThisDevice(entry) ? "Imported" : "Import to this device" }}
+          </button>
+          <button
+            type="button"
+            class="rounded-md border border-[var(--ui-border)] px-2 py-1 text-xs text-red-600 hover:bg-[var(--ui-critical)]/10 disabled:opacity-50"
+            :disabled="!cloudSync.account.isAuthenticated.value"
+            @click="removeAccountIdentity(entry.id)"
+          >
+            Remove from account
           </button>
         </div>
       </div>

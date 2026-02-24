@@ -333,6 +333,7 @@ export async function listManagedUsers(userId, workspaceId = "") {
     SELECT id, display_name, avatar_public_id, user_key, profile_id, identity_public_key, identity_key_fingerprint, status, created_at, updated_at
     FROM platform_managed_users
     WHERE workspace_id = $1
+      AND status != 'deleted'
     ORDER BY created_at ASC
     `,
     [workspace.id],
@@ -353,6 +354,63 @@ export async function listManagedUsers(userId, workspaceId = "") {
       updatedAt: row.updated_at,
     })),
   };
+}
+
+export async function resetManagedIdentityData(userId, workspaceId = "") {
+  const workspace = await resolveWorkspaceForUser(userId, workspaceId);
+  if (!workspace) return null;
+
+  return dbTx(async (client) => {
+    const removedBooks = await client.query(
+      `
+      UPDATE platform_books
+      SET status = 'deleted',
+          updated_at = NOW()
+      WHERE workspace_id = $1
+        AND status != 'deleted'
+      RETURNING id
+      `,
+      [workspace.id]
+    );
+
+    const removedUsers = await client.query(
+      `
+      UPDATE platform_managed_users
+      SET status = 'deleted',
+          updated_at = NOW()
+      WHERE workspace_id = $1
+        AND status != 'deleted'
+      RETURNING id
+      `,
+      [workspace.id]
+    );
+
+    await client.query(
+      `
+      INSERT INTO platform_audit_events (id, workspace_id, actor_user_id, event_type, payload)
+      VALUES ($1, $2, $3, $4, $5::jsonb)
+      `,
+      [
+        createId("audit"),
+        workspace.id,
+        String(userId || "").trim() || null,
+        "managed-user.identity.reset",
+        JSON.stringify({
+          removedManagedUserIds: removedUsers.rows
+            .map((row) => String(row.id || "").trim())
+            .filter(Boolean),
+          removedBookIds: removedBooks.rows
+            .map((row) => String(row.id || "").trim())
+            .filter(Boolean),
+        }),
+      ]
+    );
+
+    return {
+      removedManagedUsers: removedUsers.rowCount,
+      removedBooks: removedBooks.rowCount,
+    };
+  });
 }
 
 export async function createManagedUser(userId, workspaceId, input) {

@@ -13,8 +13,13 @@ import { providePixpaxSwitchContext } from "../../module/pixpax/context/usePixpa
 const themeMode = useLocalStorage("app/themeMode", "light");
 
 const context = providePixpaxContextStore();
-providePixpaxCloudSync({ context });
-providePixpaxSwitchContext({ context });
+const cloudSync = providePixpaxCloudSync({ context });
+providePixpaxSwitchContext({
+  context,
+  refreshCloudForActiveIdentity: async () => {
+    await cloudSync.refreshCloudForActiveIdentity();
+  },
+});
 
 const {
   pixbookReadOnly,

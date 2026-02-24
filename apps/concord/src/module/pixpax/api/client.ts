@@ -275,6 +275,15 @@ export function removeAccountManagedIdentity(userId: string, workspaceId?: strin
   );
 }
 
+export function resetAccountManagedIdentities(workspaceId?: string) {
+  return requestJson<{ ok: boolean; removedManagedUsers: number; removedBooks: number }>(
+    withWorkspaceQuery("/v1/account/identities", workspaceId),
+    {
+      method: "DELETE",
+    }
+  );
+}
+
 export function removeAccountBook(bookId: string, workspaceId?: string) {
   return requestJson<{ ok: boolean; id: string; managedUserId?: string | null; collectionId?: string | null }>(
     withWorkspaceQuery(`/v1/account/books/${encodeURIComponent(bookId)}`, workspaceId),
@@ -630,11 +639,40 @@ export type PixPaxRedeemCodeResolveResponse = {
   collectionId?: string | null;
   version?: string | null;
   expiresAt?: string | null;
+  status?: "active" | "revoked";
+  revokedAt?: string | null;
+  revokedReason?: string | null;
 };
 
 export function resolvePixpaxRedeemCode(codeId: string) {
   return requestJson<PixPaxRedeemCodeResolveResponse>(
     `/v1/pixpax/redeem-code/${encodeURIComponent(String(codeId || "").trim())}`
+  );
+}
+
+export type PixPaxRevokeCodeResponse = {
+  ok: boolean;
+  codeId: string;
+  status: "revoked";
+  alreadyRevoked: boolean;
+  revokedAt: string;
+  revokedReason?: string | null;
+};
+
+export function revokePixpaxCode(
+  codeId: string,
+  input: { reason?: string } = {},
+  token?: string | null
+) {
+  return requestJson<PixPaxRevokeCodeResponse>(
+    `/v1/pixpax/admin/codes/${encodeURIComponent(String(codeId || "").trim())}/revoke`,
+    {
+      method: "POST",
+      token: token || undefined,
+      body: {
+        reason: String(input.reason || "").trim(),
+      },
+    }
   );
 }
 

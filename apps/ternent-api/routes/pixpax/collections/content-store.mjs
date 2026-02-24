@@ -399,6 +399,12 @@ export class CollectionContentStore {
     return { bucket: this.bucket, key, created: result.created };
   }
 
+  async putGlobalCodeRecord(codeId, payload) {
+    const key = this.buildGlobalCodeRecordKey(codeId);
+    await putJson(this.gateway, this.bucket, key, payload);
+    return { bucket: this.bucket, key };
+  }
+
   async getGlobalCodeRecord(codeId) {
     const key = this.buildGlobalCodeRecordKey(codeId);
     return getJson(this.gateway, this.bucket, key);

@@ -106,11 +106,14 @@ PixPax v3 redeem uses compact ECDSA P-256 signed handle tokens:
   - token-only contract: alias/code fields are rejected
 - `POST /v1/pixpax/collections/:collectionId/:version/override-codes` (admin)
   - mints one signed **code token** (path name retained for compatibility)
+  - `expiresInSeconds` defaults to 14 days and is clamped to max (`PIX_PAX_MAX_REDEEM_TOKEN_TTL_SECONDS`, default 10 years)
   - response includes `label`, `redeemUrl`, `qrSvg`, `qrErrorCorrection`, `qrQuietZoneModules`
 - `POST /v1/pixpax/collections/:collectionId/:version/code-cards` (admin)
   - request supports `kind`, `quantity`, `cardId|count`, `dropId?`, `expiresInSeconds?`, `wave?`, `format?`
   - returns canonical `items[]` with `{ token, redeemUrl, qrSvg, ... }` for frontend print rendering
   - `format` currently supports `json` only
+- `POST /v1/pixpax/admin/codes/:codeId/revoke` (admin)
+  - revokes a code id immediately (idempotent)
 - `GET /v1/pixpax/redeem-code/:codeId`
   - resolves short redeem `codeId` to a signed token
 - `GET /v1/pixpax/issuers`

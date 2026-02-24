@@ -100,6 +100,15 @@ function normalizePalette(input: unknown): PackPalette16 {
   };
 }
 
+function formatDateTime(value: unknown) {
+  const date = new Date(String(value || ""));
+  if (Number.isNaN(date.getTime())) return "";
+  return new Intl.DateTimeFormat(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(date);
+}
+
 async function clearTokenQueryIfPresent() {
   if (!route.query?.token) return;
   const nextQuery = { ...route.query };
@@ -145,7 +154,7 @@ async function verifyOffline() {
     if (verified.isExpired) {
       offlineStatus.value = "expired";
       offlineDetail.value =
-        "Official signature verified. Token appears expired; server will decide final status.";
+        "Official signature verified, but token is expired. Redeem will be rejected by the server.";
       return;
     }
     offlineStatus.value = "official";
@@ -276,6 +285,21 @@ async function redeem() {
       if (reason === "legacy-token-unsupported" || body?.code === "legacy_token_unsupported") {
         redeemError.value =
           "This code uses a retired legacy format. Remint a new code token and try again.";
+        return;
+      }
+      if (reason === "token-expired") {
+        const expiresAt = formatDateTime(body?.expiresAt);
+        redeemError.value = expiresAt
+          ? `This code expired on ${expiresAt}. Ask for a new code.`
+          : "This code has expired. Ask for a new code.";
+        return;
+      }
+      if (reason === "code-revoked") {
+        const revokedAt = formatDateTime(body?.revokedAt);
+        const revokedReason = String(body?.revokedReason || "").trim();
+        redeemError.value = revokedAt
+          ? `This code was revoked on ${revokedAt}.${revokedReason ? ` ${revokedReason}` : ""}`
+          : "This code has been revoked.";
         return;
       }
       if (String(body?.status || "") === "already-claimed") {

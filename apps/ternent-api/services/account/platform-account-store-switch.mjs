@@ -124,6 +124,10 @@ export async function listManagedUsers(...args) {
   return runRead("listManagedUsers", args);
 }
 
+export async function resetManagedIdentityData(...args) {
+  return runWrite("resetManagedIdentityData", args);
+}
+
 export async function createManagedUser(...args) {
   return runWrite("createManagedUser", args, {
     buildMirrorArgs: ({ args: [userId, workspaceId, input], primaryResult }) => [

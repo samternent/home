@@ -96,10 +96,6 @@ export function createAccountListLoader(options: CreateAccountListLoaderOptions)
         if (activeBook) selectedCloudProfileId.value = activeBook.managedUserId;
       }
 
-      if (!selectedCloudProfileId.value && cloudProfiles.value.length > 0) {
-        selectedCloudProfileId.value = cloudProfiles.value[0].id;
-      }
-
       if (selectedCloudBookId.value) {
         const stillPresent = cloudBooks.value.some(
           (entry) => entry.id === selectedCloudBookId.value
@@ -116,9 +112,6 @@ export function createAccountListLoader(options: CreateAccountListLoaderOptions)
         }
       }
 
-      if (!selectedCloudBookId.value && filteredCloudBooks.value.length > 0) {
-        selectedCloudBookId.value = filteredCloudBooks.value[0].id;
-      }
     } catch (error: unknown) {
       if (
         error instanceof PixPaxApiError &&

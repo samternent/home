@@ -39,7 +39,14 @@ const themedSvg = computed(() => {
 useFavicon(computed(() => svgToDataUrl(themedSvg.value)));
 
 const route = useRoute();
-const isControlRoute = computed(() => route.path.includes("/control"));
+const controlShellRouteNames = new Set([
+  "pixpax-control",
+  "pixpax-control-entry",
+  "pixpax-control-login",
+]);
+const isControlRoute = computed(() =>
+  controlShellRouteNames.has(String(route.name || "")),
+);
 </script>
 <template>
   <ClientOnly>

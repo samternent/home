@@ -147,7 +147,7 @@ function isTruthyEnv(value) {
 
 const DEFAULT_PACK_COUNT = 5;
 const DEFAULT_REDEEM_TOKEN_TTL_SECONDS = 14 * 24 * 60 * 60;
-const MAX_REDEEM_TOKEN_TTL_SECONDS = 30 * 24 * 60 * 60;
+const DEFAULT_MAX_REDEEM_TOKEN_TTL_SECONDS = 10 * 365 * 24 * 60 * 60;
 const DEFAULT_TOKEN_EXP_LEEWAY_SECONDS = 60;
 const DEFAULT_COLLECTION_VISIBILITY = "public";
 const DEFAULT_COLLECTION_ISSUANCE_MODE = "scheduled";
@@ -227,7 +227,15 @@ function clampRedeemTokenTtlSeconds(value) {
   if (!Number.isFinite(parsed)) return DEFAULT_REDEEM_TOKEN_TTL_SECONDS;
   const rounded = Math.trunc(parsed);
   if (rounded < 60) return 60;
-  return Math.min(rounded, MAX_REDEEM_TOKEN_TTL_SECONDS);
+  return Math.min(rounded, resolveMaxRedeemTokenTtlSeconds());
+}
+
+function resolveMaxRedeemTokenTtlSeconds() {
+  const raw = Number(process.env.PIX_PAX_MAX_REDEEM_TOKEN_TTL_SECONDS);
+  if (!Number.isFinite(raw)) return DEFAULT_MAX_REDEEM_TOKEN_TTL_SECONDS;
+  const rounded = Math.floor(raw);
+  if (rounded < 60) return 60;
+  return rounded;
 }
 
 function resolveTokenExpLeewaySeconds() {
@@ -236,6 +244,12 @@ function resolveTokenExpLeewaySeconds() {
   const rounded = Math.floor(raw);
   if (rounded < 0) return 0;
   return rounded;
+}
+
+function isCodeRecordRevoked(record) {
+  const status = String(record?.status || "").trim().toLowerCase();
+  const revokedAt = String(record?.revokedAt || "").trim();
+  return status === "revoked" || Boolean(revokedAt);
 }
 
 function privatePemToDer(pem) {
@@ -836,6 +850,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
       const record = {
         codeId,
         createdAt: issuedAt,
+        status: "active",
         exp,
         expiresAt: new Date(exp * 1000).toISOString(),
         token: tokenSigned.token,
@@ -1311,6 +1326,63 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
       }
       console.error("[pixpax/collections] code-cards generation failed:", error);
       res.status(500).send({ error: "Failed to generate code cards." });
+    }
+  });
+
+  router.post("/v1/pixpax/admin/codes/:codeId/revoke", async (req, res) => {
+    if (!(await requireAdminToken(req, res))) return;
+    const codeId = String(req.params?.codeId || "").trim();
+    if (!codeId) {
+      res.status(400).send({ ok: false, error: "codeId is required." });
+      return;
+    }
+
+    const revokeReason = String(req.body?.reason || "").trim();
+    const revokedAt = now().toISOString();
+    try {
+      const store = await getStore();
+      const record = await store.getGlobalCodeRecord(codeId);
+      const alreadyRevoked = isCodeRecordRevoked(record);
+      const next = alreadyRevoked
+        ? record
+        : {
+            ...record,
+            status: "revoked",
+            revokedAt,
+            ...(revokeReason ? { revokedReason: revokeReason } : {}),
+          };
+
+      if (!alreadyRevoked) {
+        await store.putGlobalCodeRecord(codeId, next);
+      }
+
+      res.status(200).send({
+        ok: true,
+        codeId,
+        status: "revoked",
+        alreadyRevoked,
+        revokedAt: String(next?.revokedAt || revokedAt),
+        revokedReason: String(next?.revokedReason || "").trim() || null,
+      });
+    } catch (error) {
+      if (isNoSuchKeyError(error)) {
+        res.status(404).send({
+          ok: false,
+          error: "Redeem code was not found.",
+          reason: "code-not-found",
+        });
+        return;
+      }
+      if (missingContentConfigError(error)) {
+        res.status(503).send({
+          ok: false,
+          error:
+            "Content store configuration is incomplete. Use LEDGER_* connection vars and LEDGER_CONTENT_PREFIX.",
+        });
+        return;
+      }
+      console.error("[pixpax/admin] revoke code failed:", error);
+      res.status(500).send({ ok: false, error: "Failed to revoke redeem code." });
     }
   });
 
@@ -2092,6 +2164,9 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
         collectionId: String(record?.collectionId || "").trim() || null,
         version: String(record?.version || "").trim() || null,
         expiresAt: String(record?.expiresAt || "").trim() || null,
+        status: isCodeRecordRevoked(record) ? "revoked" : "active",
+        revokedAt: String(record?.revokedAt || "").trim() || null,
+        revokedReason: String(record?.revokedReason || "").trim() || null,
       });
     } catch (error) {
       if (isNoSuchKeyError(error)) {
@@ -2182,15 +2257,27 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
             : reason === "issuer-resolution-failed" || reason === "signature-verify-error"
             ? 500
             : 422;
+        const expiredAtIso =
+          reason === "token-expired" && Number.isFinite(Number(verification.exp))
+            ? new Date(Number(verification.exp) * 1000).toISOString()
+            : null;
+        const nowAtIso =
+          reason === "token-expired" && Number.isFinite(Number(verification.nowSeconds))
+            ? new Date(Number(verification.nowSeconds) * 1000).toISOString()
+            : null;
         res.status(statusCode).send({
           ok: false,
           error:
             reason === "legacy-token-unsupported"
               ? "Legacy token format is no longer supported. Remint a new code token."
+              : reason === "token-expired"
+              ? "This redeem code has expired. Ask for a new code."
               : "Token verification failed.",
           reason,
           code:
             reason === "legacy-token-unsupported" ? "legacy_token_unsupported" : undefined,
+          expiresAt: expiredAtIso,
+          nowAt: nowAtIso,
           details: verification.error || null,
         });
         return;
@@ -2229,6 +2316,18 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
           ok: false,
           error: "Code token lookup record does not match signed token claims.",
           reason: "code-record-mismatch",
+        });
+        return;
+      }
+
+      if (isCodeRecordRevoked(codeRecord)) {
+        res.status(410).send({
+          ok: false,
+          error: "This redeem code has been revoked.",
+          reason: "code-revoked",
+          codeId,
+          revokedAt: String(codeRecord?.revokedAt || "").trim() || null,
+          revokedReason: String(codeRecord?.revokedReason || "").trim() || null,
         });
         return;
       }

@@ -766,6 +766,101 @@ test("code token mint response includes label, redeemUrl, and qrSvg", async () =
   assert.equal(missing.body.reason, "code-not-found");
 });
 
+test("admin can revoke code ids and resolve reflects revoked status", async () => {
+  const router = createRouterHarness();
+  createIssuerAndReceiptKeyEnv();
+  process.env.PIX_PAX_ADMIN_TOKEN = "test-token";
+  pixpaxCollectionRoutes(router, { createStore });
+  const headers = { authorization: "Bearer test-token" };
+  const params = { collectionId: "kid-dragons", version: "v1" };
+
+  const collectionUpload = await router.invoke(
+    "PUT",
+    "/v1/pixpax/collections/:collectionId/:version/collection",
+    {
+      headers,
+      params,
+      body: { name: "Kid Dragons", gridSize: 16, issuer: { name: "PixPax" } },
+    }
+  );
+  assert.equal(collectionUpload.statusCode, 201);
+
+  const indexUpload = await router.invoke(
+    "PUT",
+    "/v1/pixpax/collections/:collectionId/:version/index",
+    {
+      headers,
+      params,
+      body: {
+        series: [{ seriesId: "dragons" }],
+        cards: ["dragon-001"],
+        cardMap: {
+          "dragon-001": { seriesId: "dragons", slotIndex: 0, role: "card" },
+        },
+      },
+    }
+  );
+  assert.equal(indexUpload.statusCode, 201);
+
+  const cardUpload = await router.invoke(
+    "PUT",
+    "/v1/pixpax/collections/:collectionId/:version/cards/:cardId",
+    {
+      headers,
+      params: { ...params, cardId: "dragon-001" },
+      body: {
+        cardId: "dragon-001",
+        seriesId: "dragons",
+        slotIndex: 0,
+        role: "card",
+        label: "Dragon One",
+        renderPayload: { gridSize: 16, gridB64: "AAECAw==" },
+      },
+    }
+  );
+  assert.equal(cardUpload.statusCode, 201);
+
+  const minted = await router.invoke(
+    "POST",
+    "/v1/pixpax/collections/:collectionId/:version/override-codes",
+    {
+      headers,
+      params,
+      body: {
+        kind: "fixed-card",
+        cardId: "dragon-001",
+      },
+    }
+  );
+  assert.equal(minted.statusCode, 201);
+
+  const revoke = await router.invoke(
+    "POST",
+    "/v1/pixpax/admin/codes/:codeId/revoke",
+    {
+      headers,
+      params: { codeId: minted.body.codeId },
+      body: { reason: "test-revoke" },
+    }
+  );
+  assert.equal(revoke.statusCode, 200);
+  assert.equal(revoke.body.ok, true);
+  assert.equal(revoke.body.status, "revoked");
+  assert.equal(revoke.body.codeId, minted.body.codeId);
+
+  const resolved = await router.invoke(
+    "GET",
+    "/v1/pixpax/redeem-code/:codeId",
+    {
+      params: { codeId: minted.body.codeId },
+    }
+  );
+  assert.equal(resolved.statusCode, 200);
+  assert.equal(resolved.body.ok, true);
+  assert.equal(resolved.body.status, "revoked");
+  assert.equal(resolved.body.codeId, minted.body.codeId);
+});
+
 test("code cards endpoint returns shared items dataset as json only", async () => {
   const router = createRouterHarness();
   createIssuerAndReceiptKeyEnv();

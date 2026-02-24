@@ -15,23 +15,6 @@ export const pixpaxControlChildren = [
     name: "pixpax-control-login",
     component: () => import("./RoutePixPaxControlLogin.vue"),
   },
-  {
-    path: "creator",
-    name: "pixpax-control-creator",
-    component: () => import("./RoutePixPaxCreator.vue"),
-  },
-  {
-    path: "analytics",
-    name: "pixpax-control-analytics",
-    component: () => import("./RoutePixPaxAnalytics.vue"),
-    beforeEnter: requirePixPaxPermission("pixpax.analytics.read"),
-  },
-  {
-    path: "admin",
-    name: "pixpax-control-admin",
-    component: () => import("./RoutePixPaxAdmin.vue"),
-    beforeEnter: requirePixPaxPermission("pixpax.admin.manage"),
-  },
 ];
 
 export const pixpaxChildren = [
@@ -123,6 +106,23 @@ export const pixpaxChildren = [
           import("./settings/RoutePixPaxSettingsDanger.vue"),
       },
     ],
+  },
+  {
+    path: "control/creator",
+    name: "pixpax-control-creator",
+    component: () => import("./RoutePixPaxCreator.vue"),
+  },
+  {
+    path: "control/analytics",
+    name: "pixpax-control-analytics",
+    component: () => import("./RoutePixPaxAnalytics.vue"),
+    beforeEnter: requirePixPaxPermission("pixpax.analytics.read"),
+  },
+  {
+    path: "control/admin",
+    name: "pixpax-control-admin",
+    component: () => import("./RoutePixPaxAdmin.vue"),
+    beforeEnter: requirePixPaxPermission("pixpax.admin.manage"),
   },
   {
     path: "control",
