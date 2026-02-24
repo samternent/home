@@ -1,5 +1,39 @@
 # ternent-api
 
+## Pixbook receipts-first API (v1)
+
+New pixbook command/query endpoints:
+- `GET /v1/pixbooks`
+- `GET /v1/pixbooks/:id`
+- `GET /v1/pixbooks/:id/receipts?after=<eventId>&limit=<n>`
+- `GET /v1/pixbooks/:id/snapshot`
+- `POST /v1/pixbooks/commands/create`
+- `POST /v1/pixbooks/:id/commands/save`
+
+Command headers:
+- `Idempotency-Key: <uuid>`
+- `X-Signing-Identity-Id: <id>` (required when account has multiple signing identities)
+
+Vault Transit env contract:
+- `VAULT_ADDR`
+- `VAULT_TRANSIT_MOUNT`
+- `VAULT_TOKEN` (or `VAULT_ROLE` with Kubernetes auth/JWT)
+- optional: `VAULT_K8S_JWT_PATH`
+
+Spaces receipt storage env contract:
+- `LEDGER_S3_ENDPOINT`
+- `LEDGER_BUCKET` (or `PIXBOOK_LEDGER_BUCKET` / `LEDGER_CONTENT_BUCKET`)
+- `LEDGER_REGION`
+- `LEDGER_ACCESS_KEY_ID`
+- `LEDGER_SECRET_ACCESS_KEY`
+- optional: `PIXBOOK_RECEIPTS_PREFIX` (default `pixpax/pixbooks`)
+
+Legacy compatibility endpoints are retained:
+- `GET /v1/account/pixbook`
+- `PUT /v1/account/pixbook/snapshot`
+
+These legacy routes emit `Deprecation`, `Sunset`, and `Link` headers and call the new pixbook services internally.
+
 ## PixPax issuer audit ledger
 
 `/v1/stickerbook/issue` writes a signed `pack.issued` Concord entry to an append-only

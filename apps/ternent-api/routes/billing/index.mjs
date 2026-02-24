@@ -2,9 +2,10 @@ import {
   getBillingAmounts,
   getBillingHistory,
 } from "../../services/digitalocean/index.mjs";
+import { requirePermission } from "../../services/auth/permissions.mjs";
 
 export default function billingRoutes(router) {
-  router.get("/my-costs", async (req, res) => {
+  router.get("/my-costs", requirePermission("platform.account.manage"), async (req, res) => {
     const billing = await getBillingAmounts();
     const { billing_history } = await getBillingHistory();
 

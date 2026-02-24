@@ -1,14 +1,12 @@
 import { requireSession, upsertAuthUserShadow } from "../../services/auth/platform-auth.mjs";
 import { requirePermission } from "../../services/auth/permissions.mjs";
 import {
-  BookSnapshotConflictError,
   createBook,
   createManagedUser,
   derivePersonalPixbookUserKey,
   ensurePersonalPixbook,
   ensureWorkspaceForUser,
   getBookForWorkspace,
-  getLatestBookSnapshot,
   getWorkspaceSummary,
   listBooks,
   listManagedUsers,
@@ -16,7 +14,6 @@ import {
   resetManagedIdentityData,
   removeBook,
   renameWorkspace,
-  saveBookSnapshot,
   updateBook,
   updateManagedUser,
 } from "../../services/account/platform-account-store-switch.mjs";
@@ -24,6 +21,11 @@ import {
   asAccountAliasPayload,
   resolveRequestedAccountId,
 } from "../../services/account/account-schema-flags.mjs";
+import {
+  applyLegacyDeprecationHeaders,
+  getLegacyPixbookSnapshot,
+  saveLegacyPixbookSnapshot,
+} from "../../modules/pixbooks/legacy-bridge.mjs";
 
 const DEFAULT_COLLECTION_ID = "primary";
 
@@ -501,6 +503,7 @@ export default function accountRoutes(router) {
   );
 
   router.get("/v1/account/pixbook", requireSession, async (req, res) => {
+    applyLegacyDeprecationHeaders(res);
     try {
       await upsertAuthUserShadow(req.platformSession);
       await ensureWorkspaceForUser(req.platformSession);
@@ -581,10 +584,12 @@ export default function accountRoutes(router) {
         return;
       }
 
-      const snapshot = await getLatestBookSnapshot(
-        resolved.book.id,
-        resolved.workspace.id
-      );
+      const snapshot = await getLegacyPixbookSnapshot({
+        req,
+        userId: sessionUserId(req),
+        accountId: resolved.workspace.id,
+        bookId: resolved.book.id,
+      });
 
       res.status(200).send({
         ok: true,
@@ -603,6 +608,7 @@ export default function accountRoutes(router) {
   });
 
   router.put("/v1/account/pixbook/snapshot", requireSession, async (req, res) => {
+    applyLegacyDeprecationHeaders(res);
     try {
       await upsertAuthUserShadow(req.platformSession);
       await ensureWorkspaceForUser(req.platformSession);
@@ -693,17 +699,17 @@ export default function accountRoutes(router) {
       }
 
     try {
-      const saved = await saveBookSnapshot(
-        sessionUserId(req),
-        resolved.workspace.id,
-        resolved.book.id,
-        {
-          payload: req.body?.payload,
-          ledgerHead: req.body?.ledgerHead,
-          expectedVersion: req.body?.expectedVersion,
-          expectedLedgerHead: req.body?.expectedLedgerHead,
-        }
-      );
+      const saved = await saveLegacyPixbookSnapshot({
+        req,
+        userId: sessionUserId(req),
+        accountId: resolved.workspace.id,
+        bookId: resolved.book.id,
+        payload: req.body?.payload,
+        ledgerHead: req.body?.ledgerHead,
+        expectedVersion: req.body?.expectedVersion,
+        expectedLedgerHead: req.body?.expectedLedgerHead,
+        signingIdentityId: req?.headers?.["x-signing-identity-id"],
+      });
 
       res.status(200).send({
         ok: true,
@@ -711,12 +717,12 @@ export default function accountRoutes(router) {
         managedUser: resolved.managedUser,
         book: {
           ...resolved.book,
-          currentVersion: saved?.version ?? resolved.book.currentVersion,
+          currentVersion: saved?.snapshot?.version ?? resolved.book.currentVersion,
         },
-        snapshot: saved,
+        snapshot: saved?.snapshot || null,
       });
     } catch (error) {
-      if (error instanceof BookSnapshotConflictError || error?.code === "BOOK_SNAPSHOT_CONFLICT") {
+      if (error?.code === "BOOK_SNAPSHOT_CONFLICT") {
         res.status(409).send({
           ok: false,
           error: error.message,
@@ -725,9 +731,33 @@ export default function accountRoutes(router) {
         });
         return;
       }
+      if (error?.code === "IDEMPOTENCY_CONFLICT") {
+        res.status(409).send({
+          ok: false,
+          error: error.message,
+          code: error.code,
+        });
+        return;
+      }
+      if (error?.statusCode === 404) {
+        res.status(404).send({
+          ok: false,
+          error: error.message || "Book not found.",
+          code: error.code || "BOOK_NOT_FOUND",
+        });
+        return;
+      }
+      if (error?.statusCode === 401) {
+        res.status(401).send({
+          ok: false,
+          error: error.message || "Unauthorized.",
+          code: error.code || "UNAUTHORIZED",
+        });
+        return;
+      }
       if (
         String(error?.message || "").includes(
-          "Pixbook ledger storage is not configured"
+          "Pixbook receipt storage is not configured"
         )
       ) {
         res.status(503).send({
@@ -740,6 +770,7 @@ export default function accountRoutes(router) {
       res.status(400).send({
         ok: false,
         error: error?.message || "Unable to save pixbook cloud state.",
+        code: error?.code || "PIXBOOK_SAVE_FAILED",
       });
     }
   });

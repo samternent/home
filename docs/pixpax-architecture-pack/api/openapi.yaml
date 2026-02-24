@@ -1,0 +1,773 @@
+openapi: 3.0.3
+info:
+  title: PixPax Pixbook API
+  version: 1.0.0
+  description: |
+    Contract for the receipts-first pixbook command/query API.
+    Legacy /v1/account/pixbook* endpoints are compatibility paths and are intentionally not defined here.
+servers:
+  - url: https://api.example.com
+security:
+  - cookieAuth: []
+  - bearerAuth: []
+paths:
+  /v1/pixbooks:
+    get:
+      summary: List pixbooks for account
+      operationId: listPixbooks
+      parameters:
+        - $ref: '#/components/parameters/AccountIdHeader'
+      responses:
+        '200':
+          description: Pixbook list
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/EnvelopeSuccess'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PixbookListResponse'
+              examples:
+                ok:
+                  value:
+                    ok: true
+                    requestId: 913ef4ba-b58e-4de1-8de6-bf89f89df8f0
+                    data:
+                      accountId: ws_123
+                      workspaceId: ws_123
+                      pixbooks:
+                        - id: book_abc
+                          managedUserId: user_abc
+                          collectionId: primary
+                          name: My Pixbook
+                          status: active
+                          currentVersion: 4
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /v1/pixbooks/{id}:
+    get:
+      summary: Get pixbook projection
+      operationId: getPixbook
+      parameters:
+        - $ref: '#/components/parameters/AccountIdHeader'
+        - $ref: '#/components/parameters/PixbookIdPath'
+      responses:
+        '200':
+          description: Pixbook projection
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/EnvelopeSuccess'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PixbookProjectionResponse'
+              examples:
+                ok:
+                  value:
+                    ok: true
+                    requestId: 913ef4ba-b58e-4de1-8de6-bf89f89df8f0
+                    data:
+                      accountId: ws_123
+                      workspaceId: ws_123
+                      managedUser:
+                        id: user_abc
+                        displayName: Casey
+                        userKey: auth:user:abc
+                        status: active
+                      book:
+                        id: book_abc
+                        managedUserId: user_abc
+                        collectionId: primary
+                        name: My Pixbook
+                        status: active
+                        currentVersion: 4
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /v1/pixbooks/{id}/receipts:
+    get:
+      summary: List receipts from Postgres receipt index
+      operationId: listPixbookReceipts
+      parameters:
+        - $ref: '#/components/parameters/AccountIdHeader'
+        - $ref: '#/components/parameters/PixbookIdPath'
+        - name: after
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Resume cursor eventId. Results start strictly after this event.
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 500
+            default: 100
+        - name: includePayload
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: Receipt page
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/EnvelopeSuccess'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PixbookReceiptListResponse'
+              examples:
+                ok:
+                  value:
+                    ok: true
+                    requestId: 913ef4ba-b58e-4de1-8de6-bf89f89df8f0
+                    data:
+                      accountId: ws_123
+                      workspaceId: ws_123
+                      bookId: book_abc
+                      receipts:
+                        - eventId: evt_abc
+                          streamVersion: 5
+                          type: PIXBOOK_SAVE
+                          createdAt: '2026-02-24T12:00:00.000Z'
+                          prevHash: abc
+                          hash: def
+                          signingIdentityId: signing_abc
+                          spacesKey: pixpax/pixbooks/ws_123/book_abc/events/evt_abc.json
+                          receipt:
+                            eventId: evt_abc
+                            type: PIXBOOK_SAVE
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /v1/pixbooks/{id}/snapshot:
+    get:
+      summary: Get derived snapshot artifact for pixbook
+      operationId: getPixbookSnapshot
+      parameters:
+        - $ref: '#/components/parameters/AccountIdHeader'
+        - $ref: '#/components/parameters/PixbookIdPath'
+      responses:
+        '200':
+          description: Derived snapshot
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/EnvelopeSuccess'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PixbookSnapshotResponse'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /v1/pixbooks/commands/create:
+    post:
+      summary: Create pixbook and emit PIXBOOK_CREATED receipt
+      operationId: createPixbookCommand
+      parameters:
+        - $ref: '#/components/parameters/AccountIdHeader'
+        - $ref: '#/components/parameters/IdempotencyKeyHeader'
+        - $ref: '#/components/parameters/SigningIdentityHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PixbookCreateCommand'
+            examples:
+              create:
+                value:
+                  managedUserId: user_abc
+                  name: My Pixbook
+                  collectionId: primary
+      responses:
+        '200':
+          description: Command accepted and receipt appended
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/EnvelopeSuccess'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PixbookCommandResult'
+              examples:
+                ok:
+                  value:
+                    ok: true
+                    requestId: 913ef4ba-b58e-4de1-8de6-bf89f89df8f0
+                    data:
+                      eventId: evt_abc
+                      bookId: book_abc
+                      streamVersion: 1
+                      hash: sha256:abc
+                      createdAt: '2026-02-24T12:00:00.000Z'
+        '202':
+          description: Command is still in progress for this idempotency key
+          headers:
+            Retry-After:
+              description: Seconds clients should wait before retrying this idempotent command.
+              schema:
+                type: integer
+                minimum: 1
+            Idempotency-Key:
+              description: Echoed idempotency key for client retry coordination.
+              schema:
+                type: string
+                format: uuid
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/EnvelopeSuccess'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PixbookCommandPending'
+              examples:
+                in_progress:
+                  value:
+                    ok: true
+                    requestId: 913ef4ba-b58e-4de1-8de6-bf89f89df8f0
+                    data:
+                      status: in_progress
+                      idempotencyKey: 83d1f495-4f20-4b85-9fc2-c9f0ba7aef3e
+                      retryAfterSeconds: 2
+        '400':
+          description: Validation failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvelopeError'
+              examples:
+                missing_idempotency:
+                  value:
+                    ok: false
+                    requestId: 913ef4ba-b58e-4de1-8de6-bf89f89df8f0
+                    error:
+                      code: IDEMPOTENCY_KEY_REQUIRED
+                      message: Idempotency-Key header is required.
+                      details: {}
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409IdempotencyConflict'
+  /v1/pixbooks/{id}/commands/save:
+    post:
+      summary: Save pixbook and emit PIXBOOK_SAVE receipt
+      operationId: savePixbookCommand
+      parameters:
+        - $ref: '#/components/parameters/AccountIdHeader'
+        - $ref: '#/components/parameters/PixbookIdPath'
+        - $ref: '#/components/parameters/IdempotencyKeyHeader'
+        - $ref: '#/components/parameters/SigningIdentityHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PixbookSaveCommand'
+      responses:
+        '200':
+          description: Command accepted and receipt appended
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/EnvelopeSuccess'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PixbookCommandResult'
+        '202':
+          description: Command is still in progress for this idempotency key
+          headers:
+            Retry-After:
+              description: Seconds clients should wait before retrying this idempotent command.
+              schema:
+                type: integer
+                minimum: 1
+            Idempotency-Key:
+              description: Echoed idempotency key for client retry coordination.
+              schema:
+                type: string
+                format: uuid
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/EnvelopeSuccess'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PixbookCommandPending'
+              examples:
+                in_progress:
+                  value:
+                    ok: true
+                    requestId: 913ef4ba-b58e-4de1-8de6-bf89f89df8f0
+                    data:
+                      status: in_progress
+                      idempotencyKey: 83d1f495-4f20-4b85-9fc2-c9f0ba7aef3e
+                      retryAfterSeconds: 2
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Snapshot or idempotency conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvelopeError'
+              examples:
+                snapshot_conflict:
+                  value:
+                    ok: false
+                    requestId: 913ef4ba-b58e-4de1-8de6-bf89f89df8f0
+                    error:
+                      code: BOOK_SNAPSHOT_CONFLICT
+                      message: Pixbook has changed since you last synced.
+                      details:
+                        expectedVersion: 3
+                        currentVersion: 4
+                idempotency_conflict:
+                  value:
+                    ok: false
+                    requestId: 913ef4ba-b58e-4de1-8de6-bf89f89df8f0
+                    error:
+                      code: IDEMPOTENCY_CONFLICT
+                      message: Idempotency key was already used with a different command payload.
+                      details: {}
+                stream_head_conflict:
+                  value:
+                    ok: false
+                    requestId: 913ef4ba-b58e-4de1-8de6-bf89f89df8f0
+                    error:
+                      code: STREAM_HEAD_CONFLICT
+                      message: Pixbook stream head changed before this write completed.
+                      details:
+                        expectedPrevHash: sha256:expected
+                        currentPrevHash: sha256:actual
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: session
+    bearerAuth:
+      type: http
+      scheme: bearer
+  parameters:
+    AccountIdHeader:
+      name: X-Account-Id
+      in: header
+      required: true
+      schema:
+        type: string
+      description: Account/workspace identifier used for authorization scope.
+    PixbookIdPath:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    IdempotencyKeyHeader:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: Required on commands. Same key + same body returns same response.
+    SigningIdentityHeader:
+      name: X-Signing-Identity-Id
+      in: header
+      required: false
+      schema:
+        type: string
+      description: Required when account has more than one active signing identity.
+  responses:
+    Error400:
+      description: Invalid request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/EnvelopeError'
+          examples:
+            invalid_request:
+              value:
+                ok: false
+                requestId: 913ef4ba-b58e-4de1-8de6-bf89f89df8f0
+                error:
+                  code: INVALID_REQUEST
+                  message: Request failed validation.
+                  details: {}
+    Error401:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/EnvelopeError'
+          examples:
+            unauthorized:
+              value:
+                ok: false
+                requestId: 913ef4ba-b58e-4de1-8de6-bf89f89df8f0
+                error:
+                  code: UNAUTHORIZED
+                  message: Authentication required.
+                  details: {}
+    Error403:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/EnvelopeError'
+          examples:
+            forbidden:
+              value:
+                ok: false
+                requestId: 913ef4ba-b58e-4de1-8de6-bf89f89df8f0
+                error:
+                  code: FORBIDDEN
+                  message: You do not have access to this account.
+                  details: {}
+    Error404:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/EnvelopeError'
+          examples:
+            not_found:
+              value:
+                ok: false
+                requestId: 913ef4ba-b58e-4de1-8de6-bf89f89df8f0
+                error:
+                  code: NOT_FOUND
+                  message: Resource not found.
+                  details: {}
+    Error409IdempotencyConflict:
+      description: Idempotency conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/EnvelopeError'
+          examples:
+            idempotency_conflict:
+              value:
+                ok: false
+                requestId: 913ef4ba-b58e-4de1-8de6-bf89f89df8f0
+                error:
+                  code: IDEMPOTENCY_CONFLICT
+                  message: Idempotency key was already used with a different command payload.
+                  details: {}
+  schemas:
+    EnvelopeSuccess:
+      type: object
+      required:
+        - ok
+        - requestId
+        - data
+      properties:
+        ok:
+          type: boolean
+          enum: [true]
+        requestId:
+          type: string
+        data: {}
+    EnvelopeError:
+      type: object
+      required:
+        - ok
+        - requestId
+        - error
+      properties:
+        ok:
+          type: boolean
+          enum: [false]
+        requestId:
+          type: string
+        error:
+          type: object
+          required:
+            - code
+            - message
+            - details
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+              additionalProperties: true
+    PixbookBook:
+      type: object
+      required:
+        - id
+        - managedUserId
+        - collectionId
+        - name
+        - status
+        - currentVersion
+      properties:
+        id:
+          type: string
+        managedUserId:
+          type: string
+        collectionId:
+          type: string
+        name:
+          type: string
+        status:
+          type: string
+        currentVersion:
+          type: integer
+    ManagedUser:
+      type: object
+      required:
+        - id
+        - displayName
+        - userKey
+        - status
+      properties:
+        id:
+          type: string
+        displayName:
+          type: string
+        userKey:
+          type: string
+        status:
+          type: string
+    PixbookListResponse:
+      type: object
+      required:
+        - accountId
+        - workspaceId
+        - pixbooks
+      properties:
+        accountId:
+          type: string
+        workspaceId:
+          type: string
+        pixbooks:
+          type: array
+          items:
+            $ref: '#/components/schemas/PixbookBook'
+    PixbookProjectionResponse:
+      type: object
+      required:
+        - accountId
+        - workspaceId
+        - managedUser
+        - book
+      properties:
+        accountId:
+          type: string
+        workspaceId:
+          type: string
+        managedUser:
+          $ref: '#/components/schemas/ManagedUser'
+        book:
+          $ref: '#/components/schemas/PixbookBook'
+    IndexedReceipt:
+      type: object
+      required:
+        - eventId
+        - streamVersion
+        - type
+        - createdAt
+        - hash
+        - signingIdentityId
+        - spacesKey
+      properties:
+        eventId:
+          type: string
+        streamVersion:
+          type: integer
+        type:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        prevHash:
+          type: string
+          nullable: true
+        hash:
+          type: string
+        signingIdentityId:
+          type: string
+        spacesKey:
+          type: string
+        receipt:
+          type: object
+          nullable: true
+          additionalProperties: true
+    PixbookReceiptListResponse:
+      type: object
+      required:
+        - accountId
+        - workspaceId
+        - bookId
+        - receipts
+      properties:
+        accountId:
+          type: string
+        workspaceId:
+          type: string
+        bookId:
+          type: string
+        receipts:
+          type: array
+          items:
+            $ref: '#/components/schemas/IndexedReceipt'
+    PixbookSnapshot:
+      type: object
+      nullable: true
+      properties:
+        id:
+          type: string
+        bookId:
+          type: string
+        version:
+          type: integer
+        ledgerHead:
+          type: string
+          nullable: true
+        checksum:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        payload:
+          type: object
+          nullable: true
+          additionalProperties: true
+        eventId:
+          type: string
+    PixbookSnapshotResponse:
+      type: object
+      required:
+        - accountId
+        - workspaceId
+        - bookId
+      properties:
+        accountId:
+          type: string
+        workspaceId:
+          type: string
+        bookId:
+          type: string
+        snapshot:
+          $ref: '#/components/schemas/PixbookSnapshot'
+    PixbookCreateCommand:
+      type: object
+      required:
+        - managedUserId
+      properties:
+        managedUserId:
+          type: string
+        name:
+          type: string
+        collectionId:
+          type: string
+          default: primary
+    PixbookSaveCommand:
+      type: object
+      required:
+        - payload
+      properties:
+        payload:
+          type: object
+          additionalProperties: true
+        ledgerHead:
+          type: string
+          nullable: true
+        expectedVersion:
+          type: integer
+          nullable: true
+        expectedLedgerHead:
+          type: string
+          nullable: true
+    PixbookCommandResult:
+      type: object
+      required:
+        - eventId
+        - bookId
+        - streamVersion
+        - hash
+        - createdAt
+      properties:
+        eventId:
+          type: string
+        bookId:
+          type: string
+        streamVersion:
+          type: integer
+        hash:
+          type: string
+        prevHash:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+    PixbookCommandPending:
+      type: object
+      required:
+        - status
+        - idempotencyKey
+        - retryAfterSeconds
+      properties:
+        status:
+          type: string
+          enum: [in_progress]
+        idempotencyKey:
+          type: string
+          format: uuid
+        retryAfterSeconds:
+          type: integer
+          minimum: 1

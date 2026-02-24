@@ -1,0 +1,31 @@
+@startuml
+skinparam componentStyle rectangle
+actor "Client (Web/Mobile)" as client
+
+component "API Service (Node)" as api {
+  [HTTP Router]
+  [WS Gateway]
+  [Auth Module]
+  [Accounts Module]
+  [Pixbooks Module]
+  [PixPax Module]
+  [Stickerbook Module]
+  [Receipt Writer]
+  [Projector (in-process)]
+  [Observability]
+}
+
+database "Postgres (Projection)" as pg
+cloud "DigitalOcean Spaces (Receipts + Snapshots)" as s3
+component "Better-Auth" as ba
+component "Vault Transit (ECDSA P-256)" as vault
+
+client --> api : HTTPS (Queries/Commands)
+client --> api : WS (explicit subscribe)
+
+api --> ba : session/passkey
+api --> pg : read/write projections
+api --> s3 : append receipt, read stream/snapshot
+api --> vault : sign(digest)
+
+@enduml

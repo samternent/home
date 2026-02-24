@@ -1,0 +1,25 @@
+@startuml
+actor Client
+participant API
+participant Vault as "Vault Transit"
+participant Spaces
+database Postgres as "Postgres Projection"
+
+Client -> API: POST /v1/pixbooks/{id}/commands/save
+(idempotencyKey, payload)
+API -> API: Authorize (account+identity)
+Validate (Zod)
+API -> API: Build receipt (canonical JSON)
+Compute hash(prevHash+body)
+API -> Vault: sign(hash, identityKey)
+Vault --> API: signature
+
+API -> Spaces: PUT events/{eventId}.json (append-only)
+Spaces --> API: 200 OK
+
+API -> Postgres: apply projection (sync MVP)
+update heads/derived tables
+Postgres --> API: OK
+
+API --> Client: 200 {ok:true, data:{eventId}}
+@enduml

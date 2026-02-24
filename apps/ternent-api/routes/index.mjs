@@ -2,6 +2,7 @@ import express from "express";
 import authRoutes from "./auth/index.mjs";
 import accountRoutes from "./account/index.mjs";
 import billingRoutes from "./billing/index.mjs";
+import pixbookRoutes from "../modules/pixbooks/routes.mjs";
 import pixpaxCollectionRoutes from "./pixpax/collections/index.mjs";
 import pixpaxIssuerRoutes from "./pixpax/issuers/index.mjs";
 import stickerbookRoutes from "./stickerbook/index.mjs";
@@ -14,6 +15,7 @@ router.get("/", (req, res) => {
 
 billingRoutes(router);
 authRoutes(router);
+pixbookRoutes(router);
 accountRoutes(router);
 // murderMysteryRoutes(router);
 stickerbookRoutes(router);

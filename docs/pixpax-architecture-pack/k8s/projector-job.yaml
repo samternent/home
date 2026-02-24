@@ -1,0 +1,51 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pixpax-projector-rebuild
+  namespace: backend
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: projector
+          image: samternent/ternent-api:latest
+          command: ["node", "scripts/projector-rebuild.mjs"]
+          imagePullPolicy: Always
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-auth
+                  key: database-url
+            - name: LEDGER_S3_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-ledger
+                  key: ledger-s3-endpoint
+            - name: LEDGER_BUCKET
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-ledger
+                  key: ledger-bucket
+            - name: LEDGER_REGION
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-ledger
+                  key: ledger-region
+            - name: LEDGER_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-ledger
+                  key: ledger-access-key-id
+            - name: LEDGER_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-ledger
+                  key: ledger-secret-access-key
+            - name: PIXBOOK_RECEIPTS_PREFIX
+              value: "pixpax/pixbooks"
+            - name: VAULT_ADDR
+              value: "http://vault.vault.svc.cluster.local:8200"
+            - name: VAULT_ROLE
+              value: "pixpax-projector"

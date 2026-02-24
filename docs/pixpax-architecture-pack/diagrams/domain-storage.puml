@@ -1,0 +1,21 @@
+@startuml
+hide empty description
+entity "accounts" as accounts
+entity "identities" as identities
+entity "pixbooks" as pixbooks
+entity "pixbook_ledger_heads" as heads
+cloud "Spaces" as spaces
+component "Vault Transit" as vault
+
+accounts ||--o{ identities : has
+accounts ||--o{ pixbooks : owns
+identities ||--o{ pixbooks : owner_identity_id
+pixbooks ||--|| heads : snapshot/head
+
+identities ..> vault : keyName
+heads ..> spaces : snapshotKey + lastEventId
+
+spaces : /pixpax/pixbooks/{accountId}/{bookId}/events/{ulid}.json
+spaces : /pixpax/pixbooks/{accountId}/{bookId}/snapshot.json
+
+@enduml

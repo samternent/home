@@ -1,0 +1,66 @@
+# PixPax / Ternent API - Extracted Endpoint Inventory
+
+Generated: 2026-02-24
+
+| Method | Path | Source |
+|---|---|---|
+| DELETE | `/v1/account/books/:bookId` | `routes/account/index.mjs` |
+| DELETE | `/v1/account/identities` | `routes/account/index.mjs` |
+| DELETE | `/v1/account/identities/:identityId` | `routes/account/index.mjs` |
+| DELETE | `/v1/account/pixbooks/:pixbookId` | `routes/account/index.mjs` |
+| DELETE | `/v1/account/users/:userId/identity` | `routes/account/index.mjs` |
+| GET | `/` | `routes/index.mjs` |
+| GET | `/my-costs` | `routes/billing/index.mjs` |
+| GET | `/v1/account/books` | `routes/account/index.mjs` |
+| GET | `/v1/account/identities` | `routes/account/index.mjs` |
+| GET | `/v1/account/pixbook` | `routes/account/index.mjs` |
+| GET | `/v1/account/pixbooks` | `routes/account/index.mjs` |
+| GET | `/v1/account/session` | `routes/account/index.mjs` |
+| GET | `/v1/account/users` | `routes/account/index.mjs` |
+| GET | `/v1/account/workspace` | `routes/account/index.mjs` |
+| GET | `/v1/auth/health` | `routes/auth/index.mjs` |
+| GET | `/v1/auth/session` | `routes/auth/index.mjs` |
+| GET | `/v1/pixpax/admin/collections` | `routes/pixpax/collections/index.mjs` |
+| GET | `/v1/pixpax/admin/session` | `routes/pixpax/collections/index.mjs` |
+| GET | `/v1/pixpax/analytics/packs` | `routes/pixpax/collections/index.mjs` |
+| GET | `/v1/pixpax/collections/:collectionId/:version/bundle` | `routes/pixpax/collections/index.mjs` |
+| GET | `/v1/pixpax/collections/:collectionId/:version/cards/:cardId` | `routes/pixpax/collections/index.mjs` |
+| GET | `/v1/pixpax/collections/:collectionId/:version/collection` | `routes/pixpax/collections/index.mjs` |
+| GET | `/v1/pixpax/collections/:collectionId/:version/index` | `routes/pixpax/collections/index.mjs` |
+| GET | `/v1/pixpax/collections/:collectionId/:version/packs/:packId/verify` | `routes/pixpax/collections/index.mjs` |
+| GET | `/v1/pixpax/collections/:collectionId/resolve` | `routes/pixpax/collections/index.mjs` |
+| GET | `/v1/pixpax/collections/:collectionId/settings` | `routes/pixpax/collections/index.mjs` |
+| GET | `/v1/pixpax/collections/catalog` | `routes/pixpax/collections/index.mjs` |
+| GET | `/v1/pixpax/issuers` | `routes/pixpax/issuers/index.mjs` |
+| GET | `/v1/pixpax/issuers/:issuerKeyId` | `routes/pixpax/issuers/index.mjs` |
+| GET | `/v1/pixpax/receipt-keys` | `routes/pixpax/issuers/index.mjs` |
+| GET | `/v1/pixpax/receipt-keys/:receiptKeyId` | `routes/pixpax/issuers/index.mjs` |
+| GET | `/v1/pixpax/receipt/:packId` | `routes/stickerbook/index.mjs` |
+| GET | `/v1/pixpax/redeem-code/:codeId` | `routes/pixpax/collections/index.mjs` |
+| GET | `/v1/stickerbook/catalogue` | `routes/stickerbook/index.mjs` |
+| GET | `/v1/stickerbook/index` | `routes/stickerbook/index.mjs` |
+| GET | `/v1/stickerbook/issuer-keypair` | `routes/stickerbook/index.mjs` |
+| PATCH | `/v1/account/books/:bookId` | `routes/account/index.mjs` |
+| PATCH | `/v1/account/identities/:identityId` | `routes/account/index.mjs` |
+| PATCH | `/v1/account/pixbooks/:pixbookId` | `routes/account/index.mjs` |
+| PATCH | `/v1/account/users/:userId` | `routes/account/index.mjs` |
+| PATCH | `/v1/account/workspace` | `routes/account/index.mjs` |
+| POST | `/murder-mystery` | `routes/murder-mystery/index.mjs` |
+| POST | `/v1/account/books` | `routes/account/index.mjs` |
+| POST | `/v1/account/identities` | `routes/account/index.mjs` |
+| POST | `/v1/account/pixbooks` | `routes/account/index.mjs` |
+| POST | `/v1/account/users` | `routes/account/index.mjs` |
+| POST | `/v1/pixpax/admin/codes/:codeId/revoke` | `routes/pixpax/collections/index.mjs` |
+| POST | `/v1/pixpax/collections/:collectionId/:version/code-cards` | `routes/pixpax/collections/index.mjs` |
+| POST | `/v1/pixpax/collections/:collectionId/:version/override-codes` | `routes/pixpax/collections/index.mjs` |
+| POST | `/v1/pixpax/collections/:collectionId/:version/packs` | `routes/pixpax/collections/index.mjs` |
+| POST | `/v1/pixpax/collections/:collectionId/:version/series/:seriesId/retire` | `routes/pixpax/collections/index.mjs` |
+| POST | `/v1/pixpax/packs/verify-bulk` | `routes/pixpax/collections/index.mjs` |
+| POST | `/v1/pixpax/redeem` | `routes/pixpax/collections/index.mjs` |
+| POST | `/v1/stickerbook/commit` | `routes/stickerbook/index.mjs` |
+| POST | `/v1/stickerbook/issue` | `routes/stickerbook/index.mjs` |
+| PUT | `/v1/account/pixbook/snapshot` | `routes/account/index.mjs` |
+| PUT | `/v1/pixpax/collections/:collectionId/:version/cards/:cardId` | `routes/pixpax/collections/index.mjs` |
+| PUT | `/v1/pixpax/collections/:collectionId/:version/collection` | `routes/pixpax/collections/index.mjs` |
+| PUT | `/v1/pixpax/collections/:collectionId/:version/index` | `routes/pixpax/collections/index.mjs` |
+| PUT | `/v1/pixpax/collections/:collectionId/settings` | `routes/pixpax/collections/index.mjs` |
