@@ -161,6 +161,7 @@ export default function accountRoutes(router) {
       res.status(201).send({
         ok: true,
         id: created.id,
+        user: created,
       });
     } catch (error) {
       res.status(400).send({ ok: false, error: error?.message || "Unable to create managed user." });
@@ -248,6 +249,7 @@ export default function accountRoutes(router) {
         res.status(201).send({
           ok: true,
           id: created.id,
+          user: created,
         });
       } catch (error) {
         res.status(400).send({ ok: false, error: error?.message || "Unable to create identity." });

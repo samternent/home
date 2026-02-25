@@ -7,6 +7,7 @@ import {
   createAccountManagedUser,
   getPixPaxErrorCode,
   getPixbookSnapshotV1,
+  listAccountManagedUsers,
   removeAccountBook,
   removeAccountManagedIdentity,
   resetAccountManagedIdentities,
@@ -228,9 +229,17 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
       const workspaceId = options.account.workspace.value?.workspaceId || undefined;
       await options.refreshCloudLibrary();
 
+      let managedUsersForSync = options.cloudProfiles.value;
+      try {
+        const usersRes = await listAccountManagedUsers(workspaceId);
+        managedUsersForSync = usersRes.users || [];
+      } catch {
+        managedUsersForSync = options.cloudProfiles.value;
+      }
+
       const existingByBinding = new Map<string, AccountManagedUser>();
       const deletedByBinding = new Map<string, AccountManagedUser>();
-      for (const entry of options.cloudProfiles.value) {
+      for (const entry of managedUsersForSync) {
         const profileId = String(entry.profileId || "").trim();
         const identityPublicKey = String(entry.identityPublicKey || "").trim();
         if (!profileId || !identityPublicKey) continue;
@@ -258,19 +267,41 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
       let createdIdentityCount = 0;
       let restoredIdentityCount = 0;
       let createdBookCount = 0;
+      let skippedIdentityCount = 0;
       const localIdentities = options.context.identities.value.filter((entry) => {
         if (requestedIdentityIds.size === 0) return true;
         return requestedIdentityIds.has(String(entry.id || "").trim());
       });
 
+      if (requestedIdentityIds.size > 0 && localIdentities.length === 0) {
+        throw new Error("Selected identity was not found on this device.");
+      }
+
       for (const identity of localIdentities) {
+        const identityId = String(identity.id || "").trim();
         const profileId = String(identity.profileId || "").trim();
         const identityPublicKey = String(identity.publicKeyPEM || "").trim();
-        if (!profileId || !identityPublicKey) continue;
+        if (!profileId || !identityPublicKey) {
+          if (requestedIdentityIds.size === 0 || requestedIdentityIds.has(identityId)) {
+            skippedIdentityCount += 1;
+          }
+          continue;
+        }
 
         const displayName = identityDisplayName(identity);
         const bindingKey = toIdentityBindingKey(profileId, identityPublicKey);
-        if (!bindingKey || isIdentityBindingSuppressed(bindingKey)) continue;
+        const explicitlyRequested =
+          requestedIdentityIds.size > 0 && requestedIdentityIds.has(identityId);
+        if (!bindingKey) {
+          if (explicitlyRequested) skippedIdentityCount += 1;
+          continue;
+        }
+        if (isIdentityBindingSuppressed(bindingKey) && !explicitlyRequested) {
+          continue;
+        }
+        if (explicitlyRequested) {
+          unsuppressIdentityBinding(bindingKey);
+        }
         const existing = existingByBinding.get(bindingKey) || null;
         const deleted = deletedByBinding.get(bindingKey) || null;
 
@@ -339,6 +370,21 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
       }
 
       await options.refreshCloudLibrary();
+      if (
+        requestedIdentityIds.size > 0 &&
+        createdIdentityCount === 0 &&
+        restoredIdentityCount === 0 &&
+        createdBookCount === 0
+      ) {
+        if (skippedIdentityCount > 0) {
+          throw new Error(
+            "Selected identity is missing required profile/key data and could not be saved."
+          );
+        }
+        options.identityDirectorySyncStatus.value = "Identity already saved to account.";
+        options.identityDirectorySyncError.value = "";
+        return true;
+      }
       options.identityDirectorySyncStatus.value = `Saved identities: +${createdIdentityCount} created, ${restoredIdentityCount} restored, +${createdBookCount} pixbooks.`;
       return true;
     } catch (error: unknown) {
@@ -358,6 +404,22 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
       options.identityDirectorySyncError.value = "Identity id is required.";
       return false;
     }
+
+    const identity = options.context.identities.value.find(
+      (entry) => String(entry.id || "").trim() === targetId
+    );
+    if (!identity) {
+      options.identityDirectorySyncError.value =
+        "Selected identity was not found on this device.";
+      return false;
+    }
+
+    const bindingKey = toIdentityBindingKey(
+      String(identity.profileId || "").trim(),
+      String(identity.publicKeyPEM || "").trim()
+    );
+    unsuppressIdentityBinding(bindingKey);
+
     return syncLocalIdentitiesToCloud([targetId]);
   }
 
@@ -410,7 +472,14 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
     if (!localLedgerHead || (trim(targetHead) && trim(targetHead) !== localLedgerHead)) {
       return true;
     }
-    if (localLedgerHead === trim(options.cloudSnapshotLedgerHead.value)) {
+    const lastPersistedLocalHead = trim(options.context.activePixbook.value?.lastPersistHead);
+    if (localLedgerHead && localLedgerHead === lastPersistedLocalHead) {
+      return true;
+    }
+    const remoteSnapshotHead = trim(
+      (options.cloudSnapshotPayload.value as { ledger?: { head?: unknown } } | null)?.ledger?.head
+    );
+    if (localLedgerHead === remoteSnapshotHead) {
       return true;
     }
 
@@ -458,6 +527,7 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
       options.cloudSyncError.value = "";
       return true;
     } catch (error: unknown) {
+      clearPersistIdempotencyKey(targetBookId, localLedgerHead);
       if (error instanceof PixPaxApiError && error.status === 409) {
         const code = resolveApiErrorCode(error);
         if (code === "BOOK_SNAPSHOT_CONFLICT" || code === "STREAM_HEAD_CONFLICT") {

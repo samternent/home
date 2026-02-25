@@ -76,6 +76,10 @@ function hashIdentityPublicKey(value) {
   return createHash("sha256").update(normalized, "utf8").digest("hex");
 }
 
+function isUniqueViolation(error) {
+  return String(error?.code || "").trim() === "23505";
+}
+
 function normalizeIdentityBinding(input = {}) {
   const profileId = String(input?.profileId || "").trim();
   const identityPublicKey = String(input?.identityPublicKey || "")
@@ -487,38 +491,175 @@ export async function createManagedUser(userId, workspaceId, input) {
       0,
       24,
     )}`;
+  const toManagedUserResult = (id) => ({
+    id: String(id || "").trim(),
+    displayName,
+    avatarPublicId,
+    userKey,
+    profileId: binding.profileId,
+    identityPublicKey: binding.identityPublicKey,
+    identityKeyFingerprint: binding.identityKeyFingerprint,
+    status: "active",
+  });
 
-  const id = normalizeIdOverride(input?.id, "managed-user");
-  await dbQuery(
-    `
-    INSERT INTO identities
-      (
-        id,
-        account_id,
-        display_name,
-        avatar_public_id,
-        user_key,
-        profile_id,
-        identity_public_key,
-        identity_key_fingerprint,
-        status
-      )
-    VALUES
-      ($1, $2, $3, $4, $5, $6, $7, $8, 'active')
-    `,
-    [
-      id,
-      workspace.id,
-      displayName,
-      avatarPublicId,
-      userKey,
-      binding.profileId,
-      binding.identityPublicKey,
-      binding.identityKeyFingerprint,
-    ],
-  );
+  return dbTx(async (client) => {
+    const byBinding = await client.query(
+      `
+      SELECT id
+      FROM identities
+      WHERE account_id = $1
+        AND profile_id = $2
+        AND identity_key_fingerprint = $3
+      ORDER BY created_at ASC
+      LIMIT 1
+      FOR UPDATE
+      `,
+      [workspace.id, binding.profileId, binding.identityKeyFingerprint]
+    );
 
-  return { id };
+    if (byBinding.rowCount > 0) {
+      const existingId = String(byBinding.rows[0]?.id || "").trim();
+      await client.query(
+        `
+        UPDATE identities
+        SET
+          display_name = COALESCE(NULLIF($2, ''), display_name),
+          avatar_public_id = COALESCE($3, avatar_public_id),
+          profile_id = $4,
+          identity_public_key = $5,
+          identity_key_fingerprint = $6,
+          status = 'active',
+          updated_at = NOW()
+        WHERE id = $1
+        `,
+        [
+          existingId,
+          displayName,
+          avatarPublicId,
+          binding.profileId,
+          binding.identityPublicKey,
+          binding.identityKeyFingerprint,
+        ]
+      );
+      return toManagedUserResult(existingId);
+    }
+
+    const byUserKey = await client.query(
+      `
+      SELECT id
+      FROM identities
+      WHERE account_id = $1
+        AND user_key = $2
+      ORDER BY created_at ASC
+      LIMIT 1
+      FOR UPDATE
+      `,
+      [workspace.id, userKey]
+    );
+
+    if (byUserKey.rowCount > 0) {
+      const existingId = String(byUserKey.rows[0]?.id || "").trim();
+      await client.query(
+        `
+        UPDATE identities
+        SET
+          display_name = COALESCE(NULLIF($2, ''), display_name),
+          avatar_public_id = COALESCE($3, avatar_public_id),
+          profile_id = $4,
+          identity_public_key = $5,
+          identity_key_fingerprint = $6,
+          status = 'active',
+          updated_at = NOW()
+        WHERE id = $1
+        `,
+        [
+          existingId,
+          displayName,
+          avatarPublicId,
+          binding.profileId,
+          binding.identityPublicKey,
+          binding.identityKeyFingerprint,
+        ]
+      );
+      return toManagedUserResult(existingId);
+    }
+
+    const id = normalizeIdOverride(input?.id, "managed-user");
+    try {
+      await client.query(
+        `
+        INSERT INTO identities
+          (
+            id,
+            account_id,
+            display_name,
+            avatar_public_id,
+            user_key,
+            profile_id,
+            identity_public_key,
+            identity_key_fingerprint,
+            status
+          )
+        VALUES
+          ($1, $2, $3, $4, $5, $6, $7, $8, 'active')
+        `,
+        [
+          id,
+          workspace.id,
+          displayName,
+          avatarPublicId,
+          userKey,
+          binding.profileId,
+          binding.identityPublicKey,
+          binding.identityKeyFingerprint,
+        ]
+      );
+      return toManagedUserResult(id);
+    } catch (error) {
+      if (!isUniqueViolation(error)) throw error;
+
+      const raced = await client.query(
+        `
+        SELECT id
+        FROM identities
+        WHERE account_id = $1
+          AND (
+            (profile_id = $2 AND identity_key_fingerprint = $3)
+            OR user_key = $4
+          )
+        ORDER BY created_at ASC
+        LIMIT 1
+        FOR UPDATE
+        `,
+        [workspace.id, binding.profileId, binding.identityKeyFingerprint, userKey]
+      );
+      if (raced.rowCount === 0) throw error;
+      const existingId = String(raced.rows[0]?.id || "").trim();
+      await client.query(
+        `
+        UPDATE identities
+        SET
+          display_name = COALESCE(NULLIF($2, ''), display_name),
+          avatar_public_id = COALESCE($3, avatar_public_id),
+          profile_id = $4,
+          identity_public_key = $5,
+          identity_key_fingerprint = $6,
+          status = 'active',
+          updated_at = NOW()
+        WHERE id = $1
+        `,
+        [
+          existingId,
+          displayName,
+          avatarPublicId,
+          binding.profileId,
+          binding.identityPublicKey,
+          binding.identityKeyFingerprint,
+        ]
+      );
+      return toManagedUserResult(existingId);
+    }
+  });
 }
 
 export async function updateManagedUser(

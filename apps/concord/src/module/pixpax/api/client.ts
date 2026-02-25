@@ -314,10 +314,13 @@ export function createAccountManagedUser(
   },
   workspaceId?: string
 ) {
-  return requestJson<{ ok: boolean; id: string }>(withWorkspaceQuery("/v1/account/users", workspaceId), {
-    method: "POST",
-    body: input,
-  });
+  return requestJson<{ ok: boolean; id: string; user?: AccountManagedUser }>(
+    withWorkspaceQuery("/v1/account/users", workspaceId),
+    {
+      method: "POST",
+      body: input,
+    }
+  );
 }
 
 export function updateAccountManagedUser(
