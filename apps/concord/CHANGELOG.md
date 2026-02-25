@@ -1,5 +1,11 @@
 # concord
 
+## 0.3.54
+
+### Patch Changes
+
+- [`a1ec2ee613c5c4b39b81b6303cfa02d74c3ea851`](https://github.com/samternent/home/commit/a1ec2ee613c5c4b39b81b6303cfa02d74c3ea851) Thanks [@samternent](https://github.com/samternent)! - use active pixbook
+
 ## 0.3.53
 
 ### Patch Changes
