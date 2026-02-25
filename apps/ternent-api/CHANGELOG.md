@@ -1,5 +1,13 @@
 # ternent-api
 
+## 0.2.27
+
+### Patch Changes
+
+- [`5d6d28ed17845e2dc0e1b1e209437853cb87ee77`](https://github.com/samternent/home/commit/5d6d28ed17845e2dc0e1b1e209437853cb87ee77) Thanks [@samternent](https://github.com/samternent)! - fix identity
+
+- [`3cde890f82c2103ad42ee1440cabae2fff0190ef`](https://github.com/samternent/home/commit/3cde890f82c2103ad42ee1440cabae2fff0190ef) Thanks [@samternent](https://github.com/samternent)! - Huge refactor
+
 ## 0.2.26
 
 ### Patch Changes
