@@ -1,7 +1,7 @@
 import { shallowRef, type ShallowRef } from "vue";
 import {
-  getPixbookCloudState,
-  type PixbookCloudBinding,
+  getPixbookSnapshotV1,
+  type AccountBook,
   PixPaxApiError,
 } from "../../api/client";
 
@@ -21,7 +21,7 @@ type AccountLike = {
 type CreateAccountPixbookItemLoaderOptions = {
   account: AccountLike;
   activeCollectionId: ReadRef<string>;
-  cloudBinding: ReadRef<PixbookCloudBinding | null>;
+  cloudBooks: ShallowRef<AccountBook[]>;
   selectedCloudBookId: ShallowRef<string>;
   selectedCloudProfileId: ShallowRef<string>;
   cloudBookId: ShallowRef<string>;
@@ -30,6 +30,10 @@ type CreateAccountPixbookItemLoaderOptions = {
   refreshCloudLibrary: () => Promise<void>;
   resetCloudLibraryState: () => void;
 };
+
+function trim(value: unknown) {
+  return String(value || "").trim();
+}
 
 export function createAccountPixbookItemLoader(
   options: CreateAccountPixbookItemLoaderOptions
@@ -55,35 +59,38 @@ export function createAccountPixbookItemLoader(
     resetCloudSnapshotState();
   }
 
-  function resolveApiErrorCode(error: unknown) {
-    if (!(error instanceof PixPaxApiError)) return "";
-    const body = error.body as { code?: unknown } | null;
-    const code = String(body?.code || "").trim();
-    return code;
+  function applySnapshotState({
+    accountId,
+    requestedBookId,
+    snapshot,
+  }: {
+    accountId: string;
+    requestedBookId: string;
+    snapshot: {
+      version?: number | null;
+      createdAt?: string | null;
+      ledgerHead?: string | null;
+      payload?: unknown;
+    } | null;
+  }) {
+    cloudWorkspaceId.value = accountId;
+    options.cloudBookId.value = requestedBookId;
+    options.selectedCloudBookId.value = requestedBookId;
+
+    const selectedBook = options.cloudBooks.value.find((entry) => entry.id === requestedBookId);
+    if (selectedBook?.managedUserId) {
+      options.selectedCloudProfileId.value = selectedBook.managedUserId;
+    }
+
+    cloudSnapshotVersion.value = snapshot?.version ?? null;
+    cloudSnapshotAt.value = snapshot?.createdAt || "";
+    cloudSnapshotLedgerHead.value = trim(snapshot?.ledgerHead);
+    cloudSnapshotPayload.value = snapshot?.payload ?? null;
   }
 
-  function applyCloudState(
-    response: Awaited<ReturnType<typeof getPixbookCloudState>>
-  ) {
-    cloudWorkspaceId.value = response.workspaceId || "";
-    options.cloudBookId.value = response.book?.id || "";
-    if (options.cloudBookId.value) {
-      options.selectedCloudBookId.value = options.cloudBookId.value;
-    }
-    if (response.book?.managedUserId) {
-      options.selectedCloudProfileId.value = response.book.managedUserId;
-    }
-
-    cloudSnapshotVersion.value = response.snapshot?.version ?? null;
-    cloudSnapshotAt.value = response.snapshot?.createdAt || "";
-    cloudSnapshotLedgerHead.value = String(response.snapshot?.ledgerHead || "").trim();
-    cloudSnapshotPayload.value = response.snapshot?.payload ?? null;
-  }
-
-  function clearInvalidBookSelection() {
+  function clearSelectionForInvalidBook() {
     options.selectedCloudBookId.value = "";
     options.cloudBookId.value = "";
-    options.selectedCloudProfileId.value = "";
     resetCloudSnapshotState();
   }
 
@@ -94,31 +101,49 @@ export function createAccountPixbookItemLoader(
       return;
     }
 
-    const binding = options.cloudBinding.value;
-    if (!binding) {
+    const accountId = trim(options.account.workspace.value?.workspaceId);
+    if (!accountId) {
       resetCloudReadState();
       return;
     }
 
-    const requestedBookId = String(
+    const requestedBookId = trim(
       options.selectedCloudBookId.value || options.cloudBookId.value || ""
-    ).trim();
+    );
 
     if (!requestedBookId) {
-      resetCloudReadState();
+      resetCloudSnapshotState();
+      await options.refreshCloudLibrary();
+      return;
+    }
+
+    const selectedBook = options.cloudBooks.value.find((entry) => entry.id === requestedBookId);
+    if (!selectedBook) {
+      clearSelectionForInvalidBook();
+      options.cloudSyncStatus.value =
+        "Selected account pixbook is no longer available. Selection was cleared.";
+      options.cloudSyncError.value = "";
+      await options.refreshCloudLibrary();
+      return;
+    }
+
+    if (trim(selectedBook.collectionId) !== trim(options.activeCollectionId.value)) {
+      clearSelectionForInvalidBook();
+      options.cloudSyncStatus.value =
+        "Selected account pixbook belongs to another collection. Selection was cleared.";
+      options.cloudSyncError.value = "";
       await options.refreshCloudLibrary();
       return;
     }
 
     options.cloudSyncError.value = "";
     try {
-      const response = await getPixbookCloudState(
-        options.account.workspace.value?.workspaceId || undefined,
-        binding,
+      const response = await getPixbookSnapshotV1(accountId, requestedBookId);
+      applySnapshotState({
+        accountId,
         requestedBookId,
-        options.activeCollectionId.value
-      );
-      applyCloudState(response);
+        snapshot: response.snapshot,
+      });
       await options.refreshCloudLibrary();
     } catch (error: unknown) {
       if (error instanceof PixPaxApiError && error.status === 401) {
@@ -126,69 +151,21 @@ export function createAccountPixbookItemLoader(
         options.resetCloudLibraryState();
         return;
       }
-      if (
-        error instanceof PixPaxApiError &&
-        error.status === 409 &&
-        (
-          resolveApiErrorCode(error) === "PIXBOOK_BOOK_PROFILE_MISMATCH" ||
-          resolveApiErrorCode(error) === "PIXBOOK_BOOK_COLLECTION_MISMATCH"
-        )
-      ) {
-        const mismatchCode = resolveApiErrorCode(error);
-        clearInvalidBookSelection();
-        options.cloudSyncStatus.value =
-          mismatchCode === "PIXBOOK_BOOK_COLLECTION_MISMATCH"
-            ? "Active collection changed. Account pixbook selection was cleared."
-            : "Active identity changed. Account pixbook selection was cleared.";
-        options.cloudSyncError.value = "";
-        await options.refreshCloudLibrary();
-        try {
-          const fallback = await getPixbookCloudState(
-            options.account.workspace.value?.workspaceId || undefined,
-            binding,
-            undefined,
-            options.activeCollectionId.value
-          );
-          applyCloudState(fallback);
-          options.cloudSyncStatus.value =
-            "Account pixbook switched to the active identity.";
-          await options.refreshCloudLibrary();
-          return;
-        } catch (fallbackError: unknown) {
-          if (
-            fallbackError instanceof PixPaxApiError &&
-            fallbackError.status === 404
-          ) {
-            options.cloudSyncStatus.value =
-              "No cloud pixbook found for this identity. Save identity to account first.";
-            options.cloudSyncError.value = "";
-            return;
-          }
-          if (
-            fallbackError instanceof PixPaxApiError &&
-            fallbackError.status === 401
-          ) {
-            resetCloudReadState();
-            options.resetCloudLibraryState();
-            return;
-          }
-          options.cloudSyncError.value = String(
-            (fallbackError as Error)?.message || "Failed to load cloud state."
-          );
-          return;
-        }
-      }
+
       if (error instanceof PixPaxApiError && error.status === 404) {
-        resetCloudSnapshotState();
-        options.cloudSyncStatus.value =
-          "No cloud pixbook found for this identity. Save identity to account first.";
+        applySnapshotState({
+          accountId,
+          requestedBookId,
+          snapshot: null,
+        });
+        options.cloudSyncStatus.value = "No persisted snapshot exists for this pixbook yet.";
         options.cloudSyncError.value = "";
         await options.refreshCloudLibrary();
         return;
       }
 
       options.cloudSyncError.value = String(
-        (error as Error)?.message || "Failed to load cloud state."
+        (error as Error)?.message || "Failed to load persisted pixbook snapshot."
       );
     }
   }

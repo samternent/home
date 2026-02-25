@@ -1,8 +1,8 @@
 import { computed, shallowRef, type ShallowRef } from "vue";
 import { useLocalStorage } from "@vueuse/core";
 import {
-  listAccountBooks,
   listAccountManagedUsers,
+  listPixbooksV1,
   type AccountBook,
   type AccountManagedUser,
   PixPaxApiError,
@@ -68,19 +68,59 @@ export function createAccountListLoader(options: CreateAccountListLoaderOptions)
     cloudLibraryError.value = "";
   }
 
+  function deriveProfilesFromBooks(books: AccountBook[], existingUsers: AccountManagedUser[] = []) {
+    const existingById = new Map<string, AccountManagedUser>();
+    for (const user of existingUsers) {
+      const id = String(user.id || "").trim();
+      if (!id) continue;
+      existingById.set(id, user);
+    }
+    const grouped = new Map<string, AccountManagedUser>();
+    for (const book of books) {
+      const managedUserId = String(book.managedUserId || "").trim();
+      if (!managedUserId) continue;
+      if (grouped.has(managedUserId)) continue;
+      const displayName = String(book.managedUserDisplayName || "").trim();
+      const existing = existingById.get(managedUserId);
+      grouped.set(managedUserId, {
+        id: managedUserId,
+        displayName: displayName || String(existing?.displayName || managedUserId),
+        avatarPublicId: existing?.avatarPublicId || null,
+        userKey: String(existing?.userKey || managedUserId),
+        profileId: existing?.profileId || null,
+        identityPublicKey: existing?.identityPublicKey || null,
+        identityKeyFingerprint: existing?.identityKeyFingerprint || null,
+        status: String(existing?.status || "active"),
+        createdAt: existing?.createdAt,
+        updatedAt: existing?.updatedAt,
+      });
+    }
+    return [...grouped.values()].sort((a, b) =>
+      String(a.displayName || a.id).localeCompare(String(b.displayName || b.id))
+    );
+  }
+
   async function refreshCloudLibrary() {
     if (!options.account.isAuthenticated.value) return;
     cloudLibraryLoading.value = true;
     cloudLibraryError.value = "";
     try {
-      const workspaceId = options.account.workspace.value?.workspaceId || undefined;
-      const [usersRes, booksRes] = await Promise.all([
-        listAccountManagedUsers(workspaceId),
-        listAccountBooks(workspaceId),
-      ]);
-
-      cloudProfiles.value = usersRes.users || [];
-      cloudBooks.value = booksRes.books || [];
+      const accountId = options.account.workspace.value?.workspaceId || "";
+      if (!accountId) {
+        cloudProfiles.value = [];
+        cloudBooks.value = [];
+        return;
+      }
+      const booksRes = await listPixbooksV1(accountId);
+      cloudBooks.value = booksRes.pixbooks || [];
+      let existingUsers: AccountManagedUser[] = [];
+      try {
+        const usersRes = await listAccountManagedUsers(accountId);
+        existingUsers = usersRes.users || [];
+      } catch {
+        existingUsers = [];
+      }
+      cloudProfiles.value = deriveProfilesFromBooks(cloudBooks.value, existingUsers);
 
       if (selectedCloudProfileId.value) {
         const stillPresent = cloudProfiles.value.some(
@@ -118,10 +158,10 @@ export function createAccountListLoader(options: CreateAccountListLoaderOptions)
         (error.status === 401 || error.status === 403)
       ) {
         cloudLibraryError.value =
-          "Workspace identity/pixbook management is not available for this session.";
+          "Account pixbook persistence is not available for this session.";
       } else {
         cloudLibraryError.value = String(
-          (error as Error)?.message || "Failed to load cloud library."
+          (error as Error)?.message || "Failed to load persisted pixbooks."
         );
       }
     } finally {

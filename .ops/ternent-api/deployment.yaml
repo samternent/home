@@ -53,6 +53,30 @@ spec:
                 secretKeyRef:
                   name: ternent-api-env
                   key: issuer-master-seed
+            - name: VAULT_ADDR
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-env
+                  key: vault-addr
+                  optional: true
+            - name: VAULT_TRANSIT_MOUNT
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-env
+                  key: vault-transit-mount
+                  optional: true
+            - name: VAULT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-env
+                  key: vault-token
+                  optional: true
+            - name: PIXBOOK_VAULT_KEY_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-env
+                  key: pixbook-vault-key-name
+                  optional: true
             - name: ISSUER_KEY_ID
               valueFrom:
                 secretKeyRef:

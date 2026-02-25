@@ -3,12 +3,14 @@ import { platformAuthClient } from "../auth/platform-auth-client";
 export class PixPaxApiError extends Error {
   status: number;
   body: unknown;
+  headers: Headers | null;
 
-  constructor(message: string, status: number, body: unknown) {
+  constructor(message: string, status: number, body: unknown, headers: Headers | null = null) {
     super(message);
     this.name = "PixPaxApiError";
     this.status = status;
     this.body = body;
+    this.headers = headers;
   }
 }
 
@@ -34,7 +36,13 @@ type RequestOptions = {
   credentials?: RequestCredentials;
 };
 
-async function requestJson<T>(path: string, options: RequestOptions = {}) {
+type RequestResult = {
+  response: Response;
+  text: string;
+  parsed: unknown;
+};
+
+function toRequestHeaders(options: RequestOptions) {
   const headers: Record<string, string> = {
     Accept: "application/json",
     ...(options.headers || {}),
@@ -45,7 +53,11 @@ async function requestJson<T>(path: string, options: RequestOptions = {}) {
   if (options.token) {
     headers.authorization = `Bearer ${options.token}`;
   }
+  return headers;
+}
 
+async function requestRaw(path: string, options: RequestOptions = {}): Promise<RequestResult> {
+  const headers = toRequestHeaders(options);
   const response = await fetch(buildPixPaxApiUrl(path), {
     method: options.method || "GET",
     credentials: options.credentials || "include",
@@ -55,11 +67,21 @@ async function requestJson<T>(path: string, options: RequestOptions = {}) {
 
   const text = await response.text();
   const parsed = text ? safeParseJson(text) : null;
+  return {
+    response,
+    text,
+    parsed,
+  };
+}
+
+async function requestJson<T>(path: string, options: RequestOptions = {}) {
+  const { response, text, parsed } = await requestRaw(path, options);
   if (!response.ok) {
     throw new PixPaxApiError(
       `${response.status} ${response.statusText}: ${text || "request failed"}`,
       response.status,
-      parsed
+      parsed,
+      response.headers
     );
   }
 
@@ -72,6 +94,89 @@ function safeParseJson(value: string) {
   } catch {
     return null;
   }
+}
+
+export type ApiEnvelopeSuccess<T> = {
+  ok: true;
+  data: T;
+  requestId?: string;
+};
+
+export type ApiEnvelopeError = {
+  ok: false;
+  error?: {
+    code?: string;
+    message?: string;
+    details?: unknown;
+  };
+  code?: string;
+  message?: string;
+  details?: unknown;
+  requestId?: string;
+};
+
+type EnvelopeRequestResult<T> = {
+  status: number;
+  headers: Headers;
+  envelope: ApiEnvelopeSuccess<T>;
+};
+
+async function requestEnvelope<T>(
+  path: string,
+  options: RequestOptions = {}
+): Promise<EnvelopeRequestResult<T>> {
+  const { response, text, parsed } = await requestRaw(path, options);
+  if (!response.ok) {
+    throw new PixPaxApiError(
+      `${response.status} ${response.statusText}: ${text || "request failed"}`,
+      response.status,
+      parsed,
+      response.headers
+    );
+  }
+
+  const envelope = parsed as ApiEnvelopeSuccess<T> | null;
+  if (!envelope || envelope.ok !== true || !("data" in envelope)) {
+    throw new PixPaxApiError(
+      `${response.status} ${response.statusText}: invalid API envelope`,
+      response.status,
+      parsed,
+      response.headers
+    );
+  }
+
+  return {
+    status: response.status,
+    headers: response.headers,
+    envelope,
+  };
+}
+
+export function getPixPaxErrorCode(error: unknown) {
+  if (!(error instanceof PixPaxApiError)) return "";
+  const body = (error.body || null) as ApiEnvelopeError | null;
+  return String(body?.error?.code || body?.code || "").trim();
+}
+
+function parsePositiveInt(value: unknown, fallback: number) {
+  const parsed = Number.parseInt(String(value || ""), 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function readRetryAfterSeconds(headers: Headers, fallback = 2) {
+  const retryAfter = headers.get("Retry-After");
+  return parsePositiveInt(retryAfter, fallback);
+}
+
+export function createIdempotencyKey() {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  return `idem_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 export type PixPaxAdminSessionResponse = {
@@ -404,6 +509,323 @@ export function savePixbookCloudSnapshot(input: {
       profileDisplayName: normalizedBinding?.profileDisplayName || "",
     },
   });
+}
+
+export type PixbookV1 = AccountBook;
+
+export type PixbookListV1Response = {
+  accountId: string;
+  workspaceId: string;
+  pixbooks: PixbookV1[];
+};
+
+export type PixbookDetailsV1Response = {
+  accountId: string;
+  workspaceId: string;
+  managedUser: {
+    id: string;
+    displayName: string;
+    avatarPublicId?: string | null;
+    userKey?: string;
+    profileId?: string | null;
+    identityPublicKey?: string | null;
+    identityKeyFingerprint?: string | null;
+    status?: string;
+  };
+  book: PixbookV1;
+};
+
+export type PixbookSnapshotV1 = {
+  id: string;
+  bookId: string;
+  version: number;
+  ledgerHead: string | null;
+  checksum: string;
+  createdAt: string;
+  payload: unknown;
+  eventId?: string;
+};
+
+export type PixbookSnapshotV1Response = {
+  accountId: string;
+  workspaceId: string;
+  bookId: string;
+  snapshot: PixbookSnapshotV1 | null;
+};
+
+export type PixbookReceiptsV1Response = {
+  accountId: string;
+  workspaceId: string;
+  bookId: string;
+  receipts: Array<{
+    eventId: string;
+    streamVersion: number;
+    type: string;
+    createdAt: string;
+    prevHash: string | null;
+    hash: string;
+    signingIdentityId: string;
+    spacesKey: string;
+    receipt?: unknown;
+  }>;
+};
+
+function withAccountHeader(accountId: string, headers: Record<string, string> = {}) {
+  const resolved = String(accountId || "").trim();
+  return {
+    ...headers,
+    "x-account-id": resolved,
+  };
+}
+
+export async function listPixbooksV1(accountId: string) {
+  const result = await requestEnvelope<PixbookListV1Response>("/v1/pixbooks", {
+    headers: withAccountHeader(accountId),
+  });
+  return result.envelope.data;
+}
+
+export async function getPixbookV1(accountId: string, bookId: string) {
+  const result = await requestEnvelope<PixbookDetailsV1Response>(
+    `/v1/pixbooks/${encodeURIComponent(String(bookId || "").trim())}`,
+    {
+      headers: withAccountHeader(accountId),
+    }
+  );
+  return result.envelope.data;
+}
+
+export async function getPixbookSnapshotV1(accountId: string, bookId: string) {
+  const result = await requestEnvelope<PixbookSnapshotV1Response>(
+    `/v1/pixbooks/${encodeURIComponent(String(bookId || "").trim())}/snapshot`,
+    {
+      headers: withAccountHeader(accountId),
+    }
+  );
+  return result.envelope.data;
+}
+
+export async function getPixbookReceiptsV1(input: {
+  accountId: string;
+  bookId: string;
+  after?: string;
+  limit?: number;
+  includePayload?: boolean;
+}) {
+  const query = new URLSearchParams();
+  if (input.after) query.set("after", String(input.after || "").trim());
+  if (Number.isFinite(input.limit)) query.set("limit", String(Math.max(1, Math.trunc(input.limit || 0))));
+  if (input.includePayload === false) query.set("includePayload", "false");
+  const path = `/v1/pixbooks/${encodeURIComponent(String(input.bookId || "").trim())}/receipts${
+    query.toString() ? `?${query.toString()}` : ""
+  }`;
+  const result = await requestEnvelope<PixbookReceiptsV1Response>(path, {
+    headers: withAccountHeader(input.accountId),
+  });
+  return result.envelope.data;
+}
+
+export type PixbookCommandPendingData = {
+  status: "in_progress";
+  idempotencyKey: string;
+  retryAfterSeconds: number;
+};
+
+export type PixbookCommandSucceeded<T> = {
+  kind: "succeeded";
+  status: 200;
+  idempotencyKey: string;
+  requestId: string;
+  data: T;
+};
+
+export type PixbookCommandPending = {
+  kind: "pending";
+  status: 202;
+  idempotencyKey: string;
+  requestId: string;
+  retryAfterSeconds: number;
+  data: PixbookCommandPendingData;
+};
+
+export type PixbookCommandResult<T> = PixbookCommandSucceeded<T> | PixbookCommandPending;
+
+export type PixbookCreateCommandSuccess = {
+  eventId: string;
+  bookId: string;
+  streamVersion: number;
+  hash: string;
+  createdAt: string;
+};
+
+export type PixbookSaveCommandSuccess = {
+  eventId: string;
+  bookId: string;
+  streamVersion: number;
+  hash: string;
+  prevHash: string | null;
+  createdAt: string;
+};
+
+function parsePendingData(value: unknown, idempotencyKey: string, headers: Headers): PixbookCommandPendingData {
+  const data = value && typeof value === "object" ? (value as Record<string, unknown>) : {};
+  const retryAfter = parsePositiveInt(
+    data.retryAfterSeconds,
+    readRetryAfterSeconds(headers, 2)
+  );
+  return {
+    status: "in_progress",
+    idempotencyKey:
+      String(data.idempotencyKey || headers.get("Idempotency-Key") || idempotencyKey || "").trim(),
+    retryAfterSeconds: retryAfter,
+  };
+}
+
+async function parsePixbookCommandResult<T>(
+  path: string,
+  {
+    accountId,
+    idempotencyKey,
+    signingIdentityId,
+    body,
+  }: {
+    accountId: string;
+    idempotencyKey: string;
+    signingIdentityId?: string | null;
+    body: Record<string, unknown>;
+  }
+) {
+  const resolvedIdempotency = String(idempotencyKey || "").trim() || createIdempotencyKey();
+  const resolvedSigningIdentityId = String(signingIdentityId || "").trim();
+  const headers: Record<string, string> = withAccountHeader(accountId, {
+    "Idempotency-Key": resolvedIdempotency,
+  });
+  if (resolvedSigningIdentityId) {
+    headers["X-Signing-Identity-Id"] = resolvedSigningIdentityId;
+  }
+
+  const result = await requestEnvelope<T | PixbookCommandPendingData>(path, {
+    method: "POST",
+    headers,
+    body,
+  });
+
+  const requestId = String(result.envelope.requestId || "").trim();
+  if (result.status === 202) {
+    const pending = parsePendingData(result.envelope.data, resolvedIdempotency, result.headers);
+    return {
+      kind: "pending",
+      status: 202,
+      idempotencyKey: pending.idempotencyKey || resolvedIdempotency,
+      requestId,
+      retryAfterSeconds: pending.retryAfterSeconds,
+      data: pending,
+    } satisfies PixbookCommandPending;
+  }
+
+  return {
+    kind: "succeeded",
+    status: 200,
+    idempotencyKey:
+      String(result.headers.get("Idempotency-Key") || resolvedIdempotency || "").trim(),
+    requestId,
+    data: result.envelope.data as T,
+  } satisfies PixbookCommandSucceeded<T>;
+}
+
+export function createPixbookCommandV1(input: {
+  accountId: string;
+  managedUserId: string;
+  name?: string;
+  collectionId?: string;
+  signingIdentityId?: string | null;
+  idempotencyKey?: string;
+}) {
+  return parsePixbookCommandResult<PixbookCreateCommandSuccess>(
+    "/v1/pixbooks/commands/create",
+    {
+      accountId: input.accountId,
+      idempotencyKey: String(input.idempotencyKey || "").trim() || createIdempotencyKey(),
+      signingIdentityId: input.signingIdentityId,
+      body: {
+        managedUserId: String(input.managedUserId || "").trim(),
+        name: String(input.name || "").trim() || "My Pixbook",
+        collectionId: String(input.collectionId || "").trim() || "primary",
+      },
+    }
+  );
+}
+
+export function savePixbookCommandV1(input: {
+  accountId: string;
+  bookId: string;
+  payload: unknown;
+  ledgerHead?: string | null;
+  expectedLedgerHead?: string | null;
+  expectedVersion?: number | null;
+  signingIdentityId?: string | null;
+  idempotencyKey?: string;
+}) {
+  const resolvedBookId = String(input.bookId || "").trim();
+  return parsePixbookCommandResult<PixbookSaveCommandSuccess>(
+    `/v1/pixbooks/${encodeURIComponent(resolvedBookId)}/commands/save`,
+    {
+      accountId: input.accountId,
+      idempotencyKey: String(input.idempotencyKey || "").trim() || createIdempotencyKey(),
+      signingIdentityId: input.signingIdentityId,
+      body: {
+        payload: input.payload && typeof input.payload === "object" ? input.payload : {},
+        ledgerHead: String(input.ledgerHead || "").trim() || null,
+        expectedLedgerHead: String(input.expectedLedgerHead || "").trim() || null,
+        expectedVersion:
+          input.expectedVersion === null || input.expectedVersion === undefined
+            ? null
+            : Number(input.expectedVersion),
+      },
+    }
+  );
+}
+
+export async function savePixbookCommandUntilDoneV1(
+  input: {
+    accountId: string;
+    bookId: string;
+    payload: unknown;
+    ledgerHead?: string | null;
+    expectedLedgerHead?: string | null;
+    expectedVersion?: number | null;
+    signingIdentityId?: string | null;
+    idempotencyKey?: string;
+  },
+  options: {
+    maxAttempts?: number;
+    onPending?: (result: PixbookCommandPending) => void;
+  } = {}
+) {
+  const maxAttempts = parsePositiveInt(options.maxAttempts, 20);
+  let idempotencyKey = String(input.idempotencyKey || "").trim() || createIdempotencyKey();
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+    const result = await savePixbookCommandV1({
+      ...input,
+      idempotencyKey,
+    });
+    if (result.kind === "succeeded") return result;
+    idempotencyKey = result.idempotencyKey || idempotencyKey;
+    if (options.onPending) options.onPending(result);
+    await sleep(Math.max(250, result.retryAfterSeconds * 1000));
+  }
+
+  throw new PixPaxApiError(
+    "Timed out waiting for pixbook save command to complete.",
+    202,
+    {
+      ok: false,
+      error: {
+        code: "IDEMPOTENCY_PENDING_TIMEOUT",
+        message: "Timed out waiting for command completion.",
+      },
+    }
+  );
 }
 
 export type PixPaxAnalyticsResponse = {

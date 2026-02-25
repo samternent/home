@@ -171,7 +171,14 @@ function saveInput() {
     signingIdentityId: "signing_abc",
     body: {
       payload: {
-        cards: ["a", "b", "c"],
+        format: "concord-ledger",
+        version: "1.0",
+        commits: {
+          byId: {},
+        },
+        entries: {
+          byId: {},
+        },
       },
       ledgerHead: null,
       expectedVersion: null,
@@ -187,6 +194,14 @@ function ctx() {
   };
 }
 
+function normalizedSnapshot(payload) {
+  return {
+    format: "pixpax-ledger-snapshot",
+    version: "1.0",
+    ledger: payload,
+  };
+}
+
 test("expired in_progress idempotency row is restarted and succeeds with one append", async () => {
   const input = saveInput();
   const routeTemplate = "POST /v1/pixbooks/{id}/commands/save";
@@ -195,7 +210,7 @@ test("expired in_progress idempotency row is restarted and succeeds with one app
     bookId: input.bookId,
     signingIdentityId: input.signingIdentityId,
     body: {
-      snapshot: input.body.payload,
+      snapshot: normalizedSnapshot(input.body.payload),
       clientLedgerHead: input.body.ledgerHead,
       expectedVersion: input.body.expectedVersion,
       expectedLedgerHead: input.body.expectedLedgerHead,
@@ -260,7 +275,7 @@ test("in_progress row with missing expiresAt is treated as active and returns st
     bookId: input.bookId,
     signingIdentityId: input.signingIdentityId,
     body: {
-      snapshot: input.body.payload,
+      snapshot: normalizedSnapshot(input.body.payload),
       clientLedgerHead: input.body.ledgerHead,
       expectedVersion: input.body.expectedVersion,
       expectedLedgerHead: input.body.expectedLedgerHead,
@@ -422,4 +437,60 @@ test("failed command replay returns identical failure payload fields", async () 
   );
 
   assert.equal(appendCalls, 1);
+});
+
+test("save command strips private profile material before writing receipt payload", async () => {
+  const input = saveInput();
+  input.body.payload = {
+    format: "pixpax-pixbook",
+    version: "1.0",
+    kind: "private",
+    profile: {
+      format: "concord-profile-private",
+      version: "1.0",
+      profileId: "profile_123",
+      identity: {
+        type: "ecdsa-p256",
+        publicKey: "PUBLIC",
+        privateKey: {
+          format: "pkcs8-pem",
+          payload: "VERY_SECRET",
+        },
+      },
+    },
+    ledger: {
+      commits: { byId: {} },
+      entries: { byId: {} },
+    },
+  };
+
+  const receiptRepo = makeIdempotencyRepo();
+  let appendedPayload = null;
+  const service = makeService({
+    receiptRepo,
+    receiptWriter: {
+      async appendPixbookReceipt(inputArgs) {
+        appendedPayload = cloneJson(inputArgs.payload);
+        return {
+          eventId: "evt_sanitized",
+          streamVersion: 1,
+          prevHash: null,
+          hash: "sha256:sanitized",
+          spacesKey: "pixpax/pixbooks/ws_123/book_abc/events/evt_sanitized.json",
+          createdAt: "2026-02-24T00:00:00.000Z",
+        };
+      },
+    },
+  });
+
+  await service.savePixbook(ctx(), input);
+  assert.deepEqual(appendedPayload?.snapshot, {
+    format: "pixpax-ledger-snapshot",
+    version: "1.0",
+    ledger: {
+      commits: { byId: {} },
+      entries: { byId: {} },
+    },
+  });
+  assert.equal(appendedPayload?.snapshot?.profile, undefined);
 });

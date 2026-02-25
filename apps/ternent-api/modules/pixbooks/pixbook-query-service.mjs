@@ -1,4 +1,8 @@
 import { notFound } from "../../services/http/errors.mjs";
+import {
+  sanitizePixbookSnapshotPayload,
+  sanitizeReceiptSnapshotPayloads,
+} from "./snapshot-sanitizer.mjs";
 
 function trim(value) {
   return String(value || "").trim();
@@ -10,6 +14,13 @@ function parseReceipt(value) {
   } catch {
     return null;
   }
+}
+
+function extractSnapshotPayload(receipt) {
+  const candidate =
+    receipt?.payload?.snapshot ?? receipt?.payload?.payload ?? receipt?.payload ?? null;
+  if (!candidate || typeof candidate !== "object") return null;
+  return sanitizePixbookSnapshotPayload(candidate);
 }
 
 export function createPixbookQueryService({
@@ -77,7 +88,7 @@ export function createPixbookQueryService({
         let payload = null;
         try {
           const raw = await receiptStore.getReceiptByKey(row.spacesKey);
-          payload = parseReceipt(raw);
+          payload = sanitizeReceiptSnapshotPayloads(parseReceipt(raw));
         } catch {
           payload = null;
         }
@@ -114,7 +125,15 @@ export function createPixbookQueryService({
 
       const raw = await receiptStore.getReceiptByKey(latest.spacesKey);
       const parsed = parseReceipt(raw);
-      const payload = parsed?.payload?.snapshot ?? parsed?.payload?.payload ?? parsed?.payload ?? null;
+      const payload = extractSnapshotPayload(parsed);
+      if (!payload) {
+        return {
+          accountId: trim(accountId),
+          workspaceId: trim(accountId),
+          bookId: trim(bookId),
+          snapshot: null,
+        };
+      }
 
       return {
         accountId: trim(accountId),

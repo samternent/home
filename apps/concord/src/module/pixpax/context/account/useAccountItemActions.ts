@@ -1,20 +1,22 @@
 import { useLocalStorage } from "@vueuse/core";
 import { type ShallowRef } from "vue";
+import { canonicalStringify } from "@ternent/concord-protocol";
 import {
+  createIdempotencyKey,
   createAccountBook,
   createAccountManagedUser,
-  getPixbookCloudState,
+  getPixPaxErrorCode,
+  getPixbookSnapshotV1,
   removeAccountBook,
   removeAccountManagedIdentity,
   resetAccountManagedIdentities,
-  savePixbookCloudSnapshot,
+  savePixbookCommandUntilDoneV1,
   updateAccountManagedUser,
   type AccountBook,
   type AccountManagedUser,
-  type PixbookCloudBinding,
   PixPaxApiError,
 } from "../../api/client";
-import { type PixbookExport, type PixpaxContextStore } from "../usePixpaxContextStore";
+import { type PixpaxContextStore } from "../usePixpaxContextStore";
 
 type ReadRef<T> = {
   readonly value: T;
@@ -34,7 +36,6 @@ type CreateAccountItemActionsOptions = {
   context: PixpaxContextStore;
   activeCollectionId: ReadRef<string>;
   canCloudSync: ReadRef<boolean>;
-  cloudBinding: ReadRef<PixbookCloudBinding | null>;
   cloudProfiles: ShallowRef<AccountManagedUser[]>;
   cloudBooks: ShallowRef<AccountBook[]>;
   selectedCloudProfileId: ShallowRef<string>;
@@ -55,8 +56,8 @@ type CreateAccountItemActionsOptions = {
   refreshCloudSnapshot: () => Promise<void>;
 };
 
-const PIXBOOK_FORMAT = "pixpax-pixbook";
-const PIXBOOK_VERSION = "1.0";
+const PERSISTED_LEDGER_FORMAT = "pixpax-ledger-snapshot";
+const PERSISTED_LEDGER_VERSION = "1.0";
 const DEFAULT_COLLECTION_ID = "primary";
 
 export function createAccountItemActions(options: CreateAccountItemActionsOptions) {
@@ -71,19 +72,7 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
   }
 
   function resolveApiErrorCode(error: unknown) {
-    if (!(error instanceof PixPaxApiError)) return "";
-    const body = error.body as { code?: unknown } | null;
-    return String(body?.code || "").trim();
-  }
-
-  function getCloudBindingOrThrow() {
-    const binding = options.cloudBinding.value;
-    if (!binding) {
-      throw new Error(
-        "Cloud account save/restore requires a private Pixbook identity (profile + key)."
-      );
-    }
-    return binding;
+    return getPixPaxErrorCode(error);
   }
 
   function identityDisplayName(input: { label?: string; metadata?: Record<string, unknown> }) {
@@ -127,6 +116,104 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
     suppressedIdentityBindings.value = suppressed.filter(
       (entry) => entry !== bindingKey
     );
+  }
+
+  const persistIdempotencyKeys = useLocalStorage<Record<string, string>>(
+    "pixpax/pixbook/persistIdempotencyKeys",
+    {}
+  );
+  let pendingPersistHead = "";
+  let persistLoopInFlight: Promise<boolean> | null = null;
+
+  function trim(value: unknown) {
+    return String(value || "").trim();
+  }
+
+  function toCanonicalJson<T>(value: unknown, fallback: T): T {
+    try {
+      return JSON.parse(canonicalStringify(value ?? fallback)) as T;
+    } catch {
+      return JSON.parse(JSON.stringify(value ?? fallback)) as T;
+    }
+  }
+
+  function isObject(value: unknown): value is Record<string, unknown> {
+    return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+  }
+
+  function hasLedgerShape(value: unknown): value is Record<string, unknown> {
+    if (!isObject(value)) return false;
+    if (isObject(value.ledger)) return true;
+    const format = trim(value.format).toLowerCase();
+    if (format === "concord-ledger") return true;
+    if (isObject(value.commits) || isObject(value.entries)) return true;
+    return false;
+  }
+
+  function buildPersistedSnapshotPayload() {
+    const ledger = options.context.ledger.value;
+    if (!isObject(ledger)) {
+      throw new Error("Pixbook ledger not available.");
+    }
+    return {
+      format: PERSISTED_LEDGER_FORMAT,
+      version: PERSISTED_LEDGER_VERSION,
+      ledger: toCanonicalJson<Record<string, unknown>>(ledger, {}),
+    };
+  }
+
+  function extractPersistedLedger(payload: unknown) {
+    if (!isObject(payload)) return null;
+    const format = trim(payload.format).toLowerCase();
+    if (
+      (format === "pixpax-pixbook" || format === PERSISTED_LEDGER_FORMAT) &&
+      isObject(payload.ledger)
+    ) {
+      return toCanonicalJson<Record<string, unknown>>(payload.ledger, {});
+    }
+    if (isObject(payload.ledger)) {
+      return toCanonicalJson<Record<string, unknown>>(payload.ledger, {});
+    }
+    if (hasLedgerShape(payload)) {
+      return toCanonicalJson<Record<string, unknown>>(payload, {});
+    }
+    return null;
+  }
+
+  function currentAccountId() {
+    return trim(options.account.workspace.value?.workspaceId);
+  }
+
+  function selectedBookId() {
+    return trim(options.selectedCloudBookId.value || options.cloudBookId.value);
+  }
+
+  function idempotencyScopeKey(bookId: string, ledgerHead: string) {
+    return `${trim(bookId)}::${trim(ledgerHead)}`;
+  }
+
+  function getOrCreatePersistIdempotencyKey(bookId: string, ledgerHead: string) {
+    const scope = idempotencyScopeKey(bookId, ledgerHead);
+    const existing = trim(persistIdempotencyKeys.value[scope]);
+    if (existing) return existing;
+    const created = createIdempotencyKey();
+    persistIdempotencyKeys.value = {
+      ...persistIdempotencyKeys.value,
+      [scope]: created,
+    };
+    return created;
+  }
+
+  function clearPersistIdempotencyKey(bookId: string, ledgerHead: string) {
+    const scope = idempotencyScopeKey(bookId, ledgerHead);
+    if (!persistIdempotencyKeys.value[scope]) return;
+    const next = { ...persistIdempotencyKeys.value };
+    delete next[scope];
+    persistIdempotencyKeys.value = next;
+  }
+
+  async function wait(ms: number) {
+    await new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   async function syncLocalIdentitiesToCloud(identityIds: string[] = []) {
@@ -276,77 +363,113 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
 
   async function saveCloudSnapshot() {
     if (!options.canCloudSync.value || !options.context.ledger.value) return false;
-    if (options.cloudSyncing.value) return false;
+    const localLedgerHead = trim(options.context.ledger.value?.head);
+    if (!localLedgerHead) return false;
+    pendingPersistHead = localLedgerHead;
+    if (!persistLoopInFlight) {
+      persistLoopInFlight = runPersistLoop();
+    }
+    return persistLoopInFlight;
+  }
 
-    const targetBookId = String(
-      options.selectedCloudBookId.value || options.cloudBookId.value || ""
-    ).trim();
-    if (!targetBookId) {
-      options.cloudSyncError.value =
-        "No account pixbook is selected. Save identity to account first.";
+  async function runPersistLoop() {
+    let ok = true;
+    try {
+      while (pendingPersistHead) {
+        const targetHead = pendingPersistHead;
+        pendingPersistHead = "";
+        const saved = await saveCloudSnapshotForHead(targetHead);
+        if (!saved) {
+          ok = false;
+          break;
+        }
+      }
+      return ok;
+    } finally {
+      persistLoopInFlight = null;
+    }
+  }
+
+  async function saveCloudSnapshotForHead(targetHead: string) {
+    if (!options.canCloudSync.value || !options.context.ledger.value) return false;
+    const accountId = currentAccountId();
+    if (!accountId) {
+      options.cloudSyncError.value = "Account context is unavailable.";
       options.cloudSyncStatus.value = "";
       return false;
     }
+    const targetBookId = selectedBookId();
+    if (!targetBookId) {
+      options.cloudSyncError.value = "Select an account pixbook before saving progress.";
+      options.cloudSyncStatus.value = "";
+      return false;
+    }
+    if (options.cloudSyncing.value) return false;
+
+    const localLedgerHead = trim(options.context.ledger.value?.head);
+    if (!localLedgerHead || (trim(targetHead) && trim(targetHead) !== localLedgerHead)) {
+      return true;
+    }
+    if (localLedgerHead === trim(options.cloudSnapshotLedgerHead.value)) {
+      return true;
+    }
 
     options.cloudSyncing.value = true;
-    options.cloudSyncStatus.value = "Saving pixbook to cloud...";
     options.cloudSyncError.value = "";
+    options.cloudSyncStatus.value = "Saving progress to account...";
 
     try {
-      const binding = getCloudBindingOrThrow();
-      const payload = options.context.buildPixbook("private");
-      const response = await savePixbookCloudSnapshot({
-        payload,
-        ledgerHead: options.context.ledger.value?.head || "",
-        expectedVersion: options.cloudSnapshotVersion.value ?? 0,
-        expectedLedgerHead: options.cloudSnapshotLedgerHead.value,
-        workspaceId: options.account.workspace.value?.workspaceId || undefined,
-        bookId: targetBookId,
-        collectionId: options.activeCollectionId.value,
-        binding,
-      });
+      const payload = buildPersistedSnapshotPayload();
+      const idempotencyKey = getOrCreatePersistIdempotencyKey(targetBookId, localLedgerHead);
+      const expectedLedgerHead = trim(options.cloudSnapshotLedgerHead.value) || null;
+      const expectedVersion =
+        expectedLedgerHead === null && Number.isFinite(Number(options.cloudSnapshotVersion.value))
+          ? Number(options.cloudSnapshotVersion.value)
+          : null;
 
-      options.cloudWorkspaceId.value = response.workspaceId || "";
-      options.cloudBookId.value = response.book?.id || "";
-      if (options.cloudBookId.value) {
-        options.selectedCloudBookId.value = options.cloudBookId.value;
-      }
-      if (response.book?.managedUserId) {
-        options.selectedCloudProfileId.value = response.book.managedUserId;
-      }
-      options.cloudSnapshotVersion.value = response.snapshot?.version ?? null;
-      options.cloudSnapshotAt.value = response.snapshot?.createdAt || "";
-      options.cloudSnapshotLedgerHead.value = String(
-        response.snapshot?.ledgerHead || ""
-      ).trim();
-      options.cloudSnapshotPayload.value = response.snapshot?.payload ?? payload;
-      options.cloudSyncStatus.value = `Cloud save complete (v${
-        options.cloudSnapshotVersion.value ?? 0
-      }).`;
+      const result = await savePixbookCommandUntilDoneV1(
+        {
+          accountId,
+          bookId: targetBookId,
+          payload,
+          ledgerHead: localLedgerHead,
+          expectedLedgerHead,
+          expectedVersion,
+          idempotencyKey,
+        },
+        {
+          maxAttempts: 30,
+          onPending: (pending) => {
+            options.cloudSyncStatus.value = `Save pending. Retrying in ${pending.retryAfterSeconds}s...`;
+          },
+        }
+      );
+
+      options.cloudWorkspaceId.value = accountId;
+      options.cloudBookId.value = targetBookId;
+      options.selectedCloudBookId.value = targetBookId;
+      options.cloudSnapshotVersion.value = result.data.streamVersion;
+      options.cloudSnapshotAt.value = result.data.createdAt;
+      options.cloudSnapshotLedgerHead.value = trim(result.data.hash);
+      options.cloudSnapshotPayload.value = payload;
+      clearPersistIdempotencyKey(targetBookId, localLedgerHead);
+      await options.context.persistCurrentPixbookSnapshot();
+      options.cloudSyncStatus.value = `Progress persisted (v${result.data.streamVersion}).`;
+      options.cloudSyncError.value = "";
       return true;
     } catch (error: unknown) {
       if (error instanceof PixPaxApiError && error.status === 409) {
         const code = resolveApiErrorCode(error);
-        if (
-          code === "PIXBOOK_BOOK_PROFILE_MISMATCH" ||
-          code === "PIXBOOK_BOOK_COLLECTION_MISMATCH"
-        ) {
-          options.selectedCloudBookId.value = "";
-          options.cloudBookId.value = "";
+        if (code === "BOOK_SNAPSHOT_CONFLICT" || code === "STREAM_HEAD_CONFLICT") {
           options.cloudSyncStatus.value = "";
-          await options.refreshCloudSnapshot();
           options.cloudSyncError.value =
-            "Selected account pixbook is no longer valid for this identity. Selection was cleared.";
+            "Remote pixbook changed on another device. Re-open this pixbook from account before saving again.";
           return false;
         }
-        options.cloudSyncStatus.value = "";
-        options.cloudSyncError.value =
-          "Cloud ledger conflict detected. Load latest cloud state before saving again.";
-        await options.refreshCloudSnapshot();
-        return false;
       }
+      options.cloudSyncStatus.value = "";
       options.cloudSyncError.value = String(
-        (error as Error)?.message || "Cloud save failed."
+        (error as Error)?.message || "Failed to persist pixbook progress."
       );
       return false;
     } finally {
@@ -354,72 +477,51 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
     }
   }
 
-  async function restoreCloudSnapshot() {
+  async function restoreCloudSnapshot(bookId?: string) {
     if (!options.account.isAuthenticated.value) {
-      options.cloudSyncError.value = "Sign in to restore cloud pixbooks.";
+      options.cloudSyncError.value = "Sign in to open account pixbooks.";
       return false;
     }
 
-    const binding = options.cloudBinding.value;
-    if (!binding) {
-      options.cloudSyncError.value =
-        "Cloud restore requires your private Pixbook identity in this browser.";
+    const accountId = currentAccountId();
+    if (!accountId) {
+      options.cloudSyncError.value = "Account context is unavailable.";
       return false;
     }
 
     options.cloudSyncError.value = "";
-    options.cloudSyncStatus.value = "Loading cloud ledger...";
+    options.cloudSyncStatus.value = "Opening persisted pixbook...";
 
     try {
-      const targetBookId = String(
-        options.selectedCloudBookId.value || options.cloudBookId.value || ""
-      ).trim();
+      const targetBookId = trim(bookId) || selectedBookId();
       if (!targetBookId) {
-        throw new Error(
-          "No account pixbook is selected. Save identity to account first."
-        );
+        throw new Error("No account pixbook is selected.");
       }
 
-      const response = await getPixbookCloudState(
-        options.account.workspace.value?.workspaceId || undefined,
-        binding,
-        targetBookId,
-        options.activeCollectionId.value
-      );
-
-      const payload = response.snapshot?.payload as PixbookExport | null;
-      if (!payload || typeof payload !== "object") {
-        options.cloudSyncStatus.value =
-          "No cloud ledger saved for this pixbook yet.";
+      const response = await getPixbookSnapshotV1(accountId, targetBookId);
+      const payload = response.snapshot?.payload ?? null;
+      const ledger = extractPersistedLedger(payload);
+      if (!ledger) {
+        options.cloudSyncStatus.value = "No persisted snapshot exists for this pixbook yet.";
         options.cloudSyncError.value = "";
         await options.refreshCloudSnapshot();
         return true;
       }
-      if (payload.format !== PIXBOOK_FORMAT || payload.version !== PIXBOOK_VERSION) {
-        throw new Error("Cloud ledger payload format is invalid.");
-      }
+      await options.context.loadPersistedLedgerSnapshot(ledger);
 
-      const file = new File([JSON.stringify(payload)], "cloud-pixbook.json", {
-        type: "application/json",
-      });
-      const ok = await options.context.importPixbookFile(file, { confirm: false });
-      if (!ok) {
-        throw new Error(options.context.uploadError.value || "Cloud restore failed.");
-      }
-
-      if (payload.kind === "public") {
-        options.cloudSyncStatus.value = "Public cloud pixbook loaded (read-only).";
-      } else {
-        options.cloudSyncStatus.value = `Cloud pixbook restored (v${
-          response.snapshot?.version || 0
-        }).`;
-      }
-
+      options.cloudWorkspaceId.value = accountId;
+      options.cloudBookId.value = targetBookId;
+      options.selectedCloudBookId.value = targetBookId;
+      options.cloudSnapshotVersion.value = response.snapshot?.version ?? null;
+      options.cloudSnapshotAt.value = response.snapshot?.createdAt || "";
+      options.cloudSnapshotLedgerHead.value = trim(response.snapshot?.ledgerHead);
+      options.cloudSnapshotPayload.value = payload;
+      options.cloudSyncStatus.value = `Opened persisted pixbook (v${response.snapshot?.version || 0}).`;
       await options.refreshCloudSnapshot();
       return true;
     } catch (error: unknown) {
       options.cloudSyncError.value = String(
-        (error as Error)?.message || "Cloud restore failed."
+        (error as Error)?.message || "Failed to open persisted pixbook."
       );
       options.cloudSyncStatus.value = "";
       return false;
@@ -427,126 +529,76 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
   }
 
   async function openSelectedCloudBook() {
-    if (!options.selectedCloudBookId.value) {
-      options.cloudSyncError.value = "Select a cloud pixbook first.";
+    const selected = selectedBookId();
+    if (!selected) {
+      options.cloudSyncError.value = "Select an account pixbook first.";
       return false;
     }
 
     const selectedBook = options.cloudBooks.value.find(
-      (entry) =>
-        String(entry.id || "").trim() ===
-        String(options.selectedCloudBookId.value || "").trim()
+      (entry) => trim(entry.id) === selected
     );
     if (!selectedBook) {
-      options.cloudSyncError.value = "Selected cloud pixbook was not found.";
+      options.cloudSyncError.value = "Selected account pixbook was not found.";
       return false;
     }
     if (normalizeCollectionId(selectedBook.collectionId) !== options.activeCollectionId.value) {
       options.cloudSyncError.value =
-        "Selected cloud pixbook belongs to another collection.";
+        "Selected account pixbook belongs to another collection.";
       return false;
     }
 
-    const binding = options.cloudBinding.value;
-    if (!binding) {
-      options.cloudSyncError.value =
-        "Private cloud restore requires your active identity in this browser.";
-      return false;
-    }
-    const boundManagedUser = options.cloudProfiles.value.find((entry) => {
-      return (
-        String(entry.profileId || "").trim() === String(binding.profileId || "").trim() &&
-        String(entry.identityPublicKey || "").trim() ===
-          String(binding.identityPublicKey || "").trim() &&
-        String(entry.status || "").trim() !== "deleted"
-      );
-    });
-    if (!boundManagedUser || boundManagedUser.id !== selectedBook.managedUserId) {
-      options.cloudSyncError.value =
-        "Private cross-identity cloud restore is blocked. Switch identity first.";
-      return false;
-    }
-
-    options.cloudBookId.value = options.selectedCloudBookId.value;
-    return restoreCloudSnapshot();
+    options.selectedCloudProfileId.value = selectedBook.managedUserId;
+    options.cloudBookId.value = selectedBook.id;
+    return restoreCloudSnapshot(selectedBook.id);
   }
 
-  async function importAccountIdentityToDevice(managedUserId: string) {
-    if (!options.account.isAuthenticated.value) {
-      options.cloudSyncError.value = "Sign in to import identities from your account.";
-      return false;
-    }
-
-    const targetManagedUserId = String(managedUserId || "").trim();
-    if (!targetManagedUserId) {
+  async function selectCloudProfile(profileId: string) {
+    const targetProfileId = trim(profileId);
+    if (!targetProfileId) {
       options.cloudSyncError.value = "Identity id is required.";
       return false;
     }
 
-    const targetProfile = options.cloudProfiles.value.find(
-      (entry) =>
-        String(entry.id || "").trim() === targetManagedUserId &&
-        String(entry.status || "").trim() !== "deleted"
-    );
-    if (!targetProfile) {
-      options.cloudSyncError.value = "Account identity not found.";
-      return false;
-    }
-
-    const targetBook = options.cloudBooks.value.find(
-      (entry) =>
-        String(entry.managedUserId || "").trim() === targetManagedUserId &&
-        String(entry.status || "").trim() !== "deleted" &&
+    const targetBooks = options.cloudBooks.value.filter((entry) => {
+      return (
+        trim(entry.managedUserId) === targetProfileId &&
+        trim(entry.status) !== "deleted" &&
         normalizeCollectionId(entry.collectionId) === options.activeCollectionId.value
-    );
-    if (!targetBook) {
+      );
+    });
+    if (targetBooks.length === 0) {
       options.cloudSyncError.value =
-        "No saved pixbook exists for this identity in the active collection.";
+        "No pixbook is available for this identity in the active collection.";
       return false;
     }
 
-    options.cloudSyncError.value = "";
-    options.cloudSyncStatus.value = "Importing identity from account...";
+    options.selectedCloudProfileId.value = targetProfileId;
+    const currentBookId = selectedBookId();
+    const selectedTarget =
+      targetBooks.find((entry) => trim(entry.id) === currentBookId) || targetBooks[0];
+    options.selectedCloudBookId.value = selectedTarget.id;
+    options.cloudBookId.value = selectedTarget.id;
+    return restoreCloudSnapshot(selectedTarget.id);
+  }
 
-    try {
-      const response = await getPixbookCloudState(
-        options.account.workspace.value?.workspaceId || undefined,
-        undefined,
-        targetBook.id,
-        options.activeCollectionId.value
-      );
+  async function flushPersistQueue(timeoutMs = 2500) {
+    const inFlight = persistLoopInFlight;
+    if (!inFlight) return true;
+    const timeout = Math.max(250, Number(timeoutMs || 0));
+    const winner = await Promise.race([
+      inFlight.then((ok) => (ok ? "done" : "failed")),
+      wait(timeout).then(() => "timeout"),
+    ]);
+    return winner !== "failed";
+  }
 
-      const payload = response.snapshot?.payload as PixbookExport | null;
-      if (!payload || typeof payload !== "object") {
-        throw new Error("No saved cloud ledger state exists for this identity yet.");
-      }
-      if (payload.kind !== "private") {
-        throw new Error(
-          "Only private pixbook cloud states can be imported as device identities."
-        );
-      }
-      if (payload.format !== PIXBOOK_FORMAT || payload.version !== PIXBOOK_VERSION) {
-        throw new Error("Saved cloud state format is invalid.");
-      }
-
-      const file = new File([JSON.stringify(payload)], "account-identity.json", {
-        type: "application/json",
-      });
-      const ok = await options.context.importPixbookFile(file, { confirm: false });
-      if (!ok) {
-        throw new Error(options.context.uploadError.value || "Identity import failed.");
-      }
-
-      options.cloudSyncStatus.value = "Identity imported to this device.";
-      await options.refreshCloudLibrary();
-      return true;
-    } catch (error: unknown) {
-      options.cloudSyncError.value = String(
-        (error as Error)?.message || "Failed to import identity from account."
-      );
-      options.cloudSyncStatus.value = "";
-      return false;
-    }
+  async function importAccountIdentityToDevice(managedUserId: string) {
+    void managedUserId;
+    options.cloudSyncStatus.value = "";
+    options.cloudSyncError.value =
+      "Identity import from account snapshots is disabled. Private profile keys are never persisted to account storage.";
+    return false;
   }
 
   async function removeCloudIdentity(managedUserId: string) {
@@ -680,6 +732,8 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
     saveCloudSnapshot,
     restoreCloudSnapshot,
     openSelectedCloudBook,
+    selectCloudProfile,
+    flushPersistQueue,
     importAccountIdentityToDevice,
     removeCloudIdentity,
     resetAccountIdentityData,

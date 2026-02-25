@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { canonicalStringify } from "@ternent/concord-protocol";
 import { HttpError, conflict, notFound } from "../../services/http/errors.mjs";
+import { sanitizePixbookSnapshotPayload } from "./snapshot-sanitizer.mjs";
 
 function trim(value) {
   return String(value || "").trim();
@@ -52,14 +53,6 @@ function normalizeDetails(value) {
   return value;
 }
 
-function toCanonicalJson(value, fallback = {}) {
-  try {
-    return JSON.parse(canonicalStringify(value ?? fallback));
-  } catch {
-    return cloneJson(value ?? fallback);
-  }
-}
-
 function normalizeCreateBody(body) {
   return {
     managedUserId: trim(body?.managedUserId),
@@ -76,8 +69,16 @@ function normalizeExpectedVersion(value) {
 }
 
 function normalizeSaveBody(body) {
+  const snapshot = sanitizePixbookSnapshotPayload(body?.payload ?? {});
+  if (!snapshot) {
+    throw new HttpError(
+      400,
+      "PAYLOAD_LEDGER_REQUIRED",
+      "payload must include a pixbook ledger snapshot."
+    );
+  }
   return {
-    snapshot: toCanonicalJson(body?.payload ?? {}, {}),
+    snapshot,
     clientLedgerHead: trim(body?.ledgerHead) || null,
     expectedVersion: normalizeExpectedVersion(body?.expectedVersion),
     expectedLedgerHead: trim(body?.expectedLedgerHead) || null,

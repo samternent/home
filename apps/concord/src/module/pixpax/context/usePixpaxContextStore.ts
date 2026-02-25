@@ -115,6 +115,10 @@ function copyObject(input: unknown) {
   return { ...(input as Record<string, unknown>) };
 }
 
+function cloneJson<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value)) as T;
+}
+
 function usernameFromMetadata(input: unknown) {
   if (!input || typeof input !== "object") return "";
   const username = (input as { username?: unknown }).username;
@@ -697,6 +701,30 @@ function createPixpaxContextStore() {
     }
 
     await reauthAndReplay();
+  }
+
+  async function loadPersistedLedgerSnapshot(snapshot: unknown) {
+    if (!snapshot || typeof snapshot !== "object" || Array.isArray(snapshot)) {
+      throw new Error("Persisted ledger snapshot is invalid.");
+    }
+
+    shouldAutoCreatePixbook.value = false;
+    try {
+      pixbookReadOnly.value = false;
+      viewedPixbookProfile.value = null;
+      publicLedgerSnapshot.value = "";
+
+      if (privateKey.value && publicKey.value) {
+        await api.auth(privateKey.value, publicKey.value);
+      }
+
+      await api.load(cloneJson(snapshot), [], true, true);
+      await reauthAndReplay();
+      await ensureCurrentPixbookRecord();
+      await persistCurrentPixbookSnapshot();
+    } finally {
+      shouldAutoCreatePixbook.value = true;
+    }
   }
 
   async function switchIdentityLocal(identityId: string) {
@@ -1370,6 +1398,7 @@ function createPixpaxContextStore() {
     ensurePixbook,
     ensureCurrentPixbookRecord,
     persistCurrentPixbookSnapshot,
+    loadPersistedLedgerSnapshot,
 
     buildPixbook,
     downloadPixbook,

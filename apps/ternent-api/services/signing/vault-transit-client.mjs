@@ -32,6 +32,33 @@ function assertVaultConfig(config) {
   }
 }
 
+function toFetchErrorMessage(error) {
+  if (!error) return "unknown fetch error";
+  const top = typeof error?.message === "string" ? trim(error.message) : "";
+  const causeMessage =
+    typeof error?.cause?.message === "string" ? trim(error.cause.message) : "";
+  if (top && causeMessage && causeMessage !== top) {
+    return `${top}: ${causeMessage}`;
+  }
+  if (top) {
+    return top;
+  }
+  if (causeMessage) {
+    return causeMessage;
+  }
+  return "unknown fetch error";
+}
+
+function throwVaultUnreachable(config, path, error) {
+  throw serviceUnavailable(
+    "VAULT_UNAVAILABLE",
+    `Vault is unreachable at ${config.addr}${path}.`,
+    {
+      reason: toFetchErrorMessage(error),
+    }
+  );
+}
+
 async function readServiceJwt(pathname) {
   const { readFile } = await import("node:fs/promises");
   try {
@@ -54,14 +81,19 @@ async function loginWithKubernetes(config) {
   }
 
   const url = `${config.addr.replace(/\/+$/, "")}/v1/auth/kubernetes/login`;
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({
-      role: config.role,
-      jwt,
-    }),
-  });
+  let response;
+  try {
+    response = await fetch(url, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        role: config.role,
+        jwt,
+      }),
+    });
+  } catch (error) {
+    throwVaultUnreachable(config, "/v1/auth/kubernetes/login", error);
+  }
 
   if (!response.ok) {
     const body = await response.text();
@@ -92,14 +124,19 @@ async function getVaultToken(config) {
 async function callVault(config, method, path, body) {
   const token = await getVaultToken(config);
   const url = `${config.addr.replace(/\/+$/, "")}${path}`;
-  const response = await fetch(url, {
-    method,
-    headers: {
-      "content-type": "application/json",
-      "x-vault-token": token,
-    },
-    body: body ? JSON.stringify(body) : undefined,
-  });
+  let response;
+  try {
+    response = await fetch(url, {
+      method,
+      headers: {
+        "content-type": "application/json",
+        "x-vault-token": token,
+      },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  } catch (error) {
+    throwVaultUnreachable(config, path, error);
+  }
 
   if (response.status === 403 && !config.token && cachedKubernetesToken) {
     cachedKubernetesToken = null;

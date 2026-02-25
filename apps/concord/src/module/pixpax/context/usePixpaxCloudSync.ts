@@ -1,5 +1,4 @@
 import { computed, inject, onMounted, provide, shallowRef, watch } from "vue";
-import { type PixbookCloudBinding } from "../api/client";
 import { usePixpaxAccount } from "../auth/usePixpaxAccount";
 import {
   type PixpaxContextStore,
@@ -51,39 +50,28 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
     return Boolean(window.isSecureContext && "PublicKeyCredential" in window);
   });
 
-  const cloudBinding = computed<PixbookCloudBinding | null>(() => {
-    if (context.pixbookReadOnly.value) return null;
-    const profileId = String(context.profile.profileId.value || "").trim();
-    const identityPublicKey = String(context.publicKeyPEM.value || "").trim();
-    if (!profileId || !identityPublicKey) return null;
-
-    const meta = context.profile.meta.value as { username?: string };
-    return {
-      profileId,
-      identityPublicKey,
-      profileDisplayName: meta?.username ? `@${meta.username}` : undefined,
-    };
-  });
-
-  const canCloudSync = computed(() => {
-    return (
-      account.isAuthenticated.value &&
-      !context.pixbookReadOnly.value &&
-      Boolean(context.ledger.value) &&
-      Boolean(cloudBinding.value)
-    );
-  });
-
   const listLoader = createAccountListLoader({
     account,
     activeCollectionId,
     cloudBookId,
   });
 
+  const canCloudSync = computed(() => {
+    const selectedBookId = String(
+      listLoader.selectedCloudBookId.value || cloudBookId.value || ""
+    ).trim();
+    return (
+      account.isAuthenticated.value &&
+      !context.pixbookReadOnly.value &&
+      Boolean(context.ledger.value) &&
+      Boolean(selectedBookId)
+    );
+  });
+
   const itemLoader = createAccountPixbookItemLoader({
     account,
     activeCollectionId,
-    cloudBinding,
+    cloudBooks: listLoader.cloudBooks,
     selectedCloudBookId: listLoader.selectedCloudBookId,
     selectedCloudProfileId: listLoader.selectedCloudProfileId,
     cloudBookId,
@@ -98,7 +86,6 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
     context,
     activeCollectionId,
     canCloudSync,
-    cloudBinding,
     cloudProfiles: listLoader.cloudProfiles,
     cloudBooks: listLoader.cloudBooks,
     selectedCloudProfileId: listLoader.selectedCloudProfileId,
@@ -120,43 +107,42 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
   });
 
   function bindCloudSelectionToActiveIdentity() {
-    const binding = cloudBinding.value;
-    if (!binding) {
-      listLoader.selectedCloudProfileId.value = "";
-      listLoader.selectedCloudBookId.value = "";
-      itemLoader.cloudBookId.value = "";
-      return;
-    }
-
-    const matchedProfile = listLoader.cloudProfiles.value.find((entry) => {
+    const activeBooks = listLoader.cloudBooks.value.filter((entry) => {
       return (
         String(entry.status || "").trim() !== "deleted" &&
-        String(entry.profileId || "").trim() === String(binding.profileId || "").trim() &&
-        String(entry.identityPublicKey || "").trim() ===
-          String(binding.identityPublicKey || "").trim()
-      );
-    });
-
-    if (!matchedProfile) {
-      listLoader.selectedCloudProfileId.value = "";
-      listLoader.selectedCloudBookId.value = "";
-      itemLoader.cloudBookId.value = "";
-      return;
-    }
-
-    listLoader.selectedCloudProfileId.value = matchedProfile.id;
-
-    const matchedBook = listLoader.cloudBooks.value.find((entry) => {
-      return (
-        String(entry.status || "").trim() !== "deleted" &&
-        String(entry.managedUserId || "").trim() === String(matchedProfile.id || "").trim() &&
         String(entry.collectionId || "").trim() === String(activeCollectionId.value || "").trim()
       );
     });
+    if (activeBooks.length === 0) {
+      listLoader.selectedCloudProfileId.value = "";
+      listLoader.selectedCloudBookId.value = "";
+      itemLoader.cloudBookId.value = "";
+      return;
+    }
 
-    const matchedBookId = String(matchedBook?.id || "").trim();
-    listLoader.selectedCloudBookId.value = matchedBookId;
-    itemLoader.cloudBookId.value = matchedBookId;
+    const selectedProfileId = String(listLoader.selectedCloudProfileId.value || "").trim();
+    const selectedProfileExists = activeBooks.some(
+      (entry) => String(entry.managedUserId || "").trim() === selectedProfileId
+    );
+    const resolvedProfileId = selectedProfileExists
+      ? selectedProfileId
+      : String(activeBooks[0]?.managedUserId || "").trim();
+
+    listLoader.selectedCloudProfileId.value = resolvedProfileId;
+    const profileBooks = activeBooks.filter(
+      (entry) => String(entry.managedUserId || "").trim() === resolvedProfileId
+    );
+    const selectedBookId = String(
+      listLoader.selectedCloudBookId.value || itemLoader.cloudBookId.value || ""
+    ).trim();
+    const selectedBookExists = profileBooks.some(
+      (entry) => String(entry.id || "").trim() === selectedBookId
+    );
+    const resolvedBookId = selectedBookExists
+      ? selectedBookId
+      : String(profileBooks[0]?.id || activeBooks[0]?.id || "").trim();
+    listLoader.selectedCloudBookId.value = resolvedBookId;
+    itemLoader.cloudBookId.value = resolvedBookId;
   }
 
   async function refreshCloudForActiveIdentity() {
@@ -171,6 +157,41 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
     cloudSyncError.value = "";
     itemLoader.resetCloudSnapshotState();
     listLoader.resetCloudLibraryState();
+  }
+
+  function clearIdentityScopedState() {
+    cloudSyncStatus.value = "";
+    cloudSyncError.value = "";
+    itemLoader.cloudSnapshotPayload.value = null;
+    itemLoader.cloudSnapshotLedgerHead.value = "";
+    itemLoader.cloudSnapshotVersion.value = null;
+    itemLoader.cloudSnapshotAt.value = "";
+  }
+
+  async function flushPersistQueue(timeoutMs = 2500) {
+    return actions.flushPersistQueue(timeoutMs);
+  }
+
+  async function selectCloudProfile(profileId: string) {
+    await flushPersistQueue(2500);
+    clearIdentityScopedState();
+    return actions.selectCloudProfile(profileId);
+  }
+
+  async function selectCloudBook(bookId: string) {
+    const targetBookId = String(bookId || "").trim();
+    if (!targetBookId) return false;
+    await flushPersistQueue(2500);
+    clearIdentityScopedState();
+    const selectedBook = listLoader.cloudBooks.value.find((entry) => entry.id === targetBookId);
+    if (!selectedBook) {
+      cloudSyncError.value = "Selected account pixbook was not found.";
+      return false;
+    }
+    listLoader.selectedCloudProfileId.value = String(selectedBook.managedUserId || "").trim();
+    listLoader.selectedCloudBookId.value = targetBookId;
+    itemLoader.cloudBookId.value = targetBookId;
+    return actions.openSelectedCloudBook();
   }
 
   async function sendOtpCode() {
@@ -288,8 +309,6 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
       [
         account.isAuthenticated.value,
         account.workspace.value?.workspaceId || "",
-        cloudBinding.value?.profileId || "",
-        cloudBinding.value?.identityPublicKey || "",
         activeCollectionId.value,
       ] as const,
     async ([authenticated]) => {
@@ -306,7 +325,10 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
         return;
       }
       const nextBooks = listLoader.cloudBooks.value.filter(
-        (entry) => entry.managedUserId === nextProfileId
+        (entry) =>
+          entry.managedUserId === nextProfileId &&
+          String(entry.status || "").trim() !== "deleted" &&
+          String(entry.collectionId || "").trim() === String(activeCollectionId.value || "").trim()
       );
       if (nextBooks.length === 0) {
         listLoader.selectedCloudBookId.value = "";
@@ -318,6 +340,34 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
       if (!stillValid) {
         listLoader.selectedCloudBookId.value = nextBooks[0].id;
       }
+    }
+  );
+
+  watch(
+    () => listLoader.selectedCloudBookId.value,
+    async (nextBookId, previousBookId) => {
+      const next = String(nextBookId || "").trim();
+      const prev = String(previousBookId || "").trim();
+      if (!account.isAuthenticated.value || !next || next === prev) return;
+      itemLoader.cloudBookId.value = next;
+      await itemLoader.refreshCloudSnapshot();
+    }
+  );
+
+  watch(
+    () =>
+      [
+        account.isAuthenticated.value,
+        context.pixbookReadOnly.value,
+        String(context.ledger.value?.head || "").trim(),
+        String(listLoader.selectedCloudBookId.value || itemLoader.cloudBookId.value || "").trim(),
+        String(itemLoader.cloudSnapshotLedgerHead.value || "").trim(),
+      ] as const,
+    async ([authenticated, readOnly, localHead, targetBookId, remoteHead]) => {
+      if (!authenticated || readOnly) return;
+      if (!localHead || !targetBookId) return;
+      if (localHead === remoteHead) return;
+      await actions.saveCloudSnapshot();
     }
   );
 
@@ -354,13 +404,15 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
     identityDirectorySyncError,
     identityDirectorySyncStatus,
 
-    cloudBinding,
     canCloudSync,
     activeCollectionId,
 
     refreshCloudLibrary: listLoader.refreshCloudLibrary,
     refreshCloudSnapshot: itemLoader.refreshCloudSnapshot,
     refreshCloudForActiveIdentity,
+    selectCloudProfile,
+    selectCloudBook,
+    flushPersistQueue,
     saveCloudSnapshot: actions.saveCloudSnapshot,
     restoreCloudSnapshot: actions.restoreCloudSnapshot,
     openSelectedCloudBook: actions.openSelectedCloudBook,

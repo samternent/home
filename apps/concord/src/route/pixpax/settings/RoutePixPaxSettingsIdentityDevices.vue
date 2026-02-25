@@ -155,17 +155,6 @@ async function saveIdentity(identityId: string) {
   context.setStatus("Identity saved to account.");
 }
 
-async function importAccountIdentity(managedUserId: string) {
-  const ok = await cloudSync.importAccountIdentityToDevice(managedUserId);
-  if (!ok) {
-    context.setError(
-      cloudSync.cloudSyncError.value || "Unable to import identity from account."
-    );
-    return;
-  }
-  context.setStatus("Identity imported to this device.");
-}
-
 async function removeAccountIdentity(managedUserId: string) {
   if (!cloudSync.account.isAuthenticated.value) {
     context.setError("Sign in with your account to remove identities.");
@@ -413,13 +402,13 @@ function saveHandle() {
     <section class="rounded-lg border border-[var(--ui-border)] p-3 flex flex-col gap-2">
       <h2 class="text-sm font-semibold">Saved Account Identities</h2>
       <p class="text-xs text-[var(--ui-fg-muted)]">
-        These are identities already saved to your account. Import is explicit per identity.
+        These are identities already saved to your account. Private key material is never persisted to account storage.
       </p>
       <p
         v-if="!cloudSync.account.isAuthenticated.value"
         class="text-xs text-amber-600"
       >
-        Sign in to view and import saved account identities.
+        Sign in to view saved account identities.
       </p>
       <p
         v-else-if="!accountSavedIdentities.length"
@@ -437,18 +426,10 @@ function saveHandle() {
             {{ accountIdentityLabel(entry) }}
           </p>
           <p class="text-[11px] text-[var(--ui-fg-muted)]">
-            {{ isIdentityOnThisDevice(entry) ? "Available on this device" : "Not on this device yet" }}
+            {{ isIdentityOnThisDevice(entry) ? "Available on this device" : "Create or recover this identity locally to use it here." }}
           </p>
         </div>
         <div class="flex items-center gap-2">
-          <button
-            type="button"
-            class="rounded-md border border-[var(--ui-border)] px-2 py-1 text-xs hover:bg-[var(--ui-fg)]/5 disabled:opacity-50"
-            :disabled="!cloudSync.account.isAuthenticated.value || isIdentityOnThisDevice(entry)"
-            @click="importAccountIdentity(entry.id)"
-          >
-            {{ isIdentityOnThisDevice(entry) ? "Imported" : "Import to this device" }}
-          </button>
           <button
             type="button"
             class="rounded-md border border-[var(--ui-border)] px-2 py-1 text-xs text-red-600 hover:bg-[var(--ui-critical)]/10 disabled:opacity-50"

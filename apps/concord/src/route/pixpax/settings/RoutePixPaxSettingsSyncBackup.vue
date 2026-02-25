@@ -421,12 +421,12 @@ function downloadVerificationBundle() {
 
 <template>
   <div class="flex flex-col gap-4">
-    <h1 class="text-lg font-semibold">Account Backup</h1>
+    <h1 class="text-lg font-semibold">Persistence &amp; Verification</h1>
     <p class="text-xs text-[var(--ui-fg-muted)]">
-      Account cloud ledger is the source of truth. This device keeps a local compatibility cache.
+      Pixbook progress is persisted automatically to your account after ledger commits.
     </p>
     <p class="text-xs text-[var(--ui-fg-muted)]">
-      Save identity to account first in Identity &amp; Devices before writing cloud ledger state.
+      Use this page to inspect persistence status and open persisted snapshots.
     </p>
 
     <section class="rounded-lg border border-[var(--ui-border)] p-3 flex flex-col gap-3">
@@ -434,19 +434,10 @@ function downloadVerificationBundle() {
         <button
           type="button"
           class="rounded-md border border-[var(--ui-border)] px-3 py-2 text-xs hover:bg-[var(--ui-fg)]/5 disabled:opacity-50"
-          :disabled="!cloudSync.canCloudSync.value || cloudSync.cloudSyncing.value"
-          @click="cloudSync.saveCloudSnapshot()"
-        >
-          {{ cloudSync.cloudSyncing.value ? "Saving..." : "Save now" }}
-        </button>
-
-        <button
-          type="button"
-          class="rounded-md border border-[var(--ui-border)] px-3 py-2 text-xs hover:bg-[var(--ui-fg)]/5 disabled:opacity-50"
           :disabled="cloudSync.cloudSyncing.value"
           @click="cloudSync.restoreCloudSnapshot()"
         >
-          Restore
+          Open selected pixbook
         </button>
       </div>
 
@@ -466,7 +457,7 @@ function downloadVerificationBundle() {
       </div>
 
       <p v-if="cloudSync.cloudSnapshotVersion.value !== null" class="text-xs text-[var(--ui-fg-muted)]">
-        Latest cloud ledger revision v{{ cloudSync.cloudSnapshotVersion.value }}
+        Latest persisted revision v{{ cloudSync.cloudSnapshotVersion.value }}
         <span v-if="cloudSync.cloudSnapshotAt.value">({{ new Date(cloudSync.cloudSnapshotAt.value).toLocaleString() }})</span>
       </p>
       <p v-if="cloudSync.cloudLibraryError.value" class="text-xs text-amber-600">
