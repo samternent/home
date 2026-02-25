@@ -1,5 +1,11 @@
 # concord
 
+## 0.3.53
+
+### Patch Changes
+
+- [`aee2b9b1b983ef4665beb7ce1d93e1f10f178db2`](https://github.com/samternent/home/commit/aee2b9b1b983ef4665beb7ce1d93e1f10f178db2) Thanks [@samternent](https://github.com/samternent)! - Fix identity backups
+
 ## 0.3.52
 
 ### Patch Changes
