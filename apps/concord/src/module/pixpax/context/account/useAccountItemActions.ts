@@ -198,6 +198,65 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
     return trim(options.selectedCloudBookId.value || options.cloudBookId.value);
   }
 
+  function pickBookForManagedUser(managedUserId: string) {
+    const targetManagedUserId = trim(managedUserId);
+    if (!targetManagedUserId) return "";
+    const activeCollectionId = normalizeCollectionId(options.activeCollectionId.value);
+    const preferred =
+      options.cloudBooks.value.find((entry) => {
+        return (
+          trim(entry.managedUserId) === targetManagedUserId &&
+          trim(entry.status) !== "deleted" &&
+          normalizeCollectionId(entry.collectionId) === activeCollectionId
+        );
+      }) ||
+      options.cloudBooks.value.find((entry) => {
+        return (
+          trim(entry.managedUserId) === targetManagedUserId &&
+          trim(entry.status) !== "deleted"
+        );
+      }) ||
+      null;
+    return trim(preferred?.id);
+  }
+
+  async function ensureCloudSelectionForCurrentIdentity() {
+    const existing = selectedBookId();
+    if (existing) return existing;
+
+    const localIdentity = options.context.activeIdentity.value;
+    const localIdentityId = trim(localIdentity?.id);
+    if (!localIdentity) return "";
+
+    const resolveFromCurrentCloudState = () => {
+      const cloudIdentity = resolveCloudIdentityForLocalIdentity(localIdentity);
+      const managedUserId = trim(cloudIdentity?.id);
+      if (!managedUserId) return "";
+      options.selectedCloudProfileId.value = managedUserId;
+      const resolvedBookId = pickBookForManagedUser(managedUserId);
+      if (!resolvedBookId) return "";
+      options.selectedCloudBookId.value = resolvedBookId;
+      options.cloudBookId.value = resolvedBookId;
+      return resolvedBookId;
+    };
+
+    let resolved = resolveFromCurrentCloudState();
+    if (resolved) return resolved;
+
+    await options.refreshCloudLibrary();
+    resolved = resolveFromCurrentCloudState();
+    if (resolved) return resolved;
+
+    if (localIdentityId) {
+      await syncLocalIdentitiesToCloud([localIdentityId]);
+      await options.refreshCloudLibrary();
+      resolved = resolveFromCurrentCloudState();
+      if (resolved) return resolved;
+    }
+
+    return "";
+  }
+
   function idempotencyScopeKey(bookId: string, ledgerHead: string) {
     return `${trim(bookId)}::${trim(ledgerHead)}`;
   }
@@ -652,7 +711,10 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
   }
 
   async function saveCloudSnapshot() {
-    if (!options.canCloudSync.value || !options.context.ledger.value) return false;
+    if (!options.account.isAuthenticated.value || options.context.pixbookReadOnly.value) {
+      return false;
+    }
+    if (!options.context.ledger.value) return false;
     const localLedgerHead = trim(options.context.ledger.value?.head);
     if (!localLedgerHead) return false;
     pendingPersistHead = localLedgerHead;
@@ -681,14 +743,20 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
   }
 
   async function saveCloudSnapshotForHead(targetHead: string) {
-    if (!options.canCloudSync.value || !options.context.ledger.value) return false;
+    if (!options.account.isAuthenticated.value || options.context.pixbookReadOnly.value) {
+      return false;
+    }
+    if (!options.context.ledger.value) return false;
     const accountId = currentAccountId();
     if (!accountId) {
       options.cloudSyncError.value = "Account context is unavailable.";
       options.cloudSyncStatus.value = "";
       return false;
     }
-    const targetBookId = selectedBookId();
+    let targetBookId = selectedBookId();
+    if (!targetBookId) {
+      targetBookId = await ensureCloudSelectionForCurrentIdentity();
+    }
     if (!targetBookId) {
       options.cloudSyncError.value = "Select an account pixbook before saving progress.";
       options.cloudSyncStatus.value = "";
