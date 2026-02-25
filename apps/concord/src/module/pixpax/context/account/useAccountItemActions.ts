@@ -931,11 +931,10 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
       options.cloudSyncStatus.value = "Identity recovered to this device.";
       options.cloudSyncError.value = "";
       await options.refreshCloudLibrary();
-      if (!options.selectedCloudProfileId.value) {
-        const matched = resolveCloudIdentityForLocalIdentity(merged);
-        if (matched?.id) {
-          options.selectedCloudProfileId.value = matched.id;
-        }
+      const matched = resolveCloudIdentityForLocalIdentity(merged);
+      if (matched?.id) {
+        options.selectedCloudProfileId.value = matched.id;
+        await selectCloudProfile(matched.id);
       }
       return true;
     } catch (error: unknown) {

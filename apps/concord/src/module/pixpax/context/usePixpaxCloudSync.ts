@@ -144,13 +144,35 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
       return;
     }
 
+    const localActiveIdentity = context.activeIdentity.value;
+    const localProfileId = String(localActiveIdentity?.profileId || "").trim();
+    const localIdentityPublicKey = String(localActiveIdentity?.publicKeyPEM || "").trim();
+    let preferredProfileId = "";
+    if (localProfileId && localIdentityPublicKey) {
+      const managedUser = listLoader.cloudProfiles.value.find((entry) => {
+        return (
+          String(entry.status || "").trim() !== "deleted" &&
+          String(entry.profileId || "").trim() === localProfileId &&
+          String(entry.identityPublicKey || "").trim() === localIdentityPublicKey
+        );
+      });
+      preferredProfileId = String(managedUser?.id || "").trim();
+    }
+
     const selectedProfileId = String(listLoader.selectedCloudProfileId.value || "").trim();
     const selectedProfileExists = activeBooks.some(
       (entry) => String(entry.managedUserId || "").trim() === selectedProfileId
     );
-    const resolvedProfileId = selectedProfileExists
-      ? selectedProfileId
-      : String(activeBooks[0]?.managedUserId || "").trim();
+    const preferredProfileExists = preferredProfileId
+      ? activeBooks.some(
+          (entry) => String(entry.managedUserId || "").trim() === preferredProfileId
+        )
+      : false;
+    const resolvedProfileId = preferredProfileExists
+      ? preferredProfileId
+      : selectedProfileExists
+        ? selectedProfileId
+        : String(activeBooks[0]?.managedUserId || "").trim();
 
     listLoader.selectedCloudProfileId.value = resolvedProfileId;
     const profileBooks = activeBooks.filter(
