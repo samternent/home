@@ -33,6 +33,10 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
   const identityDirectorySyncing = shallowRef(false);
   const identityDirectorySyncError = shallowRef("");
   const identityDirectorySyncStatus = shallowRef("");
+  const recoveryPassphrase = shallowRef("");
+  const recoveryPassphraseUnlocked = computed(
+    () => String(recoveryPassphrase.value || "").length > 0
+  );
 
   const cloudBookId = shallowRef("");
 
@@ -102,9 +106,29 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
     identityDirectorySyncing,
     identityDirectorySyncError,
     identityDirectorySyncStatus,
+    recoveryPassphrase,
     refreshCloudLibrary: listLoader.refreshCloudLibrary,
     refreshCloudSnapshot: itemLoader.refreshCloudSnapshot,
   });
+
+  function unlockRecoveryPassphrase(passphrase: string) {
+    const normalized = String(passphrase || "").normalize("NFC");
+    recoveryPassphrase.value = normalized;
+    if (normalized) {
+      identityDirectorySyncStatus.value = "Recovery passphrase unlocked for this session.";
+      identityDirectorySyncError.value = "";
+      return true;
+    }
+    identityDirectorySyncError.value = "Passphrase is required.";
+    identityDirectorySyncStatus.value = "";
+    return false;
+  }
+
+  function clearRecoveryPassphrase() {
+    recoveryPassphrase.value = "";
+    identityDirectorySyncStatus.value = "Recovery passphrase cleared.";
+    identityDirectorySyncError.value = "";
+  }
 
   function bindCloudSelectionToActiveIdentity() {
     const activeBooks = listLoader.cloudBooks.value.filter((entry) => {
@@ -272,6 +296,7 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
     try {
       await account.logout();
       resetCloudSyncState();
+      clearRecoveryPassphrase();
       authOtp.value = "";
       authMessage.value = "Signed out.";
       return true;
@@ -295,6 +320,7 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
     async (next) => {
       if (!next) {
         resetCloudSyncState();
+        recoveryPassphrase.value = "";
         identityDirectorySyncStatus.value = "";
         identityDirectorySyncError.value = "";
         return;
@@ -355,6 +381,24 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
   );
 
   watch(
+    () => [
+      account.isAuthenticated.value,
+      recoveryPassphraseUnlocked.value,
+      JSON.stringify(
+        context.identities.value.map((entry) => ({
+          id: entry.id,
+          profileId: entry.profileId,
+          updatedAt: entry.updatedAt,
+        }))
+      ),
+    ] as const,
+    ([authenticated, passphraseUnlocked]) => {
+      if (!authenticated || !passphraseUnlocked) return;
+      actions.scheduleAutoBackupLocalIdentities();
+    }
+  );
+
+  watch(
     () =>
       [
         account.isAuthenticated.value,
@@ -403,6 +447,7 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
     identityDirectorySyncing,
     identityDirectorySyncError,
     identityDirectorySyncStatus,
+    recoveryPassphraseUnlocked,
 
     canCloudSync,
     activeCollectionId,
@@ -422,6 +467,10 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
     removeCloudPixbook: actions.removeCloudPixbook,
     saveLocalIdentityToCloud: actions.saveLocalIdentityToCloud,
     syncLocalIdentitiesToCloud: actions.syncLocalIdentitiesToCloud,
+    backupLocalIdentityToAccount: actions.backupLocalIdentityToAccount,
+    backupAllLocalIdentitiesToAccount: actions.backupAllLocalIdentitiesToAccount,
+    unlockRecoveryPassphrase,
+    clearRecoveryPassphrase,
 
     sendOtpCode,
     submitOtpCode,

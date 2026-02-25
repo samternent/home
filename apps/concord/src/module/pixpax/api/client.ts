@@ -294,14 +294,133 @@ export type AccountBooksResponse = {
   books: AccountBook[];
 };
 
+export type IdentityBackupKdf = {
+  name: "PBKDF2-SHA256";
+  iterations: 310000;
+  saltB64: string;
+};
+
+export type IdentityBackupCipher = {
+  name: "AES-256-GCM";
+  ivB64: string;
+};
+
+export type IdentityBackupAad = {
+  accountId: string;
+  managedUserId: string;
+  profileId: string;
+  identityKeyFingerprint: string;
+  format: "pixpax-identity-backup-encrypted";
+  version: "1.0";
+};
+
+export type EncryptedIdentityBackupEnvelopeV1 = {
+  format: "pixpax-identity-backup-encrypted";
+  version: "1.0";
+  accountId: string;
+  managedUserId: string;
+  profileId: string;
+  identityPublicKey: string;
+  identityKeyFingerprint: string;
+  label: string;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+  crypto: {
+    kdf: IdentityBackupKdf;
+    cipher: IdentityBackupCipher;
+    aad: IdentityBackupAad;
+  };
+  ciphertextB64: string;
+};
+
+export type IdentityBackupMetadata = {
+  id: string;
+  managedUserId: string;
+  backupVersion: number;
+  createdAt: string;
+  profileId: string;
+  identityKeyFingerprint: string;
+};
+
+export type CreateIdentityBackupResponse = {
+  ok: boolean;
+  backup: IdentityBackupMetadata;
+};
+
+export type ListIdentityBackupsResponse = {
+  ok: boolean;
+  managedUserId: string;
+  backups: IdentityBackupMetadata[];
+};
+
+export type LatestIdentityBackupResponse = {
+  ok: boolean;
+  managedUserId: string;
+  backup: IdentityBackupMetadata & {
+    envelope: EncryptedIdentityBackupEnvelopeV1;
+  };
+};
+
 function withWorkspaceQuery(path: string, workspaceId?: string) {
   const query = new URLSearchParams();
   if (workspaceId) query.set("workspaceId", workspaceId);
   return `${path}${query.toString() ? `?${query.toString()}` : ""}`;
 }
 
+function withWorkspaceAndManagedUserQuery(
+  path: string,
+  managedUserId: string,
+  workspaceId?: string
+) {
+  const query = new URLSearchParams();
+  if (workspaceId) query.set("workspaceId", workspaceId);
+  query.set("managedUserId", String(managedUserId || "").trim());
+  return `${path}?${query.toString()}`;
+}
+
 export function listAccountManagedUsers(workspaceId?: string) {
   return requestJson<AccountUsersResponse>(withWorkspaceQuery("/v1/account/users", workspaceId));
+}
+
+export function createIdentityBackup(
+  input: {
+    managedUserId: string;
+    backupNonce: string;
+    envelope: EncryptedIdentityBackupEnvelopeV1;
+  },
+  workspaceId?: string
+) {
+  return requestJson<CreateIdentityBackupResponse>(
+    withWorkspaceQuery("/v1/account/identity-backups", workspaceId),
+    {
+      method: "POST",
+      body: {
+        managedUserId: String(input.managedUserId || "").trim(),
+        backupNonce: String(input.backupNonce || "").trim(),
+        envelope: input.envelope,
+      },
+    }
+  );
+}
+
+export function listIdentityBackups(managedUserId: string, workspaceId?: string) {
+  return requestJson<ListIdentityBackupsResponse>(
+    withWorkspaceAndManagedUserQuery(
+      "/v1/account/identity-backups",
+      managedUserId,
+      workspaceId
+    )
+  );
+}
+
+export function getLatestIdentityBackup(managedUserId: string, workspaceId?: string) {
+  return requestJson<LatestIdentityBackupResponse>(
+    withWorkspaceAndManagedUserQuery(
+      "/v1/account/identity-backups/latest",
+      managedUserId,
+      workspaceId
+    )
+  );
 }
 
 export function createAccountManagedUser(

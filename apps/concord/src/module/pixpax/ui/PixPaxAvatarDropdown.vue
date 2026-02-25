@@ -265,7 +265,7 @@ function backToMain() {
 async function handleSelectIdentity(identityId: string) {
   const targetId = trim(identityId);
   const selected = persistedIdentities.value.find((entry) => entry.id === targetId);
-  const localIdentityId = trim(selected?.localIdentityId);
+  let localIdentityId = trim(selected?.localIdentityId);
   const alreadySelectedCloud = targetId === trim(cloudSync.selectedCloudProfileId.value);
   const alreadySelectedLocal =
     !localIdentityId || localIdentityId === trim(context.currentIdentityId.value);
@@ -277,9 +277,25 @@ async function handleSelectIdentity(identityId: string) {
   switchError.value = "";
   try {
     if (!localIdentityId) {
-      switchError.value =
-        "This account identity is not available on this device yet. Use Identity & Devices to create or recover it locally.";
-      return;
+      if (!cloudSync.recoveryPassphraseUnlocked.value) {
+        switchError.value =
+          "This identity is account-only on this device. Unlock recovery passphrase in Identity & Devices, then retry.";
+        return;
+      }
+      const recovered = await cloudSync.importAccountIdentityToDevice(targetId);
+      if (!recovered) {
+        switchError.value =
+          trim(cloudSync.cloudSyncError.value) ||
+          "Couldn’t recover this identity. Check passphrase and retry.";
+        return;
+      }
+      await cloudSync.refreshCloudLibrary();
+      const refreshed = persistedIdentities.value.find((entry) => entry.id === targetId);
+      localIdentityId = trim(refreshed?.localIdentityId);
+      if (!localIdentityId) {
+        switchError.value = "Identity recovered, but local switch target was not found.";
+        return;
+      }
     }
 
     const switched = await switchContext.switchIdentity(localIdentityId);

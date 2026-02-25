@@ -4,7 +4,9 @@ import { canonicalStringify } from "@ternent/concord-protocol";
 import {
   createIdempotencyKey,
   createAccountBook,
+  createIdentityBackup,
   createAccountManagedUser,
+  getLatestIdentityBackup,
   getPixPaxErrorCode,
   getPixbookSnapshotV1,
   listAccountManagedUsers,
@@ -17,6 +19,11 @@ import {
   type AccountManagedUser,
   PixPaxApiError,
 } from "../../api/client";
+import {
+  decryptIdentityBackupEnvelope,
+  deriveIdentityKeyFingerprint,
+  encryptIdentityBackupEnvelope,
+} from "../../crypto/identity-backup-crypto";
 import { type PixpaxContextStore } from "../usePixpaxContextStore";
 
 type ReadRef<T> = {
@@ -53,6 +60,7 @@ type CreateAccountItemActionsOptions = {
   identityDirectorySyncing: ShallowRef<boolean>;
   identityDirectorySyncError: ShallowRef<string>;
   identityDirectorySyncStatus: ShallowRef<string>;
+  recoveryPassphrase: ShallowRef<string>;
   refreshCloudLibrary: () => Promise<void>;
   refreshCloudSnapshot: () => Promise<void>;
 };
@@ -123,6 +131,7 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
     "pixpax/pixbook/persistIdempotencyKeys",
     {}
   );
+  let autoBackupTimer: ReturnType<typeof setTimeout> | null = null;
   let pendingPersistHead = "";
   let persistLoopInFlight: Promise<boolean> | null = null;
 
@@ -215,6 +224,213 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
 
   async function wait(ms: number) {
     await new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  function hasRecoveryPassphrase() {
+    return trim(options.recoveryPassphrase.value).length > 0;
+  }
+
+  function generateBackupNonce() {
+    if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+      return crypto.randomUUID();
+    }
+    const bytes = new Uint8Array(16);
+    if (typeof crypto !== "undefined" && typeof crypto.getRandomValues === "function") {
+      crypto.getRandomValues(bytes);
+    } else {
+      for (let i = 0; i < bytes.length; i += 1) {
+        bytes[i] = Math.floor(Math.random() * 256);
+      }
+    }
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    const hex = Array.from(bytes)
+      .map((entry) => entry.toString(16).padStart(2, "0"))
+      .join("");
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(
+      16,
+      20
+    )}-${hex.slice(20)}`;
+  }
+
+  function resolveCloudIdentityForLocalIdentity(identity: {
+    profileId?: string;
+    publicKeyPEM?: string;
+  }) {
+    const profileId = trim(identity.profileId);
+    const identityPublicKey = trim(identity.publicKeyPEM);
+    if (!profileId || !identityPublicKey) return null;
+    return (
+      options.cloudProfiles.value.find(
+        (entry) =>
+          trim(entry.status) !== "deleted" &&
+          trim(entry.profileId) === profileId &&
+          trim(entry.identityPublicKey) === identityPublicKey
+      ) || null
+    );
+  }
+
+  function clearAutoBackupTimer() {
+    if (!autoBackupTimer) return;
+    clearTimeout(autoBackupTimer);
+    autoBackupTimer = null;
+  }
+
+  async function backupLocalIdentityToAccount(
+    identityId: string,
+    optionsInput: { silent?: boolean; allowSyncIdentity?: boolean } = {}
+  ) {
+    const silent = Boolean(optionsInput.silent);
+    const allowSyncIdentity = optionsInput.allowSyncIdentity !== false;
+    if (!options.account.isAuthenticated.value) {
+      if (!silent) {
+        options.identityDirectorySyncError.value =
+          "Sign in with your account to back up identities.";
+      }
+      return false;
+    }
+
+    const passphrase = options.recoveryPassphrase.value;
+    if (!hasRecoveryPassphrase()) {
+      if (!silent) {
+        options.identityDirectorySyncError.value =
+          "Unlock your recovery passphrase before backing up identity keys.";
+        options.identityDirectorySyncStatus.value = "";
+      }
+      return false;
+    }
+
+    const accountId = currentAccountId();
+    const workspaceId = options.account.workspace.value?.workspaceId || undefined;
+    if (!accountId) {
+      if (!silent) {
+        options.identityDirectorySyncError.value = "Account context is unavailable.";
+      }
+      return false;
+    }
+
+    const localIdentity = options.context.identities.value.find(
+      (entry) => trim(entry.id) === trim(identityId)
+    );
+    if (!localIdentity) {
+      if (!silent) {
+        options.identityDirectorySyncError.value =
+          "Selected identity was not found on this device.";
+      }
+      return false;
+    }
+
+    if (!silent) {
+      options.identityDirectorySyncStatus.value = "Encrypting identity backup...";
+      options.identityDirectorySyncError.value = "";
+    }
+
+    let cloudIdentity = resolveCloudIdentityForLocalIdentity(localIdentity);
+    if (!cloudIdentity && allowSyncIdentity) {
+      const saved = await syncLocalIdentitiesToCloud([localIdentity.id]);
+      if (!saved) return false;
+      await options.refreshCloudLibrary();
+      cloudIdentity = resolveCloudIdentityForLocalIdentity(localIdentity);
+      if (cloudIdentity) {
+        if (!silent) {
+          options.identityDirectorySyncStatus.value =
+            "Identity saved and encrypted backup stored to account.";
+          options.identityDirectorySyncError.value = "";
+        }
+        return true;
+      }
+    }
+
+    if (!cloudIdentity?.id) {
+      if (!silent) {
+        options.identityDirectorySyncError.value =
+          "Account identity mapping could not be resolved for backup.";
+        options.identityDirectorySyncStatus.value = "";
+      }
+      return false;
+    }
+
+    const identityPublicKey = trim(localIdentity.publicKeyPEM);
+    const identityKeyFingerprint = await deriveIdentityKeyFingerprint(identityPublicKey);
+    const envelope = await encryptIdentityBackupEnvelope({
+      accountId,
+      managedUserId: trim(cloudIdentity.id),
+      profileId: trim(localIdentity.profileId),
+      identityPublicKey,
+      identityKeyFingerprint,
+      label: identityDisplayName(localIdentity),
+      metadata: toCanonicalJson<Record<string, unknown>>(localIdentity.metadata || {}, {}),
+      clearPayload: {
+        format: "pixpax-identity-secret",
+        version: "1.0",
+        profileId: trim(localIdentity.profileId),
+        identity: {
+          publicKeyPEM: identityPublicKey,
+          privateKeyPEM: trim(localIdentity.privateKeyPEM),
+        },
+        encryption: {
+          publicKey: trim(localIdentity.encryptionPublicKey),
+          privateKey: trim(localIdentity.encryptionPrivateKey),
+        },
+        label: identityDisplayName(localIdentity),
+        metadata: toCanonicalJson<Record<string, unknown>>(localIdentity.metadata || {}, {}),
+      },
+      passphrase,
+    });
+
+    await createIdentityBackup(
+      {
+        managedUserId: trim(cloudIdentity.id),
+        backupNonce: generateBackupNonce(),
+        envelope,
+      },
+      workspaceId
+    );
+
+    if (!silent) {
+      options.identityDirectorySyncStatus.value = "Identity backup saved to account.";
+      options.identityDirectorySyncError.value = "";
+    }
+    return true;
+  }
+
+  async function backupAllLocalIdentitiesToAccount(optionsInput: { silent?: boolean } = {}) {
+    const silent = Boolean(optionsInput.silent);
+    if (!options.account.isAuthenticated.value) return false;
+    if (!hasRecoveryPassphrase()) {
+      if (!silent) {
+        options.identityDirectorySyncError.value =
+          "Unlock your recovery passphrase before backing up identity keys.";
+        options.identityDirectorySyncStatus.value = "";
+      }
+      return false;
+    }
+
+    const identityIds = options.context.identities.value
+      .map((entry) => trim(entry.id))
+      .filter(Boolean);
+    let successCount = 0;
+    for (const identityId of identityIds) {
+      const ok = await backupLocalIdentityToAccount(identityId, { silent: true });
+      if (ok) successCount += 1;
+    }
+    if (!silent) {
+      options.identityDirectorySyncStatus.value =
+        successCount > 0
+          ? `Backed up ${successCount} ${successCount === 1 ? "identity" : "identities"} to account.`
+          : "No identities were backed up.";
+      options.identityDirectorySyncError.value = "";
+    }
+    return successCount > 0;
+  }
+
+  function scheduleAutoBackupLocalIdentities(delayMs = 600) {
+    clearAutoBackupTimer();
+    if (!options.account.isAuthenticated.value || !hasRecoveryPassphrase()) return;
+    autoBackupTimer = setTimeout(() => {
+      autoBackupTimer = null;
+      void backupAllLocalIdentitiesToAccount({ silent: true });
+    }, Math.max(250, Number(delayMs || 0)));
   }
 
   async function syncLocalIdentitiesToCloud(identityIds: string[] = []) {
@@ -370,6 +586,18 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
       }
 
       await options.refreshCloudLibrary();
+      if (hasRecoveryPassphrase()) {
+        const targetIdentityIds =
+          requestedIdentityIds.size > 0
+            ? [...requestedIdentityIds]
+            : localIdentities.map((entry) => String(entry.id || "").trim()).filter(Boolean);
+        for (const identityId of targetIdentityIds) {
+          await backupLocalIdentityToAccount(identityId, {
+            silent: true,
+            allowSyncIdentity: false,
+          });
+        }
+      }
       if (
         requestedIdentityIds.size > 0 &&
         createdIdentityCount === 0 &&
@@ -664,11 +892,64 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
   }
 
   async function importAccountIdentityToDevice(managedUserId: string) {
-    void managedUserId;
-    options.cloudSyncStatus.value = "";
-    options.cloudSyncError.value =
-      "Identity import from account snapshots is disabled. Private profile keys are never persisted to account storage.";
-    return false;
+    if (!options.account.isAuthenticated.value) {
+      options.cloudSyncError.value = "Sign in with your account to recover identities.";
+      return false;
+    }
+    if (!hasRecoveryPassphrase()) {
+      options.cloudSyncError.value =
+        "Unlock your recovery passphrase before recovering identities.";
+      return false;
+    }
+
+    const targetManagedUserId = trim(managedUserId);
+    if (!targetManagedUserId) {
+      options.cloudSyncError.value = "Identity id is required.";
+      return false;
+    }
+
+    const workspaceId = options.account.workspace.value?.workspaceId || undefined;
+    options.cloudSyncStatus.value = "Recovering identity from account backup...";
+    options.cloudSyncError.value = "";
+
+    try {
+      const response = await getLatestIdentityBackup(targetManagedUserId, workspaceId);
+      const recovered = await decryptIdentityBackupEnvelope({
+        envelope: response.backup.envelope,
+        passphrase: options.recoveryPassphrase.value,
+      });
+
+      const merged = await options.context.upsertRecoveredIdentityMaterial({
+        label: recovered.label,
+        profileId: recovered.profileId,
+        publicKeyPEM: recovered.identity.publicKeyPEM,
+        privateKeyPEM: recovered.identity.privateKeyPEM,
+        encryptionPublicKey: recovered.encryption.publicKey,
+        encryptionPrivateKey: recovered.encryption.privateKey,
+        metadata: recovered.metadata,
+      });
+      options.cloudSyncStatus.value = "Identity recovered to this device.";
+      options.cloudSyncError.value = "";
+      await options.refreshCloudLibrary();
+      if (!options.selectedCloudProfileId.value) {
+        const matched = resolveCloudIdentityForLocalIdentity(merged);
+        if (matched?.id) {
+          options.selectedCloudProfileId.value = matched.id;
+        }
+      }
+      return true;
+    } catch (error: unknown) {
+      if (error instanceof PixPaxApiError && error.status === 404) {
+        options.cloudSyncError.value = "No recovery backup found for this identity.";
+        options.cloudSyncStatus.value = "";
+        return false;
+      }
+      options.cloudSyncError.value = String(
+        (error as Error)?.message || "Failed to recover identity from account backup."
+      );
+      options.cloudSyncStatus.value = "";
+      return false;
+    }
   }
 
   async function removeCloudIdentity(managedUserId: string) {
@@ -799,6 +1080,9 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
   return {
     syncLocalIdentitiesToCloud,
     saveLocalIdentityToCloud,
+    backupLocalIdentityToAccount,
+    backupAllLocalIdentitiesToAccount,
+    scheduleAutoBackupLocalIdentities,
     saveCloudSnapshot,
     restoreCloudSnapshot,
     openSelectedCloudBook,

@@ -10,6 +10,9 @@ const cloudSync = usePixpaxCloudSync();
 const switchContext = usePixpaxSwitchContext();
 
 const profileHandle = shallowRef(context.currentIdentityUsername.value || "");
+const recoveryPassphraseInput = shallowRef("");
+const backupBusyIdentityId = shallowRef("");
+const recoverBusyManagedUserId = shallowRef("");
 const candidateIdentity = computed(
   () => context.candidateIdentities.value[0] || null
 );
@@ -155,6 +158,54 @@ async function saveIdentity(identityId: string) {
   context.setStatus("Identity saved to account.");
 }
 
+async function backupIdentityToAccount(identityId: string) {
+  const targetId = String(identityId || "").trim();
+  if (!targetId) return;
+  backupBusyIdentityId.value = targetId;
+  try {
+    const ok = await cloudSync.backupLocalIdentityToAccount(targetId);
+    if (!ok) {
+      context.setError(
+        cloudSync.identityDirectorySyncError.value || "Unable to back up identity keys."
+      );
+      return;
+    }
+    context.setStatus("Identity keys encrypted and backed up to account.");
+  } finally {
+    backupBusyIdentityId.value = "";
+  }
+}
+
+function unlockRecoveryPassphrase() {
+  const ok = cloudSync.unlockRecoveryPassphrase(recoveryPassphraseInput.value);
+  if (ok) {
+    recoveryPassphraseInput.value = "";
+  }
+}
+
+function clearRecoveryPassphrase() {
+  cloudSync.clearRecoveryPassphrase();
+  recoveryPassphraseInput.value = "";
+}
+
+async function recoverIdentityToDevice(managedUserId: string) {
+  const targetId = String(managedUserId || "").trim();
+  if (!targetId) return;
+  recoverBusyManagedUserId.value = targetId;
+  try {
+    const ok = await cloudSync.importAccountIdentityToDevice(targetId);
+    if (!ok) {
+      context.setError(
+        cloudSync.cloudSyncError.value || "Unable to recover identity to this device."
+      );
+      return;
+    }
+    context.setStatus("Identity recovered to this device.");
+  } finally {
+    recoverBusyManagedUserId.value = "";
+  }
+}
+
 async function removeAccountIdentity(managedUserId: string) {
   if (!cloudSync.account.isAuthenticated.value) {
     context.setError("Sign in with your account to remove identities.");
@@ -288,6 +339,39 @@ function saveHandle() {
     </section>
 
     <section class="rounded-lg border border-[var(--ui-border)] p-3 flex flex-col gap-2">
+      <h2 class="text-sm font-semibold">Recovery Passphrase</h2>
+      <p class="text-xs text-[var(--ui-fg-muted)]">
+        Identity backups are encrypted client-side. Use the same passphrase on each device to recover identities.
+      </p>
+      <div class="grid gap-2 md:grid-cols-[1fr_auto_auto]">
+        <input
+          v-model="recoveryPassphraseInput"
+          type="password"
+          autocomplete="off"
+          class="rounded-md border border-[var(--ui-border)] bg-[var(--ui-bg)] px-3 py-2 text-xs"
+          placeholder="Recovery passphrase"
+        />
+        <button
+          type="button"
+          class="rounded-md border border-[var(--ui-border)] px-3 py-2 text-xs hover:bg-[var(--ui-fg)]/5"
+          @click="unlockRecoveryPassphrase"
+        >
+          Unlock
+        </button>
+        <button
+          type="button"
+          class="rounded-md border border-[var(--ui-border)] px-3 py-2 text-xs hover:bg-[var(--ui-fg)]/5"
+          @click="clearRecoveryPassphrase"
+        >
+          Clear
+        </button>
+      </div>
+      <p class="text-xs" :class="cloudSync.recoveryPassphraseUnlocked.value ? 'text-green-600' : 'text-amber-600'">
+        {{ cloudSync.recoveryPassphraseUnlocked.value ? "Passphrase unlocked for this session." : "Passphrase locked. Auto-backup is paused." }}
+      </p>
+    </section>
+
+    <section class="rounded-lg border border-[var(--ui-border)] p-3 flex flex-col gap-2">
       <h2 class="text-sm font-semibold">Create New Identity</h2>
       <p class="text-xs text-amber-600">
         Create new identity (new avatar, new ownership). A new identity will not own packs issued to your current identity.
@@ -351,6 +435,14 @@ function saveHandle() {
       >
         {{ cloudSync.identityDirectorySyncing.value ? "Saving..." : "Save all local identities to account" }}
       </button>
+      <button
+        type="button"
+        class="w-fit rounded-md border border-[var(--ui-border)] px-2 py-1 text-xs hover:bg-[var(--ui-fg)]/5 disabled:opacity-50"
+        :disabled="!cloudSync.account.isAuthenticated.value || !cloudSync.recoveryPassphraseUnlocked.value"
+        @click="cloudSync.backupAllLocalIdentitiesToAccount()"
+      >
+        Backup all identity keys
+      </button>
       <div
         v-for="entry in context.identities.value"
         :key="entry.id"
@@ -389,6 +481,14 @@ function saveHandle() {
           </button>
           <button
             type="button"
+            class="rounded-md border border-[var(--ui-border)] px-2 py-1 text-xs hover:bg-[var(--ui-fg)]/5 disabled:opacity-50"
+            :disabled="!cloudSync.account.isAuthenticated.value || !cloudSync.recoveryPassphraseUnlocked.value || backupBusyIdentityId === entry.id"
+            @click="backupIdentityToAccount(entry.id)"
+          >
+            {{ backupBusyIdentityId === entry.id ? "Backing up..." : "Backup now" }}
+          </button>
+          <button
+            type="button"
             class="rounded-md border border-[var(--ui-border)] px-2 py-1 text-xs text-red-600 hover:bg-[var(--ui-critical)]/10 disabled:opacity-50"
             :disabled="context.identities.value.length <= 1"
             @click="removeIdentity(entry.id)"
@@ -402,7 +502,7 @@ function saveHandle() {
     <section class="rounded-lg border border-[var(--ui-border)] p-3 flex flex-col gap-2">
       <h2 class="text-sm font-semibold">Saved Account Identities</h2>
       <p class="text-xs text-[var(--ui-fg-muted)]">
-        These are identities already saved to your account. Private key material is never persisted to account storage.
+        These are identities already saved to your account. Private keys are only stored as encrypted recovery backups.
       </p>
       <p
         v-if="!cloudSync.account.isAuthenticated.value"
@@ -421,15 +521,27 @@ function saveHandle() {
         :key="entry.id"
         class="rounded-md border border-[var(--ui-border)] p-2 flex items-center justify-between gap-3"
       >
-        <div class="flex flex-col gap-1">
-          <p class="text-xs font-semibold">
-            {{ accountIdentityLabel(entry) }}
-          </p>
-          <p class="text-[11px] text-[var(--ui-fg-muted)]">
-            {{ isIdentityOnThisDevice(entry) ? "Available on this device" : "Create or recover this identity locally to use it here." }}
-          </p>
+        <div class="flex items-center gap-3">
+          <IdentityAvatar :identity="entry.identityPublicKey || entry.id" size="sm" />
+          <div class="flex flex-col gap-1">
+            <p class="text-xs font-semibold">
+              {{ accountIdentityLabel(entry) }}
+            </p>
+            <p class="text-[11px] text-[var(--ui-fg-muted)]">
+              {{ isIdentityOnThisDevice(entry) ? "Available on this device" : "Recover this identity locally to use it here." }}
+            </p>
+          </div>
         </div>
         <div class="flex items-center gap-2">
+          <button
+            v-if="!isIdentityOnThisDevice(entry)"
+            type="button"
+            class="rounded-md border border-[var(--ui-border)] px-2 py-1 text-xs hover:bg-[var(--ui-fg)]/5 disabled:opacity-50"
+            :disabled="!cloudSync.recoveryPassphraseUnlocked.value || recoverBusyManagedUserId === entry.id"
+            @click="recoverIdentityToDevice(entry.id)"
+          >
+            {{ recoverBusyManagedUserId === entry.id ? "Recovering..." : "Recover to this device" }}
+          </button>
           <button
             type="button"
             class="rounded-md border border-[var(--ui-border)] px-2 py-1 text-xs text-red-600 hover:bg-[var(--ui-critical)]/10 disabled:opacity-50"

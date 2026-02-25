@@ -390,6 +390,146 @@ paths:
                       details:
                         expectedPrevHash: sha256:expected
                         currentPrevHash: sha256:actual
+  /v1/account/identity-backups:
+    post:
+      summary: Store encrypted identity backup envelope
+      operationId: createIdentityBackup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdentityBackupWriteRequest'
+      responses:
+        '200':
+          description: Backup accepted or replayed by nonce
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityBackupWriteResponse'
+        '400':
+          description: Invalid backup payload or binding mismatch
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityBackupError'
+              examples:
+                invalid:
+                  value:
+                    ok: false
+                    code: IDENTITY_BACKUP_INVALID_REQUEST
+                    error: envelope is required.
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityBackupError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityBackupError'
+        '404':
+          description: Managed identity not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityBackupError'
+        '409':
+          description: Nonce already used with different envelope payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityBackupError'
+              examples:
+                nonce_conflict:
+                  value:
+                    ok: false
+                    code: IDENTITY_BACKUP_NONCE_CONFLICT
+                    error: Backup nonce was already used with a different encrypted payload.
+    get:
+      summary: List encrypted identity backup metadata
+      operationId: listIdentityBackups
+      parameters:
+        - name: managedUserId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Backup metadata list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityBackupListResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityBackupError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityBackupError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityBackupError'
+        '404':
+          description: Managed identity not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityBackupError'
+  /v1/account/identity-backups/latest:
+    get:
+      summary: Get latest encrypted identity backup envelope
+      operationId: getLatestIdentityBackup
+      parameters:
+        - name: managedUserId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Latest encrypted backup for identity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityBackupLatestResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityBackupError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityBackupError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityBackupError'
+        '404':
+          description: Backup not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityBackupError'
 components:
   securitySchemes:
     cookieAuth:
@@ -771,3 +911,208 @@ components:
         retryAfterSeconds:
           type: integer
           minimum: 1
+    IdentityBackupError:
+      type: object
+      required:
+        - ok
+        - error
+      properties:
+        ok:
+          type: boolean
+          enum: [false]
+        code:
+          type: string
+        error:
+          type: string
+    IdentityBackupMetadata:
+      type: object
+      required:
+        - id
+        - managedUserId
+        - backupVersion
+        - createdAt
+        - profileId
+        - identityKeyFingerprint
+      properties:
+        id:
+          type: string
+        managedUserId:
+          type: string
+        backupVersion:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        profileId:
+          type: string
+        identityKeyFingerprint:
+          type: string
+    IdentityBackupWriteRequest:
+      type: object
+      required:
+        - managedUserId
+        - backupNonce
+        - envelope
+      properties:
+        managedUserId:
+          type: string
+        backupNonce:
+          type: string
+          format: uuid
+        envelope:
+          $ref: '#/components/schemas/EncryptedIdentityBackupEnvelopeV1'
+    IdentityBackupWriteResponse:
+      type: object
+      required:
+        - ok
+        - backup
+      properties:
+        ok:
+          type: boolean
+          enum: [true]
+        backup:
+          $ref: '#/components/schemas/IdentityBackupMetadata'
+    IdentityBackupListResponse:
+      type: object
+      required:
+        - ok
+        - managedUserId
+        - backups
+      properties:
+        ok:
+          type: boolean
+          enum: [true]
+        managedUserId:
+          type: string
+        backups:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentityBackupMetadata'
+    IdentityBackupLatestResponse:
+      type: object
+      required:
+        - ok
+        - managedUserId
+        - backup
+      properties:
+        ok:
+          type: boolean
+          enum: [true]
+        managedUserId:
+          type: string
+        backup:
+          allOf:
+            - $ref: '#/components/schemas/IdentityBackupMetadata'
+            - type: object
+              required:
+                - envelope
+              properties:
+                envelope:
+                  $ref: '#/components/schemas/EncryptedIdentityBackupEnvelopeV1'
+    IdentityBackupKdf:
+      type: object
+      required:
+        - name
+        - iterations
+        - saltB64
+      properties:
+        name:
+          type: string
+          enum: [PBKDF2-SHA256]
+        iterations:
+          type: integer
+          enum: [310000]
+        saltB64:
+          type: string
+    IdentityBackupCipher:
+      type: object
+      required:
+        - name
+        - ivB64
+      properties:
+        name:
+          type: string
+          enum: [AES-256-GCM]
+        ivB64:
+          type: string
+    IdentityBackupAad:
+      type: object
+      required:
+        - accountId
+        - managedUserId
+        - profileId
+        - identityKeyFingerprint
+        - format
+        - version
+      properties:
+        accountId:
+          type: string
+        managedUserId:
+          type: string
+        profileId:
+          type: string
+        identityKeyFingerprint:
+          type: string
+        format:
+          type: string
+          enum: [pixpax-identity-backup-encrypted]
+        version:
+          type: string
+          enum: ['1.0']
+    IdentityBackupCrypto:
+      type: object
+      required:
+        - kdf
+        - cipher
+        - aad
+      properties:
+        kdf:
+          $ref: '#/components/schemas/IdentityBackupKdf'
+        cipher:
+          $ref: '#/components/schemas/IdentityBackupCipher'
+        aad:
+          $ref: '#/components/schemas/IdentityBackupAad'
+    EncryptedIdentityBackupEnvelopeV1:
+      type: object
+      required:
+        - format
+        - version
+        - accountId
+        - managedUserId
+        - profileId
+        - identityPublicKey
+        - identityKeyFingerprint
+        - label
+        - metadata
+        - createdAt
+        - crypto
+        - ciphertextB64
+      properties:
+        format:
+          type: string
+          enum: [pixpax-identity-backup-encrypted]
+        version:
+          type: string
+          enum: ['1.0']
+        accountId:
+          type: string
+        managedUserId:
+          type: string
+        profileId:
+          type: string
+        identityPublicKey:
+          type: string
+        identityKeyFingerprint:
+          type: string
+        label:
+          type: string
+        metadata:
+          type: object
+          additionalProperties: true
+        createdAt:
+          type: string
+          format: date-time
+        crypto:
+          $ref: '#/components/schemas/IdentityBackupCrypto'
+        ciphertextB64:
+          type: string

@@ -400,6 +400,57 @@ function createPixpaxContextStore() {
     return merged;
   }
 
+  async function upsertRecoveredIdentityMaterial(input: {
+    label?: string;
+    profileId?: string;
+    publicKeyPEM: string;
+    privateKeyPEM: string;
+    encryptionPublicKey: string;
+    encryptionPrivateKey: string;
+    metadata?: Record<string, unknown>;
+  }) {
+    const publicKeyPEM = String(input.publicKeyPEM || "").trim();
+    const privateKeyPEM = String(input.privateKeyPEM || "").trim();
+    const encryptionPublicKey = String(input.encryptionPublicKey || "").trim();
+    const encryptionPrivateKey = String(input.encryptionPrivateKey || "").trim();
+    if (!publicKeyPEM || !privateKeyPEM || !encryptionPublicKey || !encryptionPrivateKey) {
+      throw new Error("Recovered identity payload is missing required key material.");
+    }
+
+    const profileId =
+      String(input.profileId || "").trim() || (await deriveProfileId(publicKeyPEM));
+    const id = toIdentityRecordId(publicKeyPEM, profileId);
+    const existing = identities.value.find((entry) => entry.id === id) || null;
+    const now = nowIso();
+    const metadata = hasMetadata(input.metadata)
+      ? copyObject(input.metadata)
+      : copyObject(existing?.metadata);
+    const username = usernameFromMetadata(metadata);
+    const label =
+      String(input.label || existing?.label || "").trim() ||
+      (username ? `@${username}` : "Identity");
+
+    const next: PixpaxIdentityRecord = {
+      id,
+      label,
+      fingerprint: shortFingerprint(publicKeyPEM),
+      profileId,
+      publicKeyPEM,
+      privateKeyPEM,
+      encryptionPublicKey,
+      encryptionPrivateKey,
+      metadata,
+      createdAt: existing?.createdAt || now,
+      updatedAt: now,
+    };
+
+    const merged = upsertIdentityRecord(next);
+    ensurePixbookRecord(merged.id, {
+      collectionId: activeCollectionId.value,
+    });
+    return merged;
+  }
+
   async function registerCurrentIdentity(label?: string) {
     const publicPem = String(publicKeyPEM.value || "").trim();
     const privatePem = String(privateKeyPEM.value || "").trim();
@@ -1380,6 +1431,7 @@ function createPixpaxContextStore() {
     setError,
 
     registerCurrentIdentity,
+    upsertRecoveredIdentityMaterial,
     switchIdentityLocal,
     switchPixbookLocal,
 
