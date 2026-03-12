@@ -155,11 +155,15 @@ function ensureCards() {
 }
 
 function ensureProjectSettings() {
-  const visibility = String(project.value.visibility || "").trim().toLowerCase();
+  const visibility = String(project.value.visibility || "")
+    .trim()
+    .toLowerCase();
   if (visibility !== "public" && visibility !== "unlisted") {
     project.value.visibility = "unlisted";
   }
-  const issuanceMode = String(project.value.issuanceMode || "").trim().toLowerCase();
+  const issuanceMode = String(project.value.issuanceMode || "")
+    .trim()
+    .toLowerCase();
   if (issuanceMode !== "scheduled" && issuanceMode !== "codes-only") {
     project.value.issuanceMode = "codes-only";
   }
@@ -168,7 +172,9 @@ function ensureProjectSettings() {
   }
   const issuerName = String(project.value.issuer.name || "").trim();
   project.value.issuer.name = issuerName || "PixPax";
-  project.value.issuer.avatarUrl = String(project.value.issuer.avatarUrl || "").trim();
+  project.value.issuer.avatarUrl = String(
+    project.value.issuer.avatarUrl || "",
+  ).trim();
 }
 
 watch(
@@ -428,7 +434,8 @@ const previewSticker = computed<Sticker>(() => {
 });
 
 function buildCollectionPayload() {
-  const issuerName = String(project.value.issuer?.name || "").trim() || "PixPax";
+  const issuerName =
+    String(project.value.issuer?.name || "").trim() || "PixPax";
   const issuerAvatarUrl = String(project.value.issuer?.avatarUrl || "").trim();
   return {
     collectionId: project.value.collectionId,
@@ -616,11 +623,16 @@ async function uploadAll() {
     await putPixpaxCollectionSettings(
       collectionId,
       buildCollectionSettingsPayload(),
-      auth.token.value || undefined
+      auth.token.value || undefined,
     );
 
     uploadStep.value = "Uploading index.json";
-    await putIndexJson(collectionId, version, buildIndexPayload(), auth.token.value || undefined);
+    await putIndexJson(
+      collectionId,
+      version,
+      buildIndexPayload(),
+      auth.token.value || undefined,
+    );
 
     uploadStep.value = "Uploading cards";
     for (let i = 0; i < project.value.cards.length; i += 1) {
@@ -640,7 +652,10 @@ async function uploadAll() {
     uploadStatus.value =
       "Upload complete. Collection is now stored server-side.";
   } catch (error: unknown) {
-    if (error instanceof PixPaxApiError && (error.status === 401 || error.status === 403)) {
+    if (
+      error instanceof PixPaxApiError &&
+      (error.status === 401 || error.status === 403)
+    ) {
       auth.logout();
       uploadError.value = "Admin session expired. Login in Control and retry.";
     } else {
@@ -691,20 +706,11 @@ onUnmounted(() => {
 <template>
   <div class="creator-shell">
     <main class="flex flex-1 p-8">
-      <button
-        v-if="!drawerOpen"
-        type="button"
-        class="drawer-fab"
-        @click="drawerOpen = true"
-      >
-        Open Controls
-      </button>
-
       <div class="flex flex-1 max-h-full" @contextmenu.prevent>
         <div
           class="pointer-events-none absolute inset-0 z-[0] animate-[atmoDrift_12s_ease-in-out_infinite_alternate] bg-[radial-gradient(circle_at_18%_22%,color-mix(in_srgb,var(--ui-accent)_35%,transparent)_0%,transparent_46%),radial-gradient(circle_at_78%_70%,color-mix(in_srgb,var(--ui-primary)_28%,transparent)_0%,transparent_52%)]"
         />
-        <div class="editor-grid mx-auto max-w-120 max-h-120">
+        <div class="editor-grid mx-auto max-w-120 max-h-120 min-h-120">
           <button
             v-for="(_, index) in 256"
             :key="`cell-${index}`"
@@ -718,18 +724,8 @@ onUnmounted(() => {
       </div>
     </main>
 
-    <aside class="creator-drawer" :class="{ open: drawerOpen }">
-      <div class="drawer-header">
-        <button
-          type="button"
-          class="drawer-toggle"
-          @click="drawerOpen = !drawerOpen"
-        >
-          {{ drawerOpen ? "Close" : "Open" }}
-        </button>
-      </div>
-
-      <div v-if="drawerOpen" class="drawer-scroll">
+    <aside class="creator-drawer open">
+      <div class="drawer-scroll">
         <section class="drawer-section">
           <h1 class="text-xl font-semibold">PixPax Studio</h1>
           <p class="mt-2 text-xs text-[var(--ui-fg-muted)]">
@@ -862,8 +858,14 @@ onUnmounted(() => {
               Shiny count: {{ shinyCount }} / {{ shinyLimit || "∞" }} (set 0 for
               unlimited)
             </p>
-            <details class="rounded-lg border border-[var(--ui-border)] p-2" :open="advancedOpen" @toggle="handleAdvancedToggle">
-              <summary class="cursor-pointer text-xs uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]">
+            <details
+              class="rounded-lg border border-[var(--ui-border)] p-2"
+              :open="advancedOpen"
+              @toggle="handleAdvancedToggle"
+            >
+              <summary
+                class="cursor-pointer text-xs uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]"
+              >
                 Advanced
               </summary>
               <label class="field mt-2">

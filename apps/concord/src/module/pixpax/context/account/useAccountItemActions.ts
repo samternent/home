@@ -714,6 +714,12 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
     if (!options.account.isAuthenticated.value || options.context.pixbookReadOnly.value) {
       return false;
     }
+    if ((options.context.pending.value || []).length > 0) {
+      return false;
+    }
+    if (!options.context.dirty.value) {
+      return true;
+    }
     if (!options.context.ledger.value) return false;
     const localLedgerHead = trim(options.context.ledger.value?.head);
     if (!localLedgerHead) return false;

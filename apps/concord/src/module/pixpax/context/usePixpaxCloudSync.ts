@@ -426,11 +426,15 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
         account.isAuthenticated.value,
         context.pixbookReadOnly.value,
         String(context.ledger.value?.head || "").trim(),
-        String(listLoader.selectedCloudBookId.value || itemLoader.cloudBookId.value || "").trim(),
+        (context.pending.value || []).length,
       ] as const,
-    async ([authenticated, readOnly, localHead]) => {
+    async ([authenticated, readOnly, localHead, pendingCount], previous) => {
       if (!authenticated || readOnly) return;
       if (!localHead) return;
+      if (pendingCount > 0) return;
+      const previousHead = String(previous?.[2] || "").trim();
+      const previousPendingCount = Number(previous?.[3] || 0);
+      if (localHead === previousHead && previousPendingCount === 0) return;
       await actions.saveCloudSnapshot();
     }
   );
