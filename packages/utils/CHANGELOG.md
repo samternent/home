@@ -1,5 +1,13 @@
 # ternent-utils
 
+## 1.1.0
+
+### Minor Changes
+
+- [#508](https://github.com/samternent/home/pull/508) [`b35c163b4c4d3c084591ca8512b2d43083eb40ce`](https://github.com/samternent/home/commit/b35c163b4c4d3c084591ca8512b2d43083eb40ce) Thanks [@samternent](https://github.com/samternent)! - Add shared UI primitives (`SDisclosure`, `SRadioGroup`, `STextarea`) and align proof app usage with `ternent-ui`.
+
+  Add `hashBytes` utility for deterministic raw-byte hashing in browser signing/verification flows.
+
 ## 1.0.9
 
 ### Patch Changes
