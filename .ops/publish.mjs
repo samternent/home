@@ -17,6 +17,7 @@ const packagesToPublish = [
   "../packages/game-kit",
   "../packages/ternent-ui",
   "../packages/ragejs",
+  "../packages/seal-cli",
 ];
 
 const toPublish = [...appsToPublish, ...packagesToPublish];
