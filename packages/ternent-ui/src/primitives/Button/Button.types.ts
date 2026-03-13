@@ -1,4 +1,4 @@
-export const buttonVariants = [
+export const buttonVariantValues = [
   "primary",
   "secondary",
   "tertiary",
@@ -8,5 +8,11 @@ export const buttonVariants = [
   "critical-secondary",
 ] as const;
 
-export type ButtonVariant = (typeof buttonVariants)[number];
-export type ButtonSize = "micro" | "xs" | "sm" | "md" | "lg" | "xl";
+export const buttonSizeValues = ["micro", "xs", "sm", "md", "lg", "xl"] as const;
+export const buttonElementValues = ["button", "a"] as const;
+export const buttonTypeValues = ["button", "submit", "reset"] as const;
+
+export type ButtonVariant = (typeof buttonVariantValues)[number];
+export type ButtonSize = (typeof buttonSizeValues)[number];
+export type ButtonElement = (typeof buttonElementValues)[number];
+export type ButtonNativeType = (typeof buttonTypeValues)[number];

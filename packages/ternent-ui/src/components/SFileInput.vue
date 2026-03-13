@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref, useId } from "vue";
 
 const props = defineProps({
   accept: {
@@ -34,15 +34,17 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits(["error"]);
 const file = defineModel({ type: [File, Array], required: true });
 const filename = defineModel("filename", { type: String, default: "" });
 
 const isDragOver = ref(false);
+const inputId = useId();
 
 const sizeClasses = computed(() => ({
   sm: "px-3 py-2 text-sm",
-  md: "px-4 py-3 text-base",
-  lg: "px-6 py-4 text-lg",
+  md: "px-4 py-3 text-sm",
+  lg: "px-5 py-3 text-base",
 }));
 
 function readFileAsync(file) {
@@ -83,7 +85,8 @@ async function uploadFile(e) {
       filename.value = files[0].name;
     }
   } catch (error) {
-    console.error("File processing error:", error);
+    const message = error instanceof Error ? error.message : "File processing error";
+    emit("error", message);
   }
 }
 
@@ -110,12 +113,13 @@ function handleDragLeave() {
       @dragover="handleDragOver"
       @dragleave="handleDragLeave"
       :class="[
-        'border-2 border-dashed rounded-2xl transition-all duration-200 cursor-pointer',
-        'hover:border-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/20',
+        'border-2 border-dashed rounded-[var(--ui-radius-lg)] transition-all duration-200 cursor-pointer',
+        'border-[var(--ui-border)] bg-[var(--ui-surface)] text-[var(--ui-fg-muted)]',
+        'hover:bg-[var(--ui-surface-hover)]',
         sizeClasses[size],
         isDragOver
-          ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30'
-          : 'border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800/50'
+          ? 'border-[var(--ui-primary)] bg-[var(--ui-primary-muted)] text-[var(--ui-fg)]'
+          : ''
       ]"
     >
       <input
@@ -124,18 +128,18 @@ function handleDragLeave() {
         :multiple="multiple"
         @change="uploadFile"
         class="sr-only"
-        id="file-upload"
+        :id="inputId"
       />
-      <label for="file-upload" class="cursor-pointer block text-center">
+      <label :for="inputId" class="cursor-pointer block text-center">
         <div class="flex flex-col items-center gap-3">
-          <div class="p-3 bg-indigo-100 dark:bg-indigo-950/50 rounded-xl">
+          <div class="rounded-[var(--ui-radius-md)] border border-[var(--ui-border)] bg-[var(--ui-surface-hover)] p-3">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
               stroke-width="1.5"
               stroke="currentColor"
-              class="w-6 h-6 text-indigo-600 dark:text-indigo-400"
+              class="h-6 w-6 text-[var(--ui-fg-muted)]"
             >
               <path
                 stroke-linecap="round"
@@ -145,10 +149,10 @@ function handleDragLeave() {
             </svg>
           </div>
           <div>
-            <p class="text-sm font-medium text-slate-900 dark:text-slate-100">
+            <p class="text-sm font-medium text-[var(--ui-fg)]">
               Drop files here or click to browse
             </p>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            <p class="mt-1 text-xs text-[var(--ui-fg-muted)]">
               {{ placeholder }}
             </p>
           </div>
@@ -164,15 +168,14 @@ function handleDragLeave() {
       :multiple="multiple"
       @change="uploadFile"
       class="sr-only"
-      id="file-input"
+      :id="inputId"
     />
     <label
-      for="file-input"
+      :for="inputId"
       :class="[
-        'inline-flex items-center gap-2 border border-base-300 rounded-xl',
-        'bg-base-100 hover:bg-base-200',
-        'cursor-pointer transition-all duration-200 hover:border-primary',
-        'text-base-content font-medium',
+        'inline-flex items-center gap-2 rounded-[var(--ui-radius-md)] border border-[var(--ui-border)]',
+        'cursor-pointer bg-[var(--ui-surface)] font-medium text-[var(--ui-fg)]',
+        'transition-all duration-200 hover:bg-[var(--ui-surface-hover)] hover:border-[var(--ui-primary)]',
         sizeClasses[size]
       ]"
     >

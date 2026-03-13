@@ -234,6 +234,14 @@ export async function hashData(
   return getHashHex(hash_array);
 }
 
+export async function hashBytes(
+  input: Uint8Array | ArrayBuffer
+): Promise<string> {
+  const bytes = input instanceof Uint8Array ? input : new Uint8Array(input);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", bytes);
+  return getHashHex(getHashArray(hashBuffer));
+}
+
 // utils/gradientUtils.js
 /**
  * generateColorStops function - TODO: Add description

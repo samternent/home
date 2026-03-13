@@ -12,6 +12,7 @@ export default defineConfig({
     lib: {
       entry: {
         primitives: resolve(__dirname, "src/primitives/index.ts"),
+        patterns: resolve(__dirname, "src/patterns/index.ts"),
         components: resolve(__dirname, "src/components/index.js"),
         use: resolve(__dirname, "src/use/index.js"),
         themes: resolve(__dirname, "src/themes.js"),
