@@ -1,5 +1,11 @@
 # ternent-ui
 
+## 0.4.2
+
+### Patch Changes
+
+- [`8427fb06e4ee9a14197e89dc34d26b6894654eaf`](https://github.com/samternent/home/commit/8427fb06e4ee9a14197e89dc34d26b6894654eaf) Thanks [@samternent](https://github.com/samternent)! - UUpdate landing
+
 ## 0.4.1
 
 ### Patch Changes

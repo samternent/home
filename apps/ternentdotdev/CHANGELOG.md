@@ -1,5 +1,12 @@
 # ternentdotdev
 
+## 0.4.15
+
+### Patch Changes
+
+- Updated dependencies [[`8427fb06e4ee9a14197e89dc34d26b6894654eaf`](https://github.com/samternent/home/commit/8427fb06e4ee9a14197e89dc34d26b6894654eaf)]:
+  - ternent-ui@0.4.2
+
 ## 0.4.14
 
 ### Patch Changes
