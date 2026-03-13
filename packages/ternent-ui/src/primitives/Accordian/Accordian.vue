@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { Accordion } from "@ark-ui/vue/accordion";
-import { ref } from "vue";
+import Accordion from "../Accordion/Accordion.vue";
 
-const items = ref(["React", "Solid", "Vue", "Svelte"]);
+defineOptions({ inheritAttrs: false });
 </script>
 
 <template>
-  <Accordion.Root multiple>
+  <Accordion v-bind="$attrs">
     <slot />
-  </Accordion.Root>
+  </Accordion>
 </template>

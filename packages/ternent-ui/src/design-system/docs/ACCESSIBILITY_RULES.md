@@ -5,6 +5,15 @@
 Accessibility is a built-in requirement of the design system, not a later enhancement.
 AI must treat accessibility as part of the primitive contract.
 
+## Current repo baseline
+
+The accessibility contract is ahead of the current primitive implementation.
+
+- `Button` established the baseline for focus treatment in the current v2 primitive layer.
+- `Accordion` is the canonical disclosure primitive in `src/primitives`, and several Ark-backed accessibility patterns also exist in legacy `src/components/S*` files as behavior reference only.
+- Some existing primitives such as `SplitButton` predate the full contract in this document.
+- Primitive `*.spec.md` files now exist for the active v2 surface, so future interactive primitive work must update them rather than assume documentation can lag behind behavior.
+
 ## Core principles
 
 1. keyboard access must work without mouse interaction
@@ -91,6 +100,7 @@ When using Ark UI:
 2. expose a clean system-level API on top
 3. keep styling token-driven
 4. document keyboard behavior in the spec
+5. use legacy Ark-backed `S*` components for behavior reference only, not as implementation dependencies
 
 ## Keyboard expectations by primitive type
 
@@ -161,6 +171,8 @@ Each interactive primitive spec should document:
 - disabled behavior
 - invalid behavior where relevant
 - Ark UI dependency if present
+
+Current repo note: interactive primitive changes should update the relevant spec file as part of the implementation work.
 
 ## Review checklist
 

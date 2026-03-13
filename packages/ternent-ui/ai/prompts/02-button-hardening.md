@@ -14,10 +14,11 @@ Requirements:
 - inspect legacy `src/components/SButton.vue` only for behavioral reference if needed
 - do not copy legacy implementation details blindly
 - keep the component in `src/primitives/Button`
-- review the current variant vocabulary and either preserve it intentionally or rationalize it clearly
-- review whether the current size scale is justified
+- review the current variant vocabulary in `Button.types.ts` and either preserve it intentionally or rationalize it clearly
+- review whether the current size scale in `Button.types.ts` is justified
 - use `Button.props.ts`, `Button.types.ts`, `Button.variants.ts`, `Button.vue`, and `Button.spec.md`
 - update exports if needed
+- do not assume any primitive `*.spec.md` files already exist; create the first one as part of this task if needed
 
 Output should include:
 

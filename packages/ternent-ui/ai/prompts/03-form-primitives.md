@@ -11,7 +11,7 @@ Build:
 Placement:
 
 - `Input`, `Textarea`, `Label`, and `FieldMessage` go in `src/primitives`
-- `FormField` may go in `src/patterns` if that is the cleaner boundary
+- `FormField` may go in `src/patterns` if that is the cleaner boundary, but create that directory first if you make that choice
 
 Requirements:
 
@@ -28,4 +28,5 @@ Also:
 
 - ensure field composition patterns are consistent
 - prefer a real form-system foundation rather than one-off input wrappers
+- do not assume `src/patterns` already exists
 - state any assumptions clearly

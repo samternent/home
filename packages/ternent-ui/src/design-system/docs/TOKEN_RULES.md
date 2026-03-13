@@ -41,15 +41,32 @@ Existing examples include:
 - `--ui-primary-muted`
 - `--ui-primary-hover`
 - `--ui-primary-active`
+- `--ui-accent`
+- `--ui-on-accent`
+- `--ui-secondary`
+- `--ui-on-secondary`
 - `--ui-critical`
 - `--ui-on-critical`
+- `--ui-success`
+- `--ui-on-success`
+- `--ui-warning`
+- `--ui-on-warning`
+- `--ui-info`
+- `--ui-on-info`
 - `--ui-tonal-secondary`
+- `--ui-tonal-tertiary`
 - `--ui-ring`
+- `--ui-glow-primary`
 - `--ui-radius-md`
 - `--ui-shadow-sm`
 - `--ui-duration-normal`
+- `--ui-ease-out`
+- `--ui-lift-hover`
+- `--ui-scale-active`
 
 These are acceptable as the current canonical consumption layer.
+
+Compatibility aliases also exist where needed, for example the `--ui-danger*` aliases that currently map to the `--ui-critical*` family.
 
 ### 3. Optional component aliases
 
@@ -74,6 +91,8 @@ That means:
 - reuse the current token family wherever possible
 - expand carefully when a real gap appears
 - only rename tokens when the system meaning becomes meaningfully clearer
+- treat `src/design-system/tokens.css` as the current source of truth for the active semantic contract
+- preserve the current light/dark remapping behavior, which is defined in the core token file using `prefers-color-scheme`
 
 ## Consumption rules
 
@@ -196,6 +215,7 @@ Because the repo already has a working token family, migration should be staged.
 - replacing hard-coded values with existing `--ui-*` tokens
 - expanding missing states using current tokens
 - rationalizing inconsistent use of `surface`, `tonal`, and `primary` roles
+- preserving existing compatibility aliases until the consuming surface is deliberately migrated
 - introducing missing utility tokens with documentation
 
 ### Bad migration work

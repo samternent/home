@@ -33,8 +33,19 @@ This is the only layer that should be exported as the stable primitive API.
 `src/patterns/*`
 
 This layer is for higher-level reusable compositions built from primitives.
+It now exists in the repo and should be used deliberately for product-agnostic compositions.
 Patterns are not low-level primitives.
 Patterns may be opinionated but must remain product-agnostic.
+
+## Current repo state
+
+The v2 layer is not a clean slate yet.
+
+- `src/primitives/Button/*` established the first canonical template and remains the baseline for future primitive structure.
+- `src/primitives/Accordion/*` is the canonical disclosure primitive, while `Accordian/*` remains as compatibility debt during migration.
+- `src/primitives/SplitButton/*` is exported today, but it is not yet documented by the current primitive contract.
+- Primitive `*.spec.md` files now exist for the current v2 surface and should be updated alongside implementation changes.
+- `src/primitives/index.ts` is the current public primitive export surface.
 
 ## Taxonomy
 
@@ -127,14 +138,25 @@ The current system already uses a token family such as:
 - `--ui-surface-hover`
 - `--ui-border`
 - `--ui-primary`
+- `--ui-accent`
+- `--ui-secondary`
 - `--ui-critical`
+- `--ui-success`
+- `--ui-warning`
+- `--ui-info`
+- `--ui-tonal-secondary`
+- `--ui-tonal-tertiary`
 - `--ui-ring`
 - `--ui-radius-md`
 - `--ui-shadow-sm`
+- `--ui-duration-normal`
+- `--ui-lift-hover`
+- `--ui-scale-active`
 
 These are acceptable as the starting contract.
 AI should prefer reusing and rationalizing these tokens before inventing new ones.
 A broader semantic model can be introduced gradually, but migration should be deliberate.
+The core token file also handles the default dark-mode remapping via `prefers-color-scheme`.
 
 ## Visual direction
 

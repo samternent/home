@@ -5,6 +5,16 @@
 Primitives are the stable building blocks of `ternent-ui` v2.
 They must be easy for humans and AI agents to understand, extend, and compose.
 
+## Current repo baseline
+
+The current primitive layer is only partially aligned with this document.
+
+- `src/primitives/Button/*` established the first canonical template and should remain the baseline for future primitive structure.
+- `src/primitives/Accordion/*` is canonical, while `Accordian/*` remains a compatibility layer during migration.
+- `SplitButton/*` still exists from earlier work and should be reconciled with the newer primitive contract when touched.
+- `src/patterns/*` now exists for higher-level reusable compositions.
+- Primitive `*.spec.md` files now exist for the active v2 surface and must stay aligned with implementation changes.
+
 ## Placement
 
 All new reusable low-level and mid-level components go in `src/primitives`.
@@ -177,6 +187,7 @@ Primitives should be:
 - not tied to a single product layout
 
 If a component starts needing app-shell opinions or form grouping logic, consider making it a pattern instead.
+If the work belongs in `src/patterns`, create that layer intentionally rather than pretending it already exists.
 
 ## Slots
 
@@ -202,6 +213,8 @@ Every primitive should have a `Component.spec.md` file.
 This is not optional documentation fluff.
 It is part of the AI contract.
 
+Current repo note: this requirement is now satisfied for the active v2 primitive surface, so future primitive changes should update the relevant spec file instead of letting it drift.
+
 The spec should describe:
 
 - purpose
@@ -220,6 +233,7 @@ The spec should describe:
 
 Every primitive added to `src/primitives` must also be reviewed for export in `src/primitives/index.ts`.
 Exports should be deliberate and stable.
+When adjusting existing primitives, account for the current exported surface, including `Button`, `SplitButton`, and the misspelled `Accordian` exports.
 
 ## Refactor policy for legacy equivalents
 

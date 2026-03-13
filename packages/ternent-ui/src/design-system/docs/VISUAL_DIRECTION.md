@@ -12,6 +12,12 @@
 - polished in dark mode
 - quietly expressive rather than loud
 
+## Current repo baseline
+
+This visual direction should be applied through the existing semantic token system, not through one-off component styling.
+The active token contract already includes surface, border, accent, feedback, shadow, radius, duration, easing, and interaction-motion tokens.
+Legacy `S*` styling is not the visual standard for new primitive work.
+
 ## Benchmark energy
 
 Aim closer to:
@@ -59,3 +65,4 @@ Aim for a professional app density that still feels breathable.
 
 Multiple branded themes are a feature, but the system should still feel like one family.
 Theme changes should alter mood, not break structural consistency.
+The current default light/dark behavior comes from token remapping in the core token file, and future theme work should preserve that contract.

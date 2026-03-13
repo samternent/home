@@ -16,6 +16,7 @@
   "exports": {
     ".": "./dist/components.js",
     "./primitives": "./dist/primitives.js",
+    "./patterns": "./dist/patterns.js",
     "./components": "./dist/components.js",
     "./styles.css": "./dist/ternent-ui.css",
     "./themes/print.css": "./src/themes/print.css",

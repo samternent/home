@@ -1,9 +1,14 @@
 import type { PropType } from "vue";
-import type { ButtonVariant, ButtonSize } from "./Button.types";
+import type {
+  ButtonElement,
+  ButtonNativeType,
+  ButtonSize,
+  ButtonVariant,
+} from "./Button.types";
 
 export const buttonProps = {
   as: {
-    type: String as PropType<"button" | "a">,
+    type: String as PropType<ButtonElement>,
     default: "button",
   },
   variant: {
@@ -14,7 +19,15 @@ export const buttonProps = {
     type: String as PropType<ButtonSize>,
     default: "md",
   },
+  type: {
+    type: String as PropType<ButtonNativeType>,
+    default: "button",
+  },
   disabled: {
+    type: Boolean,
+    default: false,
+  },
+  loading: {
     type: Boolean,
     default: false,
   },

@@ -4,7 +4,7 @@ Critical repo context:
 
 - `src/components/S*` is the legacy UI kit.
 - `src/primitives/*` is the future-facing design-system source of truth.
-- `src/patterns/*` is for composed reusable patterns built from primitives.
+- `src/patterns/*` is the home for composed reusable patterns built from primitives.
 - New reusable UI must not be built in the legacy `S*` layer.
 
 Current technical context:
@@ -13,7 +13,10 @@ Current technical context:
 - Existing semantic-ish tokens already exist under the `--ui-*` family.
 - Current design-system token files live under `src/design-system/*`.
 - Themes live under `src/themes/*` and multi-theme support is required.
-- `src/primitives/Button/*` is the current v2 seed and should be hardened into the canonical primitive template.
+- `src/primitives/Button/*` established the first canonical primitive template and remains the baseline for future primitive structure.
+- `src/primitives/Accordion/*` is the canonical disclosure primitive, with `Accordian` compatibility aliases still present for migration.
+- `src/primitives/index.ts` now exports the active primitive surface, including canonical `Accordion` exports and compatibility `Accordian` aliases.
+- primitive `*.spec.md` files now exist and must stay aligned with implementation changes.
 
 System rules:
 
@@ -27,6 +30,7 @@ System rules:
 - Update or create `*.spec.md` files for primitives.
 - Use Ark UI for components with meaningful interaction/a11y complexity.
 - Do not force Ark UI for simple presentational primitives.
+- Prefer incremental correction over assuming the repo is already in the ideal v2 end state.
 
 Architecture rules:
 
@@ -51,8 +55,16 @@ Before writing code:
 1. identify whether the target is a primitive, pattern, or app component
 2. inspect relevant existing v2 code first
 3. inspect legacy `S*` only for behavior and usage hints if needed
-4. state assumptions if there is ambiguity
-5. avoid unrelated changes
+4. inspect the existing docs under `src/design-system/docs` and work from them as the baseline contract
+5. state assumptions if there is ambiguity
+6. avoid unrelated changes
+
+Current repo-state reminders:
+
+- `src/design-system/docs/*` already exists and should be updated incrementally rather than replaced blindly.
+- `src/design-system/tokens.css` already defines semantic token families for primary, accent, secondary, critical, success, warning, info, tonal surfaces, glow, radius, duration, shadow, and interaction motion.
+- dark mode currently comes from token remapping in the core token file, with `prefers-color-scheme` defaults.
+- later prompts should acknowledge current naming debt and compatibility aliases instead of assuming a perfectly clean slate.
 
 Expected output quality:
 

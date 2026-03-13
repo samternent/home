@@ -5,6 +5,11 @@
 Patterns are reusable compositions built from primitives.
 They provide common UI arrangements without turning the core primitive layer into an app-specific dumping ground.
 
+## Current repo baseline
+
+`src/patterns/*` now exists as an architectural layer for shared compositions.
+`FormField` is the first established pattern and should be treated as the baseline for future pattern work.
+
 ## What belongs in `src/patterns`
 
 Patterns should be:
@@ -59,11 +64,13 @@ Pattern/
 ```
 
 A `Pattern.variants.ts` file is optional if the pattern has enough variant logic to justify it.
+`src/patterns/index.ts` is part of the public pattern export surface and should be updated deliberately when new patterns are added.
 
 ## Relationship to app code
 
 Applications should prefer using patterns where they fit.
 If a product needs a highly specific composition, build that in the product app rather than force it into the shared package.
+Legacy `S*` components may be inspected for composition ideas, but patterns must still be rebuilt from primitives rather than wrapped around legacy implementations.
 
 ## Review checklist
 

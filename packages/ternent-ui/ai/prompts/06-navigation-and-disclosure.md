@@ -23,4 +23,5 @@ Requirements:
 Also:
 
 - identify any places where a future `Pattern` layer is the better home than `src/primitives`
+- explicitly address current `Accordian` versus `Accordion` naming debt and any export compatibility implications before changing names
 - call out any token gaps discovered during implementation
