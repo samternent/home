@@ -9,7 +9,7 @@ export const buttonVariantValues = [
 ] as const;
 
 export const buttonSizeValues = ["micro", "xs", "sm", "md", "lg", "xl"] as const;
-export const buttonElementValues = ["button", "a"] as const;
+export const buttonElementValues = ["button", "a", "RouterLink"] as const;
 export const buttonTypeValues = ["button", "submit", "reset"] as const;
 
 export type ButtonVariant = (typeof buttonVariantValues)[number];

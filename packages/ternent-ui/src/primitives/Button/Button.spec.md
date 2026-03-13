@@ -21,7 +21,7 @@ Primitive
 
 Props:
 
-- `as`: `"button" | "a"`; defaults to `"button"`
+- `as`: `"button" | "a" | "RouterLink"`; defaults to `"button"`
 - `variant`: `primary | secondary | tertiary | critical | plain-primary | plain-secondary | critical-secondary`
 - `size`: `micro | xs | sm | md | lg | xl`
 - `type`: `button | submit | reset`; only applied when `as="button"`
@@ -42,8 +42,8 @@ Events:
 
 - The current variant vocabulary is preserved intentionally because it already exists in the v2 seed and maps cleanly to the current token contract.
 - The current six-step size scale is preserved intentionally because the repo already uses it in legacy button work and supporting design-system utilities.
-- Polymorphism is deliberately restrained to `button` and `a`.
-- Link-like behavior should use `as="a"` with standard anchor attributes passed through as attrs.
+- Polymorphism is deliberately restrained to `button`, `a`, and `RouterLink`.
+- Link-like behavior should use `as="a"` with standard anchor attrs or `as="RouterLink"` with a `to` attr passed through from the app.
 
 ## Variants
 
@@ -82,6 +82,7 @@ Notes:
 
 - Native `<button>` semantics are used by default.
 - Native `<a>` semantics are preserved when `as="a"`.
+- `RouterLink` is treated as non-button navigation and receives the same inactive protection as anchor-like usage.
 - Focus-visible treatment uses the shared `--ui-ring` token.
 - Loading state exposes `aria-busy="true"`.
 - Icon-only usage must still provide an accessible name via visible text, `aria-label`, or equivalent attrs.
@@ -113,6 +114,12 @@ The primitive uses only the current `--ui-*` contract:
 ```vue
 <Button as="a" href="/settings" variant="plain-secondary">
   Open settings
+</Button>
+```
+
+```vue
+<Button as="RouterLink" to="/app">
+  Open app
 </Button>
 ```
 

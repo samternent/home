@@ -8,6 +8,10 @@ export const cardVariantClasses: Record<CardVariant, string> = {
   default: "border-[var(--ui-border)] bg-[var(--ui-surface)] shadow-[var(--ui-shadow-sm)]",
   subtle: "border-[var(--ui-border)] bg-[var(--ui-tonal-tertiary)] shadow-none",
   outline: "border-[var(--ui-border)] bg-transparent shadow-none",
+  elevated:
+    "border-[var(--ui-border)] bg-[var(--ui-surface)] shadow-[var(--ui-shadow-md)]",
+  panel:
+    "border-[var(--ui-border)] bg-[var(--ui-tonal-secondary)] shadow-[var(--ui-shadow-md)]",
 };
 
 export const cardPaddingClasses: Record<CardPadding, string> = {

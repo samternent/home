@@ -1,572 +1,122 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { Button, Card, Separator } from "ternent-ui/primitives";
+import {
+  FeatureCard,
+  PageSurface,
+  PreviewPanel,
+  SectionIntro,
+  StepList,
+} from "ternent-ui/patterns";
 
-<template>
-  <div class="min-h-screen bg-neutral-950 text-white">
-    <!-- Background -->
-    <div class="pointer-events-none fixed inset-0 overflow-hidden">
-      <div
-        class="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.12),transparent_35%)]"
-      ></div>
-      <div
-        class="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(99,102,241,0.10),transparent_30%)]"
-      ></div>
-      <div
-        class="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.02),transparent_25%,transparent_75%,rgba(255,255,255,0.015))]"
-      ></div>
-    </div>
+const navigationLinks = [
+  { href: "#features", label: "Features" },
+  { href: "#how-it-works", label: "How it works" },
+  { href: "#use-cases", label: "Use cases" },
+  { href: "#developers", label: "Developers" },
+];
 
-    <!-- Page -->
-    <div class="relative">
-      <!-- Header -->
-      <header class="border-b border-[var(--ui-border)]">
-        <div
-          class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8"
-        >
-          <a href="#" class="flex items-center gap-3">
-            <div>Portable Proof</div>
-            <div></div>
-          </a>
+const featureCards = [
+  {
+    title: "Browser-native",
+    description: "Sign and verify without leaving your workspace.",
+    tone: "info",
+  },
+  {
+    title: "Deterministic identity",
+    description: "Keys derived locally and never stored.",
+    tone: "primary",
+  },
+  {
+    title: "Portable proofs",
+    description: "Self-contained artifacts you can carry anywhere.",
+    tone: "accent",
+  },
+  {
+    title: "No backend required",
+    description: "Everything runs client-side, from signing to verification.",
+    tone: "success",
+  },
+];
 
-          <nav class="hidden items-center gap-8 text-sm text-white/70 md:flex">
-            <a href="#features" class="transition hover:text-white">Features</a>
-            <a href="#how-it-works" class="transition hover:text-white"
-              >How it works</a
-            >
-            <a href="#use-cases" class="transition hover:text-white"
-              >Use cases</a
-            >
-            <a href="#developers" class="transition hover:text-white"
-              >Developers</a
-            >
-            <!-- <a href="#" class="transition hover:text-white">Docs</a>
-            <a href="#" class="transition hover:text-white">GitHub</a> -->
-          </nav>
+const heroRows = [
+  { label: "Signed by", value: "0x9F…7A1C" },
+  { label: "Algorithm", value: "Ed25519" },
+  { label: "Hash", value: "sha256:a3f8…c9d2" },
+  { label: "Status", value: "Valid proof", valueTone: "success" },
+];
 
-          <div class="flex items-center gap-3">
-            <!-- <a
-              href="#"
-              class="hidden rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white/85 transition hover:bg-white/10 sm:inline-flex"
-            >
-              Sign in
-            </a> -->
-            <RouterLink
-              to="/app"
-              class="inline-flex rounded-xl bg-[var(--ui-primary)] px-4 py-2 text-sm text-white transition"
-            >
-              Try it now
-            </RouterLink>
-          </div>
-        </div>
-      </header>
+const howItWorksSteps = [
+  {
+    title: "Generate your identity",
+    description: "Create a deterministic keypair in one click or import one you already trust.",
+  },
+  {
+    title: "Sign your content",
+    description: "Hash any text or file in seconds and produce a portable proof artifact.",
+  },
+  {
+    title: "Verify anywhere",
+    description: "Anyone can independently verify the proof without your private key or your app.",
+  },
+];
 
-      <main>
-        <!-- Hero -->
-        <section
-          class="mx-auto max-w-7xl px-6 pb-20 pt-16 lg:px-8 lg:pb-28 lg:pt-24"
-        >
-          <div class="grid items-center gap-14 lg:grid-cols-[1.05fr_0.95fr]">
-            <div class="max-w-2xl">
-              <div
-                class="mb-6 inline-flex items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-background)] px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] text-[var(--ui-foreground)]"
-              >
-                Portable cryptographic proof
-              </div>
+const proofJsonCode = `{
+  "version": "1.0",
+  "signer": "0x9F...7A1C",
+  "created": "2024-04-24T12:04:21Z",
+  "hash": "a3f8...c9d2",
+  "algorithm": "SHA-256"
+}`;
 
-              <h1
-                class="max-w-4xl text-5xl leading-tight tracking-tight text-white sm:text-6xl"
-              >
-                Cryptographic proof
-                <span class="text-[var(--ui-accent)]"
-                  >you can take anywhere.</span
-                >
-              </h1>
+const useCases = [
+  {
+    title: "Blog posts",
+    description: "Publish authorship and integrity together.",
+    tone: "primary",
+  },
+  {
+    title: "Release artifacts",
+    description: "Attach proofs to builds and downloadable assets.",
+    tone: "secondary",
+  },
+  {
+    title: "Legal documents",
+    description: "Capture exactly what was signed and when.",
+    tone: "accent",
+  },
+  {
+    title: "Research papers",
+    description: "Assert provenance for revisions and datasets.",
+    tone: "info",
+  },
+  {
+    title: "Static websites",
+    description: "Ship verifiable proofs alongside published content.",
+    tone: "primary",
+  },
+  {
+    title: "Open data",
+    description: "Distribute trusted records without central gatekeepers.",
+    tone: "success",
+  },
+];
 
-              <p class="mt-6 max-w-xl text-lg font-light leading-8 sm:text-xl">
-                Generate self-contained, portable proofs for text and files —
-                directly in your browser. No accounts. No backend. No lock-in.
-                Just math, keys, and integrity.
-              </p>
+const developerPoints = [
+  {
+    title: "Prove integrity",
+    description: "Cryptographically assert that content is exactly as you created it.",
+  },
+  {
+    title: "Control identity",
+    description: "Your keys remain yours, with no third party holding your identity.",
+  },
+  {
+    title: "Audit everything",
+    description: "Create a verifiable record of who signed what and when.",
+  },
+] as const;
 
-              <div class="mt-8 flex flex-wrap items-center gap-4">
-                <a
-                  href="#"
-                  class="inline-flex items-center rounded-xl bg-[var(--ui-primary)] px-5 py-3 text-sm font-medium text-white transition hover:bg-[var(--ui-primary-hover)]"
-                >
-                  Try it now
-                </a>
-              </div>
-            </div>
-
-            <!-- Hero visual -->
-
-            <div class="relative flex items-center justify-center py-20">
-              <div class="relative w-full max-w-sm">
-                <!-- softer, more natural shadow -->
-                <div
-                  class="pointer-events-none absolute inset-0 rounded-[30px] bg-black/40 blur-[36px] opacity-70 translate-x-8 translate-y-10 scale-[1.02]"
-                ></div>
-
-                <!-- plaque -->
-                <div
-                  class="relative w-full overflow-hidden rounded-xl border border-white/10 bg-white/[0.06] p-4 shadow-[0_20px_60px_rgba(0,0,0,0.25)] backdrop-blur-xl"
-                >
-                  <!-- subtle face glow -->
-                  <div
-                    class="pointer-events-none absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-white/10 to-transparent"
-                  ></div>
-
-                  <div class="relative rounded-xl bg-white/[0.03] p-4">
-                    <div class="flex items-center justify-between pb-3">
-                      <div class="text-xs uppercase">proof</div>
-                      <div
-                        class="inline-flex rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-300"
-                      >
-                        Verified
-                      </div>
-                    </div>
-
-                    <dl class="mt-5 space-y-4 text-sm">
-                      <div
-                        class="flex justify-between border-b border-white/5 pb-3"
-                      >
-                        <dt class="text-white/50">Signer</dt>
-                        <dd class="font-medium text-white">0x9F...7A1C</dd>
-                      </div>
-                      <div
-                        class="flex justify-between border-b border-white/5 pb-3"
-                      >
-                        <dt class="text-white/50">Algorithm</dt>
-                        <dd class="font-medium text-white">Ed25519</dd>
-                      </div>
-                      <div
-                        class="flex justify-between border-b border-white/5 pb-3"
-                      >
-                        <dt class="text-white/50">Content hash</dt>
-                        <dd class="font-medium text-white">
-                          sha256:a3f8...c9d2
-                        </dd>
-                      </div>
-                      <div class="flex justify-between">
-                        <dt class="text-white/50">Status</dt>
-                        <dd class="font-medium text-emerald-300">
-                          Valid proof
-                        </dd>
-                      </div>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Decorative grid -->
-            <div class="pointer-events-none absolute inset-0 opacity-30">
-              <div
-                class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(circle_at_center,black,transparent_75%)]"
-              ></div>
-            </div>
-          </div>
-        </section>
-
-        <!-- Features -->
-        <section id="features" class="mx-auto max-w-7xl px-6 py-20 lg:px-8">
-          <div class="mx-auto max-w-3xl text-center">
-            <div
-              class="text-xs font-medium uppercase tracking-[0.22em] text-white/40"
-            >
-              Features
-            </div>
-            <h2
-              class="mt-4 text-3xl font-semibold tracking-tight text-white sm:text-4xl"
-            >
-              A cryptographic primitive for the open web
-            </h2>
-            <p class="mt-4 text-lg leading-8 text-white/65">
-              Portable Proof handles the cryptography so you can focus on
-              proving what matters.
-            </p>
-          </div>
-
-          <div class="mt-12 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-            <div
-              class="rounded-3xl border border-white/10 bg-white/[0.035] p-6"
-            >
-              <div
-                class="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-blue-300"
-              >
-                ⌘
-              </div>
-              <h3 class="text-lg font-semibold text-white">
-                Deterministic identity
-              </h3>
-              <p class="mt-3 text-sm leading-6 text-white/60">
-                Keys are derived locally and remain under your control.
-              </p>
-            </div>
-
-            <div
-              class="rounded-3xl border border-white/10 bg-white/[0.035] p-6"
-            >
-              <div
-                class="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-blue-300"
-              >
-                {}
-              </div>
-              <h3 class="text-lg font-semibold text-white">
-                Portable proof artifact
-              </h3>
-              <p class="mt-3 text-sm leading-6 text-white/60">
-                Self-contained proof JSON that can be stored, shared, and
-                verified anywhere.
-              </p>
-            </div>
-
-            <div
-              class="rounded-3xl border border-white/10 bg-white/[0.035] p-6"
-            >
-              <div
-                class="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-blue-300"
-              >
-                ✓
-              </div>
-              <h3 class="text-lg font-semibold text-white">
-                Offline verification
-              </h3>
-              <p class="mt-3 text-sm leading-6 text-white/60">
-                Anyone can verify independently — no private key required.
-              </p>
-            </div>
-
-            <div
-              class="rounded-3xl border border-white/10 bg-white/[0.035] p-6"
-            >
-              <div
-                class="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-blue-300"
-              >
-                &lt;/&gt;
-              </div>
-              <h3 class="text-lg font-semibold text-white">Embed anywhere</h3>
-              <p class="mt-3 text-sm leading-6 text-white/60">
-                Use it in apps, CI pipelines, static sites, or publishing
-                workflows.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <!-- How it works -->
-        <section id="how-it-works" class="mx-auto max-w-7xl px-6 py-20 lg:px-8">
-          <div class="grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
-            <div
-              class="rounded-[2rem] border border-white/10 bg-white/[0.035] p-8"
-            >
-              <div
-                class="text-xs font-medium uppercase tracking-[0.22em] text-white/40"
-              >
-                How it works
-              </div>
-              <h2
-                class="mt-4 text-3xl font-semibold tracking-tight text-white sm:text-4xl"
-              >
-                Three steps to prove anything
-              </h2>
-              <p class="mt-4 max-w-xl text-lg leading-8 text-white/65">
-                Generate your identity, sign your content, and share a proof
-                that anyone can verify.
-              </p>
-
-              <div class="mt-10 space-y-8">
-                <div class="flex gap-4">
-                  <div
-                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-sm font-semibold text-white"
-                  >
-                    1
-                  </div>
-                  <div>
-                    <h3 class="text-lg font-semibold text-white">
-                      Generate or import identity
-                    </h3>
-                    <p class="mt-2 text-sm leading-6 text-white/60">
-                      Create a deterministic identity or use one you already
-                      control.
-                    </p>
-                  </div>
-                </div>
-
-                <div class="flex gap-4">
-                  <div
-                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-sm font-semibold text-white"
-                  >
-                    2
-                  </div>
-                  <div>
-                    <h3 class="text-lg font-semibold text-white">
-                      Sign your content
-                    </h3>
-                    <p class="mt-2 text-sm leading-6 text-white/60">
-                      Apply your signature to text or files and produce a
-                      portable proof artifact.
-                    </p>
-                  </div>
-                </div>
-
-                <div class="flex gap-4">
-                  <div
-                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-sm font-semibold text-white"
-                  >
-                    3
-                  </div>
-                  <div>
-                    <h3 class="text-lg font-semibold text-white">
-                      Verify independently
-                    </h3>
-                    <p class="mt-2 text-sm leading-6 text-white/60">
-                      Anyone can verify the proof without your app or your
-                      private key.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div
-              class="rounded-[2rem] border border-white/10 bg-gradient-to-br from-white/[0.04] to-white/[0.02] p-8"
-            >
-              <div class="flex items-center justify-between">
-                <div>
-                  <div class="text-sm font-semibold text-white">
-                    Verification flow
-                  </div>
-                  <div class="mt-1 text-xs text-white/45">
-                    Trust-minimal by design
-                  </div>
-                </div>
-                <div
-                  class="rounded-full border border-blue-400/20 bg-blue-400/10 px-3 py-1 text-xs font-medium text-blue-200"
-                >
-                  Client-side
-                </div>
-              </div>
-
-              <div class="mt-8 space-y-4">
-                <div class="rounded-2xl border border-white/10 bg-black/20 p-4">
-                  <div
-                    class="text-xs uppercase tracking-[0.18em] text-white/40"
-                  >
-                    Input
-                  </div>
-                  <div class="mt-3 text-sm text-white/80">
-                    Content + proof artifact
-                  </div>
-                </div>
-
-                <div class="flex justify-center text-white/30">↓</div>
-
-                <div class="rounded-2xl border border-white/10 bg-black/20 p-4">
-                  <div
-                    class="text-xs uppercase tracking-[0.18em] text-white/40"
-                  >
-                    Verify
-                  </div>
-                  <div class="mt-3 text-sm text-white/80">
-                    Recompute hash, validate signature, compare signer public
-                    key
-                  </div>
-                </div>
-
-                <div class="flex justify-center text-white/30">↓</div>
-
-                <div
-                  class="rounded-2xl border border-emerald-400/20 bg-emerald-400/10 p-4"
-                >
-                  <div
-                    class="text-xs uppercase tracking-[0.18em] text-emerald-200/80"
-                  >
-                    Output
-                  </div>
-                  <div class="mt-3 text-sm font-medium text-emerald-200">
-                    Valid proof — content integrity confirmed
-                  </div>
-                </div>
-              </div>
-
-              <div
-                class="mt-8 rounded-2xl border border-white/10 bg-neutral-900/70 p-4"
-              >
-                <div
-                  class="mb-3 text-xs uppercase tracking-[0.18em] text-white/40"
-                >
-                  Example
-                </div>
-                <pre class="overflow-x-auto text-xs leading-6 text-white/80">
-const proof = await portableProof.sign({
-  content,
-  identity
-})
-
-const result = await portableProof.verify({
-  content,
-  proof
-})</pre
-                >
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- Use cases -->
-        <section id="use-cases" class="mx-auto max-w-7xl px-6 py-20 lg:px-8">
-          <div class="mx-auto max-w-3xl text-center">
-            <div
-              class="text-xs font-medium uppercase tracking-[0.22em] text-white/40"
-            >
-              Use cases
-            </div>
-            <h2
-              class="mt-4 text-3xl font-semibold tracking-tight text-white sm:text-4xl"
-            >
-              Proof that travels with your work
-            </h2>
-            <p class="mt-4 text-lg leading-8 text-white/65">
-              Sign once. Verify anywhere.
-            </p>
-          </div>
-
-          <div class="mt-12 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-            <div
-              class="rounded-3xl border border-white/10 bg-white/[0.035] p-6"
-            >
-              <h3 class="text-lg font-semibold text-white">
-                Blog posts & articles
-              </h3>
-              <p class="mt-3 text-sm leading-6 text-white/60">
-                Prove authorship and integrity for published writing.
-              </p>
-            </div>
-
-            <div
-              class="rounded-3xl border border-white/10 bg-white/[0.035] p-6"
-            >
-              <h3 class="text-lg font-semibold text-white">
-                Release artifacts
-              </h3>
-              <p class="mt-3 text-sm leading-6 text-white/60">
-                Attach proofs to builds, downloads, and distributable assets.
-              </p>
-            </div>
-
-            <div
-              class="rounded-3xl border border-white/10 bg-white/[0.035] p-6"
-            >
-              <h3 class="text-lg font-semibold text-white">
-                Legal drafts & contracts
-              </h3>
-              <p class="mt-3 text-sm leading-6 text-white/60">
-                Record exactly what was signed and when.
-              </p>
-            </div>
-
-            <div
-              class="rounded-3xl border border-white/10 bg-white/[0.035] p-6"
-            >
-              <h3 class="text-lg font-semibold text-white">Research papers</h3>
-              <p class="mt-3 text-sm leading-6 text-white/60">
-                Assert provenance for manuscripts, datasets, and revisions.
-              </p>
-            </div>
-
-            <div
-              class="rounded-3xl border border-white/10 bg-white/[0.035] p-6"
-            >
-              <h3 class="text-lg font-semibold text-white">Static websites</h3>
-              <p class="mt-3 text-sm leading-6 text-white/60">
-                Publish independently verifiable proofs alongside your content.
-              </p>
-            </div>
-
-            <div
-              class="rounded-3xl border border-white/10 bg-white/[0.035] p-6"
-            >
-              <h3 class="text-lg font-semibold text-white">
-                CI / GitHub Actions
-              </h3>
-              <p class="mt-3 text-sm leading-6 text-white/60">
-                Automate signing and verification in your delivery pipeline.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <!-- Developers -->
-        <section id="developers" class="mx-auto max-w-7xl px-6 py-20 lg:px-8">
-          <div
-            class="rounded-[2rem] border border-white/10 bg-gradient-to-br from-white/[0.04] to-white/[0.02] p-8 sm:p-10"
-          >
-            <div
-              class="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-center"
-            >
-              <div>
-                <div
-                  class="text-xs font-medium uppercase tracking-[0.22em] text-white/40"
-                >
-                  Built on Concord
-                </div>
-                <h2
-                  class="mt-4 text-3xl font-semibold tracking-tight text-white sm:text-4xl"
-                >
-                  Identity + proof, separated from infrastructure
-                </h2>
-                <p class="mt-4 max-w-2xl text-lg leading-8 text-white/65">
-                  Portable Proof is built on Concord identity primitives with
-                  deterministic signing and trust-minimal verification. No
-                  servers. No lock-in. Pure cryptography you control.
-                </p>
-
-                <div class="mt-8 grid gap-5 sm:grid-cols-3">
-                  <div>
-                    <div class="text-sm font-semibold text-white">
-                      Prove integrity
-                    </div>
-                    <p class="mt-2 text-sm leading-6 text-white/60">
-                      Cryptographically assert that content is exactly as you
-                      created it.
-                    </p>
-                  </div>
-
-                  <div>
-                    <div class="text-sm font-semibold text-white">
-                      Control identity
-                    </div>
-                    <p class="mt-2 text-sm leading-6 text-white/60">
-                      Your keys remain yours. No third party holds your
-                      identity.
-                    </p>
-                  </div>
-
-                  <div>
-                    <div class="text-sm font-semibold text-white">
-                      Audit everything
-                    </div>
-                    <p class="mt-2 text-sm leading-6 text-white/60">
-                      Create a verifiable record of who signed what and when.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div
-                class="rounded-[1.5rem] border border-white/10 bg-neutral-950/80 p-5"
-              >
-                <div class="mb-4 flex items-center justify-between">
-                  <div class="text-sm font-semibold text-white">
-                    Developer example
-                  </div>
-                  <div class="text-xs text-white/40">PortableProof</div>
-                </div>
-
-                <pre
-                  class="overflow-x-auto rounded-2xl border border-white/10 bg-black/30 p-4 text-xs leading-6 text-white/80"
-                >
-import { PortableProof } from '@ternent/portable-proof'
+const developerExample = `import { PortableProof } from "@ternent/portable-proof"
 
 const proof = await PortableProof.sign({
   content: fileBuffer,
@@ -578,77 +128,353 @@ const verified = await PortableProof.verify({
   proof
 })
 
-// verified.valid === true</pre
-                >
+// verified.valid === true`;
 
-                <div
-                  class="mt-4 rounded-2xl border border-emerald-400/20 bg-emerald-400/10 px-4 py-3 text-sm font-medium text-emerald-200"
+const footerLinks = [
+  { href: "#", label: "Docs" },
+  { href: "#", label: "GitHub" },
+  { href: "#", label: "Concord" },
+  { href: "#", label: "Privacy" },
+  { href: "#", label: "License" },
+];
+</script>
+
+<template>
+  <PageSurface>
+    <div class="relative">
+      <header class="mx-auto max-w-7xl px-6 py-5 lg:px-8">
+        <div class="flex items-center justify-between gap-6">
+          <RouterLink to="/" class="flex items-center gap-3">
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              width="22"
+              height="22"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M10 13a5 5 0 0 1 0-7l1.2-1.2a5 5 0 1 1 7.1 7.1L17 13" />
+              <path d="M14 11a5 5 0 0 1 0 7l-1.2 1.2a5 5 0 0 1-7.1-7.1L7 11" />
+            </svg>
+            <span>Portable Proof</span>
+          </RouterLink>
+
+          <nav class="hidden items-center gap-2 md:flex">
+            <Button
+              v-for="link in navigationLinks"
+              :key="link.label"
+              as="a"
+              :href="link.href"
+              variant="plain-secondary"
+              size="sm"
+            >
+              {{ link.label }}
+            </Button>
+          </nav>
+
+          <div class="flex items-center gap-2">
+            <Button as="a" href="#" variant="secondary" size="sm">
+              Sign in
+            </Button>
+            <Button as="RouterLink" to="/app" size="sm">
+              Get started
+            </Button>
+          </div>
+        </div>
+      </header>
+
+      <div class="mx-auto max-w-7xl px-6 lg:px-8">
+        <Separator />
+      </div>
+
+      <main class="mx-auto max-w-7xl px-6 pb-24 pt-16 lg:px-8 lg:pb-28 lg:pt-24">
+        <section class="grid items-center gap-14 lg:grid-cols-[1.12fr_0.88fr] lg:gap-16">
+          <SectionIntro
+            eyebrow="Portable cryptographic proof"
+            title="Cryptographic proof you can take anywhere."
+            description="Generate verifiable, portable proofs for text and files directly in your browser. No accounts. No backend. Just math, keys, and integrity."
+            size="hero"
+            title-tag="h1"
+          >
+            <template #actions>
+              <Button as="RouterLink" to="/app" size="lg">
+                Try it now
+              </Button>
+              <Button as="a" href="#" variant="secondary" size="lg">
+                GitHub
+              </Button>
+            </template>
+          </SectionIntro>
+
+          <PreviewPanel
+            title="Proof verified"
+            :rows="heroRows"
+            status-label="Verified"
+            status-tone="success"
+            emphasis="strong"
+          />
+        </section>
+
+        <section id="features" class="pt-24">
+          <SectionIntro
+            eyebrow="Features"
+            title="Built for trust, not platforms"
+            description="Portable Proof handles the cryptography so you can focus on proving what matters."
+          />
+
+          <div class="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+            <FeatureCard
+              v-for="feature in featureCards"
+              :key="feature.title"
+              :title="feature.title"
+              :description="feature.description"
+              :tone="feature.tone"
+              surface="elevated"
+            >
+              <template #icon>
+                <svg
+                  v-if="feature.title === 'Browser-native'"
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  width="20"
+                  height="20"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
                 >
-                  Valid proof
-                </div>
-              </div>
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M3 12h18" />
+                  <path d="M12 3a14 14 0 0 1 0 18" />
+                  <path d="M12 3a14 14 0 0 0 0 18" />
+                </svg>
+                <svg
+                  v-else-if="feature.title === 'Deterministic identity'"
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  width="20"
+                  height="20"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M12 3a7 7 0 0 0-7 7c0 5 7 11 7 11s7-6 7-11a7 7 0 0 0-7-7Z" />
+                  <path d="M12 8v5" />
+                  <path d="M9.5 10.5h5" />
+                </svg>
+                <svg
+                  v-else-if="feature.title === 'Portable proofs'"
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  width="20"
+                  height="20"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z" />
+                  <path d="M14 3v5h5" />
+                  <path d="M9 13h6" />
+                  <path d="M9 17h6" />
+                </svg>
+                <svg
+                  v-else
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  width="20"
+                  height="20"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <rect x="4" y="4" width="16" height="16" rx="2" />
+                  <path d="m8 12 2.5 2.5L16 9" />
+                </svg>
+              </template>
+            </FeatureCard>
+          </div>
+        </section>
+
+        <section id="how-it-works" class="pt-24">
+          <div class="grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
+            <PreviewPanel
+              title="Portable proof preview"
+              :tabs="['Proof.json', 'Preview']"
+              active-tab="Proof.json"
+              :code="proofJsonCode"
+              footer-label="Verified"
+              footer-tone="success"
+              footer-text="Independent verification available"
+              emphasis="default"
+            />
+
+            <div class="flex flex-col gap-8">
+              <SectionIntro
+                eyebrow="How it works"
+                title="Three steps to prove anything"
+                description="Generate your identity, sign your content, and share a proof that anyone can verify."
+              />
+              <StepList :items="howItWorksSteps" />
             </div>
           </div>
         </section>
 
-        <!-- CTA -->
-        <section class="mx-auto max-w-7xl px-6 py-20 lg:px-8">
-          <div
-            class="rounded-[2rem] border border-white/10 bg-white/[0.035] px-8 py-14 text-center sm:px-12"
-          >
-            <h2
-              class="text-3xl font-semibold tracking-tight text-white sm:text-4xl"
-            >
-              Ready to start?
-            </h2>
-            <p class="mx-auto mt-4 max-w-2xl text-lg leading-8 text-white/65">
-              Sign your first proof in seconds and ship verifiable integrity
-              into your workflow.
-            </p>
+        <section id="use-cases" class="pt-24">
+          <SectionIntro
+            eyebrow="Use cases"
+            title="Proof that travels with your work"
+            description="Sign once. Verify anywhere."
+          />
 
-            <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
-              <a
-                href="#"
-                class="inline-flex items-center rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-500"
-              >
-                Try it now
-              </a>
-              <a
-                href="#"
-                class="inline-flex items-center rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-white/90 transition hover:bg-white/10"
-              >
-                Read the docs
-              </a>
-            </div>
+          <div class="mt-10 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            <FeatureCard
+              v-for="useCase in useCases"
+              :key="useCase.title"
+              :title="useCase.title"
+              :description="useCase.description"
+              :tone="useCase.tone"
+              :size="['Blog posts', 'Release artifacts', 'Legal documents'].includes(useCase.title) ? 'md' : 'sm'"
+              :surface="['Blog posts', 'Release artifacts', 'Legal documents'].includes(useCase.title) ? 'panel' : 'subtle'"
+            >
+              <template #icon>
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  width="20"
+                  height="20"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    v-if="useCase.title === 'Release artifacts'"
+                    d="m12 3 8 4.5v9L12 21 4 16.5v-9L12 3Z"
+                  />
+                  <template v-else-if="useCase.title === 'Open data'">
+                    <path d="M12 3a9 9 0 1 0 9 9" />
+                    <path d="M12 12V3" />
+                    <path d="M12 12h9" />
+                  </template>
+                  <template v-else>
+                    <rect x="4" y="4" width="16" height="16" rx="2" />
+                    <path d="M8 10h8" />
+                    <path d="M8 14h8" />
+                  </template>
+                </svg>
+              </template>
+            </FeatureCard>
           </div>
+        </section>
+
+        <section id="developers" class="pt-24">
+          <Card variant="panel" padding="lg">
+            <div class="grid gap-12 lg:grid-cols-[0.98fr_1.02fr] lg:items-start">
+              <div class="flex flex-col gap-10">
+                <SectionIntro
+                  eyebrow="Built on Concord"
+                  title="Identity and proof, separated from infrastructure"
+                  description="Portable Proof is built on Concord identity primitives with deterministic signing and trust-minimal verification. No servers. No lock-in. Pure cryptography you control."
+                />
+
+                <Separator />
+
+                <div class="grid gap-5 sm:grid-cols-3">
+                  <FeatureCard
+                    v-for="point in developerPoints"
+                    :key="point.title"
+                    :title="point.title"
+                    :description="point.description"
+                    size="sm"
+                    tone="primary"
+                    surface="subtle"
+                  />
+                </div>
+              </div>
+
+              <PreviewPanel
+                title="Developer example"
+                meta="PortableProof"
+                :code="developerExample"
+                footer-label="Valid proof"
+                footer-tone="neutral"
+                badge-mode="quiet"
+                emphasis="subtle"
+              />
+            </div>
+          </Card>
+        </section>
+
+        <section class="pt-24">
+          <Card variant="elevated" padding="lg">
+            <SectionIntro
+              align="center"
+              eyebrow="Ready to start?"
+              title="Ship verifiable integrity into your workflow"
+              description="Sign your first proof in seconds and bring portable trust to text, files, and release pipelines."
+            >
+              <template #actions>
+                <Button as="RouterLink" to="/app" size="lg">
+                  Try it now
+                </Button>
+                <Button as="a" href="#" variant="secondary" size="lg">
+                  Read the docs
+                </Button>
+              </template>
+            </SectionIntro>
+          </Card>
         </section>
       </main>
 
-      <!-- Footer -->
-      <footer class="border-t border-white/10">
-        <div class="mx-auto max-w-7xl px-6 py-8 lg:px-8">
-          <div
-            class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between"
-          >
-            <div>
-              <div class="text-sm font-semibold text-white">Portable Proof</div>
-              <div class="mt-1 text-sm text-white/45">
-                Built on Concord. Open source.
-              </div>
+      <footer class="mx-auto max-w-7xl px-6 pb-10 lg:px-8">
+        <Separator />
+        <div class="flex flex-col gap-6 py-8 sm:flex-row sm:items-center sm:justify-between">
+          <div class="flex flex-col gap-2">
+            <div class="flex items-center gap-3">
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M10 13a5 5 0 0 1 0-7l1.2-1.2a5 5 0 1 1 7.1 7.1L17 13" />
+                <path d="M14 11a5 5 0 0 1 0 7l-1.2 1.2a5 5 0 0 1-7.1-7.1L7 11" />
+              </svg>
+              <span>Portable Proof</span>
             </div>
-
-            <nav
-              class="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-white/60"
-            >
-              <a href="#" class="transition hover:text-white">Docs</a>
-              <a href="#" class="transition hover:text-white">GitHub</a>
-              <a href="#" class="transition hover:text-white">Concord</a>
-              <a href="#" class="transition hover:text-white">Privacy</a>
-              <a href="#" class="transition hover:text-white">License</a>
-            </nav>
+            <p>© 2024 Portable Proof. Built on Concord. Open source.</p>
           </div>
+
+          <nav class="flex flex-wrap items-center gap-2">
+            <Button
+              v-for="link in footerLinks"
+              :key="link.label"
+              as="a"
+              :href="link.href"
+              variant="plain-secondary"
+              size="sm"
+            >
+              {{ link.label }}
+            </Button>
+          </nav>
         </div>
       </footer>
     </div>
-  </div>
+  </PageSurface>
 </template>
