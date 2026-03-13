@@ -1,5 +1,11 @@
 # @ternent/seal-cli
 
+## 0.1.3
+
+### Patch Changes
+
+- [`d1ffa2ed2d23d6c007ab829c0c4d4fd026ce188b`](https://github.com/samternent/home/commit/d1ffa2ed2d23d6c007ab829c0c4d4fd026ce188b) Thanks [@samternent](https://github.com/samternent)! - Update seal-cli scoping
+
 ## 0.1.2
 
 ### Patch Changes
