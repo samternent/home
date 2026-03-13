@@ -1,4 +1,4 @@
-# seal-cli
+# @ternent/seal-cli
 
 ## 0.1.1
 

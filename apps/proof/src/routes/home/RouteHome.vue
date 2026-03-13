@@ -131,7 +131,7 @@ const developerPoints = [
   },
 ] as const;
 
-const developerExample = `import { createSealProof, verifySealProofAgainstBytes } from "seal-cli/proof"
+const developerExample = `import { createSealProof, verifySealProofAgainstBytes } from "@ternent/seal-cli/proof"
 
 const proof = await createSealProof({
   signer: { privateKeyPem, publicKeyPem, keyId },

@@ -1,16 +1,16 @@
-# seal-cli
+# @ternent/seal-cli
 
 Seal signs files and manifests. It verifies artifacts offline. It emits portable proof JSON that `apps/proof` can verify in the browser without duplicate crypto logic.
 
 ## Install
 
 ```bash
-pnpm add -D seal-cli
+pnpm add -D @ternent/seal-cli
 ```
 
 ## Environment
 
-`seal-cli` reads signer material from environment variables:
+`@ternent/seal-cli` reads signer material from environment variables:
 
 ```bash
 export SEAL_PRIVATE_KEY="$(cat private-key.pem)"
@@ -45,7 +45,7 @@ Repo-local usage:
     cli-command: node packages/seal-cli/bin/seal
 ```
 
-External usage after publishing `seal-cli` to npm:
+External usage after publishing `@ternent/seal-cli` to npm:
 
 ```yaml
 - name: Generate Seal artifacts
@@ -55,7 +55,7 @@ External usage after publishing `seal-cli` to npm:
     SEAL_PUBLIC_KEY: ${{ secrets.SEAL_PUBLIC_KEY }}
   with:
     assets-directory: dist
-    package-name: seal-cli
+    package-name: @ternent/seal-cli
     package-version: latest
 ```
 
@@ -138,7 +138,7 @@ Public key:
 - `/proof.json`
 - `/public-key.json` (optional)
 
-Browser verification reuses `seal-cli/proof`, `seal-cli/crypto`, `ternent-identity`, and `ternent-utils`.
+Browser verification reuses `@ternent/seal-cli/proof`, `@ternent/seal-cli/crypto`, `ternent-identity`, and `ternent-utils`.
 
 Validation rules:
 

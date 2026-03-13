@@ -76,7 +76,7 @@ The action is generic at the workflow step level:
 
 - your workflow builds a static directory
 - the action signs that directory in place
-- the action can run either the published `seal-cli` package from npm or a repo-local CLI override
+- the action can run either the published `@ternent/seal-cli` package from npm or a repo-local CLI override
 
 Example:
 

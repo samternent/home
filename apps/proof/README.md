@@ -29,4 +29,4 @@ Browser verification checks:
 - algorithm
 - optional `/public-key.json` consistency with the proof signer block
 
-All browser crypto uses shared helpers from `seal-cli/proof`, `ternent-identity`, and `ternent-utils`.
+All browser crypto uses shared helpers from `@ternent/seal-cli/proof`, `ternent-identity`, and `ternent-utils`.

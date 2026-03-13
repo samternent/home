@@ -8,9 +8,18 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": resolve(__dirname, "./src"),
-      "seal-cli/proof": resolve(__dirname, "../../packages/seal-cli/src/proof.ts"),
-      "seal-cli/crypto": resolve(__dirname, "../../packages/seal-cli/src/crypto.ts"),
-      "seal-cli/manifest": resolve(__dirname, "../../packages/seal-cli/src/manifest.ts"),
+      "@ternent/seal-cli/proof": resolve(
+        __dirname,
+        "../../packages/seal-cli/src/proof.ts"
+      ),
+      "@ternent/seal-cli/crypto": resolve(
+        __dirname,
+        "../../packages/seal-cli/src/crypto.ts"
+      ),
+      "@ternent/seal-cli/manifest": resolve(
+        __dirname,
+        "../../packages/seal-cli/src/manifest.ts"
+      ),
     },
   },
   plugins: [

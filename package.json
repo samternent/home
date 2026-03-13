@@ -22,7 +22,7 @@
   "scripts": {
     "scaffold:ternent-app": "node scripts/scaffold-ternent-app.mjs",
     "build:footballsocial": "pnpm --filter footballsocial build",
-    "build:proof": "pnpm --filter ternent-ui --filter ternent-utils --filter ternent-identity --filter seal-cli --filter proof build",
+    "build:proof": "pnpm --filter ternent-ui --filter ternent-utils --filter ternent-identity --filter @ternent/seal-cli --filter proof build",
     "build:ternentdotdev": "pnpm --filter ternentdotdev build",
     "dev:footballsocial": "pnpm --filter footballsocial dev",
     "dev:proof": "pnpm --filter proof dev",

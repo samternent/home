@@ -27,7 +27,7 @@ inputs:
   package-name:
     description: "Published npm package name for the Seal CLI."
     required: false
-    default: "seal-cli"
+    default: "@ternent/seal-cli"
   package-version:
     description: "Published npm package version or dist-tag to execute."
     required: false

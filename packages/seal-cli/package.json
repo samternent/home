@@ -1,5 +1,5 @@
 {
-  "name": "seal-cli",
+  "name": "@ternent/seal-cli",
   "version": "0.1.1",
   "description": "Deterministic artifact signing for Seal",
   "license": "ISC",

@@ -5,7 +5,7 @@ import {
   verifySealProofSignature,
   type SealProofV1,
   type SealPublicKeyArtifact,
-} from "seal-cli/proof";
+} from "@ternent/seal-cli/proof";
 
 export type PublishedArtifactsVerification = {
   valid: boolean;

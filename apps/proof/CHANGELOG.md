@@ -8,7 +8,7 @@
 
 - Updated dependencies [[`36dd9bfac417eba61b8e81756cf15a3d3ac7a216`](https://github.com/samternent/home/commit/36dd9bfac417eba61b8e81756cf15a3d3ac7a216)]:
   - ternent-identity@0.0.13
-  - seal-cli@0.1.1
+  - @ternent/seal-cli@0.1.1
   - ternent-utils@1.1.1
 
 ## 0.0.5

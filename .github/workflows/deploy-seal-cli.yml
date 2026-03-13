@@ -50,12 +50,12 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build publishable packages
-        run: pnpm --filter ternent-utils --filter ternent-identity --filter seal-cli build
+        run: pnpm --filter ternent-utils --filter ternent-identity --filter @ternent/seal-cli build
 
       - name: Test seal-cli
-        run: pnpm --filter seal-cli test
+        run: pnpm --filter @ternent/seal-cli test
 
       - name: Publish npm
-        run: pnpm --filter seal-cli publish --no-git-checks --access public
+        run: pnpm --filter @ternent/seal-cli publish --no-git-checks --access public
         env:
           NPM_TOKEN: ${{ env.NPM_TOKEN }}
