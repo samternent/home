@@ -1,5 +1,13 @@
 # ternent-api
 
+## 0.2.29
+
+### Patch Changes
+
+- Updated dependencies [[`b35c163b4c4d3c084591ca8512b2d43083eb40ce`](https://github.com/samternent/home/commit/b35c163b4c4d3c084591ca8512b2d43083eb40ce)]:
+  - ternent-utils@1.1.0
+  - ternent-identity@0.0.12
+
 ## 0.2.28
 
 ### Patch Changes
