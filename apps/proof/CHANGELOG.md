@@ -1,5 +1,12 @@
 # proof
 
+## 0.0.7
+
+### Patch Changes
+
+- Updated dependencies [[`fd130eb5815c2ea636f66acb5a81c947c4081d95`](https://github.com/samternent/home/commit/fd130eb5815c2ea636f66acb5a81c947c4081d95)]:
+  - seal-cli@0.1.2
+
 ## 0.0.6
 
 ### Patch Changes
