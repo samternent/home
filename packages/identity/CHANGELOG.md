@@ -1,5 +1,14 @@
 # identity
 
+## 0.0.13
+
+### Patch Changes
+
+- [`36dd9bfac417eba61b8e81756cf15a3d3ac7a216`](https://github.com/samternent/home/commit/36dd9bfac417eba61b8e81756cf15a3d3ac7a216) Thanks [@samternent](https://github.com/samternent)! - Adds cli and GHA
+
+- Updated dependencies [[`36dd9bfac417eba61b8e81756cf15a3d3ac7a216`](https://github.com/samternent/home/commit/36dd9bfac417eba61b8e81756cf15a3d3ac7a216)]:
+  - ternent-utils@1.1.1
+
 ## 0.0.12
 
 ### Patch Changes
