@@ -1,5 +1,11 @@
 # @ternent/seal-cli
 
+## 0.1.4
+
+### Patch Changes
+
+- [`0b11c7d885e591fb1c9f373d209abe9d9f9dfb61`](https://github.com/samternent/home/commit/0b11c7d885e591fb1c9f373d209abe9d9f9dfb61) Thanks [@samternent](https://github.com/samternent)! - Seal publsh bump
+
 ## 0.1.3
 
 ### Patch Changes
