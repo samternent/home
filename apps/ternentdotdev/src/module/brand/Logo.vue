@@ -2,13 +2,13 @@
 import { computed } from "vue";
 import { useLocalStorage } from "@vueuse/core";
 import { generateColorStops } from "ternent-utils";
-import { default as ternentUIThemes } from "ternent-ui/themes";
+// import { default as ternentUIThemes } from "ternent-ui/themes";
 import Color from "colorjs.io";
 
 const themeName = useLocalStorage("app/theme", null);
 const themeColors = computed(() => ({
-  primary: ternentUIThemes[themeName.value]?.primary,
-  secondary: ternentUIThemes[themeName.value]?.secondary,
+  primary: null,
+  secondary: null,
 }));
 
 const colors = computed(() => {
@@ -28,7 +28,7 @@ const colors = computed(() => {
         .toGamut({ space: "srgb" })
         .to("srgb")
         .toString({ format: "hex" }),
-      257
+      257,
     ),
     ...generateColorStops(
       primaryColor
@@ -39,7 +39,7 @@ const colors = computed(() => {
         .toGamut({ space: "srgb" })
         .to("srgb")
         .toString({ format: "hex" }),
-      257
+      257,
     ),
     ...generateColorStops(
       primaryColor
@@ -50,7 +50,7 @@ const colors = computed(() => {
         .toGamut({ space: "srgb" })
         .to("srgb")
         .toString({ format: "hex" }),
-      257
+      257,
     ),
   ];
 });

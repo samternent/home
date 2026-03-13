@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import { Badge, Card } from "ternent-ui/primitives";
 import { useOfflineSync } from "@/modules/offline";
 
 const { isOnline } = useOfflineSync();
@@ -12,14 +13,16 @@ const bannerText = computed(() => {
 </script>
 
 <template>
-  <div
-    class="rounded-xl border px-4 py-3 text-sm"
-    :class="
-      isOnline
-        ? 'border-border bg-[var(--ui-surface-2)] text-fg-muted'
-        : 'border-[rgba(255,90,90,0.22)] bg-[rgba(255,90,90,0.1)] text-fg'
-    "
+  <Card
+    :variant="isOnline ? 'subtle' : 'panel'"
+    padding="sm"
+    class="flex items-start gap-3 border-[color-mix(in_srgb,var(--ui-border)_86%,transparent)]"
   >
-    {{ bannerText }}
-  </div>
+    <Badge :tone="isOnline ? 'neutral' : 'warning'" variant="outline">
+      {{ isOnline ? "Online" : "Offline" }}
+    </Badge>
+    <p class="m-0 text-sm leading-6 text-[var(--ui-fg-muted)]">
+      {{ bannerText }}
+    </p>
+  </Card>
 </template>

@@ -22,6 +22,7 @@ export { default as Input } from "./Input/Input.vue";
 export { default as Textarea } from "./Textarea/Textarea.vue";
 export { default as Label } from "./Label/Label.vue";
 export { default as FieldMessage } from "./FieldMessage/FieldMessage.vue";
+export { default as FileInput } from "./FileInput/FileInput.vue";
 export { default as Accordian } from "./Accordion/Accordion.vue";
 export { default as AccordianItem } from "./Accordion/AccordionItem.vue";
 export { default as SplitButton } from "./SplitButton/SplitButton.vue";

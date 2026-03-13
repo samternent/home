@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { RouterLink, useRoute } from "vue-router";
-import { SButton, STabs } from "ternent-ui/components";
+import { Badge, Button, Card, Separator } from "ternent-ui/primitives";
+import { PageSurface } from "ternent-ui/patterns";
 import { useIdentitySession } from "@/modules/identity";
 import OfflineBanner from "@/modules/offline/components/OfflineBanner.vue";
 
@@ -9,9 +10,9 @@ const route = useRoute();
 const { identity, hasIdentity } = useIdentitySession();
 
 const tabs = [
-  { path: "/app/identity", title: "Identity" },
-  { path: "/app/sign", title: "Sign" },
-  { path: "/app/verify", title: "Verify" },
+  { path: "/app/identity", title: "Identity", name: "app-identity" },
+  { path: "/app/sign", title: "Sign", name: "app-sign" },
+  { path: "/app/verify", title: "Verify", name: "app-verify" },
 ];
 
 const copied = ref(false);
@@ -23,6 +24,14 @@ const fingerprintShort = computed(() => {
 });
 
 const currentPath = computed(() => route.path);
+const currentTabTitle = computed(
+  () =>
+    tabs.find((tab) => route.path.startsWith(tab.path))?.title ?? "Workspace",
+);
+const statusTone = computed(() => (hasIdentity.value ? "success" : "neutral"));
+const statusLabel = computed(() =>
+  hasIdentity.value ? "Identity active" : "No identity",
+);
 
 const copyFingerprint = async () => {
   if (!identity.value?.fingerprint || copied.value) return;
@@ -40,63 +49,168 @@ const copyFingerprint = async () => {
 </script>
 
 <template>
-  <div
-    class="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-6 py-10 md:px-8 md:py-12"
-  >
-    <header class="mb-8 space-y-6">
-      <div class="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 class="m-0 text-2xl font-medium tracking-tight">Proof</h1>
-        </div>
+  <PageSurface>
+    <div class="relative">
+      <header class="mx-auto max-w-6xl px-6 py-6 lg:px-8">
+        <div class="flex flex-col gap-5">
+          <div
+            class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between"
+          >
+            <RouterLink
+              to="/"
+              class="flex items-center gap-3 text-[var(--ui-fg)] no-underline"
+            >
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                width="22"
+                height="22"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M10 13a5 5 0 0 1 0-7l1.2-1.2a5 5 0 1 1 7.1 7.1L17 13"
+                />
+                <path
+                  d="M14 11a5 5 0 0 1 0 7l-1.2 1.2a5 5 0 0 1-7.1-7.1L7 11"
+                />
+              </svg>
+              <div class="flex flex-col gap-0.5">
+                <span class="text-lg font-medium tracking-tight"
+                  >Portable Proof</span
+                >
+                <span
+                  class="text-xs uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]"
+                >
+                  Browser-native verification
+                </span>
+              </div>
+            </RouterLink>
 
+            <div class="flex flex-wrap items-center gap-2">
+              <Button
+                as="RouterLink"
+                to="/"
+                size="sm"
+                variant="plain-secondary"
+              >
+                Home
+              </Button>
+              <Button
+                as="a"
+                href="https://github.com/samternent/home/tree/main/apps/proof"
+                target="_blank"
+                rel="noreferrer"
+                size="sm"
+                variant="plain-secondary"
+              >
+                GitHub
+              </Button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="mx-auto max-w-6xl px-6 lg:px-8">
+        <Separator />
+      </div>
+
+      <main class="mx-auto max-w-6xl px-6 pb-16 pt-8 lg:px-8">
+        <div class="grid gap-6">
+          <div class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_19rem]">
+            <Card variant="panel" padding="sm" class="space-y-4">
+              <div class="flex flex-wrap items-center justify-between gap-3">
+                <div class="space-y-1">
+                  <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
+                    Workspace
+                  </p>
+                  <p class="m-0 text-sm text-[var(--ui-fg-muted)]">
+                    Browser-native signing and verification with local identity control.
+                  </p>
+                </div>
+
+                <Badge tone="primary" variant="outline">
+                  {{ currentTabTitle }}
+                </Badge>
+              </div>
+
+              <div class="flex flex-wrap gap-2">
+                <Button
+                  v-for="tab in tabs"
+                  :key="tab.path"
+                  as="RouterLink"
+                  :to="tab.path"
+                  size="sm"
+                  :variant="
+                    currentPath.startsWith(tab.path)
+                      ? 'secondary'
+                      : 'plain-secondary'
+                  "
+                >
+                  {{ tab.title }}
+                </Button>
+              </div>
+            </Card>
+
+            <Card variant="subtle" padding="sm" class="space-y-4">
+              <div class="flex items-start justify-between gap-3">
+                <div class="space-y-1">
+                  <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
+                    Active signer
+                  </p>
+                  <p class="proof-shell-copy m-0 text-sm text-[var(--ui-fg)]">
+                    {{ fingerprintShort }}
+                  </p>
+                </div>
+
+                <Badge :tone="statusTone" variant="soft">
+                  {{ statusLabel }}
+                </Badge>
+              </div>
+
+              <div class="flex flex-wrap gap-2">
+                <Button
+                  size="xs"
+                  variant="secondary"
+                  :disabled="!hasIdentity"
+                  @click="copyFingerprint"
+                >
+                  {{ copied ? "Copied" : "Copy fingerprint" }}
+                </Button>
+                <Button
+                  as="RouterLink"
+                  to="/app/identity"
+                  size="xs"
+                  variant="plain-secondary"
+                >
+                  Manage identity
+                </Button>
+              </div>
+            </Card>
+          </div>
+
+          <OfflineBanner />
+
+          <section class="space-y-6">
+            <RouterView />
+          </section>
+        </div>
+      </main>
+
+      <footer class="mx-auto max-w-6xl px-6 pb-10 lg:px-8">
+        <Separator />
         <div
-          class="inline-flex items-center gap-2 rounded-full bg-[rgba(255,255,255,0.04)] px-3 py-1.5"
+          class="flex flex-col gap-3 py-6 text-sm text-[var(--ui-fg-muted)] sm:flex-row sm:items-center sm:justify-between"
         >
-          <span class="text-xs font-medium text-fg-muted">Active identity</span>
-          <span class="font-mono text-xs text-fg">{{ fingerprintShort }}</span>
-          <SButton
-            variant="ghost"
-            size="micro"
-            :disabled="!hasIdentity"
-            @click="copyFingerprint"
-          >
-            {{ copied ? "Copied" : "Copy" }}
-          </SButton>
+          <p class="m-0">Fully client-side. No data leaves your browser.</p>
+          <p class="m-0">
+            Portable proofs for text, files, and release artifacts.
+          </p>
         </div>
-      </div>
-
-      <div class="flex flex-wrap items-center justify-between gap-3 py-4">
-        <STabs :items="tabs" :path="currentPath" type="pills" size="micro" />
-
-        <div class="flex items-center gap-4 text-sm">
-          <a
-            href="https://github.com/samternent/home/apps/proof"
-            target="_blank"
-            rel="noreferrer"
-            class="text-fg-muted transition hover:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ui-ring)]"
-          >
-            GitHub
-          </a>
-          <RouterLink
-            to="/"
-            class="text-fg-muted transition hover:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ui-ring)]"
-          >
-            Home
-          </RouterLink>
-        </div>
-      </div>
-    </header>
-
-    <OfflineBanner class="mb-8" />
-
-    <main class="flex-1">
-      <div class="mx-auto w-full max-w-4xl">
-        <RouterView />
-      </div>
-    </main>
-
-    <footer class="mt-10 border-t border-border pt-4 text-xs text-fg-muted">
-      Fully client-side. No data leaves your browser.
-    </footer>
-  </div>
+      </footer>
+    </div>
+  </PageSurface>
 </template>

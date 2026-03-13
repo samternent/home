@@ -48,15 +48,18 @@ const heroRows = [
 const howItWorksSteps = [
   {
     title: "Generate your identity",
-    description: "Create a deterministic keypair in one click or import one you already trust.",
+    description:
+      "Create a deterministic keypair in one click or import one you already trust.",
   },
   {
     title: "Sign your content",
-    description: "Hash any text or file in seconds and produce a portable proof artifact.",
+    description:
+      "Hash any text or file in seconds and produce a portable proof artifact.",
   },
   {
     title: "Verify anywhere",
-    description: "Anyone can independently verify the proof without your private key or your app.",
+    description:
+      "Anyone can independently verify the proof without your private key or your app.",
   },
 ];
 
@@ -104,11 +107,13 @@ const useCases = [
 const developerPoints = [
   {
     title: "Prove integrity",
-    description: "Cryptographically assert that content is exactly as you created it.",
+    description:
+      "Cryptographically assert that content is exactly as you created it.",
   },
   {
     title: "Control identity",
-    description: "Your keys remain yours, with no third party holding your identity.",
+    description:
+      "Your keys remain yours, with no third party holding your identity.",
   },
   {
     title: "Audit everything",
@@ -116,26 +121,30 @@ const developerPoints = [
   },
 ] as const;
 
-const developerExample = `import { PortableProof } from "@ternent/portable-proof"
+const developerExample = `import { sign, verify } from "@ternent/identity"
 
-const proof = await PortableProof.sign({
+const proof = await sign({
   content: fileBuffer,
   identity
 })
 
-const verified = await PortableProof.verify({
+const verified = await verify({
   content: fileBuffer,
   proof
-})
-
-// verified.valid === true`;
+})`;
 
 const footerLinks = [
-  { href: "#", label: "Docs" },
-  { href: "#", label: "GitHub" },
-  { href: "#", label: "Concord" },
-  { href: "#", label: "Privacy" },
-  { href: "#", label: "License" },
+  { href: "/app", label: "Workspace" },
+  { href: "/app/verify", label: "Verify" },
+  {
+    href: "https://github.com/samternent/home/tree/main/apps/proof",
+    label: "GitHub",
+  },
+  { href: "https://github.com/samternent/home", label: "Monorepo" },
+  {
+    href: "https://github.com/samternent/home/tree/main/packages/identity",
+    label: "Identity",
+  },
 ];
 </script>
 
@@ -176,11 +185,14 @@ const footerLinks = [
           </nav>
 
           <div class="flex items-center gap-2">
-            <Button as="a" href="#" variant="secondary" size="sm">
-              Sign in
-            </Button>
-            <Button as="RouterLink" to="/app" size="sm">
-              Get started
+            <Button as="RouterLink" to="/app/verify" size="sm"> Verify </Button>
+            <Button
+              as="RouterLink"
+              to="/app/sign"
+              variant="secondary"
+              size="sm"
+            >
+              Sign
             </Button>
           </div>
         </div>
@@ -190,8 +202,12 @@ const footerLinks = [
         <Separator />
       </div>
 
-      <main class="mx-auto max-w-7xl px-6 pb-24 pt-16 lg:px-8 lg:pb-28 lg:pt-24">
-        <section class="grid items-center gap-14 lg:grid-cols-[1.12fr_0.88fr] lg:gap-16">
+      <main
+        class="mx-auto max-w-7xl px-6 pb-24 pt-16 lg:px-8 lg:pb-28 lg:pt-24"
+      >
+        <section
+          class="grid items-center gap-14 lg:grid-cols-[1.12fr_0.88fr] lg:gap-16"
+        >
           <SectionIntro
             eyebrow="Portable cryptographic proof"
             title="Cryptographic proof you can take anywhere."
@@ -200,11 +216,16 @@ const footerLinks = [
             title-tag="h1"
           >
             <template #actions>
-              <Button as="RouterLink" to="/app" size="lg">
-                Try it now
+              <Button as="RouterLink" to="/app/verify" size="lg">
+                Verify
               </Button>
-              <Button as="a" href="#" variant="secondary" size="lg">
-                GitHub
+              <Button
+                as="RouterLink"
+                to="/app/sign"
+                size="lg"
+                variant="secondary"
+              >
+                Sign
               </Button>
             </template>
           </SectionIntro>
@@ -264,7 +285,9 @@ const footerLinks = [
                   stroke-linecap="round"
                   stroke-linejoin="round"
                 >
-                  <path d="M12 3a7 7 0 0 0-7 7c0 5 7 11 7 11s7-6 7-11a7 7 0 0 0-7-7Z" />
+                  <path
+                    d="M12 3a7 7 0 0 0-7 7c0 5 7 11 7 11s7-6 7-11a7 7 0 0 0-7-7Z"
+                  />
                   <path d="M12 8v5" />
                   <path d="M9.5 10.5h5" />
                 </svg>
@@ -280,7 +303,9 @@ const footerLinks = [
                   stroke-linecap="round"
                   stroke-linejoin="round"
                 >
-                  <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z" />
+                  <path
+                    d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"
+                  />
                   <path d="M14 3v5h5" />
                   <path d="M9 13h6" />
                   <path d="M9 17h6" />
@@ -308,14 +333,14 @@ const footerLinks = [
         <section id="how-it-works" class="pt-24">
           <div class="grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
             <PreviewPanel
-              title="Portable proof preview"
+              title="Verification record"
               :tabs="['Proof.json', 'Preview']"
               active-tab="Proof.json"
               :code="proofJsonCode"
-              footer-label="Verified"
-              footer-tone="success"
-              footer-text="Independent verification available"
-              emphasis="default"
+              footer-label="portable-proof/v1"
+              footer-tone="neutral"
+              footer-text="Independent verification without your private key"
+              emphasis="strong"
             />
 
             <div class="flex flex-col gap-8">
@@ -337,50 +362,68 @@ const footerLinks = [
           />
 
           <div class="mt-10 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-            <FeatureCard
+            <Card
               v-for="useCase in useCases"
               :key="useCase.title"
-              :title="useCase.title"
-              :description="useCase.description"
-              :tone="useCase.tone"
-              :size="['Blog posts', 'Release artifacts', 'Legal documents'].includes(useCase.title) ? 'md' : 'sm'"
-              :surface="['Blog posts', 'Release artifacts', 'Legal documents'].includes(useCase.title) ? 'panel' : 'subtle'"
+              :variant="useCase.title === 'Release artifacts' ? 'panel' : 'subtle'"
+              :padding="useCase.title === 'Release artifacts' ? 'md' : 'sm'"
+              class="space-y-4"
             >
-              <template #icon>
-                <svg
-                  aria-hidden="true"
-                  viewBox="0 0 24 24"
-                  width="20"
-                  height="20"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.8"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+              <div class="flex items-start justify-between gap-3">
+                <div class="space-y-2">
+                  <h3
+                    class="m-0 text-xl font-medium tracking-[-0.02em] text-[var(--ui-fg)]"
+                  >
+                    {{ useCase.title }}
+                  </h3>
+                </div>
+                <div
+                  class="inline-flex size-10 items-center justify-center rounded-[var(--ui-radius-md)] border border-[var(--ui-border)] bg-[var(--ui-tonal-secondary)] text-[var(--ui-fg-muted)]"
                 >
-                  <path
-                    v-if="useCase.title === 'Release artifacts'"
-                    d="m12 3 8 4.5v9L12 21 4 16.5v-9L12 3Z"
-                  />
-                  <template v-else-if="useCase.title === 'Open data'">
-                    <path d="M12 3a9 9 0 1 0 9 9" />
-                    <path d="M12 12V3" />
-                    <path d="M12 12h9" />
-                  </template>
-                  <template v-else>
-                    <rect x="4" y="4" width="16" height="16" rx="2" />
-                    <path d="M8 10h8" />
-                    <path d="M8 14h8" />
-                  </template>
-                </svg>
-              </template>
-            </FeatureCard>
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    width="18"
+                    height="18"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      v-if="useCase.title === 'Release artifacts'"
+                      d="m12 3 8 4.5v9L12 21 4 16.5v-9L12 3Z"
+                    />
+                    <template v-else-if="useCase.title === 'Open data'">
+                      <path d="M12 3a9 9 0 1 0 9 9" />
+                      <path d="M12 12V3" />
+                      <path d="M12 12h9" />
+                    </template>
+                    <template v-else>
+                      <rect x="4" y="4" width="16" height="16" rx="2" />
+                      <path d="M8 10h8" />
+                      <path d="M8 14h8" />
+                    </template>
+                  </svg>
+                </div>
+              </div>
+              <p class="m-0 text-sm leading-7 text-[var(--ui-fg-muted)]">
+                {{ useCase.description }}
+              </p>
+            </Card>
           </div>
         </section>
 
         <section id="developers" class="pt-24">
-          <Card variant="panel" padding="lg">
-            <div class="grid gap-12 lg:grid-cols-[0.98fr_1.02fr] lg:items-start">
+          <Card
+            variant="panel"
+            padding="lg"
+            class="border-[color-mix(in_srgb,var(--ui-border)_82%,transparent)]"
+          >
+            <div
+              class="grid gap-12 lg:grid-cols-[0.98fr_1.02fr] lg:items-start"
+            >
               <div class="flex flex-col gap-10">
                 <SectionIntro
                   eyebrow="Built on Concord"
@@ -410,7 +453,7 @@ const footerLinks = [
                 footer-label="Valid proof"
                 footer-tone="neutral"
                 badge-mode="quiet"
-                emphasis="subtle"
+                emphasis="default"
               />
             </div>
           </Card>
@@ -425,11 +468,14 @@ const footerLinks = [
               description="Sign your first proof in seconds and bring portable trust to text, files, and release pipelines."
             >
               <template #actions>
-                <Button as="RouterLink" to="/app" size="lg">
-                  Try it now
-                </Button>
-                <Button as="a" href="#" variant="secondary" size="lg">
-                  Read the docs
+                <Button as="RouterLink" to="/app/sign" size="lg"> Sign </Button>
+                <Button
+                  as="RouterLink"
+                  to="/app/verify"
+                  variant="secondary"
+                  size="lg"
+                >
+                  Review verification
                 </Button>
               </template>
             </SectionIntro>
@@ -439,26 +485,36 @@ const footerLinks = [
 
       <footer class="mx-auto max-w-7xl px-6 pb-10 lg:px-8">
         <Separator />
-        <div class="flex flex-col gap-6 py-8 sm:flex-row sm:items-center sm:justify-between">
-          <div class="flex flex-col gap-2">
-            <div class="flex items-center gap-3">
-              <svg
-                aria-hidden="true"
-                viewBox="0 0 24 24"
-                width="20"
-                height="20"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M10 13a5 5 0 0 1 0-7l1.2-1.2a5 5 0 1 1 7.1 7.1L17 13" />
-                <path d="M14 11a5 5 0 0 1 0 7l-1.2 1.2a5 5 0 0 1-7.1-7.1L7 11" />
-              </svg>
-              <span>Portable Proof</span>
+        <div
+          class="flex flex-col gap-6 py-8 sm:flex-row sm:items-center sm:justify-between"
+        >
+          <div class="flex items-start gap-2">
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="mt-1"
+            >
+              <path d="M10 13a5 5 0 0 1 0-7l1.2-1.2a5 5 0 1 1 7.1 7.1L17 13" />
+              <path d="M14 11a5 5 0 0 1 0 7l-1.2 1.2a5 5 0 0 1-7.1-7.1L7 11" />
+            </svg>
+            <div class="flex flex-col gap-1">
+              <div class="flex gap-3">
+                <span>Portable Proof</span>
+              </div>
+              <span class="flex gap-1">
+                <a href="https://ternent.dev" class="hover:underline text-xs">
+                  ternent.dev</a
+                >
+                <p class="text-xs gap-2 flex">© 2026.</p>
+              </span>
             </div>
-            <p>© 2024 Portable Proof. Built on Concord. Open source.</p>
           </div>
 
           <nav class="flex flex-wrap items-center gap-2">
@@ -467,6 +523,8 @@ const footerLinks = [
               :key="link.label"
               as="a"
               :href="link.href"
+              :target="link.href.startsWith('http') ? '_blank' : undefined"
+              :rel="link.href.startsWith('http') ? 'noreferrer' : undefined"
               variant="plain-secondary"
               size="sm"
             >

@@ -5,8 +5,7 @@ import { appConfig, appThemePrefix, type ThemeMode } from "@/app/config/app.conf
 const STORAGE_KEY = `${appConfig.appId}/theme-mode`;
 
 function getInitialMode(): ThemeMode {
-  if (typeof window === "undefined") return appConfig.defaultThemeMode;
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  return appConfig.defaultThemeMode;
 }
 
 const modeRef = useLocalStorage<ThemeMode>(STORAGE_KEY, getInitialMode());

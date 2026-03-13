@@ -13,128 +13,6 @@
   font-display: swap;
 }
 
-:root,
-[data-theme="proof-light"] {
-  color-scheme: dark;
-  --ui-bg: #091528;
-  --ui-fg: rgba(255, 255, 255, 0.95);
-  --ui-fg-muted: rgba(255, 255, 255, 0.7);
-  --ui-surface: #0c192b;
-  --ui-surface-2: #102036;
-  --ui-surface-3: #14263f;
-  --ui-surface-hover: #152742;
-  --ui-border: rgba(255, 255, 255, 0.1);
-  --ui-primary: #7aa2ff;
-  --ui-on-primary: #091528;
-  --ui-primary-muted: rgba(122, 162, 255, 0.14);
-  --ui-primary-hover: #8ab0ff;
-  --ui-primary-active: rgba(122, 162, 255, 0.32);
-  --ui-secondary: #14263f;
-  --ui-on-secondary: rgba(255, 255, 255, 0.9);
-  --ui-secondary-muted: rgba(122, 162, 255, 0.1);
-  --ui-secondary-hover: rgba(122, 162, 255, 0.18);
-  --ui-secondary-active: rgba(122, 162, 255, 0.24);
-  --ui-accent: #7aa2ff;
-  --ui-on-accent: #091528;
-  --ui-accent-muted: rgba(122, 162, 255, 0.14);
-  --ui-accent-hover: rgba(122, 162, 255, 0.22);
-  --ui-accent-active: rgba(122, 162, 255, 0.3);
-  --ui-success: #b9f3c5;
-  --ui-on-success: #07111f;
-  --ui-warning: #e0bc7a;
-  --ui-on-warning: #091528;
-  --ui-info: #90b3ff;
-  --ui-on-info: #091528;
-  --ui-critical: #ffb4b4;
-  --ui-on-critical: #091528;
-  --ui-danger: var(--ui-critical);
-  --ui-on-danger: var(--ui-on-critical);
-  --ui-danger-muted: rgba(255, 90, 90, 0.1);
-  --ui-danger-hover: rgba(255, 90, 90, 0.16);
-  --ui-danger-active: rgba(255, 90, 90, 0.22);
-  --ui-radius-sm: 0.75rem;
-  --ui-radius-md: 1rem;
-  --ui-radius-lg: 1.25rem;
-  --ui-ring: rgba(120, 160, 255, 0.45);
-
-  --p: var(--ui-primary);
-  --pc: var(--ui-on-primary);
-  --s: var(--ui-secondary);
-  --sc: var(--ui-on-secondary);
-  --a: var(--ui-accent);
-  --ac: var(--ui-on-accent);
-  --su: #50c878;
-  --suc: #07111f;
-  --wa: var(--ui-warning);
-  --wac: var(--ui-on-warning);
-  --er: #ff8f8f;
-  --erc: #07111f;
-  --b1: var(--ui-surface);
-  --b2: var(--ui-surface-2);
-  --b3: var(--ui-surface-3);
-  --bc: var(--ui-fg);
-  --rounded-btn: 0.75rem;
-}
-
-[data-theme="proof-dark"] {
-  color-scheme: dark;
-  --ui-bg: #07111f;
-  --ui-fg: rgba(255, 255, 255, 0.95);
-  --ui-fg-muted: rgba(255, 255, 255, 0.72);
-  --ui-surface: #0b1728;
-  --ui-surface-2: #0f1d31;
-  --ui-surface-3: #13233b;
-  --ui-surface-hover: #162842;
-  --ui-border: rgba(255, 255, 255, 0.1);
-  --ui-primary: #7aa2ff;
-  --ui-on-primary: #07111f;
-  --ui-primary-muted: rgba(122, 162, 255, 0.14);
-  --ui-primary-hover: #8ab0ff;
-  --ui-primary-active: rgba(122, 162, 255, 0.32);
-  --ui-secondary: #13233b;
-  --ui-on-secondary: rgba(255, 255, 255, 0.9);
-  --ui-secondary-muted: rgba(122, 162, 255, 0.1);
-  --ui-secondary-hover: rgba(122, 162, 255, 0.18);
-  --ui-secondary-active: rgba(122, 162, 255, 0.24);
-  --ui-accent: #7aa2ff;
-  --ui-on-accent: #07111f;
-  --ui-accent-muted: rgba(122, 162, 255, 0.14);
-  --ui-accent-hover: rgba(122, 162, 255, 0.22);
-  --ui-accent-active: rgba(122, 162, 255, 0.3);
-  --ui-success: #b9f3c5;
-  --ui-on-success: #07111f;
-  --ui-warning: #e0bc7a;
-  --ui-on-warning: #07111f;
-  --ui-info: #9ab9ff;
-  --ui-on-info: #07111f;
-  --ui-critical: #ffb4b4;
-  --ui-on-critical: #07111f;
-  --ui-danger: var(--ui-critical);
-  --ui-on-danger: var(--ui-on-critical);
-  --ui-danger-muted: rgba(255, 90, 90, 0.1);
-  --ui-danger-hover: rgba(255, 90, 90, 0.16);
-  --ui-danger-active: rgba(255, 90, 90, 0.22);
-  --ui-ring: rgba(120, 160, 255, 0.45);
-
-  --p: var(--ui-primary);
-  --pc: var(--ui-on-primary);
-  --s: var(--ui-secondary);
-  --sc: var(--ui-on-secondary);
-  --a: var(--ui-accent);
-  --ac: var(--ui-on-accent);
-  --su: #50c878;
-  --suc: #07111f;
-  --wa: var(--ui-warning);
-  --wac: var(--ui-on-warning);
-  --er: #ff8f8f;
-  --erc: #07111f;
-  --b1: var(--ui-surface);
-  --b2: var(--ui-surface-2);
-  --b3: var(--ui-surface-3);
-  --bc: var(--ui-fg);
-  --rounded-btn: 0.75rem;
-}
-
 html,
 body,
 #app {
@@ -145,15 +23,19 @@ body,
 body {
   min-height: 100vh;
   font-family: "Clash Grotesk", system-ui, sans-serif;
-  background: radial-gradient(circle at top right, rgba(122, 162, 255, 0.12), transparent 42%),
-    radial-gradient(circle at bottom left, rgba(39, 70, 130, 0.16), transparent 52%),
-    var(--ui-bg);
+  background: var(--ui-bg);
   color: var(--ui-fg);
 }
 
-.pp-disclosure {
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 0.75rem;
-  background: var(--ui-surface-2);
+.proof-code-block {
+  overflow: auto;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-md);
+  background: color-mix(in srgb, var(--ui-tonal-tertiary) 84%, transparent);
   padding: 1rem;
+  color: var(--ui-fg-muted);
+}
+
+.proof-shell-copy {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
 }

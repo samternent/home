@@ -128,18 +128,18 @@ const badgeTone = (tone?: PreviewPanelTone) =>
   inset: 0;
   content: "";
   background:
-    radial-gradient(circle at top right, color-mix(in srgb, var(--ui-primary-muted) 60%, transparent), transparent 34%),
-    radial-gradient(circle at bottom left, color-mix(in srgb, var(--ui-info-muted) 50%, transparent), transparent 38%);
-  opacity: 0.7;
+    linear-gradient(180deg, color-mix(in srgb, var(--ui-tonal-tertiary) 78%, transparent), transparent 28%),
+    radial-gradient(circle at top right, color-mix(in srgb, var(--ui-primary-muted) 38%, transparent), transparent 38%);
+  opacity: 0.42;
   pointer-events: none;
 }
 
 .ui-preview-panel--subtle::before {
-  opacity: 0.42;
+  opacity: 0.22;
 }
 
 .ui-preview-panel--strong::before {
-  opacity: 0.5;
+  opacity: 0.34;
 }
 
 .ui-preview-panel::after {
@@ -153,7 +153,7 @@ const badgeTone = (tone?: PreviewPanelTone) =>
   background-position: center;
   background-size: 2.25rem 2.25rem;
   mask-image: radial-gradient(circle at center, black, transparent 78%);
-  opacity: 0.18;
+  opacity: 0.12;
   pointer-events: none;
 }
 
@@ -162,13 +162,13 @@ const badgeTone = (tone?: PreviewPanelTone) =>
 }
 
 .ui-preview-panel--strong::after {
-  opacity: 0.28;
+  opacity: 0.18;
 }
 
 .ui-preview-panel--strong {
   box-shadow:
     inset 0 0 0 1px color-mix(in srgb, var(--ui-border) 84%, transparent),
-    0 18px 40px color-mix(in srgb, var(--ui-bg) 65%, transparent);
+    0 14px 30px color-mix(in srgb, var(--ui-bg) 55%, transparent);
 }
 
 .ui-preview-panel > * {
@@ -216,7 +216,7 @@ const badgeTone = (tone?: PreviewPanelTone) =>
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
 }
 
 .ui-preview-panel__title {
@@ -233,7 +233,9 @@ const badgeTone = (tone?: PreviewPanelTone) =>
 
 .ui-preview-panel__meta {
   color: var(--ui-fg-muted);
-  font-size: 0.875rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .ui-preview-panel__body {
@@ -245,7 +247,7 @@ const badgeTone = (tone?: PreviewPanelTone) =>
 .ui-preview-panel__rows {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.875rem;
   margin: 0;
 }
 
@@ -254,7 +256,7 @@ const badgeTone = (tone?: PreviewPanelTone) =>
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding-bottom: 0.875rem;
+  padding-bottom: 0.75rem;
   border-bottom: 1px solid color-mix(in srgb, var(--ui-border) 72%, transparent);
 }
 

@@ -2,10 +2,11 @@ import type { TabsSize, TabsVariant } from "./Tabs.types";
 
 export const tabsRootClass = "w-full";
 export const tabsListBaseClass =
-  "relative flex w-full items-center gap-1 border-b border-[var(--ui-border)]";
+  "relative flex w-full items-center gap-1 border-b border-[color-mix(in_srgb,var(--ui-border)_82%,transparent)]";
 export const tabsListVariantClasses: Record<TabsVariant, string> = {
   underline: "",
-  pill: "rounded-[var(--ui-radius-md)] border-b-0 bg-[var(--ui-tonal-tertiary)] p-1",
+  pill:
+    "rounded-[var(--ui-radius-md)] border border-[color-mix(in_srgb,var(--ui-border)_82%,transparent)] border-b bg-[var(--ui-tonal-tertiary)] p-1",
 };
 
 export const tabsTriggerBaseClass =
@@ -23,7 +24,7 @@ export const tabsTriggerVariantClasses: Record<TabsVariant, string> = {
     "rounded-none border-b-2 border-transparent text-[var(--ui-fg-muted)] hover:text-[var(--ui-fg)] " +
     "data-[selected]:border-[var(--ui-primary)] data-[selected]:text-[var(--ui-fg)]",
   pill:
-    "text-[var(--ui-fg-muted)] hover:text-[var(--ui-fg)] data-[selected]:bg-[var(--ui-surface)] data-[selected]:text-[var(--ui-fg)] data-[selected]:shadow-[var(--ui-shadow-sm)]",
+    "text-[var(--ui-fg-muted)] hover:text-[var(--ui-fg)] data-[selected]:bg-[var(--ui-surface)] data-[selected]:text-[var(--ui-fg)] data-[selected]:shadow-[var(--ui-shadow-sm)] data-[selected]:border data-[selected]:border-[color-mix(in_srgb,var(--ui-border)_86%,transparent)]",
 };
 
-export const tabsContentClass = "pt-4 text-[var(--ui-fg)]";
+export const tabsContentClass = "pt-5 text-[var(--ui-fg)]";

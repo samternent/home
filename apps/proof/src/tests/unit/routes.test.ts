@@ -23,6 +23,12 @@ describe("routes", () => {
     expect(paths).toContain("/app/identity");
     expect(paths).toContain("/app/sign");
     expect(paths).toContain("/app/verify");
+    expect(paths).toContain("/settings");
+    expect(paths).toContain("/settings/appearance");
+    expect(paths).toContain("/settings/identity");
+    expect(paths).toContain("/settings/identity/create");
+    expect(paths).toContain("/settings/identity/import");
+    expect(paths).toContain("/settings/identity/export");
   });
 
   it("routes /app to identity by default when no identity is loaded", () => {
@@ -35,5 +41,12 @@ describe("routes", () => {
 
     expect(typeof rootChild?.redirect).toBe("function");
     expect((rootChild?.redirect as () => any)()).toEqual({ name: "app-identity" });
+  });
+
+  it("redirects settings identity routes to the app identity workspace", () => {
+    expect(routes.find((route) => route.path === "/settings/identity")?.redirect).toEqual({ name: "app-identity" });
+    expect(routes.find((route) => route.path === "/settings/identity/create")?.redirect).toEqual({ name: "app-identity" });
+    expect(routes.find((route) => route.path === "/settings/identity/import")?.redirect).toEqual({ name: "app-identity" });
+    expect(routes.find((route) => route.path === "/settings/identity/export")?.redirect).toEqual({ name: "app-identity" });
   });
 });

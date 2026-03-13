@@ -1,44 +1,86 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import { SButton, SCard, SDisclosure, SFileInput, STextarea } from "ternent-ui/components";
 import {
-  useIdentitySession,
+  Accordion,
+  AccordionItem,
+  Badge,
+  Button,
+  Card,
+  Checkbox,
+  FileInput,
+  Textarea,
+} from "ternent-ui/primitives";
+import { FormField, PreviewPanel, SectionIntro } from "ternent-ui/patterns";
+import {
   useIdentityCreate,
-  useIdentityImport,
   useIdentityExport,
+  useIdentityImport,
+  useIdentitySession,
 } from "@/modules/identity";
 
 const { identity, hasIdentity, rememberInBrowser, setRememberInBrowser, clearIdentity } = useIdentitySession();
 const { create, isCreating } = useIdentityCreate();
 const { importIdentity, isImporting } = useIdentityImport();
-const { downloadExport } = useIdentityExport();
+const { exportedPayload, downloadExport } = useIdentityExport();
 
 const importPayload = ref("");
-const importFileName = ref<string | null>(null);
+const importFileName = ref("");
 const importFile = ref<File | null>(null);
 const showImportPanel = ref(false);
 const showFullFingerprint = ref(false);
 const showPublicKey = ref(false);
-
 const fingerprintCopied = ref(false);
-
 const notice = ref<string | null>(null);
 const error = ref<string | null>(null);
 
 const rememberModel = computed({
   get: () => rememberInBrowser.value,
-  set: (value: boolean) => {
-    setRememberInBrowser(value);
-    notice.value = value
+  set: (value: boolean | "indeterminate") => {
+    const next = value === true;
+    setRememberInBrowser(next);
+    notice.value = next
       ? "Identity storage enabled for this browser."
       : "Identity storage disabled. Active identity remains memory-only.";
   },
 });
 
 const shortFingerprint = computed(() => {
-  if (!identity.value?.fingerprint) return "";
+  if (!identity.value?.fingerprint) return "No identity loaded";
   const value = identity.value.fingerprint;
-  return `${value.slice(0, 8)}...${value.slice(-8)}`;
+  return `${value.slice(0, 10)}...${value.slice(-10)}`;
+});
+
+const identityRows = computed(() => {
+  if (!identity.value) {
+    return [
+      { label: "Status", value: "No identity loaded", valueTone: "neutral" as const },
+      { label: "Storage", value: rememberInBrowser.value ? "Browser storage enabled" : "Memory only" },
+    ];
+  }
+
+  return [
+    {
+      label: "Fingerprint",
+      value: showFullFingerprint.value ? identity.value.fingerprint : shortFingerprint.value,
+      valueTone: "primary" as const,
+    },
+    { label: "Identity ID", value: identity.value.id },
+    { label: "Created", value: new Date(identity.value.createdAt).toLocaleString() },
+    { label: "Storage", value: rememberInBrowser.value ? "Browser storage enabled" : "Memory only" },
+  ];
+});
+
+const importFileModel = computed({
+  get: () => importFile.value,
+  set: (value: File | File[] | null) => {
+    importFile.value = value instanceof File ? value : null;
+  },
+});
+
+watch(importFile, async (file) => {
+  if (!file) return;
+  importFileName.value = file.name;
+  importPayload.value = await file.text();
 });
 
 const onGenerate = async () => {
@@ -61,7 +103,7 @@ const onImport = async () => {
   try {
     await importIdentity(importPayload.value);
     importPayload.value = "";
-    importFileName.value = null;
+    importFileName.value = "";
     importFile.value = null;
     showImportPanel.value = false;
     showFullFingerprint.value = false;
@@ -70,19 +112,6 @@ const onImport = async () => {
     error.value = caught instanceof Error ? caught.message : "Failed to import identity.";
   }
 };
-
-const importFileModel = computed({
-  get: () => importFile.value as File | undefined,
-  set: (value: unknown) => {
-    importFile.value = value instanceof File ? value : null;
-  },
-});
-
-watch(importFile, async (file) => {
-  if (!file) return;
-  importFileName.value = file.name;
-  importPayload.value = await file.text();
-});
 
 const copyFingerprint = async () => {
   if (!identity.value?.fingerprint || fingerprintCopied.value) return;
@@ -102,6 +131,7 @@ const onClear = () => {
   clearIdentity();
   showFullFingerprint.value = false;
   showPublicKey.value = false;
+  showImportPanel.value = false;
   notice.value = "Identity cleared from memory and remembered storage.";
   error.value = null;
 };
@@ -109,107 +139,214 @@ const onClear = () => {
 
 <template>
   <section class="space-y-8 md:space-y-10">
-    <header>
-      <h2 class="m-0 text-3xl font-medium tracking-tight">Identity</h2>
-      <p class="mt-3 max-w-2xl text-base leading-7 text-fg-muted">
-        Generate or import the active identity used to sign proofs.
-      </p>
-    </header>
+    <SectionIntro
+      eyebrow="Identity"
+      title="Create, import, and protect your local signer"
+      description="Portable Proof keeps signing keys in your browser. Generate a new identity, import an existing one, or export the current payload for secure backup."
+    />
 
-    <SCard class="space-y-4 border border-border bg-surface p-6 md:p-8">
-      <label class="flex items-start gap-2 text-sm">
-        <input v-model="rememberModel" type="checkbox" class="mt-1 h-4 w-4 rounded border-border bg-surface accent-primary" />
-        <span>Store identity in this browser (trusted devices only)</span>
-      </label>
-      <p class="m-0 text-sm text-fg-muted">Private key material is stored locally in this browser.</p>
-    </SCard>
+    <div class="grid gap-6 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
+      <div class="space-y-6">
+        <Card variant="elevated" padding="md" class="space-y-5 border-[color-mix(in_srgb,var(--ui-border)_84%,transparent)]">
+          <div class="flex flex-wrap items-start justify-between gap-3">
+            <div class="space-y-2">
+              <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
+                Identity summary
+              </p>
+              <h3 class="m-0 text-xl font-medium tracking-[-0.02em] text-[var(--ui-fg)]">
+                {{ hasIdentity ? "Local signer ready" : "No signer loaded" }}
+              </h3>
+            </div>
+            <Badge :tone="hasIdentity ? 'success' : 'neutral'" variant="outline">
+              {{ hasIdentity ? "Ready" : "Empty" }}
+            </Badge>
+          </div>
 
-    <SCard v-if="!hasIdentity" class="space-y-6 border border-border bg-surface p-6 md:p-8">
-      <h3 class="m-0 text-xl">No identity loaded</h3>
-      <p class="m-0 text-base text-fg-muted">Create a new identity or import an existing export payload.</p>
+          <div class="rounded-[var(--ui-radius-lg)] border border-[color-mix(in_srgb,var(--ui-border)_86%,transparent)] bg-[var(--ui-tonal-secondary)] px-5 py-4">
+            <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
+              Fingerprint
+            </p>
+            <p class="proof-shell-copy mt-3 break-all text-base leading-7 text-[var(--ui-fg)]">
+              {{ hasIdentity ? (showFullFingerprint ? identity?.fingerprint : shortFingerprint) : "No identity loaded" }}
+            </p>
+          </div>
 
-      <div class="flex flex-wrap gap-3">
-        <SButton variant="primary" :loading="isCreating" @click="onGenerate">
-          {{ isCreating ? "Generating..." : "Generate new identity" }}
-        </SButton>
-        <SButton variant="secondary" @click="showImportPanel = !showImportPanel">
-          {{ showImportPanel ? "Hide import" : "Import identity" }}
-        </SButton>
-      </div>
-    </SCard>
+          <PreviewPanel
+            title="Identity details"
+            :rows="identityRows.filter((row) => row.label !== 'Fingerprint')"
+            status-label="Local"
+            status-tone="neutral"
+            emphasis="subtle"
+          />
+        </Card>
 
-    <SCard v-else class="space-y-6 border border-border bg-surface p-6 md:p-8">
-      <h3 class="m-0 text-xl">Active identity</h3>
+        <Card variant="subtle" padding="md" class="space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">Local storage</p>
+              <p class="mt-2 text-sm text-[var(--ui-fg-muted)]">
+                Private key material is stored locally in this browser.
+              </p>
+            </div>
+            <Badge :tone="rememberInBrowser ? 'neutral' : 'neutral'" variant="outline">
+              {{ rememberInBrowser ? "Persisted" : "Memory only" }}
+            </Badge>
+          </div>
 
-      <div class="space-y-4 rounded-2xl border border-border bg-[var(--ui-surface-2)] p-4">
-        <p class="m-0 text-xs font-medium uppercase tracking-wide text-fg-muted">Identity summary</p>
-        <div class="flex flex-wrap items-center gap-2 text-sm">
-          <strong class="text-fg-muted">Fingerprint:</strong>
-          <span class="font-mono text-xs text-fg">{{ showFullFingerprint ? identity?.fingerprint : shortFingerprint }}</span>
-          <SButton variant="ghost" size="xs" @click="copyFingerprint">
-            {{ fingerprintCopied ? "Copied" : "Copy" }}
-          </SButton>
-          <SButton variant="ghost" size="xs" @click="showFullFingerprint = !showFullFingerprint">
-            {{ showFullFingerprint ? "Hide full" : "Show full" }}
-          </SButton>
-        </div>
+          <Checkbox v-model="rememberModel">
+            Store identity in this browser (trusted devices only)
+            <template #description>
+              Disable this if you only want the active identity to live for the current session.
+            </template>
+          </Checkbox>
+        </Card>
 
-        <div>
-          <SDisclosure
-            v-model:open="showPublicKey"
-            label="▶ View public key"
-            open-label="▼ Hide public key"
+        <Card v-if="hasIdentity" variant="subtle" padding="md" class="space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">Active identity</p>
+              <p class="mt-2 text-sm text-[var(--ui-fg-muted)]">
+                Inspect the full fingerprint or public key before sharing proofs.
+              </p>
+            </div>
+            <Badge tone="neutral" variant="outline">Loaded</Badge>
+          </div>
+
+          <div class="flex flex-wrap gap-2">
+            <Button size="xs" variant="secondary" @click="copyFingerprint">
+              {{ fingerprintCopied ? "Copied" : "Copy fingerprint" }}
+            </Button>
+            <Button size="xs" variant="plain-secondary" @click="showFullFingerprint = !showFullFingerprint">
+              {{ showFullFingerprint ? "Hide full fingerprint" : "Show full fingerprint" }}
+            </Button>
+          </div>
+
+          <Accordion
+            :value="showPublicKey ? 'public-key' : undefined"
+            @update:value="(value) => { showPublicKey = value === 'public-key'; }"
           >
-            <pre class="pp-disclosure max-h-56 overflow-auto text-xs leading-relaxed text-fg-muted"><code>{{ identity?.publicKeyPem }}</code></pre>
-          </SDisclosure>
-        </div>
+            <AccordionItem value="public-key" title="View public key">
+              <pre class="proof-code-block m-0 whitespace-pre-wrap text-xs leading-relaxed"><code>{{ identity?.publicKeyPem }}</code></pre>
+            </AccordionItem>
+          </Accordion>
+        </Card>
       </div>
 
-      <p class="m-0 rounded-xl border border-[rgba(255,180,120,0.24)] bg-[rgba(255,180,120,0.08)] px-4 py-3 text-sm text-fg">
-        Export includes private key material. Store it securely.
-      </p>
+      <div class="space-y-6">
+        <Card variant="elevated" padding="md" class="space-y-5 border-[color-mix(in_srgb,var(--ui-border)_84%,transparent)]">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">Identity actions</p>
+              <p class="mt-2 text-sm text-[var(--ui-fg-muted)]">
+                Generate a new identity, replace the active one, or clear local key material.
+              </p>
+            </div>
+            <Badge :tone="hasIdentity ? 'neutral' : 'warning'" variant="outline">
+              {{ hasIdentity ? "Identity available" : "Action required" }}
+            </Badge>
+          </div>
 
-      <div class="flex flex-wrap gap-3">
-        <SButton variant="primary" @click="downloadExport">Export identity</SButton>
-        <SButton variant="secondary" @click="showImportPanel = !showImportPanel">
-          {{ showImportPanel ? "Hide import" : "Replace / import identity" }}
-        </SButton>
-        <SButton variant="error" @click="onClear">Clear identity</SButton>
+          <div class="flex flex-wrap gap-3">
+            <Button variant="primary" :loading="isCreating" @click="onGenerate">
+              {{ isCreating ? "Generating..." : "Generate new identity" }}
+            </Button>
+            <Button variant="secondary" @click="showImportPanel = !showImportPanel">
+              {{ showImportPanel ? "Hide import" : "Import identity" }}
+            </Button>
+            <Button v-if="hasIdentity" variant="critical-secondary" @click="onClear">
+              Clear identity
+            </Button>
+          </div>
+        </Card>
+
+        <Card v-if="showImportPanel" variant="panel" padding="md" class="space-y-5">
+          <div>
+            <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">Import identity</p>
+            <p class="mt-2 text-sm text-[var(--ui-fg-muted)]">
+              Paste JSON export payload or PEM private key text.
+            </p>
+          </div>
+
+          <FormField label="Identity file" description="JSON, PEM, or plain text payloads are accepted.">
+            <template #default>
+              <FileInput
+                v-model="importFileModel"
+                v-model:filename="importFileName"
+                accept=".json,.pem,text/plain,application/json"
+                variant="dropzone"
+                placeholder="Choose identity file"
+              />
+            </template>
+          </FormField>
+
+          <FormField label="Identity payload" description="Paste JSON export payload or PEM private key text.">
+            <template #default="{ id, describedBy }">
+              <Textarea
+                :id="id"
+                v-model="importPayload"
+                :aria-describedby="describedBy"
+                rows="10"
+                class="proof-shell-copy"
+                placeholder='{"privateKeyPem":"-----BEGIN PRIVATE KEY-----..."}'
+              />
+            </template>
+          </FormField>
+
+          <div class="flex flex-wrap gap-3">
+            <Button variant="primary" :loading="isImporting" @click="onImport">
+              {{ isImporting ? "Importing..." : "Import identity" }}
+            </Button>
+            <Button variant="plain-secondary" @click="showImportPanel = false">
+              Cancel
+            </Button>
+          </div>
+        </Card>
+
+        <Card v-if="hasIdentity" variant="subtle" padding="md" class="space-y-5">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">Export identity</p>
+              <p class="mt-2 text-sm text-[var(--ui-fg-muted)]">
+                Export includes private key material. Store it securely.
+              </p>
+            </div>
+            <Badge tone="warning" variant="outline">Sensitive</Badge>
+          </div>
+
+          <FormField label="Export payload" description="Back this up securely before moving devices or clearing storage.">
+            <template #default="{ id, describedBy }">
+              <Textarea
+                :id="id"
+                :model-value="exportedPayload"
+                :aria-describedby="describedBy"
+                rows="10"
+                readonly
+                class="proof-shell-copy"
+                placeholder="Create or import an identity to export it."
+              />
+            </template>
+          </FormField>
+
+          <Button variant="primary" :disabled="!exportedPayload" @click="downloadExport">
+            Download export file
+          </Button>
+        </Card>
+
+        <p
+          v-if="notice"
+          class="m-0 rounded-[var(--ui-radius-md)] border border-[var(--ui-border)] bg-[var(--ui-tonal-secondary)] px-4 py-3 text-sm text-[var(--ui-fg)]"
+          aria-live="polite"
+        >
+          {{ notice }}
+        </p>
+        <p
+          v-if="error"
+          class="m-0 rounded-[var(--ui-radius-md)] border border-[var(--ui-critical)] bg-[var(--ui-critical-muted)] px-4 py-3 text-sm text-[var(--ui-fg)]"
+          aria-live="assertive"
+        >
+          {{ error }}
+        </p>
       </div>
-    </SCard>
-
-    <SCard v-if="showImportPanel" class="space-y-5 border border-border bg-surface p-6 md:p-8">
-      <h3 class="m-0 text-xl">Import identity</h3>
-      <p class="m-0 text-base text-fg-muted">Paste JSON export payload or PEM private key text.</p>
-
-      <SFileInput
-        v-model="importFileModel"
-        v-model:filename="importFileName"
-        accept=".json,.pem,text/plain,application/json"
-        placeholder="Choose identity file"
-      />
-      <p v-if="importFileName" class="m-0 text-sm text-fg-muted">Loaded file: {{ importFileName }}</p>
-
-      <STextarea
-        v-model="importPayload"
-        min-height="14rem"
-        monospace
-        placeholder='{"privateKeyPem":"-----BEGIN PRIVATE KEY-----..."}'
-      />
-
-      <div class="flex flex-wrap gap-3">
-        <SButton variant="primary" :loading="isImporting" @click="onImport">
-          {{ isImporting ? "Importing..." : "Import" }}
-        </SButton>
-        <SButton variant="ghost" @click="showImportPanel = false">Cancel</SButton>
-      </div>
-    </SCard>
-
-    <p v-if="notice" class="m-0 rounded-xl border border-border bg-surface px-4 py-3 text-sm" aria-live="polite">
-      {{ notice }}
-    </p>
-    <p v-if="error" class="m-0 rounded-xl border border-danger bg-danger-muted px-4 py-3 text-sm" aria-live="assertive">
-      {{ error }}
-    </p>
+    </div>
   </section>
 </template>
