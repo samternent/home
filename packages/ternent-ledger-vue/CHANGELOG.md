@@ -1,5 +1,12 @@
 # ternent-ledger-vue
 
+## 0.1.5
+
+### Patch Changes
+
+- Updated dependencies []:
+  - ternent-ledger@1.0.26
+
 ## 0.1.4
 
 ### Patch Changes
