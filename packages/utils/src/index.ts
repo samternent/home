@@ -1,3 +1,14 @@
+type BufferLike = {
+  from: (value: Uint8Array | string, encoding?: string) => {
+    toString: (encoding: string) => string;
+  };
+};
+
+function getBufferCtor(): BufferLike | null {
+  const maybeBuffer = (globalThis as { Buffer?: BufferLike }).Buffer;
+  return maybeBuffer ?? null;
+}
+
 /**
  * addNewLines function - TODO: Add description
  * @param TODO - Add parameters
@@ -68,7 +79,7 @@ export function formatEncryptionFile(file: string) {
  * @returns TODO - Add return type description
  */
 export function generateId() {
-  const uint32 = window.crypto.getRandomValues(new Uint32Array(1))[0];
+  const uint32 = crypto.getRandomValues(new Uint32Array(1))[0];
   return uint32.toString(16);
 }
 
@@ -79,11 +90,15 @@ export function generateId() {
  */
 export function arrayBufferToBase64(arrayBuffer: ArrayBuffer): string {
   const byteArray = new Uint8Array(arrayBuffer);
+  const bufferCtor = getBufferCtor();
+  if (bufferCtor) {
+    return bufferCtor.from(byteArray).toString("base64");
+  }
   let byteString = "";
   for (let i = 0; i < byteArray.byteLength; i++) {
     byteString += String.fromCharCode(byteArray[i]);
   }
-  return window.btoa(byteString);
+  return btoa(byteString);
 }
 
 /**
@@ -92,13 +107,24 @@ export function arrayBufferToBase64(arrayBuffer: ArrayBuffer): string {
  * @returns TODO - Add return type description
  */
 export function base64ToArrayBuffer(b64: string): ArrayBuffer {
-  const byteString = window.atob(b64);
+  const bufferCtor = getBufferCtor();
+  if (bufferCtor) {
+    const bytes = Uint8Array.from(
+      bufferCtor.from(b64, "base64").toString("binary"),
+      (char) => char.charCodeAt(0)
+    );
+    return bytes.buffer.slice(
+      bytes.byteOffset,
+      bytes.byteOffset + bytes.byteLength
+    );
+  }
+  const byteString = atob(b64);
   const byteArray = new Uint8Array(byteString.length);
   for (let i = 0; i < byteString.length; i++) {
     byteArray[i] = byteString.charCodeAt(i);
   }
 
-  return byteArray;
+  return byteArray.buffer;
 }
 
 /**
@@ -107,7 +133,7 @@ export function base64ToArrayBuffer(b64: string): ArrayBuffer {
  * @returns TODO - Add return type description
  */
 export function b64encode(buf: ArrayBuffer): string {
-  return btoa(String.fromCharCode(...new Uint8Array(buf)));
+  return arrayBufferToBase64(buf);
 }
 
 /**
@@ -116,13 +142,7 @@ export function b64encode(buf: ArrayBuffer): string {
  * @returns TODO - Add return type description
  */
 export function b64decode(str: string): ArrayBuffer {
-  const binary_string = window.atob(str);
-  const len = binary_string.length;
-  const bytes = new Uint8Array(new ArrayBuffer(len));
-  for (let i = 0; i < len; i++) {
-    bytes[i] = binary_string.charCodeAt(i);
-  }
-  return bytes;
+  return base64ToArrayBuffer(str);
 }
 
 // Encode JSON object to UTF-8 Buffer

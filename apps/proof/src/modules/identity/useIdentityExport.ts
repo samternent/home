@@ -14,6 +14,7 @@ export function useIdentityExport() {
         createdAt: identity.value.createdAt,
         publicKeyPem: identity.value.publicKeyPem,
         privateKeyPem: identity.value.privateKeyPem,
+        keyId: identity.value.keyId,
       },
       null,
       2,

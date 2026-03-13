@@ -1,4 +1,4 @@
-import { b64decode } from "ternent-utils";
+import { verifyBytes } from "./verifyBytes";
 
 export async function verify(
   signature: string,
@@ -6,16 +6,7 @@ export async function verify(
   publicKey: CryptoKey
 ): Promise<boolean> {
   const dataBuffer = new TextEncoder().encode(data);
-
-  return crypto.subtle.verify(
-    {
-      name: "ECDSA",
-      hash: { name: "SHA-256" },
-    },
-    publicKey,
-    b64decode(signature),
-    dataBuffer
-  );
+  return verifyBytes(signature, dataBuffer, publicKey);
 }
 
 export async function verifyJson(

@@ -40,8 +40,8 @@ const featureCards = [
 ];
 
 const heroRows = [
-  { label: "Signed by", value: "0x9F…7A1C" },
-  { label: "Algorithm", value: "Ed25519" },
+  { label: "Signed by", value: "9f3c4a1b…d07e12af" },
+  { label: "Algorithm", value: "ECDSA-P256-SHA256" },
   { label: "Hash", value: "sha256:a3f8…c9d2" },
   { label: "Status", value: "Verified", valueTone: "success" },
 ];
@@ -65,11 +65,20 @@ const howItWorksSteps = [
 ];
 
 const proofJsonCode = `{
-  "version": "1.0",
-  "signer": "0x9F...7A1C",
-  "created": "2024-04-24T12:04:21Z",
-  "hash": "a3f8...c9d2",
-  "algorithm": "SHA-256"
+  "version": "1",
+  "type": "seal-proof",
+  "algorithm": "ECDSA-P256-SHA256",
+  "createdAt": "2026-03-13T12:04:21.000Z",
+  "subject": {
+    "kind": "file",
+    "path": "sample.txt",
+    "hash": "sha256:a3f8...c9d2"
+  },
+  "signer": {
+    "publicKey": "BASE64-SPKI",
+    "keyId": "9f3c4a1b...d07e12af"
+  },
+  "signature": "BASE64-SIGNATURE"
 }`;
 
 const useCases = [
@@ -122,17 +131,14 @@ const developerPoints = [
   },
 ] as const;
 
-const developerExample = `import { sign, verify } from "@ternent/identity"
+const developerExample = `import { createSealProof, verifySealProofAgainstBytes } from "seal-cli/proof"
 
-const proof = await sign({
-  content: fileBuffer,
-  identity
+const proof = await createSealProof({
+  signer: { privateKeyPem, publicKeyPem, keyId },
+  subject: { kind: "file", path: "sample.txt", hash: "sha256:..." }
 })
 
-const verified = await verify({
-  content: fileBuffer,
-  proof
-})`;
+const verified = await verifySealProofAgainstBytes(proof, fileBuffer)`;
 
 const footerLinks = [
   { href: "/app", label: "Workspace" },
@@ -173,10 +179,15 @@ const footerLinks = [
         </nav>
 
         <div class="flex items-center gap-2">
-          <Button as="RouterLink" to="/app/verify" size="sm"> Verify </Button>
-          <Button as="RouterLink" to="/app/sign" variant="secondary" size="sm">
-            Sign
+          <Button
+            as="RouterLink"
+            to="/app/verify"
+            variant="secondary"
+            size="sm"
+          >
+            Verify
           </Button>
+          <Button as="RouterLink" to="/app/sign" size="sm"> Sign </Button>
         </div>
       </div>
       <Separator />
@@ -194,15 +205,15 @@ const footerLinks = [
           title-tag="h1"
         >
           <template #actions>
-            <Button as="RouterLink" to="/app/verify" size="lg"> Verify </Button>
             <Button
               as="RouterLink"
-              to="/app/sign"
-              size="lg"
+              to="/app/verify"
               variant="secondary"
+              size="lg"
             >
-              Sign
+              Verify
             </Button>
+            <Button as="RouterLink" to="/app/sign" size="lg"> Sign </Button>
           </template>
         </SectionIntro>
 

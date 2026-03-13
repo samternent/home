@@ -68,6 +68,36 @@ root
   - static site deploys to Vercel
   - `npm publish` for packages
 
+### Seal Action
+
+This repo now also exposes a root GitHub Action for sealing built static assets.
+
+The action is generic at the workflow step level:
+
+- your workflow builds a static directory
+- the action signs that directory in place
+- the action can run either the published `seal-cli` package from npm or a repo-local CLI override
+
+Example:
+
+```yaml
+- uses: actions/checkout@v4
+- uses: actions/setup-node@v4
+  with:
+    node-version-file: ".nvmrc"
+- uses: samternent/home@main
+  env:
+    SEAL_PRIVATE_KEY: ${{ secrets.SEAL_PRIVATE_KEY }}
+    SEAL_PUBLIC_KEY: ${{ secrets.SEAL_PUBLIC_KEY }}
+  with:
+    assets-directory: dist
+    package-version: latest
+```
+
+For this monorepo's own workflows, the action is called with `cli-command: node packages/seal-cli/bin/seal` so it does not depend on npm publication timing.
+
+`seal-cli` itself is published by [.github/workflows/deploy-seal-cli.yml](/Users/sam/dev/samternent/home/.github/workflows/deploy-seal-cli.yml) on tags matching `seal-cli-*.*.*`.
+
 ### Troubleshooting
 
 - Workspace hoisting issues? Try `pnpm install --force`.

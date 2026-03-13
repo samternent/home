@@ -1,4 +1,4 @@
-import { b64encode } from "ternent-utils";
+import { signBytes } from "./signBytes";
 
 /**
  * Signs data
@@ -13,16 +13,5 @@ import { b64encode } from "ternent-utils";
 export async function sign(signingKey: CryptoKey, data: any) {
   const payload = typeof data === "string" ? data : JSON.stringify(data);
   const dataBuffer = new TextEncoder().encode(payload);
-  const signatureBuffer = await crypto.subtle.sign(
-    {
-      name: "ECDSA",
-      hash: {
-        name: "SHA-256",
-      },
-    },
-    signingKey,
-    dataBuffer
-  );
-
-  return b64encode(signatureBuffer);
+  return signBytes(signingKey, dataBuffer);
 }

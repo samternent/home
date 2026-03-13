@@ -27,9 +27,9 @@ const importPayload = ref("");
 const importFileName = ref("");
 const importFile = ref<File | null>(null);
 const showImportPanel = ref(false);
-const showFullFingerprint = ref(false);
+const showFullKeyId = ref(false);
 const showPublicKey = ref(false);
-const fingerprintCopied = ref(false);
+const keyIdCopied = ref(false);
 const notice = ref<string | null>(null);
 const error = ref<string | null>(null);
 
@@ -44,9 +44,9 @@ const rememberModel = computed({
   },
 });
 
-const shortFingerprint = computed(() => {
-  if (!identity.value?.fingerprint) return "No identity loaded";
-  const value = identity.value.fingerprint;
+const shortKeyId = computed(() => {
+  if (!identity.value?.keyId) return "No identity loaded";
+  const value = identity.value.keyId;
   return `${value.slice(0, 10)}...${value.slice(-10)}`;
 });
 
@@ -60,8 +60,8 @@ const identityRows = computed(() => {
 
   return [
     {
-      label: "Fingerprint",
-      value: showFullFingerprint.value ? identity.value.fingerprint : shortFingerprint.value,
+      label: "Key ID",
+      value: showFullKeyId.value ? identity.value.keyId : shortKeyId.value,
       valueTone: "primary" as const,
     },
     { label: "Identity ID", value: identity.value.id },
@@ -89,7 +89,7 @@ const onGenerate = async () => {
 
   try {
     await create();
-    showFullFingerprint.value = false;
+    showFullKeyId.value = false;
     notice.value = "Identity created. Export it now and store it securely.";
   } catch (caught) {
     error.value = caught instanceof Error ? caught.message : "Failed to generate identity.";
@@ -106,30 +106,30 @@ const onImport = async () => {
     importFileName.value = "";
     importFile.value = null;
     showImportPanel.value = false;
-    showFullFingerprint.value = false;
+    showFullKeyId.value = false;
     notice.value = "Identity imported successfully.";
   } catch (caught) {
     error.value = caught instanceof Error ? caught.message : "Failed to import identity.";
   }
 };
 
-const copyFingerprint = async () => {
-  if (!identity.value?.fingerprint || fingerprintCopied.value) return;
+const copyKeyId = async () => {
+  if (!identity.value?.keyId || keyIdCopied.value) return;
 
   try {
-    await navigator.clipboard.writeText(identity.value.fingerprint);
-    fingerprintCopied.value = true;
+    await navigator.clipboard.writeText(identity.value.keyId);
+    keyIdCopied.value = true;
     window.setTimeout(() => {
-      fingerprintCopied.value = false;
+      keyIdCopied.value = false;
     }, 1200);
   } catch {
-    fingerprintCopied.value = false;
+    keyIdCopied.value = false;
   }
 };
 
 const onClear = () => {
   clearIdentity();
-  showFullFingerprint.value = false;
+  showFullKeyId.value = false;
   showPublicKey.value = false;
   showImportPanel.value = false;
   notice.value = "Identity cleared from memory and remembered storage.";
@@ -164,16 +164,16 @@ const onClear = () => {
 
           <div class="rounded-[var(--ui-radius-lg)] border border-[color-mix(in_srgb,var(--ui-border)_86%,transparent)] bg-[var(--ui-tonal-secondary)] px-5 py-4">
             <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
-              Fingerprint
+              Key ID
             </p>
             <p class="proof-shell-copy mt-3 break-all text-base leading-7 text-[var(--ui-fg)]">
-              {{ hasIdentity ? (showFullFingerprint ? identity?.fingerprint : shortFingerprint) : "No identity loaded" }}
+              {{ hasIdentity ? (showFullKeyId ? identity?.keyId : shortKeyId) : "No identity loaded" }}
             </p>
           </div>
 
           <PreviewPanel
             title="Identity details"
-            :rows="identityRows.filter((row) => row.label !== 'Fingerprint')"
+            :rows="identityRows.filter((row) => row.label !== 'Key ID')"
             status-label="Local"
             status-tone="neutral"
             emphasis="subtle"
@@ -206,18 +206,18 @@ const onClear = () => {
             <div>
               <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">Active identity</p>
               <p class="mt-2 text-sm text-[var(--ui-fg-muted)]">
-                Inspect the full fingerprint or public key before sharing proofs.
+                Inspect the full key ID or public key before sharing proofs.
               </p>
             </div>
             <Badge tone="neutral" variant="outline">Loaded</Badge>
           </div>
 
           <div class="flex flex-wrap gap-2">
-            <Button size="xs" variant="secondary" @click="copyFingerprint">
-              {{ fingerprintCopied ? "Copied" : "Copy fingerprint" }}
+            <Button size="xs" variant="secondary" @click="copyKeyId">
+              {{ keyIdCopied ? "Copied" : "Copy key ID" }}
             </Button>
-            <Button size="xs" variant="plain-secondary" @click="showFullFingerprint = !showFullFingerprint">
-              {{ showFullFingerprint ? "Hide full fingerprint" : "Show full fingerprint" }}
+            <Button size="xs" variant="plain-secondary" @click="showFullKeyId = !showFullKeyId">
+              {{ showFullKeyId ? "Hide full key ID" : "Show full key ID" }}
             </Button>
           </div>
 

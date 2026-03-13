@@ -1,2 +1,2 @@
-export * from "./types";
-export * from "./proof";
+export * from "seal-cli/proof";
+export * from "./deployed";

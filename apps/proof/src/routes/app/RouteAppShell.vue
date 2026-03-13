@@ -17,9 +17,9 @@ const tabs = [
 
 const copied = ref(false);
 
-const fingerprintShort = computed(() => {
-  if (!identity.value?.fingerprint) return "No identity loaded";
-  const value = identity.value.fingerprint;
+const keyIdShort = computed(() => {
+  if (!identity.value?.keyId) return "No identity loaded";
+  const value = identity.value.keyId;
   return `${value.slice(0, 8)}...${value.slice(-8)}`;
 });
 
@@ -33,11 +33,11 @@ const statusLabel = computed(() =>
   hasIdentity.value ? "Identity active" : "No identity",
 );
 
-const copyFingerprint = async () => {
-  if (!identity.value?.fingerprint || copied.value) return;
+const copyKeyId = async () => {
+  if (!identity.value?.keyId || copied.value) return;
 
   try {
-    await navigator.clipboard.writeText(identity.value.fingerprint);
+    await navigator.clipboard.writeText(identity.value.keyId);
     copied.value = true;
     window.setTimeout(() => {
       copied.value = false;
@@ -160,7 +160,7 @@ const copyFingerprint = async () => {
                     Active signer
                   </p>
                   <p class="proof-shell-copy m-0 text-sm text-[var(--ui-fg)]">
-                    {{ fingerprintShort }}
+                    {{ keyIdShort }}
                   </p>
                 </div>
 
@@ -174,9 +174,9 @@ const copyFingerprint = async () => {
                   size="xs"
                   variant="secondary"
                   :disabled="!hasIdentity"
-                  @click="copyFingerprint"
+                  @click="copyKeyId"
                 >
-                  {{ copied ? "Copied" : "Copy fingerprint" }}
+                  {{ copied ? "Copied" : "Copy key ID" }}
                 </Button>
                 <Button
                   as="RouterLink"

@@ -1,10 +1,10 @@
 import { ref } from "vue";
 import {
+  deriveKeyIdFromPublicKeyPem,
   importPrivateKeyFromPem,
   importPublicKeyFromPem,
   derivePublicFromPrivatePEM,
 } from "ternent-identity";
-import { hashData, stripIdentityKey } from "ternent-utils";
 import { useIdentitySession, type StoredIdentity } from "./useIdentitySession";
 
 type ImportPayload = {
@@ -12,6 +12,8 @@ type ImportPayload = {
   publicKeyPem?: string;
   id?: string;
   createdAt?: string;
+  keyId?: string;
+  fingerprint?: string;
 };
 
 function parsePayload(raw: string): ImportPayload {
@@ -56,14 +58,17 @@ export function useIdentityImport() {
 
       await importPublicKeyFromPem(publicKeyPem);
 
-      const fingerprint = await hashData(stripIdentityKey(publicKeyPem));
+      const keyId =
+        payload.keyId ??
+        payload.fingerprint ??
+        (await deriveKeyIdFromPublicKeyPem(publicKeyPem));
 
       const identity: StoredIdentity = {
-        id: payload.id || `identity-${fingerprint.slice(0, 12)}`,
+        id: payload.id || `identity-${keyId.slice(0, 12)}`,
         createdAt: payload.createdAt || new Date().toISOString(),
         publicKeyPem,
         privateKeyPem: payload.privateKeyPem,
-        fingerprint,
+        keyId,
       };
 
       setIdentity(identity);

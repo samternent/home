@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "lib": ["ES2022", "DOM"],
+    "types": ["vitest/globals"],
+    "baseUrl": ".",
+    "paths": {
+      "ternent-identity": ["../identity/src/index.ts"],
+      "ternent-utils": ["../utils/src/index.ts"]
+    }
+  },
+  "include": ["src/**/*.ts", "test/**/*.ts", "vite.config.ts"],
+  "exclude": ["dist", "node_modules"]
+}

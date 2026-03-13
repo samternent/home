@@ -9,4 +9,7 @@ export * from "./importPublicKey";
 export * from "./exportPublicKey";
 
 export * from "./sign";
+export * from "./signBytes";
 export * from "./verify";
+export * from "./verifyBytes";
+export * from "./deriveKeyId";

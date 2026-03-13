@@ -54,7 +54,31 @@ describe("identity session", () => {
 
     expect(imported.privateKeyPem).toContain("BEGIN PRIVATE KEY");
     expect(imported.publicKeyPem).toContain("BEGIN PUBLIC KEY");
-    expect(session.identity.value?.fingerprint).toBe(imported.fingerprint);
+    expect(session.identity.value?.keyId).toBe(imported.keyId);
+  });
+
+  it("accepts legacy fingerprint imports", async () => {
+    const session = useIdentitySession();
+    session.clearIdentity();
+
+    const creator = useIdentityCreate();
+    const created = await creator.create();
+
+    session.clearIdentity();
+
+    const importer = useIdentityImport();
+    const imported = await importer.importIdentity(
+      JSON.stringify({
+        id: created.id,
+        createdAt: created.createdAt,
+        publicKeyPem: created.publicKeyPem,
+        privateKeyPem: created.privateKeyPem,
+        fingerprint: created.keyId,
+      })
+    );
+
+    expect(imported.keyId).toBe(created.keyId);
+    expect(session.identity.value?.keyId).toBe(created.keyId);
   });
 
   it("clear removes active and remembered identity", async () => {

@@ -1,35 +1,32 @@
-# ternent-vue-app template
+# proof
 
-Canonical template for new Ternent Vue apps.
+Seal web app.
 
-## Features
-
-- Feature-driven architecture (`src/modules/*`)
-- Route-folder modules (`src/routes/*`) with CamelCase `Route*.vue`
-- Foundational `ternent-identity`, `ternent-utils`, `ternent-ui` support
-- Identity create/import/export baseline flows
-- Tailwind + custom light/dark theme pair
-- PWA + offline-first defaults
-- Lighthouse CI thresholds (95+ for perf/a11y/best-practices/seo)
-
-## Generate a New App
-
-From repo root:
+## Development
 
 ```bash
-pnpm scaffold:ternent-app -- --name my-app --title "My App" --host my-app.ternent.dev
+pnpm --filter proof dev
+pnpm --filter proof test:unit
+pnpm build:proof
 ```
 
-Optional:
+## Proof Contract
 
-```bash
-pnpm scaffold:ternent-app -- --name my-app --title "My App" --host my-app.ternent.dev --theme myapp
-```
+The app signs and verifies the same Seal artifacts as `packages/seal-cli`.
 
-## Monthly Template Refresh
+Fetched published artifacts:
 
-1. Update external dependencies to latest stable.
-2. Run `pnpm --filter proof test:unit`.
-3. Run `pnpm --filter proof build`.
-4. Run `pnpm --filter proof lighthouse:ci`.
-5. Update template changelog notes.
+- `/dist-manifest.json`
+- `/proof.json`
+- `/public-key.json` (optional)
+
+Browser verification checks:
+
+- proof schema
+- subject hash
+- signature
+- signer `keyId`
+- algorithm
+- optional `/public-key.json` consistency with the proof signer block
+
+All browser crypto uses shared helpers from `seal-cli/proof`, `ternent-identity`, and `ternent-utils`.

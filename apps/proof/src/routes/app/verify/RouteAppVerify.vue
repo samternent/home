@@ -11,11 +11,12 @@ import {
   Textarea,
 } from "ternent-ui/primitives";
 import { FormField, PreviewPanel, SectionIntro } from "ternent-ui/patterns";
-import { hashBytes, hashData } from "ternent-utils";
 import {
-  parsePortableProofJson,
-  verifyPortableProofSignature,
-  type PortableProofV1,
+  createSealHash,
+  parseSealProofJson,
+  verifyPublishedArtifacts,
+  verifySealProofSignature,
+  type SealProofV1,
 } from "@/modules/proof";
 
 type VerificationMode = "proof-only" | "proof-and-content";
@@ -24,14 +25,23 @@ type ContentMode = "text" | "file";
 type StageOneResult = {
   status: "idle" | "valid" | "invalid";
   errors: string[];
-  fingerprint?: string;
-  contentHash?: string;
+  keyId?: string;
+  subjectHash?: string;
+  algorithm?: string;
 };
 
 type StageTwoResult = {
   status: "idle" | "match" | "mismatch" | "error" | "skipped";
   message?: string;
   providedHash?: string;
+};
+
+type PublishedResult = {
+  status: "idle" | "loading" | "valid" | "invalid";
+  errors: string[];
+  keyId?: string;
+  subjectHash?: string;
+  algorithm?: string;
 };
 
 const showRawProofJson = ref(false);
@@ -44,9 +54,11 @@ const contentText = ref("");
 const contentFile = ref<File | null>(null);
 const contentFileName = ref("");
 const isVerifying = ref(false);
+const isVerifyingPublished = ref(false);
 const stageOne = ref<StageOneResult>({ status: "idle", errors: [] });
 const stageTwo = ref<StageTwoResult>({ status: "idle" });
-const parsedProof = ref<PortableProofV1 | null>(null);
+const published = ref<PublishedResult>({ status: "idle", errors: [] });
+const parsedProof = ref<SealProofV1 | null>(null);
 
 const verificationModeOptions = [
   {
@@ -79,10 +91,10 @@ const stageTwoStatusTone = computed(() => {
   return "neutral";
 });
 
-const stageOneTitle = computed(() => {
-  if (stageOne.value.status === "valid") return "Proof verified";
-  if (stageOne.value.status === "invalid") return "Proof verification failed";
-  return "Stage 1 — Proof validation";
+const publishedStatusTone = computed(() => {
+  if (published.value.status === "valid") return "success";
+  if (published.value.status === "invalid") return "critical";
+  return "neutral";
 });
 
 const proofFileModel = computed({
@@ -102,8 +114,9 @@ const contentFileModel = computed({
 const stageOneRows = computed(() => {
   if (stageOne.value.status !== "valid") return [];
   return [
-    { label: "Signer fingerprint", value: stageOne.value.fingerprint || "", valueTone: "primary" as const },
-    { label: "Content hash", value: stageOne.value.contentHash || "", valueTone: "primary" as const },
+    { label: "Signer key ID", value: stageOne.value.keyId || "", valueTone: "primary" as const },
+    { label: "Subject hash", value: stageOne.value.subjectHash || "", valueTone: "primary" as const },
+    { label: "Algorithm", value: stageOne.value.algorithm || "" },
   ];
 });
 
@@ -111,10 +124,21 @@ const stageTwoRows = computed(() => {
   if (!stageTwo.value.providedHash) return [];
   return [
     {
-      label: "Provided content hash",
+      label: "Provided subject hash",
       value: stageTwo.value.providedHash,
       valueTone: stageTwo.value.status === "match" ? ("success" as const) : ("critical" as const),
     },
+  ];
+});
+
+const publishedRows = computed(() => {
+  if (!published.value.keyId || !published.value.subjectHash || !published.value.algorithm) {
+    return [];
+  }
+  return [
+    { label: "Signer key ID", value: published.value.keyId, valueTone: "primary" as const },
+    { label: "Subject hash", value: published.value.subjectHash, valueTone: "primary" as const },
+    { label: "Algorithm", value: published.value.algorithm },
   ];
 });
 
@@ -124,7 +148,7 @@ const loadProofJson = async (): Promise<string> => {
   throw new Error("Upload a proof JSON file or provide raw proof JSON.");
 };
 
-const verifyContentMatch = async (proof: PortableProofV1): Promise<StageTwoResult> => {
+const verifyContentMatch = async (proof: SealProofV1): Promise<StageTwoResult> => {
   if (verificationMode.value === "proof-only") {
     return { status: "skipped", message: "Content match skipped (proof-only mode)." };
   }
@@ -136,26 +160,25 @@ const verifyContentMatch = async (proof: PortableProofV1): Promise<StageTwoResul
       if (!contentText.value.trim()) {
         return { status: "error", message: "Provide text content to compare." };
       }
-      providedHash = await hashData(contentText.value);
+      providedHash = await createSealHash(new TextEncoder().encode(contentText.value));
     } else {
       if (!contentFile.value) {
         return { status: "error", message: "Upload a file to compare." };
       }
-      const bytes = await contentFile.value.arrayBuffer();
-      providedHash = await hashBytes(bytes);
+      providedHash = await createSealHash(await contentFile.value.arrayBuffer());
     }
 
-    if (providedHash === proof.payload.contentHash) {
+    if (providedHash === proof.subject.hash) {
       return {
         status: "match",
-        message: "Content hash matches proof payload.",
+        message: "Content hash matches proof subject.",
         providedHash,
       };
     }
 
     return {
       status: "mismatch",
-      message: "Content hash does not match proof payload.",
+      message: "Content hash does not match proof subject.",
       providedHash,
     };
   } catch (caught) {
@@ -172,7 +195,7 @@ const onVerify = async () => {
 
   try {
     const rawProof = await loadProofJson();
-    const parsed = parsePortableProofJson(rawProof);
+    const parsed = parseSealProofJson(rawProof);
 
     if (!parsed.ok || !parsed.proof) {
       stageOne.value = {
@@ -183,7 +206,7 @@ const onVerify = async () => {
       return;
     }
 
-    const signatureCheck = await verifyPortableProofSignature(parsed.proof);
+    const signatureCheck = await verifySealProofSignature(parsed.proof);
 
     if (!signatureCheck.ok) {
       stageOne.value = {
@@ -199,8 +222,9 @@ const onVerify = async () => {
     stageOne.value = {
       status: "valid",
       errors: [],
-      fingerprint: parsed.proof.fingerprint,
-      contentHash: parsed.proof.payload.contentHash,
+      keyId: parsed.proof.signer.keyId,
+      subjectHash: parsed.proof.subject.hash,
+      algorithm: parsed.proof.algorithm,
     };
 
     stageTwo.value = await verifyContentMatch(parsed.proof);
@@ -215,6 +239,30 @@ const onVerify = async () => {
     isVerifying.value = false;
   }
 };
+
+const onVerifyPublished = async () => {
+  isVerifyingPublished.value = true;
+  published.value = { status: "loading", errors: [] };
+
+  try {
+    const result = await verifyPublishedArtifacts();
+    published.value = {
+      status: result.valid ? "valid" : "invalid",
+      errors: result.errors,
+      keyId: result.keyId,
+      subjectHash: result.subjectHash,
+      algorithm: result.algorithm,
+    };
+  } catch (caught) {
+    const message = caught instanceof Error ? caught.message : String(caught);
+    published.value = {
+      status: "invalid",
+      errors: [message],
+    };
+  } finally {
+    isVerifyingPublished.value = false;
+  }
+};
 </script>
 
 <template>
@@ -222,7 +270,7 @@ const onVerify = async () => {
     <SectionIntro
       eyebrow="Verify"
       title="Validate proof structure, signature, and content integrity"
-      description="Paste or upload a proof JSON payload, then optionally compare it with the original text or file to confirm the content hash."
+      description="Paste or upload a proof JSON payload, compare it with original bytes when needed, or verify the published site artifacts directly."
     />
 
     <Card variant="elevated" padding="md" class="space-y-6 border-[color-mix(in_srgb,var(--ui-border)_84%,transparent)]">
@@ -285,7 +333,7 @@ const onVerify = async () => {
           <FormField
             v-if="contentMode === 'text'"
             label="Original text"
-            description="Paste the original text that should match the proof payload."
+            description="Paste the original text that should match the proof subject bytes."
           >
             <template #default="{ id, describedBy }">
               <Textarea
@@ -301,7 +349,7 @@ const onVerify = async () => {
           <FormField
             v-else
             label="Original file"
-            description="Upload the file that should match the proof payload."
+            description="Upload the file that should match the proof subject bytes."
           >
             <template #default>
               <FileInput
@@ -333,7 +381,9 @@ const onVerify = async () => {
           <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
             Overall verification
           </p>
-          <h3 class="m-0 text-2xl font-medium tracking-[-0.03em]">{{ stageOneTitle }}</h3>
+          <h3 class="m-0 text-2xl font-medium tracking-[-0.03em]">
+            {{ stageOne.status === "valid" ? "Proof verified" : stageOne.status === "invalid" ? "Proof verification failed" : "Stage 1 — Proof validation" }}
+          </h3>
         </div>
         <Badge :tone="stageOneStatusTone" variant="solid">
           {{ stageOne.status === "idle" ? "Not run" : stageOne.status === "valid" ? "Proof valid" : "Proof invalid" }}
@@ -387,6 +437,47 @@ const onVerify = async () => {
         :rows="stageTwoRows"
         :status-label="stageTwo.status === 'match' ? 'Match' : 'Mismatch'"
         :status-tone="stageTwo.status === 'match' ? 'neutral' : 'critical'"
+        emphasis="subtle"
+      />
+    </Card>
+
+    <Card variant="elevated" padding="md" class="space-y-5 border-[color-mix(in_srgb,var(--ui-border)_84%,transparent)]">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="space-y-2">
+          <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
+            Published artifacts
+          </p>
+          <h3 class="m-0 text-xl font-medium tracking-[-0.02em]">Verify deployed site proof</h3>
+        </div>
+        <Badge :tone="publishedStatusTone" variant="solid">
+          {{ published.status === "idle" ? "Not run" : published.status === "loading" ? "Loading" : published.status === "valid" ? "Verified" : "Invalid" }}
+        </Badge>
+      </div>
+
+      <p class="m-0 text-sm text-[var(--ui-fg-muted)]">
+        Fetch `/dist-manifest.json`, `/proof.json`, and optional `/public-key.json` from the current site origin and validate them locally.
+      </p>
+
+      <div class="flex flex-wrap items-center gap-3">
+        <Button variant="primary" :loading="isVerifyingPublished" @click="onVerifyPublished">
+          {{ isVerifyingPublished ? "Checking..." : "Verify published artifacts" }}
+        </Button>
+      </div>
+
+      <p v-if="published.status === 'idle'" class="m-0 text-sm text-[var(--ui-fg-muted)]">
+        No published-artifact check run yet.
+      </p>
+
+      <ul v-if="published.status === 'invalid'" class="m-0 list-disc pl-5 text-sm">
+        <li v-for="message in published.errors" :key="message">{{ message }}</li>
+      </ul>
+
+      <PreviewPanel
+        v-if="publishedRows.length"
+        title="Published artifact result"
+        :rows="publishedRows"
+        :status-label="published.status === 'valid' ? 'Verified' : 'Invalid'"
+        :status-tone="published.status === 'valid' ? 'success' : 'critical'"
         emphasis="subtle"
       />
     </Card>

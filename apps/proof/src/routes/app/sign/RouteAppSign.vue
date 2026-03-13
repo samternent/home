@@ -12,13 +12,11 @@ import {
   Textarea,
 } from "ternent-ui/primitives";
 import { FormField, PreviewPanel, SectionIntro } from "ternent-ui/patterns";
-import { hashBytes, hashData } from "ternent-utils";
 import { useIdentitySession } from "@/modules/identity";
 import {
-  createPortableProof,
-  SUPPORTED_HASH_ALGORITHM,
-  SUPPORTED_SIGNATURE_ALGORITHM,
-  type PortableProofV1,
+  createSealHash,
+  createSealProof,
+  type SealProofV1,
 } from "@/modules/proof";
 
 type SignMode = "text" | "file";
@@ -38,7 +36,7 @@ const selectedFileName = ref("");
 const isSigning = ref(false);
 const error = ref<string | null>(null);
 const notice = ref<string | null>(null);
-const signedProof = ref<PortableProofV1 | null>(null);
+const signedProof = ref<SealProofV1 | null>(null);
 const outputFileName = ref<string | null>(null);
 const showProofJson = ref(false);
 
@@ -61,8 +59,8 @@ const proofJson = computed(() => {
 });
 
 const signerShort = computed(() => {
-  if (!signedProof.value?.fingerprint) return "";
-  const value = signedProof.value.fingerprint;
+  if (!signedProof.value?.signer.keyId) return "";
+  const value = signedProof.value.signer.keyId;
   return `${value.slice(0, 10)}...${value.slice(-10)}`;
 });
 
@@ -77,10 +75,11 @@ const proofRows = computed(() => {
   if (!signedProof.value) return [];
 
   return [
-    { label: "Content hash", value: signedProof.value.payload.contentHash, valueTone: "primary" as const },
-    { label: "Signer fingerprint", value: signerShort.value },
+    { label: "Subject hash", value: signedProof.value.subject.hash, valueTone: "primary" as const },
+    { label: "Signer key ID", value: signerShort.value },
+    { label: "Subject path", value: signedProof.value.subject.path },
     { label: "Name", value: outputFileName.value || "seal-proof" },
-    { label: "Algorithm", value: signedProof.value.payload.signatureAlgorithm },
+    { label: "Algorithm", value: signedProof.value.algorithm },
   ];
 });
 
@@ -110,40 +109,40 @@ const onSign = async () => {
   isSigning.value = true;
 
   try {
-    let contentHash = "";
-    let canonicalization: "ternent-utils/canonicalStringify-v1" | "raw-bytes" = "raw-bytes";
-    let fileName = textContentName.value.trim() || "text-proof";
+    let subjectHash = "";
+    let subjectPath = textContentName.value.trim() || "text.txt";
 
     if (mode.value === "text") {
       if (!textContent.value.trim()) {
         throw new Error("Text content is empty.");
       }
 
-      contentHash = await hashData(textContent.value);
-      canonicalization = "ternent-utils/canonicalStringify-v1";
+      subjectHash = await createSealHash(new TextEncoder().encode(textContent.value));
     } else {
       if (!selectedFile.value) {
         throw new Error("Select a file before signing.");
       }
 
       const bytes = await selectedFile.value.arrayBuffer();
-      contentHash = await hashBytes(bytes);
-      canonicalization = "raw-bytes";
-      fileName = selectedFile.value.name;
+      subjectHash = await createSealHash(bytes);
+      subjectPath = selectedFile.value.name;
     }
 
-    const proof = await createPortableProof({
-      identity: identity.value,
-      payload: {
-        contentHash,
-        hashAlgorithm: SUPPORTED_HASH_ALGORITHM,
-        signatureAlgorithm: SUPPORTED_SIGNATURE_ALGORITHM,
-        canonicalization,
+    const proof = await createSealProof({
+      signer: {
+        privateKeyPem: identity.value.privateKeyPem,
+        publicKeyPem: identity.value.publicKeyPem,
+        keyId: identity.value.keyId,
+      },
+      subject: {
+        kind: "file",
+        path: subjectPath,
+        hash: subjectHash,
       },
     });
 
     signedProof.value = proof;
-    outputFileName.value = fileName;
+    outputFileName.value = subjectPath;
     notice.value = "Proof generated successfully";
     showProofJson.value = false;
   } catch (caught) {
@@ -159,7 +158,7 @@ const onSign = async () => {
     <SectionIntro
       eyebrow="Sign"
       title="Turn text or files into signed proofs"
-      description="Use your active local identity to hash content, sign it deterministically, and export a self-contained proof artifact."
+      description="Use your active local identity to hash bytes, sign them deterministically, and export a self-contained proof artifact."
     />
 
     <Card v-if="!hasIdentity" variant="panel" padding="md" class="space-y-4">
@@ -190,7 +189,7 @@ const onSign = async () => {
           <template #panel-text>
             <div class="space-y-5">
               <p class="m-0 text-sm text-[var(--ui-fg-muted)]">
-                Hash and sign pasted text content using canonical stringification.
+                Hash and sign pasted text content as UTF-8 bytes.
               </p>
 
               <FormField label="Content name" description="Optional label used when downloading the proof JSON.">
@@ -253,7 +252,7 @@ const onSign = async () => {
               {{ isSigning ? "Signing..." : "Sign payload" }}
             </Button>
             <Badge tone="neutral" variant="outline">
-              {{ mode === "text" ? "Canonical stringification" : "Raw bytes" }}
+              {{ mode === "text" ? "UTF-8 bytes" : "Raw bytes" }}
             </Badge>
           </div>
           <p class="m-0 min-h-5 text-xs text-[var(--ui-fg-muted)]" aria-live="polite">

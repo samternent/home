@@ -1,10 +1,10 @@
 import { ref } from "vue";
 import {
   createIdentity,
+  deriveKeyIdFromPublicKeyPem,
   exportPrivateKeyAsPem,
   exportPublicKeyAsPem,
 } from "ternent-identity";
-import { hashData, stripIdentityKey } from "ternent-utils";
 import { useIdentitySession, type StoredIdentity } from "./useIdentitySession";
 
 export function useIdentityCreate() {
@@ -24,13 +24,13 @@ export function useIdentityCreate() {
         exportPrivateKeyAsPem(keyPair.privateKey),
       ]);
 
-      const fingerprint = await hashData(stripIdentityKey(publicKeyPem));
+      const keyId = await deriveKeyIdFromPublicKeyPem(publicKeyPem);
       const identity: StoredIdentity = {
-        id: `identity-${fingerprint.slice(0, 12)}`,
+        id: `identity-${keyId.slice(0, 12)}`,
         createdAt: new Date().toISOString(),
         publicKeyPem,
         privateKeyPem,
-        fingerprint,
+        keyId,
       };
 
       setIdentity(identity);

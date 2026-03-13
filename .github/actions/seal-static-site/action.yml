@@ -1,0 +1,75 @@
+name: "Seal Static Site"
+description: "Generate Seal manifest, proof, and public-key artifacts for an existing static asset directory."
+
+inputs:
+  assets-directory:
+    description: "Directory containing the built static site assets to sign."
+    required: true
+  working-directory:
+    description: "Base working directory for resolving input paths."
+    required: false
+    default: "."
+  manifest-name:
+    description: "Output filename for the generated manifest."
+    required: false
+    default: "dist-manifest.json"
+  proof-name:
+    description: "Output filename for the generated proof."
+    required: false
+    default: "proof.json"
+  public-key-name:
+    description: "Output filename for the generated public-key artifact."
+    required: false
+    default: "public-key.json"
+  package-name:
+    description: "Published npm package name for the Seal CLI."
+    required: false
+    default: "seal-cli"
+  package-version:
+    description: "Published npm package version or dist-tag to execute."
+    required: false
+    default: "latest"
+  cli-command:
+    description: "Optional explicit command prefix used to invoke the Seal CLI. If omitted, the action executes the published npm package."
+    required: false
+    default: ""
+
+outputs:
+  manifest-path:
+    description: "Path to the generated manifest file."
+    value: ${{ steps.seal.outputs.manifest-path }}
+  proof-path:
+    description: "Path to the generated proof file."
+    value: ${{ steps.seal.outputs.proof-path }}
+  public-key-path:
+    description: "Path to the generated public-key file."
+    value: ${{ steps.seal.outputs.public-key-path }}
+
+runs:
+  using: "composite"
+  steps:
+    - id: seal
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        set -euo pipefail
+
+        assets_dir="${{ inputs.assets-directory }}"
+        manifest_path="${assets_dir%/}/${{ inputs.manifest-name }}"
+        proof_path="${assets_dir%/}/${{ inputs.proof-name }}"
+        public_key_path="${assets_dir%/}/${{ inputs.public-key-name }}"
+        cli_command="${{ inputs.cli-command }}"
+        package_name="${{ inputs.package-name }}"
+        package_version="${{ inputs.package-version }}"
+
+        if [[ -z "$cli_command" ]]; then
+          cli_command="npm exec --yes --package=${package_name}@${package_version} seal"
+        fi
+
+        ${cli_command} manifest create --input "$assets_dir" --out "$manifest_path" --quiet
+        ${cli_command} sign --input "$manifest_path" --out "$proof_path" --quiet
+        ${cli_command} public-key --json > "$public_key_path"
+
+        echo "manifest-path=$manifest_path" >> "$GITHUB_OUTPUT"
+        echo "proof-path=$proof_path" >> "$GITHUB_OUTPUT"
+        echo "public-key-path=$public_key_path" >> "$GITHUB_OUTPUT"

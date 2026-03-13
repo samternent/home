@@ -28,11 +28,11 @@ test("generate identity, sign text, verify proof and mismatch", async ({ page })
   await page.getByRole("button", { name: "Verify proof" }).click();
 
   await expect(page.getByText("Proof JSON parsed successfully and the signature is valid.")).toBeVisible();
-  await expect(page.getByText("Content hash matches proof payload.")).toBeVisible();
+  await expect(page.getByText("Content hash matches proof subject.")).toBeVisible();
 
   await page.getByPlaceholder("Paste original text").fill("different text");
   await page.getByRole("button", { name: "Verify proof" }).click();
-  await expect(page.getByText("Content hash does not match proof payload.")).toBeVisible();
+  await expect(page.getByText("Content hash does not match proof subject.")).toBeVisible();
 });
 
 test("export, clear, and import identity through the consolidated app identity flow", async ({ page }) => {

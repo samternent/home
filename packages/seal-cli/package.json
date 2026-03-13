@@ -1,0 +1,54 @@
+{
+  "name": "seal-cli",
+  "version": "0.1.0",
+  "description": "Deterministic artifact signing for Seal",
+  "license": "ISC",
+  "type": "module",
+  "files": [
+    "bin",
+    "dist",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/samternent/home.git",
+    "directory": "packages/seal-cli"
+  },
+  "homepage": "https://github.com/samternent/home/tree/main/packages/seal-cli",
+  "bugs": {
+    "url": "https://github.com/samternent/home/issues"
+  },
+  "keywords": [
+    "seal",
+    "integrity",
+    "signature",
+    "manifest",
+    "cli"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": {
+    "seal": "bin/seal"
+  },
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "exports": {
+    ".": "./dist/index.js",
+    "./proof": "./dist/proof.js",
+    "./manifest": "./dist/manifest.js",
+    "./crypto": "./dist/crypto.js",
+    "./errors": "./dist/errors.js"
+  },
+  "scripts": {
+    "build": "vite build",
+    "test": "vitest run"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "ternent-identity": "workspace:*",
+    "ternent-utils": "workspace:*",
+    "vite": "^2.9.18",
+    "vitest": "^1.6.0"
+  }
+}

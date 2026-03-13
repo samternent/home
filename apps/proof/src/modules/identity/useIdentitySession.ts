@@ -6,7 +6,11 @@ export type StoredIdentity = {
   createdAt: string;
   publicKeyPem: string;
   privateKeyPem: string;
-  fingerprint: string;
+  keyId: string;
+};
+
+type LegacyStoredIdentity = StoredIdentity & {
+  fingerprint?: string;
 };
 
 export type IdentitySession = {
@@ -33,7 +37,34 @@ function readRememberedIdentity(): StoredIdentity | null {
   if (!raw) return null;
 
   try {
-    return JSON.parse(raw) as StoredIdentity;
+    const parsed = JSON.parse(raw) as LegacyStoredIdentity;
+    if (
+      typeof parsed?.id !== "string" ||
+      typeof parsed?.createdAt !== "string" ||
+      typeof parsed?.publicKeyPem !== "string" ||
+      typeof parsed?.privateKeyPem !== "string"
+    ) {
+      return null;
+    }
+
+    const keyId =
+      typeof parsed.keyId === "string"
+        ? parsed.keyId
+        : typeof parsed.fingerprint === "string"
+          ? parsed.fingerprint
+          : null;
+
+    if (!keyId) {
+      return null;
+    }
+
+    return {
+      id: parsed.id,
+      createdAt: parsed.createdAt,
+      publicKeyPem: parsed.publicKeyPem,
+      privateKeyPem: parsed.privateKeyPem,
+      keyId,
+    };
   } catch {
     return null;
   }

@@ -1,0 +1,55 @@
+name: Seal build and sign
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - apps/proof/**
+      - packages/seal-cli/**
+      - packages/identity/**
+      - packages/utils/**
+      - .github/workflows/seal-build-sign.yml
+
+jobs:
+  build-sign:
+    runs-on: ubuntu-latest
+    env:
+      SEAL_PRIVATE_KEY: ${{ secrets.SEAL_PRIVATE_KEY }}
+      SEAL_PUBLIC_KEY: ${{ secrets.SEAL_PUBLIC_KEY }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages and app
+        run: pnpm --filter ternent-utils --filter ternent-identity --filter seal-cli --filter proof build
+
+      - name: Generate Seal artifacts
+        uses: ./.github/actions/seal-static-site
+        with:
+          assets-directory: apps/proof/dist
+          cli-command: node packages/seal-cli/bin/seal
+
+      - name: Upload signed artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: proof-seal-artifacts
+          path: |
+            apps/proof/dist/dist-manifest.json
+            apps/proof/dist/proof.json
+            apps/proof/dist/public-key.json
