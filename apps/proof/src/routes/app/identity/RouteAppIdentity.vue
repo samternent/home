@@ -142,7 +142,7 @@ const onClear = () => {
     <SectionIntro
       eyebrow="Identity"
       title="Create, import, and protect your local signer"
-      description="Portable Proof keeps signing keys in your browser. Generate a new identity, import an existing one, or export the current payload for secure backup."
+      description="Seal keeps signing keys in your browser. Generate a new identity, import an existing one, or export the current payload for secure backup."
     />
 
     <div class="grid gap-6 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">

@@ -6,8 +6,8 @@ import {
 } from "@vueuse/core";
 import { computed, watch } from "vue";
 import { useRoute } from "vue-router";
+import { Logo } from "ternent-ui/patterns";
 import { useWhiteLabel } from "../brand/useWhiteLabel";
-import Logo from "../brand/Logo.vue";
 
 const breakpoints = useBreakpoints(breakpointsTailwind);
 const route = useRoute();

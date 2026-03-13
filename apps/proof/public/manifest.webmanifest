@@ -1,12 +1,12 @@
 {
-  "name": "Portable Proof",
-  "short_name": "Portable Proof",
+  "name": "Seal",
+  "short_name": "Seal",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#0b101b",
   "theme_color": "#0e1321",
-  "description": "Portable Proof is a browser-based utility for local proof signing and verification.",
+  "description": "Seal by ternent.dev is a browser-based utility for local proof signing and verification.",
   "icons": [
     {
       "src": "/icons/icon-192.png",

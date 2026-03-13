@@ -6,7 +6,7 @@ test("generate identity, sign text, verify proof and mismatch", async ({ page })
   await expect(page.getByText("Identity created. Export it now and store it securely.")).toBeVisible();
 
   await page.getByRole("link", { name: "Sign" }).click();
-  await page.getByPlaceholder("Enter text to sign").fill("portable proof text");
+  await page.getByPlaceholder("Enter text to sign").fill("seal text");
   await page.getByRole("button", { name: "Sign payload" }).click();
   await expect(page.getByRole("heading", { name: "Proof artifact ready" })).toBeVisible();
 
@@ -24,7 +24,7 @@ test("generate identity, sign text, verify proof and mismatch", async ({ page })
     .locator("[data-scope='radio-group'][data-part='item']")
     .filter({ hasText: "TextPaste the original text to compare." })
     .click();
-  await page.getByPlaceholder("Paste original text").fill("portable proof text");
+  await page.getByPlaceholder("Paste original text").fill("seal text");
   await page.getByRole("button", { name: "Verify proof" }).click();
 
   await expect(page.getByText("Proof JSON parsed successfully and the signature is valid.")).toBeVisible();

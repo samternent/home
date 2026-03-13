@@ -79,13 +79,11 @@ const copyFingerprint = async () => {
                 />
               </svg>
               <div class="flex flex-col gap-0.5">
-                <span class="text-lg font-medium tracking-tight"
-                  >Portable Proof</span
-                >
+                <span class="text-lg font-medium tracking-tight">Seal</span>
                 <span
                   class="text-xs uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]"
                 >
-                  Browser-native verification
+                  ternent.dev suite
                 </span>
               </div>
             </RouterLink>
@@ -128,7 +126,7 @@ const copyFingerprint = async () => {
                     Workspace
                   </p>
                   <p class="m-0 text-sm text-[var(--ui-fg-muted)]">
-                    Browser-native signing and verification with local identity control.
+                    Local signing and verification for self-contained proofs across the ternent.dev suite.
                   </p>
                 </div>
 
@@ -207,7 +205,7 @@ const copyFingerprint = async () => {
         >
           <p class="m-0">Fully client-side. No data leaves your browser.</p>
           <p class="m-0">
-            Portable proofs for text, files, and release artifacts.
+            Seal produces proofs for text, files, and release artifacts.
           </p>
         </div>
       </footer>

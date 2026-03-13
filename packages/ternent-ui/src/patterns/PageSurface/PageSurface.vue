@@ -1,8 +1,14 @@
 <template>
   <div class="ui-page-surface">
     <div class="ui-page-surface__mesh" aria-hidden="true"></div>
-    <div class="ui-page-surface__glow ui-page-surface__glow--primary" aria-hidden="true"></div>
-    <div class="ui-page-surface__glow ui-page-surface__glow--accent" aria-hidden="true"></div>
+    <div
+      class="ui-page-surface__glow ui-page-surface__glow--primary"
+      aria-hidden="true"
+    ></div>
+    <div
+      class="ui-page-surface__glow ui-page-surface__glow--accent"
+      aria-hidden="true"
+    ></div>
     <div class="ui-page-surface__content">
       <slot />
     </div>
@@ -13,10 +19,17 @@
 .ui-page-surface {
   position: relative;
   min-height: 100vh;
-  overflow: hidden;
-  background:
-    radial-gradient(circle at top center, color-mix(in srgb, var(--ui-primary-muted) 70%, transparent), transparent 42%),
-    linear-gradient(180deg, color-mix(in srgb, var(--ui-tonal-tertiary) 72%, transparent), transparent 34%),
+  /* overflow: hidden; */
+  background: radial-gradient(
+      circle at top center,
+      color-mix(in srgb, var(--ui-primary-muted) 70%, transparent),
+      transparent 42%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--ui-tonal-tertiary) 72%, transparent),
+      transparent 34%
+    ),
     var(--ui-bg);
   color: var(--ui-fg);
   isolation: isolate;
@@ -36,9 +49,15 @@
 
 .ui-page-surface__mesh {
   opacity: 0.3;
-  background-image:
-    linear-gradient(color-mix(in srgb, var(--ui-border) 72%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in srgb, var(--ui-border) 72%, transparent) 1px, transparent 1px);
+  background-image: linear-gradient(
+      color-mix(in srgb, var(--ui-border) 72%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--ui-border) 72%, transparent) 1px,
+      transparent 1px
+    );
   background-size: 2rem 2rem;
   mask-image: radial-gradient(circle at center, black, transparent 72%);
 }

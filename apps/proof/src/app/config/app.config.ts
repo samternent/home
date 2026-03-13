@@ -9,8 +9,8 @@ export type AppConfig = {
 
 export const appConfig: AppConfig = {
   appId: "proof",
-  appTitle: "Portable Proof",
-  defaultHost: "proof.ternent.dev",
+  appTitle: "Seal",
+  defaultHost: "seal.ternent.dev",
   defaultThemeMode: "dark",
 };
 

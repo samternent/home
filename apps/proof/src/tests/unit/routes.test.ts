@@ -15,7 +15,7 @@ function flattenPaths(input: any[], parent = ""): string[] {
 }
 
 describe("routes", () => {
-  it("includes portable proof routes", () => {
+  it("includes seal workspace routes", () => {
     const paths = flattenPaths(routes);
 
     expect(paths).toContain("/");

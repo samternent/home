@@ -79,7 +79,7 @@ const proofRows = computed(() => {
   return [
     { label: "Content hash", value: signedProof.value.payload.contentHash, valueTone: "primary" as const },
     { label: "Signer fingerprint", value: signerShort.value },
-    { label: "Name", value: outputFileName.value || "portable-proof" },
+    { label: "Name", value: outputFileName.value || "seal-proof" },
     { label: "Algorithm", value: signedProof.value.payload.signatureAlgorithm },
   ];
 });
@@ -87,7 +87,7 @@ const proofRows = computed(() => {
 const downloadProof = () => {
   if (!proofJson.value) return;
 
-  const name = outputFileName.value || "portable-proof";
+  const name = outputFileName.value || "seal-proof";
   const blob = new Blob([proofJson.value], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
@@ -158,7 +158,7 @@ const onSign = async () => {
   <section class="space-y-8 md:space-y-10">
     <SectionIntro
       eyebrow="Sign"
-      title="Turn text or files into portable proofs"
+      title="Turn text or files into signed proofs"
       description="Use your active local identity to hash content, sign it deterministically, and export a self-contained proof artifact."
     />
 

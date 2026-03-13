@@ -1,7 +1,6 @@
 <script setup>
 import { shallowRef, computed } from "vue";
 import { onClickOutside } from "@vueuse/core";
-import { designTokens, spacing, shadows } from "../design-system/tokens.js";
 import SButton from "./SButton.vue";
 
 const props = defineProps({

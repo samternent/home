@@ -18,9 +18,9 @@ export default defineConfig({
       includeAssets: ["favicon.ico", "icons/icon-192.png", "icons/icon-512.png", "icons/maskable-512.png"],
       manifest: {
         id: "/",
-        name: "Portable Proof",
-        short_name: "Portable Proof",
-        description: "Portable Proof is a browser-based utility for local proof signing and verification.",
+        name: "Seal",
+        short_name: "Seal",
+        description: "Seal by ternent.dev is a browser-based utility for local proof signing and verification.",
         theme_color: "#0e1321",
         background_color: "#0b101b",
         display: "standalone",

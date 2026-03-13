@@ -1,98 +1,73 @@
+/* This file is generated from src/themes/semanticThemeContract.js. */
+
 [data-theme="proof-dark"] {
   color-scheme: dark;
-
-  /* Base */
-  --ui-bg: #060a0f; /* oil-black blue */
-  --ui-fg: #e6edf3; /* GitHub-grade cold light */
-  --ui-fg-muted: #8b949e; /* terminal grey */
-
-  /* Surfaces */
-  --ui-surface: #0d1117; /* steel panel */
+  --ui-bg: #060a0f;
+  --ui-fg: #e6edf3;
+  --ui-fg-muted: #8b949e;
+  --ui-surface: #0d1117;
   --ui-surface-hover: #161b22;
   --ui-border: rgba(230, 237, 243, 0.08);
-
-  /* Primary (deep electric blue) */
-  --ui-primary: #2f81f7; /* sharp but serious */
+  --ui-primary: #2f81f7;
   --ui-on-primary: #ffffff;
   --ui-primary-muted: rgba(47, 129, 247, 0.15);
   --ui-primary-hover: rgba(47, 129, 247, 0.22);
   --ui-primary-active: rgba(47, 129, 247, 0.3);
-
-  /* Secondary (monochrome bias) */
   --ui-secondary: #6e7681;
   --ui-on-secondary: #ffffff;
   --ui-secondary-muted: rgba(110, 118, 129, 0.14);
   --ui-secondary-hover: rgba(110, 118, 129, 0.22);
   --ui-secondary-active: rgba(110, 118, 129, 0.3);
-
-  /* Accent (very restrained steel tone) */
   --ui-accent: #9da7b3;
   --ui-on-accent: #060a0f;
   --ui-accent-muted: rgba(157, 167, 179, 0.14);
   --ui-accent-hover: rgba(157, 167, 179, 0.22);
   --ui-accent-active: rgba(157, 167, 179, 0.3);
-
-  /* Success (true signal green) */
-  --ui-success: #2ea043; /* Git / terminal green */
+  --ui-success: #2ea043;
   --ui-on-success: #05140a;
   --ui-success-muted: rgba(46, 160, 67, 0.16);
   --ui-success-hover: rgba(46, 160, 67, 0.24);
   --ui-success-active: rgba(46, 160, 67, 0.32);
-
-  /* Warning (muted amber) */
   --ui-warning: #d29922;
   --ui-on-warning: #140e02;
   --ui-warning-muted: rgba(210, 153, 34, 0.16);
   --ui-warning-hover: rgba(210, 153, 34, 0.24);
   --ui-warning-active: rgba(210, 153, 34, 0.32);
-
-  /* Info */
   --ui-info: #2f81f7;
   --ui-on-info: #ffffff;
   --ui-info-muted: rgba(47, 129, 247, 0.16);
   --ui-info-hover: rgba(47, 129, 247, 0.24);
   --ui-info-active: rgba(47, 129, 247, 0.32);
-
-  /* Critical */
   --ui-critical: #f85149;
   --ui-on-critical: #1a0c0b;
   --ui-critical-muted: rgba(248, 81, 73, 0.16);
   --ui-critical-hover: rgba(248, 81, 73, 0.24);
   --ui-critical-active: rgba(248, 81, 73, 0.32);
-
   --ui-danger: var(--ui-critical);
   --ui-on-danger: var(--ui-on-critical);
   --ui-danger-muted: var(--ui-critical-muted);
   --ui-danger-hover: var(--ui-critical-hover);
   --ui-danger-active: var(--ui-critical-active);
-
-  /* Tonals */
   --ui-tonal-secondary: rgba(230, 237, 243, 0.06);
   --ui-tonal-secondary-hover: rgba(230, 237, 243, 0.12);
   --ui-tonal-tertiary: rgba(230, 237, 243, 0.03);
   --ui-tonal-tertiary-hover: rgba(230, 237, 243, 0.08);
-
-  /* Rings */
   --ui-ring: rgba(47, 129, 247, 0.5);
   --ui-glow-primary: 0 0 0 2px rgba(47, 129, 247, 0.35);
   --ui-glow-success: 0 0 0 2px rgba(46, 160, 67, 0.35);
   --ui-glow-critical: 0 0 0 2px rgba(248, 81, 73, 0.3);
-
-  /* Shadows */
   --ui-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.45);
   --ui-shadow-md: 0 12px 36px rgba(0, 0, 0, 0.65);
-
-  /* Radii (slightly tighter = more serious) */
   --ui-radius-sm: 6px;
   --ui-radius-md: 10px;
   --ui-radius-lg: 14px;
-
-  /* Motion */
   --ui-duration-fast: 120ms;
   --ui-duration-normal: 180ms;
   --ui-duration-slow: 240ms;
   --ui-ease-out: cubic-bezier(0, 0, 0.2, 1);
-
   --ui-lift-hover: -0.5px;
   --ui-scale-active: 0.98;
+  --ui-logo-start: #2f81f7;
+  --ui-logo-end: #9da7b3;
+  --ui-logo-cutout: #060a0f;
 }

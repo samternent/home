@@ -1,7 +1,7 @@
 <script setup>
 import { useAppShell } from "@/module/app-shell/useAppShell";
 import { useBreadcrumbs } from "@/module/breadcrumbs/useBreadcrumbs";
-import Logo from "@/module/brand/Logo.vue";
+import { Logo } from "ternent-ui/patterns";
 import AppLayout from "@/module/app/AppLayout.vue";
 import AppNavBar from "@/module/app/AppNavBar.vue";
 

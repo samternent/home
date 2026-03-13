@@ -36,8 +36,9 @@
     "./tailwind.config": "./tailwind.config.js"
   },
   "scripts": {
-    "build": "vite build",
+    "build": "node ./scripts/generate-theme-css.mjs && vite build",
     "dev": "vite build --watch",
+    "generate:themes": "node ./scripts/generate-theme-css.mjs",
     "serve": "http-server ./dist -p 5001 --cors='*'",
     "lint:tokens": "node ./scripts/check-tokens.js"
   },
