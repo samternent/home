@@ -40,29 +40,37 @@ const copyFingerprint = async () => {
 </script>
 
 <template>
-  <div class="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-6 py-10 md:px-8 md:py-12">
+  <div
+    class="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-6 py-10 md:px-8 md:py-12"
+  >
     <header class="mb-8 space-y-6">
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 class="m-0 text-2xl font-medium tracking-tight">Portable Proof</h1>
-          <p class="m-0 text-sm text-fg-muted">by ternent.dev</p>
+          <h1 class="m-0 text-2xl font-medium tracking-tight">Proof</h1>
         </div>
 
-        <div class="inline-flex items-center gap-2 rounded-full border border-border bg-[rgba(255,255,255,0.04)] px-3 py-1.5">
+        <div
+          class="inline-flex items-center gap-2 rounded-full bg-[rgba(255,255,255,0.04)] px-3 py-1.5"
+        >
           <span class="text-xs font-medium text-fg-muted">Active identity</span>
           <span class="font-mono text-xs text-fg">{{ fingerprintShort }}</span>
-          <SButton variant="ghost" size="micro" :disabled="!hasIdentity" @click="copyFingerprint">
+          <SButton
+            variant="ghost"
+            size="micro"
+            :disabled="!hasIdentity"
+            @click="copyFingerprint"
+          >
             {{ copied ? "Copied" : "Copy" }}
           </SButton>
         </div>
       </div>
 
-      <div class="flex flex-wrap items-center justify-between gap-3 border-y border-border py-4">
+      <div class="flex flex-wrap items-center justify-between gap-3 py-4">
         <STabs :items="tabs" :path="currentPath" type="pills" size="micro" />
 
         <div class="flex items-center gap-4 text-sm">
           <a
-            href="https://github.com/samternent/home"
+            href="https://github.com/samternent/home/apps/proof"
             target="_blank"
             rel="noreferrer"
             class="text-fg-muted transition hover:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ui-ring)]"

@@ -1,0 +1,26 @@
+Audit the existing `src/primitives/Button/*` implementation and harden it into the canonical primitive template for the design system.
+
+Goals:
+
+- preserve good existing behavior where sensible
+- align structure and naming with the design-system docs
+- keep styling token-driven
+- keep render logic small
+- ensure states are explicit and consistent
+- create or update `Button.spec.md`
+
+Requirements:
+
+- inspect legacy `src/components/SButton.vue` only for behavioral reference if needed
+- do not copy legacy implementation details blindly
+- keep the component in `src/primitives/Button`
+- review the current variant vocabulary and either preserve it intentionally or rationalize it clearly
+- review whether the current size scale is justified
+- use `Button.props.ts`, `Button.types.ts`, `Button.variants.ts`, `Button.vue`, and `Button.spec.md`
+- update exports if needed
+
+Output should include:
+
+- summary of what changed
+- any API decisions made
+- any follow-up recommendations for alignment with future primitives
