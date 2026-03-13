@@ -1,5 +1,11 @@
 # ternent-ui
 
+## 0.4.3
+
+### Patch Changes
+
+- [`346a6cf11407bb3e94bf1e553683769d50112616`](https://github.com/samternent/home/commit/346a6cf11407bb3e94bf1e553683769d50112616) Thanks [@samternent](https://github.com/samternent)! - Updates it to seal
+
 ## 0.4.2
 
 ### Patch Changes
