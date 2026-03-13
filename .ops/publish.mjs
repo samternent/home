@@ -6,6 +6,7 @@ const appsToPublish = [
   "../apps/footballsocial-api",
   "../apps/ternent-api",
   "../apps/ternentdotdev",
+  "../apps/proof",
 ];
 const packagesToPublish = [
   "../packages/ledger",
@@ -29,7 +30,7 @@ for (; i < toPublish.length; i++) {
   const fullChangelog = shell
     .exec(
       `gh pr list -B "main" -s merged -H changeset-release/"main" --json body --jq '.[].body' -L 1`,
-      { silent: true }
+      { silent: true },
     )
     .toString();
 
@@ -40,7 +41,7 @@ for (; i < toPublish.length; i++) {
   if (changelog) {
     shell.exec(
       `gh release create "${name}-${version}" -t "${name}-${version}" -n "${name}-${version}" -n "${changelog}"`,
-      { silent: true }
+      { silent: true },
     );
   }
 }
