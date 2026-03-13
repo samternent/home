@@ -1,5 +1,12 @@
 # concord
 
+## 0.3.57
+
+### Patch Changes
+
+- Updated dependencies [[`a9b21ff9ca09718b824ef6e665e1d79d29fdeb69`](https://github.com/samternent/home/commit/a9b21ff9ca09718b824ef6e665e1d79d29fdeb69)]:
+  - ternent-ui@0.4.1
+
 ## 0.3.56
 
 ### Patch Changes
