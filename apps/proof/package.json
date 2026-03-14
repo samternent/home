@@ -7,6 +7,7 @@
     "dev": "vite --host",
     "build": "vite-ssg build",
     "preview": "vite preview --host",
+    "seal:local": "node ./scripts/generate-local-seal-artifacts.mjs",
     "test": "pnpm test:unit",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",

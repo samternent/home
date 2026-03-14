@@ -16,13 +16,18 @@ const attrs = useAttrs();
 const props = defineProps(accordionProps);
 
 const rootClass = computed(() => twMerge(accordionRootClass, normalizeClass(attrs.class)));
+const modelValue = computed<string[]>(() => {
+  if (Array.isArray(props.value)) return props.value;
+  if (typeof props.value === "string" && props.value.length > 0) return [props.value];
+  return [];
+});
 const rootAttrs = computed(() => {
   const { class: _class, ...rest } = attrs;
   return rest;
 });
 
-function handleValueChange(value: AccordionValue) {
-  emit("update:value", value);
+function handleValueChange(value: string[]) {
+  emit("update:value", props.multiple ? value : value[0]);
 }
 </script>
 
@@ -32,10 +37,10 @@ function handleValueChange(value: AccordionValue) {
     :multiple="props.multiple"
     :collapsible="props.collapsible"
     :lazy-mount="props.lazyMount"
-    :value="props.value"
+    :model-value="modelValue"
     unmount-on-exit
     v-bind="rootAttrs"
-    @update:value="handleValueChange"
+    @update:model-value="handleValueChange"
   >
     <slot />
   </ArkAccordion.Root>

@@ -19,7 +19,8 @@
 .ui-page-surface {
   position: relative;
   min-height: 100vh;
-  /* overflow: hidden; */
+  overflow-x: clip;
+  overflow-y: visible;
   background: radial-gradient(
       circle at top center,
       color-mix(in srgb, var(--ui-primary-muted) 70%, transparent),

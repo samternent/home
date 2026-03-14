@@ -126,6 +126,7 @@ describe("proof", () => {
 
     expect(result.valid).toBe(true);
     expect(result.keyId).toBe(identity.keyId);
+    expect(result.proofRaw).toBe(JSON.stringify(proof));
   });
 
   it("fails published artifacts on key mismatch", async () => {

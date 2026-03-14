@@ -10,7 +10,12 @@ import {
   RadioGroup,
   Textarea,
 } from "ternent-ui/primitives";
-import { FormField, PreviewPanel, SectionIntro } from "ternent-ui/patterns";
+import {
+  FormField,
+  SectionIntro,
+  VerificationDetailsPanel,
+  VerificationSummary,
+} from "ternent-ui/patterns";
 import {
   createSealHash,
   parseSealProofJson,
@@ -25,9 +30,6 @@ type ContentMode = "text" | "file";
 type StageOneResult = {
   status: "idle" | "valid" | "invalid";
   errors: string[];
-  keyId?: string;
-  subjectHash?: string;
-  algorithm?: string;
 };
 
 type StageTwoResult = {
@@ -39,9 +41,8 @@ type StageTwoResult = {
 type PublishedResult = {
   status: "idle" | "loading" | "valid" | "invalid";
   errors: string[];
-  keyId?: string;
-  subjectHash?: string;
-  algorithm?: string;
+  proof?: SealProofV1 | null;
+  proofRaw?: string;
 };
 
 const showRawProofJson = ref(false);
@@ -59,6 +60,7 @@ const stageOne = ref<StageOneResult>({ status: "idle", errors: [] });
 const stageTwo = ref<StageTwoResult>({ status: "idle" });
 const published = ref<PublishedResult>({ status: "idle", errors: [] });
 const parsedProof = ref<SealProofV1 | null>(null);
+const parsedProofRaw = ref("");
 
 const verificationModeOptions = [
   {
@@ -111,15 +113,6 @@ const contentFileModel = computed({
   },
 });
 
-const stageOneRows = computed(() => {
-  if (stageOne.value.status !== "valid") return [];
-  return [
-    { label: "Signer key ID", value: stageOne.value.keyId || "", valueTone: "primary" as const },
-    { label: "Subject hash", value: stageOne.value.subjectHash || "", valueTone: "primary" as const },
-    { label: "Algorithm", value: stageOne.value.algorithm || "" },
-  ];
-});
-
 const stageTwoRows = computed(() => {
   if (!stageTwo.value.providedHash) return [];
   return [
@@ -131,15 +124,30 @@ const stageTwoRows = computed(() => {
   ];
 });
 
-const publishedRows = computed(() => {
-  if (!published.value.keyId || !published.value.subjectHash || !published.value.algorithm) {
-    return [];
-  }
-  return [
-    { label: "Signer key ID", value: published.value.keyId, valueTone: "primary" as const },
-    { label: "Subject hash", value: published.value.subjectHash, valueTone: "primary" as const },
-    { label: "Algorithm", value: published.value.algorithm },
-  ];
+const stageOneVerificationStatus = computed(() =>
+  stageOne.value.status === "valid"
+    ? "verified"
+    : stageOne.value.status === "invalid"
+      ? "failed"
+      : "unknown"
+);
+
+const publishedVerificationStatus = computed(() =>
+  published.value.status === "valid"
+    ? "verified"
+    : published.value.status === "invalid"
+      ? "failed"
+      : "unknown"
+);
+
+const parsedProofSize = computed(() => {
+  if (!parsedProofRaw.value) return undefined;
+  return `${new TextEncoder().encode(parsedProofRaw.value).byteLength} B`;
+});
+
+const publishedProofSize = computed(() => {
+  if (!published.value.proofRaw) return undefined;
+  return `${new TextEncoder().encode(published.value.proofRaw).byteLength} B`;
 });
 
 const loadProofJson = async (): Promise<string> => {
@@ -190,6 +198,7 @@ const verifyContentMatch = async (proof: SealProofV1): Promise<StageTwoResult> =
 const onVerify = async () => {
   isVerifying.value = true;
   parsedProof.value = null;
+  parsedProofRaw.value = "";
   stageOne.value = { status: "idle", errors: [] };
   stageTwo.value = { status: "idle" };
 
@@ -218,13 +227,11 @@ const onVerify = async () => {
     }
 
     parsedProof.value = parsed.proof;
+    parsedProofRaw.value = rawProof;
 
     stageOne.value = {
       status: "valid",
       errors: [],
-      keyId: parsed.proof.signer.keyId,
-      subjectHash: parsed.proof.subject.hash,
-      algorithm: parsed.proof.algorithm,
     };
 
     stageTwo.value = await verifyContentMatch(parsed.proof);
@@ -249,15 +256,16 @@ const onVerifyPublished = async () => {
     published.value = {
       status: result.valid ? "valid" : "invalid",
       errors: result.errors,
-      keyId: result.keyId,
-      subjectHash: result.subjectHash,
-      algorithm: result.algorithm,
+      proof: result.proof,
+      proofRaw: result.proofRaw,
     };
   } catch (caught) {
     const message = caught instanceof Error ? caught.message : String(caught);
     published.value = {
       status: "invalid",
       errors: [message],
+      proof: null,
+      proofRaw: "",
     };
   } finally {
     isVerifyingPublished.value = false;
@@ -401,13 +409,17 @@ const onVerifyPublished = async () => {
         <li v-for="message in stageOne.errors" :key="message">{{ message }}</li>
       </ul>
 
-      <PreviewPanel
+      <VerificationSummary
         v-if="stageOne.status === 'valid'"
-        title="Validated proof"
-        :rows="stageOneRows"
-        status-label="Signature valid"
-        status-tone="neutral"
-        emphasis="subtle"
+        :status="stageOneVerificationStatus"
+        :subject="parsedProof?.subject.path || 'Proof subject'"
+        :hash="parsedProof?.subject.hash || 'Unavailable'"
+        :signer="parsedProof?.signer.keyId || 'Unknown signer'"
+        :algorithm="parsedProof?.algorithm || 'Unknown'"
+        :timestamp="parsedProof?.createdAt || 'Unavailable'"
+        :version="parsedProof ? `seal/v${parsedProof.version}` : 'seal/v1'"
+        :context="{ surface: 'browser', location: 'app' }"
+        variant="compact"
       />
     </Card>
 
@@ -472,13 +484,21 @@ const onVerifyPublished = async () => {
         <li v-for="message in published.errors" :key="message">{{ message }}</li>
       </ul>
 
-      <PreviewPanel
-        v-if="publishedRows.length"
-        title="Published artifact result"
-        :rows="publishedRows"
-        :status-label="published.status === 'valid' ? 'Verified' : 'Invalid'"
-        :status-tone="published.status === 'valid' ? 'success' : 'critical'"
-        emphasis="subtle"
+      <VerificationDetailsPanel
+        v-if="published.proof"
+        :status="publishedVerificationStatus"
+        :subject="published.proof.subject.path"
+        :hash="published.proof.subject.hash"
+        :signer="published.proof.signer.keyId"
+        :algorithm="published.proof.algorithm"
+        :timestamp="published.proof.createdAt"
+        :version="`seal/v${published.proof.version}`"
+        :signature="published.proof.signature"
+        :proof-size="publishedProofSize"
+        :context="{ surface: 'browser', location: 'app' }"
+        variant="compact"
+        :raw-proof="published.proofRaw"
+        headline="Published proof"
       />
     </Card>
   </section>

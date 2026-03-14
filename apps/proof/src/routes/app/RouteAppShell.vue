@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { RouterLink, useRoute } from "vue-router";
-import { Badge, Button, Card, Separator } from "ternent-ui/primitives";
+import { Badge, Button, Card } from "ternent-ui/primitives";
 import { PageSurface } from "ternent-ui/patterns";
 import { useIdentitySession } from "@/modules/identity";
 import OfflineBanner from "@/modules/offline/components/OfflineBanner.vue";
@@ -51,70 +51,70 @@ const copyKeyId = async () => {
 <template>
   <PageSurface>
     <div class="relative">
-      <header class="mx-auto max-w-6xl px-6 py-6 lg:px-8">
-        <div class="flex flex-col gap-5">
-          <div
-            class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between"
-          >
-            <RouterLink
-              to="/"
-              class="flex items-center gap-3 text-[var(--ui-fg)] no-underline"
+      <header
+        class="sticky top-0 z-30 border-b border-[color-mix(in_srgb,var(--ui-border)_84%,transparent)] bg-[color-mix(in_srgb,var(--ui-bg)_86%,transparent)] backdrop-blur-md"
+      >
+        <div class="mx-auto max-w-6xl px-6 py-6 lg:px-8">
+          <div class="flex flex-col gap-5">
+            <div
+              class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between"
             >
-              <svg
-                aria-hidden="true"
-                viewBox="0 0 24 24"
-                width="22"
-                height="22"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path
-                  d="M10 13a5 5 0 0 1 0-7l1.2-1.2a5 5 0 1 1 7.1 7.1L17 13"
-                />
-                <path
-                  d="M14 11a5 5 0 0 1 0 7l-1.2 1.2a5 5 0 0 1-7.1-7.1L7 11"
-                />
-              </svg>
-              <div class="flex flex-col gap-0.5">
-                <span class="text-lg font-medium tracking-tight">Seal</span>
-                <span
-                  class="text-xs uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]"
-                >
-                  ternent.dev suite
-                </span>
-              </div>
-            </RouterLink>
-
-            <div class="flex flex-wrap items-center gap-2">
-              <Button
-                as="RouterLink"
+              <RouterLink
                 to="/"
-                size="sm"
-                variant="plain-secondary"
+                class="flex items-center gap-3 text-[var(--ui-fg)] no-underline"
               >
-                Home
-              </Button>
-              <Button
-                as="a"
-                href="https://github.com/samternent/home/tree/main/apps/proof"
-                target="_blank"
-                rel="noreferrer"
-                size="sm"
-                variant="plain-secondary"
-              >
-                GitHub
-              </Button>
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  width="22"
+                  height="22"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M10 13a5 5 0 0 1 0-7l1.2-1.2a5 5 0 1 1 7.1 7.1L17 13"
+                  />
+                  <path
+                    d="M14 11a5 5 0 0 1 0 7l-1.2 1.2a5 5 0 0 1-7.1-7.1L7 11"
+                  />
+                </svg>
+                <div class="flex flex-col gap-0.5">
+                  <span class="text-lg font-medium tracking-tight">Seal</span>
+                  <span
+                    class="text-xs uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]"
+                  >
+                    ternent.dev suite
+                  </span>
+                </div>
+              </RouterLink>
+
+              <div class="flex flex-wrap items-center gap-2">
+                <Button
+                  as="RouterLink"
+                  to="/"
+                  size="sm"
+                  variant="plain-secondary"
+                >
+                  Home
+                </Button>
+                <Button
+                  as="a"
+                  href="https://github.com/samternent/home/tree/main/apps/proof"
+                  target="_blank"
+                  rel="noreferrer"
+                  size="sm"
+                  variant="plain-secondary"
+                >
+                  GitHub
+                </Button>
+              </div>
             </div>
           </div>
         </div>
       </header>
-
-      <div class="mx-auto max-w-6xl px-6 lg:px-8">
-        <Separator />
-      </div>
 
       <main class="mx-auto max-w-6xl px-6 pb-16 pt-8 lg:px-8">
         <div class="grid gap-6">

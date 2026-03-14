@@ -120,6 +120,8 @@ const badgeTone = (tone?: PreviewPanelTone) =>
 <style scoped>
 .ui-preview-panel {
   position: relative;
+  width: 100%;
+  max-width: 100%;
   overflow: hidden;
 }
 
@@ -242,6 +244,7 @@ const badgeTone = (tone?: PreviewPanelTone) =>
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  min-width: 0;
 }
 
 .ui-preview-panel__rows {
@@ -306,6 +309,8 @@ const badgeTone = (tone?: PreviewPanelTone) =>
 
 .ui-preview-panel__code {
   margin: 0;
+  min-width: 0;
+  max-width: 100%;
   padding: 1rem 1.125rem;
   overflow-x: auto;
   border: 1px solid color-mix(in srgb, var(--ui-border) 72%, transparent);
@@ -324,6 +329,7 @@ const badgeTone = (tone?: PreviewPanelTone) =>
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  min-width: 0;
 }
 
 .ui-preview-panel__footer {

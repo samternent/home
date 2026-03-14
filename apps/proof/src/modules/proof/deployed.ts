@@ -10,6 +10,7 @@ import {
 export type PublishedArtifactsVerification = {
   valid: boolean;
   proof: SealProofV1 | null;
+  proofRaw: string;
   publicKeyArtifact: SealPublicKeyArtifact | null;
   keyId: string;
   algorithm: string;
@@ -48,6 +49,7 @@ export async function verifyPublishedArtifacts(
     return {
       valid: false,
       proof: null,
+      proofRaw,
       publicKeyArtifact: null,
       keyId: "",
       algorithm: "",
@@ -94,6 +96,7 @@ export async function verifyPublishedArtifacts(
   return {
     valid: verification.valid && errors.length === 0,
     proof: parsedProof.proof,
+    proofRaw,
     publicKeyArtifact,
     keyId: parsedProof.proof.signer.keyId,
     algorithm: parsedProof.proof.algorithm,

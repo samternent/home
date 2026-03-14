@@ -8,6 +8,8 @@ import {
   SectionIntro,
   StepList,
 } from "ternent-ui/patterns";
+import { appConfig } from "@/app/config/app.config";
+import PublishedSiteProofPreview from "@/modules/proof/components/PublishedSiteProofPreview.vue";
 
 const navigationLinks = [
   { href: "#features", label: "Features" },
@@ -39,13 +41,6 @@ const featureCards = [
   },
 ];
 
-const heroRows = [
-  { label: "Signed by", value: "9f3c4a1b…d07e12af" },
-  { label: "Algorithm", value: "ECDSA-P256-SHA256" },
-  { label: "Hash", value: "sha256:a3f8…c9d2" },
-  { label: "Status", value: "Verified", valueTone: "success" },
-];
-
 const howItWorksSteps = [
   {
     title: "Generate your identity",
@@ -63,23 +58,6 @@ const howItWorksSteps = [
       "Anyone can independently verify the proof without your private key or your app.",
   },
 ];
-
-const proofJsonCode = `{
-  "version": "1",
-  "type": "seal-proof",
-  "algorithm": "ECDSA-P256-SHA256",
-  "createdAt": "2026-03-13T12:04:21.000Z",
-  "subject": {
-    "kind": "file",
-    "path": "sample.txt",
-    "hash": "sha256:a3f8...c9d2"
-  },
-  "signer": {
-    "publicKey": "BASE64-SPKI",
-    "keyId": "9f3c4a1b...d07e12af"
-  },
-  "signature": "BASE64-SIGNATURE"
-}`;
 
 const useCases = [
   {
@@ -153,6 +131,10 @@ const footerLinks = [
     label: "Identity",
   },
 ];
+
+const publishedSiteBaseUrl = import.meta.env.DEV
+  ? "/_seal"
+  : `https://${appConfig.defaultHost}`;
 </script>
 
 <template>
@@ -217,12 +199,11 @@ const footerLinks = [
           </template>
         </SectionIntro>
 
-        <PreviewPanel
-          title="Verification passed"
-          :rows="heroRows"
-          status-label="Verified"
-          status-tone="success"
-          emphasis="strong"
+        <PublishedSiteProofPreview
+          mode="details"
+          headline="Verified proof"
+          :base-url="publishedSiteBaseUrl"
+          variant="full"
         />
       </section>
 
@@ -319,15 +300,12 @@ const footerLinks = [
 
       <section id="how-it-works" class="pt-24">
         <div class="grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
-          <PreviewPanel
-            title="Verification record"
-            :tabs="['Artifact JSON', 'Preview']"
-            active-tab="Artifact JSON"
-            :code="proofJsonCode"
-            footer-label="seal/v1"
-            footer-tone="neutral"
-            footer-text="Independent verification without your private key"
-            emphasis="strong"
+          <PublishedSiteProofPreview
+            mode="details"
+            headline="Verification record"
+            :base-url="publishedSiteBaseUrl"
+            variant="full"
+            show-raw-proof
           />
 
           <div class="flex flex-col gap-8">
@@ -470,18 +448,23 @@ const footerLinks = [
       </section>
     </main>
 
-    <footer class="mx-auto max-w-7xl px-6 pb-10 lg:px-8">
+    <footer class="mx-auto max-w-7xl px-6 pb-4 lg:px-8">
       <Separator />
       <div
-        class="flex flex-col gap-6 py-8 sm:flex-row sm:items-center sm:justify-between"
+        class="flex flex-col gap-6 py-8 sm:flex-row sm:items-start sm:justify-between"
       >
-        <div class="flex items-end gap-2">
-          <Logo class="size-6" />
-          <div class="flex gap-1 text-sm">
+        <div class="flex flex-col items-start gap-3">
+          <div class="flex items-end gap-3 text-sm">
+            <Logo class="size-6" />
             <a href="https://ternent.dev" class="hover:underline">
               ternent.dev</a
             >
             <p>© 2026.</p>
+            <PublishedSiteProofPreview
+              mode="badge"
+              :base-url="publishedSiteBaseUrl"
+              with-popover
+            />
           </div>
         </div>
 
