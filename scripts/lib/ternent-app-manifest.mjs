@@ -1,9 +1,6 @@
 import fs from "node:fs";
-import { createRequire } from "node:module";
 import path from "node:path";
-
-const require = createRequire(import.meta.url);
-const YAML = require("../../node_modules/.pnpm/node_modules/yaml");
+import YAML from "yaml";
 
 export const CANONICAL_APP_MANIFEST = "app.yaml";
 
