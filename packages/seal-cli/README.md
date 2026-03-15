@@ -34,7 +34,7 @@ Use the published GitHub Action:
 
 ```yaml
 - name: Generate Seal artifacts
-  uses: samternent/seal-action@1.0.0
+  uses: samternent/seal-action@v1
   env:
     SEAL_PRIVATE_KEY: ${{ secrets.SEAL_PRIVATE_KEY }}
     SEAL_PUBLIC_KEY: ${{ secrets.SEAL_PUBLIC_KEY }}
