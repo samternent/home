@@ -28,6 +28,9 @@ test("scaffold creates an app from a manifest file", () => {
   const appId = `codex-manifest-${Date.now()}`;
   const targetDir = path.join(repoRoot, "apps", appId);
   const manifestPath = path.join(os.tmpdir(), `${appId}.yaml`);
+  const workflowPath = path.join(repoRoot, ".github", "workflows", `deploy-${appId}.yml`);
+  const publishPath = path.join(repoRoot, ".ops", "publish.mjs");
+  const publishSource = fs.readFileSync(publishPath, "utf8");
 
   fs.writeFileSync(
     manifestPath,
@@ -131,8 +134,19 @@ landing:
       fs.readFileSync(path.join(targetDir, "tsconfig.json"), "utf8"),
       /"extends": "\.\.\/\.\.\/tsconfig\.json"/,
     );
+    assert.ok(fs.existsSync(workflowPath));
+    assert.match(
+      fs.readFileSync(workflowPath, "utf8"),
+      new RegExp(`apps/${appId}`),
+    );
+    assert.match(
+      fs.readFileSync(publishPath, "utf8"),
+      new RegExp(`\\.\\./apps/${appId}`),
+    );
   } finally {
     removeDir(targetDir);
+    fs.rmSync(workflowPath, { force: true });
+    fs.writeFileSync(publishPath, publishSource, "utf8");
     fs.rmSync(manifestPath, { force: true });
   }
 });
@@ -141,6 +155,9 @@ test("scaffold shorthand writes a manifest and sync updates generated config", (
   const appId = `codex-flags-${Date.now()}`;
   const targetDir = path.join(repoRoot, "apps", appId);
   const manifestPath = path.join(targetDir, "app.yaml");
+  const workflowPath = path.join(repoRoot, ".github", "workflows", `deploy-${appId}.yml`);
+  const publishPath = path.join(repoRoot, ".ops", "publish.mjs");
+  const publishSource = fs.readFileSync(publishPath, "utf8");
 
   try {
     runNodeScript([
@@ -187,7 +204,14 @@ test("scaffold shorthand writes a manifest and sync updates generated config", (
       /"extends": "\.\.\/\.\.\/tsconfig\.json"/,
     );
     assert.equal(fs.readFileSync(customFile, "utf8"), "leave me alone");
+    assert.ok(fs.existsSync(workflowPath));
+    assert.match(
+      fs.readFileSync(publishPath, "utf8"),
+      new RegExp(`\\.\\./apps/${appId}`),
+    );
   } finally {
     removeDir(targetDir);
+    fs.rmSync(workflowPath, { force: true });
+    fs.writeFileSync(publishPath, publishSource, "utf8");
   }
 });

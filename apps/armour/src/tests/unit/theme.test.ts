@@ -7,11 +7,11 @@ describe("theme mode", () => {
     theme.start();
 
     expect(theme.mode.value).toBe("dark");
-    expect(document.documentElement.getAttribute("data-theme")).toBe("aurora-dark");
+    expect(document.documentElement.getAttribute("data-theme")).toBe("armour-dark");
 
     theme.toggleTheme();
 
     expect(theme.mode.value).toBe("light");
-    expect(document.documentElement.getAttribute("data-theme")).toBe("aurora-light");
+    expect(document.documentElement.getAttribute("data-theme")).toBe("armour-light");
   });
 });

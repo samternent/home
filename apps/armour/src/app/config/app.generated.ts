@@ -301,7 +301,7 @@ export const landingPageConfig = {
     }
   },
   "footer": {
-    "brandLabel": "Armour",
+    "brandLabel": "ternent.dev",
     "brandHref": "https://ternent.dev",
     "copyright": "© 2026.",
     "links": [

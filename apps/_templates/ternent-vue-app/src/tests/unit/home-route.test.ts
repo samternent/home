@@ -11,6 +11,9 @@ function createWrapper() {
           props: ["to"],
           template: "<a :href=\"to\"><slot /></a>",
         },
+        PublishedSiteProofBadge: {
+          template: "<span>Published site proof</span>",
+        },
       },
     },
   });

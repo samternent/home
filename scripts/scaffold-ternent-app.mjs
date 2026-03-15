@@ -5,10 +5,12 @@ import path from "node:path";
 import {
   CANONICAL_APP_MANIFEST,
   createScaffoldManifest,
+  getVercelProjectSecretName,
   loadTernentAppManifest,
   normalizeScaffoldedAppFiles,
   stringifyManifestYaml,
   writeGeneratedAppFiles,
+  writeScaffoldReleaseFiles,
 } from "./lib/ternent-app-manifest.mjs";
 
 const repoRoot = process.cwd();
@@ -163,12 +165,19 @@ function main() {
   );
 
   writeGeneratedAppFiles(targetDir, manifest);
+  writeScaffoldReleaseFiles(repoRoot, manifest);
 
   console.log(`Created app from template: apps/${manifest.app.appId}`);
   console.log(`Manifest: apps/${manifest.app.appId}/${CANONICAL_APP_MANIFEST}`);
+  console.log(`Workflow: .github/workflows/deploy-${manifest.app.appId}.yml`);
   console.log("Next steps:");
-  console.log(`  pnpm sync:ternent-app -- --app apps/${manifest.app.appId}`);
-  console.log(`  pnpm --filter ${manifest.app.appId} dev`);
+  console.log(
+    `  1. Create the Vercel project and add the GitHub secret ${getVercelProjectSecretName(
+      manifest.app.appId,
+    )}`,
+  );
+  console.log(`  2. pnpm sync:ternent-app -- --app apps/${manifest.app.appId}`);
+  console.log(`  3. pnpm --filter ${manifest.app.appId} dev`);
 }
 
 main();

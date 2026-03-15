@@ -204,15 +204,15 @@ landing:
       variant: secondary
 
   footer:
-    brandLabel: Ternent Launchpad
+    brandLabel: ternent.dev
     brandHref: https://ternent.dev
     copyright: © 2026.
     links:
-      - href: /
-        label: Home
       - href: /settings
         label: Settings
-      - href: /settings/appearance
-        label: Appearance
+      - href: /settings/identity
+        label: Identity
+      - href: https://github.com/samternent/home/tree/main/apps/_templates/ternent-vue-app
+        label: GitHub
       - href: https://github.com/samternent/home
         label: Monorepo

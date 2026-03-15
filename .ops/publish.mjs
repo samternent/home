@@ -1,6 +1,7 @@
 import shell from "shelljs";
 
 const appsToPublish = [
+  "../apps/armour",
   "../apps/concord",
   "../apps/footballsocial",
   "../apps/footballsocial-api",

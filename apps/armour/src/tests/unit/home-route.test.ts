@@ -11,6 +11,9 @@ function createWrapper() {
           props: ["to"],
           template: "<a :href=\"to\"><slot /></a>",
         },
+        PublishedSiteProofBadge: {
+          template: "<span>Published site proof</span>",
+        },
       },
     },
   });
@@ -30,35 +33,33 @@ async function clickTab(
 }
 
 describe("RouteHome landing page", () => {
-  it("renders template landing content from generated config", async () => {
+  it("renders armour landing content from generated config", async () => {
     const wrapper = createWrapper();
     const text = wrapper.text();
 
-    expect(text).toContain("Armour launches fast.");
-    expect(text).toContain("Template-ready and on-brand");
-    expect(text).toContain("Ship a new landing page in one pass");
-    expect(text).toContain("Built for repeat launches");
-    expect(text).toContain("The same skeleton adapts to app, CLI, and docs messaging");
-    expect(text).toContain("What this template is and isn’t");
-    expect(text).toContain("Scaffold the next ternent app from YAML");
-    expect(text).toContain("Open settings");
-    expect(text).toContain("Inspect template");
-    expect(text).toContain("Product microsites");
-    expect(text).toContain("Docs launchpads");
+    expect(text).toContain("Encrypt text and files in the browser.");
+    expect(text).toContain("Browser-first encryption with real portability");
+    expect(text).toContain("Encrypt locally, then share the result");
+    expect(text).toContain("Common use cases");
+    expect(text).toContain("A browser wrapper over rage-compatible encryption flows");
+    expect(text).toContain("What Armour is and isn’t");
+    expect(text).toContain("Encrypt locally with Armour");
+    expect(text).toContain("Open Web App");
+    expect(text).toContain("View source");
+    expect(text).toContain("Private notes");
+    expect(text).toContain("Local-first experiments");
 
-    expect(text).toContain("Manifest");
-    expect(text).toContain("Sync");
-    expect(text).toContain("Scaffold");
-    expect(text).toContain("themeName: aurora");
+    expect(text).toContain("JavaScript");
+    expect(text).toContain("Output");
+    expect(text).toContain("Workflow");
+    expect(text).toContain('@ternent/armour');
 
-    await clickTab(wrapper, "Sync");
+    await clickTab(wrapper, "Output");
 
-    expect(wrapper.text()).toContain("pnpm sync:ternent-app -- --app apps/my-app");
+    expect(wrapper.text()).toContain("Portable encrypted output");
 
-    await clickTab(wrapper, "Scaffold");
+    await clickTab(wrapper, "Workflow");
 
-    expect(wrapper.text()).toContain(
-      "pnpm scaffold:ternent-app -- --manifest apps/my-app/app.yaml",
-    );
+    expect(wrapper.text()).toContain("Browser-first local encryption");
   });
 });

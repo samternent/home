@@ -586,7 +586,24 @@ export function createScaffoldManifest({
       },
       footer: {
         ...base.landing.footer,
-        brandLabel: title,
+        links: [
+          {
+            href: "/settings",
+            label: "Settings",
+          },
+          {
+            href: "/settings/identity",
+            label: "Identity",
+          },
+          {
+            href: `https://github.com/samternent/home/tree/main/apps/${name}`,
+            label: "GitHub",
+          },
+          {
+            href: "https://github.com/samternent/home",
+            label: "Monorepo",
+          },
+        ],
       },
     },
   };
@@ -653,4 +670,136 @@ export function createPwaManifest(manifest) {
       },
     ],
   };
+}
+
+function getDeployWorkflowPath(repoRoot, appId) {
+  return path.join(repoRoot, ".github", "workflows", `deploy-${appId}.yml`);
+}
+
+function getPublishScriptPath(repoRoot) {
+  return path.join(repoRoot, ".ops", "publish.mjs");
+}
+
+export function getVercelProjectSecretName(appId) {
+  return `VERCEL_${appId.replaceAll("-", "_").toUpperCase()}_PROJECT_ID`;
+}
+
+export function createDeployWorkflowSource(manifest) {
+  const { appId, defaultHost } = manifest.app;
+  const projectSecretName = getVercelProjectSecretName(appId);
+
+  return `name: Release ${defaultHost}
+env:
+  VERCEL_ORG_ID: \${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: \${{ secrets.${projectSecretName} }}
+  PNPM_CACHE_PATH: ~/.pnpm-store
+  PNPM_CACHE_NAME: pnpm-store-cache
+  SEAL_PRIVATE_KEY: \${{ secrets.SEAL_PRIVATE_KEY }}
+  SEAL_PUBLIC_KEY: \${{ secrets.SEAL_PUBLIC_KEY }}
+on:
+  push:
+    tags:
+      - "${appId}-*.*.*"
+
+jobs:
+  Deploy-Production:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@master
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Get branch name
+        id: branch
+        run: |
+          echo "branch_name=$(echo \${GITHUB_REF#refs/heads/} | tr / -)" >> $GITHUB_ENV
+
+      - name: Get node version
+        id: nvmrc
+        run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install Vercel CLI
+        run: pnpm install --global vercel@latest
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build ${appId} app
+        run: pnpm --filter ternent-ui --filter ternent-utils --filter ternent-identity --filter ${appId} build
+
+      - name: Link Vercel project
+        run: vercel link --yes --cwd \${{ github.workspace }}/apps/${appId} --token=\${{ secrets.VERCEL_TOKEN }}
+
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --cwd \${{ github.workspace }}/apps/${appId} --token=\${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build Vercel Environment Information
+        run: vercel build --prod --cwd \${{ github.workspace }}/apps/${appId} --token=\${{ secrets.VERCEL_TOKEN }}
+
+      - name: Generate sealed site artifacts
+        uses: samternent/seal-action@v1
+        with:
+          assets-directory: apps/${appId}/.vercel/output/static
+
+      - name: Deploy Project Artifacts to Vercel
+        run: vercel deploy --prebuilt --prod --cwd \${{ github.workspace }}/apps/${appId} --token=\${{ secrets.VERCEL_TOKEN }}
+
+      - name: Update app version in Redis
+        run: node .ops/update-redis-version.mjs
+        env:
+          REDIS_PASSWORD: \${{ secrets.REDIS_PASSWORD }}
+          REDIS_ENDPOINT_URI: \${{ secrets.REDIS_ENDPOINT_URI }}
+`;
+}
+
+export function updatePublishScriptSource(source, appId) {
+  const nextEntry = `../apps/${appId}`;
+  const arrayPattern = /const appsToPublish = \[(?<body>[\s\S]*?)\n\];/;
+  const match = source.match(arrayPattern);
+
+  if (!match?.groups?.body) {
+    throw new Error("Unable to locate appsToPublish array in .ops/publish.mjs");
+  }
+
+  const currentEntries = Array.from(
+    match.groups.body.matchAll(/"([^"]+)"/g),
+    ([, entry]) => entry,
+  );
+
+  if (currentEntries.includes(nextEntry)) {
+    return source;
+  }
+
+  const nextEntries = [...currentEntries, nextEntry].sort((left, right) =>
+    left.localeCompare(right),
+  );
+
+  return source.replace(
+    arrayPattern,
+    `const appsToPublish = [\n${nextEntries.map((entry) => `  "${entry}",`).join("\n")}\n];`,
+  );
+}
+
+export function writeScaffoldReleaseFiles(repoRoot, manifest) {
+  const workflowPath = getDeployWorkflowPath(repoRoot, manifest.app.appId);
+  fs.mkdirSync(path.dirname(workflowPath), { recursive: true });
+  fs.writeFileSync(workflowPath, createDeployWorkflowSource(manifest), "utf8");
+
+  const publishScriptPath = getPublishScriptPath(repoRoot);
+  const publishSource = fs.readFileSync(publishScriptPath, "utf8");
+  const nextPublishSource = updatePublishScriptSource(
+    publishSource,
+    manifest.app.appId,
+  );
+
+  if (nextPublishSource !== publishSource) {
+    fs.writeFileSync(publishScriptPath, nextPublishSource, "utf8");
+  }
 }

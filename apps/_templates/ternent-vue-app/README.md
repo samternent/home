@@ -30,6 +30,15 @@ pnpm --filter ledger-demo dev
 ```
 
 That creates `apps/ledger-demo`, writes `apps/ledger-demo/app.yaml`, and generates the runtime config immediately.
+It also scaffolds:
+
+- `.github/workflows/deploy-ledger-demo.yml`
+- a publish entry in `.ops/publish.mjs`
+
+The only manual release setup left is:
+
+- create the Vercel project
+- add `VERCEL_LEDGER_DEMO_PROJECT_ID` to GitHub Actions secrets
 
 ## Config-First Workflow
 
@@ -67,6 +76,8 @@ When you change that file, regenerate the runtime config with:
 pnpm sync:ternent-app -- --app apps/ledger-demo
 ```
 
+`sync:ternent-app` updates generated app config only. Deployment workflow and publish registration are scaffolded when the app is first created.
+
 ## Concrete Example
 
 Minimal config-first session:
@@ -76,6 +87,44 @@ pnpm prepare:ternent-app -- --out .ternent-apps/receipt-checker.yaml --name rece
 pnpm scaffold:ternent-app -- --manifest .ternent-apps/receipt-checker.yaml
 pnpm --filter receipt-checker dev
 ```
+
+## Release Flow
+
+For each scaffolded app the generator wires in the repo-level release hooks:
+
+- `.github/workflows/deploy-<app-name>.yml` deploys the tagged app to Vercel
+- `.ops/publish.mjs` includes the app so changeset releases emit a GitHub release entry
+
+Recommended sequence:
+
+1. Run `pnpm prepare:ternent-app` or `pnpm scaffold:ternent-app`
+2. Edit `apps/<app-name>/app.yaml`
+3. Run `pnpm sync:ternent-app -- --app apps/<app-name>`
+4. Create the Vercel project and add `VERCEL_<APP_NAME>_PROJECT_ID` to repo secrets
+5. Commit the scaffolded app, workflow, and manifest
+6. Add a changeset that bumps the new app package when you want the first production release
+
+## Vercel + GitHub Setup
+
+If you are already logged into both the Vercel CLI and GitHub CLI, you can automate the project/secret wiring with:
+
+```bash
+pnpm setup:ternent-app-deploy -- --app apps/ledger-demo
+```
+
+That script will:
+
+- link or create the Vercel project for the app via `vercel link --project <app-id> --yes`
+- read `.vercel/project.json`
+- set `VERCEL_<APP_NAME>_PROJECT_ID` in GitHub Actions secrets
+- set `VERCEL_ORG_ID` in GitHub Actions secrets
+
+Optional flags:
+
+- `--project <name>` to use a different Vercel project name
+- `--repo <owner/repo>` to target a different GitHub repository
+- `--scope <scope>` to target a specific Vercel team/scope
+- `--skip-org-secret` if `VERCEL_ORG_ID` is already managed elsewhere
 
 ## Monthly Template Refresh
 
