@@ -6,6 +6,7 @@ import {
   Logo,
   PageSurface,
   PreviewPanel,
+  SectionClarifier,
   SectionIntro,
   StepList,
 } from "ternent-ui/patterns";
@@ -574,46 +575,36 @@ const publishedSiteBaseUrl = import.meta.env.DEV
         </Card>
       </section>
 
-      <section class="pt-24">
-        <Card variant="panel" padding="lg">
-          <div class="grid gap-8 lg:grid-cols-2">
-            <SectionIntro
-              eyebrow="Definition"
-              title="What Seal is and isn’t"
-              description=""
-            />
+      <section class="pt-14">
+        <SectionClarifier eyebrow="Definition" title="What Seal is and isn’t">
+          <div class="grid gap-8 md:grid-cols-2 lg:gap-14">
+            <div class="space-y-5">
+              <h3
+                class="m-0 mb-4 text-sm font-semibold uppercase tracking-[0.12em] text-[var(--ui-fg)]"
+              >
+                Seal is:
+              </h3>
+              <ul
+                class="m-0 list-outside list-disc space-y-2 pl-5 text-sm leading-7 text-[var(--ui-fg-muted)] marker:text-[var(--ui-fg-muted)]"
+              >
+                <li v-for="item in sealIs" :key="item">{{ item }}</li>
+              </ul>
+            </div>
 
-            <div class="grid gap-6 sm:grid-cols-2">
-              <div class="space-y-4">
-                <h3
-                  class="m-0 text-lg font-medium tracking-[-0.02em] text-[var(--ui-fg)]"
-                >
-                  Seal is:
-                </h3>
-                <ul
-                  class="m-0 space-y-3 text-sm leading-7 text-[var(--ui-fg-muted)]"
-                >
-                  <li class="" v-for="item in sealIs" :key="item">
-                    {{ item }}
-                  </li>
-                </ul>
-              </div>
-
-              <div class="space-y-4">
-                <h3
-                  class="m-0 text-lg font-medium tracking-[-0.02em] text-[var(--ui-fg)]"
-                >
-                  Seal is not:
-                </h3>
-                <ul
-                  class="m-0 space-y-3 text-sm leading-7 text-[var(--ui-fg-muted)]"
-                >
-                  <li v-for="item in sealIsNot" :key="item">{{ item }}</li>
-                </ul>
-              </div>
+            <div class="space-y-5">
+              <h3
+                class="m-0 mb-4 text-sm font-semibold uppercase tracking-[0.12em] text-[var(--ui-fg)]"
+              >
+                Seal is not:
+              </h3>
+              <ul
+                class="m-0 list-outside list-disc space-y-2 pl-5 text-sm leading-7 text-[var(--ui-fg-muted)] marker:text-[var(--ui-fg-muted)]"
+              >
+                <li v-for="item in sealIsNot" :key="item">{{ item }}</li>
+              </ul>
             </div>
           </div>
-        </Card>
+        </SectionClarifier>
       </section>
 
       <section class="pt-24">
