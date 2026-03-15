@@ -1,5 +1,11 @@
 # proof
 
+## 0.0.16
+
+### Patch Changes
+
+- [`7a206f910edc5237cd61822aaa60f23125a6efe8`](https://github.com/samternent/home/commit/7a206f910edc5237cd61822aaa60f23125a6efe8) Thanks [@samternent](https://github.com/samternent)! - action again
+
 ## 0.0.15
 
 ### Patch Changes
