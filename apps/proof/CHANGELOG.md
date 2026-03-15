@@ -1,5 +1,14 @@
 # proof
 
+## 0.0.21
+
+### Patch Changes
+
+- [`0d44f4eb18ec74b394018a709d0dc78c9e1fd520`](https://github.com/samternent/home/commit/0d44f4eb18ec74b394018a709d0dc78c9e1fd520) Thanks [@samternent](https://github.com/samternent)! - consuming template updates
+
+- Updated dependencies [[`0d44f4eb18ec74b394018a709d0dc78c9e1fd520`](https://github.com/samternent/home/commit/0d44f4eb18ec74b394018a709d0dc78c9e1fd520)]:
+  - ternent-ui@0.4.6
+
 ## 0.0.20
 
 ### Patch Changes
