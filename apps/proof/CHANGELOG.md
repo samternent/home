@@ -1,5 +1,14 @@
 # proof
 
+## 0.0.14
+
+### Patch Changes
+
+- [`ba97b4b9466f7c16a7226609f8047e5367afdd70`](https://github.com/samternent/home/commit/ba97b4b9466f7c16a7226609f8047e5367afdd70) Thanks [@samternent](https://github.com/samternent)! - Update seal publish
+
+- Updated dependencies [[`ba97b4b9466f7c16a7226609f8047e5367afdd70`](https://github.com/samternent/home/commit/ba97b4b9466f7c16a7226609f8047e5367afdd70)]:
+  - @ternent/seal-cli@0.1.7
+
 ## 0.0.13
 
 ### Patch Changes
