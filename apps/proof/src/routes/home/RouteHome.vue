@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Button, Card, Separator } from "ternent-ui/primitives";
+import { ref } from "vue";
+import { Button, Card, Separator, Tabs } from "ternent-ui/primitives";
 import {
   FeatureCard,
   Logo,
@@ -109,14 +110,85 @@ const developerPoints = [
   },
 ] as const;
 
-const developerExample = `import { createSealProof, verifySealProofAgainstBytes } from "@ternent/seal-cli/proof"
+type DeveloperTab = "js" | "cli" | "action";
+
+type DeveloperPanel = {
+  title: string;
+  meta: string;
+  code: string;
+  supportingCopy: string;
+  link: {
+    href: string;
+    label: string;
+  };
+};
+
+const developerTab = ref<DeveloperTab>("js");
+
+const developerTabs = [
+  { value: "js", label: "JavaScript" },
+  { value: "cli", label: "seal-cli" },
+  { value: "action", label: "GitHub Action" },
+] as const;
+
+const developerPanels: Record<DeveloperTab, DeveloperPanel> = {
+  js: {
+    title: "Browser verification with shared primitives",
+    meta: "JavaScript",
+    code: `import { createSealProof, verifySealProofAgainstBytes } from "@ternent/seal-cli/proof"
 
 const proof = await createSealProof({
   signer: { privateKeyPem, publicKeyPem, keyId },
   subject: { kind: "file", path: "sample.txt", hash: "sha256:..." }
 })
 
-const verified = await verifySealProofAgainstBytes(proof, fileBuffer)`;
+const verified = await verifySealProofAgainstBytes(proof, fileBuffer)`,
+    supportingCopy:
+      "Use the same proof helpers in your browser app when you want direct control over signing and verification flows.",
+    link: {
+      href: "https://github.com/samternent/home/tree/main/packages/seal-cli",
+      label: "View the shared proof package",
+    },
+  },
+  cli: {
+    title: "Simple file proofs from the terminal",
+    meta: "seal-cli",
+    code: `pnpm add -D @ternent/seal-cli
+
+export SEAL_PRIVATE_KEY="$(cat private-key.pem)"
+
+seal sign --input sample.txt --out sample.proof.json
+seal verify --proof sample.proof.json --input sample.txt --json`,
+    supportingCopy:
+      "For local files, release assets, or quick automation, the CLI gives you a direct proof flow without writing app code.",
+    link: {
+      href: "https://www.npmjs.com/package/@ternent/seal-cli",
+      label: "See @ternent/seal-cli on npm",
+    },
+  },
+  action: {
+    title: "Sign static builds in CI",
+    meta: "GitHub Action",
+    code: `- uses: actions/checkout@v4
+- uses: actions/setup-node@v4
+  with:
+    node-version-file: ".nvmrc"
+- uses: samternent/seal-action@v1
+  env:
+    SEAL_PRIVATE_KEY: \${{ secrets.SEAL_PRIVATE_KEY }}
+    SEAL_PUBLIC_KEY: \${{ secrets.SEAL_PUBLIC_KEY }}
+  with:
+    assets-directory: dist
+    package-name: @ternent/seal-cli
+    package-version: latest`,
+    supportingCopy:
+      "When your workflow already builds a static directory, Seal Action adds signed artifacts with minimal extra YAML.",
+    link: {
+      href: "https://github.com/marketplace/actions/seal-action",
+      label: "Open Seal Action on GitHub Marketplace",
+    },
+  },
+};
 
 const footerLinks = [
   { href: "/app", label: "Workspace" },
@@ -388,12 +460,14 @@ const publishedSiteBaseUrl = import.meta.env.DEV
           padding="lg"
           class="border-[color-mix(in_srgb,var(--ui-border)_82%,transparent)]"
         >
-          <div class="grid gap-12 lg:grid-cols-[0.98fr_1.02fr] lg:items-start">
-            <div class="flex flex-col gap-10">
+          <div
+            class="grid gap-12 lg:grid-cols-[minmax(0,0.98fr)_minmax(0,1.02fr)] lg:items-start"
+          >
+            <div class="min-w-0 flex flex-col gap-10">
               <SectionIntro
                 eyebrow="Built on Concord"
                 title="Identity and verification, separated from infrastructure"
-                description="Seal is built on Concord identity primitives with deterministic signing and trust-minimal verification. No servers. No lock-in. Pure cryptography you control."
+                description="Seal is built on Concord identity primitives with deterministic signing and trust-minimal verification. Use the same model in the browser, from the terminal, or inside CI."
               />
 
               <Separator />
@@ -411,15 +485,90 @@ const publishedSiteBaseUrl = import.meta.env.DEV
               </div>
             </div>
 
-            <PreviewPanel
-              title="Developer example"
-              meta="Seal"
-              :code="developerExample"
-              footer-label="Verified"
-              footer-tone="neutral"
-              badge-mode="quiet"
-              emphasis="default"
-            />
+            <Tabs
+              v-model="developerTab"
+              :items="developerTabs"
+              variant="pill"
+              class="min-w-0"
+            >
+              <template #panel-js>
+                <PreviewPanel
+                  :title="developerPanels.js.title"
+                  :meta="developerPanels.js.meta"
+                  badge-mode="quiet"
+                  emphasis="default"
+                >
+                  <div class="space-y-4">
+                    <pre
+                      class="m-0 overflow-x-auto rounded-[calc(var(--ui-radius-md)-2px)] border border-[color-mix(in_srgb,var(--ui-border)_82%,transparent)] bg-[color-mix(in_srgb,var(--ui-surface)_88%,transparent)] p-4 text-[0.8rem] leading-6 text-[var(--ui-fg)]"
+                    ><code>{{ developerPanels.js.code }}</code></pre>
+                    <p class="m-0 text-sm leading-7 text-[var(--ui-fg-muted)]">
+                      {{ developerPanels.js.supportingCopy }}
+                    </p>
+                    <a
+                      class="text-sm text-[var(--ui-fg-muted)] underline decoration-[color-mix(in_srgb,var(--ui-border)_70%,transparent)] underline-offset-4 transition hover:text-[var(--ui-fg)]"
+                      :href="developerPanels.js.link.href"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {{ developerPanels.js.link.label }}
+                    </a>
+                  </div>
+                </PreviewPanel>
+              </template>
+
+              <template #panel-cli>
+                <PreviewPanel
+                  :title="developerPanels.cli.title"
+                  :meta="developerPanels.cli.meta"
+                  badge-mode="quiet"
+                  emphasis="default"
+                >
+                  <div class="space-y-4">
+                    <pre
+                      class="m-0 overflow-x-auto rounded-[calc(var(--ui-radius-md)-2px)] border border-[color-mix(in_srgb,var(--ui-border)_82%,transparent)] bg-[color-mix(in_srgb,var(--ui-surface)_88%,transparent)] p-4 text-[0.8rem] leading-6 text-[var(--ui-fg)]"
+                    ><code>{{ developerPanels.cli.code }}</code></pre>
+                    <p class="m-0 text-sm leading-7 text-[var(--ui-fg-muted)]">
+                      {{ developerPanels.cli.supportingCopy }}
+                    </p>
+                    <a
+                      class="text-sm text-[var(--ui-fg-muted)] underline decoration-[color-mix(in_srgb,var(--ui-border)_70%,transparent)] underline-offset-4 transition hover:text-[var(--ui-fg)]"
+                      :href="developerPanels.cli.link.href"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {{ developerPanels.cli.link.label }}
+                    </a>
+                  </div>
+                </PreviewPanel>
+              </template>
+
+              <template #panel-action>
+                <PreviewPanel
+                  :title="developerPanels.action.title"
+                  :meta="developerPanels.action.meta"
+                  badge-mode="quiet"
+                  emphasis="default"
+                >
+                  <div class="space-y-4">
+                    <pre
+                      class="m-0 overflow-x-auto rounded-[calc(var(--ui-radius-md)-2px)] border border-[color-mix(in_srgb,var(--ui-border)_82%,transparent)] bg-[color-mix(in_srgb,var(--ui-surface)_88%,transparent)] p-4 text-[0.8rem] leading-6 text-[var(--ui-fg)]"
+                    ><code>{{ developerPanels.action.code }}</code></pre>
+                    <p class="m-0 text-sm leading-7 text-[var(--ui-fg-muted)]">
+                      {{ developerPanels.action.supportingCopy }}
+                    </p>
+                    <a
+                      class="text-sm text-[var(--ui-fg-muted)] underline decoration-[color-mix(in_srgb,var(--ui-border)_70%,transparent)] underline-offset-4 transition hover:text-[var(--ui-fg)]"
+                      :href="developerPanels.action.link.href"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {{ developerPanels.action.link.label }}
+                    </a>
+                  </div>
+                </PreviewPanel>
+              </template>
+            </Tabs>
           </div>
         </Card>
       </section>
