@@ -1,20 +1,20 @@
-name: Production Tag Deployment
+name: Release ledger.ternent.dev
 env:
-  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_LEDGER_PROJECT_ID }}
   PNPM_CACHE_PATH: ~/.pnpm-store
   PNPM_CACHE_NAME: pnpm-store-cache
+  SEAL_PRIVATE_KEY: ${{ secrets.SEAL_PRIVATE_KEY }}
+  SEAL_PUBLIC_KEY: ${{ secrets.SEAL_PUBLIC_KEY }}
 on:
   push:
     tags:
-      - "ternent-ledger-*.*.*"
+      - "ledger-*.*.*"
 
 jobs:
   Deploy-Production:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
       - name: Checkout repo
         uses: actions/checkout@master
         with:
@@ -35,26 +35,34 @@ jobs:
         with:
           version: 8
 
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          always-auth: true
-          node-version-file: ".nvmrc"
-          registry-url: https://registry.npmjs.org
-          cache: "pnpm"
-
-      - name: Set publishing config
-        run: pnpm config set '//registry.npmjs.org/:_authToken' "${NODE_AUTH_TOKEN}"
-        env:
-          NODE_AUTH_TOKEN: ${{env.NPM_TOKEN}}
+      - name: Install Vercel CLI
+        run: pnpm install --global vercel@latest
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build libs
-        run: pnpm --filter ternent-utils --filter ternent-identity --filter ternent-encrypt --filter @ternent/concord-protocol --filter ternent-ledger build
+      - name: Build ledger app
+        run: pnpm --filter ternent-ui --filter ternent-utils --filter ternent-identity --filter ledger build
 
-      - name: Publish npm
-        run: pnpm --filter ternent-ledger publish --no-git-checks --access public
+      - name: Link Vercel project
+        run: vercel link --yes --cwd ${{ github.workspace }}/apps/ledger --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --cwd ${{ github.workspace }}/apps/ledger --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build Vercel Environment Information
+        run: vercel build --prod --cwd ${{ github.workspace }}/apps/ledger --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Generate sealed site artifacts
+        uses: samternent/seal-action@v1
+        with:
+          assets-directory: apps/ledger/.vercel/output/static
+
+      - name: Deploy Project Artifacts to Vercel
+        run: vercel deploy --prebuilt --prod --cwd ${{ github.workspace }}/apps/ledger --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Update app version in Redis
+        run: node .ops/update-redis-version.mjs
         env:
-          NPM_TOKEN: ${{ env.NPM_TOKEN }}
+          REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
+          REDIS_ENDPOINT_URI: ${{ secrets.REDIS_ENDPOINT_URI }}

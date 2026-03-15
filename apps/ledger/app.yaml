@@ -1,0 +1,213 @@
+app:
+  id: ledger
+  title: Ledger
+  host: ledger.ternent.dev
+  themeName: ledger
+  defaultThemeMode: dark
+seo:
+  shortName: Ledger
+  description: Ledger by ternent.dev for signed append-only history in the browser.
+  themeColor: "#14b8a6"
+  backgroundColor: "#071513"
+  lang: en
+landing:
+  navigationLinks:
+    - href: "#features"
+      label: Features
+    - href: "#how-it-works"
+      label: How it works
+    - href: "#use-cases"
+      label: Use cases
+    - href: "#developers"
+      label: Developers
+  hero:
+    eyebrow: ledger.ternent.dev
+    title: Append entries. Preserve history. Verify the chain.
+    description: Ledger is a browser-first append-only record format for signed, replayable history. Create entries, link them together, and verify integrity and authorship without a backend dependency.
+    primaryAction:
+      href: /settings
+      label: Open settings
+      variant: primary
+    secondaryAction:
+      href: https://github.com/samternent/home/tree/main/apps/_templates/ternent-vue-app
+      label: View template
+      variant: secondary
+    preview:
+      title: Signed ledger record
+      meta: ledger.json
+      statusLabel: Append-only
+      statusTone: info
+      rows:
+        - label: Theme
+          value: ledger-dark
+          valueTone: primary
+        - label: Surface
+          value: Signed ordered history
+          valueTone: secondary
+        - label: Input
+          value: Entries linked in sequence
+          valueTone: accent
+        - label: Output
+          value: Replayable JSON ledger
+          valueTone: success
+      footerText: Ledger stores ordered signed entries in a portable JSON format so the whole history can be exported, replayed, and verified anywhere.
+  featureSection:
+    eyebrow: Features
+    title: Ordered signed history without a backend
+    description: Ledger focuses on one job well. Keep an append-only history of records that can be replayed and verified later.
+    items:
+      - title: Append-only records
+        description: Add new entries without mutating the history that came before them.
+        tone: primary
+        icon: document
+      - title: Signed entries
+        description: Attach integrity and authorship to each record using portable signing primitives.
+        tone: info
+        icon: spark
+      - title: Linked history
+        description: Chain entries together so ordering and continuity can be verified over time.
+        tone: accent
+        icon: grid
+      - title: Replayable exports
+        description: Export a ledger file that can be checked, replayed, and reasoned about anywhere.
+        tone: success
+        icon: terminal
+  howItWorksSection:
+    eyebrow: How it works
+    title: Build a verifiable chain of history
+    preview:
+      title: Ledger workflow
+      meta: append + verify
+      rows:
+        - label: "1"
+          value: Create an entry
+          valueTone: primary
+        - label: "2"
+          value: Link and sign it
+          valueTone: accent
+        - label: "3"
+          value: Replay and verify
+          valueTone: success
+      footerText: Each entry includes its content, its author, and its link to prior history so the ledger can be validated as a whole.
+    steps:
+      - title: Create the entry
+        description: Capture the event, payload, or record you want to append to the ledger.
+      - title: Link and sign it
+        description: Reference the previous ledger state and sign the new entry with the local identity.
+      - title: Replay and verify
+        description: Validate ordering, continuity, and signer integrity by replaying the exported ledger.
+  useCasesSection:
+    eyebrow: Use cases
+    title: Built for ordered history
+    items:
+      - title: Audit trails
+        description: Keep an append-only history of actions, approvals, and changes that can be verified later.
+        tone: primary
+        icon: globe
+      - title: Signed timelines
+        description: Preserve not just what happened, but who appended each step in the chain.
+        tone: secondary
+        icon: shield
+      - title: Browser-native logs
+        description: Build local-first histories inside web apps without needing immediate server infrastructure.
+        tone: accent
+        icon: check
+      - title: Export histories
+        description: Package a portable timeline of records alongside exports, backups, or snapshots.
+        tone: info
+        icon: terminal
+      - title: Reproducible state
+        description: Rebuild state by replaying ordered entries instead of trusting hidden mutable storage.
+        tone: primary
+        icon: stack
+      - title: Foundation layers
+        description: Use Ledger as the history primitive beneath richer tools, demos, and protocols.
+        tone: success
+        icon: dataset
+  developerSection:
+    eyebrow: Developers
+    title: A browser primitive for ordered signed history
+    description: Ledger sits alongside signing and encryption as the history layer in the ternent suite. It gives browser-native systems a portable append-only record model.
+    surfaces:
+      - Web app
+      - CLI
+      - Docs
+    tabs:
+      - value: yaml
+        label: Manifest
+        title: Model a portable ledger file
+        meta: YAML
+        code: |-
+          ledger:
+            entries:
+              - id: entry-0001
+                prev: null
+                type: note.created
+                payload:
+                  title: First entry
+                signature:
+                  keyId: key:demo
+        supportingCopy: Keep ordered history in a portable structure so the ledger can be exported, replayed, and verified safely.
+        link:
+          href: https://github.com/samternent/home/tree/main/apps/_templates/ternent-vue-app
+          label: Open the template source
+      - value: sync
+        label: Sync
+        title: Replay and verify the ledger
+        meta: CLI
+        code: |-
+          pnpm sync:ternent-app -- --app apps/ledger
+          pnpm --filter ledger dev
+        supportingCopy: The app can expose verification and replay flows without changing the landing-page structure around it.
+        link:
+          href: https://github.com/samternent/home/blob/main/scripts/sync-ternent-app.mjs
+          label: View the sync script
+      - value: scaffold
+        label: Scaffold
+        title: Create a new ledger app surface
+        meta: CLI
+        code: pnpm scaffold:ternent-app -- --manifest apps/ledger/app.yaml
+        supportingCopy: Use the scaffold to stand up the app shell, then focus on append, verify, and replay workflows.
+        link:
+          href: https://github.com/samternent/home/blob/main/scripts/scaffold-ternent-app.mjs
+          label: View the scaffold script
+  clarifierSection:
+    eyebrow: Definition
+    title: What Ledger is and isn’t
+    columns:
+      - title: Ledger is
+        items:
+          - An append-only record format
+          - A way to preserve ordered signed history
+          - A replayable browser-native primitive
+      - title: Ledger is not
+        items:
+          - A blockchain
+          - A consensus network
+          - A database replacement
+          - A hidden server dependency
+  ctaSection:
+    eyebrow: Ready to start?
+    title: Start building verifiable history
+    description: Create entries, append them to a signed chain, and export a ledger that can be replayed and verified anywhere.
+    primaryAction:
+      href: /settings
+      label: Open settings
+      variant: primary
+    secondaryAction:
+      href: https://github.com/samternent/home/tree/main/apps/_templates/ternent-vue-app
+      label: Inspect template
+      variant: secondary
+  footer:
+    brandLabel: ternent.dev
+    brandHref: https://ternent.dev
+    copyright: © 2026.
+    links:
+      - href: /settings
+        label: Settings
+      - href: /settings/identity
+        label: Identity
+      - href: https://github.com/samternent/home/tree/main/apps/ledger
+        label: GitHub
+      - href: https://github.com/samternent/home
+        label: Monorepo

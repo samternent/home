@@ -5,9 +5,10 @@ const appsToPublish = [
   "../apps/concord",
   "../apps/footballsocial",
   "../apps/footballsocial-api",
+  "../apps/ledger",
+  "../apps/proof",
   "../apps/ternent-api",
   "../apps/ternentdotdev",
-  "../apps/proof",
 ];
 const packagesToPublish = [
   "../packages/ledger",

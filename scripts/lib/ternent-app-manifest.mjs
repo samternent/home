@@ -527,21 +527,36 @@ export function writeGeneratedAppFiles(appDir, manifest) {
 
 export function normalizeScaffoldedAppFiles(appDir, repoRoot) {
   const tsconfigPath = path.join(appDir, "tsconfig.json");
-  if (!fs.existsSync(tsconfigPath)) {
-    return;
+  if (fs.existsSync(tsconfigPath)) {
+    const repoTsconfigPath = path.join(repoRoot, "tsconfig.json");
+    const extendsPath = path.relative(appDir, repoTsconfigPath).replaceAll(path.sep, "/");
+
+    const source = fs.readFileSync(tsconfigPath, "utf8");
+    const next = source.replace(
+      /"extends":\s*"[^"]+"/,
+      `"extends": "${extendsPath}"`,
+    );
+
+    if (next !== source) {
+      fs.writeFileSync(tsconfigPath, next, "utf8");
+    }
   }
 
-  const repoTsconfigPath = path.join(repoRoot, "tsconfig.json");
-  const extendsPath = path.relative(appDir, repoTsconfigPath).replaceAll(path.sep, "/");
+  const viteConfigPath = path.join(appDir, "vite.config.ts");
+  if (fs.existsSync(viteConfigPath)) {
+    const sealCliProofPath = path
+      .relative(appDir, path.join(repoRoot, "packages", "seal-cli", "src", "proof.ts"))
+      .replaceAll(path.sep, "/");
 
-  const source = fs.readFileSync(tsconfigPath, "utf8");
-  const next = source.replace(
-    /"extends":\s*"[^"]+"/,
-    `"extends": "${extendsPath}"`,
-  );
+    const source = fs.readFileSync(viteConfigPath, "utf8");
+    const next = source.replace(
+      /@ternent\/seal-cli\/proof": resolve\(\s*__dirname,\s*"[^"]+",\s*\)/m,
+      `@ternent/seal-cli/proof": resolve(\n        __dirname,\n        "${sealCliProofPath}",\n      )`,
+    );
 
-  if (next !== source) {
-    fs.writeFileSync(tsconfigPath, next, "utf8");
+    if (next !== source) {
+      fs.writeFileSync(viteConfigPath, next, "utf8");
+    }
   }
 }
 

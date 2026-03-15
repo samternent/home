@@ -134,6 +134,10 @@ landing:
       fs.readFileSync(path.join(targetDir, "tsconfig.json"), "utf8"),
       /"extends": "\.\.\/\.\.\/tsconfig\.json"/,
     );
+    assert.match(
+      fs.readFileSync(path.join(targetDir, "vite.config.ts"), "utf8"),
+      /"\.\.\/\.\.\/packages\/seal-cli\/src\/proof\.ts"/,
+    );
     assert.ok(fs.existsSync(workflowPath));
     assert.match(
       fs.readFileSync(workflowPath, "utf8"),
@@ -192,6 +196,13 @@ test("scaffold shorthand writes a manifest and sync updates generated config", (
         .replace('"extends": "../../tsconfig.json"', '"extends": "../../../tsconfig.json"'),
       "utf8",
     );
+    fs.writeFileSync(
+      path.join(targetDir, "vite.config.ts"),
+      fs
+        .readFileSync(path.join(targetDir, "vite.config.ts"), "utf8")
+        .replace('"../../packages/seal-cli/src/proof.ts"', '"../../../packages/seal-cli/src/proof.ts"'),
+      "utf8",
+    );
 
     runNodeScript(["scripts/sync-ternent-app.mjs", "--", "--app", `apps/${appId}`]);
 
@@ -202,6 +213,10 @@ test("scaffold shorthand writes a manifest and sync updates generated config", (
     assert.match(
       fs.readFileSync(path.join(targetDir, "tsconfig.json"), "utf8"),
       /"extends": "\.\.\/\.\.\/tsconfig\.json"/,
+    );
+    assert.match(
+      fs.readFileSync(path.join(targetDir, "vite.config.ts"), "utf8"),
+      /"\.\.\/\.\.\/packages\/seal-cli\/src\/proof\.ts"/,
     );
     assert.equal(fs.readFileSync(customFile, "utf8"), "leave me alone");
     assert.ok(fs.existsSync(workflowPath));
