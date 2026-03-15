@@ -1,5 +1,11 @@
 # proof
 
+## 0.0.11
+
+### Patch Changes
+
+- [`d660504ebdf6aab0d964d572597475ded6fb5144`](https://github.com/samternent/home/commit/d660504ebdf6aab0d964d572597475ded6fb5144) Thanks [@samternent](https://github.com/samternent)! - Updated to marketplace action
+
 ## 0.0.10
 
 ### Patch Changes
