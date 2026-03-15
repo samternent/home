@@ -1,5 +1,0 @@
----
-"proof": patch
----
-
-Update copy
