@@ -1,5 +1,16 @@
 # proof
 
+## 0.0.19
+
+### Patch Changes
+
+- [`3016b41acffdf9664b01afd9f32f76f3b2880303`](https://github.com/samternent/home/commit/3016b41acffdf9664b01afd9f32f76f3b2880303) Thanks [@samternent](https://github.com/samternent)! - Updates definition blocks
+
+- [`80c1a8e095299c23af67358ddcc074a431d079b8`](https://github.com/samternent/home/commit/80c1a8e095299c23af67358ddcc074a431d079b8) Thanks [@samternent](https://github.com/samternent)! - Update to use template
+
+- Updated dependencies [[`3016b41acffdf9664b01afd9f32f76f3b2880303`](https://github.com/samternent/home/commit/3016b41acffdf9664b01afd9f32f76f3b2880303), [`80c1a8e095299c23af67358ddcc074a431d079b8`](https://github.com/samternent/home/commit/80c1a8e095299c23af67358ddcc074a431d079b8)]:
+  - ternent-ui@0.4.5
+
 ## 0.0.18
 
 ### Patch Changes
