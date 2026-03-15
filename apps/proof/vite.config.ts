@@ -3,6 +3,13 @@ import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import tailwindcss from "@tailwindcss/vite";
 import { VitePWA } from "vite-plugin-pwa";
+import {
+  createIndexHtmlTransformPlugin,
+  createPwaManifest,
+  loadTernentAppManifestForDir,
+} from "../../scripts/lib/ternent-app-manifest.mjs";
+
+const appManifest = loadTernentAppManifestForDir(__dirname, resolve(__dirname, "../.."));
 
 export default defineConfig({
   resolve: {
@@ -25,38 +32,11 @@ export default defineConfig({
   plugins: [
     vue(),
     tailwindcss(),
+    createIndexHtmlTransformPlugin(appManifest),
     VitePWA({
       registerType: "autoUpdate",
       includeAssets: ["favicon.ico", "icons/icon-192.png", "icons/icon-512.png", "icons/maskable-512.png"],
-      manifest: {
-        id: "/",
-        name: "Seal",
-        short_name: "Seal",
-        description: "Seal by ternent.dev is a browser-based utility for local proof signing and verification.",
-        theme_color: "#0e1321",
-        background_color: "#0b101b",
-        display: "standalone",
-        start_url: "/",
-        scope: "/",
-        icons: [
-          {
-            src: "/icons/icon-192.png",
-            sizes: "192x192",
-            type: "image/png",
-          },
-          {
-            src: "/icons/icon-512.png",
-            sizes: "512x512",
-            type: "image/png",
-          },
-          {
-            src: "/icons/maskable-512.png",
-            sizes: "512x512",
-            type: "image/png",
-            purpose: "maskable",
-          }
-        ]
-      },
+      manifest: createPwaManifest(appManifest),
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
         navigateFallbackDenylist: [/^\/v1\//],

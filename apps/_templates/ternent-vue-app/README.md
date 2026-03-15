@@ -12,18 +12,27 @@ Canonical template for new Ternent Vue apps.
 - PWA + offline-first defaults
 - Lighthouse CI thresholds (95+ for perf/a11y/best-practices/seo)
 
+## App Manifest
+
+The template landing page is driven by `app.yaml`.
+
+- Author landing copy, links, snippets, and theme selection in YAML.
+- Run `pnpm sync:ternent-app -- --app apps/<app-name>` to regenerate typed runtime config.
+- The browser consumes generated TS config only; it does not parse YAML at runtime.
+
 ## Generate a New App
 
 From repo root:
 
 ```bash
-pnpm scaffold:ternent-app -- --name my-app --title "My App" --host my-app.ternent.dev
+pnpm scaffold:ternent-app -- --manifest apps/my-app/app.yaml
 ```
 
 Optional:
 
 ```bash
-pnpm scaffold:ternent-app -- --name my-app --title "My App" --host my-app.ternent.dev --theme myapp
+pnpm scaffold:ternent-app -- --name my-app --title "My App" --host my-app.ternent.dev --theme aurora
+pnpm sync:ternent-app -- --app apps/my-app
 ```
 
 ## Monthly Template Refresh

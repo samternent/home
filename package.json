@@ -17,10 +17,13 @@
   },
   "dependencies": {
     "redis": "^4.7.0",
-    "shelljs": "^0.8.5"
+    "shelljs": "^0.8.5",
+    "yaml": "^2.5.0"
   },
   "scripts": {
     "scaffold:ternent-app": "node scripts/scaffold-ternent-app.mjs",
+    "sync:ternent-app": "node scripts/sync-ternent-app.mjs",
+    "test:ternent-app-scaffold": "node --test scripts/tests/ternent-app-manifest.test.mjs scripts/tests/scaffold-ternent-app.test.mjs",
     "build:footballsocial": "pnpm --filter footballsocial build",
     "build:proof": "pnpm --filter ternent-ui --filter ternent-utils --filter ternent-identity --filter @ternent/seal-cli --filter proof build",
     "build:ternentdotdev": "pnpm --filter ternentdotdev build",

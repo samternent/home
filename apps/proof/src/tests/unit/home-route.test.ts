@@ -74,6 +74,8 @@ describe("RouteHome landing page", () => {
     expect(text).toContain(
       'import { createSealProof, verifySealProofAgainstBytes } from "@ternent/seal-cli/proof"',
     );
+    expect(wrapper.find('[data-testid="published-site-proof-preview"]').exists()).toBe(true);
+    expect(wrapper.findAll('[data-testid="published-site-proof-preview"]')).toHaveLength(2);
 
     await clickTab(wrapper, "seal-cli");
 

@@ -23,7 +23,18 @@ body,
 body {
   min-height: 100vh;
   font-family: "Clash Grotesk", system-ui, sans-serif;
-  background: var(--ui-bg);
+  background:
+    radial-gradient(
+      circle at top right,
+      color-mix(in srgb, var(--ui-primary) 15%, transparent),
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at bottom left,
+      color-mix(in srgb, var(--ui-accent) 12%, transparent),
+      transparent 45%
+    ),
+    var(--ui-bg);
   color: var(--ui-fg);
 }
 

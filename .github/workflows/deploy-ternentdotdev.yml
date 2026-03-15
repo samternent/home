@@ -4,6 +4,8 @@ env:
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_TERNENTDOTDEV_PROJECT_ID }}
   PNPM_CACHE_PATH: ~/.pnpm-store
   PNPM_CACHE_NAME: pnpm-store-cache
+  SEAL_PRIVATE_KEY: ${{ secrets.SEAL_PRIVATE_KEY }}
+  SEAL_PUBLIC_KEY: ${{ secrets.SEAL_PUBLIC_KEY }}
 on:
   push:
     tags:
@@ -63,6 +65,11 @@ jobs:
 
       - name: Build slides
         run: pnpm build:slides
+
+      - name: Generate sealed site artifacts
+        uses: samternent/seal-action@v1
+        with:
+          assets-directory: .vercel/output/static
 
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}

@@ -5,10 +5,13 @@ Seal web app.
 ## Development
 
 ```bash
+pnpm sync:ternent-app -- --app apps/proof
 pnpm --filter proof dev
 pnpm --filter proof test:unit
 pnpm build:proof
 ```
+
+Landing-page copy, theme selection, and marketing snippets live in `app.yaml`.
 
 ## Proof Contract
 

@@ -2,13 +2,21 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import {
+  CANONICAL_APP_MANIFEST,
+  createScaffoldManifest,
+  loadTernentAppManifest,
+  stringifyManifestYaml,
+  writeGeneratedAppFiles,
+} from "./lib/ternent-app-manifest.mjs";
 
 const repoRoot = process.cwd();
 const templateDir = path.join(repoRoot, "apps", "_templates", "ternent-vue-app");
 
 function printUsage() {
   console.log(`Usage:
-  pnpm scaffold:ternent-app -- --name <app-name> --title "App Title" --host <app.ternent.dev> [--theme <theme-prefix>]
+  pnpm scaffold:ternent-app -- --manifest apps/my-app/app.yaml
+  pnpm scaffold:ternent-app -- --name <app-name> --title "App Title" --host <app.ternent.dev> [--theme <ternent-ui-theme>]
 `);
 }
 
@@ -96,24 +104,40 @@ function replaceTemplateTokens(targetDir, tokens) {
   }
 }
 
-function main() {
-  const args = parseArgs(process.argv.slice(2));
+function createManifestFromArgs(args) {
+  if (args.manifest) {
+    return loadTernentAppManifest(path.resolve(repoRoot, args.manifest), repoRoot);
+  }
 
   const name = args.name;
   const title = args.title;
   const host = args.host;
-  const theme = args.theme || name;
 
   if (!name || !title || !host) {
     printUsage();
     process.exitCode = 1;
-    return;
+    return null;
   }
 
   assertName(name);
+
+  return createScaffoldManifest({
+    repoRoot,
+    name,
+    title,
+    host,
+    themeName: args.theme,
+  });
+}
+
+function main() {
+  const args = parseArgs(process.argv.slice(2));
   assertTemplateExists();
 
-  const targetDir = path.join(repoRoot, "apps", name);
+  const manifest = createManifestFromArgs(args);
+  if (!manifest) return;
+
+  const targetDir = path.join(repoRoot, "apps", manifest.app.appId);
 
   if (fs.existsSync(targetDir)) {
     throw new Error(`Target already exists: ${targetDir}`);
@@ -126,16 +150,22 @@ function main() {
   });
 
   replaceTemplateTokens(targetDir, {
-    "__APP_ID__": name,
-    "__APP_TITLE__": title,
-    "__APP_HOST__": host,
-    "__APP_THEME_PREFIX__": theme,
+    "__APP_ID__": manifest.app.appId,
   });
 
-  console.log(`Created app from template: apps/${name}`);
+  fs.writeFileSync(
+    path.join(targetDir, CANONICAL_APP_MANIFEST),
+    stringifyManifestYaml(manifest),
+    "utf8",
+  );
+
+  writeGeneratedAppFiles(targetDir, manifest);
+
+  console.log(`Created app from template: apps/${manifest.app.appId}`);
+  console.log(`Manifest: apps/${manifest.app.appId}/${CANONICAL_APP_MANIFEST}`);
   console.log("Next steps:");
-  console.log(`  pnpm install`);
-  console.log(`  pnpm --filter ${name} dev`);
+  console.log(`  pnpm sync:ternent-app -- --app apps/${manifest.app.appId}`);
+  console.log(`  pnpm --filter ${manifest.app.appId} dev`);
 }
 
 main();

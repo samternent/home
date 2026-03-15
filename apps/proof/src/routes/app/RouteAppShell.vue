@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { RouterLink, useRoute } from "vue-router";
-import { Badge, Button, Card } from "ternent-ui/primitives";
+import { Badge, Button, Card, Separator } from "ternent-ui/primitives";
 import { PageSurface } from "ternent-ui/patterns";
+import { appConfig } from "@/app/config/app.config";
 import { useIdentitySession } from "@/modules/identity";
 import OfflineBanner from "@/modules/offline/components/OfflineBanner.vue";
+import PublishedSiteProofPreview from "@/modules/proof/components/PublishedSiteProofPreview.vue";
 
 const route = useRoute();
 const { identity, hasIdentity } = useIdentitySession();
@@ -16,6 +18,9 @@ const tabs = [
 ];
 
 const copied = ref(false);
+const publishedSiteBaseUrl = import.meta.env.DEV
+  ? "/_seal"
+  : `https://${appConfig.defaultHost}`;
 
 const keyIdShort = computed(() => {
   if (!identity.value?.keyId) return "No identity loaded";
@@ -203,7 +208,14 @@ const copyKeyId = async () => {
         <div
           class="flex flex-col gap-3 py-6 text-sm text-[var(--ui-fg-muted)] sm:flex-row sm:items-center sm:justify-between"
         >
-          <p class="m-0">Fully client-side. No data leaves your browser.</p>
+          <div class="flex items-center gap-3">
+            <p class="m-0">Fully client-side. No data leaves your browser.</p>
+            <PublishedSiteProofPreview
+              mode="badge"
+              :base-url="publishedSiteBaseUrl"
+              with-popover
+            />
+          </div>
           <p class="m-0">
             Seal produces proofs for text, files, and release artifacts.
           </p>

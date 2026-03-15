@@ -14,6 +14,9 @@ importers:
       shelljs:
         specifier: ^0.8.5
         version: 0.8.5
+      yaml:
+        specifier: ^2.5.0
+        version: 2.5.0
     devDependencies:
       '@changesets/changelog-github':
         specifier: ^0.4.8
@@ -75,7 +78,7 @@ importers:
         version: 5.9.3
       vite:
         specifier: npm:rolldown-vite@7.2.5
-        version: /rolldown-vite@7.2.5(@types/node@24.10.4)
+        version: /rolldown-vite@7.2.5(@types/node@24.10.4)(yaml@2.5.0)
       vite-plugin-pwa:
         specifier: ^0.21.1
         version: 0.21.2(rolldown-vite@7.2.5)(workbox-build@7.4.0)(workbox-window@7.4.0)
@@ -85,6 +88,9 @@ importers:
       vitest:
         specifier: ^1.6.0
         version: 1.6.0(jsdom@24.1.3)
+      workbox-window:
+        specifier: ^7.4.0
+        version: 7.4.0
 
   apps/_templates/vue:
     dependencies:
@@ -218,7 +224,7 @@ importers:
         version: 14.1.0
       vite:
         specifier: npm:rolldown-vite@7.2.5
-        version: /rolldown-vite@7.2.5(@types/node@24.10.4)
+        version: /rolldown-vite@7.2.5(@types/node@24.10.4)(yaml@2.5.0)
       vite-plugin-vue-markdown:
         specifier: ^0.23.8
         version: 0.23.8(rolldown-vite@7.2.5)
@@ -413,7 +419,7 @@ importers:
         version: 5.9.3
       vite:
         specifier: npm:rolldown-vite@7.2.5
-        version: /rolldown-vite@7.2.5(@types/node@24.10.4)
+        version: /rolldown-vite@7.2.5(@types/node@24.10.4)(yaml@2.5.0)
       vite-plugin-pwa:
         specifier: ^0.21.1
         version: 0.21.2(rolldown-vite@7.2.5)(workbox-build@7.4.0)(workbox-window@7.4.0)
@@ -926,7 +932,7 @@ importers:
         version: 24.1.3
       vite:
         specifier: ^7.3.0
-        version: 7.3.0
+        version: 7.3.0(yaml@2.5.0)
       vitest:
         specifier: ^1.6.0
         version: 1.6.0(jsdom@24.1.3)
@@ -6660,7 +6666,7 @@ packages:
       '@tailwindcss/node': 4.1.18
       '@tailwindcss/oxide': 4.1.18
       tailwindcss: 4.1.18
-      vite: /rolldown-vite@7.2.5(@types/node@24.10.4)
+      vite: /rolldown-vite@7.2.5(@types/node@24.10.4)(yaml@2.5.0)
     dev: false
 
   /@tailwindcss/vite@4.1.18(vite@7.3.0):
@@ -6671,7 +6677,7 @@ packages:
       '@tailwindcss/node': 4.1.18
       '@tailwindcss/oxide': 4.1.18
       tailwindcss: 4.1.18
-      vite: 7.3.0
+      vite: 7.3.0(yaml@2.5.0)
     dev: false
 
   /@tootallnate/once@2.0.0:
@@ -7645,7 +7651,7 @@ packages:
       vite: ^4.0.0 || ^5.0.0
       vue: ^3.2.25
     dependencies:
-      vite: 7.3.0
+      vite: 7.3.0(yaml@2.5.0)
       vue: 3.4.38(typescript@5.9.3)
     dev: true
 
@@ -7668,7 +7674,7 @@ packages:
       vue: ^3.2.25
     dependencies:
       '@rolldown/pluginutils': 1.0.0-beta.53
-      vite: /rolldown-vite@7.2.5(@types/node@24.10.4)
+      vite: /rolldown-vite@7.2.5(@types/node@24.10.4)(yaml@2.5.0)
       vue: 3.5.26(typescript@5.9.3)
     dev: true
 
@@ -16313,7 +16319,7 @@ packages:
     resolution: {integrity: sha512-IXgzBWvWQwE6PrDI05OvmXUIruQTcoMDzRsOd5CDvHCVLcLHMTSYvOK5Cm46kWqlV3yAbuSpBZdJ5oP5OUoStg==}
     dev: false
 
-  /rolldown-vite@7.2.5(@types/node@24.10.4):
+  /rolldown-vite@7.2.5(@types/node@24.10.4)(yaml@2.5.0):
     resolution: {integrity: sha512-u09tdk/huMiN8xwoiBbig197jKdCamQTtOruSalOzbqGje3jdHiV0njQlAW0YvzoahkirFePNQ4RYlfnRQpXZA==}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
@@ -16361,6 +16367,7 @@ packages:
       postcss: 8.5.6
       rolldown: 1.0.0-beta.50
       tinyglobby: 0.2.15
+      yaml: 2.5.0
     optionalDependencies:
       fsevents: 2.3.3
 
@@ -18268,7 +18275,7 @@ packages:
       fs-extra: 10.1.0
       kolorist: 1.8.0
       ts-morph: 17.0.1
-      vite: 7.3.0
+      vite: 7.3.0(yaml@2.5.0)
     transitivePeerDependencies:
       - '@types/node'
       - rollup
@@ -18281,7 +18288,7 @@ packages:
       vite: '>=5.0.0'
     dependencies:
       ejs: 3.1.10
-      vite: /rolldown-vite@7.2.5(@types/node@24.10.4)
+      vite: /rolldown-vite@7.2.5(@types/node@24.10.4)(yaml@2.5.0)
     dev: false
 
   /vite-plugin-ejs@1.7.0(vite@4.5.3):
@@ -18351,7 +18358,7 @@ packages:
       debug: 4.3.6(supports-color@5.5.0)
       pretty-bytes: 6.1.1
       tinyglobby: 0.2.15
-      vite: /rolldown-vite@7.2.5(@types/node@24.10.4)
+      vite: /rolldown-vite@7.2.5(@types/node@24.10.4)(yaml@2.5.0)
       workbox-build: 7.4.0
       workbox-window: 7.4.0
     transitivePeerDependencies:
@@ -18414,7 +18421,7 @@ packages:
       '@rollup/pluginutils': 5.1.0
       '@types/markdown-it': 13.0.9
       markdown-it: 13.0.2
-      vite: /rolldown-vite@7.2.5(@types/node@24.10.4)
+      vite: /rolldown-vite@7.2.5(@types/node@24.10.4)(yaml@2.5.0)
     transitivePeerDependencies:
       - rollup
     dev: true
@@ -18469,7 +18476,7 @@ packages:
       html-minifier-terser: 7.2.0
       html5parser: 2.0.2
       jsdom: 27.4.0
-      vite: /rolldown-vite@7.2.5(@types/node@24.10.4)
+      vite: /rolldown-vite@7.2.5(@types/node@24.10.4)(yaml@2.5.0)
       vue: 3.5.26(typescript@5.9.3)
       vue-router: 4.4.3(vue@3.5.26)
     transitivePeerDependencies:
@@ -18587,7 +18594,7 @@ packages:
     optionalDependencies:
       fsevents: 2.3.3
 
-  /vite@7.3.0:
+  /vite@7.3.0(yaml@2.5.0):
     resolution: {integrity: sha512-dZwN5L1VlUBewiP6H9s2+B3e3Jg96D0vzN+Ry73sOefebhYr9f94wwkMNN/9ouoU8pV1BqA1d1zGk8928cx0rg==}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
@@ -18633,6 +18640,7 @@ packages:
       postcss: 8.5.6
       rollup: 4.55.1
       tinyglobby: 0.2.15
+      yaml: 2.5.0
     optionalDependencies:
       fsevents: 2.3.3
 
@@ -19359,7 +19367,6 @@ packages:
     resolution: {integrity: sha512-2wWLbGbYDiSqqIKoPjar3MPgB94ErzCtrNE1FdqGuaO0pi2JGjmE8aW8TDZwzU7vuxcGRdL/4gPQwQ7hD5AMSw==}
     engines: {node: '>= 14'}
     hasBin: true
-    dev: true
 
   /yargs-parser@13.1.2:
     resolution: {integrity: sha512-3lbsNRf/j+A4QuSZfDRA7HRSfWrzO0YjqTJd5kjAq37Zep1CEgaYmrH9Q3GwPiB9cHyd1Y1UwggGhJGoxipbzg==}

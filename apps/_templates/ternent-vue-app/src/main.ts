@@ -5,6 +5,7 @@ import { installAppProviders } from "./app/bootstrap/createApp";
 import registerSW from "./utils/registerSW";
 
 import "ternent-ui/styles.css";
+import "@/app/config/theme.generated";
 import "./style.css";
 
 export const createApp = ViteSSG(
