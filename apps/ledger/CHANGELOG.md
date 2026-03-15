@@ -1,5 +1,11 @@
 # **APP_ID**
 
+## 0.0.10
+
+### Patch Changes
+
+- [`60f4524bae9e79db876ebba4a96027e0930a1ae5`](https://github.com/samternent/home/commit/60f4524bae9e79db876ebba4a96027e0930a1ae5) Thanks [@samternent](https://github.com/samternent)! - Adds ledger app
+
 ## 0.0.9
 
 ### Patch Changes
