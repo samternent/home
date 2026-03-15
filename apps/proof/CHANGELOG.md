@@ -1,5 +1,11 @@
 # proof
 
+## 0.0.17
+
+### Patch Changes
+
+- [`d0b95b90b242b26ae1c8f27af86716179d760072`](https://github.com/samternent/home/commit/d0b95b90b242b26ae1c8f27af86716179d760072) Thanks [@samternent](https://github.com/samternent)! - Adds clia dn actions examples
+
 ## 0.0.16
 
 ### Patch Changes
