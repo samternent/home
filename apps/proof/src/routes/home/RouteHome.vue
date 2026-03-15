@@ -22,92 +22,89 @@ const navigationLinks = [
 const featureCards = [
   {
     title: "Browser-native",
-    description: "Sign and verify without leaving your workspace.",
+    description: "Create and verify proofs locally in your browser.",
     tone: "info",
   },
   {
-    title: "Deterministic identity",
-    description: "Keys derived locally and never stored.",
+    title: "Deterministic manifests",
+    description: "Generate consistent file manifests for static builds.",
     tone: "primary",
   },
   {
-    title: "Travel-ready proofs",
-    description: "Self-contained artifacts you can carry anywhere.",
+    title: "CI-ready",
+    description: "Sign build outputs in GitHub Actions.",
     tone: "accent",
   },
   {
     title: "No backend required",
-    description: "Everything runs client-side, from signing to verification.",
+    description: "Signing and verification work without a server.",
     tone: "success",
   },
 ];
 
 const howItWorksSteps = [
   {
-    title: "Generate your identity",
-    description:
-      "Create a deterministic keypair in one click or import one you already trust.",
+    title: "Generate a manifest",
+    description: "Create a deterministic list of files and hashes.",
   },
   {
-    title: "Sign your content",
-    description:
-      "Hash any text or file in seconds and produce a signed proof artifact.",
+    title: "Sign the manifest",
+    description: "Sign it with your local private key.",
   },
   {
-    title: "Verify anywhere",
+    title: "Publish and verify",
     description:
-      "Anyone can independently verify the proof without your private key or your app.",
+      "Share the proof file. Anyone can verify integrity and signer identity.",
   },
 ];
 
 const useCases = [
   {
-    title: "Blog posts",
-    description: "Publish authorship and integrity together.",
+    title: "Static websites",
+    description:
+      "Sign your build output and publish proof.json alongside your site.",
     tone: "primary",
   },
   {
     title: "Release artifacts",
-    description: "Attach proofs to builds and downloadable assets.",
+    description: "Sign downloadable assets for integrity verification.",
     tone: "secondary",
   },
   {
-    title: "Legal documents",
-    description: "Capture exactly what was signed and when.",
+    title: "Documents",
+    description: "Sign PDFs or text files and share portable proof files.",
     tone: "accent",
   },
   {
-    title: "Research papers",
-    description: "Assert provenance for revisions and datasets.",
+    title: "Research datasets",
+    description: "Publish signed manifests for reproducibility.",
     tone: "info",
   },
   {
-    title: "Static websites",
-    description: "Ship verifiable proofs alongside published content.",
+    title: "Open data",
+    description: "Distribute verified data snapshots.",
     tone: "primary",
   },
   {
-    title: "Open data",
-    description: "Distribute trusted records without central gatekeepers.",
+    title: "Build pipelines",
+    description: "Use the GitHub Action to sign CI outputs automatically.",
     tone: "success",
   },
 ];
 
-const developerPoints = [
-  {
-    title: "Prove integrity",
-    description:
-      "Cryptographically assert that content is exactly as you created it.",
-  },
-  {
-    title: "Control identity",
-    description:
-      "Your keys remain yours, with no third party holding your identity.",
-  },
-  {
-    title: "Audit everything",
-    description: "Create a verifiable record of who signed what and when.",
-  },
+const developerSurfaces = ["Web app", "CLI", "GitHub Action"] as const;
+
+const sealIs = [
+  "A tool for signing content and static builds",
+  "A way to prove integrity and signer identity",
+  "Browser-first and CI-friendly",
+] as const;
+
+const sealIsNot = [
+  "Encryption",
+  "A blockchain",
+  "A hosted trust platform",
+  "A PKI replacement",
 ] as const;
 
 type DeveloperTab = "js" | "cli" | "action";
@@ -233,15 +230,18 @@ const publishedSiteBaseUrl = import.meta.env.DEV
         </nav>
 
         <div class="flex items-center gap-2">
+          <Button as="RouterLink" to="/app" variant="secondary" size="sm">
+            Open Web App
+          </Button>
           <Button
-            as="RouterLink"
-            to="/app/verify"
-            variant="secondary"
+            as="a"
+            href="https://github.com/marketplace/actions/seal-action"
+            target="_blank"
+            rel="noreferrer"
             size="sm"
           >
-            Verify
+            View GitHub Action
           </Button>
-          <Button as="RouterLink" to="/app/sign" size="sm"> Sign </Button>
         </div>
       </div>
       <Separator />
@@ -254,20 +254,23 @@ const publishedSiteBaseUrl = import.meta.env.DEV
         <SectionIntro
           eyebrow="ternent.dev"
           title="Seal anything. Verify anywhere."
-          description="Seal turns text and files into verifiable proof artifacts directly in your browser. No accounts. No backend. Just math, keys, and integrity."
+          description="Create portable signed proof files for text, files, and static site builds. Runs in the browser, CLI, and GitHub Actions. No backend required."
           size="hero"
           title-tag="h1"
         >
           <template #actions>
+            <Button as="RouterLink" to="/app" variant="secondary" size="lg">
+              Open Web App
+            </Button>
             <Button
-              as="RouterLink"
-              to="/app/verify"
-              variant="secondary"
+              as="a"
+              href="https://github.com/marketplace/actions/seal-action"
+              target="_blank"
+              rel="noreferrer"
               size="lg"
             >
-              Verify
+              View GitHub Action
             </Button>
-            <Button as="RouterLink" to="/app/sign" size="lg"> Sign </Button>
           </template>
         </SectionIntro>
 
@@ -282,8 +285,8 @@ const publishedSiteBaseUrl = import.meta.env.DEV
       <section id="features" class="pt-24">
         <SectionIntro
           eyebrow="Features"
-          title="Built for trust, not platforms"
-          description="Seal handles the cryptography so you can focus on proving what matters."
+          title="Portable signed proof artifacts"
+          description="Generate deterministic file manifests, sign them locally, and publish a JSON proof artifact anyone can verify."
         />
 
         <div class="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
@@ -314,7 +317,7 @@ const publishedSiteBaseUrl = import.meta.env.DEV
                 <path d="M12 3a14 14 0 0 0 0 18" />
               </svg>
               <svg
-                v-else-if="feature.title === 'Deterministic identity'"
+                v-else-if="feature.title === 'Deterministic manifests'"
                 aria-hidden="true"
                 viewBox="0 0 24 24"
                 width="20"
@@ -332,7 +335,7 @@ const publishedSiteBaseUrl = import.meta.env.DEV
                 <path d="M9.5 10.5h5" />
               </svg>
               <svg
-                v-else-if="feature.title === 'Travel-ready proofs'"
+                v-else-if="feature.title === 'CI-ready'"
                 aria-hidden="true"
                 viewBox="0 0 24 24"
                 width="20"
@@ -343,12 +346,8 @@ const publishedSiteBaseUrl = import.meta.env.DEV
                 stroke-linecap="round"
                 stroke-linejoin="round"
               >
-                <path
-                  d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"
-                />
-                <path d="M14 3v5h5" />
-                <path d="M9 13h6" />
-                <path d="M9 17h6" />
+                <path d="m12 3 8 4.5v9L12 21 4 16.5v-9L12 3Z" />
+                <path d="m9 12 2 2 4-4" />
               </svg>
               <svg
                 v-else
@@ -381,22 +380,14 @@ const publishedSiteBaseUrl = import.meta.env.DEV
           />
 
           <div class="flex flex-col gap-8">
-            <SectionIntro
-              eyebrow="How it works"
-              title="Three steps to seal any record"
-              description="Generate your identity, sign your content, and share a signed artifact that anyone can verify."
-            />
+            <SectionIntro eyebrow="How it works" title="How it works" />
             <StepList :items="howItWorksSteps" />
           </div>
         </div>
       </section>
 
       <section id="use-cases" class="pt-24">
-        <SectionIntro
-          eyebrow="Use cases"
-          title="Trust that travels with your work"
-          description="Sign once. Verify anywhere."
-        />
+        <SectionIntro eyebrow="Use cases" title="Common use cases" />
 
         <div class="mt-10 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           <Card
@@ -465,23 +456,33 @@ const publishedSiteBaseUrl = import.meta.env.DEV
           >
             <div class="min-w-0 flex flex-col gap-10">
               <SectionIntro
-                eyebrow="Built on Concord"
-                title="Identity and verification, separated from infrastructure"
-                description="Seal is built on Concord identity primitives with deterministic signing and trust-minimal verification. Use the same model in the browser, from the terminal, or inside CI."
+                eyebrow="Developers"
+                title="Browser, CLI, and CI share the same proof model"
+                description="Seal uses the same proof format across:"
               />
 
               <Separator />
 
-              <div class="grid gap-5 sm:grid-cols-3">
-                <FeatureCard
-                  v-for="point in developerPoints"
-                  :key="point.title"
-                  :title="point.title"
-                  :description="point.description"
-                  size="sm"
-                  tone="primary"
-                  surface="subtle"
-                />
+              <div class="grid gap-3 sm:grid-cols-3">
+                <div
+                  v-for="surface in developerSurfaces"
+                  :key="surface"
+                  class="rounded-[var(--ui-radius-md)] border border-[var(--ui-border)] bg-[var(--ui-tonal-secondary)] px-4 py-4"
+                >
+                  <p class="m-0 text-sm font-medium text-[var(--ui-fg)]">
+                    {{ surface }}
+                  </p>
+                </div>
+              </div>
+
+              <div
+                class="space-y-3 text-sm leading-7 text-[var(--ui-fg-muted)]"
+              >
+                <p class="m-0">Proof files are portable JSON artifacts.</p>
+                <p class="m-0">
+                  Verification does not require your private key or a backend
+                  service.
+                </p>
               </div>
             </div>
 
@@ -574,22 +575,68 @@ const publishedSiteBaseUrl = import.meta.env.DEV
       </section>
 
       <section class="pt-24">
+        <Card variant="panel" padding="lg">
+          <div class="grid gap-8 lg:grid-cols-2">
+            <SectionIntro
+              eyebrow="Definition"
+              title="What Seal is and isn’t"
+              description=""
+            />
+
+            <div class="grid gap-6 sm:grid-cols-2">
+              <div class="space-y-4">
+                <h3
+                  class="m-0 text-lg font-medium tracking-[-0.02em] text-[var(--ui-fg)]"
+                >
+                  Seal is:
+                </h3>
+                <ul
+                  class="m-0 space-y-3 text-sm leading-7 text-[var(--ui-fg-muted)]"
+                >
+                  <li class="" v-for="item in sealIs" :key="item">
+                    {{ item }}
+                  </li>
+                </ul>
+              </div>
+
+              <div class="space-y-4">
+                <h3
+                  class="m-0 text-lg font-medium tracking-[-0.02em] text-[var(--ui-fg)]"
+                >
+                  Seal is not:
+                </h3>
+                <ul
+                  class="m-0 space-y-3 text-sm leading-7 text-[var(--ui-fg-muted)]"
+                >
+                  <li v-for="item in sealIsNot" :key="item">{{ item }}</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </Card>
+      </section>
+
+      <section class="pt-24">
         <Card variant="elevated" padding="lg">
           <SectionIntro
             align="center"
             eyebrow="Ready to start?"
-            title="Ship verifiable integrity into your workflow"
-            description="Sign your first artifact in seconds and bring verifiable trust to text, files, and release pipelines."
+            title="Start signing your build artifacts"
+            description="Generate a manifest, sign it, and publish a portable proof file."
           >
             <template #actions>
-              <Button as="RouterLink" to="/app/sign" size="lg"> Sign </Button>
+              <Button as="RouterLink" to="/app" size="lg">
+                Open Web App
+              </Button>
               <Button
-                as="RouterLink"
-                to="/app/verify"
+                as="a"
+                href="https://www.npmjs.com/package/@ternent/seal-cli"
                 variant="secondary"
+                target="_blank"
+                rel="noreferrer"
                 size="lg"
               >
-                Review verification
+                Install CLI
               </Button>
             </template>
           </SectionIntro>
