@@ -30,26 +30,11 @@ seal public-key --json
 
 ## GitHub Actions
 
-There are two ways to use the action.
-
-Repo-local usage:
+Use the published GitHub Action:
 
 ```yaml
 - name: Generate Seal artifacts
-  uses: ./.github/actions/seal-static-site
-  env:
-    SEAL_PRIVATE_KEY: ${{ secrets.SEAL_PRIVATE_KEY }}
-    SEAL_PUBLIC_KEY: ${{ secrets.SEAL_PUBLIC_KEY }}
-  with:
-    assets-directory: apps/proof/.vercel/output/static
-    cli-command: node packages/seal-cli/bin/seal
-```
-
-External usage after publishing `@ternent/seal-cli` to npm:
-
-```yaml
-- name: Generate Seal artifacts
-  uses: samternent/home@main
+  uses: samternent/seal-action@1.0.0
   env:
     SEAL_PRIVATE_KEY: ${{ secrets.SEAL_PRIVATE_KEY }}
     SEAL_PUBLIC_KEY: ${{ secrets.SEAL_PUBLIC_KEY }}

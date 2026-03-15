@@ -55,10 +55,9 @@ jobs:
         run: vercel build --prod --cwd ${{ github.workspace }}/apps/proof --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Generate sealed site artifacts
-        uses: ./.github/actions/seal-static-site
+        uses: samternent/seal-action@1.0.0
         with:
           assets-directory: apps/proof/.vercel/output/static
-          cli-command: node packages/seal-cli/bin/seal
 
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prebuilt --prod --cwd ${{ github.workspace }}/apps/proof --token=${{ secrets.VERCEL_TOKEN }}
