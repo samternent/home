@@ -1,5 +1,11 @@
 # proof
 
+## 0.0.15
+
+### Patch Changes
+
+- [`d120a4619e9c8254e495acc00c3b0ba8c5e76a38`](https://github.com/samternent/home/commit/d120a4619e9c8254e495acc00c3b0ba8c5e76a38) Thanks [@samternent](https://github.com/samternent)! - try another bump
+
 ## 0.0.14
 
 ### Patch Changes
