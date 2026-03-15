@@ -1,5 +1,11 @@
 # proof
 
+## 0.0.20
+
+### Patch Changes
+
+- [`fbc100499e821ca62685a3b65997744576f97130`](https://github.com/samternent/home/commit/fbc100499e821ca62685a3b65997744576f97130) Thanks [@samternent](https://github.com/samternent)! - Fix yaml loading
+
 ## 0.0.19
 
 ### Patch Changes
