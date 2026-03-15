@@ -15,6 +15,7 @@ test("prepare script creates a starter manifest outside apps", () => {
     "node",
     [
       "scripts/prepare-ternent-app.mjs",
+      "--",
       "--out",
       outPath,
       "--name",

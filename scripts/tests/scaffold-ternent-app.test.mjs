@@ -119,13 +119,17 @@ landing:
   );
 
   try {
-    runNodeScript(["scripts/scaffold-ternent-app.mjs", "--manifest", manifestPath]);
+    runNodeScript(["scripts/scaffold-ternent-app.mjs", "--", "--manifest", manifestPath]);
 
     assert.ok(fs.existsSync(path.join(targetDir, "app.yaml")));
     assert.ok(fs.existsSync(path.join(targetDir, "src", "app", "config", "app.generated.ts")));
     assert.match(
       fs.readFileSync(path.join(targetDir, "src", "app", "config", "theme.generated.ts"), "utf8"),
       /ternent-ui\/themes\/aurora\.css/,
+    );
+    assert.match(
+      fs.readFileSync(path.join(targetDir, "tsconfig.json"), "utf8"),
+      /"extends": "\.\.\/\.\.\/tsconfig\.json"/,
     );
   } finally {
     removeDir(targetDir);
@@ -141,6 +145,7 @@ test("scaffold shorthand writes a manifest and sync updates generated config", (
   try {
     runNodeScript([
       "scripts/scaffold-ternent-app.mjs",
+      "--",
       "--name",
       appId,
       "--title",
@@ -163,12 +168,23 @@ test("scaffold shorthand writes a manifest and sync updates generated config", (
       manifestSource.replace("themeName: harbor-rose", "themeName: prism"),
       "utf8",
     );
+    fs.writeFileSync(
+      path.join(targetDir, "tsconfig.json"),
+      fs
+        .readFileSync(path.join(targetDir, "tsconfig.json"), "utf8")
+        .replace('"extends": "../../tsconfig.json"', '"extends": "../../../tsconfig.json"'),
+      "utf8",
+    );
 
-    runNodeScript(["scripts/sync-ternent-app.mjs", "--app", `apps/${appId}`]);
+    runNodeScript(["scripts/sync-ternent-app.mjs", "--", "--app", `apps/${appId}`]);
 
     assert.match(
       fs.readFileSync(path.join(targetDir, "src", "app", "config", "theme.generated.ts"), "utf8"),
       /ternent-ui\/themes\/prism\.css/,
+    );
+    assert.match(
+      fs.readFileSync(path.join(targetDir, "tsconfig.json"), "utf8"),
+      /"extends": "\.\.\/\.\.\/tsconfig\.json"/,
     );
     assert.equal(fs.readFileSync(customFile, "utf8"), "leave me alone");
   } finally {

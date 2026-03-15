@@ -3,13 +3,54 @@ import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import tailwindcss from "@tailwindcss/vite";
 import { VitePWA } from "vite-plugin-pwa";
-import {
-  createIndexHtmlTransformPlugin,
-  createPwaManifest,
-  loadTernentAppManifestForDir,
-} from "../../scripts/lib/ternent-app-manifest.mjs";
+import { appConfig, appSeoConfig } from "./src/app/config/app.generated";
 
-const appManifest = loadTernentAppManifestForDir(__dirname, resolve(__dirname, "../.."));
+function createIndexHtmlTransformPlugin() {
+  return {
+    name: "ternent-app-index-html",
+    transformIndexHtml(html: string) {
+      return html
+        .replaceAll("__APP_LANG__", appSeoConfig.lang)
+        .replaceAll("__APP_TITLE__", appConfig.appTitle)
+        .replaceAll("__APP_DESCRIPTION__", appSeoConfig.description)
+        .replaceAll("__APP_THEME_COLOR__", appSeoConfig.themeColor)
+        .replaceAll(
+          "__APP_THEME_DATA__",
+          `${appConfig.themeName}-${appConfig.defaultThemeMode}`,
+        );
+    },
+  };
+}
+
+const pwaManifest = {
+  id: "/",
+  name: appConfig.appTitle,
+  short_name: appSeoConfig.shortName,
+  description: appSeoConfig.description,
+  theme_color: appSeoConfig.themeColor,
+  background_color: appSeoConfig.backgroundColor,
+  display: "standalone",
+  start_url: "/",
+  scope: "/",
+  icons: [
+    {
+      src: "/icons/icon-192.png",
+      sizes: "192x192",
+      type: "image/png",
+    },
+    {
+      src: "/icons/icon-512.png",
+      sizes: "512x512",
+      type: "image/png",
+    },
+    {
+      src: "/icons/maskable-512.png",
+      sizes: "512x512",
+      type: "image/png",
+      purpose: "maskable",
+    },
+  ],
+};
 
 export default defineConfig({
   resolve: {
@@ -32,11 +73,11 @@ export default defineConfig({
   plugins: [
     vue(),
     tailwindcss(),
-    createIndexHtmlTransformPlugin(appManifest),
+    createIndexHtmlTransformPlugin(),
     VitePWA({
       registerType: "autoUpdate",
       includeAssets: ["favicon.ico", "icons/icon-192.png", "icons/icon-512.png", "icons/maskable-512.png"],
-      manifest: createPwaManifest(appManifest),
+      manifest: pwaManifest,
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
         navigateFallbackDenylist: [/^\/v1\//],

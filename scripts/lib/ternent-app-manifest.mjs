@@ -525,6 +525,26 @@ export function writeGeneratedAppFiles(appDir, manifest) {
   );
 }
 
+export function normalizeScaffoldedAppFiles(appDir, repoRoot) {
+  const tsconfigPath = path.join(appDir, "tsconfig.json");
+  if (!fs.existsSync(tsconfigPath)) {
+    return;
+  }
+
+  const repoTsconfigPath = path.join(repoRoot, "tsconfig.json");
+  const extendsPath = path.relative(appDir, repoTsconfigPath).replaceAll(path.sep, "/");
+
+  const source = fs.readFileSync(tsconfigPath, "utf8");
+  const next = source.replace(
+    /"extends":\s*"[^"]+"/,
+    `"extends": "${extendsPath}"`,
+  );
+
+  if (next !== source) {
+    fs.writeFileSync(tsconfigPath, next, "utf8");
+  }
+}
+
 export function createScaffoldManifest({
   repoRoot,
   name,

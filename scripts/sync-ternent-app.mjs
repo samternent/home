@@ -3,6 +3,7 @@
 import path from "node:path";
 import {
   loadTernentAppManifestForDir,
+  normalizeScaffoldedAppFiles,
   writeGeneratedAppFiles,
 } from "./lib/ternent-app-manifest.mjs";
 
@@ -18,6 +19,7 @@ function parseArgs(argv) {
   const args = {};
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
+    if (arg === "--") continue;
     if (!arg.startsWith("--")) continue;
 
     const key = arg.slice(2);
@@ -43,6 +45,7 @@ function main() {
 
   const appDir = path.resolve(repoRoot, args.app);
   const manifest = loadTernentAppManifestForDir(appDir, repoRoot);
+  normalizeScaffoldedAppFiles(appDir, repoRoot);
   writeGeneratedAppFiles(appDir, manifest);
 
   console.log(`Synced ternent app config from ${path.relative(repoRoot, appDir)}/app.yaml`);

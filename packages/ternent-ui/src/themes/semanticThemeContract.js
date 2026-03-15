@@ -1,5 +1,5 @@
 export const rootSemanticThemes = {
-  "light": {
+  light: {
     "color-scheme": "light",
     "--ui-bg": "#fbf7f0",
     "--ui-fg": "#181615",
@@ -69,9 +69,9 @@ export const rootSemanticThemes = {
     "--ui-scale-active": "0.97",
     "--ui-logo-start": "#FF5757",
     "--ui-logo-end": "#8C52FF",
-    "--ui-logo-cutout": "#fbf7f0"
+    "--ui-logo-cutout": "#fbf7f0",
   },
-  "dark": {
+  dark: {
     "color-scheme": "dark",
     "--ui-bg": "#2d3047",
     "--ui-fg": "#e9e6df",
@@ -132,13 +132,159 @@ export const rootSemanticThemes = {
     "--ui-shadow-md": "0 6px 18px rgba(0, 0, 0, 0.45)",
     "--ui-logo-start": "#FF6B6B",
     "--ui-logo-end": "#A78BFA",
-    "--ui-logo-cutout": "#2d3047"
-  }
+    "--ui-logo-cutout": "#2d3047",
+  },
 };
 
 export const namedSemanticThemes = {
-  "aurora": {
-    "light": {
+  armour: {
+    light: {
+      "color-scheme": "light",
+      "--ui-bg": "#f3f8f7",
+      "--ui-fg": "#142321",
+      "--ui-fg-muted": "#5c726e",
+      "--ui-surface": "#e7efed",
+      "--ui-surface-hover": "#dbe7e4",
+      "--ui-border": "rgba(20, 35, 33, 0.12)",
+      "--ui-primary": "#0f766e",
+      "--ui-on-primary": "#f3f8f7",
+      "--ui-primary-muted": "rgba(15, 118, 110, 0.14)",
+      "--ui-primary-hover": "rgba(15, 118, 110, 0.22)",
+      "--ui-primary-active": "rgba(15, 118, 110, 0.3)",
+      "--ui-secondary": "#51656a",
+      "--ui-on-secondary": "#f3f8f7",
+      "--ui-secondary-muted": "rgba(81, 101, 106, 0.14)",
+      "--ui-secondary-hover": "rgba(81, 101, 106, 0.22)",
+      "--ui-secondary-active": "rgba(81, 101, 106, 0.3)",
+      "--ui-accent": "#10b981",
+      "--ui-on-accent": "#062018",
+      "--ui-accent-muted": "rgba(16, 185, 129, 0.14)",
+      "--ui-accent-hover": "rgba(16, 185, 129, 0.22)",
+      "--ui-accent-active": "rgba(16, 185, 129, 0.3)",
+      "--ui-success": "#15803d",
+      "--ui-on-success": "#f3f8f7",
+      "--ui-success-muted": "rgba(21, 128, 61, 0.16)",
+      "--ui-success-hover": "rgba(21, 128, 61, 0.24)",
+      "--ui-success-active": "rgba(21, 128, 61, 0.32)",
+      "--ui-warning": "#b45309",
+      "--ui-on-warning": "#fff7ed",
+      "--ui-warning-muted": "rgba(180, 83, 9, 0.16)",
+      "--ui-warning-hover": "rgba(180, 83, 9, 0.24)",
+      "--ui-warning-active": "rgba(180, 83, 9, 0.32)",
+      "--ui-info": "#0ea5e9",
+      "--ui-on-info": "#f3f8f7",
+      "--ui-info-muted": "rgba(14, 165, 233, 0.16)",
+      "--ui-info-hover": "rgba(14, 165, 233, 0.24)",
+      "--ui-info-active": "rgba(14, 165, 233, 0.32)",
+      "--ui-critical": "#b91c1c",
+      "--ui-on-critical": "#fef2f2",
+      "--ui-critical-muted": "rgba(185, 28, 28, 0.16)",
+      "--ui-critical-hover": "rgba(185, 28, 28, 0.24)",
+      "--ui-critical-active": "rgba(185, 28, 28, 0.32)",
+      "--ui-danger": "var(--ui-critical)",
+      "--ui-on-danger": "var(--ui-on-critical)",
+      "--ui-danger-muted": "var(--ui-critical-muted)",
+      "--ui-danger-hover": "var(--ui-critical-hover)",
+      "--ui-danger-active": "var(--ui-critical-active)",
+      "--ui-tonal-secondary": "rgba(20, 35, 33, 0.06)",
+      "--ui-tonal-secondary-hover": "rgba(20, 35, 33, 0.1)",
+      "--ui-tonal-tertiary": "rgba(20, 35, 33, 0.03)",
+      "--ui-tonal-tertiary-hover": "rgba(20, 35, 33, 0.07)",
+      "--ui-ring": "rgba(15, 118, 110, 0.4)",
+      "--ui-glow-primary": "0 0 0 2px rgba(15, 118, 110, 0.25)",
+      "--ui-glow-accent": "0 0 0 2px rgba(16, 185, 129, 0.22)",
+      "--ui-glow-critical": "0 0 0 2px rgba(185, 28, 28, 0.25)",
+      "--ui-glow-success": "0 0 0 2px rgba(21, 128, 61, 0.22)",
+      "--ui-radius-sm": "8px",
+      "--ui-radius-md": "12px",
+      "--ui-radius-lg": "16px",
+      "--ui-duration-fast": "120ms",
+      "--ui-duration-normal": "200ms",
+      "--ui-duration-slow": "300ms",
+      "--ui-ease-out": "cubic-bezier(0, 0, 0.2, 1)",
+      "--ui-shadow-sm": "0 1px 2px rgba(12, 21, 20, 0.12)",
+      "--ui-shadow-md": "0 6px 18px rgba(12, 21, 20, 0.22)",
+      "--ui-lift-hover": "-0.5px",
+      "--ui-scale-active": "0.97",
+      "--ui-logo-start": "#0f766e",
+      "--ui-logo-end": "#10b981",
+      "--ui-logo-cutout": "#f3f8f7",
+    },
+    dark: {
+      "color-scheme": "dark",
+      "--ui-bg": "#071513",
+      "--ui-fg": "#e7f4f1",
+      "--ui-fg-muted": "#93ada7",
+      "--ui-surface": "#0d1d1a",
+      "--ui-surface-hover": "#142824",
+      "--ui-border": "rgba(231, 244, 241, 0.08)",
+      "--ui-primary": "#14b8a6",
+      "--ui-on-primary": "#041311",
+      "--ui-primary-muted": "rgba(20, 184, 166, 0.16)",
+      "--ui-primary-hover": "rgba(20, 184, 166, 0.24)",
+      "--ui-primary-active": "rgba(20, 184, 166, 0.32)",
+      "--ui-secondary": "#5d7470",
+      "--ui-on-secondary": "#ffffff",
+      "--ui-secondary-muted": "rgba(93, 116, 112, 0.16)",
+      "--ui-secondary-hover": "rgba(93, 116, 112, 0.24)",
+      "--ui-secondary-active": "rgba(93, 116, 112, 0.32)",
+      "--ui-accent": "#34d399",
+      "--ui-on-accent": "#04140f",
+      "--ui-accent-muted": "rgba(52, 211, 153, 0.16)",
+      "--ui-accent-hover": "rgba(52, 211, 153, 0.24)",
+      "--ui-accent-active": "rgba(52, 211, 153, 0.32)",
+      "--ui-success": "#22c55e",
+      "--ui-on-success": "#04140a",
+      "--ui-success-muted": "rgba(34, 197, 94, 0.16)",
+      "--ui-success-hover": "rgba(34, 197, 94, 0.24)",
+      "--ui-success-active": "rgba(34, 197, 94, 0.32)",
+      "--ui-warning": "#f59e0b",
+      "--ui-on-warning": "#1a1002",
+      "--ui-warning-muted": "rgba(245, 158, 11, 0.16)",
+      "--ui-warning-hover": "rgba(245, 158, 11, 0.24)",
+      "--ui-warning-active": "rgba(245, 158, 11, 0.32)",
+      "--ui-info": "#38bdf8",
+      "--ui-on-info": "#04131a",
+      "--ui-info-muted": "rgba(56, 189, 248, 0.16)",
+      "--ui-info-hover": "rgba(56, 189, 248, 0.24)",
+      "--ui-info-active": "rgba(56, 189, 248, 0.32)",
+      "--ui-critical": "#ef4444",
+      "--ui-on-critical": "#190606",
+      "--ui-critical-muted": "rgba(239, 68, 68, 0.16)",
+      "--ui-critical-hover": "rgba(239, 68, 68, 0.24)",
+      "--ui-critical-active": "rgba(239, 68, 68, 0.32)",
+      "--ui-danger": "var(--ui-critical)",
+      "--ui-on-danger": "var(--ui-on-critical)",
+      "--ui-danger-muted": "var(--ui-critical-muted)",
+      "--ui-danger-hover": "var(--ui-critical-hover)",
+      "--ui-danger-active": "var(--ui-critical-active)",
+      "--ui-tonal-secondary": "rgba(231, 244, 241, 0.06)",
+      "--ui-tonal-secondary-hover": "rgba(231, 244, 241, 0.12)",
+      "--ui-tonal-tertiary": "rgba(231, 244, 241, 0.03)",
+      "--ui-tonal-tertiary-hover": "rgba(231, 244, 241, 0.08)",
+      "--ui-ring": "rgba(20, 184, 166, 0.45)",
+      "--ui-glow-primary": "0 0 0 2px rgba(20, 184, 166, 0.35)",
+      "--ui-glow-accent": "0 0 0 2px rgba(52, 211, 153, 0.35)",
+      "--ui-glow-critical": "0 0 0 2px rgba(239, 68, 68, 0.3)",
+      "--ui-glow-success": "0 0 0 2px rgba(34, 197, 94, 0.35)",
+      "--ui-shadow-sm": "0 1px 2px rgba(0, 0, 0, 0.45)",
+      "--ui-shadow-md": "0 12px 36px rgba(0, 0, 0, 0.65)",
+      "--ui-radius-sm": "6px",
+      "--ui-radius-md": "10px",
+      "--ui-radius-lg": "14px",
+      "--ui-duration-fast": "120ms",
+      "--ui-duration-normal": "180ms",
+      "--ui-duration-slow": "240ms",
+      "--ui-ease-out": "cubic-bezier(0, 0, 0.2, 1)",
+      "--ui-lift-hover": "-0.5px",
+      "--ui-scale-active": "0.98",
+      "--ui-logo-start": "#14b8a6",
+      "--ui-logo-end": "#34d399",
+      "--ui-logo-cutout": "#071513",
+    },
+  },
+  aurora: {
+    light: {
       "color-scheme": "light",
       "--ui-bg": "#f2fbff",
       "--ui-fg": "#14323d",
@@ -208,9 +354,9 @@ export const namedSemanticThemes = {
       "--ui-scale-active": "0.97",
       "--ui-logo-start": "#e11d48",
       "--ui-logo-end": "#4338ca",
-      "--ui-logo-cutout": "#f2fbff"
+      "--ui-logo-cutout": "#f2fbff",
     },
-    "dark": {
+    dark: {
       "color-scheme": "dark",
       "--ui-bg": "#0b1217",
       "--ui-fg": "#e4f8ff",
@@ -280,11 +426,11 @@ export const namedSemanticThemes = {
       "--ui-scale-active": "0.97",
       "--ui-logo-start": "#fda4af",
       "--ui-logo-end": "#c7d2fe",
-      "--ui-logo-cutout": "#0b1217"
-    }
+      "--ui-logo-cutout": "#0b1217",
+    },
   },
   "citrine-ash": {
-    "light": {
+    light: {
       "color-scheme": "light",
       "--ui-bg": "#fbfbf2",
       "--ui-fg": "#3d3b30",
@@ -354,9 +500,9 @@ export const namedSemanticThemes = {
       "--ui-scale-active": "0.97",
       "--ui-logo-start": "#c59f12",
       "--ui-logo-end": "#3a5ea8",
-      "--ui-logo-cutout": "#fbfbf2"
+      "--ui-logo-cutout": "#fbfbf2",
     },
-    "dark": {
+    dark: {
       "color-scheme": "dark",
       "--ui-bg": "#15140f",
       "--ui-fg": "#f5f2d9",
@@ -426,11 +572,11 @@ export const namedSemanticThemes = {
       "--ui-scale-active": "0.97",
       "--ui-logo-start": "#f5e27a",
       "--ui-logo-end": "#7f9edc",
-      "--ui-logo-cutout": "#15140f"
-    }
+      "--ui-logo-cutout": "#15140f",
+    },
   },
   "garnet-honey": {
-    "light": {
+    light: {
       "color-scheme": "light",
       "--ui-bg": "#fbf6ef",
       "--ui-fg": "#2a141a",
@@ -500,9 +646,9 @@ export const namedSemanticThemes = {
       "--ui-scale-active": "0.97",
       "--ui-logo-start": "#7a0f2b",
       "--ui-logo-end": "#e7b24a",
-      "--ui-logo-cutout": "#fbf6ef"
+      "--ui-logo-cutout": "#fbf6ef",
     },
-    "dark": {
+    dark: {
       "color-scheme": "dark",
       "--ui-bg": "#1c0d11",
       "--ui-fg": "#f7ede1",
@@ -572,11 +718,11 @@ export const namedSemanticThemes = {
       "--ui-scale-active": "0.97",
       "--ui-logo-start": "#e8a0b2",
       "--ui-logo-end": "#f3c45c",
-      "--ui-logo-cutout": "#1c0d11"
-    }
+      "--ui-logo-cutout": "#1c0d11",
+    },
   },
   "harbor-rose": {
-    "light": {
+    light: {
       "color-scheme": "light",
       "--ui-bg": "#f6f7fb",
       "--ui-fg": "#191a23",
@@ -646,9 +792,9 @@ export const namedSemanticThemes = {
       "--ui-scale-active": "0.97",
       "--ui-logo-start": "#c0265c",
       "--ui-logo-end": "#5f7fdf",
-      "--ui-logo-cutout": "#f6f7fb"
+      "--ui-logo-cutout": "#f6f7fb",
     },
-    "dark": {
+    dark: {
       "color-scheme": "dark",
       "--ui-bg": "#0f1222",
       "--ui-fg": "#eef1fa",
@@ -718,11 +864,11 @@ export const namedSemanticThemes = {
       "--ui-scale-active": "0.97",
       "--ui-logo-start": "#e1557a",
       "--ui-logo-end": "#9db4f2",
-      "--ui-logo-cutout": "#0f1222"
-    }
+      "--ui-logo-cutout": "#0f1222",
+    },
   },
   "neon-noir": {
-    "dark": {
+    dark: {
       "color-scheme": "dark",
       "--ui-bg": "oklch(12% 0 0)",
       "--ui-fg": "oklch(92% 0 0)",
@@ -792,11 +938,11 @@ export const namedSemanticThemes = {
       "--ui-scale-active": "0.97",
       "--ui-logo-start": "oklch(65% 0.27 310)",
       "--ui-logo-end": "oklch(70% 0.16 200)",
-      "--ui-logo-cutout": "oklch(12% 0 0)"
-    }
+      "--ui-logo-cutout": "oklch(12% 0 0)",
+    },
   },
   "obsidian-iris": {
-    "light": {
+    light: {
       "color-scheme": "light",
       "--ui-bg": "#f7f5f7",
       "--ui-fg": "#211a1d",
@@ -866,9 +1012,9 @@ export const namedSemanticThemes = {
       "--ui-scale-active": "0.97",
       "--ui-logo-start": "#4a1d96",
       "--ui-logo-end": "#7c5cf0",
-      "--ui-logo-cutout": "#f7f5f7"
+      "--ui-logo-cutout": "#f7f5f7",
     },
-    "dark": {
+    dark: {
       "color-scheme": "dark",
       "--ui-bg": "#120e11",
       "--ui-fg": "#f3eff4",
@@ -938,12 +1084,12 @@ export const namedSemanticThemes = {
       "--ui-scale-active": "0.97",
       "--ui-logo-start": "#a78bfa",
       "--ui-logo-end": "#c4b5fd",
-      "--ui-logo-cutout": "#120e11"
-    }
+      "--ui-logo-cutout": "#120e11",
+    },
   },
-  "pixpax": {},
-  "print": {
-    "light": {
+  pixpax: {},
+  print: {
+    light: {
       "color-scheme": "light",
       "--ui-bg": "#fbf7f0",
       "--ui-fg": "#181615",
@@ -1013,9 +1159,9 @@ export const namedSemanticThemes = {
       "--ui-scale-active": "0.97",
       "--ui-logo-start": "#FF5757",
       "--ui-logo-end": "#8C52FF",
-      "--ui-logo-cutout": "#fbf7f0"
+      "--ui-logo-cutout": "#fbf7f0",
     },
-    "dark": {
+    dark: {
       "color-scheme": "dark",
       "--ui-bg": "#141311",
       "--ui-fg": "#e9e6df",
@@ -1085,11 +1231,11 @@ export const namedSemanticThemes = {
       "--ui-scale-active": "0.97",
       "--ui-logo-start": "#FF6B6B",
       "--ui-logo-end": "#A78BFA",
-      "--ui-logo-cutout": "#141311"
-    }
+      "--ui-logo-cutout": "#141311",
+    },
   },
-  "prism": {
-    "light": {
+  prism: {
+    light: {
       "color-scheme": "light",
       "--ui-bg": "#f7f9ff",
       "--ui-fg": "#1b1f34",
@@ -1159,9 +1305,9 @@ export const namedSemanticThemes = {
       "--ui-scale-active": "0.97",
       "--ui-logo-start": "#db2777",
       "--ui-logo-end": "#1d4ed8",
-      "--ui-logo-cutout": "#f7f9ff"
+      "--ui-logo-cutout": "#f7f9ff",
     },
-    "dark": {
+    dark: {
       "color-scheme": "dark",
       "--ui-bg": "#0f1222",
       "--ui-fg": "#e8edff",
@@ -1231,11 +1377,11 @@ export const namedSemanticThemes = {
       "--ui-scale-active": "0.97",
       "--ui-logo-start": "#f9a8d4",
       "--ui-logo-end": "#93c5fd",
-      "--ui-logo-cutout": "#0f1222"
-    }
+      "--ui-logo-cutout": "#0f1222",
+    },
   },
-  "proof": {
-    "dark": {
+  proof: {
+    dark: {
       "color-scheme": "dark",
       "--ui-bg": "#060a0f",
       "--ui-fg": "#e6edf3",
@@ -1304,11 +1450,11 @@ export const namedSemanticThemes = {
       "--ui-scale-active": "0.98",
       "--ui-logo-start": "#2f81f7",
       "--ui-logo-end": "#9da7b3",
-      "--ui-logo-cutout": "#060a0f"
-    }
+      "--ui-logo-cutout": "#060a0f",
+    },
   },
   "spruce-ink": {
-    "light": {
+    light: {
       "color-scheme": "light",
       "--ui-bg": "#f7f7f4",
       "--ui-fg": "#2d3047",
@@ -1378,9 +1524,9 @@ export const namedSemanticThemes = {
       "--ui-scale-active": "0.97",
       "--ui-logo-start": "#1b7f5a",
       "--ui-logo-end": "#1f2937",
-      "--ui-logo-cutout": "#f7f7f4"
+      "--ui-logo-cutout": "#f7f7f4",
     },
-    "dark": {
+    dark: {
       "color-scheme": "dark",
       "--ui-bg": "#171a2a",
       "--ui-fg": "#eef1f4",
@@ -1450,11 +1596,11 @@ export const namedSemanticThemes = {
       "--ui-scale-active": "0.97",
       "--ui-logo-start": "#4fd1a5",
       "--ui-logo-end": "#3f475a",
-      "--ui-logo-cutout": "#171a2a"
-    }
+      "--ui-logo-cutout": "#171a2a",
+    },
   },
-  "sunset": {
-    "light": {
+  sunset: {
+    light: {
       "color-scheme": "light",
       "--ui-bg": "#fff5ef",
       "--ui-fg": "#2b1710",
@@ -1524,9 +1670,9 @@ export const namedSemanticThemes = {
       "--ui-scale-active": "0.97",
       "--ui-logo-start": "#9a3412",
       "--ui-logo-end": "#1e3a8a",
-      "--ui-logo-cutout": "#fff5ef"
+      "--ui-logo-cutout": "#fff5ef",
     },
-    "dark": {
+    dark: {
       "color-scheme": "dark",
       "--ui-bg": "#1a0f14",
       "--ui-fg": "#ffe8d6",
@@ -1596,7 +1742,7 @@ export const namedSemanticThemes = {
       "--ui-scale-active": "0.97",
       "--ui-logo-start": "#fdba74",
       "--ui-logo-end": "#a5b4fc",
-      "--ui-logo-cutout": "#1a0f14"
-    }
-  }
+      "--ui-logo-cutout": "#1a0f14",
+    },
+  },
 };

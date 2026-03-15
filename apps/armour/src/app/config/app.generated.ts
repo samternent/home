@@ -1,0 +1,330 @@
+import type { LandingPageConfig } from "ternent-ui/patterns";
+
+export type ThemeMode = "light" | "dark";
+
+export type AppConfig = {
+  appId: string;
+  appTitle: string;
+  defaultHost: string;
+  themeName: string;
+  defaultThemeMode: ThemeMode;
+};
+
+export type AppSeoConfig = {
+  shortName: string;
+  description: string;
+  themeColor: string;
+  backgroundColor: string;
+  lang: string;
+};
+
+export const appConfig = {
+  "appId": "armour",
+  "appTitle": "Armour",
+  "defaultHost": "armour.ternent.dev",
+  "themeName": "armour",
+  "defaultThemeMode": "dark"
+} as const satisfies AppConfig;
+
+export const appSeoConfig = {
+  "shortName": "Armour",
+  "description": "Armour by ternent.dev for local browser-based encryption and decryption powered by rage.",
+  "themeColor": "#14b8a6",
+  "backgroundColor": "#071513",
+  "lang": "en"
+} as const satisfies AppSeoConfig;
+
+export const appThemeName = "armour";
+
+export const appThemePrefix = appThemeName;
+
+export const landingPageConfig = {
+  "navigationLinks": [
+    {
+      "href": "#features",
+      "label": "Features"
+    },
+    {
+      "href": "#how-it-works",
+      "label": "How it works"
+    },
+    {
+      "href": "#use-cases",
+      "label": "Use cases"
+    },
+    {
+      "href": "#developers",
+      "label": "Developers"
+    }
+  ],
+  "hero": {
+    "eyebrow": "ternent.dev",
+    "title": "Encrypt text and files in the browser.",
+    "description": "Armour is a browser-first wrapper around rage for local encryption and decryption. Encrypt text or files for one or more recipients without sending plaintext to a backend.",
+    "primaryAction": {
+      "href": "/app",
+      "label": "Open Web App",
+      "variant": "primary"
+    },
+    "secondaryAction": {
+      "href": "https://github.com/samternent/home",
+      "label": "View Monorepo",
+      "variant": "secondary"
+    },
+    "preview": {
+      "title": "Encrypted payload",
+      "meta": "ciphertext.age",
+      "statusLabel": "Browser-native",
+      "statusTone": "info",
+      "rows": [
+        {
+          "label": "Subject",
+          "value": "notes.txt",
+          "valueTone": "primary"
+        },
+        {
+          "label": "Recipient",
+          "value": "age1...",
+          "valueTone": "secondary"
+        },
+        {
+          "label": "Format",
+          "value": "Armored ciphertext",
+          "valueTone": "accent"
+        },
+        {
+          "label": "Result",
+          "value": "Ready to share",
+          "valueTone": "success"
+        }
+      ],
+      "footerText": "Armour wraps rage in a browser-native workflow so content can be encrypted locally before it leaves the device."
+    }
+  },
+  "featureSection": {
+    "eyebrow": "Features",
+    "title": "Browser-first encryption with real portability",
+    "description": "Armour gives age-style encryption a clean local-first interface for text and files, without pretending to be a new cryptography protocol.",
+    "items": [
+      {
+        "title": "Browser-native",
+        "description": "Encrypt and decrypt locally in the browser without a required backend service.",
+        "tone": "primary",
+        "icon": "globe"
+      },
+      {
+        "title": "Text and files",
+        "description": "Work with pasted text, typed notes, or uploaded files from the same app surface.",
+        "tone": "info",
+        "icon": "document"
+      },
+      {
+        "title": "Recipient-based",
+        "description": "Encrypt for one or more recipients using public key material instead of inventing a proprietary sharing system.",
+        "tone": "accent",
+        "icon": "shield"
+      },
+      {
+        "title": "Portable output",
+        "description": "Produce ciphertext that fits cleanly into compatible age and rage-style workflows.",
+        "tone": "success",
+        "icon": "terminal"
+      }
+    ]
+  },
+  "howItWorksSection": {
+    "eyebrow": "How it works",
+    "title": "Encrypt locally, then share the result",
+    "preview": {
+      "title": "Local encryption flow",
+      "meta": "browser session",
+      "rows": [
+        {
+          "label": "1",
+          "value": "Choose text or file",
+          "valueTone": "primary"
+        },
+        {
+          "label": "2",
+          "value": "Add recipient keys",
+          "valueTone": "accent"
+        },
+        {
+          "label": "3",
+          "value": "Encrypt and export",
+          "valueTone": "success"
+        }
+      ],
+      "footerText": "Armour keeps the workflow simple. Provide content, provide recipients, and generate portable ciphertext locally in the browser."
+    },
+    "steps": [
+      {
+        "title": "Choose your content",
+        "description": "Paste text or select a file you want to encrypt."
+      },
+      {
+        "title": "Add recipient keys",
+        "description": "Provide one or more recipient public keys for the people or systems that should be able to decrypt it."
+      },
+      {
+        "title": "Encrypt and move on",
+        "description": "Generate ciphertext locally, then copy or download the output for storage, transport, or handoff elsewhere."
+      }
+    ]
+  },
+  "useCasesSection": {
+    "eyebrow": "Use cases",
+    "title": "Common use cases",
+    "items": [
+      {
+        "title": "Private notes",
+        "description": "Encrypt sensitive text locally before storing it in a document, repo, or note system.",
+        "tone": "primary",
+        "icon": "document"
+      },
+      {
+        "title": "File handoff",
+        "description": "Encrypt files for a specific person or system without relying on a hosted transfer product.",
+        "tone": "secondary",
+        "icon": "shield"
+      },
+      {
+        "title": "Browser workflows",
+        "description": "Use age-style encryption from the browser when native tooling is inconvenient or unavailable.",
+        "tone": "accent",
+        "icon": "globe"
+      },
+      {
+        "title": "Developer tooling",
+        "description": "Build browser-based encryption flows into your own tools and internal apps.",
+        "tone": "info",
+        "icon": "terminal"
+      },
+      {
+        "title": "Secure upload prep",
+        "description": "Encrypt content locally before uploading it to some other storage or delivery surface.",
+        "tone": "primary",
+        "icon": "stack"
+      },
+      {
+        "title": "Local-first experiments",
+        "description": "Prototype privacy-preserving UX around rage-compatible primitives without inventing a whole new security model.",
+        "tone": "success",
+        "icon": "dataset"
+      }
+    ]
+  },
+  "developerSection": {
+    "eyebrow": "Developers",
+    "title": "A browser wrapper over rage-compatible encryption flows",
+    "description": "Armour is designed for people who want the convenience of browser-native encryption while staying close to portable underlying primitives.",
+    "surfaces": [
+      "Web app",
+      "Browser package",
+      "Shared utilities"
+    ],
+    "tabs": [
+      {
+        "value": "js",
+        "label": "JavaScript",
+        "title": "Encrypt inside a browser flow",
+        "meta": "JavaScript",
+        "code": "import { encryptText, decryptText } from \"@ternent/armour\"\n\nconst ciphertext = await encryptText({\n  text: \"hello world\",\n  recipients: [recipientPublicKey]\n})\n\nconst plaintext = await decryptText({\n  ciphertext,\n  identity: privateKey\n})",
+        "supportingCopy": "Use Armour when you want a cleaner browser-facing wrapper around recipient-based encryption flows instead of wiring lower-level pieces by hand.",
+        "link": {
+          "href": "https://github.com/samternent/home",
+          "label": "View the monorepo"
+        }
+      },
+      {
+        "value": "output",
+        "label": "Output",
+        "title": "Portable encrypted output",
+        "meta": "ciphertext",
+        "code": "-----BEGIN AGE ENCRYPTED FILE-----\n...\n-----END AGE ENCRYPTED FILE-----",
+        "supportingCopy": "Armour is intended to produce portable ciphertext you can store, transport, and use in compatible workflows beyond the web app.",
+        "link": {
+          "href": "https://github.com/samternent/home",
+          "label": "View project source"
+        }
+      },
+      {
+        "value": "workflow",
+        "label": "Workflow",
+        "title": "Browser-first local encryption",
+        "meta": "Flow",
+        "code": "Select content\n→ Add recipient public key(s)\n→ Encrypt locally\n→ Copy or download ciphertext\n→ Decrypt later with the matching identity",
+        "supportingCopy": "The goal is not to hide what encryption is doing, but to make the workflow easier to use correctly from the browser.",
+        "link": {
+          "href": "/app",
+          "label": "Open the web app"
+        }
+      }
+    ]
+  },
+  "clarifierSection": {
+    "eyebrow": "Definition",
+    "title": "What Armour is and isn’t",
+    "columns": [
+      {
+        "title": "Armour is",
+        "items": [
+          "A browser-first wrapper around rage",
+          "A local encryption and decryption tool",
+          "A cleaner UX for recipient-based encryption"
+        ]
+      },
+      {
+        "title": "Armour is not",
+        "items": [
+          "A new encryption algorithm",
+          "A hosted vault",
+          "A messaging platform",
+          "A password manager"
+        ]
+      }
+    ]
+  },
+  "ctaSection": {
+    "eyebrow": "Ready to start?",
+    "title": "Encrypt locally with Armour",
+    "description": "Open the app, add a recipient, and generate portable ciphertext in the browser.",
+    "primaryAction": {
+      "href": "/app",
+      "label": "Open Web App",
+      "variant": "primary"
+    },
+    "secondaryAction": {
+      "href": "https://github.com/samternent/home",
+      "label": "View source",
+      "variant": "secondary"
+    }
+  },
+  "footer": {
+    "brandLabel": "Armour",
+    "brandHref": "https://ternent.dev",
+    "copyright": "© 2026.",
+    "links": [
+      {
+        "href": "/app",
+        "label": "Workspace"
+      },
+      {
+        "href": "/app/encrypt",
+        "label": "Encrypt"
+      },
+      {
+        "href": "/app/decrypt",
+        "label": "Decrypt"
+      },
+      {
+        "href": "https://github.com/samternent/home/tree/main/apps/armour",
+        "label": "GitHub"
+      },
+      {
+        "href": "https://github.com/samternent/home",
+        "label": "Monorepo"
+      }
+    ]
+  }
+} as const satisfies LandingPageConfig;

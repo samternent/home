@@ -6,6 +6,7 @@ import {
   CANONICAL_APP_MANIFEST,
   createScaffoldManifest,
   loadTernentAppManifest,
+  normalizeScaffoldedAppFiles,
   stringifyManifestYaml,
   writeGeneratedAppFiles,
 } from "./lib/ternent-app-manifest.mjs";
@@ -24,6 +25,7 @@ function parseArgs(argv) {
   const args = {};
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
+    if (arg === "--") continue;
     if (!arg.startsWith("--")) continue;
 
     const key = arg.slice(2);
@@ -152,6 +154,7 @@ function main() {
   replaceTemplateTokens(targetDir, {
     "__APP_ID__": manifest.app.appId,
   });
+  normalizeScaffoldedAppFiles(targetDir, repoRoot);
 
   fs.writeFileSync(
     path.join(targetDir, CANONICAL_APP_MANIFEST),
