@@ -1,5 +1,12 @@
 # proof
 
+## 0.0.12
+
+### Patch Changes
+
+- Updated dependencies [[`be5ecca6e2c9db462407c4edd6d3f668c5d51060`](https://github.com/samternent/home/commit/be5ecca6e2c9db462407c4edd6d3f668c5d51060)]:
+  - @ternent/seal-cli@0.1.5
+
 ## 0.0.11
 
 ### Patch Changes

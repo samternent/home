@@ -1,5 +1,11 @@
 # @ternent/seal-cli
 
+## 0.1.5
+
+### Patch Changes
+
+- [`be5ecca6e2c9db462407c4edd6d3f668c5d51060`](https://github.com/samternent/home/commit/be5ecca6e2c9db462407c4edd6d3f668c5d51060) Thanks [@samternent](https://github.com/samternent)! - Publish seal-cli
+
 ## 0.1.4
 
 ### Patch Changes
