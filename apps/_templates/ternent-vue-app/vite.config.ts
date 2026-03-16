@@ -5,6 +5,10 @@ import tailwindcss from "@tailwindcss/vite";
 import { VitePWA } from "vite-plugin-pwa";
 import { appConfig, appSeoConfig } from "./src/app/config/app.generated";
 
+const appThemeData = `${appConfig.themeName}-${appConfig.defaultThemeMode}`;
+const themeStorageKey = `${appConfig.appId}/theme-mode`;
+const themeBootstrapScript = `(function(){var storageKey=${JSON.stringify(themeStorageKey)};var defaultMode=${JSON.stringify(appConfig.defaultThemeMode)};var themePrefix=${JSON.stringify(appConfig.themeName)};var mode=defaultMode;try{var stored=window.localStorage.getItem(storageKey);if(stored==="dark"||stored==="light"){mode=stored;}}catch{}document.documentElement.setAttribute("data-theme",themePrefix+"-"+mode);}());`;
+
 function createIndexHtmlTransformPlugin() {
   return {
     name: "ternent-app-index-html",
@@ -14,10 +18,8 @@ function createIndexHtmlTransformPlugin() {
         .replaceAll("__APP_TITLE__", appConfig.appTitle)
         .replaceAll("__APP_DESCRIPTION__", appSeoConfig.description)
         .replaceAll("__APP_THEME_COLOR__", appSeoConfig.themeColor)
-        .replaceAll(
-          "__APP_THEME_DATA__",
-          `${appConfig.themeName}-${appConfig.defaultThemeMode}`,
-        );
+        .replaceAll("__APP_THEME_DATA__", appThemeData)
+        .replaceAll("__APP_THEME_BOOTSTRAP__", themeBootstrapScript);
     },
   };
 }
@@ -71,25 +73,20 @@ export default defineConfig({
       includeAssets: ["favicon.ico", "icons/icon-192.png", "icons/icon-512.png", "icons/maskable-512.png"],
       manifest: pwaManifest,
       workbox: {
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
         navigateFallbackDenylist: [/^\/v1\//],
+        skipWaiting: true,
         runtimeCaching: [
           {
             urlPattern: ({ request }) => request.mode === "navigate",
             handler: "NetworkFirst",
             options: {
               cacheName: "app-pages",
-              networkTimeoutSeconds: 2,
               precacheFallback: {
                 fallbackURL: "/offline.html",
               },
-            },
-          },
-          {
-            urlPattern: ({ request }) => ["style", "script", "worker"].includes(request.destination),
-            handler: "StaleWhileRevalidate",
-            options: {
-              cacheName: "app-static",
             },
           },
           {
@@ -108,7 +105,6 @@ export default defineConfig({
             handler: "NetworkFirst",
             options: {
               cacheName: "app-api",
-              networkTimeoutSeconds: 3,
             },
           },
         ],

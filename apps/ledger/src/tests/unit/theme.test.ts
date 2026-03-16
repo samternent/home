@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { appThemePrefix, appConfig } from "@/app/config/app.config";
 import { useThemeMode } from "@/modules/ui";
 
 describe("theme mode", () => {
@@ -6,12 +7,16 @@ describe("theme mode", () => {
     const theme = useThemeMode();
     theme.start();
 
-    expect(theme.mode.value).toBe("dark");
-    expect(document.documentElement.getAttribute("data-theme")).toBe("aurora-dark");
+    expect(theme.mode.value).toBe(appConfig.defaultThemeMode);
+    expect(document.documentElement.getAttribute("data-theme")).toBe(
+      `${appThemePrefix}-${appConfig.defaultThemeMode}`,
+    );
 
     theme.toggleTheme();
 
     expect(theme.mode.value).toBe("light");
-    expect(document.documentElement.getAttribute("data-theme")).toBe("aurora-light");
+    expect(document.documentElement.getAttribute("data-theme")).toBe(
+      `${appThemePrefix}-light`,
+    );
   });
 });

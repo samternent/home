@@ -16,7 +16,7 @@ export const createApp = ViteSSG(
   ({ app, isClient }) => {
     installAppProviders(app);
 
-    if (isClient) {
+    if (isClient && import.meta.env.PROD) {
       registerSW();
     }
   },
