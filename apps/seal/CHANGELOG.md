@@ -1,5 +1,14 @@
 # seal
 
+## 0.0.29
+
+### Patch Changes
+
+- [`f52fa81d8adac2176f0578a01a3486e787d43083`](https://github.com/samternent/home/commit/f52fa81d8adac2176f0578a01a3486e787d43083) Thanks [@samternent](https://github.com/samternent)! - Update teh landing page on seal
+
+- Updated dependencies [[`f52fa81d8adac2176f0578a01a3486e787d43083`](https://github.com/samternent/home/commit/f52fa81d8adac2176f0578a01a3486e787d43083)]:
+  - ternent-ui@0.4.8
+
 ## 0.0.28
 
 ### Patch Changes
