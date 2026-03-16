@@ -5,6 +5,7 @@ import { createManifestArtifact } from "./commands/manifest";
 import { createProofArtifact } from "./commands/sign";
 import { createPublicKeyArtifact } from "./commands/publicKey";
 import { verifyProofArtifact } from "./commands/verify";
+import { resolveSealIdentityFromEnv } from "./node";
 import {
   EXIT_FAILURE,
   EXIT_HASH_MISMATCH,
@@ -98,11 +99,6 @@ function requireFlag(flags: ParsedArgs["flags"], key: string): string {
   return value;
 }
 
-function getEnvVar(env: ProcessEnvLike, name: string): string | undefined {
-  const value = env[name];
-  return value && value.trim().length > 0 ? value : undefined;
-}
-
 async function writeOutputFile(filePath: string, content: string): Promise<void> {
   const resolvedPath = resolve(filePath);
   await mkdir(dirname(resolvedPath), { recursive: true });
@@ -149,24 +145,6 @@ function outputError(
   return exitCode;
 }
 
-function readSigningEnv(env: ProcessEnvLike): {
-  privateKeyPem: string;
-  publicKeyPem?: string;
-} {
-  const privateKeyPem = getEnvVar(env, "SEAL_PRIVATE_KEY");
-  if (!privateKeyPem) {
-    throw new SealCliError(
-      "Missing SEAL_PRIVATE_KEY environment variable.",
-      EXIT_KEY_CONFIG
-    );
-  }
-
-  return {
-    privateKeyPem,
-    publicKeyPem: getEnvVar(env, "SEAL_PUBLIC_KEY"),
-  };
-}
-
 export async function runCli(
   argv: string[],
   params: {
@@ -199,10 +177,10 @@ export async function runCli(
     }
 
     if (command === "sign") {
-      const signingEnv = readSigningEnv(env);
+      const identity = await resolveSealIdentityFromEnv(env);
       const artifact = await createProofArtifact({
         inputPath: requireFlag(parsed.flags, "input"),
-        ...signingEnv,
+        identity,
       });
       const outPath = getFlag(parsed.flags, "out");
       if (outPath) {
@@ -244,7 +222,9 @@ export async function runCli(
     }
 
     if (command === "public-key") {
-      const artifact = await createPublicKeyArtifact(readSigningEnv(env));
+      const artifact = await createPublicKeyArtifact({
+        identity: await resolveSealIdentityFromEnv(env),
+      });
       outputResult(writer, true, quiet, artifact);
       return EXIT_SUCCESS;
     }
@@ -267,8 +247,8 @@ export async function runCli(
     if (
       error instanceof Error &&
       (error.message.includes("public key") ||
-        error.message.includes("SEAL_PRIVATE_KEY") ||
-        error.message.includes("private key"))
+        error.message.includes("SEAL_IDENTITY") ||
+        error.message.includes("identity"))
     ) {
       return outputError(
         writer,

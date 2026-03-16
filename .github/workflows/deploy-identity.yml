@@ -9,6 +9,7 @@ on:
   push:
     tags:
       - "ternent-identity-*.*.*"
+      - "@ternent/identity-*.*.*"
 
 jobs:
   Deploy-Production:
@@ -51,10 +52,26 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Resolve identity package target
+        id: identity
+        run: |
+          case "${GITHUB_REF_NAME}" in
+            @ternent/identity-*)
+              echo "package_filter=@ternent/identity" >> "$GITHUB_OUTPUT"
+              ;;
+            ternent-identity-*)
+              echo "package_filter=ternent-identity" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "Unsupported identity tag: ${GITHUB_REF_NAME}" >&2
+              exit 1
+              ;;
+          esac
+
       - name: Build libs
-        run: pnpm --filter ternent-utils --filter ternent-identity build
+        run: pnpm --filter ternent-utils --filter "${{ steps.identity.outputs.package_filter }}" build
 
       - name: Publish npm
-        run: pnpm --filter ternent-identity publish --no-git-checks --access public
+        run: pnpm --filter "${{ steps.identity.outputs.package_filter }}" publish --no-git-checks --access public
         env:
           NPM_TOKEN: ${{ env.NPM_TOKEN }}

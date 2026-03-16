@@ -1,16 +1,16 @@
 import { canonicalStringify, hashBytes } from "ternent-utils";
 import {
-  importPublicKeyFromBase64,
   resolveSealSigner,
-  signUtf8,
+  signSealUtf8,
   verifyPublicKeyKeyId,
-  verifyUtf8,
+  verifySealUtf8,
   type SealSignerInput,
 } from "./crypto";
 
-export const SEAL_PROOF_VERSION = "1" as const;
+export const SEAL_PROOF_VERSION = "2" as const;
 export const SEAL_PROOF_TYPE = "seal-proof" as const;
-export const SEAL_SIGNATURE_ALGORITHM = "ECDSA-P256-SHA256" as const;
+export const SEAL_PUBLIC_KEY_TYPE = "seal-public-key" as const;
+export const SEAL_SIGNATURE_ALGORITHM = "Ed25519" as const;
 
 export type SealSubjectKind = "file" | "manifest";
 
@@ -32,6 +32,8 @@ export type SealProofV1 = {
 };
 
 export type SealPublicKeyArtifact = {
+  version: typeof SEAL_PROOF_VERSION;
+  type: typeof SEAL_PUBLIC_KEY_TYPE;
   algorithm: typeof SEAL_SIGNATURE_ALGORITHM;
   publicKey: string;
   keyId: string;
@@ -97,13 +99,13 @@ export async function createSealProof(input: {
     createdAt: input.createdAt ?? new Date().toISOString(),
     subject: input.subject,
     signer: {
-      publicKey: signer.publicKeyBase64,
+      publicKey: signer.publicKey,
       keyId: signer.keyId,
     },
   };
 
-  const signature = await signUtf8(
-    signer.privateKey,
+  const signature = await signSealUtf8(
+    signer.identity,
     getSealProofSigningPayload(fields)
   );
 
@@ -118,8 +120,10 @@ export async function createSealPublicKeyArtifact(
 ): Promise<SealPublicKeyArtifact> {
   const resolved = await resolveSealSigner(signer);
   return {
+    version: SEAL_PROOF_VERSION,
+    type: SEAL_PUBLIC_KEY_TYPE,
     algorithm: SEAL_SIGNATURE_ALGORITHM,
-    publicKey: resolved.publicKeyBase64,
+    publicKey: resolved.publicKey,
     keyId: resolved.keyId,
   };
 }
@@ -162,7 +166,7 @@ export function validateSealProofShape(value: unknown): {
     errors.push("Proof createdAt must be an ISO timestamp.");
   }
   if (typeof value.signature !== "string" || value.signature.length === 0) {
-    errors.push("Proof signature must be a non-empty base64 string.");
+    errors.push("Proof signature must be a non-empty base64url string.");
   }
   if (!isRecord(value.subject)) {
     errors.push("Proof subject must be an object.");
@@ -181,7 +185,6 @@ export function validateSealProofShape(value: unknown): {
   if (!hasOnlyKeys(value.signer, ["publicKey", "keyId"])) {
     errors.push("Proof signer contains unsupported fields.");
   }
-
   if (value.subject.kind !== "file" && value.subject.kind !== "manifest") {
     errors.push("Proof subject kind must be file or manifest.");
   }
@@ -195,7 +198,7 @@ export function validateSealProofShape(value: unknown): {
     typeof value.signer.publicKey !== "string" ||
     value.signer.publicKey.length === 0
   ) {
-    errors.push("Proof signer publicKey must be a non-empty base64 string.");
+    errors.push("Proof signer publicKey must be a non-empty base64url string.");
   }
   if (typeof value.signer.keyId !== "string" || value.signer.keyId.length === 0) {
     errors.push("Proof signer keyId must be a non-empty string.");
@@ -243,14 +246,20 @@ export function validateSealPublicKeyShape(value: unknown): {
 
   const errors: string[] = [];
 
-  if (!hasOnlyKeys(value, ["algorithm", "publicKey", "keyId"])) {
+  if (!hasOnlyKeys(value, ["version", "type", "algorithm", "publicKey", "keyId"])) {
     errors.push("Public key artifact contains unsupported fields.");
+  }
+  if (value.version !== SEAL_PROOF_VERSION) {
+    errors.push(`Public key artifact version must be ${SEAL_PROOF_VERSION}.`);
+  }
+  if (value.type !== SEAL_PUBLIC_KEY_TYPE) {
+    errors.push(`Public key artifact type must be ${SEAL_PUBLIC_KEY_TYPE}.`);
   }
   if (value.algorithm !== SEAL_SIGNATURE_ALGORITHM) {
     errors.push(`Public key artifact algorithm must be ${SEAL_SIGNATURE_ALGORITHM}.`);
   }
   if (typeof value.publicKey !== "string" || value.publicKey.length === 0) {
-    errors.push("Public key artifact publicKey must be a non-empty base64 string.");
+    errors.push("Public key artifact publicKey must be a non-empty base64url string.");
   }
   if (typeof value.keyId !== "string" || value.keyId.length === 0) {
     errors.push("Public key artifact keyId must be a non-empty string.");
@@ -300,11 +309,10 @@ export async function verifySealProofSignature(proof: SealProofV1): Promise<{
   }
 
   try {
-    const publicKey = await importPublicKeyFromBase64(proof.signer.publicKey);
-    const valid = await verifyUtf8(
+    const valid = await verifySealUtf8(
       proof.signature,
       getSealProofSigningPayload(proof),
-      publicKey
+      proof.signer.publicKey
     );
     if (!valid) {
       return { ok: false, errors: ["Invalid signature."] };

@@ -1,13 +1,7 @@
 import { spawnSync } from "node:child_process";
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
-import identity from "ternent-identity";
-
-const {
-  createIdentity,
-  exportPrivateKeyAsPem,
-  exportPublicKeyAsPem,
-} = identity;
+import { createIdentity, serializeIdentity } from "@ternent/identity";
 
 const repoRoot = resolve(new URL("../../..", import.meta.url).pathname);
 const manifestPath = resolve(repoRoot, "apps/seal/public/_seal/dist-manifest.json");
@@ -32,18 +26,16 @@ function run(command, args, options = {}) {
 }
 
 async function resolveSigningEnv() {
-  if (process.env.SEAL_PRIVATE_KEY?.trim()) {
+  if (process.env.SEAL_IDENTITY?.trim()) {
     return {
-      privateKeyPem: process.env.SEAL_PRIVATE_KEY,
-      publicKeyPem: process.env.SEAL_PUBLIC_KEY,
+      identityJson: process.env.SEAL_IDENTITY,
       generated: false,
     };
   }
 
-  const keyPair = await createIdentity();
+  const identity = await createIdentity();
   return {
-    privateKeyPem: await exportPrivateKeyAsPem(keyPair.privateKey),
-    publicKeyPem: await exportPublicKeyAsPem(keyPair.publicKey),
+    identityJson: serializeIdentity(identity, false).trim(),
     generated: true,
   };
 }
@@ -52,7 +44,7 @@ const signing = await resolveSigningEnv();
 
 if (signing.generated) {
   process.stdout.write(
-    "No SEAL_PRIVATE_KEY found. Generating an ephemeral local dev signer.\n"
+    "No SEAL_IDENTITY found. Generating an ephemeral local dev signer.\n"
   );
 }
 
@@ -61,8 +53,7 @@ run("pnpm", ["--filter", "seal", "build"]);
 
 const sealEnv = {
   ...process.env,
-  SEAL_PRIVATE_KEY: signing.privateKeyPem,
-  SEAL_PUBLIC_KEY: signing.publicKeyPem,
+  SEAL_IDENTITY: signing.identityJson,
 };
 
 await mkdir(dirname(manifestPath), { recursive: true });

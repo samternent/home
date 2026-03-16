@@ -5,8 +5,7 @@ import { createSealProof, createSealHash, type SealProofV1 } from "../proof";
 
 export async function createProofArtifact(params: {
   inputPath: string;
-  privateKeyPem: string;
-  publicKeyPem?: string;
+  identity: import("@ternent/identity").SerializedIdentity;
 }): Promise<{
   proof: SealProofV1;
   content: string;
@@ -16,8 +15,7 @@ export async function createProofArtifact(params: {
   const parsedManifest = parseSealManifestJson(raw);
   const proof = await createSealProof({
     signer: {
-      privateKeyPem: params.privateKeyPem,
-      publicKeyPem: params.publicKeyPem,
+      identity: params.identity,
     },
     subject: {
       kind: parsedManifest.ok ? "manifest" : "file",

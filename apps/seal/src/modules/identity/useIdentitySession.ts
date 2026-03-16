@@ -1,22 +1,25 @@
 import { computed, shallowRef, type ComputedRef } from "vue";
+import type { SerializedIdentity } from "@ternent/identity";
 import { appConfig } from "@/app/config/app.config";
 
-export type StoredIdentity = {
+export type StoredIdentity = SerializedIdentity & {
   id: string;
-  createdAt: string;
-  publicKeyPem: string;
-  privateKeyPem: string;
-  keyId: string;
 };
 
-type LegacyStoredIdentity = StoredIdentity & {
+type LegacyStoredIdentity = {
+  id?: string;
+  createdAt?: string;
+  publicKeyPem?: string;
+  privateKeyPem?: string;
   fingerprint?: string;
+  keyId?: string;
 };
 
 export type IdentitySession = {
   identity: ComputedRef<StoredIdentity | null>;
   hasIdentity: ComputedRef<boolean>;
   rememberInBrowser: ComputedRef<boolean>;
+  legacyIdentityRejected: ComputedRef<boolean>;
   setIdentity: (next: StoredIdentity) => void;
   clearIdentity: () => void;
   setRememberInBrowser: (next: boolean) => void;
@@ -30,49 +33,60 @@ function readRememberFlag(): boolean {
   return window.localStorage.getItem(rememberIdentityFlagStorageKey) === "true";
 }
 
-function readRememberedIdentity(): StoredIdentity | null {
-  if (typeof window === "undefined") return null;
+function toStoredIdentity(input: SerializedIdentity): StoredIdentity {
+  return {
+    id: `identity-${input.keyId.slice(0, 12)}`,
+    ...input,
+  };
+}
+
+function readRememberedIdentity(): {
+  identity: StoredIdentity | null;
+  legacyRejected: boolean;
+} {
+  if (typeof window === "undefined") {
+    return { identity: null, legacyRejected: false };
+  }
 
   const raw = window.localStorage.getItem(rememberedIdentityStorageKey);
-  if (!raw) return null;
+  if (!raw) {
+    return { identity: null, legacyRejected: false };
+  }
 
   try {
-    const parsed = JSON.parse(raw) as LegacyStoredIdentity;
+    const parsed = JSON.parse(raw) as LegacyStoredIdentity | SerializedIdentity;
     if (
-      typeof parsed?.id !== "string" ||
-      typeof parsed?.createdAt !== "string" ||
-      typeof parsed?.publicKeyPem !== "string" ||
-      typeof parsed?.privateKeyPem !== "string"
+      typeof (parsed as LegacyStoredIdentity)?.privateKeyPem === "string" ||
+      typeof (parsed as LegacyStoredIdentity)?.publicKeyPem === "string"
     ) {
-      return null;
+      window.localStorage.removeItem(rememberedIdentityStorageKey);
+      return { identity: null, legacyRejected: true };
     }
 
-    const keyId =
-      typeof parsed.keyId === "string"
-        ? parsed.keyId
-        : typeof parsed.fingerprint === "string"
-          ? parsed.fingerprint
-          : null;
-
-    if (!keyId) {
-      return null;
+    if (
+      typeof (parsed as SerializedIdentity)?.format !== "string" ||
+      typeof (parsed as SerializedIdentity)?.seed !== "string" ||
+      typeof (parsed as SerializedIdentity)?.publicKey !== "string" ||
+      typeof (parsed as SerializedIdentity)?.keyId !== "string"
+    ) {
+      return { identity: null, legacyRejected: false };
     }
 
     return {
-      id: parsed.id,
-      createdAt: parsed.createdAt,
-      publicKeyPem: parsed.publicKeyPem,
-      privateKeyPem: parsed.privateKeyPem,
-      keyId,
+      identity: toStoredIdentity(parsed as SerializedIdentity),
+      legacyRejected: false,
     };
   } catch {
-    return null;
+    return { identity: null, legacyRejected: false };
   }
 }
 
 function writeRememberFlag(value: boolean) {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(rememberIdentityFlagStorageKey, value ? "true" : "false");
+  window.localStorage.setItem(
+    rememberIdentityFlagStorageKey,
+    value ? "true" : "false"
+  );
 }
 
 function writeRememberedIdentity(identity: StoredIdentity | null) {
@@ -83,12 +97,19 @@ function writeRememberedIdentity(identity: StoredIdentity | null) {
     return;
   }
 
-  window.localStorage.setItem(rememberedIdentityStorageKey, JSON.stringify(identity));
+  window.localStorage.setItem(
+    rememberedIdentityStorageKey,
+    JSON.stringify(identity)
+  );
 }
 
 const rememberInBrowserState = shallowRef<boolean>(readRememberFlag());
-const activeIdentityState = shallowRef<StoredIdentity | null>(
-  rememberInBrowserState.value ? readRememberedIdentity() : null,
+const rememberedState = rememberInBrowserState.value
+  ? readRememberedIdentity()
+  : { identity: null, legacyRejected: false };
+const activeIdentityState = shallowRef<StoredIdentity | null>(rememberedState.identity);
+const legacyIdentityRejectedState = shallowRef<boolean>(
+  rememberedState.legacyRejected
 );
 
 function syncRememberedIdentity() {
@@ -103,21 +124,30 @@ function syncRememberedIdentity() {
 export function resetIdentitySessionState() {
   const rememberFlag = readRememberFlag();
   rememberInBrowserState.value = rememberFlag;
-  activeIdentityState.value = rememberFlag ? readRememberedIdentity() : null;
+  const remembered = rememberFlag
+    ? readRememberedIdentity()
+    : { identity: null, legacyRejected: false };
+  activeIdentityState.value = remembered.identity;
+  legacyIdentityRejectedState.value = remembered.legacyRejected;
 }
 
 export function useIdentitySession(): IdentitySession {
   const identity = computed(() => activeIdentityState.value);
   const hasIdentity = computed(() => Boolean(activeIdentityState.value));
   const rememberInBrowser = computed(() => rememberInBrowserState.value);
+  const legacyIdentityRejected = computed(
+    () => legacyIdentityRejectedState.value
+  );
 
   const setIdentity = (next: StoredIdentity) => {
     activeIdentityState.value = next;
+    legacyIdentityRejectedState.value = false;
     syncRememberedIdentity();
   };
 
   const clearIdentity = () => {
     activeIdentityState.value = null;
+    legacyIdentityRejectedState.value = false;
     writeRememberedIdentity(null);
   };
 
@@ -131,6 +161,7 @@ export function useIdentitySession(): IdentitySession {
     identity,
     hasIdentity,
     rememberInBrowser,
+    legacyIdentityRejected,
     setIdentity,
     clearIdentity,
     setRememberInBrowser,

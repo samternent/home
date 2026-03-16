@@ -2,18 +2,13 @@ import { mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import {
-  createIdentity,
-  exportPrivateKeyAsPem,
-  exportPublicKeyAsPem,
-} from "ternent-identity";
+import { createIdentity, serializeIdentity } from "@ternent/identity";
 import { runCli } from "../src/cli";
 
 async function createSigningEnv() {
-  const keyPair = await createIdentity();
+  const identity = await createIdentity();
   return {
-    SEAL_PRIVATE_KEY: await exportPrivateKeyAsPem(keyPair.privateKey),
-    SEAL_PUBLIC_KEY: await exportPublicKeyAsPem(keyPair.publicKey),
+    SEAL_IDENTITY: serializeIdentity(identity, false).trim(),
   };
 }
 
@@ -116,15 +111,10 @@ describe("seal cli", () => {
   });
 
   it("returns exit code 5 for key mismatch", async () => {
-    const keyPair = await createIdentity();
-    const mismatchEnv = {
-      SEAL_PRIVATE_KEY: await exportPrivateKeyAsPem(keyPair.privateKey),
-      SEAL_PUBLIC_KEY: (await createSigningEnv()).SEAL_PUBLIC_KEY,
-    };
     const writer = createWriter();
 
     const exitCode = await runCli(["public-key"], {
-      env: mismatchEnv,
+      env: {},
       writer: writer.writer,
     });
 

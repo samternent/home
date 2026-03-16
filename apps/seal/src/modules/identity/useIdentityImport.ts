@@ -1,41 +1,6 @@
 import { ref } from "vue";
-import {
-  deriveKeyIdFromPublicKeyPem,
-  importPrivateKeyFromPem,
-  importPublicKeyFromPem,
-  derivePublicFromPrivatePEM,
-} from "ternent-identity";
+import { parseIdentity, validateIdentity } from "@ternent/identity";
 import { useIdentitySession, type StoredIdentity } from "./useIdentitySession";
-
-type ImportPayload = {
-  privateKeyPem: string;
-  publicKeyPem?: string;
-  id?: string;
-  createdAt?: string;
-  keyId?: string;
-  fingerprint?: string;
-};
-
-function parsePayload(raw: string): ImportPayload {
-  const trimmed = raw.trim();
-  if (!trimmed) {
-    throw new Error("Identity import payload is empty");
-  }
-
-  if (trimmed.startsWith("{")) {
-    const parsed = JSON.parse(trimmed) as ImportPayload;
-    if (!parsed.privateKeyPem) {
-      throw new Error("Missing privateKeyPem in identity payload");
-    }
-    return parsed;
-  }
-
-  if (trimmed.includes("BEGIN PRIVATE KEY")) {
-    return { privateKeyPem: trimmed };
-  }
-
-  throw new Error("Unsupported identity payload format. Use JSON or PEM private key text.");
-}
 
 export function useIdentityImport() {
   const { setIdentity } = useIdentitySession();
@@ -48,33 +13,31 @@ export function useIdentityImport() {
     error.value = null;
 
     try {
-      const payload = parsePayload(rawPayload);
+      const trimmed = rawPayload.trim();
+      if (!trimmed) {
+        throw new Error("Identity import payload is empty");
+      }
+      if (
+        trimmed.includes("BEGIN PRIVATE KEY") ||
+        trimmed.includes("\"privateKeyPem\"") ||
+        trimmed.includes("\"publicKeyPem\"")
+      ) {
+        throw new Error(
+          "Legacy PEM identities are not supported in Seal v2. Import a ternent-identity v2 JSON export."
+        );
+      }
 
-      await importPrivateKeyFromPem(payload.privateKeyPem);
-
-      const publicKeyPem = payload.publicKeyPem
-        ? payload.publicKeyPem
-        : await derivePublicFromPrivatePEM(payload.privateKeyPem);
-
-      await importPublicKeyFromPem(publicKeyPem);
-
-      const keyId =
-        payload.keyId ??
-        payload.fingerprint ??
-        (await deriveKeyIdFromPublicKeyPem(publicKeyPem));
-
+      const parsed = await validateIdentity(parseIdentity(trimmed));
       const identity: StoredIdentity = {
-        id: payload.id || `identity-${keyId.slice(0, 12)}`,
-        createdAt: payload.createdAt || new Date().toISOString(),
-        publicKeyPem,
-        privateKeyPem: payload.privateKeyPem,
-        keyId,
+        id: `identity-${parsed.keyId.slice(0, 12)}`,
+        ...parsed,
       };
 
       setIdentity(identity);
       return identity;
     } catch (caught) {
-      const message = caught instanceof Error ? caught.message : "Failed to import identity";
+      const message =
+        caught instanceof Error ? caught.message : "Failed to import identity";
       error.value = message;
       throw new Error(message);
     } finally {

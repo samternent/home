@@ -1,11 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  createIdentity,
-  deriveKeyIdFromPublicKeyPem,
-  exportPrivateKeyAsPem,
-  exportPublicKey,
-  exportPublicKeyAsPem,
-} from "ternent-identity";
+import { createIdentity, deriveKeyId } from "@ternent/identity";
 import {
   createSealHash,
   createSealProof,
@@ -16,14 +10,11 @@ import {
 } from "../src/proof";
 
 async function createSigner() {
-  const keyPair = await createIdentity();
-  const publicKeyPem = await exportPublicKeyAsPem(keyPair.publicKey);
-  const privateKeyPem = await exportPrivateKeyAsPem(keyPair.privateKey);
+  const identity = await createIdentity();
   return {
-    privateKeyPem,
-    publicKeyPem,
-    publicKey: await exportPublicKey(keyPair.publicKey),
-    keyId: await deriveKeyIdFromPublicKeyPem(publicKeyPem),
+    identity,
+    publicKey: identity.publicKey,
+    keyId: await deriveKeyId(identity.publicKey),
   };
 }
 
@@ -32,7 +23,7 @@ describe("seal proof", () => {
     const signer = await createSigner();
     const bytes = new TextEncoder().encode("seal proof bytes");
     const proof = await createSealProof({
-      signer,
+      signer: { identity: signer.identity },
       subject: {
         kind: "file",
         path: "sample.txt",
@@ -57,9 +48,13 @@ describe("seal proof", () => {
 
   it("creates a portable public-key artifact", async () => {
     const signer = await createSigner();
-    const artifact = await createSealPublicKeyArtifact(signer);
+    const artifact = await createSealPublicKeyArtifact({
+      identity: signer.identity,
+    });
 
     expect(artifact.publicKey).toBe(signer.publicKey);
     expect(artifact.keyId).toBe(signer.keyId);
+    expect(artifact.version).toBe("2");
+    expect(artifact.type).toBe("seal-public-key");
   });
 });

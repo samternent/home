@@ -10,7 +10,7 @@ export type VerifyArtifactResult = {
   hashMatch: boolean;
   signatureValid: boolean;
   keyId: string;
-  algorithm: "ECDSA-P256-SHA256";
+  algorithm: "Ed25519";
   subjectHash: `sha256:${string}`;
 };
 

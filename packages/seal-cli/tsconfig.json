@@ -8,7 +8,7 @@
     "types": ["vitest/globals"],
     "baseUrl": ".",
     "paths": {
-      "ternent-identity": ["../identity/src/index.ts"],
+      "@ternent/identity": ["../identity-v2/src/index.ts"],
       "ternent-utils": ["../utils/src/index.ts"]
     }
   },

@@ -1,10 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import {
-  createIdentity,
-  deriveKeyIdFromPublicKeyPem,
-  exportPrivateKeyAsPem,
-  exportPublicKeyAsPem,
-} from "ternent-identity";
+import { createIdentity } from "@ternent/identity";
 import {
   createSealHash,
   createSealProof,
@@ -15,17 +10,10 @@ import {
 import type { StoredIdentity } from "@/modules/identity";
 
 async function createStoredIdentity(): Promise<StoredIdentity> {
-  const keyPair = await createIdentity();
-  const publicKeyPem = await exportPublicKeyAsPem(keyPair.publicKey);
-  const privateKeyPem = await exportPrivateKeyAsPem(keyPair.privateKey);
-  const keyId = await deriveKeyIdFromPublicKeyPem(publicKeyPem);
-
+  const identity = await createIdentity();
   return {
-    id: `identity-${keyId.slice(0, 12)}`,
-    createdAt: new Date().toISOString(),
-    publicKeyPem,
-    privateKeyPem,
-    keyId,
+    id: `identity-${identity.keyId.slice(0, 12)}`,
+    ...identity,
   };
 }
 
@@ -33,11 +21,7 @@ describe("proof", () => {
   it("creates and verifies a valid proof", async () => {
     const identity = await createStoredIdentity();
     const proof = await createSealProof({
-      signer: {
-        privateKeyPem: identity.privateKeyPem,
-        publicKeyPem: identity.publicKeyPem,
-        keyId: identity.keyId,
-      },
+      signer: { identity },
       subject: {
         kind: "file",
         path: "hello.txt",
@@ -53,11 +37,7 @@ describe("proof", () => {
   it("rejects invalid signature", async () => {
     const identity = await createStoredIdentity();
     const proof = await createSealProof({
-      signer: {
-        privateKeyPem: identity.privateKeyPem,
-        publicKeyPem: identity.publicKeyPem,
-        keyId: identity.keyId,
-      },
+      signer: { identity },
       subject: {
         kind: "file",
         path: "hello.txt",
@@ -92,11 +72,7 @@ describe("proof", () => {
       '{"files":{"assets/index.js":"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},"root":"dist","type":"seal-manifest","version":"1"}';
     const manifestBytes = new TextEncoder().encode(manifestRaw);
     const proof = await createSealProof({
-      signer: {
-        privateKeyPem: identity.privateKeyPem,
-        publicKeyPem: identity.publicKeyPem,
-        keyId: identity.keyId,
-      },
+      signer: { identity },
       subject: {
         kind: "manifest",
         path: "dist-manifest.json",
@@ -114,6 +90,8 @@ describe("proof", () => {
       }
       return new Response(
         JSON.stringify({
+          version: "2",
+          type: "seal-public-key",
           algorithm: proof.algorithm,
           publicKey: proof.signer.publicKey,
           keyId: proof.signer.keyId,
@@ -135,11 +113,7 @@ describe("proof", () => {
       '{"files":{"assets/index.js":"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},"root":"dist","type":"seal-manifest","version":"1"}';
     const manifestBytes = new TextEncoder().encode(manifestRaw);
     const proof = await createSealProof({
-      signer: {
-        privateKeyPem: identity.privateKeyPem,
-        publicKeyPem: identity.publicKeyPem,
-        keyId: identity.keyId,
-      },
+      signer: { identity },
       subject: {
         kind: "manifest",
         path: "dist-manifest.json",
@@ -157,6 +131,8 @@ describe("proof", () => {
       }
       return new Response(
         JSON.stringify({
+          version: "2",
+          type: "seal-public-key",
           algorithm: proof.algorithm,
           publicKey: proof.signer.publicKey,
           keyId: "wrong-key-id",
@@ -177,11 +153,7 @@ describe("proof", () => {
       '{"files":{"assets/index.js":"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},"root":"dist","type":"seal-manifest","version":"1"}';
     const manifestBytes = new TextEncoder().encode(manifestRaw);
     const proof = await createSealProof({
-      signer: {
-        privateKeyPem: identity.privateKeyPem,
-        publicKeyPem: identity.publicKeyPem,
-        keyId: identity.keyId,
-      },
+      signer: { identity },
       subject: {
         kind: "manifest",
         path: "dist-manifest.json",
@@ -205,6 +177,8 @@ describe("proof", () => {
       }
       return new Response(
         JSON.stringify({
+          version: "2",
+          type: "seal-public-key",
           algorithm: proof.algorithm,
           publicKey: proof.signer.publicKey,
           keyId: proof.signer.keyId,

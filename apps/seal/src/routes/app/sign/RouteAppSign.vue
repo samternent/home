@@ -129,11 +129,7 @@ const onSign = async () => {
     }
 
     const proof = await createSealProof({
-      signer: {
-        privateKeyPem: identity.value.privateKeyPem,
-        publicKeyPem: identity.value.publicKeyPem,
-        keyId: identity.value.keyId,
-      },
+      signer: { identity: identity.value },
       subject: {
         kind: "file",
         path: subjectPath,

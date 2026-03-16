@@ -18,7 +18,14 @@ import {
   useIdentitySession,
 } from "@/modules/identity";
 
-const { identity, hasIdentity, rememberInBrowser, setRememberInBrowser, clearIdentity } = useIdentitySession();
+const {
+  identity,
+  hasIdentity,
+  rememberInBrowser,
+  legacyIdentityRejected,
+  setRememberInBrowser,
+  clearIdentity,
+} = useIdentitySession();
 const { create, isCreating } = useIdentityCreate();
 const { importIdentity, isImporting } = useIdentityImport();
 const { exportedPayload, downloadExport } = useIdentityExport();
@@ -55,6 +62,9 @@ const identityRows = computed(() => {
     return [
       { label: "Status", value: "No identity loaded", valueTone: "neutral" as const },
       { label: "Storage", value: rememberInBrowser.value ? "Browser storage enabled" : "Memory only" },
+      ...(legacyIdentityRejected.value
+        ? [{ label: "Legacy", value: "Legacy PEM identity was rejected" }]
+        : []),
     ];
   }
 
@@ -67,6 +77,9 @@ const identityRows = computed(() => {
     { label: "Identity ID", value: identity.value.id },
     { label: "Created", value: new Date(identity.value.createdAt).toLocaleString() },
     { label: "Storage", value: rememberInBrowser.value ? "Browser storage enabled" : "Memory only" },
+    ...(legacyIdentityRejected.value
+      ? [{ label: "Legacy", value: "Legacy PEM identity was rejected" }]
+      : []),
   ];
 });
 
@@ -206,7 +219,7 @@ const onClear = () => {
             <div>
               <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">Active identity</p>
               <p class="mt-2 text-sm text-[var(--ui-fg-muted)]">
-                Inspect the full key ID or public key before sharing proofs.
+                Inspect the full key ID or derived public key before sharing proofs.
               </p>
             </div>
             <Badge tone="neutral" variant="outline">Loaded</Badge>
@@ -226,7 +239,7 @@ const onClear = () => {
             @update:value="(value) => { showPublicKey = value === 'public-key'; }"
           >
             <AccordionItem value="public-key" title="View public key">
-              <pre class="proof-code-block m-0 whitespace-pre-wrap text-xs leading-relaxed"><code>{{ identity?.publicKeyPem }}</code></pre>
+              <pre class="proof-code-block m-0 whitespace-pre-wrap break-all text-xs leading-relaxed"><code>{{ identity?.publicKey }}</code></pre>
             </AccordionItem>
           </Accordion>
         </Card>
@@ -263,11 +276,11 @@ const onClear = () => {
           <div>
             <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">Import identity</p>
             <p class="mt-2 text-sm text-[var(--ui-fg-muted)]">
-              Paste JSON export payload or PEM private key text.
+                Paste a v2 ternent identity JSON payload.
             </p>
           </div>
 
-          <FormField label="Identity file" description="JSON, PEM, or plain text payloads are accepted.">
+          <FormField label="Identity file" description="Only ternent identity v2 JSON exports are accepted.">
             <template #default>
               <FileInput
                 v-model="importFileModel"
@@ -279,7 +292,7 @@ const onClear = () => {
             </template>
           </FormField>
 
-          <FormField label="Identity payload" description="Paste JSON export payload or PEM private key text.">
+          <FormField label="Identity payload" description="Paste a ternent identity v2 JSON export payload.">
             <template #default="{ id, describedBy }">
               <Textarea
                 :id="id"
@@ -287,7 +300,7 @@ const onClear = () => {
                 :aria-describedby="describedBy"
                 rows="10"
                 class="proof-shell-copy"
-                placeholder='{"privateKeyPem":"-----BEGIN PRIVATE KEY-----..."}'
+                placeholder='{"format":"ternent-identity","version":"2","algorithm":"Ed25519",...}'
               />
             </template>
           </FormField>
@@ -332,6 +345,13 @@ const onClear = () => {
           </Button>
         </Card>
 
+        <p
+          v-if="legacyIdentityRejected"
+          class="m-0 rounded-[var(--ui-radius-md)] border border-[var(--ui-border)] bg-[var(--ui-tonal-secondary)] px-4 py-3 text-sm text-[var(--ui-fg)]"
+          aria-live="polite"
+        >
+          A legacy PEM-based Seal identity was found in browser storage and was cleared. Import a v2 ternent identity JSON export instead.
+        </p>
         <p
           v-if="notice"
           class="m-0 rounded-[var(--ui-radius-md)] border border-[var(--ui-border)] bg-[var(--ui-tonal-secondary)] px-4 py-3 text-sm text-[var(--ui-fg)]"

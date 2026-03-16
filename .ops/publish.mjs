@@ -12,6 +12,7 @@ const packagesToPublish = [
   "../packages/ledger",
   "../packages/encrypt",
   "../packages/identity",
+  "../packages/identity-v2",
   "../packages/utils",
   "../packages/concord-protocol",
   "../packages/ternent-ui",

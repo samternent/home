@@ -58,6 +58,10 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": resolve(__dirname, "./src"),
+      "@ternent/identity": resolve(
+        __dirname,
+        "../../packages/identity-v2/src/index.ts"
+      ),
       "@ternent/seal-cli/proof": resolve(
         __dirname,
         "../../packages/seal-cli/src/proof.ts"
@@ -118,6 +122,12 @@ export default defineConfig({
     globals: true,
     include: ["src/tests/unit/**/*.test.ts"],
     exclude: ["src/tests/e2e/**"],
+    alias: {
+      "@ternent/identity": resolve(
+        __dirname,
+        "../../packages/identity-v2/src/index.ts"
+      ),
+    },
     coverage: {
       provider: "v8",
       reporter: ["text", "html"],

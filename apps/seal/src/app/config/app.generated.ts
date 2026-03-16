@@ -229,7 +229,7 @@ export const landingPageConfig = {
         "label": "JavaScript",
         "title": "Browser verification with shared primitives",
         "meta": "JavaScript",
-        "code": "import { createSealProof, verifySealProofAgainstBytes } from \"@ternent/seal-cli/proof\"\n\nconst proof = await createSealProof({\n  signer: { privateKeyPem, publicKeyPem, keyId },\n  subject: { kind: \"file\", path: \"sample.txt\", hash: \"sha256:...\" }\n})\n\nconst verified = await verifySealProofAgainstBytes(proof, fileBuffer)",
+        "code": "import { createSealProof, verifySealProofAgainstBytes } from \"@ternent/seal-cli/proof\"\n\nconst proof = await createSealProof({\n  signer: { identity },\n  subject: { kind: \"file\", path: \"sample.txt\", hash: \"sha256:...\" }\n})\n\nconst verified = await verifySealProofAgainstBytes(proof, fileBuffer)",
         "supportingCopy": "Use the same proof helpers in your browser app when you want direct control over signing and verification flows.",
         "link": {
           "href": "https://github.com/samternent/home/tree/main/packages/seal-cli",
@@ -241,7 +241,7 @@ export const landingPageConfig = {
         "label": "seal-cli",
         "title": "Simple file proofs from the terminal",
         "meta": "seal-cli",
-        "code": "pnpm add -D @ternent/seal-cli\n\nexport SEAL_PRIVATE_KEY=\"$(cat private-key.pem)\"\n\nseal sign --input sample.txt --out sample.proof.json\nseal verify --proof sample.proof.json --input sample.txt --json",
+        "code": "pnpm add -D @ternent/seal-cli\n\nexport SEAL_IDENTITY=\"$(cat identity.json)\"\n\nseal sign --input sample.txt --out sample.proof.json\nseal verify --proof sample.proof.json --input sample.txt --json",
         "supportingCopy": "For local files, release assets, or quick automation, the CLI gives you a direct proof flow without writing app code.",
         "link": {
           "href": "https://www.npmjs.com/package/@ternent/seal-cli",
@@ -253,7 +253,7 @@ export const landingPageConfig = {
         "label": "GitHub Action",
         "title": "Sign static builds in CI",
         "meta": "GitHub Action",
-        "code": "- uses: actions/checkout@v4\n- uses: actions/setup-node@v4\n  with:\n    node-version-file: \".nvmrc\"\n- uses: samternent/seal-action@v1\n  env:\n    SEAL_PRIVATE_KEY: ${{ secrets.SEAL_PRIVATE_KEY }}\n    SEAL_PUBLIC_KEY: ${{ secrets.SEAL_PUBLIC_KEY }}\n  with:\n    assets-directory: dist\n    package-name: @ternent/seal-cli\n    package-version: latest",
+        "code": "- uses: actions/checkout@v4\n- uses: actions/setup-node@v4\n  with:\n    node-version-file: \".nvmrc\"\n- uses: samternent/seal-action@v1\n  env:\n    SEAL_IDENTITY: ${{ secrets.SEAL_IDENTITY }}\n  with:\n    assets-directory: dist\n    package-name: @ternent/seal-cli\n    package-version: latest",
         "supportingCopy": "When your workflow already builds a static directory, Seal Action adds signed artifacts with minimal extra YAML.",
         "link": {
           "href": "https://github.com/marketplace/actions/seal-action",

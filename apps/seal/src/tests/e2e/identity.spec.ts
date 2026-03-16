@@ -51,7 +51,7 @@ test("export, clear, and import identity through the consolidated app identity f
 
   await page.getByRole("button", { name: "Import identity" }).click();
   await page
-    .getByPlaceholder('{"privateKeyPem":"-----BEGIN PRIVATE KEY-----..."}')
+    .getByPlaceholder('{"format":"ternent-identity","version":"2","algorithm":"Ed25519",...}')
     .fill(exportedPayload);
   await page.getByRole("button", { name: "Import identity", exact: true }).click();
 

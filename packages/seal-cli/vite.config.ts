@@ -10,6 +10,11 @@ const external = new Set([
 ]);
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      "@ternent/identity": resolve(configDir, "../identity-v2/src/index.ts"),
+    },
+  },
   build: {
     outDir: "dist",
     target: "node20",
@@ -36,7 +41,7 @@ export default defineConfig({
   test: {
     environment: "node",
     alias: {
-      "ternent-identity": resolve(configDir, "../identity/src/index.ts"),
+      "@ternent/identity": resolve(configDir, "../identity-v2/src/index.ts"),
       "ternent-utils": resolve(configDir, "../utils/src/index.ts"),
     },
   },

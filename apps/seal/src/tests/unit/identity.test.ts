@@ -46,18 +46,21 @@ describe("identity session", () => {
 
     const exporter = useIdentityExport();
     const payload = exporter.exportedPayload.value;
+    const exported = JSON.parse(payload) as Record<string, unknown>;
+
+    expect(exported.id).toBeUndefined();
 
     session.clearIdentity();
 
     const importer = useIdentityImport();
     const imported = await importer.importIdentity(payload);
 
-    expect(imported.privateKeyPem).toContain("BEGIN PRIVATE KEY");
-    expect(imported.publicKeyPem).toContain("BEGIN PUBLIC KEY");
+    expect(imported.seed.length).toBeGreaterThan(10);
+    expect(imported.publicKey.length).toBeGreaterThan(10);
     expect(session.identity.value?.keyId).toBe(imported.keyId);
   });
 
-  it("accepts legacy fingerprint imports", async () => {
+  it("rejects legacy PEM imports", async () => {
     const session = useIdentitySession();
     session.clearIdentity();
 
@@ -67,18 +70,18 @@ describe("identity session", () => {
     session.clearIdentity();
 
     const importer = useIdentityImport();
-    const imported = await importer.importIdentity(
-      JSON.stringify({
-        id: created.id,
-        createdAt: created.createdAt,
-        publicKeyPem: created.publicKeyPem,
-        privateKeyPem: created.privateKeyPem,
-        fingerprint: created.keyId,
-      })
-    );
-
-    expect(imported.keyId).toBe(created.keyId);
-    expect(session.identity.value?.keyId).toBe(created.keyId);
+    await expect(
+      importer.importIdentity(
+        JSON.stringify({
+          id: created.id,
+          createdAt: created.createdAt,
+          publicKeyPem: "legacy",
+          privateKeyPem: "legacy",
+          fingerprint: created.keyId,
+        })
+      )
+    ).rejects.toThrow(/Legacy PEM identities/);
+    expect(session.identity.value).toBeNull();
   });
 
   it("clear removes active and remembered identity", async () => {

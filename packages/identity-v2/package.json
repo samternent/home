@@ -1,0 +1,23 @@
+{
+  "name": "@ternent/identity",
+  "version": "0.1.0",
+  "description": "Seed-based Ed25519 identity primitives with X25519 bridge helpers",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "test": "vitest run"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "vite": "^2.9.18",
+    "vite-plugin-dts": "^1.7.3",
+    "vitest": "^1.6.0"
+  }
+}

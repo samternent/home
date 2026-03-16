@@ -46,7 +46,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "ternent-identity": "workspace:*",
+    "@ternent/identity": "workspace:*",
     "ternent-utils": "workspace:*",
     "vite": "^2.9.18",
     "vitest": "^1.6.0"

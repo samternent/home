@@ -10,14 +10,13 @@ pnpm add -D @ternent/seal-cli
 
 ## Environment
 
-`@ternent/seal-cli` reads signer material from environment variables:
+`@ternent/seal-cli` reads signer material from a v2 identity JSON payload:
 
 ```bash
-export SEAL_PRIVATE_KEY="$(cat private-key.pem)"
-export SEAL_PUBLIC_KEY="$(cat public-key.pem)"
+export SEAL_IDENTITY="$(cat identity.json)"
+# or
+export SEAL_IDENTITY_FILE="./identity.json"
 ```
-
-`SEAL_PUBLIC_KEY` is optional. If it is present, Seal verifies that it matches `SEAL_PRIVATE_KEY`.
 
 ## Commands
 
@@ -36,8 +35,7 @@ Use the published GitHub Action:
 - name: Generate Seal artifacts
   uses: samternent/seal-action@v1
   env:
-    SEAL_PRIVATE_KEY: ${{ secrets.SEAL_PRIVATE_KEY }}
-    SEAL_PUBLIC_KEY: ${{ secrets.SEAL_PUBLIC_KEY }}
+    SEAL_IDENTITY: ${{ secrets.SEAL_IDENTITY }}
   with:
     assets-directory: dist
     package-name: @ternent/seal-cli
@@ -88,9 +86,9 @@ Proof:
 
 ```json
 {
-  "version": "1",
+  "version": "2",
   "type": "seal-proof",
-  "algorithm": "ECDSA-P256-SHA256",
+  "algorithm": "Ed25519",
   "createdAt": "2026-03-13T00:00:00.000Z",
   "subject": {
     "kind": "manifest",
@@ -98,7 +96,7 @@ Proof:
     "hash": "sha256:..."
   },
   "signer": {
-    "publicKey": "BASE64-SPKI",
+    "publicKey": "BASE64URL-RAW-ED25519-PUBLIC-KEY",
     "keyId": "..."
   },
   "signature": "..."
@@ -109,8 +107,10 @@ Public key:
 
 ```json
 {
-  "algorithm": "ECDSA-P256-SHA256",
-  "publicKey": "BASE64-SPKI",
+  "version": "2",
+  "type": "seal-public-key",
+  "algorithm": "Ed25519",
+  "publicKey": "BASE64URL-RAW-ED25519-PUBLIC-KEY",
   "keyId": "..."
 }
 ```
@@ -123,7 +123,7 @@ Public key:
 - `/proof.json`
 - `/public-key.json` (optional)
 
-Browser verification reuses `@ternent/seal-cli/proof`, `@ternent/seal-cli/crypto`, `ternent-identity`, and `ternent-utils`.
+Browser verification reuses `@ternent/seal-cli/proof`, `@ternent/seal-cli/crypto`, `@ternent/identity`, and `ternent-utils`.
 
 Validation rules:
 

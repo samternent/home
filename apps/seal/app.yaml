@@ -146,7 +146,7 @@ landing:
           import { createSealProof, verifySealProofAgainstBytes } from "@ternent/seal-cli/proof"
 
           const proof = await createSealProof({
-            signer: { privateKeyPem, publicKeyPem, keyId },
+            signer: { identity },
             subject: { kind: "file", path: "sample.txt", hash: "sha256:..." }
           })
 
@@ -162,7 +162,7 @@ landing:
         code: |-
           pnpm add -D @ternent/seal-cli
 
-          export SEAL_PRIVATE_KEY="$(cat private-key.pem)"
+          export SEAL_IDENTITY="$(cat identity.json)"
 
           seal sign --input sample.txt --out sample.proof.json
           seal verify --proof sample.proof.json --input sample.txt --json
@@ -181,8 +181,7 @@ landing:
               node-version-file: ".nvmrc"
           - uses: samternent/seal-action@v1
             env:
-              SEAL_PRIVATE_KEY: ${{ secrets.SEAL_PRIVATE_KEY }}
-              SEAL_PUBLIC_KEY: ${{ secrets.SEAL_PUBLIC_KEY }}
+              SEAL_IDENTITY: ${{ secrets.SEAL_IDENTITY }}
             with:
               assets-directory: dist
               package-name: @ternent/seal-cli

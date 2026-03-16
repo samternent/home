@@ -319,15 +319,15 @@ importers:
       '@tailwindcss/vite':
         specifier: ^4.1.18
         version: 4.1.18(rolldown-vite@7.2.5)
+      '@ternent/identity':
+        specifier: workspace:*
+        version: link:../../packages/identity-v2
       '@ternent/seal-cli':
         specifier: workspace:*
         version: link:../../packages/seal-cli
       '@vueuse/core':
         specifier: ^10.11.1
         version: 10.11.1(vue@3.5.26)
-      ternent-identity:
-        specifier: workspace:*
-        version: link:../../packages/identity
       ternent-ui:
         specifier: workspace:*
         version: link:../../packages/ternent-ui
@@ -745,6 +745,18 @@ importers:
         specifier: ^1.7.3
         version: 1.7.3(vite@2.9.18)
 
+  packages/identity-v2:
+    devDependencies:
+      vite:
+        specifier: ^2.9.18
+        version: 2.9.18
+      vite-plugin-dts:
+        specifier: ^1.7.3
+        version: 1.7.3(vite@2.9.18)
+      vitest:
+        specifier: ^1.6.0
+        version: 1.6.0(jsdom@24.1.3)
+
   packages/ledger:
     dependencies:
       '@swc/helpers':
@@ -786,9 +798,9 @@ importers:
 
   packages/seal-cli:
     devDependencies:
-      ternent-identity:
+      '@ternent/identity':
         specifier: workspace:*
-        version: link:../identity
+        version: link:../identity-v2
       ternent-utils:
         specifier: workspace:*
         version: link:../utils
@@ -4201,7 +4213,7 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       call-me-maybe: 1.0.2
-      cross-spawn: 7.0.3
+      cross-spawn: 7.0.6
       string-argv: 0.3.2
       type-detect: 4.1.0
     dev: false
@@ -9241,6 +9253,7 @@ packages:
       path-key: 3.1.1
       shebang-command: 2.0.0
       which: 2.0.2
+    dev: true
 
   /cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}

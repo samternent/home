@@ -780,8 +780,7 @@ env:
   VERCEL_PROJECT_ID: \${{ secrets.${projectSecretName} }}
   PNPM_CACHE_PATH: ~/.pnpm-store
   PNPM_CACHE_NAME: pnpm-store-cache
-  SEAL_PRIVATE_KEY: \${{ secrets.SEAL_PRIVATE_KEY }}
-  SEAL_PUBLIC_KEY: \${{ secrets.SEAL_PUBLIC_KEY }}
+  SEAL_IDENTITY: \${{ secrets.SEAL_IDENTITY }}
 on:
   push:
     tags:
