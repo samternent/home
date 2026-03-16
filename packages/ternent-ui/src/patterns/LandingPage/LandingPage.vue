@@ -168,7 +168,9 @@ function resolveActionVariant(action: LandingPageAction) {
               <Button
                 v-if="props.config.hero.secondaryAction"
                 v-bind="resolveButtonProps(props.config.hero.secondaryAction)"
-                :variant="resolveActionVariant(props.config.hero.secondaryAction)"
+                :variant="
+                  resolveActionVariant(props.config.hero.secondaryAction)
+                "
                 size="lg"
               >
                 {{ props.config.hero.secondaryAction.label }}
@@ -241,7 +243,9 @@ function resolveActionVariant(action: LandingPageAction) {
             >
               {{ item.title }}
             </h3>
-            <p class="m-0 max-w-2xl text-sm leading-7 text-[var(--ui-fg-muted)]">
+            <p
+              class="m-0 max-w-2xl text-sm leading-7 text-[var(--ui-fg-muted)]"
+            >
               {{ item.description }}
             </p>
           </div>
@@ -280,11 +284,7 @@ function resolveActionVariant(action: LandingPageAction) {
         </slot>
       </section>
 
-      <section
-        v-if="props.config.surfacesSection"
-        id="surfaces"
-        class="pt-24"
-      >
+      <section v-if="props.config.surfacesSection" id="surfaces" class="pt-24">
         <SectionIntro
           :eyebrow="props.config.surfacesSection.eyebrow"
           :title="props.config.surfacesSection.title"
@@ -430,7 +430,9 @@ function resolveActionVariant(action: LandingPageAction) {
               >
                 {{ index + 1 }}
               </div>
-              <div class="space-y-2 border-t border-[color-mix(in_srgb,var(--ui-border)_82%,transparent)] pt-4">
+              <div
+                class="space-y-2 border-t border-[color-mix(in_srgb,var(--ui-border)_82%,transparent)] pt-4"
+              >
                 <h3 class="m-0 text-base font-medium text-[var(--ui-fg)]">
                   {{ step.title }}
                 </h3>
@@ -503,12 +505,18 @@ function resolveActionVariant(action: LandingPageAction) {
               :key="tab.value"
               v-slot:[`panel-${tab.value}`]
             >
-              <div class="space-y-4 rounded-[var(--ui-radius-lg)] border border-[color-mix(in_srgb,var(--ui-border)_82%,transparent)] bg-[color-mix(in_srgb,var(--ui-surface)_94%,transparent)] p-5">
+              <div
+                class="space-y-4 rounded-[var(--ui-radius-lg)] border border-[color-mix(in_srgb,var(--ui-border)_82%,transparent)] bg-[color-mix(in_srgb,var(--ui-surface)_94%,transparent)] p-5"
+              >
                 <div class="space-y-1">
-                  <p class="m-0 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ui-fg-muted)]">
+                  <p
+                    class="m-0 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ui-fg-muted)]"
+                  >
                     {{ tab.meta }}
                   </p>
-                  <h3 class="m-0 text-lg font-medium tracking-[-0.02em] text-[var(--ui-fg)]">
+                  <h3
+                    class="m-0 text-lg font-medium tracking-[-0.02em] text-[var(--ui-fg)]"
+                  >
                     {{ tab.title }}
                   </h3>
                 </div>
@@ -559,11 +567,7 @@ function resolveActionVariant(action: LandingPageAction) {
         </SectionClarifier>
       </section>
 
-      <section
-        v-if="props.config.suiteSection"
-        id="suite"
-        class="pt-24"
-      >
+      <section v-if="props.config.suiteSection" id="suite" class="pt-24">
         <Card variant="panel" padding="lg" class="space-y-5">
           <SectionIntro
             :eyebrow="props.config.suiteSection.eyebrow"
@@ -579,10 +583,7 @@ function resolveActionVariant(action: LandingPageAction) {
         </Card>
       </section>
 
-      <section
-        v-if="props.config.nonGoalsSection"
-        class="pt-14"
-      >
+      <section v-if="props.config.nonGoalsSection" class="pt-14">
         <SectionClarifier
           :eyebrow="props.config.nonGoalsSection.eyebrow || 'Boundaries'"
           :title="props.config.nonGoalsSection.title"

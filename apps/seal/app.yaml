@@ -230,8 +230,8 @@ landing:
     #   label: View JavaScript API
 
   footer:
-    brandLabel: Seal
-    brandHref: /
+    brandLabel: ternent.dev
+    brandHref: https://ternent.dev
     copyright: © 2026.
     links:
       - href: https://github.com/marketplace/actions/seal-action
