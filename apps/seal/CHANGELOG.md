@@ -1,5 +1,11 @@
 # seal
 
+## 0.0.27
+
+### Patch Changes
+
+- [`323035cd4e8f88a3fc3ed07a2e661e3871def14a`](https://github.com/samternent/home/commit/323035cd4e8f88a3fc3ed07a2e661e3871def14a) Thanks [@samternent](https://github.com/samternent)! - New seal version action
+
 ## 0.0.26
 
 ### Patch Changes
