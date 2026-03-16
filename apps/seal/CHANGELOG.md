@@ -1,5 +1,11 @@
 # seal
 
+## 0.0.26
+
+### Patch Changes
+
+- [`bbb26ebf8c56f90c7c435d04da068a9a011633d3`](https://github.com/samternent/home/commit/bbb26ebf8c56f90c7c435d04da068a9a011633d3) Thanks [@samternent](https://github.com/samternent)! - Use seal action v2
+
 ## 0.0.25
 
 ### Patch Changes
