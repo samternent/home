@@ -1,5 +1,11 @@
 # ternent-ui
 
+## 0.4.7
+
+### Patch Changes
+
+- [`e694239710abbe9ab15bd386901f34334f7692e5`](https://github.com/samternent/home/commit/e694239710abbe9ab15bd386901f34334f7692e5) Thanks [@samternent](https://github.com/samternent)! - code deletion and renaming
+
 ## 0.4.6
 
 ### Patch Changes
