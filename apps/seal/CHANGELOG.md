@@ -1,5 +1,12 @@
 # seal
 
+## 0.0.28
+
+### Patch Changes
+
+- Updated dependencies [[`ee7aa501b6a57f0896e9a3b8c13c3446f8751a5a`](https://github.com/samternent/home/commit/ee7aa501b6a57f0896e9a3b8c13c3446f8751a5a)]:
+  - @ternent/seal-cli@0.3.1
+
 ## 0.0.27
 
 ### Patch Changes
