@@ -817,7 +817,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build ${appId} app
-        run: pnpm --filter ternent-ui --filter ternent-utils --filter ternent-identity --filter ${appId} build
+        run: pnpm --filter ternent-ui --filter ternent-utils --filter @ternent/identity --filter @ternent/seal-cli --filter ${appId} build
 
       - name: Link Vercel project
         run: vercel link --yes --cwd \${{ github.workspace }}/apps/${appId} --token=\${{ secrets.VERCEL_TOKEN }}
