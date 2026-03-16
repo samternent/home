@@ -1,5 +1,14 @@
 # ternentdotdev
 
+## 0.4.21
+
+### Patch Changes
+
+- [`e694239710abbe9ab15bd386901f34334f7692e5`](https://github.com/samternent/home/commit/e694239710abbe9ab15bd386901f34334f7692e5) Thanks [@samternent](https://github.com/samternent)! - code deletion and renaming
+
+- Updated dependencies [[`e694239710abbe9ab15bd386901f34334f7692e5`](https://github.com/samternent/home/commit/e694239710abbe9ab15bd386901f34334f7692e5)]:
+  - ternent-ui@0.4.7
+
 ## 0.4.20
 
 ### Patch Changes
