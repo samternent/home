@@ -33,7 +33,7 @@ Use the published GitHub Action:
 
 ```yaml
 - name: Generate Seal artifacts
-  uses: samternent/seal-action@v1
+  uses: samternent/seal-action@v2
   env:
     SEAL_IDENTITY: ${{ secrets.SEAL_IDENTITY }}
   with:

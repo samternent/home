@@ -85,7 +85,7 @@ Example:
 - uses: actions/setup-node@v4
   with:
     node-version-file: ".nvmrc"
-- uses: samternent/seal-action@v1
+- uses: samternent/seal-action@v2
   env:
     SEAL_IDENTITY: ${{ secrets.SEAL_IDENTITY }}
   with:

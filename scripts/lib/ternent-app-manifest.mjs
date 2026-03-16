@@ -829,7 +829,7 @@ jobs:
         run: vercel build --prod --cwd \${{ github.workspace }}/apps/${appId} --token=\${{ secrets.VERCEL_TOKEN }}
 
       - name: Generate sealed site artifacts
-        uses: samternent/seal-action@v1
+        uses: samternent/seal-action@v2
         with:
           assets-directory: apps/${appId}/.vercel/output/static
 

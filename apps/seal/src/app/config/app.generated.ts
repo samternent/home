@@ -253,7 +253,7 @@ export const landingPageConfig = {
         "label": "GitHub Action",
         "title": "Sign static builds in CI",
         "meta": "GitHub Action",
-        "code": "- uses: actions/checkout@v4\n- uses: actions/setup-node@v4\n  with:\n    node-version-file: \".nvmrc\"\n- uses: samternent/seal-action@v1\n  env:\n    SEAL_IDENTITY: ${{ secrets.SEAL_IDENTITY }}\n  with:\n    assets-directory: dist\n    package-name: @ternent/seal-cli\n    package-version: latest",
+        "code": "- uses: actions/checkout@v4\n- uses: actions/setup-node@v4\n  with:\n    node-version-file: \".nvmrc\"\n- uses: samternent/seal-action@v2\n  env:\n    SEAL_IDENTITY: ${{ secrets.SEAL_IDENTITY }}\n  with:\n    assets-directory: dist\n    package-name: @ternent/seal-cli\n    package-version: latest",
         "supportingCopy": "When your workflow already builds a static directory, Seal Action adds signed artifacts with minimal extra YAML.",
         "link": {
           "href": "https://github.com/marketplace/actions/seal-action",

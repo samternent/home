@@ -88,7 +88,7 @@ describe("RouteHome landing page", () => {
 
     await clickTab(wrapper, "GitHub Action");
 
-    expect(wrapper.text()).toContain("uses: samternent/seal-action@v1");
+    expect(wrapper.text()).toContain("uses: samternent/seal-action@v2");
     expect(
       wrapper
         .findAll('a[href="https://github.com/marketplace/actions/seal-action"]')
