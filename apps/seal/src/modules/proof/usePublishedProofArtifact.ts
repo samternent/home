@@ -69,10 +69,10 @@ export function usePublishedProofArtifact(
   });
 
   const statusLabel = computed(() => {
-    if (status.value === "loading") return "Checking live proof";
-    if (status.value === "unavailable") return "Live proof unavailable";
-    if (status.value === "verified") return "Live proof verified";
-    return "Live proof failed";
+    if (status.value === "loading") return "Checking proof";
+    if (status.value === "unavailable") return "Proof unavailable";
+    if (status.value === "verified") return "Proof verified";
+    return "Proof failed";
   });
 
   const statusDetail = computed(() => {

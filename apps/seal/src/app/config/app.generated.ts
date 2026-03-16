@@ -68,7 +68,7 @@ export const landingPageConfig = {
     "supportingLine": "Seal emits a self-contained proof file. It does not require a backend service to verify.",
     "note": "The primitive is the product. The artifact is the output.",
     "primaryAction": {
-      "href": "#surfaces",
+      "href": "https://github.com/marketplace/actions/seal-action",
       "label": "Sign in GitHub Actions",
       "variant": "primary"
     },
@@ -255,8 +255,8 @@ export const landingPageConfig = {
     }
   },
   "footer": {
-    "brandLabel": "Seal",
-    "brandHref": "/",
+    "brandLabel": "ternent.dev",
+    "brandHref": "https://ternent.dev",
     "copyright": "© 2026.",
     "links": [
       {

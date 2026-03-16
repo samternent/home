@@ -68,19 +68,12 @@ const rows = computed(() => [
     />
 
     <div class="relative p-6 lg:p-7">
-      <div class="flex flex-wrap items-start justify-between gap-4">
-        <div class="space-y-1.5">
-          <p
-            class="m-0 text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-[var(--ui-fg-muted)]"
-          >
-            Live published proof
-          </p>
-          <h3
-            class="m-0 text-[1.8rem] font-medium tracking-[-0.04em] text-[var(--ui-fg)]"
-          >
-            proof.json
-          </h3>
-        </div>
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <h3
+          class="m-0 text-[1.8rem] font-medium tracking-[-0.04em] text-[var(--ui-fg)]"
+        >
+          proof.json
+        </h3>
         <span
           class="inline-flex items-center rounded-full border px-3 py-1 text-[0.72rem] font-medium uppercase tracking-[0.14em]"
           :class="statusClass"

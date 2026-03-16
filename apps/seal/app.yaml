@@ -30,7 +30,7 @@ landing:
     supportingLine: Seal emits a self-contained proof file. It does not require a backend service to verify.
     note: The primitive is the product. The artifact is the output.
     primaryAction:
-      href: "#surfaces"
+      href: "https://github.com/marketplace/actions/seal-action"
       label: Sign in GitHub Actions
       variant: primary
     secondaryAction:
