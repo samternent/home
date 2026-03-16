@@ -1,5 +1,14 @@
 # concord
 
+## 0.3.65
+
+### Patch Changes
+
+- Updated dependencies [[`f364cb7d38f18770d32fe4a628b3c8b4bcccc31f`](https://github.com/samternent/home/commit/f364cb7d38f18770d32fe4a628b3c8b4bcccc31f)]:
+  - ternent-identity@0.0.14
+  - ternent-ledger@1.0.27
+  - ternent-ledger-vue@0.1.6
+
 ## 0.3.64
 
 ### Patch Changes
