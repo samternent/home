@@ -55,8 +55,25 @@ describe("identity session", () => {
     const importer = useIdentityImport();
     const imported = await importer.importIdentity(payload);
 
-    expect(imported.seed.length).toBeGreaterThan(10);
+    expect(imported.material.seed.length).toBeGreaterThan(10);
     expect(imported.publicKey.length).toBeGreaterThan(10);
+    expect(session.identity.value?.keyId).toBe(imported.keyId);
+    expect(exported.material).toMatchObject({ kind: "seed" });
+    expect(exported.seed).toBeUndefined();
+  });
+
+  it("imports from a valid mnemonic phrase", async () => {
+    const session = useIdentitySession();
+    session.clearIdentity();
+
+    const importer = useIdentityImport();
+    const imported = await importer.importMnemonic(
+      "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
+      "TREZOR"
+    );
+
+    expect(imported.material.kind).toBe("seed");
+    expect(imported.material.seed.length).toBeGreaterThan(10);
     expect(session.identity.value?.keyId).toBe(imported.keyId);
   });
 

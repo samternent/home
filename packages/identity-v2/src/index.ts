@@ -1,13 +1,23 @@
+import { ed25519, x25519 } from "@noble/curves/ed25519.js";
+import { hmac } from "@noble/hashes/hmac.js";
+import { sha256, sha512 } from "@noble/hashes/sha2.js";
+import {
+  generateMnemonic as bip39GenerateMnemonic,
+  mnemonicToSeedSync,
+  validateMnemonic as bip39ValidateMnemonic,
+} from "@scure/bip39";
+import { wordlist as englishWordlist } from "@scure/bip39/wordlists/english.js";
+
 const IDENTITY_FORMAT = "ternent-identity" as const;
 const IDENTITY_VERSION = "2" as const;
 const IDENTITY_ALGORITHM = "Ed25519" as const;
 const ED25519_CONTEXT = "ternent-seal/v2";
-
-const ED25519_PKCS8_PREFIX = hexToBytes("302e020100300506032b657004220420");
-const ED25519_SPKI_PREFIX = hexToBytes("302a300506032b6570032100");
-const X25519_PKCS8_PREFIX = hexToBytes("302e020100300506032b656e04220420");
-
-const CURVE25519_P = (1n << 255n) - 19n;
+const IDENTITY_MATERIAL_KIND = "seed" as const;
+const IDENTITY_DERIVATION_PATH = "m/101010'/25519'/0'" as const;
+const BIP39_LANGUAGE = "english" as const;
+const SLIP10_HARDENED_OFFSET = 0x80000000;
+const SLIP10_KEY = new TextEncoder().encode("ed25519 seed");
+const IDENTITY_PATH_SEGMENTS = [101010, 25519, 0] as const;
 const BECH32_GENERATORS = [
   0x3b6a57b2,
   0x26508e6d,
@@ -16,11 +26,70 @@ const BECH32_GENERATORS = [
   0x2a1462b3,
 ];
 
-function getWebCrypto(): Crypto {
-  if (typeof globalThis.crypto !== "undefined") {
-    return globalThis.crypto;
+export type MnemonicWordCount = 12 | 24;
+
+export type IdentityMaterial = {
+  kind: typeof IDENTITY_MATERIAL_KIND;
+  seed: string;
+};
+
+export type SerializedIdentity = {
+  format: typeof IDENTITY_FORMAT;
+  version: typeof IDENTITY_VERSION;
+  algorithm: typeof IDENTITY_ALGORITHM;
+  createdAt: string;
+  publicKey: string;
+  keyId: string;
+  material: IdentityMaterial;
+};
+
+type SeedLike = SerializedIdentity | Uint8Array | ArrayBuffer | string;
+type PublicKeyLike =
+  | SerializedIdentity
+  | Uint8Array
+  | ArrayBuffer
+  | string
+  | { publicKey: string | Uint8Array | ArrayBuffer }
+  | { seed: string | Uint8Array | ArrayBuffer };
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function concatBytes(...parts: Uint8Array[]): Uint8Array {
+  const length = parts.reduce((sum, part) => sum + part.length, 0);
+  const output = new Uint8Array(length);
+  let offset = 0;
+  for (const part of parts) {
+    output.set(part, offset);
+    offset += part.length;
   }
-  throw new Error("Web Crypto is not available in this runtime.");
+  return output;
+}
+
+function ensureBytes(
+  value: Uint8Array | ArrayBuffer,
+  label: string
+): Uint8Array {
+  const bytes = value instanceof Uint8Array ? value : new Uint8Array(value);
+  if (bytes.length === 0) {
+    throw new Error(`${label} must not be empty.`);
+  }
+  return bytes;
+}
+
+function bytesToHex(bytes: Uint8Array): string {
+  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join(
+    ""
+  );
+}
+
+function normalizeBase64Url(value: string): string {
+  return String(value || "")
+    .trim()
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/g, "");
 }
 
 function base64Encode(bytes: Uint8Array): string {
@@ -70,73 +139,6 @@ function base64Decode(value: string): Uint8Array {
   throw new Error("Base64 decoding is not available in this runtime.");
 }
 
-export type SerializedIdentity = {
-  format: typeof IDENTITY_FORMAT;
-  version: typeof IDENTITY_VERSION;
-  algorithm: typeof IDENTITY_ALGORITHM;
-  createdAt: string;
-  seed: string;
-  publicKey: string;
-  keyId: string;
-};
-
-type SeedLike = SerializedIdentity | Uint8Array | ArrayBuffer | string;
-type PublicKeyLike =
-  | SerializedIdentity
-  | Uint8Array
-  | ArrayBuffer
-  | string
-  | { publicKey: string | Uint8Array | ArrayBuffer }
-  | { seed: string | Uint8Array | ArrayBuffer };
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
-}
-
-function hexToBytes(value: string): Uint8Array {
-  const bytes = new Uint8Array(value.length / 2);
-  for (let index = 0; index < value.length; index += 2) {
-    bytes[index / 2] = Number.parseInt(value.slice(index, index + 2), 16);
-  }
-  return bytes;
-}
-
-function concatBytes(...parts: Uint8Array[]): Uint8Array {
-  const length = parts.reduce((sum, part) => sum + part.length, 0);
-  const output = new Uint8Array(length);
-  let offset = 0;
-  for (const part of parts) {
-    output.set(part, offset);
-    offset += part.length;
-  }
-  return output;
-}
-
-function ensureBytes(
-  value: Uint8Array | ArrayBuffer,
-  label: string
-): Uint8Array {
-  const bytes = value instanceof Uint8Array ? value : new Uint8Array(value);
-  if (bytes.length === 0) {
-    throw new Error(`${label} must not be empty.`);
-  }
-  return bytes;
-}
-
-function bytesToHex(bytes: Uint8Array): string {
-  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join(
-    ""
-  );
-}
-
-function normalizeBase64Url(value: string): string {
-  return String(value || "")
-    .trim()
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/g, "");
-}
-
 function base64UrlEncode(bytes: Uint8Array): string {
   return base64Encode(bytes)
     .replace(/\+/g, "-")
@@ -165,112 +167,43 @@ function combineContext(
   return concatBytes(utf8Bytes(context), new Uint8Array([0]), payload);
 }
 
-async function sha256(bytes: Uint8Array): Promise<Uint8Array> {
-  const hash = await getWebCrypto().subtle.digest("SHA-256", bytes);
-  return new Uint8Array(hash);
-}
-
-async function sha512(bytes: Uint8Array): Promise<Uint8Array> {
-  const hash = await getWebCrypto().subtle.digest("SHA-512", bytes);
-  return new Uint8Array(hash);
-}
-
-function toLittleEndianBigInt(bytes: Uint8Array): bigint {
-  let result = 0n;
-  for (let index = bytes.length - 1; index >= 0; index -= 1) {
-    result = (result << 8n) + BigInt(bytes[index]);
+function assertWordCount(words: number): MnemonicWordCount {
+  if (words === 12 || words === 24) {
+    return words;
   }
-  return result;
+  throw new Error("Mnemonic word count must be 12 or 24.");
 }
 
-function fromLittleEndianBigInt(value: bigint, length: number): Uint8Array {
-  let remaining = value;
-  const bytes = new Uint8Array(length);
-  for (let index = 0; index < length; index += 1) {
-    bytes[index] = Number(remaining & 0xffn);
-    remaining >>= 8n;
+function strengthFromWordCount(words: MnemonicWordCount): 128 | 256 {
+  return words === 24 ? 256 : 128;
+}
+
+function serializeUint32(value: number): Uint8Array {
+  return new Uint8Array([
+    (value >>> 24) & 0xff,
+    (value >>> 16) & 0xff,
+    (value >>> 8) & 0xff,
+    value & 0xff,
+  ]);
+}
+
+function deriveSlip10Seed(seedBytes: Uint8Array): Uint8Array {
+  let chain = hmac(sha512, SLIP10_KEY, seedBytes);
+  let key = chain.slice(0, 32);
+  let chainCode = chain.slice(32);
+
+  for (const segment of IDENTITY_PATH_SEGMENTS) {
+    const index = segment + SLIP10_HARDENED_OFFSET;
+    chain = hmac(
+      sha512,
+      chainCode,
+      concatBytes(new Uint8Array([0]), key, serializeUint32(index))
+    );
+    key = chain.slice(0, 32);
+    chainCode = chain.slice(32);
   }
-  return bytes;
-}
 
-function mod(value: bigint, modulus: bigint): bigint {
-  const result = value % modulus;
-  return result >= 0n ? result : result + modulus;
-}
-
-function modPow(base: bigint, exponent: bigint, modulus: bigint): bigint {
-  let result = 1n;
-  let factor = mod(base, modulus);
-  let power = exponent;
-  while (power > 0n) {
-    if (power & 1n) {
-      result = mod(result * factor, modulus);
-    }
-    factor = mod(factor * factor, modulus);
-    power >>= 1n;
-  }
-  return result;
-}
-
-function modInverse(value: bigint, modulus: bigint): bigint {
-  if (value === 0n) {
-    throw new Error("Cannot invert zero in the field.");
-  }
-  return modPow(value, modulus - 2n, modulus);
-}
-
-async function importEd25519PrivateKey(seedBytes: Uint8Array): Promise<CryptoKey> {
-  return getWebCrypto().subtle.importKey(
-    "pkcs8",
-    concatBytes(ED25519_PKCS8_PREFIX, seedBytes),
-    { name: "Ed25519" },
-    true,
-    ["sign"]
-  );
-}
-
-async function importEd25519PublicKey(publicKeyBytes: Uint8Array): Promise<CryptoKey> {
-  return getWebCrypto().subtle.importKey(
-    "spki",
-    concatBytes(ED25519_SPKI_PREFIX, publicKeyBytes),
-    { name: "Ed25519" },
-    true,
-    ["verify"]
-  );
-}
-
-async function exportEd25519PublicKeyFromSeed(
-  seedBytes: Uint8Array
-): Promise<Uint8Array> {
-  const privateKey = await importEd25519PrivateKey(seedBytes);
-  const jwk = (await getWebCrypto().subtle.exportKey(
-    "jwk",
-    privateKey
-  )) as JsonWebKey;
-  if (!jwk.x) {
-    throw new Error("Unable to derive Ed25519 public key.");
-  }
-  return base64UrlDecode(jwk.x);
-}
-
-async function exportX25519PublicKeyFromScalar(
-  scalarBytes: Uint8Array
-): Promise<Uint8Array> {
-  const privateKey = await getWebCrypto().subtle.importKey(
-    "pkcs8",
-    concatBytes(X25519_PKCS8_PREFIX, scalarBytes),
-    { name: "X25519" },
-    true,
-    ["deriveBits"]
-  );
-  const jwk = (await getWebCrypto().subtle.exportKey(
-    "jwk",
-    privateKey
-  )) as JsonWebKey;
-  if (!jwk.x) {
-    throw new Error("Unable to derive X25519 public key.");
-  }
-  return base64UrlDecode(jwk.x);
+  return key;
 }
 
 function isSerializedIdentity(value: unknown): value is SerializedIdentity {
@@ -280,9 +213,11 @@ function isSerializedIdentity(value: unknown): value is SerializedIdentity {
     value.version === IDENTITY_VERSION &&
     value.algorithm === IDENTITY_ALGORITHM &&
     typeof value.createdAt === "string" &&
-    typeof value.seed === "string" &&
     typeof value.publicKey === "string" &&
-    typeof value.keyId === "string"
+    typeof value.keyId === "string" &&
+    isRecord(value.material) &&
+    value.material.kind === IDENTITY_MATERIAL_KIND &&
+    typeof value.material.seed === "string"
   );
 }
 
@@ -292,9 +227,12 @@ function toCanonicalIdentity(identity: SerializedIdentity): SerializedIdentity {
     version: identity.version,
     algorithm: identity.algorithm,
     createdAt: identity.createdAt,
-    seed: identity.seed,
     publicKey: identity.publicKey,
     keyId: identity.keyId,
+    material: {
+      kind: identity.material.kind,
+      seed: identity.material.seed,
+    },
   };
 }
 
@@ -314,7 +252,7 @@ function resolveSeedBytes(input: SeedLike): Uint8Array {
     return bytes;
   }
   if (isSerializedIdentity(input)) {
-    return resolveSeedBytes(input.seed);
+    return resolveSeedBytes(input.material.seed);
   }
   throw new Error("A valid identity or 32-byte seed is required.");
 }
@@ -345,45 +283,26 @@ function resolvePublicKeyBytes(input: PublicKeyLike): Uint8Array {
   throw new Error("A valid 32-byte public key is required.");
 }
 
-async function resolveX25519PrivateKeyBytes(input: SeedLike): Promise<Uint8Array> {
-  const seedBytes = resolveSeedBytes(input);
-  const hashed = await sha512(seedBytes);
-  const scalar = hashed.slice(0, 32);
-  scalar[0] &= 248;
-  scalar[31] &= 127;
-  scalar[31] |= 64;
-  return scalar;
+function resolveX25519PrivateKeyBytes(input: SeedLike): Uint8Array {
+  return ed25519.utils.toMontgomerySecret(resolveSeedBytes(input));
 }
 
 function convertEd25519PublicKeyToX25519PublicKeyBytes(
   publicKeyBytes: Uint8Array
 ): Uint8Array {
-  const yBytes = publicKeyBytes.slice();
-  yBytes[31] &= 0x7f;
-  const y = toLittleEndianBigInt(yBytes);
-  const numerator = mod(1n + y, CURVE25519_P);
-  const denominator = mod(1n - y, CURVE25519_P);
-  const u = mod(
-    numerator * modInverse(denominator, CURVE25519_P),
-    CURVE25519_P
-  );
-  return fromLittleEndianBigInt(u, 32);
+  return ed25519.utils.toMontgomery(publicKeyBytes);
 }
 
-async function resolveX25519PublicKeyBytes(
-  input: PublicKeyLike
-): Promise<Uint8Array> {
+function resolveX25519PublicKeyBytes(input: PublicKeyLike): Uint8Array {
   if (isRecord(input) && "seed" in input) {
-    return exportX25519PublicKeyFromScalar(
-      await resolveX25519PrivateKeyBytes(
+    return x25519.getPublicKey(
+      resolveX25519PrivateKeyBytes(
         input.seed as string | Uint8Array | ArrayBuffer
       )
     );
   }
   if (isSerializedIdentity(input)) {
-    return exportX25519PublicKeyFromScalar(
-      await resolveX25519PrivateKeyBytes(input)
-    );
+    return x25519.getPublicKey(resolveX25519PrivateKeyBytes(input));
   }
   if (
     typeof input === "string" ||
@@ -466,38 +385,102 @@ function bech32Encode(hrp: string, data: Uint8Array): string {
   return `${hrp}1${combined.map((value) => charset[value]).join("")}`;
 }
 
-export function getDefaultSignatureContext(): string {
-  return ED25519_CONTEXT;
-}
-
-export async function createIdentity(
-  createdAt = new Date().toISOString()
+async function createIdentityFromSeedBytes(
+  seedBytes: Uint8Array,
+  createdAt: string
 ): Promise<SerializedIdentity> {
-  const seedBytes = getWebCrypto().getRandomValues(new Uint8Array(32));
-  const publicKeyBytes = await exportEd25519PublicKeyFromSeed(seedBytes);
+  const publicKeyBytes = ed25519.getPublicKey(seedBytes);
   return {
     format: IDENTITY_FORMAT,
     version: IDENTITY_VERSION,
     algorithm: IDENTITY_ALGORITHM,
     createdAt,
-    seed: base64UrlEncode(seedBytes),
     publicKey: base64UrlEncode(publicKeyBytes),
-    keyId: await deriveKeyId(publicKeyBytes),
+    keyId: bytesToHex(sha256(publicKeyBytes)),
+    material: {
+      kind: IDENTITY_MATERIAL_KIND,
+      seed: base64UrlEncode(seedBytes),
+    },
+  };
+}
+
+export function getDefaultSignatureContext(): string {
+  return ED25519_CONTEXT;
+}
+
+export function getIdentityDerivationPath(): string {
+  return IDENTITY_DERIVATION_PATH;
+}
+
+export function generateMnemonic(input: {
+  words?: MnemonicWordCount;
+} = {}): string {
+  const words = assertWordCount(input.words ?? 12);
+  return bip39GenerateMnemonic(englishWordlist, strengthFromWordCount(words));
+}
+
+export function validateMnemonic(
+  mnemonic: string,
+  options: { wordlist?: typeof BIP39_LANGUAGE } = {}
+): boolean {
+  if (options.wordlist && options.wordlist !== BIP39_LANGUAGE) {
+    throw new Error("Only the English BIP-39 wordlist is supported.");
+  }
+  return bip39ValidateMnemonic(String(mnemonic || "").trim(), englishWordlist);
+}
+
+export async function createIdentity(
+  createdAt = new Date().toISOString()
+): Promise<SerializedIdentity> {
+  return createIdentityFromSeedBytes(
+    ed25519.utils.randomSecretKey(),
+    createdAt
+  );
+}
+
+export async function createIdentityFromMnemonic(input: {
+  mnemonic: string;
+  passphrase?: string;
+  createdAt?: string;
+}): Promise<SerializedIdentity> {
+  const mnemonic = String(input.mnemonic || "").trim();
+  if (!validateMnemonic(mnemonic)) {
+    throw new Error("Mnemonic phrase is not a valid English BIP-39 phrase.");
+  }
+  const mnemonicSeed = mnemonicToSeedSync(mnemonic, input.passphrase || "");
+  const derivedSeed = deriveSlip10Seed(mnemonicSeed);
+  return createIdentityFromSeedBytes(
+    derivedSeed,
+    input.createdAt ?? new Date().toISOString()
+  );
+}
+
+export async function createMnemonicIdentity(input: {
+  words?: MnemonicWordCount;
+  passphrase?: string;
+  createdAt?: string;
+} = {}): Promise<{ identity: SerializedIdentity; mnemonic: string }> {
+  const mnemonic = generateMnemonic({ words: input.words ?? 12 });
+  return {
+    mnemonic,
+    identity: await createIdentityFromMnemonic({
+      mnemonic,
+      passphrase: input.passphrase,
+      createdAt: input.createdAt,
+    }),
   };
 }
 
 export async function derivePublicKey(
   seed: string | Uint8Array | ArrayBuffer
 ): Promise<string> {
-  return base64UrlEncode(
-    await exportEd25519PublicKeyFromSeed(resolveSeedBytes(seed))
-  );
+  return base64UrlEncode(ed25519.getPublicKey(resolveSeedBytes(seed)));
 }
 
 export async function deriveKeyId(
   publicKey: string | Uint8Array | ArrayBuffer
 ): Promise<string> {
-  return bytesToHex(await sha256(resolvePublicKeyBytes(publicKey)));
+  return bytesToHex(sha256(resolvePublicKeyBytes(publicKey)));
 }
 
 export function parseIdentity(input: string | SerializedIdentity): SerializedIdentity {
@@ -519,7 +502,7 @@ export async function validateIdentity(
   identity: SerializedIdentity
 ): Promise<SerializedIdentity> {
   const parsed = parseIdentity(identity);
-  const derivedPublicKey = await derivePublicKey(parsed.seed);
+  const derivedPublicKey = await derivePublicKey(parsed.material.seed);
   if (derivedPublicKey !== normalizeBase64Url(parsed.publicKey)) {
     throw new Error("Identity publicKey does not match the stored seed.");
   }
@@ -535,13 +518,12 @@ export async function signBytes(
   payload: Uint8Array | ArrayBuffer,
   options: { context?: string } = {}
 ): Promise<string> {
-  const privateKey = await importEd25519PrivateKey(resolveSeedBytes(identityOrSeed));
-  const signature = await getWebCrypto().subtle.sign(
-    "Ed25519",
-    privateKey,
-    combineContext(ensureBytes(payload, "Payload"), options.context)
+  return base64UrlEncode(
+    ed25519.sign(
+      combineContext(ensureBytes(payload, "Payload"), options.context),
+      resolveSeedBytes(identityOrSeed)
+    )
   );
-  return base64UrlEncode(new Uint8Array(signature));
 }
 
 export async function verifyBytes(
@@ -550,12 +532,10 @@ export async function verifyBytes(
   signature: string,
   options: { context?: string } = {}
 ): Promise<boolean> {
-  const verifyKey = await importEd25519PublicKey(resolvePublicKeyBytes(publicKey));
-  return getWebCrypto().subtle.verify(
-    "Ed25519",
-    verifyKey,
+  return ed25519.verify(
     base64UrlDecode(signature),
-    combineContext(ensureBytes(payload, "Payload"), options.context)
+    combineContext(ensureBytes(payload, "Payload"), options.context),
+    resolvePublicKeyBytes(publicKey)
   );
 }
 
@@ -577,11 +557,11 @@ export async function verifyUtf8(
 }
 
 export async function deriveX25519PrivateKey(input: SeedLike): Promise<string> {
-  return base64UrlEncode(await resolveX25519PrivateKeyBytes(input));
+  return base64UrlEncode(resolveX25519PrivateKeyBytes(input));
 }
 
 export async function deriveX25519PublicKey(input: PublicKeyLike): Promise<string> {
-  return base64UrlEncode(await resolveX25519PublicKeyBytes(input));
+  return base64UrlEncode(resolveX25519PublicKeyBytes(input));
 }
 
 export async function convertEd25519PublicKeyToX25519PublicKey(
@@ -593,12 +573,12 @@ export async function convertEd25519PublicKeyToX25519PublicKey(
 }
 
 export async function deriveAgeRecipient(input: PublicKeyLike): Promise<string> {
-  return bech32Encode("age", await resolveX25519PublicKeyBytes(input));
+  return bech32Encode("age", resolveX25519PublicKeyBytes(input));
 }
 
 export async function deriveAgeSecretKey(input: SeedLike): Promise<string> {
   return bech32Encode(
     "age-secret-key-",
-    await resolveX25519PrivateKeyBytes(input)
+    resolveX25519PrivateKeyBytes(input)
   ).toUpperCase();
 }

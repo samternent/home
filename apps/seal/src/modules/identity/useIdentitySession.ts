@@ -1,5 +1,5 @@
 import { computed, shallowRef, type ComputedRef } from "vue";
-import type { SerializedIdentity } from "@ternent/identity";
+import { parseIdentity, type SerializedIdentity } from "@ternent/identity";
 import { appConfig } from "@/app/config/app.config";
 
 export type StoredIdentity = SerializedIdentity & {
@@ -63,19 +63,14 @@ function readRememberedIdentity(): {
       return { identity: null, legacyRejected: true };
     }
 
-    if (
-      typeof (parsed as SerializedIdentity)?.format !== "string" ||
-      typeof (parsed as SerializedIdentity)?.seed !== "string" ||
-      typeof (parsed as SerializedIdentity)?.publicKey !== "string" ||
-      typeof (parsed as SerializedIdentity)?.keyId !== "string"
-    ) {
+    try {
+      return {
+        identity: toStoredIdentity(parseIdentity(parsed as SerializedIdentity)),
+        legacyRejected: false,
+      };
+    } catch {
       return { identity: null, legacyRejected: false };
     }
-
-    return {
-      identity: toStoredIdentity(parsed as SerializedIdentity),
-      legacyRejected: false,
-    };
   } catch {
     return { identity: null, legacyRejected: false };
   }

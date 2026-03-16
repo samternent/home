@@ -3,9 +3,16 @@
   "version": "0.1.0",
   "description": "Seed-based Ed25519 identity primitives with X25519 bridge helpers",
   "type": "module",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
+  "main": "dist/index.umd.js",
+  "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.es.js",
+      "default": "./dist/index.es.js"
+    }
+  },
   "files": [
     "dist",
     "README.md"
@@ -19,5 +26,10 @@
     "vite": "^2.9.18",
     "vite-plugin-dts": "^1.7.3",
     "vitest": "^1.6.0"
+  },
+  "dependencies": {
+    "@noble/curves": "^2.0.1",
+    "@noble/hashes": "^2.0.1",
+    "@scure/bip39": "^2.0.1"
   }
 }

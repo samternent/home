@@ -746,6 +746,16 @@ importers:
         version: 1.7.3(vite@2.9.18)
 
   packages/identity-v2:
+    dependencies:
+      '@noble/curves':
+        specifier: ^2.0.1
+        version: 2.0.1
+      '@noble/hashes':
+        specifier: ^2.0.1
+        version: 2.0.1
+      '@scure/bip39':
+        specifier: ^2.0.1
+        version: 2.0.1
     devDependencies:
       vite:
         specifier: ^2.9.18
@@ -4398,6 +4408,13 @@ packages:
     engines: {node: '>= 20.19.0'}
     dev: false
 
+  /@noble/curves@2.0.1:
+    resolution: {integrity: sha512-vs1Az2OOTBiP4q0pwjW5aF0xp9n4MxVrmkFBxc6EKZc6ddYx5gaZiAsZoq0uRRXWbi3AT/sBqn05eRPtn1JCPw==}
+    engines: {node: '>= 20.19.0'}
+    dependencies:
+      '@noble/hashes': 2.0.1
+    dev: false
+
   /@noble/hashes@2.0.1:
     resolution: {integrity: sha512-XlOlEbQcE9fmuXxrVTXCTlG2nlRXa9Rj3rr5Ue/+tX+nmkgbX720YHh0VR3hBF9xDvwnb8D2shVGOwNx+ulArw==}
     engines: {node: '>= 20.19.0'}
@@ -5155,6 +5172,17 @@ packages:
       string-argv: 0.3.2
     transitivePeerDependencies:
       - '@types/node'
+
+  /@scure/base@2.0.0:
+    resolution: {integrity: sha512-3E1kpuZginKkek01ovG8krQ0Z44E3DHPjc5S2rjJw9lZn3KSQOs8S7wqikF/AH7iRanHypj85uGyxk0XAyC37w==}
+    dev: false
+
+  /@scure/bip39@2.0.1:
+    resolution: {integrity: sha512-PsxdFj/d2AcJcZDX1FXN3dDgitDDTmwf78rKZq1a6c1P1Nan1X/Sxc7667zU3U+AN60g7SxxP0YCVw2H/hBycg==}
+    dependencies:
+      '@noble/hashes': 2.0.1
+      '@scure/base': 2.0.0
+    dev: false
 
   /@sentry/core@6.19.7:
     resolution: {integrity: sha512-tOfZ/umqB2AcHPGbIrsFLcvApdTm9ggpi/kQZFkej7kMphjT+SGBiQfYtjyg9jcRW+ilAR4JXC9BGKsdEQ+8Vw==}

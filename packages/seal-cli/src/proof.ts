@@ -319,10 +319,9 @@ export async function verifySealProofSignature(proof: SealProofV1): Promise<{
     }
     return { ok: true, errors: [] };
   } catch (caught) {
-    const message = caught instanceof Error ? caught.message : String(caught);
     return {
       ok: false,
-      errors: [`Failed to verify signature: ${message}`],
+      errors: ["Invalid signature."],
     };
   }
 }

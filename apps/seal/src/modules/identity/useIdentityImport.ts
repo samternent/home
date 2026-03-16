@@ -1,5 +1,10 @@
 import { ref } from "vue";
-import { parseIdentity, validateIdentity } from "@ternent/identity";
+import {
+  createIdentityFromMnemonic,
+  parseIdentity,
+  validateIdentity,
+  validateMnemonic,
+} from "@ternent/identity";
 import { useIdentitySession, type StoredIdentity } from "./useIdentitySession";
 
 export function useIdentityImport() {
@@ -45,9 +50,51 @@ export function useIdentityImport() {
     }
   };
 
+  const importMnemonic = async (
+    mnemonic: string,
+    passphrase?: string
+  ): Promise<StoredIdentity> => {
+    isImporting.value = true;
+    error.value = null;
+
+    try {
+      const trimmed = String(mnemonic || "").trim();
+      if (!trimmed) {
+        throw new Error("Seed phrase import payload is empty");
+      }
+      if (!validateMnemonic(trimmed)) {
+        throw new Error(
+          "Seed phrase must be a valid 12- or 24-word English BIP-39 phrase."
+        );
+      }
+
+      const parsed = await createIdentityFromMnemonic({
+        mnemonic: trimmed,
+        passphrase,
+      });
+      const identity: StoredIdentity = {
+        id: `identity-${parsed.keyId.slice(0, 12)}`,
+        ...parsed,
+      };
+
+      setIdentity(identity);
+      return identity;
+    } catch (caught) {
+      const message =
+        caught instanceof Error
+          ? caught.message
+          : "Failed to import seed phrase";
+      error.value = message;
+      throw new Error(message);
+    } finally {
+      isImporting.value = false;
+    }
+  };
+
   return {
     isImporting,
     error,
     importIdentity,
+    importMnemonic,
   };
 }
