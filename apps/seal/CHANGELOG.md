@@ -1,5 +1,11 @@
 # seal
 
+## 0.0.22
+
+### Patch Changes
+
+- [`3d59a78ed66c801dd6caa5ff242e23a008ec83a1`](https://github.com/samternent/home/commit/3d59a78ed66c801dd6caa5ff242e23a008ec83a1) Thanks [@samternent](https://github.com/samternent)! - Fix PWA cache
+
 ## 0.0.21
 
 ### Patch Changes
