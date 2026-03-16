@@ -16,7 +16,6 @@
     "encoding": "0.1.13"
   },
   "dependencies": {
-    "redis": "^4.7.0",
     "shelljs": "^0.8.5",
     "yaml": "^2.5.0"
   },
@@ -27,17 +26,17 @@
     "setup:ternent-app-deploy": "node scripts/setup-ternent-app-deploy.mjs",
     "test:ternent-app-scaffold": "node --test scripts/tests/ternent-app-manifest.test.mjs scripts/tests/scaffold-ternent-app.test.mjs scripts/tests/prepare-ternent-app.test.mjs",
     "build:footballsocial": "pnpm --filter footballsocial build",
-    "build:proof": "pnpm --filter ternent-ui --filter ternent-utils --filter ternent-identity --filter @ternent/seal-cli --filter proof build",
+    "build:seal": "pnpm --filter ternent-ui --filter ternent-utils --filter ternent-identity --filter @ternent/seal-cli --filter seal build",
     "build:ternentdotdev": "pnpm --filter ternentdotdev build",
     "dev:footballsocial": "pnpm --filter footballsocial dev",
-    "dev:proof": "pnpm --filter proof dev",
+    "dev:seal": "pnpm --filter seal dev",
     "dev:ternentdotdev": "pnpm --filter ternentdotdev dev",
     "dev:ternent-ui": "pnpm --filter ternent-ui dev",
     "build:footballsocial-api": "docker build -f ./apps/footballsocial-api/Dockerfile . -t samternent/footballsocial-api",
     "build:ternent-api-libs": "pnpm --filter ternent-utils --filter @ternent/concord-protocol --filter ternent-identity build",
     "build:ternent-api": "docker build -f ./apps/ternent-api/Dockerfile . -t samternent/ternent-api",
     "build:slides": "pnpm --filter ternentdotdev build:slides:teamwork-frontend && pnpm --filter ternentdotdev build:slides:router-drawers && pnpm --filter ternentdotdev build:slides:copy",
-    "build:libs": "pnpm --filter ternent-ui --filter sams-game-kit --filter ternent-utils --filter @ternent/concord-protocol --filter @ternent/concord-protocol-wasm  --filter ternent-identity --filter ternent-encrypt --filter @ternent/concord-plugin-identity --filter @ternent/concord-plugin-encryption --filter @ternent/concord-plugin-permissions --filter ternent-ledger build",
+    "build:libs": "pnpm --filter ternent-ui --filter ternent-utils --filter @ternent/concord-protocol --filter @ternent/concord-protocol-wasm  --filter ternent-identity --filter ternent-encrypt --filter @ternent/concord-plugin-identity --filter @ternent/concord-plugin-encryption --filter @ternent/concord-plugin-permissions --filter ternent-ledger build",
     "build:ternent-ui": "pnpm --filter ternent-ui build",
     "generate-docs": "node scripts/generate-docs.js",
     "enhance-docs": "node scripts/enhance-docs.js",

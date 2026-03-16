@@ -61,8 +61,3 @@ jobs:
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prebuilt --prod --cwd ${{ github.workspace }}/apps/ledger --token=${{ secrets.VERCEL_TOKEN }}
 
-      - name: Update app version in Redis
-        run: node .ops/update-redis-version.mjs
-        env:
-          REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
-          REDIS_ENDPOINT_URI: ${{ secrets.REDIS_ENDPOINT_URI }}

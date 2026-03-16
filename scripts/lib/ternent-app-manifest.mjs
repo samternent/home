@@ -42,14 +42,15 @@ export function getAvailableThemeNames(repoRoot) {
 }
 
 function parseThemeTokens(css, selector) {
-  const match = css.match(new RegExp(`\\[data-theme="${selector}"\\]\\s*\\{([\\s\\S]*?)\\}`));
+  const match = css.match(
+    new RegExp(`\\[data-theme="${selector}"\\]\\s*\\{([\\s\\S]*?)\\}`),
+  );
   if (!match) return {};
 
   return Object.fromEntries(
-    Array.from(match[1].matchAll(/(--[\w-]+):\s*([^;]+);/g)).map(([, key, value]) => [
-      key,
-      value.trim(),
-    ]),
+    Array.from(match[1].matchAll(/(--[\w-]+):\s*([^;]+);/g)).map(
+      ([, key, value]) => [key, value.trim()],
+    ),
   );
 }
 
@@ -89,29 +90,42 @@ function normalizeAction(value, context) {
 function normalizePreviewRows(value, context) {
   if (!value) return undefined;
 
-  return assertArray(value, `${context} must be a non-empty array.`).map((row, index) => {
-    assertObject(row, `${context}[${index}] must be an object.`);
-    return {
-      label: assertString(row.label, `${context}[${index}].label is required.`),
-      value: assertString(row.value, `${context}[${index}].value is required.`),
-      valueTone:
-        typeof row.valueTone === "string" && row.valueTone.length > 0
-          ? row.valueTone
-          : undefined,
-    };
-  });
+  return assertArray(value, `${context} must be a non-empty array.`).map(
+    (row, index) => {
+      assertObject(row, `${context}[${index}] must be an object.`);
+      return {
+        label: assertString(
+          row.label,
+          `${context}[${index}].label is required.`,
+        ),
+        value: assertString(
+          row.value,
+          `${context}[${index}].value is required.`,
+        ),
+        valueTone:
+          typeof row.valueTone === "string" && row.valueTone.length > 0
+            ? row.valueTone
+            : undefined,
+      };
+    },
+  );
 }
 
 function normalizePreviewTabs(value, context) {
   if (!value) return undefined;
 
-  return assertArray(value, `${context} must be a non-empty array.`).map((tab, index) => {
-    assertObject(tab, `${context}[${index}] must be an object.`);
-    return {
-      label: assertString(tab.label, `${context}[${index}].label is required.`),
-      active: Boolean(tab.active),
-    };
-  });
+  return assertArray(value, `${context} must be a non-empty array.`).map(
+    (tab, index) => {
+      assertObject(tab, `${context}[${index}] must be an object.`);
+      return {
+        label: assertString(
+          tab.label,
+          `${context}[${index}].label is required.`,
+        ),
+        active: Boolean(tab.active),
+      };
+    },
+  );
 }
 
 function normalizePreview(value, context) {
@@ -131,80 +145,113 @@ function normalizePreview(value, context) {
     title: typeof value.title === "string" ? value.title.trim() : undefined,
     meta: typeof value.meta === "string" ? value.meta.trim() : undefined,
     statusLabel:
-      typeof value.statusLabel === "string" ? value.statusLabel.trim() : undefined,
+      typeof value.statusLabel === "string"
+        ? value.statusLabel.trim()
+        : undefined,
     statusTone:
-      typeof value.statusTone === "string" ? value.statusTone.trim() : undefined,
+      typeof value.statusTone === "string"
+        ? value.statusTone.trim()
+        : undefined,
     rows,
     code,
     tabs: normalizePreviewTabs(value.tabs, `${context}.tabs`),
     footerText:
-      typeof value.footerText === "string" ? value.footerText.trim() : undefined,
+      typeof value.footerText === "string"
+        ? value.footerText.trim()
+        : undefined,
   };
 }
 
 function normalizeFeatureList(value, context) {
-  return assertArray(value, `${context} must be a non-empty array.`).map((item, index) => {
-    assertObject(item, `${context}[${index}] must be an object.`);
-    return {
-      title: assertString(item.title, `${context}[${index}].title is required.`),
-      description: assertString(
-        item.description,
-        `${context}[${index}].description is required.`,
-      ),
-      tone: typeof item.tone === "string" ? item.tone.trim() : "primary",
-      icon: typeof item.icon === "string" ? item.icon.trim() : "spark",
-    };
-  });
+  return assertArray(value, `${context} must be a non-empty array.`).map(
+    (item, index) => {
+      assertObject(item, `${context}[${index}] must be an object.`);
+      return {
+        title: assertString(
+          item.title,
+          `${context}[${index}].title is required.`,
+        ),
+        description: assertString(
+          item.description,
+          `${context}[${index}].description is required.`,
+        ),
+        tone: typeof item.tone === "string" ? item.tone.trim() : "primary",
+        icon: typeof item.icon === "string" ? item.icon.trim() : "spark",
+      };
+    },
+  );
 }
 
 function normalizeStepList(value, context) {
-  return assertArray(value, `${context} must be a non-empty array.`).map((item, index) => {
-    assertObject(item, `${context}[${index}] must be an object.`);
-    return {
-      title: assertString(item.title, `${context}[${index}].title is required.`),
-      description: assertString(
-        item.description,
-        `${context}[${index}].description is required.`,
-      ),
-    };
-  });
+  return assertArray(value, `${context} must be a non-empty array.`).map(
+    (item, index) => {
+      assertObject(item, `${context}[${index}] must be an object.`);
+      return {
+        title: assertString(
+          item.title,
+          `${context}[${index}].title is required.`,
+        ),
+        description: assertString(
+          item.description,
+          `${context}[${index}].description is required.`,
+        ),
+      };
+    },
+  );
 }
 
 function normalizeStringList(value, context) {
-  return assertArray(value, `${context} must be a non-empty array.`).map((item, index) =>
-    assertString(item, `${context}[${index}] must be a string.`),
+  return assertArray(value, `${context} must be a non-empty array.`).map(
+    (item, index) =>
+      assertString(item, `${context}[${index}] must be a string.`),
   );
 }
 
 function normalizeDeveloperTabs(value, context) {
-  return assertArray(value, `${context} must be a non-empty array.`).map((tab, index) => {
-    assertObject(tab, `${context}[${index}] must be an object.`);
-    return {
-      value: assertString(tab.value, `${context}[${index}].value is required.`),
-      label: assertString(tab.label, `${context}[${index}].label is required.`),
-      title: assertString(tab.title, `${context}[${index}].title is required.`),
-      meta: assertString(tab.meta, `${context}[${index}].meta is required.`),
-      code: assertString(tab.code, `${context}[${index}].code is required.`).replace(
-        /\r\n/g,
-        "\n",
-      ),
-      supportingCopy: assertString(
-        tab.supportingCopy,
-        `${context}[${index}].supportingCopy is required.`,
-      ),
-      link: normalizeLink(tab.link, `${context}[${index}].link`),
-    };
-  });
+  return assertArray(value, `${context} must be a non-empty array.`).map(
+    (tab, index) => {
+      assertObject(tab, `${context}[${index}] must be an object.`);
+      return {
+        value: assertString(
+          tab.value,
+          `${context}[${index}].value is required.`,
+        ),
+        label: assertString(
+          tab.label,
+          `${context}[${index}].label is required.`,
+        ),
+        title: assertString(
+          tab.title,
+          `${context}[${index}].title is required.`,
+        ),
+        meta: assertString(tab.meta, `${context}[${index}].meta is required.`),
+        code: assertString(
+          tab.code,
+          `${context}[${index}].code is required.`,
+        ).replace(/\r\n/g, "\n"),
+        supportingCopy: assertString(
+          tab.supportingCopy,
+          `${context}[${index}].supportingCopy is required.`,
+        ),
+        link: normalizeLink(tab.link, `${context}[${index}].link`),
+      };
+    },
+  );
 }
 
 function normalizeColumns(value, context) {
-  return assertArray(value, `${context} must be a non-empty array.`).map((column, index) => {
-    assertObject(column, `${context}[${index}] must be an object.`);
-    return {
-      title: assertString(column.title, `${context}[${index}].title is required.`),
-      items: normalizeStringList(column.items, `${context}[${index}].items`),
-    };
-  });
+  return assertArray(value, `${context} must be a non-empty array.`).map(
+    (column, index) => {
+      assertObject(column, `${context}[${index}] must be an object.`);
+      return {
+        title: assertString(
+          column.title,
+          `${context}[${index}].title is required.`,
+        ),
+        items: normalizeStringList(column.items, `${context}[${index}].items`),
+      };
+    },
+  );
 }
 
 function normalizeLanding(rawLanding) {
@@ -217,7 +264,10 @@ function normalizeLanding(rawLanding) {
   assertObject(featureSection, "landing.featureSection must be an object.");
 
   const howItWorksSection = rawLanding.howItWorksSection;
-  assertObject(howItWorksSection, "landing.howItWorksSection must be an object.");
+  assertObject(
+    howItWorksSection,
+    "landing.howItWorksSection must be an object.",
+  );
 
   const useCasesSection = rawLanding.useCasesSection;
   assertObject(useCasesSection, "landing.useCasesSection must be an object.");
@@ -373,7 +423,8 @@ function normalizeLanding(rawLanding) {
         "landing.footer.brandLabel is required.",
       ),
       brandHref:
-        typeof footer.brandHref === "string" && footer.brandHref.trim().length > 0
+        typeof footer.brandHref === "string" &&
+        footer.brandHref.trim().length > 0
           ? footer.brandHref.trim()
           : "/",
       copyright: assertString(
@@ -383,7 +434,9 @@ function normalizeLanding(rawLanding) {
       links: assertArray(
         footer.links,
         "landing.footer.links must be a non-empty array.",
-      ).map((link, index) => normalizeLink(link, `landing.footer.links[${index}]`)),
+      ).map((link, index) =>
+        normalizeLink(link, `landing.footer.links[${index}]`),
+      ),
     },
   };
 }
@@ -412,7 +465,11 @@ export function normalizeTernentAppManifest(rawManifest, repoRoot) {
   }
 
   const defaultThemeMode = app.defaultThemeMode === "light" ? "light" : "dark";
-  const derivedThemeMeta = deriveThemeMeta(repoRoot, themeName, defaultThemeMode);
+  const derivedThemeMeta = deriveThemeMeta(
+    repoRoot,
+    themeName,
+    defaultThemeMode,
+  );
 
   return {
     app: {
@@ -427,13 +484,17 @@ export function normalizeTernentAppManifest(rawManifest, repoRoot) {
         typeof seo.shortName === "string" && seo.shortName.trim().length > 0
           ? seo.shortName.trim()
           : assertString(app.title, "app.title is required."),
-      description: assertString(seo.description, "seo.description is required."),
+      description: assertString(
+        seo.description,
+        "seo.description is required.",
+      ),
       themeColor:
         typeof seo.themeColor === "string" && seo.themeColor.trim().length > 0
           ? seo.themeColor.trim()
           : derivedThemeMeta.themeColor,
       backgroundColor:
-        typeof seo.backgroundColor === "string" && seo.backgroundColor.trim().length > 0
+        typeof seo.backgroundColor === "string" &&
+        seo.backgroundColor.trim().length > 0
           ? seo.backgroundColor.trim()
           : derivedThemeMeta.backgroundColor,
       lang:
@@ -452,7 +513,10 @@ export function loadTernentAppManifest(manifestPath, repoRoot) {
 }
 
 export function loadTernentAppManifestForDir(appDir, repoRoot) {
-  return loadTernentAppManifest(path.join(appDir, CANONICAL_APP_MANIFEST), repoRoot);
+  return loadTernentAppManifest(
+    path.join(appDir, CANONICAL_APP_MANIFEST),
+    repoRoot,
+  );
 }
 
 export function loadTemplateManifest(repoRoot) {
@@ -491,7 +555,9 @@ export type AppSeoConfig = {
 
 export const appConfig = ${toJson(manifest.app)} as const satisfies AppConfig;
 
-export const appSeoConfig = ${toJson(manifest.seo)} as const satisfies AppSeoConfig;
+export const appSeoConfig = ${toJson(
+    manifest.seo,
+  )} as const satisfies AppSeoConfig;
 
 export const appThemeName = ${JSON.stringify(manifest.app.themeName)};
 
@@ -529,7 +595,9 @@ export function normalizeScaffoldedAppFiles(appDir, repoRoot) {
   const tsconfigPath = path.join(appDir, "tsconfig.json");
   if (fs.existsSync(tsconfigPath)) {
     const repoTsconfigPath = path.join(repoRoot, "tsconfig.json");
-    const extendsPath = path.relative(appDir, repoTsconfigPath).replaceAll(path.sep, "/");
+    const extendsPath = path
+      .relative(appDir, repoTsconfigPath)
+      .replaceAll(path.sep, "/");
 
     const source = fs.readFileSync(tsconfigPath, "utf8");
     const next = source.replace(
@@ -545,7 +613,10 @@ export function normalizeScaffoldedAppFiles(appDir, repoRoot) {
   const viteConfigPath = path.join(appDir, "vite.config.ts");
   if (fs.existsSync(viteConfigPath)) {
     const sealCliProofPath = path
-      .relative(appDir, path.join(repoRoot, "packages", "seal-cli", "src", "proof.ts"))
+      .relative(
+        appDir,
+        path.join(repoRoot, "packages", "seal-cli", "src", "proof.ts"),
+      )
       .replaceAll(path.sep, "/");
 
     const source = fs.readFileSync(viteConfigPath, "utf8");
@@ -765,12 +836,6 @@ jobs:
 
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prebuilt --prod --cwd \${{ github.workspace }}/apps/${appId} --token=\${{ secrets.VERCEL_TOKEN }}
-
-      - name: Update app version in Redis
-        run: node .ops/update-redis-version.mjs
-        env:
-          REDIS_PASSWORD: \${{ secrets.REDIS_PASSWORD }}
-          REDIS_ENDPOINT_URI: \${{ secrets.REDIS_ENDPOINT_URI }}
 `;
 }
 
@@ -798,7 +863,9 @@ export function updatePublishScriptSource(source, appId) {
 
   return source.replace(
     arrayPattern,
-    `const appsToPublish = [\n${nextEntries.map((entry) => `  "${entry}",`).join("\n")}\n];`,
+    `const appsToPublish = [\n${nextEntries
+      .map((entry) => `  "${entry}",`)
+      .join("\n")}\n];`,
   );
 }
 

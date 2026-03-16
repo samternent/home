@@ -10,14 +10,6 @@ services:
       postgres:
         condition: service_healthy
 
-  footballsocial-api:
-    image: "samternent/footballsocial-api"
-    restart: always
-    ports:
-      - "8002:3000"
-    env_file:
-      - "./footballsocial-api/.env"
-
   postgres:
     image: "postgres:17-alpine"
     restart: always

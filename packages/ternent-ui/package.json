@@ -33,8 +33,6 @@
     "./themes/sunset.css": "./src/themes/sunset.css",
     "./themes/armour.css": "./src/themes/armour.css",
     "./themes/aurora.css": "./src/themes/aurora.css",
-    "./themes": "./dist/themes.js",
-    "./use": "./dist/use.js",
     "./tailwind.config": "./tailwind.config.js"
   },
   "scripts": {

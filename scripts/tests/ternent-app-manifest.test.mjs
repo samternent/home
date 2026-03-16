@@ -16,10 +16,10 @@ import {
 
 const repoRoot = path.resolve(new URL("../..", import.meta.url).pathname);
 
-test("loads the proof manifest into normalized runtime config", () => {
-  const manifest = loadTernentAppManifestForDir(path.join(repoRoot, "apps", "proof"), repoRoot);
+test("loads the seal manifest into normalized runtime config", () => {
+  const manifest = loadTernentAppManifestForDir(path.join(repoRoot, "apps", "seal"), repoRoot);
 
-  assert.equal(manifest.app.appId, "proof");
+  assert.equal(manifest.app.appId, "seal");
   assert.equal(manifest.app.themeName, "proof");
   assert.equal(manifest.app.defaultThemeMode, "dark");
   assert.equal(manifest.landing.developerSection.tabs[0].value, "js");
@@ -163,7 +163,7 @@ test("builds a deploy workflow for scaffolded apps", () => {
 });
 
 test("adds scaffolded apps to the publish script once", () => {
-  const source = `const appsToPublish = [\n  "../apps/proof",\n];\n`;
+  const source = `const appsToPublish = [\n  "../apps/seal",\n];\n`;
 
   const once = updatePublishScriptSource(source, "armour");
   const twice = updatePublishScriptSource(once, "armour");

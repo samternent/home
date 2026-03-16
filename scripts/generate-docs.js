@@ -46,20 +46,6 @@ const PACKAGE_CONFIGS = {
     ],
     mainFunctions: ["generate", "encrypt", "decrypt"],
   },
-  "game-kit": {
-    type: "typescript",
-    description:
-      "A lightweight game engine toolkit with animation loop management, scene handling, and sprite utilities.",
-    features: [
-      "Animation Loop Management: Built on requestAnimationFrame for smooth 60fps gameplay",
-      "Scene Management: Create and manage multiple game scenes",
-      "Sprite System: Handle sprite rendering and animations",
-      "Event System: Register and manage game loop callbacks",
-      "Performance Optimized: Efficient rendering and memory management",
-      "TypeScript Support: Full type safety and IntelliSense support",
-    ],
-    mainFunctions: ["createEngine", "createScene", "createSprite"],
-  },
   identity: {
     type: "typescript",
     description:
@@ -198,7 +184,7 @@ ${description}
 ${features
   .map(
     (feature) =>
-      `- ✅ **${feature.split(":")[0]}**: ${feature.split(":")[1] || feature}`
+      `- ✅ **${feature.split(":")[0]}**: ${feature.split(":")[1] || feature}`,
   )
   .join("\n")}
 
@@ -228,7 +214,7 @@ ${mainFunctions
     (func) => `#### \`${func}()\`
 // TODO: Add documentation for ${func}
 
-`
+`,
   )
   .join("")}
 
@@ -405,7 +391,7 @@ function processTypeScriptPackage(packageDir, packageName) {
 
   const tsFiles = findTSFiles(srcDir);
   console.log(
-    `📁 Processing ${tsFiles.length} TypeScript files in ${packageName}`
+    `📁 Processing ${tsFiles.length} TypeScript files in ${packageName}`,
   );
 
   tsFiles.forEach((file) => {
@@ -430,7 +416,7 @@ function main() {
   console.log(
     `📦 Found ${packages.length} packages:`,
     packages.join(", "),
-    "\n"
+    "\n",
   );
 
   for (const packageName of packages) {
@@ -446,7 +432,7 @@ function main() {
       processTypeScriptPackage(packageDir, packageName);
     } else if (config && config.type === "rust-wasm") {
       console.log(
-        `🦀 Skipping Rust package ${packageName} (use cargo doc for Rust documentation)`
+        `🦀 Skipping Rust package ${packageName} (use cargo doc for Rust documentation)`,
       );
     } else {
       console.log(`⚠️  Unknown package type for ${packageName}`);

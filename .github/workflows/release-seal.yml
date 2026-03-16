@@ -1,0 +1,60 @@
+name: Release seal
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - apps/seal/package.json
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-seal
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+
+      - name: Read seal version
+        id: seal
+        run: |
+          version="$(node -p "require('./apps/seal/package.json').version")"
+          tag="seal-${version}"
+
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+
+      - name: Check whether release already exists
+        id: release
+        run: |
+          if git ls-remote --exit-code --tags origin "refs/tags/${{ steps.seal.outputs.tag }}" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create GitHub release
+        if: steps.release.outputs.exists != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          gh release create "${{ steps.seal.outputs.tag }}" \
+            --target "${{ github.sha }}" \
+            --title "${{ steps.seal.outputs.tag }}" \
+            --generate-notes

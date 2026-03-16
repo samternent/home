@@ -6,13 +6,6 @@ services:
     volumes:
       - ../:/app
 
-  footballsocial-api:
-    image: "samternent/footballsocial-api"
-    platform: linux/amd64
-    command: "pnpm --filter footballsocial-api dev"
-    volumes:
-      - ../:/app
-
   postgres:
     image: "postgres:17-alpine"
     platform: linux/amd64

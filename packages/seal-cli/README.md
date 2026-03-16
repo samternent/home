@@ -1,6 +1,6 @@
 # @ternent/seal-cli
 
-Seal signs files and manifests. It verifies artifacts offline. It emits portable proof JSON that `apps/proof` can verify in the browser without duplicate crypto logic.
+Seal signs files and manifests. It verifies artifacts offline. It emits portable proof JSON that `apps/seal` can verify in the browser without duplicate crypto logic.
 
 ## Install
 
@@ -22,9 +22,9 @@ export SEAL_PUBLIC_KEY="$(cat public-key.pem)"
 ## Commands
 
 ```bash
-seal manifest create --input apps/proof/dist --out apps/proof/dist/dist-manifest.json
-seal sign --input apps/proof/dist/dist-manifest.json --out apps/proof/dist/proof.json
-seal verify --proof apps/proof/dist/proof.json --input apps/proof/dist/dist-manifest.json --json
+seal manifest create --input apps/seal/dist --out apps/seal/dist/dist-manifest.json
+seal sign --input apps/seal/dist/dist-manifest.json --out apps/seal/dist/proof.json
+seal verify --proof apps/seal/dist/proof.json --input apps/seal/dist/dist-manifest.json --json
 seal public-key --json
 ```
 
@@ -117,7 +117,7 @@ Public key:
 
 ## Frontend Contract
 
-`apps/proof` verifies published artifacts by fetching:
+`apps/seal` verifies published artifacts by fetching:
 
 - `/dist-manifest.json`
 - `/proof.json`

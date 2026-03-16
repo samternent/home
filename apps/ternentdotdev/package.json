@@ -30,7 +30,6 @@
     "highlight.js": "^11.10.0",
     "luxon": "^3.5.0",
     "marked": "^9.1.6",
-    "sams-game-kit": "workspace:*",
     "ternent-encrypt": "workspace:*",
     "ternent-identity": "workspace:*",
     "ternent-ledger-vue": "workspace:*",

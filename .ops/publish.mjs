@@ -3,10 +3,8 @@ import shell from "shelljs";
 const appsToPublish = [
   "../apps/armour",
   "../apps/concord",
-  "../apps/footballsocial",
-  "../apps/footballsocial-api",
   "../apps/ledger",
-  "../apps/proof",
+  "../apps/seal",
   "../apps/ternent-api",
   "../apps/ternentdotdev",
 ];
@@ -16,7 +14,6 @@ const packagesToPublish = [
   "../packages/identity",
   "../packages/utils",
   "../packages/concord-protocol",
-  "../packages/game-kit",
   "../packages/ternent-ui",
   "../packages/ragejs",
   "../packages/seal-cli",

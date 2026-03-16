@@ -11,7 +11,7 @@ const repoRoot = process.cwd();
 
 function printUsage() {
   console.log(`Usage:
-  pnpm sync:ternent-app -- --app apps/proof
+  pnpm sync:ternent-app -- --app apps/seal
 `);
 }
 

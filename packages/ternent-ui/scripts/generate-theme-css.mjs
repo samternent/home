@@ -26,7 +26,9 @@ const singletonThemeSelectors = {
 };
 
 function renderDeclaration([property, value], indent = "  ") {
-  const normalizedValue = String(value).trim().replace(/[;,]+\s*$/, "");
+  const normalizedValue = String(value)
+    .trim()
+    .replace(/[;,]+\s*$/, "");
   return `${indent}${property}: ${normalizedValue};`;
 }
 
@@ -69,7 +71,9 @@ function renderThemeCss(themeName, variants) {
 
   for (const mode of ["light", "dark"]) {
     if (!variants[mode]) continue;
-    sections.push(renderRule(getThemeSelector(themeName, mode), variants[mode]));
+    sections.push(
+      renderRule(getThemeSelector(themeName, mode), variants[mode]),
+    );
     sections.push("");
   }
 
