@@ -47,7 +47,7 @@ const canSign = computed(() => {
 });
 
 const disabledReason = computed(() => {
-  if (!hasIdentity.value) return "Load an identity to sign content.";
+  if (!hasIdentity.value) return "Load or generate a signer to continue.";
   if (mode.value === "text" && !textContent.value.trim()) return "Enter text to enable signing.";
   if (mode.value === "file" && !selectedFile.value) return "Choose a file to enable signing.";
   return "";
@@ -154,21 +154,27 @@ const onSign = async () => {
     <SectionIntro
       eyebrow="Sign"
       title="Turn text or files into signed proofs"
-      description="Use your active local identity to hash bytes, sign them deterministically, and export a self-contained proof artifact."
+      description="Hash bytes, sign them locally, and export a self-contained proof artifact."
     />
 
-    <Card v-if="!hasIdentity" variant="panel" padding="md" class="space-y-4">
-      <Badge tone="warning" variant="soft">No identity loaded</Badge>
-      <p class="m-0 text-sm text-[var(--ui-fg-muted)]">
-        Load an identity before signing content.
-      </p>
-      <Button as="RouterLink" to="/app/identity" variant="secondary">
-        Go to Identity
-      </Button>
-    </Card>
+    <Card variant="elevated" padding="md" class="space-y-6 border-[color-mix(in_srgb,var(--ui-border)_84%,transparent)]">
+      <div
+        v-if="!hasIdentity"
+        class="rounded-[var(--ui-radius-md)] border border-[var(--ui-warning)] bg-[color-mix(in_srgb,var(--ui-warning-muted)_72%,transparent)] px-4 py-4"
+      >
+        <div class="flex flex-wrap items-start justify-between gap-3">
+          <div class="space-y-2">
+            <Badge tone="warning" variant="soft">Signer required</Badge>
+            <p class="m-0 text-sm text-[var(--ui-fg)]">
+              Load or generate a signer to continue. The signing workflow stays here.
+            </p>
+          </div>
+          <Button as="RouterLink" to="/settings/identity" variant="secondary">
+            Open signer settings
+          </Button>
+        </div>
+      </div>
 
-    <template v-else>
-      <Card variant="elevated" padding="md" class="space-y-6 border-[color-mix(in_srgb,var(--ui-border)_84%,transparent)]">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
@@ -178,7 +184,12 @@ const onSign = async () => {
               Choose the source material, confirm the current payload, then sign and export the proof artifact.
             </p>
           </div>
-          <Badge tone="neutral" variant="outline">{{ mode === "text" ? "Text payload" : "File payload" }}</Badge>
+          <Badge
+            :tone="hasIdentity ? 'neutral' : 'warning'"
+            variant="outline"
+          >
+            {{ mode === "text" ? "Text payload" : "File payload" }}
+          </Badge>
         </div>
 
         <Tabs v-model="mode" :items="signModeTabs" variant="pill">
@@ -244,7 +255,13 @@ const onSign = async () => {
 
         <div class="space-y-3 border-t border-[color-mix(in_srgb,var(--ui-border)_80%,transparent)] pt-5">
           <div class="flex flex-wrap items-center gap-3">
-            <Button variant="primary" :disabled="!canSign" :loading="isSigning" @click="onSign">
+            <Button
+              variant="primary"
+              :disabled="!canSign"
+              :loading="isSigning"
+              :title="disabledReason || undefined"
+              @click="onSign"
+            >
               {{ isSigning ? "Signing..." : "Sign payload" }}
             </Button>
             <Badge tone="neutral" variant="outline">
@@ -257,44 +274,43 @@ const onSign = async () => {
         </div>
       </Card>
 
-      <div v-if="signedProof" class="space-y-5">
-        <PreviewPanel
-          title="Proof artifact ready"
-          :rows="proofRows"
-          status-label="Signed"
-          status-tone="neutral"
-          emphasis="strong"
-        />
+    <div v-if="signedProof" class="space-y-5">
+      <PreviewPanel
+        title="Proof artifact ready"
+        :rows="proofRows"
+        status-label="Signed"
+        status-tone="neutral"
+        emphasis="strong"
+      />
 
-        <Card variant="subtle" padding="md" class="space-y-4">
-          <div class="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
-                Export
-              </p>
-              <p class="mt-2 text-sm text-[var(--ui-fg-muted)]">
-                Download the proof JSON or inspect the raw payload before sending it elsewhere.
-              </p>
-            </div>
-            <Button variant="primary" @click="downloadProof">Download proof</Button>
+      <Card variant="subtle" padding="md" class="space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
+              Export
+            </p>
+            <p class="mt-2 text-sm text-[var(--ui-fg-muted)]">
+              Download the proof JSON or inspect the raw payload before sending it elsewhere.
+            </p>
           </div>
+          <Button variant="primary" @click="downloadProof">Download proof</Button>
+        </div>
 
-          <Accordion
-            :value="showProofJson ? 'raw-proof' : undefined"
-            @update:value="(value) => { showProofJson = value === 'raw-proof'; }"
-          >
-            <AccordionItem value="raw-proof" title="Inspect raw proof JSON">
-              <Textarea
-                :model-value="proofJson"
-                readonly
-                rows="12"
-                class="proof-shell-copy"
-              />
-            </AccordionItem>
-          </Accordion>
-        </Card>
-      </div>
-    </template>
+        <Accordion
+          :value="showProofJson ? 'raw-proof' : undefined"
+          @update:value="(value) => { showProofJson = value === 'raw-proof'; }"
+        >
+          <AccordionItem value="raw-proof" title="Inspect raw proof JSON">
+            <Textarea
+              :model-value="proofJson"
+              readonly
+              rows="12"
+              class="proof-shell-copy"
+            />
+          </AccordionItem>
+        </Accordion>
+      </Card>
+    </div>
 
     <p
       v-if="notice"

@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 test("offline mode banner appears when network drops", async ({ page, context }) => {
   await page.goto("/");
-  await expect(page.getByText("Cryptographic proof you can take anywhere.")).toBeVisible();
+  await expect(page.getByText("A portable proof primitive for signed artifacts.")).toBeVisible();
 
   await page.goto("/app/verify");
   await context.setOffline(true);

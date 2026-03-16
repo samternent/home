@@ -1,8 +1,17 @@
 import { test, expect } from "@playwright/test";
 
 test("generate identity, sign text, verify proof and mismatch", async ({ page }) => {
-  await page.goto("/app/identity");
-  await page.getByRole("button", { name: "Generate new identity" }).click();
+  await page.goto("/app");
+  await expect(page).toHaveURL(/\/app\/sign$/);
+  await expect(page.getByText("Signer required")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Sign payload" })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Sign payload" })).toHaveAttribute(
+    "title",
+    "Load or generate a signer to continue.",
+  );
+
+  await page.getByRole("link", { name: "Settings", exact: true }).click();
+  await page.getByRole("button", { name: "Generate signer" }).click();
   await expect(page.getByText("Identity created. Export it now and store it securely.")).toBeVisible();
 
   await page.getByRole("link", { name: "Sign" }).click();
@@ -39,21 +48,22 @@ test("export, clear, and import identity through the consolidated app identity f
   await page.goto("/app/identity");
   await expect(page.getByRole("button", { name: "Download export file" })).toHaveCount(0);
 
-  await page.getByRole("button", { name: "Generate new identity" }).click();
+  await page.getByRole("button", { name: "Generate signer" }).click();
   await expect(page.getByText("Identity created. Export it now and store it securely.")).toBeVisible();
 
+  await page.getByRole("button", { name: "Reveal export payload" }).click();
   const exportedPayload = await page.locator("textarea[readonly]").inputValue();
   await expect(page.getByRole("button", { name: "Download export file" })).toBeVisible();
 
-  await page.getByRole("button", { name: "Clear identity" }).click();
+  await page.getByRole("button", { name: "Clear signer" }).click();
   await expect(page.getByText("Identity cleared from memory and remembered storage.")).toBeVisible();
-  await expect(page.getByText("No identity loaded").first()).toBeVisible();
+  await expect(page.getByText("No signer loaded").first()).toBeVisible();
 
-  await page.getByRole("button", { name: "Import identity" }).click();
+  await page.getByRole("button", { name: "Import signer" }).click();
   await page
     .getByPlaceholder('{"format":"ternent-identity","version":"2","algorithm":"Ed25519","material":{"kind":"seed","seed":"..."},...}')
     .fill(exportedPayload);
-  await page.getByRole("button", { name: "Import identity", exact: true }).click();
+  await page.getByRole("button", { name: "Import signer", exact: true }).click();
 
   await expect(page.getByText("Identity imported successfully.")).toBeVisible();
   await expect(page.getByRole("button", { name: "Download export file" })).toBeVisible();

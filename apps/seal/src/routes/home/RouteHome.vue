@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { LandingPage } from "ternent-ui/patterns";
 import { appConfig, landingPageConfig } from "@/app/config/app.config";
+import HeroProofArtifactCard from "@/modules/proof/components/HeroProofArtifactCard.vue";
+import LivePublishedProofJson from "@/modules/proof/components/LivePublishedProofJson.vue";
 import PublishedSiteProofPreview from "@/modules/proof/components/PublishedSiteProofPreview.vue";
 
 const publishedSiteBaseUrl = import.meta.env.DEV
@@ -11,12 +13,11 @@ const publishedSiteBaseUrl = import.meta.env.DEV
 <template>
   <LandingPage :config="landingPageConfig">
     <template #hero-preview>
-      <PublishedSiteProofPreview
-        mode="details"
-        headline="Verified proof"
-        :base-url="publishedSiteBaseUrl"
-        variant="full"
-      />
+      <HeroProofArtifactCard :base-url="publishedSiteBaseUrl" />
+    </template>
+
+    <template v-slot:proofJson>
+      <LivePublishedProofJson :base-url="publishedSiteBaseUrl" />
     </template>
 
     <template #footer-meta>

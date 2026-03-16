@@ -17,6 +17,14 @@ function createWrapper() {
   return mount(RouteHome, {
     global: {
       stubs: {
+        HeroProofArtifactCard: {
+          template:
+            '<div data-testid="hero-proof-artifact-card">proof.jsonseal-proofartifact.tar.gzEd25519</div>',
+        },
+        LivePublishedProofJson: {
+          template:
+            '<div data-testid="live-published-proof-json">proof.jsonLive proof verified"subject":{"path":"dist-manifest.json"}</div>',
+        },
         PublishedSiteProofPreview: {
           template: "<div data-testid=\"published-site-proof-preview\" />",
         },
@@ -47,39 +55,56 @@ describe("RouteHome landing page", () => {
     const wrapper = createWrapper();
     const text = wrapper.text();
 
+    expect(text).toContain("A portable proof primitive for signed artifacts.");
     expect(text).toContain(
-      "Sign files and static site builds. Verify them anywhere.",
+      "Seal defines a minimal contract for producing versioned JSON proofs for files and build outputs.",
     );
-    expect(text).toContain("Portable signed proof artifacts");
-    expect(text).toContain("How it works");
-    expect(text).toContain("Common use cases");
-    expect(text).toContain("Browser, CLI, and CI share the same proof model");
-    expect(text).toContain("What Seal is and isn’t");
-    expect(text).toContain("Start signing your build artifacts");
-    expect(text).toContain("Open Web App");
-    expect(text).toContain("View GitHub Action");
+    expect(text).toContain("The primitive");
+    expect(text).toContain("The proof format");
+    expect(text).toContain("Use it where you build");
+    expect(text).toContain("Publish an artifact with its proof");
+    expect(text).toContain("For developers");
+    expect(text).toContain("Seal is not");
+    expect(text).toContain("Start with GitHub Actions. Keep the same proof everywhere.");
+    expect(text).toContain("Sign in GitHub Actions");
     expect(text).toContain("Install CLI");
-    expect(text).toContain("Static websites");
-    expect(text).toContain("Build pipelines");
+    expect(text).toContain("View JavaScript API");
+    expect(text).toContain("A hosted verification service");
+    expect(text).toContain("A key management platform");
     expect(text).toContain("A blockchain");
-    expect(text).toContain("A PKI replacement");
+    expect(text).toContain("A new cryptographic algorithm");
+    expect(text).not.toContain("Open Web App");
+    expect(text).not.toContain("View GitHub Action");
+    expect(text).not.toContain("Common use cases");
+    expect(text).not.toContain("ternent.dev suite");
+    expect(text).not.toContain("Concord");
+    expect(text).not.toContain("PixPax");
+    expect(text).not.toContain("Browser reference app");
 
     for (const phrase of bannedPhrases) {
       expect(text.toLowerCase()).not.toContain(phrase);
     }
 
+    expect(wrapper.find('a[href="#proof-model"]').exists()).toBe(false);
+    expect(wrapper.find('a[href="#proof-json"]').exists()).toBe(false);
+    expect(wrapper.find('a[href="#static-build"]').exists()).toBe(false);
+    expect(wrapper.findAll('a[href="#surfaces"]').length).toBeGreaterThan(0);
+    expect(text).toContain("proof.json");
+    expect(text).toContain("seal-proof");
+    expect(text).toContain("artifact.tar.gz");
     expect(text).toContain("JavaScript");
     expect(text).toContain("seal-cli");
     expect(text).toContain("GitHub Action");
-    expect(text).toContain(
-      'import { createSealProof, verifySealProofAgainstBytes } from "@ternent/seal-cli/proof"',
-    );
+    expect(text).toContain('createSealProof,');
+    expect(text).toContain('verifySealProofAgainstBytes');
+    expect(text).toContain('@ternent/seal-cli/proof');
+    expect(wrapper.find('[data-testid="hero-proof-artifact-card"]').exists()).toBe(true);
     expect(wrapper.find('[data-testid="published-site-proof-preview"]').exists()).toBe(true);
-    expect(wrapper.findAll('[data-testid="published-site-proof-preview"]')).toHaveLength(2);
+    expect(wrapper.findAll('[data-testid="published-site-proof-preview"]')).toHaveLength(1);
 
     await clickTab(wrapper, "seal-cli");
 
-    expect(wrapper.text()).toContain("pnpm add -D @ternent/seal-cli");
+    expect(wrapper.text()).toContain("seal sign --input artifact.tar.gz --out proof.json");
     expect(
       wrapper
         .findAll('a[href="https://www.npmjs.com/package/@ternent/seal-cli"]')

@@ -22,8 +22,11 @@ test("loads the seal manifest into normalized runtime config", () => {
   assert.equal(manifest.app.appId, "seal");
   assert.equal(manifest.app.themeName, "proof");
   assert.equal(manifest.app.defaultThemeMode, "dark");
+  assert.equal(manifest.landing.hero.tertiaryAction.label, "View JavaScript API");
+  assert.equal(manifest.landing.proofModelSection.items.length, 4);
+  assert.equal(manifest.landing.proofJsonSection.title, "The proof format");
   assert.equal(manifest.landing.developerSection.tabs[0].value, "js");
-  assert.equal(manifest.landing.featureSection.items.length, 4);
+  assert.equal(manifest.landing.nonGoalsSection.items.length, 5);
 });
 
 test("rejects a manifest with an unknown ternent-ui theme", () => {

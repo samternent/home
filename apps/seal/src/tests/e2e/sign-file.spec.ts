@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 test("sign file and verify proof only", async ({ page }) => {
   await page.goto("/app/identity");
-  await page.getByRole("button", { name: "Generate new identity" }).click();
+  await page.getByRole("button", { name: "Generate signer" }).click();
   await expect(page.getByText("Identity created. Export it now and store it securely.")).toBeVisible();
 
   await page.getByRole("link", { name: "Sign" }).click();

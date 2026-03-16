@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
 import type { LedgerContainer } from "@ternent/concord-protocol";
-import { STreeView } from "ternent-ui/components";
+import { TreeView } from "ternent-ui/primitives";
 
 import { useLedger } from "../../module/ledger/useLedger";
 
@@ -477,7 +477,7 @@ watch(ledgerText, (next) => {
       <div
         class="flex-1 overflow-auto p-3 bg-[var(--ui-surface)] border-t border-[var(--ui-border)]"
       >
-        <STreeView
+        <TreeView
           v-if="treeState.nodes.length"
           :nodes="treeState.nodes"
           :default-expanded-depth="2"

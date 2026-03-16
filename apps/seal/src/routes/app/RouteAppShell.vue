@@ -12,7 +12,6 @@ const route = useRoute();
 const { identity, hasIdentity } = useIdentitySession();
 
 const tabs = [
-  { path: "/app/identity", title: "Identity", name: "app-identity" },
   { path: "/app/sign", title: "Sign", name: "app-sign" },
   { path: "/app/verify", title: "Verify", name: "app-verify" },
 ];
@@ -29,13 +28,13 @@ const keyIdShort = computed(() => {
 });
 
 const currentPath = computed(() => route.path);
-const currentTabTitle = computed(
-  () =>
-    tabs.find((tab) => route.path.startsWith(tab.path))?.title ?? "Workspace",
-);
+const currentTabTitle = computed(() => {
+  if (route.path.startsWith("/app/identity")) return "Signer settings";
+  return tabs.find((tab) => route.path.startsWith(tab.path))?.title ?? "Workspace";
+});
 const statusTone = computed(() => (hasIdentity.value ? "success" : "neutral"));
 const statusLabel = computed(() =>
-  hasIdentity.value ? "Identity active" : "No identity",
+  hasIdentity.value ? "Signer ready" : "No signer",
 );
 
 const copyKeyId = async () => {
@@ -115,6 +114,14 @@ const copyKeyId = async () => {
                 >
                   GitHub
                 </Button>
+                <Button
+                  as="RouterLink"
+                  to="/settings/identity"
+                  size="sm"
+                  variant="plain-secondary"
+                >
+                  Settings
+                </Button>
               </div>
             </div>
           </div>
@@ -131,7 +138,7 @@ const copyKeyId = async () => {
                     Workspace
                   </p>
                   <p class="m-0 text-sm text-[var(--ui-fg-muted)]">
-                    Local signing and verification for self-contained proofs across the ternent.dev suite.
+                    Sign and verify portable proof artifacts with the shared Seal workflow.
                   </p>
                 </div>
 
@@ -162,7 +169,7 @@ const copyKeyId = async () => {
               <div class="flex items-start justify-between gap-3">
                 <div class="space-y-1">
                   <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
-                    Active signer
+                    Signer status
                   </p>
                   <p class="proof-shell-copy m-0 text-sm text-[var(--ui-fg)]">
                     {{ keyIdShort }}
@@ -185,11 +192,11 @@ const copyKeyId = async () => {
                 </Button>
                 <Button
                   as="RouterLink"
-                  to="/app/identity"
+                  to="/settings/identity"
                   size="xs"
                   variant="plain-secondary"
                 >
-                  Manage identity
+                  Advanced settings
                 </Button>
               </div>
             </Card>
@@ -217,7 +224,7 @@ const copyKeyId = async () => {
             />
           </div>
           <p class="m-0">
-            Seal produces proofs for text, files, and release artifacts.
+            Seal emits portable proof artifacts for builds, files, and release flows.
           </p>
         </div>
       </footer>

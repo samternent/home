@@ -40,7 +40,7 @@ describe("routes", () => {
     const rootChild = appRoute?.children?.find((route) => route.path === "");
 
     expect(typeof rootChild?.redirect).toBe("function");
-    expect((rootChild?.redirect as () => any)()).toEqual({ name: "app-identity" });
+    expect((rootChild?.redirect as () => any)()).toEqual({ name: "app-sign" });
   });
 
   it("redirects settings identity routes to the app identity workspace", () => {

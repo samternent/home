@@ -200,6 +200,24 @@ function normalizeStepList(value, context) {
   );
 }
 
+function normalizeNarrativeItems(value, context) {
+  return assertArray(value, `${context} must be a non-empty array.`).map(
+    (item, index) => {
+      assertObject(item, `${context}[${index}] must be an object.`);
+      return {
+        title: assertString(
+          item.title,
+          `${context}[${index}].title is required.`,
+        ),
+        description: assertString(
+          item.description,
+          `${context}[${index}].description is required.`,
+        ),
+      };
+    },
+  );
+}
+
 function normalizeStringList(value, context) {
   return assertArray(value, `${context} must be a non-empty array.`).map(
     (item, index) =>
@@ -254,29 +272,119 @@ function normalizeColumns(value, context) {
   );
 }
 
+function normalizeProofModelSection(value, context) {
+  if (!value) return undefined;
+  assertObject(value, `${context} must be an object.`);
+  return {
+    eyebrow: assertString(value.eyebrow, `${context}.eyebrow is required.`),
+    title: assertString(value.title, `${context}.title is required.`),
+    description: assertString(
+      value.description,
+      `${context}.description is required.`,
+    ),
+    items: normalizeNarrativeItems(value.items, `${context}.items`),
+  };
+}
+
+function normalizeProofJsonSection(value, context) {
+  if (!value) return undefined;
+  assertObject(value, `${context} must be an object.`);
+  return {
+    eyebrow: assertString(value.eyebrow, `${context}.eyebrow is required.`),
+    title: assertString(value.title, `${context}.title is required.`),
+    description: assertString(
+      value.description,
+      `${context}.description is required.`,
+    ),
+    code: assertString(value.code, `${context}.code is required.`).replace(
+      /\r\n/g,
+      "\n",
+    ),
+    supportingText:
+      typeof value.supportingText === "string" &&
+      value.supportingText.trim().length > 0
+        ? value.supportingText.trim()
+        : undefined,
+  };
+}
+
+function normalizeSurfacesSection(value, context) {
+  if (!value) return undefined;
+  assertObject(value, `${context} must be an object.`);
+  return {
+    eyebrow: assertString(value.eyebrow, `${context}.eyebrow is required.`),
+    title: assertString(value.title, `${context}.title is required.`),
+    description: assertString(
+      value.description,
+      `${context}.description is required.`,
+    ),
+    items: normalizeFeatureList(value.items, `${context}.items`),
+  };
+}
+
+function normalizeStaticBuildSection(value, context) {
+  if (!value) return undefined;
+  assertObject(value, `${context} must be an object.`);
+  return {
+    eyebrow: assertString(value.eyebrow, `${context}.eyebrow is required.`),
+    title: assertString(value.title, `${context}.title is required.`),
+    description: assertString(
+      value.description,
+      `${context}.description is required.`,
+    ),
+    steps: normalizeStepList(value.steps, `${context}.steps`),
+    closingLine:
+      typeof value.closingLine === "string" && value.closingLine.trim().length > 0
+        ? value.closingLine.trim()
+        : undefined,
+    primaryAction: value.primaryAction
+      ? normalizeAction(value.primaryAction, `${context}.primaryAction`)
+      : undefined,
+    secondaryAction: value.secondaryAction
+      ? normalizeAction(value.secondaryAction, `${context}.secondaryAction`)
+      : undefined,
+  };
+}
+
+function normalizeSuiteSection(value, context) {
+  if (!value) return undefined;
+  assertObject(value, `${context} must be an object.`);
+  return {
+    eyebrow: assertString(value.eyebrow, `${context}.eyebrow is required.`),
+    title: assertString(value.title, `${context}.title is required.`),
+    description: assertString(
+      value.description,
+      `${context}.description is required.`,
+    ),
+    supportingText:
+      typeof value.supportingText === "string" &&
+      value.supportingText.trim().length > 0
+        ? value.supportingText.trim()
+        : undefined,
+  };
+}
+
+function normalizeNonGoalsSection(value, context) {
+  if (!value) return undefined;
+  assertObject(value, `${context} must be an object.`);
+  return {
+    eyebrow:
+      typeof value.eyebrow === "string" && value.eyebrow.trim().length > 0
+        ? value.eyebrow.trim()
+        : undefined,
+    title: assertString(value.title, `${context}.title is required.`),
+    items: normalizeStringList(value.items, `${context}.items`),
+  };
+}
+
 function normalizeLanding(rawLanding) {
   assertObject(rawLanding, "landing must be an object.");
 
   const hero = rawLanding.hero;
   assertObject(hero, "landing.hero must be an object.");
 
-  const featureSection = rawLanding.featureSection;
-  assertObject(featureSection, "landing.featureSection must be an object.");
-
-  const howItWorksSection = rawLanding.howItWorksSection;
-  assertObject(
-    howItWorksSection,
-    "landing.howItWorksSection must be an object.",
-  );
-
-  const useCasesSection = rawLanding.useCasesSection;
-  assertObject(useCasesSection, "landing.useCasesSection must be an object.");
-
   const developerSection = rawLanding.developerSection;
   assertObject(developerSection, "landing.developerSection must be an object.");
-
-  const clarifierSection = rawLanding.clarifierSection;
-  assertObject(clarifierSection, "landing.clarifierSection must be an object.");
 
   const ctaSection = rawLanding.ctaSection;
   assertObject(ctaSection, "landing.ctaSection must be an object.");
@@ -298,6 +406,15 @@ function normalizeLanding(rawLanding) {
         hero.description,
         "landing.hero.description is required.",
       ),
+      supportingLine:
+        typeof hero.supportingLine === "string" &&
+        hero.supportingLine.trim().length > 0
+          ? hero.supportingLine.trim()
+          : undefined,
+      note:
+        typeof hero.note === "string" && hero.note.trim().length > 0
+          ? hero.note.trim()
+          : undefined,
       primaryAction: normalizeAction(
         hero.primaryAction,
         "landing.hero.primaryAction",
@@ -305,58 +422,83 @@ function normalizeLanding(rawLanding) {
       secondaryAction: hero.secondaryAction
         ? normalizeAction(hero.secondaryAction, "landing.hero.secondaryAction")
         : undefined,
+      tertiaryAction: hero.tertiaryAction
+        ? normalizeLink(hero.tertiaryAction, "landing.hero.tertiaryAction")
+        : undefined,
       preview: normalizePreview(hero.preview, "landing.hero.preview"),
     },
-    featureSection: {
-      eyebrow: assertString(
-        featureSection.eyebrow,
-        "landing.featureSection.eyebrow is required.",
-      ),
-      title: assertString(
-        featureSection.title,
-        "landing.featureSection.title is required.",
-      ),
-      description:
-        typeof featureSection.description === "string"
-          ? featureSection.description.trim()
-          : undefined,
-      items: normalizeFeatureList(
-        featureSection.items,
-        "landing.featureSection.items",
-      ),
-    },
-    howItWorksSection: {
-      eyebrow: assertString(
-        howItWorksSection.eyebrow,
-        "landing.howItWorksSection.eyebrow is required.",
-      ),
-      title: assertString(
-        howItWorksSection.title,
-        "landing.howItWorksSection.title is required.",
-      ),
-      preview: normalizePreview(
-        howItWorksSection.preview,
-        "landing.howItWorksSection.preview",
-      ),
-      steps: normalizeStepList(
-        howItWorksSection.steps,
-        "landing.howItWorksSection.steps",
-      ),
-    },
-    useCasesSection: {
-      eyebrow: assertString(
-        useCasesSection.eyebrow,
-        "landing.useCasesSection.eyebrow is required.",
-      ),
-      title: assertString(
-        useCasesSection.title,
-        "landing.useCasesSection.title is required.",
-      ),
-      items: normalizeFeatureList(
-        useCasesSection.items,
-        "landing.useCasesSection.items",
-      ),
-    },
+    proofModelSection: normalizeProofModelSection(
+      rawLanding.proofModelSection,
+      "landing.proofModelSection",
+    ),
+    proofJsonSection: normalizeProofJsonSection(
+      rawLanding.proofJsonSection,
+      "landing.proofJsonSection",
+    ),
+    surfacesSection: normalizeSurfacesSection(
+      rawLanding.surfacesSection,
+      "landing.surfacesSection",
+    ),
+    staticBuildSection: normalizeStaticBuildSection(
+      rawLanding.staticBuildSection,
+      "landing.staticBuildSection",
+    ),
+    featureSection: rawLanding.featureSection
+      ? {
+          eyebrow: assertString(
+            rawLanding.featureSection.eyebrow,
+            "landing.featureSection.eyebrow is required.",
+          ),
+          title: assertString(
+            rawLanding.featureSection.title,
+            "landing.featureSection.title is required.",
+          ),
+          description:
+            typeof rawLanding.featureSection.description === "string"
+              ? rawLanding.featureSection.description.trim()
+              : undefined,
+          items: normalizeFeatureList(
+            rawLanding.featureSection.items,
+            "landing.featureSection.items",
+          ),
+        }
+      : undefined,
+    howItWorksSection: rawLanding.howItWorksSection
+      ? {
+          eyebrow: assertString(
+            rawLanding.howItWorksSection.eyebrow,
+            "landing.howItWorksSection.eyebrow is required.",
+          ),
+          title: assertString(
+            rawLanding.howItWorksSection.title,
+            "landing.howItWorksSection.title is required.",
+          ),
+          preview: normalizePreview(
+            rawLanding.howItWorksSection.preview,
+            "landing.howItWorksSection.preview",
+          ),
+          steps: normalizeStepList(
+            rawLanding.howItWorksSection.steps,
+            "landing.howItWorksSection.steps",
+          ),
+        }
+      : undefined,
+    useCasesSection: rawLanding.useCasesSection
+      ? {
+          eyebrow: assertString(
+            rawLanding.useCasesSection.eyebrow,
+            "landing.useCasesSection.eyebrow is required.",
+          ),
+          title: assertString(
+            rawLanding.useCasesSection.title,
+            "landing.useCasesSection.title is required.",
+          ),
+          items: normalizeFeatureList(
+            rawLanding.useCasesSection.items,
+            "landing.useCasesSection.items",
+          ),
+        }
+      : undefined,
     developerSection: {
       eyebrow: assertString(
         developerSection.eyebrow,
@@ -379,20 +521,30 @@ function normalizeLanding(rawLanding) {
         "landing.developerSection.tabs",
       ),
     },
-    clarifierSection: {
-      eyebrow: assertString(
-        clarifierSection.eyebrow,
-        "landing.clarifierSection.eyebrow is required.",
-      ),
-      title: assertString(
-        clarifierSection.title,
-        "landing.clarifierSection.title is required.",
-      ),
-      columns: normalizeColumns(
-        clarifierSection.columns,
-        "landing.clarifierSection.columns",
-      ),
-    },
+    clarifierSection: rawLanding.clarifierSection
+      ? {
+          eyebrow: assertString(
+            rawLanding.clarifierSection.eyebrow,
+            "landing.clarifierSection.eyebrow is required.",
+          ),
+          title: assertString(
+            rawLanding.clarifierSection.title,
+            "landing.clarifierSection.title is required.",
+          ),
+          columns: normalizeColumns(
+            rawLanding.clarifierSection.columns,
+            "landing.clarifierSection.columns",
+          ),
+        }
+      : undefined,
+    suiteSection: normalizeSuiteSection(
+      rawLanding.suiteSection,
+      "landing.suiteSection",
+    ),
+    nonGoalsSection: normalizeNonGoalsSection(
+      rawLanding.nonGoalsSection,
+      "landing.nonGoalsSection",
+    ),
     ctaSection: {
       eyebrow: assertString(
         ctaSection.eyebrow,
@@ -414,6 +566,12 @@ function normalizeLanding(rawLanding) {
         ? normalizeAction(
             ctaSection.secondaryAction,
             "landing.ctaSection.secondaryAction",
+          )
+        : undefined,
+      tertiaryAction: ctaSection.tertiaryAction
+        ? normalizeLink(
+            ctaSection.tertiaryAction,
+            "landing.ctaSection.tertiaryAction",
           )
         : undefined,
     },

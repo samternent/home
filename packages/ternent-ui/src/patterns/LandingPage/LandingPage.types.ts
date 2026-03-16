@@ -46,6 +46,8 @@ export type LandingPageAction = LandingPageLink & {
   variant?: LandingPageActionVariant;
 };
 
+export type LandingPageTertiaryAction = LandingPageLink;
+
 export type LandingPagePreviewTab = {
   label: string;
   active?: boolean;
@@ -80,6 +82,11 @@ export type LandingPageStep = {
   description: string;
 };
 
+export type LandingPageNarrativeItem = {
+  title: string;
+  description: string;
+};
+
 export type LandingPageDeveloperTab = {
   value: string;
   label: string;
@@ -95,29 +102,81 @@ export type LandingPageClarifierColumn = {
   items: readonly string[];
 };
 
+export type LandingPageProofModelSection = {
+  eyebrow: string;
+  title: string;
+  description: string;
+  items: readonly LandingPageNarrativeItem[];
+};
+
+export type LandingPageProofJsonSection = {
+  eyebrow: string;
+  title: string;
+  description: string;
+  code: string;
+  supportingText?: string;
+};
+
+export type LandingPageSurfacesSection = {
+  eyebrow: string;
+  title: string;
+  description: string;
+  items: readonly LandingPageFeature[];
+};
+
+export type LandingPageStaticBuildSection = {
+  eyebrow: string;
+  title: string;
+  description: string;
+  steps: readonly LandingPageStep[];
+  closingLine?: string;
+  primaryAction?: LandingPageAction;
+  secondaryAction?: LandingPageAction;
+};
+
+export type LandingPageSuiteSection = {
+  eyebrow: string;
+  title: string;
+  description: string;
+  supportingText?: string;
+};
+
+export type LandingPageNonGoalsSection = {
+  eyebrow?: string;
+  title: string;
+  items: readonly string[];
+};
+
 export type LandingPageConfig = {
   navigationLinks: readonly LandingPageLink[];
   hero: {
     eyebrow: string;
     title: string;
     description: string;
+    supportingLine?: string;
+    note?: string;
     primaryAction: LandingPageAction;
     secondaryAction?: LandingPageAction;
+    tertiaryAction?: LandingPageTertiaryAction;
     preview: LandingPagePreview;
   };
-  featureSection: {
+  proofModelSection?: LandingPageProofModelSection;
+  proofJsonSection?: LandingPageProofJsonSection;
+  surfacesSection?: LandingPageSurfacesSection;
+  staticBuildSection?: LandingPageStaticBuildSection;
+  featureSection?: {
     eyebrow: string;
     title: string;
     description?: string;
     items: readonly LandingPageFeature[];
   };
-  howItWorksSection: {
+  howItWorksSection?: {
     eyebrow: string;
     title: string;
     preview: LandingPagePreview;
     steps: readonly LandingPageStep[];
   };
-  useCasesSection: {
+  useCasesSection?: {
     eyebrow: string;
     title: string;
     items: readonly LandingPageFeature[];
@@ -129,17 +188,20 @@ export type LandingPageConfig = {
     surfaces: readonly string[];
     tabs: readonly LandingPageDeveloperTab[];
   };
-  clarifierSection: {
+  clarifierSection?: {
     eyebrow: string;
     title: string;
     columns: readonly LandingPageClarifierColumn[];
   };
+  suiteSection?: LandingPageSuiteSection;
+  nonGoalsSection?: LandingPageNonGoalsSection;
   ctaSection: {
     eyebrow: string;
     title: string;
     description: string;
     primaryAction: LandingPageAction;
     secondaryAction?: LandingPageAction;
+    tertiaryAction?: LandingPageTertiaryAction;
   };
   footer: {
     brandLabel: string;
