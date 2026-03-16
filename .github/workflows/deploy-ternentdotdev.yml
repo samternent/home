@@ -66,7 +66,7 @@ jobs:
         run: pnpm build:slides
 
       - name: Generate sealed site artifacts
-        uses: samternent/seal-action@v1
+        uses: samternent/seal-action@v2
         with:
           assets-directory: .vercel/output/static
 
