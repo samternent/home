@@ -1,5 +1,11 @@
 # @ternent/seal-cli
 
+## 0.3.1
+
+### Patch Changes
+
+- [`ee7aa501b6a57f0896e9a3b8c13c3446f8751a5a`](https://github.com/samternent/home/commit/ee7aa501b6a57f0896e9a3b8c13c3446f8751a5a) Thanks [@samternent](https://github.com/samternent)! - Fix the package runtime dependency graph by shipping `@ternent/identity` and `ternent-utils` as production dependencies. This prevents browser consumers that bundle Seal proof helpers from source from failing to resolve `@ternent/identity` during app builds.
+
 ## 0.3.0
 
 ### Minor Changes
