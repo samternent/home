@@ -1,5 +1,14 @@
 # ternentdotdev
 
+## 0.4.23
+
+### Patch Changes
+
+- Updated dependencies [[`f364cb7d38f18770d32fe4a628b3c8b4bcccc31f`](https://github.com/samternent/home/commit/f364cb7d38f18770d32fe4a628b3c8b4bcccc31f)]:
+  - ternent-identity@0.0.15
+  - ternent-ledger@1.0.28
+  - ternent-ledger-vue@0.1.7
+
 ## 0.4.22
 
 ### Patch Changes
