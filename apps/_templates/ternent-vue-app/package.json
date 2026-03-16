@@ -1,7 +1,7 @@
 {
   "name": "__APP_ID__",
   "private": true,
-  "version": "0.0.12",
+  "version": "0.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite --host",
@@ -14,6 +14,7 @@
     "lighthouse:ci": "lhci autorun"
   },
   "dependencies": {
+    "@ternent/identity": "workspace:*",
     "@ternent/seal-cli": "workspace:*",
     "@tailwindcss/vite": "^4.1.18",
     "@vueuse/core": "^10.11.1",

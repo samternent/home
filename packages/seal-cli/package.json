@@ -44,10 +44,11 @@
     "build": "vite build",
     "test": "vitest run"
   },
-  "dependencies": {},
-  "devDependencies": {
+  "dependencies": {
     "@ternent/identity": "workspace:*",
-    "ternent-utils": "workspace:*",
+    "ternent-utils": "workspace:*"
+  },
+  "devDependencies": {
     "vite": "^2.9.18",
     "vitest": "^1.6.0"
   }

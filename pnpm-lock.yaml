@@ -30,6 +30,9 @@ importers:
       '@tailwindcss/vite':
         specifier: ^4.1.18
         version: 4.1.18(rolldown-vite@7.2.5)
+      '@ternent/identity':
+        specifier: workspace:*
+        version: link:../../../packages/identity-v2
       '@ternent/seal-cli':
         specifier: workspace:*
         version: link:../../../packages/seal-cli
@@ -97,6 +100,9 @@ importers:
       '@tailwindcss/vite':
         specifier: ^4.1.18
         version: 4.1.18(rolldown-vite@7.2.5)
+      '@ternent/identity':
+        specifier: workspace:*
+        version: link:../../packages/identity-v2
       '@ternent/seal-cli':
         specifier: workspace:*
         version: link:../../packages/seal-cli
@@ -252,6 +258,9 @@ importers:
       '@tailwindcss/vite':
         specifier: ^4.1.18
         version: 4.1.18(rolldown-vite@7.2.5)
+      '@ternent/identity':
+        specifier: workspace:*
+        version: link:../../packages/identity-v2
       '@ternent/seal-cli':
         specifier: workspace:*
         version: link:../../packages/seal-cli
@@ -807,13 +816,14 @@ importers:
   packages/ragejs/pkg: {}
 
   packages/seal-cli:
-    devDependencies:
+    dependencies:
       '@ternent/identity':
         specifier: workspace:*
         version: link:../identity-v2
       ternent-utils:
         specifier: workspace:*
         version: link:../utils
+    devDependencies:
       vite:
         specifier: ^2.9.18
         version: 2.9.18
