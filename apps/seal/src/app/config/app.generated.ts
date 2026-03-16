@@ -20,7 +20,7 @@ export type AppSeoConfig = {
 
 export const appConfig = {
   "appId": "seal",
-  "appTitle": "Seal",
+  "appTitle": "Seal - A portable proof primitive for signed artifacts.",
   "defaultHost": "seal.ternent.dev",
   "themeName": "proof",
   "defaultThemeMode": "dark"
@@ -62,7 +62,7 @@ export const landingPageConfig = {
     }
   ],
   "hero": {
-    "eyebrow": "ternent.dev",
+    "eyebrow": "seal",
     "title": "A portable proof primitive for signed artifacts.",
     "description": "Seal defines a minimal contract for producing versioned JSON proofs for files and build outputs. The proof is self-contained, portable, and verifiable without a backend.",
     "supportingLine": "Seal emits a self-contained proof file. It does not require a backend service to verify.",
