@@ -16,6 +16,7 @@ const packagesToPublish = [
   "../packages/utils",
   "../packages/concord-protocol",
   "../packages/ternent-ui",
+  "../packages/rage",
   "../packages/ragejs",
   "../packages/seal-cli",
 ];
