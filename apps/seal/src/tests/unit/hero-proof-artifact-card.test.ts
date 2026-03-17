@@ -55,7 +55,7 @@ describe("HeroProofArtifactCard", () => {
       fetch,
       "https://seal.ternent.dev",
     );
-    expect(text).toContain("Live proof verified");
+    expect(text).toContain("Proof verified");
     expect(text).toContain("dist-manifest.json");
     expect(text).toContain("Ed25519");
     expect(text).toContain("sha256:abc123");

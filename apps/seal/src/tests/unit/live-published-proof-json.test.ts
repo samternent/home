@@ -55,7 +55,7 @@ describe("LivePublishedProofJson", () => {
       fetch,
       "https://seal.ternent.dev",
     );
-    expect(text).toContain("Live proof verified");
+    expect(text).toContain("Proof verified");
     expect(text).toContain("dist-manifest.json");
     expect(text).toContain("The proof is self-describing and versioned.");
     expect(text).toContain(

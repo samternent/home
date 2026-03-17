@@ -24,6 +24,19 @@ function createIndexHtmlTransformPlugin() {
   };
 }
 
+function createPwaManifestAssetPlugin() {
+  return {
+    name: "ternent-app-pwa-manifest-asset",
+    generateBundle() {
+      this.emitFile({
+        type: "asset",
+        fileName: "manifest.webmanifest",
+        source: `${JSON.stringify(pwaManifest, null, 2)}\n`,
+      });
+    },
+  };
+}
+
 const pwaManifest = {
   id: "/",
   name: appConfig.appTitle,
@@ -80,6 +93,7 @@ export default defineConfig({
     vue(),
     tailwindcss(),
     createIndexHtmlTransformPlugin(),
+    createPwaManifestAssetPlugin(),
     VitePWA({
       registerType: "autoUpdate",
       includeAssets: ["favicon.ico", "icons/icon-192.png", "icons/icon-512.png", "icons/maskable-512.png"],
@@ -87,7 +101,7 @@ export default defineConfig({
       workbox: {
         cleanupOutdatedCaches: true,
         clientsClaim: true,
-        globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
+        globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2,webmanifest}"],
         navigateFallbackDenylist: [/^\/v1\//],
         skipWaiting: true,
         runtimeCaching: [
