@@ -58,6 +58,10 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": resolve(__dirname, "./src"),
+      "ternent-identity": resolve(
+        __dirname,
+        "../../packages/identity/src/index.ts",
+      ),
       "@ternent/seal-cli/proof": resolve(
         __dirname,
         "../../packages/seal-cli/src/proof.ts",
