@@ -1,6 +1,6 @@
 {
   "name": "@ternent/rage",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Async-first age-compatible WASM crypto engine",
   "license": "ISC",
   "type": "module",
