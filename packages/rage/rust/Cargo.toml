@@ -1,0 +1,23 @@
+[package]
+name = "ternent-rage-wasm"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "WASM bindings for @ternent/rage"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+age = { version = "0.10.0", features = ["armor"] }
+getrandom = { version = "0.2", features = ["js"] }
+js-sys = "0.3.69"
+secrecy = "0.8.0"
+wasm-bindgen = "0.2"
+wasm-bindgen-futures = "0.4"
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+panic = "abort"

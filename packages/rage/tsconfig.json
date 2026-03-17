@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2020", "DOM"],
+    "types": ["node", "vitest/globals"],
+    "allowJs": false
+  },
+  "include": [
+    "src/**/*.ts",
+    "test/**/*.ts",
+    "vite.config.ts",
+    "playwright.config.ts"
+  ]
+}

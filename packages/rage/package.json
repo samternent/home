@@ -1,0 +1,44 @@
+{
+  "name": "@ternent/rage",
+  "version": "0.1.0",
+  "description": "Async-first age-compatible WASM crypto engine",
+  "license": "ISC",
+  "type": "module",
+  "files": [
+    "dist",
+    "pkg",
+    "README.md",
+    "SPEC.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build:wasm": "cd rust && wasm-pack build --target web --out-dir ../pkg --release && node ../scripts/embed-wasm.mjs",
+    "build": "pnpm run build:wasm && vite build",
+    "test:node": "vitest run",
+    "test:browser": "playwright test --config playwright.config.ts",
+    "test": "pnpm run build && pnpm run test:node && pnpm run test:browser"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.46.1",
+    "@types/node": "^24.3.0",
+    "typescript": "^5.6.3",
+    "vite": "^4.5.3",
+    "vite-plugin-dts": "^1.7.3",
+    "vite-plugin-top-level-await": "^1.4.4",
+    "vite-plugin-wasm": "^3.3.0",
+    "vitest": "^1.6.0",
+    "wasm-pack": "^0.12.1"
+  }
+}
