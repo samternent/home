@@ -1,5 +1,11 @@
 # seal
 
+## 0.0.32
+
+### Patch Changes
+
+- [`bfc17fff67ff8ded6bbbea79c8a0a775ee0d18e9`](https://github.com/samternent/home/commit/bfc17fff67ff8ded6bbbea79c8a0a775ee0d18e9) Thanks [@samternent](https://github.com/samternent)! - Update timestamp in proof card
+
 ## 0.0.31
 
 ### Patch Changes
