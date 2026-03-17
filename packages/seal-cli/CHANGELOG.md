@@ -1,5 +1,11 @@
 # @ternent/seal-cli
 
+## 0.3.2
+
+### Patch Changes
+
+- [`e3b14dab10ce8da5b875826383c71283cbd5b99c`](https://github.com/samternent/home/commit/e3b14dab10ce8da5b875826383c71283cbd5b99c) Thanks [@samternent](https://github.com/samternent)! - Adds create identity to seal-cli
+
 ## 0.3.1
 
 ### Patch Changes

@@ -1,5 +1,16 @@
 # seal
 
+## 0.0.31
+
+### Patch Changes
+
+- [`e3b14dab10ce8da5b875826383c71283cbd5b99c`](https://github.com/samternent/home/commit/e3b14dab10ce8da5b875826383c71283cbd5b99c) Thanks [@samternent](https://github.com/samternent)! - Adds create identity to seal-cli
+
+- [`d879c1fbf99b180934eb30a6383072666448e465`](https://github.com/samternent/home/commit/d879c1fbf99b180934eb30a6383072666448e465) Thanks [@samternent](https://github.com/samternent)! - Fix service worker and goat analytics
+
+- Updated dependencies [[`e3b14dab10ce8da5b875826383c71283cbd5b99c`](https://github.com/samternent/home/commit/e3b14dab10ce8da5b875826383c71283cbd5b99c)]:
+  - @ternent/seal-cli@0.3.2
+
 ## 0.0.30
 
 ### Patch Changes
