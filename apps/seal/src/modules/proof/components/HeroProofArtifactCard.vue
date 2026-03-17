@@ -41,8 +41,6 @@ const statusClass = computed(() => {
 });
 
 const rows = computed(() => [
-  { label: "Type", value: result.value?.proof?.type ?? "seal-proof" },
-  { label: "Version", value: result.value?.proof?.version ?? "2" },
   {
     label: "Subject",
     value: result.value?.proof?.subject?.path ?? "dist-manifest.json",
@@ -62,6 +60,10 @@ const rows = computed(() => [
   {
     label: "Signer",
     value: truncateMiddle(result.value?.keyId ?? "", 12, 8),
+  },
+  {
+    label: "Signature",
+    value: truncateMiddle(result.value?.proof?.signature ?? "", 16, 12),
   },
 ]);
 </script>

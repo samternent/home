@@ -65,6 +65,9 @@ describe("HeroProofArtifactCard", () => {
     expect(text).toContain("Ed25519");
     expect(text).toContain(localizedTimestamp);
     expect(text).toContain("sha256:abc123");
+    expect(text).toContain("signature");
+    expect(text).not.toContain("Version");
+    expect(text).not.toContain("Type");
     expect(
       wrapper.find('a[href="https://seal.ternent.dev/proof.json"]').text(),
     ).toContain("View proof.json");
