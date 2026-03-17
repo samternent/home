@@ -20,7 +20,7 @@ export type AppSeoConfig = {
 
 export const appConfig = {
   "appId": "armour",
-  "appTitle": "Armour",
+  "appTitle": "Armour - Encrypt for identities with explicit age-compatible primitives.",
   "defaultHost": "armour.ternent.dev",
   "themeName": "armour",
   "defaultThemeMode": "dark"
@@ -28,7 +28,7 @@ export const appConfig = {
 
 export const appSeoConfig = {
   "shortName": "Armour",
-  "description": "Armour by ternent.dev for local browser-based encryption and decryption powered by rage.",
+  "description": "Armour bridges @ternent/identity and @ternent/rage for explicit identity-based and passphrase encryption with age-compatible output.",
   "themeColor": "#14b8a6",
   "backgroundColor": "#071513",
   "lang": "en"
@@ -41,16 +41,20 @@ export const appThemePrefix = appThemeName;
 export const landingPageConfig = {
   "navigationLinks": [
     {
-      "href": "#features",
-      "label": "Features"
+      "href": "#proof-model",
+      "label": "Why Armour"
     },
     {
-      "href": "#how-it-works",
+      "href": "#proof-json",
+      "label": "Encryption Model"
+    },
+    {
+      "href": "#surfaces",
+      "label": "Surfaces"
+    },
+    {
+      "href": "#static-build",
       "label": "How it works"
-    },
-    {
-      "href": "#use-cases",
-      "label": "Use cases"
     },
     {
       "href": "#developers",
@@ -58,245 +62,195 @@ export const landingPageConfig = {
     }
   ],
   "hero": {
-    "eyebrow": "ternent.dev",
-    "title": "Encrypt text and files in the browser.",
-    "description": "Armour is a browser-first wrapper around rage for local encryption and decryption. Encrypt text or files for one or more recipients without sending plaintext to a backend.",
+    "eyebrow": "armour",
+    "title": "Encrypt for identities with explicit age-compatible primitives.",
+    "description": "Armour is the bridge between @ternent/identity and @ternent/rage. It derives age-compatible recipients from shared identities, keeps recipient and passphrase modes explicit, and gives browser and package surfaces the same clean encryption contract.",
+    "supportingLine": "Identity stays the capability root. Rage stays the crypto engine. Armour keeps encryption explicit and portable.",
+    "note": "Encryption is not signing. Authenticity belongs to Seal.",
     "primaryAction": {
-      "href": "/app",
-      "label": "Open Web App",
+      "href": "#developers",
+      "label": "See the API",
       "variant": "primary"
     },
     "secondaryAction": {
-      "href": "https://github.com/samternent/home",
-      "label": "View Monorepo",
+      "href": "https://github.com/samternent/home/tree/main/packages/armour",
+      "label": "View package source",
       "variant": "secondary"
     },
     "preview": {
-      "title": "Encrypted payload",
-      "meta": "ciphertext.age",
-      "statusLabel": "Browser-native",
-      "statusTone": "info",
+      "title": "identity → recipient → ciphertext",
+      "meta": "explicit model",
+      "statusLabel": "Stable",
+      "statusTone": "neutral",
       "rows": [
         {
-          "label": "Subject",
-          "value": "notes.txt",
+          "label": "Identity",
+          "value": "Shared capability root",
           "valueTone": "primary"
         },
         {
-          "label": "Recipient",
-          "value": "age1...",
+          "label": "Modes",
+          "value": "Recipients or passphrase",
           "valueTone": "secondary"
         },
         {
-          "label": "Format",
-          "value": "Armored ciphertext",
+          "label": "Output",
+          "value": "Age-compatible ciphertext",
           "valueTone": "accent"
         },
         {
-          "label": "Result",
-          "value": "Ready to share",
+          "label": "Boundary",
+          "value": "No artifact format here",
           "valueTone": "success"
         }
       ],
-      "footerText": "Armour wraps rage in a browser-native workflow so content can be encrypted locally before it leaves the device."
+      "footerText": "Armour encrypts and decrypts. Portable sealed artifacts belong to Seal."
     }
   },
-  "featureSection": {
-    "eyebrow": "Features",
-    "title": "Browser-first encryption with real portability",
-    "description": "Armour gives age-style encryption a clean local-first interface for text and files, without pretending to be a new cryptography protocol.",
+  "proofModelSection": {
+    "eyebrow": "Why Armour",
+    "title": "The bridge layer",
+    "description": "Armour is an opinionated protocol library for identity-backed encryption. It derives age-compatible recipients and secret keys through @ternent/identity, delegates encryption and decryption to @ternent/rage, and keeps the public contract explicit across browser and package surfaces.",
     "items": [
       {
-        "title": "Browser-native",
-        "description": "Encrypt and decrypt locally in the browser without a required backend service.",
-        "tone": "primary",
-        "icon": "globe"
+        "title": "Identity-backed",
+        "description": "Start from one serialized identity model and derive the age-compatible capability you need without splitting the concept in two."
       },
       {
-        "title": "Text and files",
-        "description": "Work with pasted text, typed notes, or uploaded files from the same app surface.",
-        "tone": "info",
-        "icon": "document"
+        "title": "Explicit modes",
+        "description": "Recipient mode and passphrase mode stay separate on purpose. Armour does not guess which contract you meant."
       },
       {
-        "title": "Recipient-based",
-        "description": "Encrypt for one or more recipients using public key material instead of inventing a proprietary sharing system.",
-        "tone": "accent",
-        "icon": "shield"
+        "title": "Age-compatible output",
+        "description": "Ciphertext comes from rage and stays aligned with age expectations and tooling instead of inventing a new format."
       },
       {
-        "title": "Portable output",
-        "description": "Produce ciphertext that fits cleanly into compatible age and rage-style workflows.",
-        "tone": "success",
-        "icon": "terminal"
+        "title": "Async-first",
+        "description": "Public APIs stay Promise-based and initialization remains explicit through initArmour()."
       }
     ]
   },
-  "howItWorksSection": {
+  "proofJsonSection": {
+    "eyebrow": "Encryption Model",
+    "title": "Raw ciphertext, clear boundaries",
+    "description": "Armour does not define an envelope or portable artifact format. It focuses on explicit encryption and decryption, leaving sealed transport objects and proof-bearing formats to Seal.",
+    "code": "import {\n  initArmour,\n  encryptForIdentities,\n  decryptWithIdentity\n} from \"@ternent/armour\"\n\nawait initArmour()\n\nconst ciphertext = await encryptForIdentities({\n  identities: [identity],\n  data: new TextEncoder().encode(\"portable payload\"),\n  output: \"armor\"\n})\n\nconst plaintext = await decryptWithIdentity({\n  identity,\n  data: ciphertext\n})",
+    "supportingText": "Armour owns the bridge from identity to age-compatible encryption. Sealed artifacts belong elsewhere in the stack."
+  },
+  "surfacesSection": {
+    "eyebrow": "Surfaces",
+    "title": "One encryption model. Multiple surfaces.",
+    "description": "Armour keeps the same bridge contract across the JavaScript package and the browser app, so the mental model does not change when the surface does.",
+    "items": [
+      {
+        "title": "JavaScript package",
+        "description": "Use @ternent/armour directly when you want identity-based encryption, passphrase mode, and explicit control in your own runtime.",
+        "tone": "primary",
+        "icon": "terminal"
+      },
+      {
+        "title": "Browser app",
+        "description": "The browser surface uses the same language and the same model. It is not a separate encryption product with different rules.",
+        "tone": "secondary",
+        "icon": "globe"
+      },
+      {
+        "title": "Concord ecosystem",
+        "description": "Armour is the ergonomic bridge for Ternent surfaces that already use @ternent/identity and need age-compatible encryption without muddying boundaries.",
+        "tone": "info",
+        "icon": "stack"
+      }
+    ]
+  },
+  "staticBuildSection": {
     "eyebrow": "How it works",
-    "title": "Encrypt locally, then share the result",
-    "preview": {
-      "title": "Local encryption flow",
-      "meta": "browser session",
-      "rows": [
-        {
-          "label": "1",
-          "value": "Choose text or file",
-          "valueTone": "primary"
-        },
-        {
-          "label": "2",
-          "value": "Add recipient keys",
-          "valueTone": "accent"
-        },
-        {
-          "label": "3",
-          "value": "Encrypt and export",
-          "valueTone": "success"
-        }
-      ],
-      "footerText": "Armour keeps the workflow simple. Provide content, provide recipients, and generate portable ciphertext locally in the browser."
-    },
+    "title": "Encrypt for identities without changing the primitive",
+    "description": "Create or import an identity, encrypt to one or more identities, and move raw ciphertext between environments without changing the underlying contract.",
     "steps": [
       {
-        "title": "Choose your content",
-        "description": "Paste text or select a file you want to encrypt."
+        "title": "Start from an identity",
+        "description": "Use a serialized @ternent/identity payload as the capability root for recipient derivation and decryption."
       },
       {
-        "title": "Add recipient keys",
-        "description": "Provide one or more recipient public keys for the people or systems that should be able to decrypt it."
+        "title": "Choose an explicit mode",
+        "description": "Encrypt for identities when you have recipients, or use passphrase mode when that is the right contract for the job."
       },
       {
-        "title": "Encrypt and move on",
-        "description": "Generate ciphertext locally, then copy or download the output for storage, transport, or handoff elsewhere."
+        "title": "Keep the ciphertext raw",
+        "description": "Armour returns age-compatible ciphertext directly and does not wrap it in a package-specific transport format."
+      },
+      {
+        "title": "Decrypt with the matching capability",
+        "description": "Decrypt with the derived age secret key from the identity, or with the passphrase when passphrase mode was used."
       }
-    ]
-  },
-  "useCasesSection": {
-    "eyebrow": "Use cases",
-    "title": "Common use cases",
-    "items": [
-      {
-        "title": "Private notes",
-        "description": "Encrypt sensitive text locally before storing it in a document, repo, or note system.",
-        "tone": "primary",
-        "icon": "document"
-      },
-      {
-        "title": "File handoff",
-        "description": "Encrypt files for a specific person or system without relying on a hosted transfer product.",
-        "tone": "secondary",
-        "icon": "shield"
-      },
-      {
-        "title": "Browser workflows",
-        "description": "Use age-style encryption from the browser when native tooling is inconvenient or unavailable.",
-        "tone": "accent",
-        "icon": "globe"
-      },
-      {
-        "title": "Developer tooling",
-        "description": "Build browser-based encryption flows into your own tools and internal apps.",
-        "tone": "info",
-        "icon": "terminal"
-      },
-      {
-        "title": "Secure upload prep",
-        "description": "Encrypt content locally before uploading it to some other storage or delivery surface.",
-        "tone": "primary",
-        "icon": "stack"
-      },
-      {
-        "title": "Local-first experiments",
-        "description": "Prototype privacy-preserving UX around rage-compatible primitives without inventing a whole new security model.",
-        "tone": "success",
-        "icon": "dataset"
-      }
-    ]
+    ],
+    "closingLine": "Armour keeps the bridge stable while identity and rage keep their own responsibilities.",
+    "primaryAction": {
+      "href": "#developers",
+      "label": "Explore examples",
+      "variant": "primary"
+    }
   },
   "developerSection": {
-    "eyebrow": "Developers",
-    "title": "A browser wrapper over rage-compatible encryption flows",
-    "description": "Armour is designed for people who want the convenience of browser-native encryption while staying close to portable underlying primitives.",
+    "eyebrow": "For Developers",
+    "title": "A clean layer above rage",
+    "description": "@ternent/armour is the opinionated library layer above @ternent/rage. It adds identity integration and browser-safe helpers without changing the underlying crypto responsibilities or introducing artifact semantics.",
     "surfaces": [
-      "Web app",
-      "Browser package",
-      "Shared utilities"
+      "@ternent/armour",
+      "@ternent/identity",
+      "@ternent/rage"
     ],
     "tabs": [
       {
         "value": "js",
         "label": "JavaScript",
-        "title": "Encrypt inside a browser flow",
+        "title": "Encrypt directly for identities",
         "meta": "JavaScript",
-        "code": "import { encryptText, decryptText } from \"@ternent/armour\"\n\nconst ciphertext = await encryptText({\n  text: \"hello world\",\n  recipients: [recipientPublicKey]\n})\n\nconst plaintext = await decryptText({\n  ciphertext,\n  identity: privateKey\n})",
-        "supportingCopy": "Use Armour when you want a cleaner browser-facing wrapper around recipient-based encryption flows instead of wiring lower-level pieces by hand.",
+        "code": "import { createIdentity } from \"@ternent/identity\"\nimport {\n  initArmour,\n  encryptTextForIdentities,\n  decryptTextWithIdentity\n} from \"@ternent/armour\"\n\nawait initArmour()\n\nconst identity = await createIdentity()\nconst ciphertext = await encryptTextForIdentities({\n  identities: [identity],\n  text: \"hello world\"\n})\n\nconst plaintext = await decryptTextWithIdentity({\n  identity,\n  data: ciphertext\n})",
+        "supportingCopy": "Identity-based APIs are the first-class surface. Recipient derivation comes from @ternent/identity and encryption comes from @ternent/rage.",
         "link": {
-          "href": "https://github.com/samternent/home",
-          "label": "View the monorepo"
+          "href": "https://github.com/samternent/home/tree/main/packages/armour",
+          "label": "View package source"
         }
       },
       {
-        "value": "output",
-        "label": "Output",
-        "title": "Portable encrypted output",
-        "meta": "ciphertext",
-        "code": "-----BEGIN AGE ENCRYPTED FILE-----\n...\n-----END AGE ENCRYPTED FILE-----",
-        "supportingCopy": "Armour is intended to produce portable ciphertext you can store, transport, and use in compatible workflows beyond the web app.",
+        "value": "envelope",
+        "label": "Raw Bytes",
+        "title": "Work directly with bytes and explicit output modes",
+        "meta": "armor | binary",
+        "code": "import {\n  initArmour,\n  encryptForIdentities,\n  decryptWithIdentity\n} from \"@ternent/armour\"\n\nawait initArmour()\n\nconst ciphertext = await encryptForIdentities({\n  identities: [identity],\n  data: new TextEncoder().encode(\"portable payload\"),\n  output: \"binary\"\n})\n\nconst plaintext = await decryptWithIdentity({\n  identity,\n  data: ciphertext\n})",
+        "supportingCopy": "Armour exposes raw encryption APIs for byte payloads and explicit output modes. It does not define an envelope or transport container.",
         "link": {
-          "href": "https://github.com/samternent/home",
-          "label": "View project source"
+          "href": "https://github.com/samternent/home/tree/main/packages/armour",
+          "label": "Read package spec"
         }
       },
       {
-        "value": "workflow",
-        "label": "Workflow",
-        "title": "Browser-first local encryption",
-        "meta": "Flow",
-        "code": "Select content\n→ Add recipient public key(s)\n→ Encrypt locally\n→ Copy or download ciphertext\n→ Decrypt later with the matching identity",
-        "supportingCopy": "The goal is not to hide what encryption is doing, but to make the workflow easier to use correctly from the browser.",
+        "value": "passphrase",
+        "label": "Passphrase",
+        "title": "Keep passphrase mode explicit",
+        "meta": "passphrase",
+        "code": "import {\n  initArmour,\n  encryptTextWithPassphrase,\n  decryptTextWithPassphrase\n} from \"@ternent/armour\"\n\nawait initArmour()\n\nconst ciphertext = await encryptTextWithPassphrase({\n  passphrase: \"correct horse battery staple\",\n  text: \"secret\"\n})\n\nconst plaintext = await decryptTextWithPassphrase({\n  passphrase: \"correct horse battery staple\",\n  data: ciphertext\n})",
+        "supportingCopy": "Passphrase mode is separate from recipient mode. Armour does not overload one function to infer both.",
         "link": {
-          "href": "/app",
-          "label": "Open the web app"
+          "href": "https://github.com/samternent/home/tree/main/packages/armour/README.md",
+          "label": "Open README"
         }
-      }
-    ]
-  },
-  "clarifierSection": {
-    "eyebrow": "Definition",
-    "title": "What Armour is and isn’t",
-    "columns": [
-      {
-        "title": "Armour is",
-        "items": [
-          "A browser-first wrapper around rage",
-          "A local encryption and decryption tool",
-          "A cleaner UX for recipient-based encryption"
-        ]
-      },
-      {
-        "title": "Armour is not",
-        "items": [
-          "A new encryption algorithm",
-          "A hosted vault",
-          "A messaging platform",
-          "A password manager"
-        ]
       }
     ]
   },
   "ctaSection": {
-    "eyebrow": "Ready to start?",
-    "title": "Encrypt locally with Armour",
-    "description": "Open the app, add a recipient, and generate portable ciphertext in the browser.",
+    "eyebrow": "Ready",
+    "title": "Use one identity model. Keep encryption explicit.",
+    "description": "Start from the shared identity model, use the package directly, and keep encryption, signing, and artifact responsibilities separate across every surface.",
     "primaryAction": {
-      "href": "/app",
-      "label": "Open Web App",
+      "href": "#developers",
+      "label": "Start with the package",
       "variant": "primary"
     },
     "secondaryAction": {
-      "href": "https://github.com/samternent/home",
-      "label": "View source",
+      "href": "https://github.com/samternent/home/tree/main/packages/armour",
+      "label": "View package source",
       "variant": "secondary"
     }
   },
@@ -306,24 +260,20 @@ export const landingPageConfig = {
     "copyright": "© 2026.",
     "links": [
       {
-        "href": "/app",
-        "label": "Workspace"
+        "href": "#developers",
+        "label": "API examples"
       },
       {
-        "href": "/app/encrypt",
-        "label": "Encrypt"
+        "href": "#proof-json",
+        "label": "Encryption model"
       },
       {
-        "href": "/app/decrypt",
-        "label": "Decrypt"
+        "href": "https://github.com/samternent/home/tree/main/packages/armour",
+        "label": "JavaScript package"
       },
       {
         "href": "https://github.com/samternent/home/tree/main/apps/armour",
         "label": "GitHub"
-      },
-      {
-        "href": "https://github.com/samternent/home",
-        "label": "Monorepo"
       }
     ]
   }

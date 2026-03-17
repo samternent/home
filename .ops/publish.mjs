@@ -9,6 +9,7 @@ const appsToPublish = [
   "../apps/ternentdotdev",
 ];
 const packagesToPublish = [
+  "../packages/armour",
   "../packages/ledger",
   "../packages/encrypt",
   "../packages/identity",
