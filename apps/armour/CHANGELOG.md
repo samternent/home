@@ -1,5 +1,11 @@
 # **APP_ID**
 
+## 0.0.19
+
+### Patch Changes
+
+- [`485fcf15b22c7f9494471be6e2c25bf16e383dc7`](https://github.com/samternent/home/commit/485fcf15b22c7f9494471be6e2c25bf16e383dc7) Thanks [@samternent](https://github.com/samternent)! - fix build issues
+
 ## 0.0.18
 
 ### Patch Changes
