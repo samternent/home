@@ -139,7 +139,7 @@ export const landingPageConfig = {
   },
   "surfacesSection": {
     "eyebrow": "Surfaces",
-    "title": "Use it where you build",
+    "title": "One proof model. Multiple surfaces.",
     "description": "Seal uses one proof contract across every implementation surface.",
     "items": [
       {
@@ -218,8 +218,8 @@ export const landingPageConfig = {
         "label": "seal-cli",
         "title": "Generate and verify proofs from the CLI",
         "meta": "seal-cli",
-        "code": "pnpm add -D @ternent/seal-cli\n\nexport SEAL_IDENTITY=\"$(cat identity.json)\"\n\nseal sign --input artifact.tar.gz --out proof.json\nseal verify --proof proof.json --input artifact.tar.gz --json",
-        "supportingCopy": "The CLI is a thin local surface over the same proof contract.",
+        "code": "pnpm add -D @ternent/seal-cli\n\nseal identity create --out identity.json --words 24 --mnemonic-out seal-seed-phrase.txt\nexport SEAL_IDENTITY_FILE=\"./identity.json\"\n\nseal sign --input artifact.tar.gz --out proof.json\nseal verify --proof proof.json --input artifact.tar.gz --json",
+        "supportingCopy": "The CLI is a thin local surface over the same proof contract, including mnemonic-backed identity creation.",
         "link": {
           "href": "https://www.npmjs.com/package/@ternent/seal-cli",
           "label": "See @ternent/seal-cli on npm"
@@ -241,7 +241,7 @@ export const landingPageConfig = {
   },
   "ctaSection": {
     "eyebrow": "Ready",
-    "title": "Start with GitHub Actions. Keep the same proof everywhere.",
+    "title": "Start in CI. Keep the same proof everywhere.",
     "description": "Sign in CI, verify locally, integrate directly via the JavaScript library.",
     "primaryAction": {
       "href": "https://github.com/marketplace/actions/seal-action",

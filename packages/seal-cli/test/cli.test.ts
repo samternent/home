@@ -56,6 +56,46 @@ describe("seal cli", () => {
     expect(writer.read().stdout).toContain('"valid": true');
   });
 
+  it("creates an identity file", async () => {
+    const identityPath = await createTempFile("identity.json", "");
+    const writer = createWriter();
+
+    const exitCode = await runCli(
+      ["identity", "create", "--out", identityPath, "--json"],
+      { writer: writer.writer }
+    );
+
+    expect(exitCode).toBe(0);
+    expect(writer.read().stdout).toContain('"format": "ternent-identity"');
+    expect(await readFile(identityPath, "utf8")).toContain('"material"');
+  });
+
+  it("creates a mnemonic-backed identity and writes the seed phrase", async () => {
+    const identityPath = await createTempFile("identity.json", "");
+    const mnemonicPath = await createTempFile("seed.txt", "");
+    const writer = createWriter();
+
+    const exitCode = await runCli(
+      [
+        "identity",
+        "create",
+        "--out",
+        identityPath,
+        "--words",
+        "24",
+        "--mnemonic-out",
+        mnemonicPath,
+        "--json",
+      ],
+      { writer: writer.writer }
+    );
+
+    expect(exitCode).toBe(0);
+    expect(writer.read().stdout).toContain('"mnemonic"');
+    expect(await readFile(identityPath, "utf8")).toContain('"format": "ternent-identity"');
+    expect(await readFile(mnemonicPath, "utf8")).toContain("Seal seed phrase backup");
+  });
+
   it("returns exit code 2 for a hash mismatch", async () => {
     const env = await createSigningEnv();
     const subjectPath = await createTempFile("sample.txt", "sample file\n");

@@ -10,6 +10,18 @@ pnpm add -D @ternent/seal-cli
 
 ## Environment
 
+Create a signer identity with Seal:
+
+```bash
+seal identity create --out identity.json
+```
+
+Create a mnemonic-backed identity and save the recovery phrase separately:
+
+```bash
+seal identity create --out identity.json --words 24 --mnemonic-out seal-seed-phrase.txt
+```
+
 `@ternent/seal-cli` reads signer material from a v2 identity JSON payload:
 
 ```bash
@@ -21,10 +33,30 @@ export SEAL_IDENTITY_FILE="./identity.json"
 ## Commands
 
 ```bash
+seal identity create --out identity.json
+seal identity create --out identity.json --words 24 --mnemonic-out seal-seed-phrase.txt
 seal manifest create --input apps/seal/dist --out apps/seal/dist/dist-manifest.json
 seal sign --input apps/seal/dist/dist-manifest.json --out apps/seal/dist/proof.json
 seal verify --proof apps/seal/dist/proof.json --input apps/seal/dist/dist-manifest.json --json
 seal public-key --json
+```
+
+## JavaScript API
+
+Create a Seal-compatible identity and persist it as the `SEAL_IDENTITY` payload:
+
+```ts
+import {
+  createSealIdentity,
+  createSealMnemonicIdentity,
+  exportIdentityJson,
+} from "@ternent/seal-cli";
+
+const identity = await createSealIdentity();
+const identityJson = exportIdentityJson(identity);
+
+const { identity: mnemonicIdentity, mnemonic } =
+  await createSealMnemonicIdentity({ words: 24 });
 ```
 
 ## GitHub Actions
@@ -112,6 +144,23 @@ Public key:
   "algorithm": "Ed25519",
   "publicKey": "BASE64URL-RAW-ED25519-PUBLIC-KEY",
   "keyId": "..."
+}
+```
+
+Identity:
+
+```json
+{
+  "format": "ternent-identity",
+  "version": "2",
+  "algorithm": "Ed25519",
+  "createdAt": "2026-03-17T00:00:00.000Z",
+  "publicKey": "BASE64URL-RAW-ED25519-PUBLIC-KEY",
+  "keyId": "...",
+  "material": {
+    "kind": "seed",
+    "seed": "BASE64URL-RAW-32-BYTE-SEED"
+  }
 }
 ```
 

@@ -1,4 +1,7 @@
 import {
+  createIdentity,
+  createIdentityFromMnemonic,
+  createMnemonicIdentity,
   deriveKeyId,
   parseIdentity,
   serializeIdentity,
@@ -18,6 +21,28 @@ export type ResolvedSealSigner = {
 };
 
 export const SEAL_SIGNATURE_CONTEXT = "ternent-seal/v2";
+
+export async function createSealIdentity(
+  createdAt = new Date().toISOString()
+): Promise<SerializedIdentity> {
+  return createIdentity(createdAt);
+}
+
+export async function createSealIdentityFromMnemonic(input: {
+  mnemonic: string;
+  passphrase?: string;
+  createdAt?: string;
+}): Promise<SerializedIdentity> {
+  return createIdentityFromMnemonic(input);
+}
+
+export async function createSealMnemonicIdentity(input: {
+  words?: 12 | 24;
+  passphrase?: string;
+  createdAt?: string;
+} = {}): Promise<{ identity: SerializedIdentity; mnemonic: string }> {
+  return createMnemonicIdentity(input);
+}
 
 export function exportIdentityJson(identity: SerializedIdentity): string {
   return serializeIdentity(identity);

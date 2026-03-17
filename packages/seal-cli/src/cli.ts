@@ -2,6 +2,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createManifestArtifact } from "./commands/manifest";
+import { createIdentityArtifact } from "./commands/identity";
 import { createProofArtifact } from "./commands/sign";
 import { createPublicKeyArtifact } from "./commands/publicKey";
 import { verifyProofArtifact } from "./commands/verify";
@@ -99,6 +100,19 @@ function requireFlag(flags: ParsedArgs["flags"], key: string): string {
   return value;
 }
 
+function parseMnemonicWordCount(
+  flags: ParsedArgs["flags"]
+): 12 | 24 | undefined {
+  const words = getFlag(flags, "words");
+  if (!words) {
+    return undefined;
+  }
+  if (words === "12" || words === "24") {
+    return Number(words) as 12 | 24;
+  }
+  throw new SealCliError("Mnemonic word count must be 12 or 24.", EXIT_FAILURE);
+}
+
 async function writeOutputFile(filePath: string, content: string): Promise<void> {
   const resolvedPath = resolve(filePath);
   await mkdir(dirname(resolvedPath), { recursive: true });
@@ -163,6 +177,53 @@ export async function runCli(
 
   try {
     const [command, subcommand] = parsed._;
+
+    if (command === "identity" && subcommand === "create") {
+      const mnemonicOutPath = getFlag(parsed.flags, "mnemonic-out");
+      const artifact = await createIdentityArtifact({
+        withMnemonic: Boolean(mnemonicOutPath),
+        words: parseMnemonicWordCount(parsed.flags),
+        passphrase: getFlag(parsed.flags, "passphrase"),
+      });
+      const outPath = getFlag(parsed.flags, "out");
+      if (outPath) {
+        await writeOutputFile(outPath, artifact.content);
+      }
+      if (mnemonicOutPath) {
+        await writeOutputFile(mnemonicOutPath, artifact.mnemonicContent || "");
+      }
+
+      if (outPath) {
+        outputResult(
+          writer,
+          json,
+          quiet,
+          json
+            ? artifact.mnemonic
+              ? {
+                  identity: artifact.identity,
+                  mnemonic: artifact.mnemonic,
+                  mnemonicFile: mnemonicOutPath || null,
+                }
+              : artifact.identity
+            : outPath
+        );
+      } else {
+        outputResult(
+          writer,
+          true,
+          quiet,
+          artifact.mnemonic
+            ? {
+                identity: artifact.identity,
+                mnemonic: artifact.mnemonic,
+                mnemonicFile: mnemonicOutPath || null,
+              }
+            : artifact.identity
+        );
+      }
+      return EXIT_SUCCESS;
+    }
 
     if (command === "manifest" && subcommand === "create") {
       const artifact = await createManifestArtifact(requireFlag(parsed.flags, "input"));
@@ -230,7 +291,8 @@ export async function runCli(
     }
 
     throw new SealCliError(
-      "Usage: seal manifest create --input <path> [--out <path>] [--json] [--quiet]\n" +
+      "Usage: seal identity create [--out <path>] [--words 12|24] [--passphrase <value>] [--mnemonic-out <path>] [--json] [--quiet]\n" +
+        "       seal manifest create --input <path> [--out <path>] [--json] [--quiet]\n" +
         "       seal sign --input <path> [--out <path>] [--json] [--quiet]\n" +
         "       seal verify --proof <proof.json> --input <path> [--json] [--quiet]\n" +
         "       seal public-key [--json] [--quiet]",
