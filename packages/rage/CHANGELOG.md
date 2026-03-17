@@ -1,5 +1,11 @@
 # @ternent/rage
 
+## 0.1.2
+
+### Patch Changes
+
+- [`0af93b5732d363c1dbf2835efd3cfa4ea989f491`](https://github.com/samternent/home/commit/0af93b5732d363c1dbf2835efd3cfa4ea989f491) Thanks [@samternent](https://github.com/samternent)! - Fix build
+
 ## 0.1.1
 
 ### Patch Changes
