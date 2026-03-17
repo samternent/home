@@ -1,5 +1,12 @@
 # **APP_ID**
 
+## 0.0.18
+
+### Patch Changes
+
+- Updated dependencies [[`e3b14dab10ce8da5b875826383c71283cbd5b99c`](https://github.com/samternent/home/commit/e3b14dab10ce8da5b875826383c71283cbd5b99c)]:
+  - @ternent/seal-cli@0.3.2
+
 ## 0.0.17
 
 ### Patch Changes
