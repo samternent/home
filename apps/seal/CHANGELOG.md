@@ -1,5 +1,11 @@
 # seal
 
+## 0.0.33
+
+### Patch Changes
+
+- [`65fc878e4418c5a13c333d7837006cf68f1dc05d`](https://github.com/samternent/home/commit/65fc878e4418c5a13c333d7837006cf68f1dc05d) Thanks [@samternent](https://github.com/samternent)! - update proof card
+
 ## 0.0.32
 
 ### Patch Changes
