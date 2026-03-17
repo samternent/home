@@ -11,6 +11,11 @@ import { verifyPublishedArtifacts } from "@/modules/proof/deployed";
 
 describe("HeroProofArtifactCard", () => {
   it("renders live published proof state in the hero card", async () => {
+    const localizedTimestamp = "13/03/2026, 00:00:00";
+    const toLocaleStringSpy = vi
+      .spyOn(Date.prototype, "toLocaleString")
+      .mockReturnValue(localizedTimestamp);
+
     vi.mocked(verifyPublishedArtifacts).mockResolvedValueOnce({
       valid: true,
       proof: {
@@ -58,9 +63,12 @@ describe("HeroProofArtifactCard", () => {
     expect(text).toContain("Proof verified");
     expect(text).toContain("dist-manifest.json");
     expect(text).toContain("Ed25519");
+    expect(text).toContain(localizedTimestamp);
     expect(text).toContain("sha256:abc123");
     expect(
       wrapper.find('a[href="https://seal.ternent.dev/proof.json"]').text(),
     ).toContain("View proof.json");
+
+    toLocaleStringSpy.mockRestore();
   });
 });

@@ -61,10 +61,10 @@ describe("RouteHome landing page", () => {
     );
     expect(text).toContain("The primitive");
     expect(text).toContain("The proof format");
-    expect(text).toContain("Use it where you build");
+    expect(text).toContain("One proof model. Multiple surfaces.");
     expect(text).toContain("Publish an artifact with its proof");
     expect(text).toContain("For developers");
-    expect(text).toContain("Start with GitHub Actions. Keep the same proof everywhere.");
+    expect(text).toContain("Start in CI. Keep the same proof everywhere.");
     expect(text).toContain("Sign in GitHub Actions");
     expect(text).toContain("Install CLI/API");
     expect(text).toContain("View JavaScript API");
@@ -103,6 +103,9 @@ describe("RouteHome landing page", () => {
 
     await clickTab(wrapper, "seal-cli");
 
+    expect(wrapper.text()).toContain(
+      "seal identity create --out identity.json --words 24 --mnemonic-out seal-seed-phrase.txt",
+    );
     expect(wrapper.text()).toContain("seal sign --input artifact.tar.gz --out proof.json");
     expect(
       wrapper

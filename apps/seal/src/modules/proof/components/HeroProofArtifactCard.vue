@@ -17,6 +17,13 @@ function truncateMiddle(value: string, head = 14, tail = 10) {
   return `${value.slice(0, head)}...${value.slice(-tail)}`;
 }
 
+function formatLocalizedTimestamp(value: string | undefined) {
+  if (!value) return "Unavailable";
+  const timestamp = new Date(value);
+  if (Number.isNaN(timestamp.getTime())) return "Unavailable";
+  return timestamp.toLocaleString();
+}
+
 const { result, status, statusDetail, statusLabel } = usePublishedProofArtifact(
   () => props.baseUrl,
 );
@@ -43,6 +50,10 @@ const rows = computed(() => [
   {
     label: "Algorithm",
     value: result.value?.proof?.algorithm ?? "Ed25519",
+  },
+  {
+    label: "Created",
+    value: formatLocalizedTimestamp(result.value?.proof?.createdAt),
   },
   {
     label: "Hash",
