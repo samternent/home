@@ -41,6 +41,9 @@ jobs:
           registry-url: https://registry.npmjs.org
           cache: "pnpm"
 
+      - name: Setup Rust toolchain target
+        run: rustup target add wasm32-unknown-unknown
+
       - name: Set publishing config
         run: pnpm config set '//registry.npmjs.org/:_authToken' "${NODE_AUTH_TOKEN}"
         env:
@@ -49,11 +52,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build @ternent/armour
-        run: pnpm --filter @ternent/armour build
+      - name: Build @ternent/rage
+        run: pnpm --filter @ternent/rage build
 
       - name: Test @ternent/armour
         run: pnpm --filter @ternent/armour test
+
+      - name: Build @ternent/armour
+        run: pnpm --filter @ternent/armour build
 
       - name: Publish npm
         run: pnpm --filter @ternent/armour publish --no-git-checks --access public

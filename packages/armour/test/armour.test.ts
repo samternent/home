@@ -1,6 +1,11 @@
+import { dirname, resolve } from "node:path";
 import { readFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it, vi } from "vitest";
 import { createIdentity, serializeIdentity } from "../../identity-v2/src/index.ts";
+
+const testDir = dirname(fileURLToPath(import.meta.url));
+const packageDir = resolve(testDir, "..");
 
 async function loadSourceModule() {
   vi.resetModules();
@@ -216,12 +221,12 @@ describe("@ternent/armour", () => {
 
   it("keeps the package boundary clean", async () => {
     const sourceFiles = [
-      "/Users/sam/dev/samternent/home/packages/armour/src/index.ts",
-      "/Users/sam/dev/samternent/home/packages/armour/src/identity.ts",
-      "/Users/sam/dev/samternent/home/packages/armour/src/recipients.ts",
-      "/Users/sam/dev/samternent/home/packages/armour/src/passphrase.ts",
-      "/Users/sam/dev/samternent/home/packages/armour/src/text.ts",
-      "/Users/sam/dev/samternent/home/packages/armour/src/files.ts",
+      resolve(packageDir, "src/index.ts"),
+      resolve(packageDir, "src/identity.ts"),
+      resolve(packageDir, "src/recipients.ts"),
+      resolve(packageDir, "src/passphrase.ts"),
+      resolve(packageDir, "src/text.ts"),
+      resolve(packageDir, "src/files.ts"),
     ];
     const source = (await Promise.all(sourceFiles.map((file) => readFile(file, "utf8"))))
       .join("\n");
