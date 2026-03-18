@@ -1,5 +1,11 @@
 # **APP_ID**
 
+## 0.4.3
+
+### Patch Changes
+
+- [`325554cc3168ac8024d3ca17b14bc42bd2195c69`](https://github.com/samternent/home/commit/325554cc3168ac8024d3ca17b14bc42bd2195c69) Thanks [@samternent](https://github.com/samternent)! - fix local imports
+
 ## 0.4.2
 
 ### Patch Changes
