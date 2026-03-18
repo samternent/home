@@ -1,0 +1,41 @@
+{
+  "name": "@ternent/ledger",
+  "version": "0.1.0",
+  "description": "Append-only state engine for Concord",
+  "license": "ISC",
+  "type": "module",
+  "files": [
+    "dist",
+    "SPEC.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "vite build",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@ternent/armour": "workspace:*",
+    "@ternent/concord-protocol": "workspace:*",
+    "@ternent/identity": "workspace:*",
+    "@ternent/seal-cli": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "typescript": "^5.6.3",
+    "vite": "^4.5.3",
+    "vite-plugin-dts": "^1.7.3",
+    "vitest": "^1.6.0"
+  }
+}

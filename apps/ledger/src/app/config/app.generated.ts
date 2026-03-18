@@ -20,7 +20,7 @@ export type AppSeoConfig = {
 
 export const appConfig = {
   "appId": "ledger",
-  "appTitle": "Ledger",
+  "appTitle": "Ledger - An append-only state engine for portable application truth.",
   "defaultHost": "ledger.ternent.dev",
   "themeName": "ledger",
   "defaultThemeMode": "dark"
@@ -28,9 +28,9 @@ export const appConfig = {
 
 export const appSeoConfig = {
   "shortName": "Ledger",
-  "description": "Ledger by ternent.dev for signed append-only history in the browser.",
-  "themeColor": "#14b8a6",
-  "backgroundColor": "#071513",
+  "description": "Ledger is an append-only state engine for portable application truth, deterministic replay, and non-custodial software.",
+  "themeColor": "#c46a6a",
+  "backgroundColor": "#140d0d",
   "lang": "en"
 } as const satisfies AppSeoConfig;
 
@@ -41,16 +41,20 @@ export const appThemePrefix = appThemeName;
 export const landingPageConfig = {
   "navigationLinks": [
     {
-      "href": "#features",
-      "label": "Features"
+      "href": "#proof-model",
+      "label": "The Primitive"
     },
     {
-      "href": "#how-it-works",
-      "label": "How it works"
+      "href": "#proof-json",
+      "label": "Ledger Format"
     },
     {
-      "href": "#use-cases",
-      "label": "Use cases"
+      "href": "#surfaces",
+      "label": "Surfaces"
+    },
+    {
+      "href": "#static-build",
+      "label": "Example Use"
     },
     {
       "href": "#developers",
@@ -58,245 +62,195 @@ export const landingPageConfig = {
     }
   ],
   "hero": {
-    "eyebrow": "ledger.ternent.dev",
-    "title": "Append entries. Preserve history. Verify the chain.",
-    "description": "Ledger is a browser-first append-only record format for signed, replayable history. Create entries, link them together, and verify integrity and authorship without a backend dependency.",
+    "eyebrow": "ledger",
+    "title": "An append-only state engine for portable application truth.",
+    "description": "Ledger defines a minimal contract for authored entries, staged truth, committed history, deterministic replay, and derived projection. It composes Seal for authenticity and Armour for protected payloads without turning storage into authority.",
+    "supportingLine": "Ledger stores truth, replays state, and keeps projection derived. It does not require a central database to be trusted.",
+    "note": "Ledger is not the app. It is the state engine the app projects from.",
     "primaryAction": {
-      "href": "/settings",
-      "label": "Open settings",
+      "href": "https://www.npmjs.com/package/@ternent/ledger",
+      "label": "Install package",
       "variant": "primary"
     },
     "secondaryAction": {
-      "href": "https://github.com/samternent/home/tree/main/apps/_templates/ternent-vue-app",
-      "label": "View template",
+      "href": "https://github.com/samternent/home/tree/main/packages/ledger-v2",
+      "label": "View source",
       "variant": "secondary"
     },
     "preview": {
-      "title": "Signed ledger record",
-      "meta": "ledger.json",
+      "title": "Ledger artifact",
+      "meta": "concord-ledger",
       "statusLabel": "Append-only",
-      "statusTone": "info",
+      "statusTone": "neutral",
       "rows": [
         {
-          "label": "Theme",
-          "value": "ledger-dark",
+          "label": "Truth",
+          "value": "committed entries",
           "valueTone": "primary"
         },
         {
-          "label": "Surface",
-          "value": "Signed ordered history",
+          "label": "Type",
+          "value": "concord-ledger",
           "valueTone": "secondary"
         },
         {
-          "label": "Input",
-          "value": "Entries linked in sequence",
+          "label": "Replay",
+          "value": "deterministic",
           "valueTone": "accent"
         },
         {
-          "label": "Output",
-          "value": "Replayable JSON ledger",
+          "label": "Result",
+          "value": "derived projection",
           "valueTone": "success"
         }
       ],
-      "footerText": "Ledger stores ordered signed entries in a portable JSON format so the whole history can be exported, replayed, and verified anywhere."
+      "footerText": "Ledger keeps committed truth portable and replayable without treating projection as source-of-truth."
     }
   },
-  "featureSection": {
-    "eyebrow": "Features",
-    "title": "Ordered signed history without a backend",
-    "description": "Ledger focuses on one job well. Keep an append-only history of records that can be replayed and verified later.",
+  "proofModelSection": {
+    "eyebrow": "The Primitive",
+    "title": "The primitive",
+    "description": "Ledger defines a minimal state-engine contract. It authors entries, stages them, commits them into append-only history, and replays that history into projection. It does not define app commands, hosting, or storage ownership. It emits truth and derives state.",
     "items": [
       {
-        "title": "Append-only records",
-        "description": "Add new entries without mutating the history that came before them.",
-        "tone": "primary",
-        "icon": "document"
+        "title": "Append-only truth",
+        "description": "Committed history is immutable. New facts are appended, never rewritten."
       },
       {
-        "title": "Signed entries",
-        "description": "Attach integrity and authorship to each record using portable signing primitives.",
-        "tone": "info",
-        "icon": "spark"
+        "title": "Deterministic replay",
+        "description": "The same committed truth replays into the same projection under the same rules."
       },
       {
-        "title": "Linked history",
-        "description": "Chain entries together so ordering and continuity can be verified over time.",
-        "tone": "accent",
-        "icon": "grid"
+        "title": "Explicit composition",
+        "description": "Seal authenticates entries. Armour protects payloads. Ledger composes both without blurring them."
       },
       {
-        "title": "Replayable exports",
-        "description": "Export a ledger file that can be checked, replayed, and reasoned about anywhere.",
-        "tone": "success",
-        "icon": "terminal"
+        "title": "Storage-agnostic",
+        "description": "Storage persists committed and staged truth. It does not become the source of authority."
       }
     ]
   },
-  "howItWorksSection": {
-    "eyebrow": "How it works",
-    "title": "Build a verifiable chain of history",
-    "preview": {
-      "title": "Ledger workflow",
-      "meta": "append + verify",
-      "rows": [
-        {
-          "label": "1",
-          "value": "Create an entry",
-          "valueTone": "primary"
-        },
-        {
-          "label": "2",
-          "value": "Link and sign it",
-          "valueTone": "accent"
-        },
-        {
-          "label": "3",
-          "value": "Replay and verify",
-          "valueTone": "success"
-        }
-      ],
-      "footerText": "Each entry includes its content, its author, and its link to prior history so the ledger can be validated as a whole."
-    },
+  "proofJsonSection": {
+    "eyebrow": "The Ledger Format",
+    "title": "The ledger format",
+    "description": "A ledger container is plain JSON. It holds committed truth only. Staged truth lives separately in runtime state and persistence snapshots.",
+    "code": "{\n  \"format\": \"concord-ledger\",\n  \"version\": \"1\",\n  \"metadata\": {\n    \"createdAt\": \"2026-03-18T00:00:00.000Z\"\n  },\n  \"commits\": {\n    \"commit_001\": {\n      \"parent\": null,\n      \"timestamp\": \"2026-03-18T00:00:00.000Z\",\n      \"entries\": [\"entry_001\"],\n      \"metadata\": null\n    }\n  },\n  \"entries\": {\n    \"entry_001\": {\n      \"entryId\": \"entry_001\",\n      \"kind\": \"todo.item.created\",\n      \"authoredAt\": \"2026-03-18T00:00:00.000Z\",\n      \"author\": \"sam\",\n      \"meta\": null,\n      \"payload\": {\n        \"type\": \"plain\",\n        \"data\": {\n          \"id\": \"todo_123\",\n          \"title\": \"Buy milk\"\n        }\n      },\n      \"seal\": {\n        \"type\": \"seal-proof\",\n        \"version\": \"2\",\n        \"algorithm\": \"Ed25519\"\n      }\n    }\n  },\n  \"head\": \"commit_001\"\n}",
+    "supportingText": "The container stores committed truth only. Projection is always recomputed from replay."
+  },
+  "surfacesSection": {
+    "eyebrow": "Surfaces",
+    "title": "One truth model. Multiple layers.",
+    "description": "Ledger sits between deep protocol rules and higher-level Concord runtime ergonomics. It keeps the state engine explicit across every surface that builds on it.",
+    "items": [
+      {
+        "title": "State engine package",
+        "description": "Use @ternent/ledger directly when you need append, commit, replay, verify, export, and import over portable truth.",
+        "tone": "primary",
+        "icon": "terminal"
+      },
+      {
+        "title": "Concord runtime layer",
+        "description": "Concord builds app-facing command and plugin ergonomics above the same ledger truth model. It should not reimplement ledger mechanics.",
+        "tone": "secondary",
+        "icon": "pin"
+      },
+      {
+        "title": "Portable storage adapters",
+        "description": "Ledger stays storage-agnostic so committed truth can live in local files, Solid, Drive, or other persistence layers.",
+        "tone": "info",
+        "icon": "globe"
+      }
+    ]
+  },
+  "staticBuildSection": {
+    "eyebrow": "Example Use",
+    "title": "Append truth. Replay state.",
+    "description": "Build an entry, optionally protect its payload, seal it, commit it, and replay the ledger into derived state. The history stays portable. The projection can always be rebuilt.",
     "steps": [
       {
-        "title": "Create the entry",
-        "description": "Capture the event, payload, or record you want to append to the ledger."
+        "title": "Author an entry",
+        "description": "Create a ledger-owned truth record for an application fact, such as a todo item being created."
       },
       {
-        "title": "Link and sign it",
-        "description": "Reference the previous ledger state and sign the new entry with the local identity."
+        "title": "Protect and seal it",
+        "description": "Encrypt the payload when needed, then seal the resulting entry so authenticity binds to stored truth."
       },
       {
-        "title": "Replay and verify",
-        "description": "Validate ordering, continuity, and signer integrity by replaying the exported ledger."
+        "title": "Commit it",
+        "description": "Move staged entries into committed append-only history in deterministic order."
+      },
+      {
+        "title": "Replay it",
+        "description": "Recompute projection from committed truth, with optional decryption when capability is present."
       }
-    ]
-  },
-  "useCasesSection": {
-    "eyebrow": "Use cases",
-    "title": "Built for ordered history",
-    "items": [
-      {
-        "title": "Audit trails",
-        "description": "Keep an append-only history of actions, approvals, and changes that can be verified later.",
-        "tone": "primary",
-        "icon": "globe"
-      },
-      {
-        "title": "Signed timelines",
-        "description": "Preserve not just what happened, but who appended each step in the chain.",
-        "tone": "secondary",
-        "icon": "shield"
-      },
-      {
-        "title": "Browser-native logs",
-        "description": "Build local-first histories inside web apps without needing immediate server infrastructure.",
-        "tone": "accent",
-        "icon": "check"
-      },
-      {
-        "title": "Export histories",
-        "description": "Package a portable timeline of records alongside exports, backups, or snapshots.",
-        "tone": "info",
-        "icon": "terminal"
-      },
-      {
-        "title": "Reproducible state",
-        "description": "Rebuild state by replaying ordered entries instead of trusting hidden mutable storage.",
-        "tone": "primary",
-        "icon": "stack"
-      },
-      {
-        "title": "Foundation layers",
-        "description": "Use Ledger as the history primitive beneath richer tools, demos, and protocols.",
-        "tone": "success",
-        "icon": "dataset"
-      }
-    ]
+    ],
+    "closingLine": "Truth is committed once. Projection is rebuilt whenever needed.",
+    "primaryAction": {
+      "href": "https://www.npmjs.com/package/@ternent/ledger",
+      "label": "Install package",
+      "variant": "primary"
+    }
   },
   "developerSection": {
-    "eyebrow": "Developers",
-    "title": "A browser primitive for ordered signed history",
-    "description": "Ledger sits alongside signing and encryption as the history layer in the ternent suite. It gives browser-native systems a portable append-only record model.",
+    "eyebrow": "For Developers",
+    "title": "For developers",
+    "description": "The Ledger package is the state engine layer between protocol primitives and Concord runtime ergonomics. It owns authored truth records, replay, verification, and persistence boundaries without becoming an app framework.",
     "surfaces": [
-      "Web app",
-      "CLI",
-      "Docs"
+      "State engine",
+      "Replay pipeline",
+      "Persistence boundary"
     ],
     "tabs": [
       {
-        "value": "yaml",
-        "label": "Manifest",
-        "title": "Model a portable ledger file",
-        "meta": "YAML",
-        "code": "ledger:\n  entries:\n    - id: entry-0001\n      prev: null\n      type: note.created\n      payload:\n        title: First entry\n      signature:\n        keyId: key:demo",
-        "supportingCopy": "Keep ordered history in a portable structure so the ledger can be exported, replayed, and verified safely.",
+        "value": "js",
+        "label": "JavaScript",
+        "title": "Append and replay directly",
+        "meta": "JavaScript",
+        "code": "import { createLedger } from \"@ternent/ledger\"\n\nconst ledger = await createLedger({\n  identity,\n  protocol,\n  seal,\n  armour,\n  storage,\n  projector,\n})\n\nawait ledger.create()\n\nawait ledger.append({\n  kind: \"todo.item.created\",\n  payload: {\n    id: \"todo_123\",\n    title: \"Buy milk\"\n  }\n})\n\nawait ledger.commit({\n  metadata: { reason: \"user-action\" }\n})\n\nconst projection = await ledger.replay()",
+        "supportingCopy": "Use the package directly when you want explicit control over append, commit, replay, and verification without jumping straight to app-level runtime abstractions.",
         "link": {
-          "href": "https://github.com/samternent/home/tree/main/apps/_templates/ternent-vue-app",
-          "label": "Open the template source"
+          "href": "https://github.com/samternent/home/tree/main/packages/ledger-v2",
+          "label": "View source"
         }
       },
       {
-        "value": "sync",
-        "label": "Sync",
-        "title": "Replay and verify the ledger",
-        "meta": "CLI",
-        "code": "pnpm sync:ternent-app -- --app apps/ledger\npnpm --filter ledger dev",
-        "supportingCopy": "The app can expose verification and replay flows without changing the landing-page structure around it.",
+        "value": "cli",
+        "label": "Encrypted entries",
+        "title": "Protect payloads before they become truth",
+        "meta": "Armour + Seal",
+        "code": "const entry = await ledger.append({\n  kind: \"journal.entry.created\",\n  payload: {\n    text: \"private note\"\n  },\n  protection: {\n    type: \"recipients\",\n    recipients: [\"age1...\"],\n    encoding: \"armor\"\n  }\n})\n\nawait ledger.commit()\nconst projection = await ledger.replay()",
+        "supportingCopy": "Payload protection is explicit. Armour encrypts first, then Ledger seals the resulting entry so the proof binds to encrypted state rather than plaintext.",
         "link": {
-          "href": "https://github.com/samternent/home/blob/main/scripts/sync-ternent-app.mjs",
-          "label": "View the sync script"
+          "href": "https://github.com/samternent/home/tree/main/packages/ledger-v2/SPEC.md",
+          "label": "Read SPEC"
         }
       },
       {
-        "value": "scaffold",
-        "label": "Scaffold",
-        "title": "Create a new ledger app surface",
-        "meta": "CLI",
-        "code": "pnpm scaffold:ternent-app -- --manifest apps/ledger/app.yaml",
-        "supportingCopy": "Use the scaffold to stand up the app shell, then focus on append, verify, and replay workflows.",
+        "value": "action",
+        "label": "Verification",
+        "title": "Verify truth without trusting projection",
+        "meta": "verify()",
+        "code": "const result = await ledger.verify()\n\nconsole.log(result.valid)\nconsole.log(result.commitChainValid)\nconsole.log(result.entriesValid)\nconsole.log(result.payloadHashesValid)\nconsole.log(result.invalidCommitIds)\nconsole.log(result.invalidEntryIds)",
+        "supportingCopy": "Verification checks committed structure, commit chain, entry proofs, and encrypted payload hashes. Projection is derived later and never treated as the source of truth.",
         "link": {
-          "href": "https://github.com/samternent/home/blob/main/scripts/scaffold-ternent-app.mjs",
-          "label": "View the scaffold script"
+          "href": "https://github.com/samternent/home/tree/main/packages/ledger-v2",
+          "label": "Open package on GitHub"
         }
-      }
-    ]
-  },
-  "clarifierSection": {
-    "eyebrow": "Definition",
-    "title": "What Ledger is and isn’t",
-    "columns": [
-      {
-        "title": "Ledger is",
-        "items": [
-          "An append-only record format",
-          "A way to preserve ordered signed history",
-          "A replayable browser-native primitive"
-        ]
-      },
-      {
-        "title": "Ledger is not",
-        "items": [
-          "A blockchain",
-          "A consensus network",
-          "A database replacement",
-          "A hidden server dependency"
-        ]
       }
     ]
   },
   "ctaSection": {
-    "eyebrow": "Ready to start?",
-    "title": "Start building verifiable history",
-    "description": "Create entries, append them to a signed chain, and export a ledger that can be replayed and verified anywhere.",
+    "eyebrow": "Ready",
+    "title": "Start with truth. Build projection on top.",
+    "description": "Append facts, commit them deterministically, replay projection anywhere, and keep storage from becoming authority.",
     "primaryAction": {
-      "href": "/settings",
-      "label": "Open settings",
+      "href": "https://www.npmjs.com/package/@ternent/ledger",
+      "label": "Install package",
       "variant": "primary"
     },
     "secondaryAction": {
-      "href": "https://github.com/samternent/home/tree/main/apps/_templates/ternent-vue-app",
-      "label": "Inspect template",
+      "href": "https://github.com/samternent/home/tree/main/packages/ledger-v2",
+      "label": "View source",
       "variant": "secondary"
     }
   },
@@ -306,20 +260,20 @@ export const landingPageConfig = {
     "copyright": "© 2026.",
     "links": [
       {
-        "href": "/settings",
-        "label": "Settings"
+        "href": "https://www.npmjs.com/package/@ternent/ledger",
+        "label": "Package"
       },
       {
-        "href": "/settings/identity",
-        "label": "Identity"
+        "href": "https://github.com/samternent/home/tree/main/packages/ledger-v2/SPEC.md",
+        "label": "SPEC"
+      },
+      {
+        "href": "https://github.com/samternent/home/tree/main/packages/ledger-v2",
+        "label": "Source"
       },
       {
         "href": "https://github.com/samternent/home/tree/main/apps/ledger",
         "label": "GitHub"
-      },
-      {
-        "href": "https://github.com/samternent/home",
-        "label": "Monorepo"
       }
     ]
   }
