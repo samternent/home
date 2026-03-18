@@ -185,9 +185,6 @@ importers:
       '@vueuse/core':
         specifier: ^10.11.1
         version: 10.11.1(vue@3.5.26)
-      ternent-identity:
-        specifier: workspace:*
-        version: link:../../packages/identity
       ternent-ui:
         specifier: workspace:*
         version: link:../../packages/ternent-ui
