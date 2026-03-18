@@ -1,5 +1,11 @@
 # @ternent/seal-cli
 
+## 0.3.3
+
+### Patch Changes
+
+- [`91246e9d2645faa6d25b0a05cc507bc0c66ade01`](https://github.com/samternent/home/commit/91246e9d2645faa6d25b0a05cc507bc0c66ade01) Thanks [@samternent](https://github.com/samternent)! - Add armoured seal
+
 ## 0.3.2
 
 ### Patch Changes
