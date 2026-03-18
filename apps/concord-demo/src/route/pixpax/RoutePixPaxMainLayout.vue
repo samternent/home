@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useLocalStorage } from "@vueuse/core";
-import { SThemeToggle } from "ternent-ui";
+import { SThemeToggle } from "ternent-ui/components";
 import AppBootstrap from "../../module/app/AppBootstrap.vue";
 import Logo from "../../module/brand/Logo.vue";
 import IdentityAvatar from "../../module/identity/IdentityAvatar.vue";

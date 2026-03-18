@@ -56,13 +56,53 @@ const pwaManifest = {
 
 export default defineConfig({
   resolve: {
-    alias: {
-      "@": resolve(__dirname, "./src"),
-      "@ternent/seal-cli/proof": resolve(
-        __dirname,
-        "../../packages/seal-cli/src/proof.ts",
-      ),
-    },
+    alias: [
+      { find: "@", replacement: resolve(__dirname, "./src") },
+      {
+        find: "@ternent/seal-cli/proof",
+        replacement: resolve(__dirname, "../../packages/seal-cli/src/proof.ts"),
+      },
+      {
+        find: "ternent-ui/components",
+        replacement: resolve(__dirname, "../../packages/ternent-ui/src/components/index.js"),
+      },
+      {
+        find: "ternent-ui/patterns",
+        replacement: resolve(__dirname, "../../packages/ternent-ui/src/patterns/index.ts"),
+      },
+      {
+        find: "ternent-ui/primitives",
+        replacement: resolve(__dirname, "../../packages/ternent-ui/src/primitives/index.ts"),
+      },
+      {
+        find: "@ternent/armour",
+        replacement: resolve(__dirname, "../../packages/armour/src/index.ts"),
+      },
+      {
+        find: "@ternent/concord-protocol",
+        replacement: resolve(__dirname, "../../packages/concord-protocol/src/index.ts"),
+      },
+      {
+        find: "@ternent/identity",
+        replacement: resolve(__dirname, "../../packages/identity-v2/src/index.ts"),
+      },
+      {
+        find: "@ternent/ledger",
+        replacement: resolve(__dirname, "../../packages/ledger-v2/src/index.ts"),
+      },
+      {
+        find: "@ternent/seal-cli",
+        replacement: resolve(__dirname, "../../packages/seal-cli/src/index.ts"),
+      },
+      {
+        find: "@ternent/concord",
+        replacement: resolve(__dirname, "../../packages/concord/src/index.ts"),
+      },
+      {
+        find: "ternent-utils",
+        replacement: resolve(__dirname, "../../packages/utils/src/index.ts"),
+      },
+    ],
   },
   plugins: [
     vue(),
