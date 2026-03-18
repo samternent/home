@@ -2,6 +2,7 @@
 import { computed, ref } from "vue";
 import { TreeView } from "@ark-ui/vue/tree-view";
 import type { TreeCollection } from "@ark-ui/vue/tree-view";
+import Badge from "../Badge/Badge.vue";
 import type { TreeNode } from "./TreeView.types";
 
 defineOptions({ name: "TreeViewNode" });
@@ -24,9 +25,28 @@ const props = withDefaults(
 
 const hasChildren = computed(() => props.collection.isBranchNode(props.node));
 const childNodes = computed(() => props.collection.getNodeChildren(props.node));
-const indentStyle = computed(() => ({
+const rowStyle = computed(() => ({
   paddingLeft: `${props.level * 16}px`,
+  color: props.node.tone === "critical" ? "var(--ui-critical)" : undefined,
 }));
+const rowToneClass = computed(() =>
+  props.node.tone === "critical"
+    ? "border border-[color-mix(in_srgb,var(--ui-critical)_18%,transparent)] bg-[color-mix(in_srgb,var(--ui-critical-muted)_65%,transparent)]"
+    : "border border-transparent",
+);
+const labelToneClass = computed(() =>
+  props.node.tone === "critical"
+    ? "text-[var(--ui-text)]"
+    : "text-[var(--ui-text)]",
+);
+const valueToneClass = computed(() =>
+  props.node.tone === "critical"
+    ? "text-[var(--ui-text-muted)]"
+    : "text-[var(--ui-text-muted)]",
+);
+const textStyle = computed(() =>
+  props.node.tone === "critical" ? { color: "var(--ui-critical)" } : undefined,
+);
 
 const isEditingValue = ref(false);
 const draftValue = ref("");
@@ -72,8 +92,9 @@ function cancelValueEdit() {
     <TreeView.NodeContext v-slot="context">
       <TreeView.Branch v-if="hasChildren">
         <TreeView.BranchControl
-          :style="indentStyle"
+          :style="rowStyle"
           class="group flex w-full items-center gap-2 rounded-md px-2 py-1 text-left transition hover:bg-[var(--ui-border)]"
+          :class="rowToneClass"
         >
           <TreeView.BranchTrigger class="flex items-center gap-2">
             <TreeView.BranchIndicator>
@@ -92,12 +113,21 @@ function cancelValueEdit() {
               </svg>
             </TreeView.BranchIndicator>
             <TreeView.BranchText
-              class="flex-1 truncate text-[var(--ui-text)]"
-              :class="{ 'font-semibold': context.selected }"
+              class="flex-1 truncate"
+              :class="[labelToneClass, { 'font-semibold': context.selected }]"
+              :style="textStyle"
             >
               {{ node.label }}
             </TreeView.BranchText>
           </TreeView.BranchTrigger>
+          <Badge
+            v-if="node.badge"
+            tone="critical"
+            variant="soft"
+            size="xs"
+          >
+            {{ node.badge }}
+          </Badge>
           <input
             v-if="editableValues && hasRawValue && isEditingValue"
             v-model="draftValue"
@@ -108,7 +138,9 @@ function cancelValueEdit() {
           />
           <span
             v-else-if="node.value || node.meta"
-            class="ml-auto max-w-[55%] truncate text-[0.85em] text-[var(--ui-text-muted)]"
+            class="ml-auto max-w-[55%] truncate text-[0.85em]"
+            :class="valueToneClass"
+            :style="textStyle"
             @dblclick.stop="beginValueEdit"
           >
             {{ node.value || node.meta }}
@@ -132,15 +164,25 @@ function cancelValueEdit() {
 
       <TreeView.Item
         v-else
-        :style="indentStyle"
+        :style="rowStyle"
         class="group flex w-full items-center gap-2 rounded-md px-2 py-1 text-left transition hover:bg-[var(--ui-border)]"
+        :class="rowToneClass"
       >
         <TreeView.ItemText
-          class="flex-1 truncate text-[var(--ui-text)]"
-          :class="{ 'font-semibold': context.selected }"
+          class="flex-1 truncate"
+          :class="[labelToneClass, { 'font-semibold': context.selected }]"
+          :style="textStyle"
         >
           {{ node.label }}
         </TreeView.ItemText>
+        <Badge
+          v-if="node.badge"
+          tone="critical"
+          variant="soft"
+          size="xs"
+        >
+          {{ node.badge }}
+        </Badge>
         <input
           v-if="editableValues && hasRawValue && isEditingValue"
           v-model="draftValue"
@@ -151,7 +193,9 @@ function cancelValueEdit() {
         />
         <span
           v-else-if="node.value || node.meta"
-          class="ml-auto max-w-[55%] truncate text-[0.85em] text-[var(--ui-text-muted)]"
+          class="ml-auto max-w-[55%] truncate text-[0.85em]"
+          :class="valueToneClass"
+          :style="textStyle"
           @dblclick.stop="beginValueEdit"
         >
           {{ node.value || node.meta }}

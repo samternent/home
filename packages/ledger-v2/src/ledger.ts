@@ -3,6 +3,7 @@ import {
   deriveCommitId as protocolDeriveCommitId,
   deriveEntryId as protocolDeriveEntryId,
   getCommitChain as protocolGetCommitChain,
+  getCommitSigningPayload,
   getEntrySigningPayload,
   validateLedger as protocolValidateLedger,
   type Commit as ProtocolCommit,
@@ -44,12 +45,14 @@ import type {
   LedgerSealContract,
   LedgerState,
   LedgerStorageAdapter,
+  LedgerUnsignedCommitRecord,
   LedgerVerificationResult,
   LedgerVerifyOptions,
   SealProof
 } from "./types.js";
 
 type UnsignedLedgerEntry = Omit<LedgerEntryRecord, "entryId" | "seal">;
+type UnsignedLedgerCommit = LedgerUnsignedCommitRecord;
 
 const LEDGER_FORMAT = "concord-ledger";
 const LEDGER_VERSION = "1" as const;
@@ -137,10 +140,20 @@ function buildUnsignedEntrySubject(entry: UnsignedLedgerEntry): Uint8Array {
 
 function createShadowCommit(commit: LedgerCommitRecord): ProtocolCommit {
   return {
+    ...createShadowCommitCore(commit),
+    signature: JSON.stringify(commit.seal)
+  };
+}
+
+function createShadowCommitCore(
+  commit: UnsignedLedgerCommit | LedgerCommitRecord
+): ProtocolCommit {
+  return {
     parent: commit.parentCommitId,
     timestamp: commit.committedAt,
     metadata: commit.metadata,
-    entries: commit.entryIds
+    entries: commit.entryIds,
+    signature: null
   };
 }
 
@@ -235,6 +248,9 @@ function validateCommitShape(commit: LedgerCommitRecord): string[] {
   } else if (commit.entryIds.some((entryId) => typeof entryId !== "string")) {
     errors.push("Commit.entryIds must contain only strings.");
   }
+  if (!isRecord(commit.seal)) {
+    errors.push("Commit.seal must be an object.");
+  }
   return errors;
 }
 
@@ -290,11 +306,14 @@ function createDefaultProtocolContract(): LedgerProtocolContract {
     getEntrySubjectBytes(entry) {
       return buildUnsignedEntrySubject(entry);
     },
+    getCommitSubjectBytes(commit) {
+      return textEncoder.encode(getCommitSigningPayload(createShadowCommitCore(commit)));
+    },
     async deriveEntryId(entry) {
       return protocolDeriveEntryId(createShadowEntry(entry));
     },
     async deriveCommitId(commit) {
-      return protocolDeriveCommitId(createShadowCommit(commit));
+      return protocolDeriveCommitId(createShadowCommitCore(commit));
     },
     getCommitChain(container) {
       return protocolGetCommitChain(createShadowContainer(container));
@@ -324,7 +343,7 @@ function createDefaultProtocolContract(): LedgerProtocolContract {
 
 function createDefaultSealContract(): LedgerSealContract {
   return {
-    async createProof(input) {
+    async createEntryProof(input) {
       return (await createSealProof({
         createdAt: input.entry.authoredAt,
         signer: input.signer,
@@ -335,7 +354,25 @@ function createDefaultSealContract(): LedgerSealContract {
         }
       })) as SealProof;
     },
-    async verifyProof(input) {
+    async verifyEntryProof(input) {
+      const result = await verifySealProofAgainstBytes(
+        input.proof as never,
+        input.subjectBytes
+      );
+      return result.valid;
+    },
+    async createCommitProof(input) {
+      return (await createSealProof({
+        createdAt: input.commit.committedAt,
+        signer: input.signer,
+        subject: {
+          kind: "artifact",
+          path: `ledger-commit:${input.commitId}`,
+          hash: await createSealHash(input.subjectBytes)
+        }
+      })) as SealProof;
+    },
+    async verifyCommitProof(input) {
       const result = await verifySealProofAgainstBytes(
         input.proof as never,
         input.subjectBytes
@@ -534,7 +571,7 @@ async function toReplayEntry(
 function createGenesisCommitDraft(
   timestamp: string,
   metadata: Record<string, unknown> | null
-): Omit<LedgerCommitRecord, "commitId"> {
+): UnsignedLedgerCommit {
   return {
     parentCommitId: null,
     committedAt: timestamp,
@@ -573,6 +610,25 @@ export async function createLedger<P>(
     await config.storage.save(snapshot);
   }
 
+  async function buildCommitRecord(
+    unsignedCommit: UnsignedLedgerCommit
+  ): Promise<LedgerCommitRecord> {
+    const subjectBytes = protocol.getCommitSubjectBytes(unsignedCommit);
+    const commitId = await protocol.deriveCommitId(unsignedCommit);
+    const sealProof = await seal.createCommitProof({
+      commit: unsignedCommit,
+      commitId,
+      subjectBytes,
+      signer: config.identity.signer
+    });
+
+    return {
+      ...unsignedCommit,
+      commitId,
+      seal: sealProof
+    };
+  }
+
   async function verifySnapshot(
     container: LedgerContainer | null,
     staged: LedgerEntryRecord[],
@@ -581,8 +637,11 @@ export async function createLedger<P>(
     if (!container) {
       return {
         valid: true,
+        committedHistoryValid: true,
         commitChainValid: true,
+        commitProofsValid: true,
         entriesValid: true,
+        entryProofsValid: true,
         payloadHashesValid: true,
         proofsValid: true,
         invalidCommitIds: [],
@@ -593,18 +652,31 @@ export async function createLedger<P>(
     const invalidCommitIds = new Set<string>();
     const invalidEntryIds = new Set<string>();
     let commitChainValid = true;
+    let commitProofsValid = true;
     let entriesValid = true;
+    let entryProofsValid = true;
     let payloadHashesValid = true;
     let proofsValid = true;
+    let committedEntriesValid = true;
+    let committedEntryProofsValid = true;
+    let committedPayloadHashesValid = true;
 
     const containerValidation = protocol.validateContainer(container);
     if (!containerValidation.ok) {
       commitChainValid = false;
     }
 
+    const reachableCommitIds = new Set<string>();
+    const reachableEntryIds = new Set<string>();
+
     for (const [commitId, commit] of Object.entries(container.commits)) {
       try {
-        const derivedCommitId = await protocol.deriveCommitId(commit);
+        const derivedCommitId = await protocol.deriveCommitId({
+          parentCommitId: commit.parentCommitId,
+          committedAt: commit.committedAt,
+          metadata: commit.metadata,
+          entryIds: commit.entryIds
+        });
         if (derivedCommitId !== commitId) {
           invalidCommitIds.add(commitId);
           commitChainValid = false;
@@ -619,6 +691,30 @@ export async function createLedger<P>(
         commitChainValid = false;
       }
 
+      if (options?.includeProofs !== false) {
+        try {
+          const proofValid = await seal.verifyCommitProof({
+            commit,
+            subjectBytes: protocol.getCommitSubjectBytes({
+              parentCommitId: commit.parentCommitId,
+              committedAt: commit.committedAt,
+              metadata: commit.metadata,
+              entryIds: commit.entryIds
+            }),
+            proof: commit.seal
+          });
+          if (!proofValid) {
+            invalidCommitIds.add(commitId);
+            commitProofsValid = false;
+            proofsValid = false;
+          }
+        } catch {
+          invalidCommitIds.add(commitId);
+          commitProofsValid = false;
+          proofsValid = false;
+        }
+      }
+
       for (const entryId of commit.entryIds) {
         if (!container.entries[entryId]) {
           invalidEntryIds.add(entryId);
@@ -628,24 +724,49 @@ export async function createLedger<P>(
     }
 
     try {
-      protocol.getCommitChain(container);
+      const chain = protocol.getCommitChain(container);
+      for (const commitId of chain) {
+        reachableCommitIds.add(commitId);
+        for (const entryId of container.commits[commitId]?.entryIds ?? []) {
+          reachableEntryIds.add(entryId);
+        }
+      }
     } catch {
       invalidCommitIds.add(container.head);
       commitChainValid = false;
+      committedEntriesValid = false;
+      committedEntryProofsValid = false;
+      committedPayloadHashesValid = false;
     }
 
-    const entriesToVerify = [...Object.values(container.entries), ...staged];
+    const entriesToVerify = [
+      ...Object.entries(container.entries).map(([recordKey, entry]) => ({
+        recordKey,
+        entry
+      })),
+      ...staged.map((entry) => ({ recordKey: null, entry }))
+    ];
 
-    for (const entry of entriesToVerify) {
+    for (const { recordKey, entry } of entriesToVerify) {
+      const isReachableCommittedEntry =
+        (recordKey !== null && reachableEntryIds.has(recordKey)) ||
+        reachableEntryIds.has(entry.entryId);
+
       try {
         const derivedEntryId = await protocol.deriveEntryId(entry);
         if (derivedEntryId !== entry.entryId) {
           invalidEntryIds.add(entry.entryId);
           entriesValid = false;
+          if (isReachableCommittedEntry) {
+            committedEntriesValid = false;
+          }
         }
       } catch {
         invalidEntryIds.add(entry.entryId);
         entriesValid = false;
+        if (isReachableCommittedEntry) {
+          committedEntriesValid = false;
+        }
       }
 
       const subjectBytes = buildUnsignedEntrySubject({
@@ -658,7 +779,7 @@ export async function createLedger<P>(
 
       if (options?.includeProofs !== false) {
         try {
-          const proofValid = await seal.verifyProof({
+          const proofValid = await seal.verifyEntryProof({
             entry,
             subjectBytes,
             proof: entry.seal
@@ -666,12 +787,22 @@ export async function createLedger<P>(
           if (!proofValid) {
             invalidEntryIds.add(entry.entryId);
             entriesValid = false;
+            entryProofsValid = false;
             proofsValid = false;
+            if (isReachableCommittedEntry) {
+              committedEntriesValid = false;
+              committedEntryProofsValid = false;
+            }
           }
         } catch {
           invalidEntryIds.add(entry.entryId);
           entriesValid = false;
+          entryProofsValid = false;
           proofsValid = false;
+          if (isReachableCommittedEntry) {
+            committedEntriesValid = false;
+            committedEntryProofsValid = false;
+          }
         }
       }
 
@@ -682,24 +813,46 @@ export async function createLedger<P>(
             invalidEntryIds.add(entry.entryId);
             entriesValid = false;
             payloadHashesValid = false;
+            if (isReachableCommittedEntry) {
+              committedEntriesValid = false;
+              committedPayloadHashesValid = false;
+            }
           }
         } catch {
           invalidEntryIds.add(entry.entryId);
           entriesValid = false;
           payloadHashesValid = false;
+          if (isReachableCommittedEntry) {
+            committedEntriesValid = false;
+            committedPayloadHashesValid = false;
+          }
         }
       }
     }
 
+    for (const entryId of reachableEntryIds) {
+      if (!container.entries[entryId]) {
+        committedEntriesValid = false;
+        committedEntryProofsValid = false;
+        committedPayloadHashesValid = false;
+      }
+    }
+
+    const committedHistoryValid =
+      commitChainValid &&
+      commitProofsValid &&
+      committedEntriesValid &&
+      committedEntryProofsValid &&
+      committedPayloadHashesValid &&
+      containerValidation.ok;
+
     return {
-      valid:
-        commitChainValid &&
-        entriesValid &&
-        payloadHashesValid &&
-        proofsValid &&
-        containerValidation.ok,
+      valid: committedHistoryValid,
+      committedHistoryValid,
       commitChainValid,
+      commitProofsValid,
       entriesValid,
+      entryProofsValid,
       payloadHashesValid,
       proofsValid,
       invalidCommitIds: sortStrings(invalidCommitIds),
@@ -799,7 +952,7 @@ export async function createLedger<P>(
       payload
     };
     const subjectBytes = buildUnsignedEntrySubject(unsignedEntry);
-    const sealProof = await seal.createProof({
+    const sealProof = await seal.createEntryProof({
       entry: unsignedEntry,
       subjectBytes,
       signer: config.identity.signer
@@ -861,25 +1014,18 @@ export async function createLedger<P>(
   }
 
   async function create(params?: CreateLedgerParams): Promise<void> {
-    const draft = createGenesisCommitDraft(now(), normalizeMeta(params?.metadata));
-    const commit: LedgerCommitRecord = {
-      ...draft,
-      commitId: ""
-    };
-    const commitId = await protocol.deriveCommitId(commit);
-    const genesis: LedgerCommitRecord = {
-      ...commit,
-      commitId
-    };
+    const genesis = await buildCommitRecord(
+      createGenesisCommitDraft(now(), normalizeMeta(params?.metadata))
+    );
 
     state.container = {
       format: LEDGER_FORMAT,
       version: LEDGER_VERSION,
       commits: {
-        [commitId]: genesis
+        [genesis.commitId]: genesis
       },
       entries: {},
-      head: commitId
+      head: genesis.commitId
     };
     state.staged = [];
     state.verification = null;
@@ -950,28 +1096,23 @@ export async function createLedger<P>(
       entries[entry.entryId] = entry;
     }
 
-    const draft: LedgerCommitRecord = {
-      commitId: "",
+    const unsignedCommit: UnsignedLedgerCommit = {
       parentCommitId: container.head,
       committedAt: now(),
       metadata: normalizeMeta(input?.metadata),
       entryIds: staged.map((entry) => entry.entryId)
     };
-    const commitId = await protocol.deriveCommitId(draft);
-    const commitRecord: LedgerCommitRecord = {
-      ...draft,
-      commitId
-    };
+    const commitRecord = await buildCommitRecord(unsignedCommit);
 
     state.container = {
       format: container.format,
       version: container.version,
       commits: {
         ...container.commits,
-        [commitId]: commitRecord
+        [commitRecord.commitId]: commitRecord
       },
       entries,
-      head: commitId
+      head: commitRecord.commitId
     };
     state.staged = [];
 
@@ -980,7 +1121,8 @@ export async function createLedger<P>(
 
     return {
       commit: cloneValue(commitRecord),
-      committedEntries: staged
+      committedEntries: staged,
+      committedEntryIds: staged.map((entry) => entry.entryId)
     };
   }
 

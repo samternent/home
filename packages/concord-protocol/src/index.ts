@@ -21,6 +21,7 @@ export interface Commit {
   timestamp: string;
   metadata?: Record<string, unknown> | null;
   entries: string[];
+  signature?: string | null;
 }
 
 /**
@@ -100,10 +101,36 @@ export async function deriveEntryId(entry: Entry): Promise<string> {
 }
 
 /**
+ * Returns the commit fields used for hashing and signing.
+ */
+export function getCommitCore(commit: Commit): Omit<Commit, "signature"> {
+  return {
+    parent: commit.parent,
+    timestamp: commit.timestamp,
+    metadata: commit.metadata ?? null,
+    entries: commit.entries,
+  };
+}
+
+/**
+ * Canonical signing payload for a commit (excludes signature).
+ */
+export function getCommitSigningPayload(commit: Commit): string {
+  return canonicalStringify(getCommitCore(commit));
+}
+
+/**
+ * Canonical signing payload as bytes for a commit (excludes signature).
+ */
+export function getCommitSigningBytes(commit: Commit): Uint8Array {
+  return utf8Bytes(getCommitSigningPayload(commit));
+}
+
+/**
  * Deterministically derives a CommitID from commit content.
  */
 export async function deriveCommitId(commit: Commit): Promise<string> {
-  const payload = canonicalStringify(commit);
+  const payload = getCommitSigningPayload(commit);
   return hashCanonical(payload);
 }
 
@@ -124,6 +151,7 @@ export async function createGenesisCommit(
       ...metadata,
     },
     entries,
+    signature: null,
   };
   const commitId = await deriveCommitId(commit);
   return { commitId, commit };
@@ -266,6 +294,7 @@ export async function createCommit(params: {
     timestamp: params.timestamp ?? new Date().toISOString(),
     metadata: params.metadata ?? null,
     entries: params.entries,
+    signature: null,
   };
   const commitId = await deriveCommitId(commit);
   return { commitId, commit };
@@ -480,6 +509,13 @@ export function validateCommit(commit: Commit): {
     (typeof commit.metadata !== "object" || Array.isArray(commit.metadata))
   ) {
     errors.push("Commit.metadata must be an object or null");
+  }
+  if (
+    commit.signature !== undefined &&
+    commit.signature !== null &&
+    typeof commit.signature !== "string"
+  ) {
+    errors.push("Commit.signature must be a string or null");
   }
   return { ok: errors.length === 0, errors };
 }

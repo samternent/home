@@ -1,30 +1,25 @@
-<!DOCTYPE html>
-<html lang="en" data-app-version="<%= __APP_VERSION__ %>">
+<!doctype html>
+<html lang="__APP_LANG__" data-theme="__APP_THEME_DATA__">
   <head>
-    <%- include("partials/head", {
-      title: "Concord — client-side verifiable ledger",
-      description: "Concord is a client-side, append-only, cryptographically verifiable ledger system designed to prove data integrity without trusting the storage layer.",
-      canonical: "https://concord.ternent.dev/",
-      pixpaxTitle: "PixPax",
-      pixpaxDescription: "Open packs, collect pixels, trade with friends.",
-      pixpaxCanonical: "https://www.pixpax.xyz/",
-      robots: "index,follow",
-      ogSiteName: "Concord",
-      ogTitle: "Concord — client-side verifiable ledger",
-      ogDescription: "A client-side, append-only, cryptographically verifiable ledger system designed to prove data integrity without trusting the storage layer.",
-      ogUrl: "https://concord.ternent.dev/",
-      pixpaxOgSiteName: "PixPax",
-      pixpaxOgTitle: "PixPax",
-      pixpaxOgDescription: "Open packs, collect pixels, trade with friends.",
-      pixpaxOgUrl: "https://www.pixpax.xyz/",
-      twitterTitle: "Concord — client-side verifiable ledger",
-      twitterDescription: "A client-side, append-only, cryptographically verifiable ledger system designed to prove data integrity without trusting the storage layer.",
-      pixpaxTwitterTitle: "PixPax",
-      pixpaxTwitterDescription: "Open packs, collect pixels, trade with friends."
-    }) %>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="__APP_DESCRIPTION__" />
+    <meta name="theme-color" content="__APP_THEME_COLOR__" />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link
+      rel="preload"
+      href="/fonts/ClashGrotesk-Variable.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <script>
+      __APP_THEME_BOOTSTRAP__
+    </script>
+    <title>__APP_TITLE__</title>
   </head>
   <body>
-    <div id="pixpax-preload">Loading PixPax</div>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>

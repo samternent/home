@@ -167,6 +167,85 @@ importers:
 
   apps/concord:
     dependencies:
+      '@tailwindcss/vite':
+        specifier: ^4.1.18
+        version: 4.1.18(rolldown-vite@7.2.5)
+      '@ternent/armour':
+        specifier: workspace:*
+        version: link:../../packages/armour
+      '@ternent/concord':
+        specifier: workspace:*
+        version: link:../../packages/concord
+      '@ternent/identity':
+        specifier: workspace:*
+        version: link:../../packages/identity-v2
+      '@ternent/ledger':
+        specifier: workspace:*
+        version: link:../../packages/ledger-v2
+      '@ternent/seal-cli':
+        specifier: workspace:*
+        version: link:../../packages/seal-cli
+      '@vueuse/core':
+        specifier: ^10.11.1
+        version: 10.11.1(vue@3.5.26)
+      ternent-identity:
+        specifier: workspace:*
+        version: link:../../packages/identity
+      ternent-ui:
+        specifier: workspace:*
+        version: link:../../packages/ternent-ui
+      ternent-utils:
+        specifier: workspace:*
+        version: link:../../packages/utils
+      vue:
+        specifier: ^3.5.24
+        version: 3.5.26(typescript@5.9.3)
+      vue-router:
+        specifier: ^4.4.3
+        version: 4.4.3(vue@3.5.26)
+    devDependencies:
+      '@lhci/cli':
+        specifier: ^0.14.0
+        version: 0.14.0(encoding@0.1.13)
+      '@playwright/test':
+        specifier: ^1.46.1
+        version: 1.58.2
+      '@vitejs/plugin-vue':
+        specifier: ^6.0.1
+        version: 6.0.3(rolldown-vite@7.2.5)(vue@3.5.26)
+      '@vitest/coverage-v8':
+        specifier: ^1.6.0
+        version: 1.6.1(vitest@1.6.0)
+      '@vue/test-utils':
+        specifier: ^2.4.6
+        version: 2.4.6
+      jsdom:
+        specifier: ^24.1.1
+        version: 24.1.3
+      tailwindcss:
+        specifier: ^4.1.18
+        version: 4.1.18
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+      vite:
+        specifier: npm:rolldown-vite@7.2.5
+        version: /rolldown-vite@7.2.5(@types/node@24.10.4)(yaml@2.5.0)
+      vite-plugin-pwa:
+        specifier: ^0.21.1
+        version: 0.21.2(rolldown-vite@7.2.5)(workbox-build@7.4.0)(workbox-window@7.4.0)
+      vite-ssg:
+        specifier: ^28.2.2
+        version: 28.2.2(rolldown-vite@7.2.5)(unhead@2.1.1)(vue-router@4.4.3)(vue@3.5.26)
+      vitest:
+        specifier: ^1.6.0
+        version: 1.6.0(jsdom@24.1.3)
+      workbox-window:
+        specifier: ^7.4.0
+        version: 7.4.0
+
+  apps/concord-demo:
+    dependencies:
       '@better-auth/passkey':
         specifier: ^1.4.18
         version: 1.4.18(@better-auth/core@1.4.18)(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-auth@1.4.18)(better-call@1.1.8)(nanostores@1.1.0)
@@ -548,7 +627,7 @@ importers:
         version: 4.1.18
       vite:
         specifier: ^4.5.3
-        version: 4.5.3
+        version: 4.5.3(@types/node@24.10.4)
       vite-plugin-pwa:
         specifier: ^0.16.7
         version: 0.16.7(vite@4.5.3)(workbox-build@7.4.0)(workbox-window@7.4.0)
@@ -568,6 +647,40 @@ importers:
         specifier: workspace:*
         version: link:../rage
     devDependencies:
+      '@types/node':
+        specifier: ^24.3.0
+        version: 24.10.4
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+      vite:
+        specifier: ^4.5.3
+        version: 4.5.3(@types/node@24.10.4)
+      vite-plugin-dts:
+        specifier: ^1.7.3
+        version: 1.7.3(@types/node@24.10.4)(vite@4.5.3)
+      vitest:
+        specifier: ^1.6.0
+        version: 1.6.0(@types/node@24.10.4)
+
+  packages/concord:
+    dependencies:
+      '@ternent/ledger':
+        specifier: workspace:*
+        version: link:../ledger-v2
+    devDependencies:
+      '@ternent/armour':
+        specifier: workspace:*
+        version: link:../armour
+      '@ternent/identity':
+        specifier: workspace:*
+        version: link:../identity-v2
+      '@ternent/rage':
+        specifier: workspace:*
+        version: link:../rage
+      '@ternent/seal-cli':
+        specifier: workspace:*
+        version: link:../seal-cli
       '@types/node':
         specifier: ^24.3.0
         version: 24.10.4
@@ -882,7 +995,7 @@ importers:
         version: 1.7.3(@types/node@24.10.4)(vite@4.5.3)
       vite-plugin-top-level-await:
         specifier: ^1.4.4
-        version: 1.4.4(vite@4.5.3)
+        version: 1.4.4(rollup@2.80.0)(vite@4.5.3)
       vite-plugin-wasm:
         specifier: ^3.3.0
         version: 3.3.0(vite@4.5.3)
@@ -7018,7 +7131,7 @@ packages:
       vite: ^4.0.0 || ^5.0.0
       vue: ^3.2.25
     dependencies:
-      vite: 4.5.3
+      vite: 4.5.3(@types/node@24.10.4)
       vue: 3.4.38(typescript@5.9.3)
     dev: true
 
@@ -7171,7 +7284,7 @@ packages:
       '@vue/shared': 3.4.38
       entities: 4.5.0
       estree-walker: 2.0.2
-      source-map-js: 1.2.0
+      source-map-js: 1.2.1
 
   /@vue/compiler-core@3.5.26:
     resolution: {integrity: sha512-vXyI5GMfuoBCnv5ucIT7jhHKl55Y477yxP6fc4eUswjP8FG3FFVFd41eNDArR+Uk3QKn2Z85NavjaxLxOC19/w==}
@@ -7204,7 +7317,7 @@ packages:
       '@vue/shared': 3.4.38
       estree-walker: 2.0.2
       magic-string: 0.30.21
-      postcss: 8.4.41
+      postcss: 8.5.6
       source-map-js: 1.2.0
 
   /@vue/compiler-sfc@3.5.26:
@@ -13472,11 +13585,6 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
-  /nanoid@3.3.7:
-    resolution: {integrity: sha512-eSRppjcPIatRIMC1U6UngP8XFcz8MQWGQdt1MTBQ7NaAmvXDfvNxbvWV3x2y6CdEUciCSsDHDQZbhYaB8QEo2g==}
-    engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
-    hasBin: true
-
   /nanostores@1.1.0:
     resolution: {integrity: sha512-yJBmDJr18xy47dbNVlHcgdPrulSn1nhSE6Ns9vTG+Nx9VPT6iV1MD6aQFp/t52zpf82FhLLTXAXr30NuCnxvwA==}
     engines: {node: ^20.0.0 || >=22.0.0}
@@ -14165,14 +14273,6 @@ packages:
 
   /postcss-value-parser@4.2.0:
     resolution: {integrity: sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==}
-
-  /postcss@8.4.41:
-    resolution: {integrity: sha512-TesUflQ0WKZqAvg52PWL6kHgLKP6xB6heTOdoYM0Wt2UHyxNa4K25EZZMgKns3BH1RLVbZCREPpLY0rhnNoHVQ==}
-    engines: {node: ^10 || ^12 || >=14}
-    dependencies:
-      nanoid: 3.3.7
-      picocolors: 1.1.1
-      source-map-js: 1.2.0
 
   /postcss@8.5.6:
     resolution: {integrity: sha512-3Ybi1tAuwAP9s0r1UQ2J4n5Y0G05bJkpUIO0/bI9MhwmD70S5aTWbXGBwxHrelT+XM1k6dM0pk+SwNkpTRN7Pg==}
@@ -16378,7 +16478,7 @@ packages:
       vite: '>=5.0.0'
     dependencies:
       ejs: 3.1.10
-      vite: 4.5.3
+      vite: 4.5.3(@types/node@24.10.4)
     dev: false
 
   /vite-plugin-inspect@0.8.7(rollup@2.80.0)(vite@5.4.2):
@@ -16417,7 +16517,7 @@ packages:
       debug: 4.3.6
       fast-glob: 3.3.2
       pretty-bytes: 6.1.1
-      vite: 4.5.3
+      vite: 4.5.3(@types/node@24.10.4)
       workbox-build: 7.4.0
       workbox-window: 7.4.0
     transitivePeerDependencies:
@@ -16483,20 +16583,6 @@ packages:
       '@rollup/plugin-virtual': 3.0.2(rollup@2.80.0)
       '@swc/core': 1.7.14
       uuid: 10.0.0
-      vite: 4.5.3
-    transitivePeerDependencies:
-      - '@swc/helpers'
-      - rollup
-    dev: true
-
-  /vite-plugin-top-level-await@1.4.4(vite@4.5.3):
-    resolution: {integrity: sha512-QyxQbvcMkgt+kDb12m2P8Ed35Sp6nXP+l8ptGrnHV9zgYDUpraO0CPdlqLSeBqvY2DToR52nutDG7mIHuysdiw==}
-    peerDependencies:
-      vite: '>=2.8'
-    dependencies:
-      '@rollup/plugin-virtual': 3.0.2(rollup@2.80.0)
-      '@swc/core': 1.7.14
-      uuid: 10.0.0
       vite: 4.5.3(@types/node@24.10.4)
     transitivePeerDependencies:
       - '@swc/helpers'
@@ -16543,7 +16629,7 @@ packages:
     peerDependencies:
       vite: ^2 || ^3 || ^4 || ^5
     dependencies:
-      vite: 4.5.3
+      vite: 4.5.3(@types/node@24.10.4)
     dev: true
 
   /vite-ssg@28.2.2(rolldown-vite@7.2.5)(unhead@2.1.1)(vue-router@4.4.3)(vue@3.5.26):
@@ -16616,40 +16702,6 @@ packages:
       fsevents: 2.3.3
     dev: true
 
-  /vite@4.5.3:
-    resolution: {integrity: sha512-kQL23kMeX92v3ph7IauVkXkikdDRsYMGTVl5KY2E9OY4ONLvkHf04MDTbnfo6NKxZiDLWzVpP5oTa8hQD8U3dg==}
-    engines: {node: ^14.18.0 || >=16.0.0}
-    hasBin: true
-    peerDependencies:
-      '@types/node': '>= 14'
-      less: '*'
-      lightningcss: ^1.21.0
-      sass: '*'
-      stylus: '*'
-      sugarss: '*'
-      terser: ^5.4.0
-    peerDependenciesMeta:
-      '@types/node':
-        optional: true
-      less:
-        optional: true
-      lightningcss:
-        optional: true
-      sass:
-        optional: true
-      stylus:
-        optional: true
-      sugarss:
-        optional: true
-      terser:
-        optional: true
-    dependencies:
-      esbuild: 0.18.20
-      postcss: 8.4.41
-      rollup: 3.29.4
-    optionalDependencies:
-      fsevents: 2.3.3
-
   /vite@4.5.3(@types/node@24.10.4):
     resolution: {integrity: sha512-kQL23kMeX92v3ph7IauVkXkikdDRsYMGTVl5KY2E9OY4ONLvkHf04MDTbnfo6NKxZiDLWzVpP5oTa8hQD8U3dg==}
     engines: {node: ^14.18.0 || >=16.0.0}
@@ -16684,7 +16736,6 @@ packages:
       rollup: 3.29.4
     optionalDependencies:
       fsevents: 2.3.3
-    dev: true
 
   /vite@5.4.2(@types/node@24.10.4):
     resolution: {integrity: sha512-dDrQTRHp5C1fTFzcSaMxjk6vdpKvT+2/mIdE07Gw2ykehT49O0z/VHS3zZ8iV/Gh8BJJKHWOe5RjaNrW5xf/GA==}

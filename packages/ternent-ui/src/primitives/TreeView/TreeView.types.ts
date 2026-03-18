@@ -4,5 +4,7 @@ export type TreeNode = {
   meta?: string;
   value?: string;
   rawValue?: unknown;
+  tone?: "default" | "critical";
+  badge?: string;
   children?: TreeNode[];
 };

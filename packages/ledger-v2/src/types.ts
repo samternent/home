@@ -70,7 +70,13 @@ export type LedgerCommitRecord = {
   committedAt: string;
   metadata: Record<string, unknown> | null;
   entryIds: string[];
+  seal: SealProof;
 };
+
+export type LedgerUnsignedCommitRecord = Omit<
+  LedgerCommitRecord,
+  "commitId" | "seal"
+>;
 
 export type LedgerContainer = {
   format: "concord-ledger";
@@ -119,6 +125,7 @@ export type LedgerCommitInput = {
 export type LedgerCommitResult = {
   commit: LedgerCommitRecord;
   committedEntries: LedgerEntryRecord[];
+  committedEntryIds: string[];
 };
 
 export type LedgerReplayOptions = {
@@ -178,8 +185,11 @@ export type LedgerProjector<P> = (projection: P, entry: LedgerReplayEntry) => P;
 
 export type LedgerVerificationResult = {
   valid: boolean;
+  committedHistoryValid: boolean;
   commitChainValid: boolean;
+  commitProofsValid: boolean;
   entriesValid: boolean;
+  entryProofsValid: boolean;
   payloadHashesValid: boolean;
   proofsValid: boolean;
   invalidCommitIds: string[];
@@ -208,8 +218,9 @@ export type LedgerProtocolContract = {
   getEntrySubjectBytes: (
     entry: Omit<LedgerEntryRecord, "entryId" | "seal">
   ) => Uint8Array;
+  getCommitSubjectBytes: (commit: LedgerUnsignedCommitRecord) => Uint8Array;
   deriveEntryId: (entry: LedgerEntryRecord) => Promise<string>;
-  deriveCommitId: (commit: LedgerCommitRecord) => Promise<string>;
+  deriveCommitId: (commit: LedgerUnsignedCommitRecord) => Promise<string>;
   getCommitChain: (container: LedgerContainer) => string[];
   validateContainer: (container: LedgerContainer) => {
     ok: boolean;
@@ -218,13 +229,24 @@ export type LedgerProtocolContract = {
 };
 
 export type LedgerSealContract = {
-  createProof: (input: {
+  createEntryProof: (input: {
     entry: Omit<LedgerEntryRecord, "entryId" | "seal">;
     subjectBytes: Uint8Array;
     signer: SealSigner;
   }) => Promise<SealProof>;
-  verifyProof: (input: {
+  verifyEntryProof: (input: {
     entry: LedgerEntryRecord;
+    subjectBytes: Uint8Array;
+    proof: SealProof;
+  }) => Promise<boolean>;
+  createCommitProof: (input: {
+    commit: LedgerUnsignedCommitRecord;
+    commitId: string;
+    subjectBytes: Uint8Array;
+    signer: SealSigner;
+  }) => Promise<SealProof>;
+  verifyCommitProof: (input: {
+    commit: LedgerCommitRecord;
     subjectBytes: Uint8Array;
     proof: SealProof;
   }) => Promise<boolean>;

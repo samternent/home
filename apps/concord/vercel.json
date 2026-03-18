@@ -2,103 +2,17 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
   "trailingSlash": false,
-  "rewrites": [
-    {
-      "source": "/assets/:path*",
-      "has": [{ "type": "host", "value": "pixpax.xyz" }],
-      "destination": "/assets/:path*"
-    },
-    {
-      "source": "/assets/:path*",
-      "has": [{ "type": "host", "value": "www.pixpax.xyz" }],
-      "destination": "/assets/:path*"
-    },
-    {
-      "source": "/favicon.ico",
-      "has": [{ "type": "host", "value": "pixpax.xyz" }],
-      "destination": "/favicon.ico"
-    },
-    {
-      "source": "/favicon.ico",
-      "has": [{ "type": "host", "value": "www.pixpax.xyz" }],
-      "destination": "/favicon.ico"
-    },
-    {
-      "source": "/icon.svg",
-      "has": [{ "type": "host", "value": "pixpax.xyz" }],
-      "destination": "/icon.svg"
-    },
-    {
-      "source": "/icon.svg",
-      "has": [{ "type": "host", "value": "www.pixpax.xyz" }],
-      "destination": "/icon.svg"
-    },
-    {
-      "source": "/vite.svg",
-      "has": [{ "type": "host", "value": "pixpax.xyz" }],
-      "destination": "/vite.svg"
-    },
-    {
-      "source": "/vite.svg",
-      "has": [{ "type": "host", "value": "www.pixpax.xyz" }],
-      "destination": "/vite.svg"
-    },
-    {
-      "source": "/pixpax-meta.js",
-      "has": [{ "type": "host", "value": "pixpax.xyz" }],
-      "destination": "/pixpax-meta.js"
-    },
-    {
-      "source": "/pixpax-meta.js",
-      "has": [{ "type": "host", "value": "www.pixpax.xyz" }],
-      "destination": "/pixpax-meta.js"
-    },
-    {
-      "source": "/pixpax-preload.js",
-      "has": [{ "type": "host", "value": "pixpax.xyz" }],
-      "destination": "/pixpax-preload.js"
-    },
-    {
-      "source": "/pixpax-preload.js",
-      "has": [{ "type": "host", "value": "www.pixpax.xyz" }],
-      "destination": "/pixpax-preload.js"
-    },
-    {
-      "source": "/:path*",
-      "has": [{ "type": "host", "value": "pixpax.xyz" }],
-      "destination": "/spa"
-    },
-    {
-      "source": "/:path*",
-      "has": [{ "type": "host", "value": "www.pixpax.xyz" }],
-      "destination": "/spa"
-    },
-    { "source": "/workspace", "destination": "/spa" },
-    { "source": "/workspace/:path*", "destination": "/spa" },
-    { "source": "/pixpax", "destination": "/spa" },
-    { "source": "/pixpax/:path*", "destination": "/spa" }
-  ],
-
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
   "headers": [
     {
-      "source": "/service-worker.js",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=0, must-revalidate"
-        }
-      ]
+      "source": "/sw.js",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }]
     },
     {
       "source": "/(.*)",
       "headers": [
-        {
-          "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval' gc.zgo.at; connect-src 'self' *.ternent.dev data: blob: *.ternent.dev ternentdotdev.goatcounter.com; font-src 'self' fonts.gstatic.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com unpkg.com; img-src 'self' data:; base-uri 'self'; frame-ancestors 'none'"
-        },
         { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-XSS-Protection", "value": "1; mode=block" },
-        { "key": "Referrer-Policy", "value": "same-origin" }
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
       ]
     }
   ]

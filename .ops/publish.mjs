@@ -3,6 +3,7 @@ import shell from "shelljs";
 const appsToPublish = [
   "../apps/armour",
   "../apps/concord",
+  "../apps/concord-demo",
   "../apps/ledger",
   "../apps/seal",
   "../apps/ternent-api",
@@ -10,7 +11,9 @@ const appsToPublish = [
 ];
 const packagesToPublish = [
   "../packages/armour",
+  "../packages/concord",
   "../packages/ledger",
+  "../packages/ledger-v2",
   "../packages/encrypt",
   "../packages/identity",
   "../packages/identity-v2",
