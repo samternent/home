@@ -1,5 +1,11 @@
 # ternent-ui
 
+## 0.4.12
+
+### Patch Changes
+
+- [`a7c7e3c9f61300396fb11caf364d10e721b078ec`](https://github.com/samternent/home/commit/a7c7e3c9f61300396fb11caf364d10e721b078ec) Thanks [@samternent](https://github.com/samternent)! - Update seal theme and concord copy
+
 ## 0.4.11
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # **APP_ID**
 
+## 0.4.8
+
+### Patch Changes
+
+- [`a7c7e3c9f61300396fb11caf364d10e721b078ec`](https://github.com/samternent/home/commit/a7c7e3c9f61300396fb11caf364d10e721b078ec) Thanks [@samternent](https://github.com/samternent)! - Update seal theme and concord copy
+
+- Updated dependencies [[`a7c7e3c9f61300396fb11caf364d10e721b078ec`](https://github.com/samternent/home/commit/a7c7e3c9f61300396fb11caf364d10e721b078ec)]:
+  - ternent-ui@0.4.12
+
 ## 0.4.7
 
 ### Patch Changes
