@@ -1,6 +1,6 @@
 {
   "name": "@ternent/ledger",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Append-only state engine for Concord",
   "license": "ISC",
   "type": "module",

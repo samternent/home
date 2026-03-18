@@ -1,5 +1,14 @@
 # @ternent/concord
 
+## 0.2.2
+
+### Patch Changes
+
+- [`3fd51c9f51ccc3d816d044aa8aa161d9683534c3`](https://github.com/samternent/home/commit/3fd51c9f51ccc3d816d044aa8aa161d9683534c3) Thanks [@samternent](https://github.com/samternent)! - alias utils
+
+- Updated dependencies []:
+  - @ternent/ledger@0.1.3
+
 ## 0.2.1
 
 ### Patch Changes
