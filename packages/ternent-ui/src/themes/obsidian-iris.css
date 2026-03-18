@@ -1,6 +1,6 @@
 /* This file is generated from src/themes/semanticThemeContract.js. */
 
-[data-theme="obsidian-iris-light"] {
+:root[data-theme="obsidian-iris-light"] {
   color-scheme: light;
   --ui-bg: #f7f5f7;
   --ui-fg: #211a1d;
@@ -73,7 +73,7 @@
   --ui-logo-cutout: #f7f5f7;
 }
 
-[data-theme="obsidian-iris-dark"] {
+:root[data-theme="obsidian-iris-dark"] {
   color-scheme: dark;
   --ui-bg: #120e11;
   --ui-fg: #f3eff4;

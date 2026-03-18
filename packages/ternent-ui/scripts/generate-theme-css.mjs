@@ -60,10 +60,10 @@ function renderRootCss() {
 function getThemeSelector(themeName, mode) {
   const singletonSelector = singletonThemeSelectors[themeName]?.[mode];
   if (singletonSelector) {
-    return `[data-theme="${singletonSelector}"]`;
+    return `:root[data-theme="${singletonSelector}"]`;
   }
 
-  return `[data-theme="${themeName}-${mode}"]`;
+  return `:root[data-theme="${themeName}-${mode}"]`;
 }
 
 function renderThemeCss(themeName, variants) {

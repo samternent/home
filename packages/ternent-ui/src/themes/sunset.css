@@ -1,6 +1,6 @@
 /* This file is generated from src/themes/semanticThemeContract.js. */
 
-[data-theme="sunset-light"] {
+:root[data-theme="sunset-light"] {
   color-scheme: light;
   --ui-bg: #fff5ef;
   --ui-fg: #2b1710;
@@ -73,7 +73,7 @@
   --ui-logo-cutout: #fff5ef;
 }
 
-[data-theme="sunset-dark"] {
+:root[data-theme="sunset-dark"] {
   color-scheme: dark;
   --ui-bg: #1a0f14;
   --ui-fg: #ffe8d6;

@@ -1,6 +1,6 @@
 /* This file is generated from src/themes/semanticThemeContract.js. */
 
-[data-theme="concord-light"] {
+:root[data-theme="concord-light"] {
   color-scheme: light;
   --ui-bg: #f4f7fb;
   --ui-fg: #16222f;
@@ -73,7 +73,7 @@
   --ui-logo-cutout: #f4f7fb;
 }
 
-[data-theme="concord-dark"] {
+:root[data-theme="concord-dark"] {
   color-scheme: dark;
   --ui-bg: #0f141b;
   --ui-fg: #e9eef5;

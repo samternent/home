@@ -1,6 +1,6 @@
 /* This file is generated from src/themes/semanticThemeContract.js. */
 
-[data-theme="garnet-honey-light"] {
+:root[data-theme="garnet-honey-light"] {
   color-scheme: light;
   --ui-bg: #fbf6ef;
   --ui-fg: #2a141a;
@@ -73,7 +73,7 @@
   --ui-logo-cutout: #fbf6ef;
 }
 
-[data-theme="garnet-honey-dark"] {
+:root[data-theme="garnet-honey-dark"] {
   color-scheme: dark;
   --ui-bg: #1c0d11;
   --ui-fg: #f7ede1;

@@ -1,6 +1,6 @@
 /* This file is generated from src/themes/semanticThemeContract.js. */
 
-[data-theme="harbor-rose-light"] {
+:root[data-theme="harbor-rose-light"] {
   color-scheme: light;
   --ui-bg: #f6f7fb;
   --ui-fg: #191a23;
@@ -73,7 +73,7 @@
   --ui-logo-cutout: #f6f7fb;
 }
 
-[data-theme="harbor-rose-dark"] {
+:root[data-theme="harbor-rose-dark"] {
   color-scheme: dark;
   --ui-bg: #0f1222;
   --ui-fg: #eef1fa;

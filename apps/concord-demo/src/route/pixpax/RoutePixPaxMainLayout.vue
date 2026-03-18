@@ -81,7 +81,7 @@ const {
           class="max-w-[980px] mx-auto w-full flex flex-col items-center gap-6"
         >
           <a
-            href="https://concord-demo.ternent.dev"
+            href="https://concord.ternent.dev"
             class="flex flex-col items-center justify-center gap-1 opacity-80 hover:opacity-100 text-xs font-mono font-thin -translate-y-1 hover:-translate-y-0.5 group-hover:translate-x-1.5 transition-all duration-300"
           >
             <span

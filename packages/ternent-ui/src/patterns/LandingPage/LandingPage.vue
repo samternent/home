@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { Button, Card, Separator, Tabs } from "../../primitives";
+import SThemeToggle from "../../components/SThemeToggle.vue";
 import FeatureCard from "../FeatureCard/FeatureCard.vue";
 import Logo from "../Logo/Logo.vue";
 import PageSurface from "../PageSurface/PageSurface.vue";
@@ -654,11 +655,11 @@ function resolveActionVariant(action: LandingPageAction) {
     <footer class="mx-auto max-w-7xl px-6 pb-4 lg:px-8">
       <Separator />
       <div
-        class="flex flex-col gap-6 py-8 sm:flex-row sm:items-start sm:justify-between"
+        class="flex gap-6 py-8 md:flex-row md:items-start md:justify-between"
       >
-        <div class="flex flex-col items-start gap-3">
+        <div class="flex min-w-0 flex-1 flex-col items-start gap-3">
           <div
-            class="flex items-center gap-3 text-sm text-[var(--ui-fg-muted)]"
+            class="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-[var(--ui-fg-muted)]"
           >
             <Logo class="!size-6" />
             <a
@@ -668,11 +669,19 @@ function resolveActionVariant(action: LandingPageAction) {
               {{ props.config.footer.brandLabel }}
             </a>
             <p class="m-0">{{ props.config.footer.copyright }}</p>
+          </div>
+
+          <div
+            v-if="$slots['footer-meta']"
+            class="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-[var(--ui-fg-muted)]"
+          >
             <slot name="footer-meta" />
           </div>
         </div>
 
-        <nav class="flex flex-wrap items-center gap-2">
+        <nav
+          class="flex flex-row flex-wrap items-center gap-2 md:max-w-[42rem] md:justify-end"
+        >
           <Button
             v-for="link in props.config.footer.links"
             :key="link.label"
@@ -682,6 +691,9 @@ function resolveActionVariant(action: LandingPageAction) {
           >
             {{ link.label }}
           </Button>
+
+          <SThemeToggle size="sm" />
+          <slot name="footer-actions" />
         </nav>
       </div>
     </footer>

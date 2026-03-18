@@ -7,7 +7,7 @@ import { appConfig, appSeoConfig } from "./src/app/config/app.generated";
 
 const appThemeData = `${appConfig.themeName}-${appConfig.defaultThemeMode}`;
 const themeStorageKey = `${appConfig.appId}/theme-mode`;
-const themeBootstrapScript = `(function(){var storageKey=${JSON.stringify(themeStorageKey)};var defaultMode=${JSON.stringify(appConfig.defaultThemeMode)};var themePrefix=${JSON.stringify(appConfig.themeName)};var mode=defaultMode;try{var stored=window.localStorage.getItem(storageKey);if(stored==="dark"||stored==="light"){mode=stored;}}catch{}document.documentElement.setAttribute("data-theme",themePrefix+"-"+mode);}());`;
+const themeBootstrapScript = `(function(){var storageKey=${JSON.stringify(themeStorageKey)};var defaultMode=${JSON.stringify(appConfig.defaultThemeMode)};var themePrefix=${JSON.stringify(appConfig.themeName)};var root=document.documentElement;var mode=defaultMode;root.dataset.themePrefix=themePrefix;root.dataset.themeStorageKey=storageKey;try{var stored=window.localStorage.getItem(storageKey);if(stored==="dark"||stored==="light"){mode=stored;}else if(typeof window.matchMedia==="function"){mode=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}}catch{if(typeof window.matchMedia==="function"){mode=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}}root.setAttribute("data-theme",themePrefix+"-"+mode);}());`;
 
 function createIndexHtmlTransformPlugin() {
   return {

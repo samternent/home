@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import { SButton } from "ternent-ui/components";
+import { SThemeToggle } from "ternent-ui/components";
 import { useThemeMode } from "@/modules/ui";
 
-const { isDark, toggleTheme } = useThemeMode();
+const { mode } = useThemeMode();
 </script>
 
 <template>
-  <SButton type="secondary" @click="toggleTheme">
-    {{ isDark ? "Use light mode" : "Use dark mode" }}
-  </SButton>
+  <SThemeToggle v-model="mode" />
 </template>

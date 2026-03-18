@@ -1,6 +1,6 @@
 /* This file is generated from src/themes/semanticThemeContract.js. */
 
-[data-theme="spruce-ink-light"] {
+:root[data-theme="spruce-ink-light"] {
   color-scheme: light;
   --ui-bg: #f7f7f4;
   --ui-fg: #2d3047;
@@ -73,7 +73,7 @@
   --ui-logo-cutout: #f7f7f4;
 }
 
-[data-theme="spruce-ink-dark"] {
+:root[data-theme="spruce-ink-dark"] {
   color-scheme: dark;
   --ui-bg: #171a2a;
   --ui-fg: #eef1f4;

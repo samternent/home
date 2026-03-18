@@ -1,6 +1,6 @@
 /* This file is generated from src/themes/semanticThemeContract.js. */
 
-[data-theme="print-light"] {
+:root[data-theme="print-light"] {
   color-scheme: light;
   --ui-bg: #fbf7f0;
   --ui-fg: #181615;
@@ -73,7 +73,7 @@
   --ui-logo-cutout: #fbf7f0;
 }
 
-[data-theme="print-dark"] {
+:root[data-theme="print-dark"] {
   color-scheme: dark;
   --ui-bg: #141311;
   --ui-fg: #e9e6df;

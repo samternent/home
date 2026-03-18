@@ -1,6 +1,6 @@
 /* This file is generated from src/themes/semanticThemeContract.js. */
 
-[data-theme="proof-dark"] {
+:root[data-theme="proof-dark"] {
   color-scheme: dark;
   --ui-bg: #060a0f;
   --ui-fg: #e6edf3;

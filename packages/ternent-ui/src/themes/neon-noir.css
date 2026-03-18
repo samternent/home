@@ -1,6 +1,6 @@
 /* This file is generated from src/themes/semanticThemeContract.js. */
 
-[data-theme="neon-noir"] {
+:root[data-theme="neon-noir"] {
   color-scheme: dark;
   --ui-bg: oklch(12% 0 0);
   --ui-fg: oklch(92% 0 0);

@@ -1,6 +1,6 @@
 /* This file is generated from src/themes/semanticThemeContract.js. */
 
-[data-theme="aurora-light"] {
+:root[data-theme="aurora-light"] {
   color-scheme: light;
   --ui-bg: #f2fbff;
   --ui-fg: #14323d;
@@ -73,7 +73,7 @@
   --ui-logo-cutout: #f2fbff;
 }
 
-[data-theme="aurora-dark"] {
+:root[data-theme="aurora-dark"] {
   color-scheme: dark;
   --ui-bg: #0b1217;
   --ui-fg: #e4f8ff;

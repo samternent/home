@@ -1,6 +1,6 @@
 /* This file is generated from src/themes/semanticThemeContract.js. */
 
-[data-theme="citrine-ash-light"] {
+:root[data-theme="citrine-ash-light"] {
   color-scheme: light;
   --ui-bg: #fbfbf2;
   --ui-fg: #3d3b30;
@@ -73,7 +73,7 @@
   --ui-logo-cutout: #fbfbf2;
 }
 
-[data-theme="citrine-ash-dark"] {
+:root[data-theme="citrine-ash-dark"] {
   color-scheme: dark;
   --ui-bg: #15140f;
   --ui-fg: #f5f2d9;

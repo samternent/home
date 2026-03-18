@@ -1,6 +1,6 @@
 /* This file is generated from src/themes/semanticThemeContract.js. */
 
-[data-theme="armour-light"] {
+:root[data-theme="armour-light"] {
   color-scheme: light;
   --ui-bg: #f3f8f7;
   --ui-fg: #142321;
@@ -73,7 +73,7 @@
   --ui-logo-cutout: #f3f8f7;
 }
 
-[data-theme="armour-dark"] {
+:root[data-theme="armour-dark"] {
   color-scheme: dark;
   --ui-bg: #071513;
   --ui-fg: #e7f4f1;

@@ -5,6 +5,12 @@ import { appConfig, appThemePrefix, type ThemeMode } from "@/app/config/app.conf
 const STORAGE_KEY = `${appConfig.appId}/theme-mode`;
 
 function getInitialMode(): ThemeMode {
+  if (typeof window !== "undefined" && typeof window.matchMedia === "function") {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+  }
+
   return appConfig.defaultThemeMode;
 }
 
@@ -14,6 +20,8 @@ let started = false;
 
 function applyTheme(mode: ThemeMode) {
   if (typeof document === "undefined") return;
+  document.documentElement.dataset.themePrefix = appConfig.themeName;
+  document.documentElement.dataset.themeStorageKey = STORAGE_KEY;
   document.documentElement.setAttribute("data-theme", `${appThemePrefix}-${mode}`);
 }
 

@@ -1,6 +1,6 @@
 /* This file is generated from src/themes/semanticThemeContract.js. */
 
-[data-theme="ledger-light"] {
+:root[data-theme="ledger-light"] {
   color-scheme: light;
   --ui-bg: #f8f4ef;
   --ui-fg: #241817;
@@ -73,7 +73,7 @@
   --ui-logo-cutout: #f8f4ef;
 }
 
-[data-theme="ledger-dark"] {
+:root[data-theme="ledger-dark"] {
   color-scheme: dark;
   --ui-bg: #140d0d;
   --ui-fg: #f4ebe4;
