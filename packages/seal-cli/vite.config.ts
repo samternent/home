@@ -12,7 +12,9 @@ const external = new Set([
 export default defineConfig({
   resolve: {
     alias: {
+      "@ternent/armour": resolve(configDir, "../armour/src/index.ts"),
       "@ternent/identity": resolve(configDir, "../identity-v2/src/index.ts"),
+      "@ternent/rage": resolve(configDir, "../rage/src/index.ts"),
     },
   },
   build: {
@@ -26,6 +28,7 @@ export default defineConfig({
         cli: resolve(configDir, "src/cli.ts"),
         index: resolve(configDir, "src/index.ts"),
         proof: resolve(configDir, "src/proof.ts"),
+        artifact: resolve(configDir, "src/artifact.ts"),
         manifest: resolve(configDir, "src/manifest.ts"),
         crypto: resolve(configDir, "src/crypto.ts"),
         errors: resolve(configDir, "src/errors.ts"),
@@ -41,7 +44,9 @@ export default defineConfig({
   test: {
     environment: "node",
     alias: {
+      "@ternent/armour": resolve(configDir, "../armour/src/index.ts"),
       "@ternent/identity": resolve(configDir, "../identity-v2/src/index.ts"),
+      "@ternent/rage": resolve(configDir, "../rage/src/index.ts"),
       "ternent-utils": resolve(configDir, "../utils/src/index.ts"),
     },
   },

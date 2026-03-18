@@ -3,9 +3,9 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createManifestArtifact } from "./commands/manifest";
 import { createIdentityArtifact } from "./commands/identity";
-import { createProofArtifact } from "./commands/sign";
+import { createProofArtifact, createRecipientArtifact } from "./commands/sign";
 import { createPublicKeyArtifact } from "./commands/publicKey";
-import { verifyProofArtifact } from "./commands/verify";
+import { verifyArtifactProof, verifyProofArtifact } from "./commands/verify";
 import { resolveSealIdentityFromEnv } from "./node";
 import {
   EXIT_FAILURE,
@@ -86,6 +86,17 @@ function getFlag(flags: ParsedArgs["flags"], key: string): string | undefined {
     return value[value.length - 1];
   }
   return typeof value === "string" ? value : undefined;
+}
+
+function getFlags(flags: ParsedArgs["flags"], key: string): string[] {
+  const value = flags[key];
+  if (Array.isArray(value)) {
+    return value.map(String);
+  }
+  if (typeof value === "string") {
+    return [value];
+  }
+  return [];
 }
 
 function hasFlag(flags: ParsedArgs["flags"], key: string): boolean {
@@ -239,21 +250,68 @@ export async function runCli(
 
     if (command === "sign") {
       const identity = await resolveSealIdentityFromEnv(env);
-      const artifact = await createProofArtifact({
-        inputPath: requireFlag(parsed.flags, "input"),
-        identity,
-      });
+      const recipients = getFlags(parsed.flags, "recipient");
+      const inputPath = requireFlag(parsed.flags, "input");
       const outPath = getFlag(parsed.flags, "out");
-      if (outPath) {
-        await writeOutputFile(outPath, artifact.content);
-        outputResult(writer, json, quiet, json ? artifact.proof : outPath);
+      if (recipients.length > 0) {
+        const artifact = await createRecipientArtifact({
+          inputPath,
+          identity,
+          recipients,
+        });
+        if (outPath) {
+          await writeOutputFile(outPath, artifact.content);
+          outputResult(writer, json, quiet, json ? artifact.artifact : outPath);
+        } else {
+          outputResult(writer, true, quiet, artifact.artifact);
+        }
       } else {
-        outputResult(writer, true, quiet, artifact.proof);
+        const artifact = await createProofArtifact({
+          inputPath,
+          identity,
+        });
+        if (outPath) {
+          await writeOutputFile(outPath, artifact.content);
+          outputResult(writer, json, quiet, json ? artifact.proof : outPath);
+        } else {
+          outputResult(writer, true, quiet, artifact.proof);
+        }
       }
       return EXIT_SUCCESS;
     }
 
     if (command === "verify") {
+      const artifactPath = getFlag(parsed.flags, "artifact");
+      if (artifactPath) {
+        const { result } = await verifyArtifactProof({ artifactPath });
+        outputResult(
+          writer,
+          json,
+          quiet,
+          json
+            ? result
+            : [
+                `valid=${result.valid}`,
+                `hashMatch=${result.hashMatch}`,
+                `signatureValid=${result.signatureValid}`,
+                `encrypted=${result.encrypted}`,
+                `payloadScheme=${result.payloadScheme}`,
+                `payloadMode=${result.payloadMode}`,
+                `keyId=${result.keyId}`,
+                `algorithm=${result.algorithm}`,
+                `subjectHash=${result.subjectHash}`,
+              ].join("\n")
+        );
+
+        if (!result.hashMatch) {
+          return EXIT_HASH_MISMATCH;
+        }
+        if (!result.signatureValid) {
+          return EXIT_SIGNATURE_INVALID;
+        }
+        return EXIT_SUCCESS;
+      }
+
       const proofPath = requireFlag(parsed.flags, "proof");
       const inputPath = requireFlag(parsed.flags, "input");
       const { result } = await verifyProofArtifact({ proofPath, inputPath });
@@ -293,8 +351,9 @@ export async function runCli(
     throw new SealCliError(
       "Usage: seal identity create [--out <path>] [--words 12|24] [--passphrase <value>] [--mnemonic-out <path>] [--json] [--quiet]\n" +
         "       seal manifest create --input <path> [--out <path>] [--json] [--quiet]\n" +
-        "       seal sign --input <path> [--out <path>] [--json] [--quiet]\n" +
+        "       seal sign --input <path> [--recipient <age...>] [--out <path>] [--json] [--quiet]\n" +
         "       seal verify --proof <proof.json> --input <path> [--json] [--quiet]\n" +
+        "       seal verify --artifact <artifact.json> [--json] [--quiet]\n" +
         "       seal public-key [--json] [--quiet]",
       EXIT_FAILURE
     );

@@ -1,6 +1,6 @@
 # @ternent/seal-cli
 
-Seal signs files and manifests. It verifies artifacts offline. It emits portable proof JSON that `apps/seal` can verify in the browser without duplicate crypto logic.
+Seal signs files and manifests. It verifies artifacts offline. It emits portable proof JSON for legacy flows and recipient-targeted sealed artifacts for encrypted flows.
 
 ## Install
 
@@ -37,9 +37,13 @@ seal identity create --out identity.json
 seal identity create --out identity.json --words 24 --mnemonic-out seal-seed-phrase.txt
 seal manifest create --input apps/seal/dist --out apps/seal/dist/dist-manifest.json
 seal sign --input apps/seal/dist/dist-manifest.json --out apps/seal/dist/proof.json
+seal sign --input artifact.tar.gz --recipient age1... --recipient age1... --out artifact.seal.json
 seal verify --proof apps/seal/dist/proof.json --input apps/seal/dist/dist-manifest.json --json
+seal verify --artifact artifact.seal.json --json
 seal public-key --json
 ```
+
+When one or more `--recipient` flags are provided, Seal encrypts the input bytes with `@ternent/armour`, then signs the unsigned artifact container. Recipient values are never serialized into the emitted artifact.
 
 ## JavaScript API
 
@@ -57,6 +61,29 @@ const identityJson = exportIdentityJson(identity);
 
 const { identity: mnemonicIdentity, mnemonic } =
   await createSealMnemonicIdentity({ words: 24 });
+```
+
+Create and verify recipient-targeted artifacts:
+
+```ts
+import {
+  createSealArtifact,
+  decryptSealArtifactPayload,
+  verifySealArtifact,
+} from "@ternent/seal-cli/artifact";
+
+const artifact = await createSealArtifact({
+  signer: { identity },
+  subjectPath: "artifact.tar.gz",
+  payload: artifactBytes,
+  recipients: ["age1..."],
+});
+
+const verification = await verifySealArtifact(artifact);
+const plaintext = await decryptSealArtifactPayload({
+  artifact,
+  identity,
+});
 ```
 
 ## GitHub Actions
@@ -132,6 +159,46 @@ Proof:
     "keyId": "..."
   },
   "signature": "..."
+}
+```
+
+Encrypted artifact:
+
+```json
+{
+  "version": "1",
+  "type": "seal-artifact",
+  "manifest": {
+    "version": "1",
+    "payloadType": "encrypted",
+    "payloadScheme": "age",
+    "payloadMode": "recipients",
+    "payloadEncoding": "armor",
+    "payloadHash": "sha256:..."
+  },
+  "payload": {
+    "type": "encrypted",
+    "scheme": "age",
+    "mode": "recipients",
+    "encoding": "armor",
+    "data": "-----BEGIN AGE ENCRYPTED FILE-----\n...\n-----END AGE ENCRYPTED FILE-----\n"
+  },
+  "proof": {
+    "version": "2",
+    "type": "seal-proof",
+    "algorithm": "Ed25519",
+    "createdAt": "2026-03-17T00:00:00.000Z",
+    "subject": {
+      "kind": "artifact",
+      "path": "artifact.tar.gz",
+      "hash": "sha256:..."
+    },
+    "signer": {
+      "publicKey": "BASE64URL-RAW-ED25519-PUBLIC-KEY",
+      "keyId": "..."
+    },
+    "signature": "..."
+  }
 }
 ```
 

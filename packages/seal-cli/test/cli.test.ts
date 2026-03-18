@@ -3,6 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { createIdentity, serializeIdentity } from "@ternent/identity";
+import { recipientFromIdentity } from "@ternent/armour";
 import { runCli } from "../src/cli";
 
 async function createSigningEnv() {
@@ -54,6 +55,37 @@ describe("seal cli", () => {
     expect(signExit).toBe(0);
     expect(verifyExit).toBe(0);
     expect(writer.read().stdout).toContain('"valid": true');
+  });
+
+  it("signs and verifies an encrypted artifact successfully", async () => {
+    const env = await createSigningEnv();
+    const recipient = await createIdentity();
+    const recipientValue = await recipientFromIdentity(recipient);
+    const subjectPath = await createTempFile("sample.txt", "sample file\n");
+    const artifactPath = await createTempFile("artifact.json", "");
+    const writer = createWriter();
+
+    const signExit = await runCli(
+      [
+        "sign",
+        "--input",
+        subjectPath,
+        "--recipient",
+        recipientValue,
+        "--out",
+        artifactPath,
+      ],
+      { env, writer: writer.writer }
+    );
+    const verifyExit = await runCli(
+      ["verify", "--artifact", artifactPath, "--json"],
+      { writer: writer.writer }
+    );
+
+    expect(signExit).toBe(0);
+    expect(verifyExit).toBe(0);
+    expect(await readFile(artifactPath, "utf8")).toContain('"type": "seal-artifact"');
+    expect(writer.read().stdout).toContain('"encrypted": true');
   });
 
   it("creates an identity file", async () => {
@@ -111,6 +143,20 @@ describe("seal cli", () => {
     expect(exitCode).toBe(2);
   });
 
+  it("keeps the legacy proof output when no recipients are provided", async () => {
+    const env = await createSigningEnv();
+    const subjectPath = await createTempFile("sample.txt", "sample file\n");
+    const proofPath = await createTempFile("proof.json", "");
+
+    const exitCode = await runCli(
+      ["sign", "--input", subjectPath, "--out", proofPath],
+      { env }
+    );
+
+    expect(exitCode).toBe(0);
+    expect(await readFile(proofPath, "utf8")).toContain('"type": "seal-proof"');
+  });
+
   it("returns exit code 3 for an invalid signature", async () => {
     const env = await createSigningEnv();
     const otherEnv = await createSigningEnv();
@@ -159,5 +205,22 @@ describe("seal cli", () => {
     });
 
     expect(exitCode).toBe(5);
+  });
+
+  it("surfaces invalid recipients without leaking armour errors", async () => {
+    const env = await createSigningEnv();
+    const subjectPath = await createTempFile("sample.txt", "sample file\n");
+    const writer = createWriter();
+
+    const exitCode = await runCli(
+      ["sign", "--input", subjectPath, "--recipient", "bad-recipient"],
+      { env, writer: writer.writer }
+    );
+
+    expect(exitCode).toBe(1);
+    expect(writer.read().stderr).toContain(
+      "Recipient must be a valid age recipient string."
+    );
+    expect(writer.read().stderr).not.toContain("ARMOUR_");
   });
 });

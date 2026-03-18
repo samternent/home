@@ -36,6 +36,7 @@
   "exports": {
     ".": "./dist/index.js",
     "./proof": "./dist/proof.js",
+    "./artifact": "./dist/artifact.js",
     "./manifest": "./dist/manifest.js",
     "./crypto": "./dist/crypto.js",
     "./errors": "./dist/errors.js"
@@ -45,6 +46,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@ternent/armour": "workspace:*",
     "@ternent/identity": "workspace:*",
     "ternent-utils": "workspace:*"
   },

@@ -12,7 +12,7 @@ export const SEAL_PROOF_TYPE = "seal-proof" as const;
 export const SEAL_PUBLIC_KEY_TYPE = "seal-public-key" as const;
 export const SEAL_SIGNATURE_ALGORITHM = "Ed25519" as const;
 
-export type SealSubjectKind = "file" | "manifest";
+export type SealSubjectKind = "file" | "manifest" | "artifact";
 
 export type SealProofV1 = {
   version: typeof SEAL_PROOF_VERSION;
@@ -185,8 +185,12 @@ export function validateSealProofShape(value: unknown): {
   if (!hasOnlyKeys(value.signer, ["publicKey", "keyId"])) {
     errors.push("Proof signer contains unsupported fields.");
   }
-  if (value.subject.kind !== "file" && value.subject.kind !== "manifest") {
-    errors.push("Proof subject kind must be file or manifest.");
+  if (
+    value.subject.kind !== "file" &&
+    value.subject.kind !== "manifest" &&
+    value.subject.kind !== "artifact"
+  ) {
+    errors.push("Proof subject kind must be file, manifest, or artifact.");
   }
   if (typeof value.subject.path !== "string" || value.subject.path.length === 0) {
     errors.push("Proof subject path must be a non-empty string.");
