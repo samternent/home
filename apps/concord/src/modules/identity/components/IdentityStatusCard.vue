@@ -20,7 +20,7 @@ const shortFingerprint = computed(() => {
     <div v-if="identity" class="mt-3 text-sm">
       <div><strong>ID:</strong> {{ identity.id }}</div>
       <div><strong>Fingerprint:</strong> {{ shortFingerprint }}</div>
-      <div><strong>Created:</strong> {{ new Date(identity.createdAt).toLocaleString() }}</div>
+      <div><strong>Created:</strong> {{ new Date(identity.serializedIdentity.createdAt).toLocaleString() }}</div>
     </div>
   </SCard>
 </template>

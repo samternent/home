@@ -11,10 +11,8 @@ export function useIdentityExport() {
     return JSON.stringify(
       {
         id: identity.value.id,
-        createdAt: identity.value.createdAt,
-        publicKeyPem: identity.value.publicKeyPem,
-        privateKeyPem: identity.value.privateKeyPem,
         fingerprint: identity.value.fingerprint,
+        serializedIdentity: identity.value.serializedIdentity,
       },
       null,
       2,

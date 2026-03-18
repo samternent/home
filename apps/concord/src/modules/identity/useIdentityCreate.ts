@@ -1,10 +1,5 @@
 import { ref } from "vue";
-import {
-  createIdentity,
-  exportPrivateKeyAsPem,
-  exportPublicKeyAsPem,
-} from "ternent-identity";
-import { hashData, stripIdentityKey } from "ternent-utils";
+import { createIdentity } from "@ternent/identity";
 import { useIdentitySession, type StoredIdentity } from "./useIdentitySession";
 
 export function useIdentityCreate() {
@@ -18,19 +13,12 @@ export function useIdentityCreate() {
     error.value = null;
 
     try {
-      const keyPair = await createIdentity();
-      const [publicKeyPem, privateKeyPem] = await Promise.all([
-        exportPublicKeyAsPem(keyPair.publicKey),
-        exportPrivateKeyAsPem(keyPair.privateKey),
-      ]);
-
-      const fingerprint = await hashData(stripIdentityKey(publicKeyPem));
+      const serializedIdentity = await createIdentity();
+      const fingerprint = serializedIdentity.keyId;
       const identity: StoredIdentity = {
         id: `identity-${fingerprint.slice(0, 12)}`,
-        createdAt: new Date().toISOString(),
-        publicKeyPem,
-        privateKeyPem,
         fingerprint,
+        serializedIdentity,
       };
 
       setIdentity(identity);

@@ -17,13 +17,13 @@ const onImport = async () => {
   <SCard class="space-y-4 p-5">
     <h3 class="m-0 text-lg">Import identity</h3>
     <p class="text-sm text-fg-muted">
-      Paste either JSON export payload or PEM private key text.
+      Paste a serialized identity export payload.
     </p>
 
     <textarea
       v-model="payload"
       class="min-h-64 w-full rounded-md border border-border bg-surface px-3 py-2 font-mono text-xs"
-      placeholder='{"privateKeyPem":"-----BEGIN PRIVATE KEY-----..."}'
+      placeholder='{"serializedIdentity":{"format":"ternent-identity","version":"2","algorithm":"Ed25519"}}'
     />
 
     <SButton type="primary" :loading="isImporting" @click="onImport">

@@ -1,17 +1,12 @@
 import { ref } from "vue";
-import {
-  importPrivateKeyFromPem,
-  importPublicKeyFromPem,
-  derivePublicFromPrivatePEM,
-} from "ternent-identity";
-import { hashData, stripIdentityKey } from "ternent-utils";
+import { parseIdentity, validateIdentity, type SerializedIdentity } from "@ternent/identity";
 import { useIdentitySession, type StoredIdentity } from "./useIdentitySession";
 
 type ImportPayload = {
-  privateKeyPem: string;
-  publicKeyPem?: string;
   id?: string;
-  createdAt?: string;
+  fingerprint?: string;
+  serializedIdentity?: SerializedIdentity;
+  identity?: SerializedIdentity;
 };
 
 function parsePayload(raw: string): ImportPayload {
@@ -21,18 +16,10 @@ function parsePayload(raw: string): ImportPayload {
   }
 
   if (trimmed.startsWith("{")) {
-    const parsed = JSON.parse(trimmed) as ImportPayload;
-    if (!parsed.privateKeyPem) {
-      throw new Error("Missing privateKeyPem in identity payload");
-    }
-    return parsed;
+    return JSON.parse(trimmed) as ImportPayload;
   }
 
-  if (trimmed.includes("BEGIN PRIVATE KEY")) {
-    return { privateKeyPem: trimmed };
-  }
-
-  throw new Error("Unsupported identity payload format. Use JSON or PEM private key text.");
+  throw new Error("Unsupported identity payload format. Use serialized identity JSON.");
 }
 
 export function useIdentityImport() {
@@ -47,25 +34,16 @@ export function useIdentityImport() {
 
     try {
       const payload = parsePayload(rawPayload);
-
-      // Validate private key before accepting it.
-      await importPrivateKeyFromPem(payload.privateKeyPem);
-
-      const publicKeyPem = payload.publicKeyPem
-        ? payload.publicKeyPem
-        : await derivePublicFromPrivatePEM(payload.privateKeyPem);
-
-      // Validate public key shape.
-      await importPublicKeyFromPem(publicKeyPem);
-
-      const fingerprint = await hashData(stripIdentityKey(publicKeyPem));
+      const serializedIdentity = parseIdentity(
+        payload.serializedIdentity ?? payload.identity ?? payload,
+      );
+      await validateIdentity(serializedIdentity);
+      const fingerprint = payload.fingerprint || serializedIdentity.keyId;
 
       const identity: StoredIdentity = {
         id: payload.id || `identity-${fingerprint.slice(0, 12)}`,
-        createdAt: payload.createdAt || new Date().toISOString(),
-        publicKeyPem,
-        privateKeyPem: payload.privateKeyPem,
         fingerprint,
+        serializedIdentity,
       };
 
       setIdentity(identity);

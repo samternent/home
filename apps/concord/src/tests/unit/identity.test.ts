@@ -32,7 +32,7 @@ describe("identity flows", () => {
     const imported = await importer.importIdentity(payload);
 
     expect(imported.id).toMatch(/^identity-/);
-    expect(imported.privateKeyPem).toContain("BEGIN PRIVATE KEY");
-    expect(imported.publicKeyPem).toContain("BEGIN PUBLIC KEY");
+    expect(imported.serializedIdentity.format).toBe("ternent-identity");
+    expect(imported.serializedIdentity.version).toBe("2");
   });
 });
