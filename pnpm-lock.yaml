@@ -170,9 +170,6 @@ importers:
       '@tailwindcss/vite':
         specifier: ^4.1.18
         version: 4.1.18(rolldown-vite@7.2.5)
-      '@ternent/armour':
-        specifier: workspace:*
-        version: link:../../packages/armour
       '@ternent/concord':
         specifier: workspace:*
         version: link:../../packages/concord
