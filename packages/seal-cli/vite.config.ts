@@ -15,6 +15,7 @@ export default defineConfig({
       "@ternent/armour": resolve(configDir, "../armour/src/index.ts"),
       "@ternent/identity": resolve(configDir, "../identity-v2/src/index.ts"),
       "@ternent/rage": resolve(configDir, "../rage/src/index.ts"),
+      "ternent-utils": resolve(configDir, "../utils/src/index.ts"),
     },
   },
   build: {

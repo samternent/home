@@ -16,7 +16,8 @@ export default defineConfig({
       "@ternent/identity": resolve(configDir, "../identity-v2/src/index.ts"),
       "@ternent/ledger": resolve(configDir, "../ledger-v2/src/index.ts"),
       "@ternent/rage": resolve(configDir, "../rage/src/index.ts"),
-      "@ternent/seal-cli": resolve(configDir, "../seal-cli/src/index.ts")
+      "@ternent/seal-cli": resolve(configDir, "../seal-cli/src/index.ts"),
+      "ternent-utils": resolve(configDir, "../utils/src/index.ts")
     }
   },
   build: {
