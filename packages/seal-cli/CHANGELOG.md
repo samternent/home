@@ -1,5 +1,11 @@
 # @ternent/seal-cli
 
+## 0.3.5
+
+### Patch Changes
+
+- [`3fd51c9f51ccc3d816d044aa8aa161d9683534c3`](https://github.com/samternent/home/commit/3fd51c9f51ccc3d816d044aa8aa161d9683534c3) Thanks [@samternent](https://github.com/samternent)! - alias utils
+
 ## 0.3.4
 
 ### Patch Changes

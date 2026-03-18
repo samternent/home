@@ -1,5 +1,16 @@
 # **APP_ID**
 
+## 0.4.1
+
+### Patch Changes
+
+- [`467c93f49235e5dee4d1fb60a2019ae1584e314c`](https://github.com/samternent/home/commit/467c93f49235e5dee4d1fb60a2019ae1584e314c) Thanks [@samternent](https://github.com/samternent)! - Concord version bump
+
+- Updated dependencies [[`3fd51c9f51ccc3d816d044aa8aa161d9683534c3`](https://github.com/samternent/home/commit/3fd51c9f51ccc3d816d044aa8aa161d9683534c3)]:
+  - @ternent/seal-cli@0.3.5
+  - @ternent/concord@0.2.2
+  - @ternent/ledger@0.1.3
+
 ## 0.0.7
 
 ### Patch Changes
