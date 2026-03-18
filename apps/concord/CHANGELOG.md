@@ -1,5 +1,16 @@
 # **APP_ID**
 
+## 0.0.5
+
+### Patch Changes
+
+- [`92050833da54cacbd6fe33349d9b8fb66754d82c`](https://github.com/samternent/home/commit/92050833da54cacbd6fe33349d9b8fb66754d82c) Thanks [@samternent](https://github.com/samternent)! - Concord library migration
+
+- Updated dependencies [[`92050833da54cacbd6fe33349d9b8fb66754d82c`](https://github.com/samternent/home/commit/92050833da54cacbd6fe33349d9b8fb66754d82c), [`92050833da54cacbd6fe33349d9b8fb66754d82c`](https://github.com/samternent/home/commit/92050833da54cacbd6fe33349d9b8fb66754d82c)]:
+  - @ternent/concord@0.2.0
+  - ternent-ui@0.4.9
+  - @ternent/ledger@0.1.1
+
 ## 0.0.4
 
 ### Patch Changes
