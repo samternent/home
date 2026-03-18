@@ -1,5 +1,11 @@
 # **APP_ID**
 
+## 0.0.7
+
+### Patch Changes
+
+- [`a2829c2563d8b71db54ed6af756a56e9360c2137`](https://github.com/samternent/home/commit/a2829c2563d8b71db54ed6af756a56e9360c2137) Thanks [@samternent](https://github.com/samternent)! - Deploy new concord. First roll
+
 ## 0.0.6
 
 ### Patch Changes

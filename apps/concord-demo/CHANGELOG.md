@@ -1,5 +1,11 @@
 # concord-demo
 
+## 0.3.70
+
+### Patch Changes
+
+- [`291a23c296a84782925a4e61f49c6b252f592d47`](https://github.com/samternent/home/commit/291a23c296a84782925a4e61f49c6b252f592d47) Thanks [@samternent](https://github.com/samternent)! - Fix demo
+
 ## 0.3.69
 
 ### Patch Changes
