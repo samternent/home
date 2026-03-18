@@ -1,5 +1,12 @@
 # **APP_ID**
 
+## 0.0.22
+
+### Patch Changes
+
+- Updated dependencies [[`92050833da54cacbd6fe33349d9b8fb66754d82c`](https://github.com/samternent/home/commit/92050833da54cacbd6fe33349d9b8fb66754d82c)]:
+  - ternent-ui@0.4.9
+
 ## 0.0.21
 
 ### Patch Changes

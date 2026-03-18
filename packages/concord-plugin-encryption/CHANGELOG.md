@@ -1,5 +1,14 @@
 # @ternent/concord-plugin-encryption
 
+## 0.1.2
+
+### Patch Changes
+
+- Updated dependencies [[`92050833da54cacbd6fe33349d9b8fb66754d82c`](https://github.com/samternent/home/commit/92050833da54cacbd6fe33349d9b8fb66754d82c)]:
+  - @ternent/concord-protocol@0.1.1
+  - @ternent/concord-plugin-identity@0.1.2
+  - @ternent/concord-plugin-permissions@0.1.2
+
 ## 0.1.1
 
 ### Patch Changes
