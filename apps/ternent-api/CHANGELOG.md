@@ -1,5 +1,12 @@
 # ternent-api
 
+## 0.2.33
+
+### Patch Changes
+
+- Updated dependencies [[`92050833da54cacbd6fe33349d9b8fb66754d82c`](https://github.com/samternent/home/commit/92050833da54cacbd6fe33349d9b8fb66754d82c)]:
+  - @ternent/concord-protocol@0.1.1
+
 ## 0.2.32
 
 ### Patch Changes
