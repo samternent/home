@@ -1,6 +1,6 @@
 {
   "name": "@ternent/armour",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Opinionated identity-aware encryption bridge over @ternent/rage",
   "license": "ISC",
   "type": "module",
