@@ -1,5 +1,11 @@
 # concord-demo
 
+## 0.3.71
+
+### Patch Changes
+
+- [`e8ed58fcebc8b6ac1271398218a8f725754747ac`](https://github.com/samternent/home/commit/e8ed58fcebc8b6ac1271398218a8f725754747ac) Thanks [@samternent](https://github.com/samternent)! - Build concord apps
+
 ## 0.3.70
 
 ### Patch Changes
