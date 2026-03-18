@@ -22,8 +22,8 @@
     }
   },
   "scripts": {
-    "build": "vite build",
-    "test": "vitest run"
+    "build": "pnpm --filter @ternent/rage build && vite build",
+    "test": "pnpm --filter @ternent/rage build && vitest run"
   },
   "dependencies": {
     "@ternent/armour": "workspace:*",
