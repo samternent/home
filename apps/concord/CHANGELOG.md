@@ -1,5 +1,11 @@
 # **APP_ID**
 
+## 0.4.4
+
+### Patch Changes
+
+- [`70e8a19ff09ca74ac8370c7abb7a6baf9d120221`](https://github.com/samternent/home/commit/70e8a19ff09ca74ac8370c7abb7a6baf9d120221) Thanks [@samternent](https://github.com/samternent)! - stabalise builds
+
 ## 0.4.3
 
 ### Patch Changes
