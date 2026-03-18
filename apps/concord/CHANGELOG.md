@@ -1,5 +1,11 @@
 # **APP_ID**
 
+## 0.4.2
+
+### Patch Changes
+
+- [`e8ed58fcebc8b6ac1271398218a8f725754747ac`](https://github.com/samternent/home/commit/e8ed58fcebc8b6ac1271398218a8f725754747ac) Thanks [@samternent](https://github.com/samternent)! - Build concord apps
+
 ## 0.4.1
 
 ### Patch Changes
