@@ -1,5 +1,77 @@
 /* This file is generated from src/themes/semanticThemeContract.js. */
 
+:root[data-theme="proof-light"] {
+  color-scheme: light;
+  --ui-bg: #f6f8fa;
+  --ui-fg: #1f2328;
+  --ui-fg-muted: #59636e;
+  --ui-surface: #ffffff;
+  --ui-surface-hover: #f3f4f6;
+  --ui-border: rgba(31, 35, 40, 0.12);
+  --ui-primary: #0969da;
+  --ui-on-primary: #ffffff;
+  --ui-primary-muted: rgba(9, 105, 218, 0.12);
+  --ui-primary-hover: rgba(9, 105, 218, 0.18);
+  --ui-primary-active: rgba(9, 105, 218, 0.24);
+  --ui-secondary: #6e7781;
+  --ui-on-secondary: #ffffff;
+  --ui-secondary-muted: rgba(110, 119, 129, 0.12);
+  --ui-secondary-hover: rgba(110, 119, 129, 0.18);
+  --ui-secondary-active: rgba(110, 119, 129, 0.24);
+  --ui-accent: #6e7781;
+  --ui-on-accent: #ffffff;
+  --ui-accent-muted: rgba(110, 119, 129, 0.12);
+  --ui-accent-hover: rgba(110, 119, 129, 0.18);
+  --ui-accent-active: rgba(110, 119, 129, 0.24);
+  --ui-success: #1a7f37;
+  --ui-on-success: #ffffff;
+  --ui-success-muted: rgba(26, 127, 55, 0.12);
+  --ui-success-hover: rgba(26, 127, 55, 0.18);
+  --ui-success-active: rgba(26, 127, 55, 0.24);
+  --ui-warning: #9a6700;
+  --ui-on-warning: #ffffff;
+  --ui-warning-muted: rgba(154, 103, 0, 0.12);
+  --ui-warning-hover: rgba(154, 103, 0, 0.18);
+  --ui-warning-active: rgba(154, 103, 0, 0.24);
+  --ui-info: #0969da;
+  --ui-on-info: #ffffff;
+  --ui-info-muted: rgba(9, 105, 218, 0.12);
+  --ui-info-hover: rgba(9, 105, 218, 0.18);
+  --ui-info-active: rgba(9, 105, 218, 0.24);
+  --ui-critical: #cf222e;
+  --ui-on-critical: #ffffff;
+  --ui-critical-muted: rgba(207, 34, 46, 0.12);
+  --ui-critical-hover: rgba(207, 34, 46, 0.18);
+  --ui-critical-active: rgba(207, 34, 46, 0.24);
+  --ui-danger: var(--ui-critical);
+  --ui-on-danger: var(--ui-on-critical);
+  --ui-danger-muted: var(--ui-critical-muted);
+  --ui-danger-hover: var(--ui-critical-hover);
+  --ui-danger-active: var(--ui-critical-active);
+  --ui-tonal-secondary: rgba(31, 35, 40, 0.06);
+  --ui-tonal-secondary-hover: rgba(31, 35, 40, 0.1);
+  --ui-tonal-tertiary: rgba(31, 35, 40, 0.03);
+  --ui-tonal-tertiary-hover: rgba(31, 35, 40, 0.06);
+  --ui-ring: rgba(9, 105, 218, 0.35);
+  --ui-glow-primary: 0 0 0 2px rgba(9, 105, 218, 0.2);
+  --ui-glow-success: 0 0 0 2px rgba(26, 127, 55, 0.2);
+  --ui-glow-critical: 0 0 0 2px rgba(207, 34, 46, 0.18);
+  --ui-shadow-sm: 0 1px 2px rgba(31, 35, 40, 0.08);
+  --ui-shadow-md: 0 12px 36px rgba(31, 35, 40, 0.12);
+  --ui-radius-sm: 6px;
+  --ui-radius-md: 10px;
+  --ui-radius-lg: 14px;
+  --ui-duration-fast: 120ms;
+  --ui-duration-normal: 180ms;
+  --ui-duration-slow: 240ms;
+  --ui-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ui-lift-hover: -0.5px;
+  --ui-scale-active: 0.98;
+  --ui-logo-start: #0969da;
+  --ui-logo-end: #6e7781;
+  --ui-logo-cutout: #f6f8fa;
+}
+
 :root[data-theme="proof-dark"] {
   color-scheme: dark;
   --ui-bg: #060a0f;

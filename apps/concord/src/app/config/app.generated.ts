@@ -63,10 +63,10 @@ export const landingPageConfig = {
   ],
   "hero": {
     "eyebrow": "concord",
-    "title": "A command-first runtime for verifiable, non-custodial applications.",
-    "description": "Concord sits above Ledger and turns signed, append-only commit history into usable application state. It owns command dispatch, explicit commit control, replay-driven state rebuilding, and projection fanout without redefining truth mechanics.",
-    "supportingLine": "Commands stage intent locally. Commits author signed history boundaries. State is rebuilt deterministically from replay. Storage never becomes authority.",
-    "note": "Concord is not the ledger. It is the runtime that makes signed commit history usable as application state.",
+    "title": "Build apps from signed history, not trusted storage.",
+    "description": "Concord is a command-first runtime for developers who want application state to be derived, verifiable, and portable. It sits above Ledger and turns signed, append-only commit history into real, usable app state through commands, explicit commits, deterministic replay, and plugin projections.",
+    "supportingLine": "Stage intent locally. Commit when you mean it. Rebuild state from replay. Keep storage dumb.",
+    "note": "Concord is the engine. Ledger preserves truth. Concord turns that truth into a working application runtime.",
     "primaryAction": {
       "href": "https://www.npmjs.com/package/@ternent/concord",
       "label": "Install package",
@@ -80,7 +80,7 @@ export const landingPageConfig = {
     "preview": {
       "title": "Concord app runtime",
       "meta": "command → signed commit → replay",
-      "statusLabel": "Verifiable",
+      "statusLabel": "Deterministic",
       "statusTone": "neutral",
       "rows": [
         {
@@ -90,7 +90,7 @@ export const landingPageConfig = {
         },
         {
           "label": "Boundary",
-          "value": "signed commit",
+          "value": "explicit commit",
           "valueTone": "secondary"
         },
         {
@@ -100,63 +100,63 @@ export const landingPageConfig = {
         },
         {
           "label": "Result",
-          "value": "replayed app state",
+          "value": "derived state",
           "valueTone": "success"
         }
       ],
-      "footerText": "Concord stages commands, commits explicitly into signed, parent-linked history, and rebuilds application state from deterministic replay."
+      "footerText": "Concord stages commands, commits them into signed parent-linked history, and rebuilds application state from deterministic replay instead of treating storage as authority."
     }
   },
   "proofModelSection": {
     "eyebrow": "The Runtime",
-    "title": "The runtime",
-    "description": "Concord defines a minimal runtime contract for building non-custodial apps on top of signed commit history. It routes commands to domain plugins, stages truth through Ledger, commits explicitly into cryptographically signed boundaries, replays committed plus staged truth into projected plugin state, and optionally fans the same replay stream into local query stores. It does not redefine protocol rules, ledger mechanics, or storage authority.",
+    "title": "A runtime built around commands and replay",
+    "description": "Concord defines the runtime contract for apps built on signed commit history. You dispatch domain commands. Concord stages them through Ledger, groups them into explicit signed commits, and rebuilds plugin state from deterministic replay. The same replay stream can power local query stores. State is always derived. History is always signed.",
     "items": [
       {
         "title": "Command-first ergonomics",
-        "description": "Dispatch domain commands instead of manually constructing entries, while keeping commit boundaries explicit, contextual, and signed."
+        "description": "Work with domain commands like \"todo.create-item\" instead of manually constructing entries. Concord turns intent into structured ledger input."
       },
       {
-        "title": "Signed history boundaries",
-        "description": "Commits bind parent linkage and ordered entry IDs into a signed chain. Any invalid committed byte invalidates the entire document."
+        "title": "Explicit commit boundaries",
+        "description": "Decide when history becomes permanent. Commits bind ordered entry IDs and parent linkage into a signed chain."
       },
       {
-        "title": "Replay-driven state",
-        "description": "Concord rebuilds plugin state from deterministic replay of committed plus staged truth instead of treating local app state as authority."
+        "title": "Replay as the state engine",
+        "description": "Plugin state is rebuilt from ordered history. No hidden mutations. No silent drift. If you can replay it, you can trust it."
       },
       {
-        "title": "Strict integrity semantics",
-        "description": "Verification fails globally if any committed entry, payload hash, or commit linkage is invalid, while still reporting precise diagnostic breakdowns."
+        "title": "Integrity that actually means something",
+        "description": "If a committed byte changes, verification fails. Concord tells you exactly what broke and refuses to treat corrupted history as valid runtime state."
       }
     ]
   },
   "proofJsonSection": {
     "eyebrow": "Portable Truth",
     "title": "A portable ledger artifact you can tamper and validate",
-    "description": "This artifact is exported from the live Concord runtime above. Probe a signed commit, a parent link, or a content-addressed entry and watch validation fail immediately. Concord diagnoses precisely, but it does not keep treating corrupted committed history as trustworthy runtime state.",
+    "description": "This artifact is exported from the live Concord runtime above. Edit a signed commit, change a parent link, or tweak a payload and validation fails immediately. What you are seeing is the entire app history.",
     "code": "{\n  \"format\": \"concord-ledger\",\n  \"version\": \"1\",\n  \"commits\": {\n    \"commit_0002\": {\n      \"commitId\": \"commit_0002\",\n      \"parentCommitId\": \"commit_0001\",\n      \"committedAt\": \"2026-03-18T09:20:05.000Z\",\n      \"metadata\": {\n        \"message\": \"Seed landing demo todos\"\n      },\n      \"entryIds\": [\"entry_001\", \"entry_002\"],\n      \"seal\": {\n        \"type\": \"seal-proof\",\n        \"signature\": \"...\"\n      }\n    }\n  },\n  \"entries\": {\n    \"entry_001\": {\n      \"entryId\": \"entry_001\",\n      \"kind\": \"todo.item.created\",\n      \"authoredAt\": \"2026-03-18T09:20:02.000Z\",\n      \"author\": \"did:key:demo\",\n      \"meta\": {\n        \"pluginId\": \"todo\",\n        \"command\": \"todo.create-item\"\n      },\n      \"payload\": {\n        \"type\": \"plain\",\n        \"data\": {\n          \"id\": \"todo_001\",\n          \"title\": \"Buy milk\",\n          \"completed\": false\n        }\n      },\n      \"seal\": {\n        \"type\": \"seal-proof\",\n        \"signature\": \"...\"\n      }\n    }\n  },\n  \"head\": \"commit_0002\"\n}",
-    "supportingText": "Tamper the artifact to see how validation fails. Any invalid committed byte invalidates the whole document. Concord reports exactly what broke, but it does not treat the remaining committed history as trustworthy."
+    "supportingText": "Tamper with it. Break a signature. Change a parent. Watch verification fail. Concord shows precisely where integrity was lost and refuses to pretend the remaining history is safe."
   },
   "surfacesSection": {
     "eyebrow": "Surfaces",
-    "title": "One signed history. Multiple runtime surfaces.",
-    "description": "Concord sits above Ledger and below framework adapters. It preserves signed commit integrity while making command and plugin ergonomics practical.",
+    "title": "One signed history. Many ways to use it.",
+    "description": "Concord lives between Ledger and your application layer. It preserves signed commit integrity while making command handling, replay, and plugin-based architecture practical for real-world apps.",
     "items": [
       {
         "title": "Runtime package",
-        "description": "Use @ternent/concord for command dispatch, explicit commit control, replay-based state rebuilding, and projection target fanout.",
+        "description": "Use @ternent/concord for command dispatch, explicit commits, replay-based state rebuilding, and projection fanout.",
         "tone": "primary",
         "icon": "terminal"
       },
       {
         "title": "Ledger integration",
-        "description": "Concord relies on @ternent/ledger for staging, signed commit creation, replay, verification, export, and import. It never reimplements truth mechanics.",
+        "description": "Concord builds directly on @ternent/ledger for staging, commit creation, replay, verification, export, and import. History stays consistent everywhere.",
         "tone": "secondary",
         "icon": "pin"
       },
       {
         "title": "Suite composition",
-        "description": "Entries may be authenticated by Seal and protected by Armour, while commit signatures bind parent linkage and ordered entry IDs into tamper-evident history.",
+        "description": "Authenticate entries with Seal. Protect payloads with Armour. Bind everything into tamper-evident signed history.",
         "tone": "info",
         "icon": "globe"
       }
@@ -165,30 +165,30 @@ export const landingPageConfig = {
   "staticBuildSection": {
     "eyebrow": "Example Use",
     "title": "Build an app without owning user data",
-    "description": "Create a Concord app, load or create its ledger, stage commands, group them into explicit signed commits, rebuild plugin state from deterministic replay, and optionally materialize the same replay stream into a local query store.",
+    "description": "Create a Concord app, load or create its ledger, dispatch commands, commit authored history, and rebuild plugin state from replay. You can optionally project the same replay stream into fast local query stores.",
     "steps": [
       {
         "title": "Create an app runtime",
-        "description": "Assemble identity, storage, plugins, and optional projection targets into a Concord app."
+        "description": "Combine identity, storage, plugins, and optional projection targets into a Concord app."
       },
       {
-        "title": "Stage commands",
-        "description": "Route domain commands to plugins so Concord can turn intent into staged ledger append inputs."
+        "title": "Dispatch commands",
+        "description": "Express user intent through domain commands. Concord turns them into staged ledger entries."
       },
       {
         "title": "Commit authored history",
-        "description": "Group one or more staged entries into a signed, parent-linked commit with contextual metadata."
+        "description": "Group staged entries into a signed, parent-linked commit with meaningful metadata."
       },
       {
-        "title": "Replay truth into state",
-        "description": "Rebuild plugin state deterministically from the ordered commit chain plus any currently staged entries."
+        "title": "Replay into state",
+        "description": "Concord rebuilds plugin state deterministically from ordered commit history."
       },
       {
         "title": "Verify integrity",
-        "description": "Validate commit linkage, commit proofs, entry identities, and payload hashes. Any invalid committed byte invalidates the entire document."
+        "description": "Run verification at any time. If history has been altered, Concord fails loudly and precisely."
       }
     ],
-    "closingLine": "Truth stays portable. Commits stay signed. Concord makes that history usable as application state.",
+    "closingLine": "Storage is replaceable. History is signed. State is derived. Concord keeps those boundaries clean.",
     "primaryAction": {
       "href": "https://www.npmjs.com/package/@ternent/concord",
       "label": "Install package",
@@ -197,8 +197,8 @@ export const landingPageConfig = {
   },
   "developerSection": {
     "eyebrow": "For Developers",
-    "title": "For developers",
-    "description": "Concord is the developer-facing runtime layer above Ledger. It owns command dispatch, plugin projection, runtime policy, and projection orchestration without becoming a framework or redefining the state engine.",
+    "title": "A runtime you can actually build on",
+    "description": "Concord is the developer-facing runtime above Ledger. It handles command routing, commit control, replay orchestration, and projection fanout without becoming a framework or hiding your domain logic.",
     "surfaces": [
       "Command runtime",
       "Explicit commit boundaries",
@@ -211,7 +211,7 @@ export const landingPageConfig = {
         "title": "Create a Concord app",
         "meta": "JavaScript",
         "code": "import { createConcordApp } from \"@ternent/concord\"\nimport { createTodoPlugin } from \"@ternent/concord-plugin-todo\"\n\nconst app = await createConcordApp({\n  identity,\n  storage,\n  plugins: [createTodoPlugin()],\n})\n\nawait app.load()\n\nawait app.command(\"todo.create-item\", {\n  id: crypto.randomUUID(),\n  title: \"Buy milk\",\n})\n\nawait app.command(\"todo.rename-item\", {\n  id: \"todo_123\",\n  title: \"Buy oat milk\",\n})\n\nawait app.commit({\n  metadata: {\n    message: \"Create and refine first todo\",\n  },\n})\n\nconst verification = await app.verify()\nconst todoState = app.getPluginState(\"todo\")",
-        "supportingCopy": "Concord stages commands locally and commits them explicitly into signed history boundaries. Replay rebuilds state. Verification enforces global integrity.",
+        "supportingCopy": "You dispatch commands. You decide when to commit. Concord rebuilds state from replay and enforces integrity across the entire history.",
         "link": {
           "href": "https://github.com/samternent/home/tree/main/packages/concord",
           "label": "View source"
@@ -223,7 +223,7 @@ export const landingPageConfig = {
         "title": "Build on Ledger instead of replacing it",
         "meta": "Ledger integration",
         "code": "const app = await createConcordApp({\n  identity,\n  storage,\n  plugins,\n  protocol,\n  seal,\n  armour,\n})\n\nawait app.load()\n\nawait app.command(\"journal.create-entry\", {\n  text: \"private note\"\n})\n\nawait app.commit({\n  metadata: {\n    message: \"Commit private note\"\n  }\n})\n\nconst verification = await app.verify()\nconst ledger = await app.exportLedger()",
-        "supportingCopy": "Concord does not redefine truth. It uses Ledger for staging, signed commit creation, replay, and strict verification semantics.",
+        "supportingCopy": "Concord does not invent a new truth model. It builds on Ledger’s signed commit history and strict verification semantics.",
         "link": {
           "href": "https://ledger.ternent.dev",
           "label": "Explore Ledger"
@@ -235,7 +235,7 @@ export const landingPageConfig = {
         "title": "Fan replay into local query stores",
         "meta": "projection target",
         "code": "const app = await createConcordApp({\n  identity,\n  storage,\n  plugins: [createTodoPlugin()],\n  projectionTargets: [loki.target],\n})\n\nawait app.load()\n\nawait app.command(\"todo.create-item\", {\n  id: \"todo_123\",\n  title: \"Buy milk\",\n})\n\nawait app.commit({\n  metadata: {\n    message: \"Commit todo projection\"\n  }\n})\n\nconst rows = loki.getCollection(\"concord/all\")?.find() ?? []",
-        "supportingCopy": "Projection targets consume the same replay stream used to rebuild plugin state. They are derived query views, never authority.",
+        "supportingCopy": "Projection targets consume the same replay stream that builds plugin state. They are fast derived views, never authority.",
         "link": {
           "href": "https://seal.ternent.dev",
           "label": "Explore Seal"
@@ -245,8 +245,8 @@ export const landingPageConfig = {
   },
   "ctaSection": {
     "eyebrow": "Ready",
-    "title": "Build on signed history without owning user data.",
-    "description": "Use Concord for command ergonomics and explicit commit control, Ledger for signed, parent-linked truth, and Seal for cryptographic proof while keeping storage portable and non-authoritative.",
+    "title": "Build on signed history without giving storage authority.",
+    "description": "Use Concord for command ergonomics and replay-driven state, Ledger for signed commit history, and Seal for cryptographic proof. Keep your app portable. Keep your truth verifiable.",
     "primaryAction": {
       "href": "https://www.npmjs.com/package/@ternent/concord",
       "label": "Install package",
