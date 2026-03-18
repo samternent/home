@@ -1,5 +1,14 @@
 # seal
 
+## 0.0.39
+
+### Patch Changes
+
+- [`69de6bfe65a37ac88be939a00b82480f5f62334f`](https://github.com/samternent/home/commit/69de6bfe65a37ac88be939a00b82480f5f62334f) Thanks [@samternent](https://github.com/samternent)! - Fix footer and theme toggle
+
+- Updated dependencies [[`69de6bfe65a37ac88be939a00b82480f5f62334f`](https://github.com/samternent/home/commit/69de6bfe65a37ac88be939a00b82480f5f62334f)]:
+  - ternent-ui@0.4.11
+
 ## 0.0.38
 
 ### Patch Changes

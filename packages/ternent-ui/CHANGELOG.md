@@ -1,5 +1,11 @@
 # ternent-ui
 
+## 0.4.11
+
+### Patch Changes
+
+- [`69de6bfe65a37ac88be939a00b82480f5f62334f`](https://github.com/samternent/home/commit/69de6bfe65a37ac88be939a00b82480f5f62334f) Thanks [@samternent](https://github.com/samternent)! - Fix footer and theme toggle
+
 ## 0.4.10
 
 ### Patch Changes
