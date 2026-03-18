@@ -1,5 +1,11 @@
 # ternent-ui
 
+## 0.4.10
+
+### Patch Changes
+
+- [`cd973e5413f67670371efe25835c3b5cabe63edb`](https://github.com/samternent/home/commit/cd973e5413f67670371efe25835c3b5cabe63edb) Thanks [@samternent](https://github.com/samternent)! - Cocnord theme
+
 ## 0.4.9
 
 ### Patch Changes
