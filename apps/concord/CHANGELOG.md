@@ -1,5 +1,11 @@
 # **APP_ID**
 
+## 0.4.6
+
+### Patch Changes
+
+- [`189c9374c6fb2123836ad237299c43718cad896b`](https://github.com/samternent/home/commit/189c9374c6fb2123836ad237299c43718cad896b) Thanks [@samternent](https://github.com/samternent)! - Fix service workers
+
 ## 0.4.5
 
 ### Patch Changes
