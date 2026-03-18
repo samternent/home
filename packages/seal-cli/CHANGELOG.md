@@ -1,5 +1,14 @@
 # @ternent/seal-cli
 
+## 0.3.4
+
+### Patch Changes
+
+- [`109f8c3989b16a161a34b933dcad68390d9219c5`](https://github.com/samternent/home/commit/109f8c3989b16a161a34b933dcad68390d9219c5) Thanks [@samternent](https://github.com/samternent)! - Fix deps
+
+- Updated dependencies [[`109f8c3989b16a161a34b933dcad68390d9219c5`](https://github.com/samternent/home/commit/109f8c3989b16a161a34b933dcad68390d9219c5)]:
+  - @ternent/armour@0.1.3
+
 ## 0.3.3
 
 ### Patch Changes
