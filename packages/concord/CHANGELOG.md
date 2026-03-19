@@ -1,5 +1,11 @@
 # @ternent/concord
 
+## 0.2.5
+
+### Patch Changes
+
+- [`42a5b52f19d93079ca76a07f44c647d5e6866009`](https://github.com/samternent/home/commit/42a5b52f19d93079ca76a07f44c647d5e6866009) Thanks [@samternent](https://github.com/samternent)! - Align build with identity
+
 ## 0.2.4
 
 ### Patch Changes
