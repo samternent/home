@@ -20,7 +20,7 @@ export type AppSeoConfig = {
 
 export const appConfig = {
   "appId": "concord",
-  "appTitle": "Concord - A command-first runtime for verifiable, non-custodial applications.",
+  "appTitle": "Concord - A command-first runtime for verifiable applications.",
   "defaultHost": "concord.ternent.dev",
   "themeName": "concord",
   "defaultThemeMode": "dark"
@@ -28,7 +28,7 @@ export const appConfig = {
 
 export const appSeoConfig = {
   "shortName": "Concord",
-  "description": "Concord is a command-first runtime for building verifiable, non-custodial applications on top of Ledger and signed commit history.",
+  "description": "Concord is a command-first runtime for building verifiable applications on top of Ledger and signed commit history.",
   "themeColor": "#7ea7d6",
   "backgroundColor": "#0f141b",
   "lang": "en"
@@ -64,7 +64,7 @@ export const landingPageConfig = {
   "hero": {
     "eyebrow": "concord",
     "title": "Build apps from signed history, not trusted storage.",
-    "description": "Concord is a command-first runtime for developers who want application state to be derived, verifiable, and portable. It turns signed, append-only commit history into real, usable app state through commands, explicit commits, deterministic replay, and plugin projections.",
+    "description": "Concord is a command-first runtime for developers who want application state to be derived, verifiable, and portable. It turns signed, append-only commit history into usable app state through commands, explicit commits, deterministic replay, and plugin projections.",
     "supportingLine": "Stage intent locally. Commit when you mean it. Rebuild state from replay. Keep storage dumb.",
     "note": "Concord is the engine. Ledger preserves truth. Concord turns that truth into a working application runtime.",
     "primaryAction": {
@@ -109,8 +109,8 @@ export const landingPageConfig = {
   },
   "proofModelSection": {
     "eyebrow": "The Runtime",
-    "title": "A runtime built around commands and replay",
-    "description": "Concord defines the runtime contract for apps built on signed commit history. You dispatch domain commands. Concord stages them through Ledger, groups them into explicit signed commits, and rebuilds plugin state from deterministic replay. The same replay stream can power local query stores. State is always derived. History is always signed.",
+    "title": "A runtime for verifiable, non-custodial applications",
+    "description": "Concord defines the runtime contract for applications built on signed commit history. You dispatch domain commands. Concord stages them through Ledger, groups them into explicit signed commits, and rebuilds plugin state through deterministic replay. The same replay stream can also power local query stores. State is always derived. History is always signed.",
     "items": [
       {
         "title": "Command-first ergonomics",
@@ -133,13 +133,13 @@ export const landingPageConfig = {
   "proofJsonSection": {
     "eyebrow": "Portable Truth",
     "title": "A portable ledger artifact you can tamper and validate",
-    "description": "This artifact is exported from the live Concord runtime above. Edit a signed commit, change a parent link, or tweak a payload and validation fails immediately. What you are seeing is the entire app history.",
+    "description": "This artifact is exported from the live Concord runtime above. Edit a signed commit, change a parent link, or tweak a payload and validation fails immediately. What you are seeing is the full application history.",
     "code": "{\n  \"format\": \"concord-ledger\",\n  \"version\": \"1\",\n  \"commits\": {\n    \"commit_0002\": {\n      \"commitId\": \"commit_0002\",\n      \"parentCommitId\": \"commit_0001\",\n      \"committedAt\": \"2026-03-18T09:20:05.000Z\",\n      \"metadata\": {\n        \"message\": \"Seed landing demo todos\"\n      },\n      \"entryIds\": [\"entry_001\", \"entry_002\"],\n      \"seal\": {\n        \"type\": \"seal-proof\",\n        \"signature\": \"...\"\n      }\n    }\n  },\n  \"entries\": {\n    \"entry_001\": {\n      \"entryId\": \"entry_001\",\n      \"kind\": \"todo.item.created\",\n      \"authoredAt\": \"2026-03-18T09:20:02.000Z\",\n      \"author\": \"did:key:demo\",\n      \"meta\": {\n        \"pluginId\": \"todo\",\n        \"command\": \"todo.create-item\"\n      },\n      \"payload\": {\n        \"type\": \"plain\",\n        \"data\": {\n          \"id\": \"todo_001\",\n          \"title\": \"Buy milk\",\n          \"completed\": false\n        }\n      },\n      \"seal\": {\n        \"type\": \"seal-proof\",\n        \"signature\": \"...\"\n      }\n    }\n  },\n  \"head\": \"commit_0002\"\n}",
     "supportingText": "Tamper with it. Break a signature. Change a parent. Watch verification fail. Concord shows precisely where integrity was lost and refuses to pretend the remaining history is safe."
   },
   "staticBuildSection": {
     "eyebrow": "Example Use",
-    "title": "Build an app without owning user data",
+    "title": "Build an app without giving storage authority",
     "description": "Create a Concord app, load or create its ledger, dispatch commands, commit authored history, and rebuild plugin state from replay. You can optionally project the same replay stream into fast local query stores.",
     "steps": [
       {
@@ -173,7 +173,7 @@ export const landingPageConfig = {
   "developerSection": {
     "eyebrow": "For Developers",
     "title": "A runtime you can actually build on",
-    "description": "Concord is the developer-facing runtime above Ledger. It handles command routing, commit control, replay orchestration, and projection fanout without becoming a framework or hiding your domain logic.",
+    "description": "Concord is the runtime layer above Ledger. It handles command routing, commit control, replay orchestration, and projection fanout without becoming a framework or hiding your domain logic.",
     "surfaces": [
       "Command runtime",
       "Explicit commit boundaries",
@@ -186,7 +186,7 @@ export const landingPageConfig = {
         "title": "Create a Concord app",
         "meta": "JavaScript",
         "code": "import { createConcordApp } from \"@ternent/concord\"\nimport { createTodoPlugin } from \"@ternent/concord-plugin-todo\"\n\nconst app = await createConcordApp({\n  identity,\n  storage,\n  plugins: [createTodoPlugin()],\n})\n\nawait app.load()\n\nawait app.command(\"todo.create-item\", {\n  id: crypto.randomUUID(),\n  title: \"Buy milk\",\n})\n\nawait app.command(\"todo.rename-item\", {\n  id: \"todo_123\",\n  title: \"Buy oat milk\",\n})\n\nawait app.commit({\n  metadata: {\n    message: \"Create and refine first todo\",\n  },\n})\n\nconst verification = await app.verify()\nconst todoState = app.getPluginState(\"todo\")",
-        "supportingCopy": "You dispatch commands. You decide when to commit. Concord rebuilds state from replay and enforces integrity across the entire history.",
+        "supportingCopy": "You dispatch commands. You decide when to commit. Concord rebuilds state from replay and enforces integrity across the full history.",
         "link": {
           "href": "https://github.com/samternent/home/tree/main/packages/concord",
           "label": "View source"
@@ -221,7 +221,7 @@ export const landingPageConfig = {
   "suiteSection": {
     "eyebrow": "The Suite",
     "title": "Concord sits inside a composable stack.",
-    "description": "Concord gives applications the runtime layer. The rest of the suite keeps authenticity, confidentiality, and replayable truth explicit instead of hiding them behind storage or framework magic.",
+    "description": "Concord provides the runtime layer. The rest of the suite keeps authenticity, confidentiality, and replayable truth explicit instead of hiding them behind storage or framework magic.",
     "supportingText": "Reach for Concord when you need command dispatch, commit control, replay, and plugin state. Pair it with Seal, Armour, and Ledger when the same app also needs portable proofs, protected payloads, and append-only verifiable history.",
     "items": [
       {
@@ -256,7 +256,7 @@ export const landingPageConfig = {
   "ctaSection": {
     "eyebrow": "Ready",
     "title": "Build on signed history without giving storage authority.",
-    "description": "Use Concord for command ergonomics and replay-driven state, Ledger for signed commit history, Seal for cryptographic proof and Armour for identity-based encryption. Keep your app portable. Keep your truth verifiable.",
+    "description": "Use Concord for command ergonomics and replay-driven state, Ledger for signed commit history, Seal for cryptographic proof, and Armour for identity-based encryption. Keep your app portable. Keep your truth verifiable.",
     "primaryAction": {
       "href": "https://www.npmjs.com/package/@ternent/concord",
       "label": "Install package",
