@@ -15,14 +15,8 @@ export default defineConfig({
       entry: resolve(configDir, "src/index.ts"),
       name: "ternentConcord",
       fileName: "index",
-      formats: ["es"],
     },
-    rollupOptions: {
-      output: {
-        format: "es",
-        entryFileNames: "index.js",
-      },
-    },
+    rollupOptions: {},
   },
   plugins: [
     dts({
