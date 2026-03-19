@@ -1,6 +1,6 @@
 {
   "name": "@ternent/identity",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Seed-based Ed25519 identity primitives with X25519 bridge helpers",
   "type": "module",
   "main": "dist/index.umd.js",
