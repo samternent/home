@@ -39,9 +39,12 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      
+      - name: Build dependencies
+        run: pnpm --filter ternent-utils --filter @ternent/identity --filter @ternent/rage --filter @ternent/armour --filter @ternent/seal-cli --filter @ternent/concord-protocol build
 
       - name: Build ledger app
-        run: pnpm --filter ternent-ui --filter ternent-utils --filter @ternent/identity --filter @ternent/seal-cli --filter ledger build
+        run: pnpm --filter ledger build
 
       - name: Link Vercel project
         run: vercel link --yes --cwd ${{ github.workspace }}/apps/ledger --token=${{ secrets.VERCEL_TOKEN }}

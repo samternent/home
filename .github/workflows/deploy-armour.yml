@@ -40,8 +40,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build dependencies
+        run: pnpm --filter ternent-utils --filter @ternent/identity --filter @ternent/rage build --filter @ternent/armour build
+
       - name: Build armour app
-        run: pnpm --filter ternent-ui --filter ternent-utils --filter @ternent/identity --filter @ternent/seal-cli --filter armour build
+        run: pnpm --filter armour build
 
       - name: Link Vercel project
         run: vercel link --yes --cwd ${{ github.workspace }}/apps/armour --token=${{ secrets.VERCEL_TOKEN }}

@@ -50,8 +50,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build publishable packages
-        run: pnpm --filter ternent-utils --filter @ternent/identity --filter @ternent/seal-cli build
+      - name: Build dependencies
+        run: pnpm --filter ternent-utils --filter @ternent/identity --filter @ternent/rage --filter @ternent/armour --filter @ternent/seal-cli  build
 
       - name: Test seal-cli
         run: pnpm --filter @ternent/seal-cli test

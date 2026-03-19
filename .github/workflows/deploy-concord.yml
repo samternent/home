@@ -41,8 +41,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build dependencies
+        run: pnpm --filter ternent-utils --filter @ternent/identity --filter @ternent/rage --filter @ternent/armour --filter @ternent/seal-cli --filter @ternent/concord-protocol --filter @ternent/ledger --filter @ternent/concord build
+
       - name: Build concord app
-        run: pnpm --filter ternent-ui --filter ternent-utils --filter @ternent/identity --filter @ternent/seal-cli --filter concord build
+        run: pnpm --filter concord build
 
       - name: Link Vercel project
         run: vercel link --yes --cwd ${{ github.workspace }}/apps/concord --token=${{ secrets.VERCEL_TOKEN }}

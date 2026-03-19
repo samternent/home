@@ -52,8 +52,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build @ternent/rage
-        run: pnpm --filter @ternent/rage build
+      - name: Build dependencies
+        run: pnpm --filter ternent-utils --filter @ternent/identity --filter @ternent/rage build
 
       - name: Test @ternent/armour
         run: pnpm --filter @ternent/armour test
