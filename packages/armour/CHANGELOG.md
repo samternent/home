@@ -1,5 +1,11 @@
 # @ternent/armour
 
+## 0.1.4
+
+### Patch Changes
+
+- [`acf974919a1176da235e7ec7468c46df8bc13402`](https://github.com/samternent/home/commit/acf974919a1176da235e7ec7468c46df8bc13402) Thanks [@samternent](https://github.com/samternent)! - Update build configs
+
 ## 0.1.3
 
 ### Patch Changes
