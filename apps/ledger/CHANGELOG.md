@@ -1,5 +1,11 @@
 # **APP_ID**
 
+## 0.0.33
+
+### Patch Changes
+
+- [`551b8221aa2a8d5e9fd8ea6dbf196e02c587f436`](https://github.com/samternent/home/commit/551b8221aa2a8d5e9fd8ea6dbf196e02c587f436) Thanks [@samternent](https://github.com/samternent)! - Adds ternent-ui build
+
 ## 0.0.32
 
 ### Patch Changes

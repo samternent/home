@@ -1,5 +1,14 @@
 # **APP_ID**
 
+## 0.4.14
+
+### Patch Changes
+
+- [`551b8221aa2a8d5e9fd8ea6dbf196e02c587f436`](https://github.com/samternent/home/commit/551b8221aa2a8d5e9fd8ea6dbf196e02c587f436) Thanks [@samternent](https://github.com/samternent)! - Adds ternent-ui build
+
+- Updated dependencies [[`42a5b52f19d93079ca76a07f44c647d5e6866009`](https://github.com/samternent/home/commit/42a5b52f19d93079ca76a07f44c647d5e6866009)]:
+  - @ternent/concord@0.2.5
+
 ## 0.4.13
 
 ### Patch Changes
