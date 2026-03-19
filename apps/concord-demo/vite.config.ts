@@ -9,44 +9,7 @@ import { version } from "./package.json";
 
 export default defineConfig({
   resolve: {
-    alias: [
-      {
-        find: "ternent-ui/components",
-        replacement: resolve(__dirname, "../../packages/ternent-ui/src/components/index.js"),
-      },
-      {
-        find: "ternent-ui/patterns",
-        replacement: resolve(__dirname, "../../packages/ternent-ui/src/patterns/index.ts"),
-      },
-      {
-        find: "ternent-ui/primitives",
-        replacement: resolve(__dirname, "../../packages/ternent-ui/src/primitives/index.ts"),
-      },
-      {
-        find: "@ternent/concord-protocol",
-        replacement: resolve(__dirname, "../../packages/concord-protocol/src/index.ts"),
-      },
-      {
-        find: "ternent-encrypt",
-        replacement: resolve(__dirname, "../../packages/encrypt/src/index.ts"),
-      },
-      {
-        find: "ternent-identity",
-        replacement: resolve(__dirname, "../../packages/identity/src/index.ts"),
-      },
-      {
-        find: "ternent-ledger-vue",
-        replacement: resolve(__dirname, "../../packages/ternent-ledger-vue/src/index.ts"),
-      },
-      {
-        find: "ternent-ledger",
-        replacement: resolve(__dirname, "../../packages/ledger/src/index.ts"),
-      },
-      {
-        find: "ternent-utils",
-        replacement: resolve(__dirname, "../../packages/utils/src/index.ts"),
-      },
-    ],
+    alias: [],
   },
   build: {
     assetsInlineLimit: 0,
