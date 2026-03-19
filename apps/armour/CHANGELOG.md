@@ -1,5 +1,11 @@
 # **APP_ID**
 
+## 0.0.34
+
+### Patch Changes
+
+- [`15ea4726a7e8788f72c055bff99609ce634b34be`](https://github.com/samternent/home/commit/15ea4726a7e8788f72c055bff99609ce634b34be) Thanks [@samternent](https://github.com/samternent)! - Remove old identity package
+
 ## 0.0.33
 
 ### Patch Changes
