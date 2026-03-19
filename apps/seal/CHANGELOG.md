@@ -1,5 +1,12 @@
 # seal
 
+## 0.0.41
+
+### Patch Changes
+
+- Updated dependencies [[`13540fde40ad2158e5c873f539fdecb4160c48d8`](https://github.com/samternent/home/commit/13540fde40ad2158e5c873f539fdecb4160c48d8)]:
+  - ternent-ui@0.4.13
+
 ## 0.0.40
 
 ### Patch Changes

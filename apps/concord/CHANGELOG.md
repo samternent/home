@@ -1,5 +1,14 @@
 # **APP_ID**
 
+## 0.4.9
+
+### Patch Changes
+
+- [`13540fde40ad2158e5c873f539fdecb4160c48d8`](https://github.com/samternent/home/commit/13540fde40ad2158e5c873f539fdecb4160c48d8) Thanks [@samternent](https://github.com/samternent)! - Update layout and copy
+
+- Updated dependencies [[`13540fde40ad2158e5c873f539fdecb4160c48d8`](https://github.com/samternent/home/commit/13540fde40ad2158e5c873f539fdecb4160c48d8)]:
+  - ternent-ui@0.4.13
+
 ## 0.4.8
 
 ### Patch Changes
