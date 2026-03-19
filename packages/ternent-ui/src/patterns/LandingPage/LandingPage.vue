@@ -80,6 +80,12 @@ function previewActiveTab(preview: LandingPagePreview) {
 function resolveActionVariant(action: LandingPageAction) {
   return action.variant === "secondary" ? "secondary" : "primary";
 }
+
+function resolveSuiteItemStyle(themeColor: string) {
+  return {
+    "--landing-suite-accent": themeColor,
+  };
+}
 </script>
 
 <template>
@@ -309,6 +315,62 @@ function resolveActionVariant(action: LandingPageAction) {
               {{ surface.description }}
             </p>
           </div>
+        </div>
+      </section>
+
+      <section v-if="props.config.suiteSection" id="suite" class="pt-24">
+        <div class="max-w-4xl">
+          <SectionIntro
+            :eyebrow="props.config.suiteSection.eyebrow"
+            :title="props.config.suiteSection.title"
+            :description="props.config.suiteSection.description"
+          />
+          <p
+            v-if="props.config.suiteSection.supportingText"
+            class="mt-5 m-0 text-sm leading-7 text-[var(--ui-fg-muted)]"
+          >
+            {{ props.config.suiteSection.supportingText }}
+          </p>
+        </div>
+
+        <div
+          class="mt-12 grid gap-0 border-y border-[color-mix(in_srgb,var(--ui-border)_82%,transparent)] md:grid-cols-3"
+        >
+          <article
+            v-for="item in props.config.suiteSection.items"
+            :key="item.title"
+            :style="resolveSuiteItemStyle(item.themeColor)"
+            class="space-y-4 px-0 py-6 md:px-6 md:py-8 md:not-first:border-l md:not-first:border-[color-mix(in_srgb,var(--ui-border)_82%,transparent)]"
+          >
+            <div
+              class="inline-flex rounded-full border px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.18em]"
+              style="
+                border-color: color-mix(in srgb, var(--landing-suite-accent) 36%, transparent);
+                background: color-mix(in srgb, var(--landing-suite-accent) 12%, transparent);
+                color: var(--landing-suite-accent);
+              "
+            >
+              {{ item.title }}
+            </div>
+            <div class="space-y-3">
+              <h3
+                class="m-0 text-lg font-medium tracking-[-0.02em] text-[var(--ui-fg)]"
+              >
+                {{ item.title }}
+              </h3>
+              <p class="m-0 text-sm leading-7 text-[var(--ui-fg-muted)]">
+                {{ item.description }}
+              </p>
+            </div>
+            <a
+              class="inline-flex items-center gap-2 text-sm font-medium no-underline transition hover:opacity-85"
+              style="color: var(--landing-suite-accent)"
+              v-bind="resolveLinkProps(item.link)"
+            >
+              {{ item.link.label }}
+              <span aria-hidden="true">→</span>
+            </a>
+          </article>
         </div>
       </section>
 
@@ -566,22 +628,6 @@ function resolveActionVariant(action: LandingPageAction) {
             </div>
           </div>
         </SectionClarifier>
-      </section>
-
-      <section v-if="props.config.suiteSection" id="suite" class="pt-24">
-        <Card variant="panel" padding="lg" class="space-y-5">
-          <SectionIntro
-            :eyebrow="props.config.suiteSection.eyebrow"
-            :title="props.config.suiteSection.title"
-            :description="props.config.suiteSection.description"
-          />
-          <p
-            v-if="props.config.suiteSection.supportingText"
-            class="m-0 max-w-4xl text-sm leading-7 text-[var(--ui-fg-muted)]"
-          >
-            {{ props.config.suiteSection.supportingText }}
-          </p>
-        </Card>
       </section>
 
       <section v-if="props.config.nonGoalsSection" class="pt-14">

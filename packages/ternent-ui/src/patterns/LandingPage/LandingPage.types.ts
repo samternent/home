@@ -139,6 +139,12 @@ export type LandingPageSuiteSection = {
   title: string;
   description: string;
   supportingText?: string;
+  items: readonly {
+    title: string;
+    description: string;
+    themeColor: string;
+    link: LandingPageLink;
+  }[];
 };
 
 export type LandingPageNonGoalsSection = {

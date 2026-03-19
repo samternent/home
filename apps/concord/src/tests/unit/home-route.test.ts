@@ -71,10 +71,18 @@ describe("RouteHome landing page", () => {
       "Any invalid committed byte invalidates the whole document.",
     );
     expect(text).toContain("One signed history. Multiple runtime surfaces.");
+    expect(text).toContain("Concord sits inside a composable stack.");
+    expect(text).toContain("Explore Seal");
+    expect(text).toContain("Explore Armour");
+    expect(text).toContain("Explore Ledger");
     expect(text).toContain("Build an app without owning user data");
     expect(text).toContain("For developers");
     expect(text).toContain('await app.command("todo.create-item"');
     expect(text).toContain("Create and refine first todo");
+
+    expect(text.indexOf("Concord sits inside a composable stack.")).toBeLessThan(
+      text.indexOf("Build an app without owning user data"),
+    );
 
     expect(text).toContain("JavaScript");
     expect(text).toContain("Ledger + Seal");

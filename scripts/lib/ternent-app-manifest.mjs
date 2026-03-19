@@ -361,6 +361,30 @@ function normalizeSuiteSection(value, context) {
       value.supportingText.trim().length > 0
         ? value.supportingText.trim()
         : undefined,
+    items: assertArray(
+      value.items,
+      `${context}.items must be a non-empty array.`,
+    ).map((item, index) => {
+      assertObject(item, `${context}.items[${index}] must be an object.`);
+      return {
+        title: assertString(
+          item.title,
+          `${context}.items[${index}].title is required.`,
+        ),
+        description: assertString(
+          item.description,
+          `${context}.items[${index}].description is required.`,
+        ),
+        themeColor: assertString(
+          item.themeColor,
+          `${context}.items[${index}].themeColor is required.`,
+        ),
+        link: normalizeLink(
+          item.link,
+          `${context}.items[${index}].link`,
+        ),
+      };
+    }),
   };
 }
 

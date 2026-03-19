@@ -122,23 +122,48 @@ landing:
       }
     supportingText: "Tamper with it. Break a signature. Change a parent. Watch verification fail. Concord shows precisely where integrity was lost and refuses to pretend the remaining history is safe."
 
-  surfacesSection:
-    eyebrow: Surfaces
-    title: One signed history. Many ways to use it.
-    description: Concord lives between Ledger and your application layer. It preserves signed commit integrity while making command handling, replay, and plugin-based architecture practical for real-world apps.
+  # surfacesSection:
+  #   eyebrow: Surfaces
+  #   title: One signed history. Many ways to use it.
+  #   description: Concord lives between Ledger and your application layer. It preserves signed commit integrity while making command handling, replay, and plugin-based architecture practical for real-world apps.
+  #   items:
+  #     - title: Runtime package
+  #       description: Use @ternent/concord for command dispatch, explicit commits, replay-based state rebuilding, and projection fanout.
+  #       tone: primary
+  #       icon: terminal
+  #     - title: Ledger integration
+  #       description: Concord builds directly on @ternent/ledger for staging, commit creation, replay, verification, export, and import. History stays consistent everywhere.
+  #       tone: secondary
+  #       icon: pin
+  #     - title: Suite composition
+  #       description: Authenticate entries with Seal. Protect payloads with Armour. Bind everything into tamper-evident signed history.
+  #       tone: info
+  #       icon: globe
+
+  suiteSection:
+    eyebrow: The Suite
+    title: Concord sits inside a composable stack.
+    description: Concord gives applications the runtime layer. The rest of the suite keeps authenticity, confidentiality, and replayable truth explicit instead of hiding them behind storage or framework magic.
+    supportingText: Reach for Concord when you need command dispatch, commit control, replay, and plugin state. Pair it with Seal, Armour, and Ledger when the same app also needs portable proofs, protected payloads, and append-only verifiable history.
     items:
-      - title: Runtime package
-        description: Use @ternent/concord for command dispatch, explicit commits, replay-based state rebuilding, and projection fanout.
-        tone: primary
-        icon: terminal
-      - title: Ledger integration
-        description: Concord builds directly on @ternent/ledger for staging, commit creation, replay, verification, export, and import. History stays consistent everywhere.
-        tone: secondary
-        icon: pin
-      - title: Suite composition
-        description: Authenticate entries with Seal. Protect payloads with Armour. Bind everything into tamper-evident signed history.
-        tone: info
-        icon: globe
+      - title: Seal
+        description: Produce portable proofs for entries, commits, and exported artifacts so authenticity travels with the data.
+        themeColor: "#2f81f7"
+        link:
+          href: https://seal.ternent.dev
+          label: Explore Seal
+      - title: Armour
+        description: Protect sensitive payloads with explicit identity and passphrase encryption before they enter signed history.
+        themeColor: "#14b8a6"
+        link:
+          href: https://armour.ternent.dev
+          label: Explore Armour
+      - title: Ledger
+        description: Preserve staged and committed truth as append-only history that can be replayed, exported, imported, and verified.
+        themeColor: "#c46a6a"
+        link:
+          href: https://ledger.ternent.dev
+          label: Explore Ledger
 
   staticBuildSection:
     eyebrow: Example Use
@@ -274,7 +299,7 @@ landing:
   ctaSection:
     eyebrow: Ready
     title: Build on signed history without giving storage authority.
-    description: Use Concord for command ergonomics and replay-driven state, Ledger for signed commit history, and Seal for cryptographic proof. Keep your app portable. Keep your truth verifiable.
+    description: Use Concord for command ergonomics and replay-driven state, Ledger for signed commit history, Seal for cryptographic proof and Armour for identity-based encryption. Keep your app portable. Keep your truth verifiable.
     primaryAction:
       href: https://www.npmjs.com/package/@ternent/concord
       label: Install package
