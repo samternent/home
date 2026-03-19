@@ -20,7 +20,6 @@ export default defineConfig({
       formats: ["es"],
     },
     rollupOptions: {
-      external: ["@ternent/identity", "@ternent/rage"],
       output: {
         format: "es",
         entryFileNames: "index.js",

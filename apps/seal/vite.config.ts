@@ -7,7 +7,13 @@ import { appConfig, appSeoConfig } from "./src/app/config/app.generated";
 
 const appThemeData = `${appConfig.themeName}-${appConfig.defaultThemeMode}`;
 const themeStorageKey = `${appConfig.appId}/theme-mode`;
-const themeBootstrapScript = `(function(){var storageKey=${JSON.stringify(themeStorageKey)};var defaultMode=${JSON.stringify(appConfig.defaultThemeMode)};var themePrefix=${JSON.stringify(appConfig.themeName)};var root=document.documentElement;var mode=defaultMode;root.dataset.themePrefix=themePrefix;root.dataset.themeStorageKey=storageKey;try{var stored=window.localStorage.getItem(storageKey);if(stored==="dark"||stored==="light"){mode=stored;}else if(typeof window.matchMedia==="function"){mode=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}}catch{if(typeof window.matchMedia==="function"){mode=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}}root.setAttribute("data-theme",themePrefix+"-"+mode);}());`;
+const themeBootstrapScript = `(function(){var storageKey=${JSON.stringify(
+  themeStorageKey,
+)};var defaultMode=${JSON.stringify(
+  appConfig.defaultThemeMode,
+)};var themePrefix=${JSON.stringify(
+  appConfig.themeName,
+)};var root=document.documentElement;var mode=defaultMode;root.dataset.themePrefix=themePrefix;root.dataset.themeStorageKey=storageKey;try{var stored=window.localStorage.getItem(storageKey);if(stored==="dark"||stored==="light"){mode=stored;}else if(typeof window.matchMedia==="function"){mode=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}}catch{if(typeof window.matchMedia==="function"){mode=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}}root.setAttribute("data-theme",themePrefix+"-"+mode);}());`;
 
 function createIndexHtmlTransformPlugin() {
   return {
@@ -71,22 +77,6 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": resolve(__dirname, "./src"),
-      "@ternent/identity": resolve(
-        __dirname,
-        "../../packages/identity-v2/src/index.ts"
-      ),
-      "@ternent/seal-cli/proof": resolve(
-        __dirname,
-        "../../packages/seal-cli/src/proof.ts"
-      ),
-      "@ternent/seal-cli/crypto": resolve(
-        __dirname,
-        "../../packages/seal-cli/src/crypto.ts"
-      ),
-      "@ternent/seal-cli/manifest": resolve(
-        __dirname,
-        "../../packages/seal-cli/src/manifest.ts"
-      ),
     },
   },
   plugins: [
@@ -96,7 +86,12 @@ export default defineConfig({
     createPwaManifestAssetPlugin(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "icons/icon-192.png", "icons/icon-512.png", "icons/maskable-512.png"],
+      includeAssets: [
+        "favicon.ico",
+        "icons/icon-192.png",
+        "icons/icon-512.png",
+        "icons/maskable-512.png",
+      ],
       manifest: pwaManifest,
       workbox: {
         cleanupOutdatedCaches: true,
@@ -116,7 +111,8 @@ export default defineConfig({
             },
           },
           {
-            urlPattern: ({ request }) => request.destination === "image" || request.destination === "font",
+            urlPattern: ({ request }) =>
+              request.destination === "image" || request.destination === "font",
             handler: "CacheFirst",
             options: {
               cacheName: "app-media",
@@ -139,7 +135,7 @@ export default defineConfig({
     alias: {
       "@ternent/identity": resolve(
         __dirname,
-        "../../packages/identity-v2/src/index.ts"
+        "../../packages/identity-v2/src/index.ts",
       ),
     },
     coverage: {

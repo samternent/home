@@ -23,7 +23,7 @@
     }
   },
   "scripts": {
-    "build": "pnpm --filter @ternent/rage build && vite build",
+    "build": "vite build",
     "test": "pnpm --filter @ternent/rage build && vitest run"
   },
   "dependencies": {
