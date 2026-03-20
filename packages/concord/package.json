@@ -23,6 +23,7 @@
     }
   },
   "scripts": {
+    "dev": "vite build --watch",
     "build": "vite build",
     "test": "pnpm --filter @ternent/rage build && vitest run"
   },

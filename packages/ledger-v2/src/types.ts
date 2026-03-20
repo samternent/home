@@ -26,7 +26,7 @@ export type LedgerDecryptor = {
 };
 
 export type LedgerRecipientResolver = (
-  recipients: string[]
+  recipients: string[],
 ) => Promise<string[]> | string[];
 
 export type LedgerIdentityContext = {
@@ -216,7 +216,7 @@ export type LedgerReplayPolicy = {
 export type LedgerProtocolContract = {
   canonicalizePayload: (value: unknown) => string;
   getEntrySubjectBytes: (
-    entry: Omit<LedgerEntryRecord, "entryId" | "seal">
+    entry: Omit<LedgerEntryRecord, "entryId" | "seal">,
   ) => Uint8Array;
   getCommitSubjectBytes: (commit: LedgerUnsignedCommitRecord) => Uint8Array;
   deriveEntryId: (entry: LedgerEntryRecord) => Promise<string>;

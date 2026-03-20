@@ -52,11 +52,11 @@ export type LedgerEvent<P> =
 export type Reducer<P> = (projection: P, entry: EntryWithId) => P;
 
 export type EntryTransform = (
-  entry: EntryWithId
+  entry: EntryWithId,
 ) => Promise<EntryWithId | null> | (EntryWithId | null);
 
 export type BatchTransform = (
-  entries: EntryWithId[]
+  entries: EntryWithId[],
 ) => Promise<EntryWithId[]> | EntryWithId[];
 
 export type StorageAdapter<P> = {
@@ -98,7 +98,7 @@ export type SquashStrategy = {
 export type AuthorResolver = (publicKey: CryptoKey) => Promise<string> | string;
 export type Signer = (
   signingKey: CryptoKey,
-  signingPayload: ReturnType<typeof getEntrySigningPayload>
+  signingPayload: ReturnType<typeof getEntrySigningPayload>,
 ) => Promise<string> | string;
 
 export type LedgerApi<P> = {
@@ -148,7 +148,7 @@ function normalizeEntry(entry: Entry): Entry {
 async function stageEntry(
   ledger: LedgerContainer,
   pending: PendingEntry[],
-  entry: Entry
+  entry: Entry,
 ): Promise<{ pending: PendingEntry[]; entryId: string } | null> {
   const normalized = normalizeEntry(entry);
   const entryId = await deriveEntryId(normalized);
@@ -163,7 +163,7 @@ async function commitPending(
   ledger: LedgerContainer,
   pending: PendingEntry[],
   metadata: CommitMetadata,
-  timestamp: string
+  timestamp: string,
 ): Promise<LedgerContainer> {
   if (!pending.length) return ledger;
 
@@ -190,7 +190,7 @@ async function commitPending(
 
 function buildOrderedEntries(
   ledger: LedgerContainer,
-  pending: PendingEntry[]
+  pending: PendingEntry[],
 ): EntryWithId[] {
   const chain = getCommitChain(ledger);
   const ordered: EntryWithId[] = [];
@@ -258,7 +258,7 @@ export function createLedgerRuntime<P>(config: RuntimeConfig<P>) {
   }
 
   async function applyEntryTransforms(
-    entry: EntryWithId
+    entry: EntryWithId,
   ): Promise<EntryWithId | null> {
     let current: EntryWithId | null = entry;
     for (const p of plugins) {
@@ -269,7 +269,7 @@ export function createLedgerRuntime<P>(config: RuntimeConfig<P>) {
   }
 
   async function applyReplayBatchTransforms(
-    entries: EntryWithId[]
+    entries: EntryWithId[],
   ): Promise<EntryWithId[]> {
     let current = entries;
     for (const p of plugins) {
@@ -365,7 +365,7 @@ export function createLedgerRuntime<P>(config: RuntimeConfig<P>) {
       };
       const signature = await config.sign(
         state.signingKey as CryptoKey,
-        getEntrySigningPayload(entryCore)
+        getEntrySigningPayload(entryCore),
       );
       genesisEntries.push({ ...entryCore, signature });
     }
@@ -373,7 +373,7 @@ export function createLedgerRuntime<P>(config: RuntimeConfig<P>) {
     const ledger = await createLedger(
       { created_at: now(), ...metadata },
       now(),
-      genesisEntries
+      genesisEntries,
     );
     state.ledger = ledger;
     state.pending = [];
@@ -389,7 +389,7 @@ export function createLedgerRuntime<P>(config: RuntimeConfig<P>) {
     ledger: LedgerContainer,
     pending: PendingEntry[] = [],
     shouldRecompute = true,
-    persist = true
+    persist = true,
   ) {
     state.ledger = ledger;
     state.pending = pending;
@@ -441,7 +441,7 @@ export function createLedgerRuntime<P>(config: RuntimeConfig<P>) {
 
     const signature = await config.sign(
       state.signingKey,
-      getEntrySigningPayload(entryCore)
+      getEntrySigningPayload(entryCore),
     );
 
     const entry: Entry = { ...entryCore, signature };
@@ -487,7 +487,7 @@ export function createLedgerRuntime<P>(config: RuntimeConfig<P>) {
       state.ledger,
       state.pending,
       metadata,
-      now()
+      now(),
     );
     state.ledger = ledger;
     state.pending = [];

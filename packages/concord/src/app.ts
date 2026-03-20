@@ -5,34 +5,45 @@ import {
   type LedgerContainer,
   type LedgerDecryptor,
   type LedgerIdentityContext,
-  type LedgerInstance,
   type LedgerReplayEntry,
-  type LedgerVerificationResult
+  type LedgerVerificationResult,
 } from "@ternent/ledger";
 import { ConcordBoundaryError } from "./errors.js";
 import type {
   ConcordApp,
+  ConcordAppIdentity,
   ConcordCommandContext,
   ConcordCommandResult,
   ConcordCommitInput,
   ConcordCommitResult,
   ConcordCreateParams,
-  ConcordPlugin,
-  ConcordProjectionReplayContext,
+  ConcordReplayContext,
+  ConcordReplayMetadata,
   ConcordReplayOptions,
+  ConcordReplayPlugin,
   ConcordState,
-  CreateConcordAppInput
+  CreateConcordAppInput,
 } from "./types.js";
 
 type CommandRegistration = {
-  plugin: ConcordPlugin;
-  handler: NonNullable<ConcordPlugin["commands"]>[string];
+  plugin: ConcordReplayPlugin;
+  handler: NonNullable<ConcordReplayPlugin["commands"]>[string];
 };
 
 type RebuildStateOptions = {
   ready: boolean;
   integrityValid: boolean;
   verification: LedgerVerificationResult | null;
+};
+
+type ReplayRange = Pick<
+  ConcordReplayMetadata,
+  "fromEntryId" | "toEntryId" | "isPartial"
+>;
+
+type ReplayDraft = {
+  nextState: ConcordState;
+  contexts: Map<string, ConcordReplayContext>;
 };
 
 function createDefaultNow() {
@@ -79,74 +90,104 @@ function assertReplayEntries(value: unknown): LedgerReplayEntry[] {
 
   throw new ConcordBoundaryError(
     "INVALID_LEDGER_PROJECTION",
-    "Concord requires ledger replay output to be LedgerReplayEntry[]."
+    "Concord requires ledger replay output to be LedgerReplayEntry[].",
   );
 }
 
-function createInitialPluginState(plugins: ConcordPlugin[]): Record<string, unknown> {
-  return Object.fromEntries(plugins.map((plugin) => [plugin.id, plugin.initialState()]));
+function createInitialReplayState(
+  plugins: ConcordReplayPlugin[],
+): Record<string, unknown> {
+  return Object.fromEntries(
+    plugins.map((plugin) => [plugin.id, plugin.initialState?.()]),
+  );
 }
 
 function assertKnownPlugin(
-  pluginsById: Map<string, ConcordPlugin>,
-  pluginId: string
+  pluginsById: Map<string, ConcordReplayPlugin>,
+  pluginId: string,
 ): void {
   if (!pluginsById.has(pluginId)) {
     throw new ConcordBoundaryError(
       "UNKNOWN_PLUGIN",
-      `Unknown Concord plugin: ${pluginId}`
+      `Unknown Concord plugin: ${pluginId}`,
     );
   }
 }
 
 function normalizeAppendInputs(
-  value: LedgerAppendInput | LedgerAppendInput[]
+  value: LedgerAppendInput | LedgerAppendInput[],
 ): LedgerAppendInput[] {
   const inputs = Array.isArray(value) ? value : [value];
   if (inputs.length === 0) {
     throw new ConcordBoundaryError(
       "COMMAND_PRODUCED_NO_ENTRIES",
-      "Concord command handlers must return at least one LedgerAppendInput."
+      "Concord command handlers must return at least one LedgerAppendInput.",
     );
   }
   return inputs;
 }
 
 function assertInternalLedgerRequirements(input: CreateConcordAppInput): void {
-  if (typeof input.identity.author !== "string" || input.identity.author.length === 0) {
+  if (!input.identity?.signer) {
     throw new ConcordBoundaryError(
       "INVALID_IDENTITY",
-      "Concord requires identity.author when creating an internal ledger."
-    );
-  }
-
-  if (!input.identity.signer) {
-    throw new ConcordBoundaryError(
-      "INVALID_IDENTITY",
-      "Concord requires identity.signer when creating an internal ledger."
+      "Concord requires identity.signer when creating an internal ledger.",
     );
   }
 }
 
+function resolveLedgerIdentity(
+  identity: ConcordAppIdentity,
+): LedgerIdentityContext {
+  if (!identity.signer) {
+    throw new ConcordBoundaryError(
+      "INVALID_IDENTITY",
+      "Concord requires identity.signer when creating an internal ledger.",
+    );
+  }
+
+  return {
+    signer: identity.signer as LedgerIdentityContext["signer"],
+    authorResolver: () => identity.author,
+    decryptor: identity.decryptor as LedgerDecryptor | undefined,
+  };
+}
+
+function createReplayRange(options?: ConcordReplayOptions): ReplayRange {
+  return {
+    fromEntryId: options?.fromEntryId,
+    toEntryId: options?.toEntryId,
+    isPartial: Boolean(options?.fromEntryId || options?.toEntryId),
+  };
+}
+
+function createReplayMetadata(range: ReplayRange): ConcordReplayMetadata {
+  return {
+    phase: "reset",
+    entryCount: 0,
+    fromEntryId: range.fromEntryId,
+    toEntryId: range.toEntryId,
+    isPartial: range.isPartial,
+  };
+}
+
 export async function createConcordApp(
-  input: CreateConcordAppInput
+  input: CreateConcordAppInput,
 ): Promise<ConcordApp> {
   const plugins = [...input.plugins];
-  const projectionTargets = [...(input.projectionTargets ?? [])];
   const now = input.now ?? createDefaultNow;
   const policy = {
-    autoCommit: input.policy?.autoCommit ?? false
+    autoCommit: input.policy?.autoCommit ?? false,
   };
 
-  const pluginsById = new Map<string, ConcordPlugin>();
+  const pluginsById = new Map<string, ConcordReplayPlugin>();
   const commands = new Map<string, CommandRegistration>();
-  const projectionTargetNames = new Set<string>();
 
   for (const plugin of plugins) {
     if (pluginsById.has(plugin.id)) {
       throw new ConcordBoundaryError(
         "DUPLICATE_PLUGIN_ID",
-        `Duplicate Concord plugin id: ${plugin.id}`
+        `Duplicate Concord plugin id: ${plugin.id}`,
       );
     }
 
@@ -156,23 +197,12 @@ export async function createConcordApp(
       if (commands.has(commandType)) {
         throw new ConcordBoundaryError(
           "DUPLICATE_COMMAND_TYPE",
-          `Duplicate Concord command type: ${commandType}`
+          `Duplicate Concord command type: ${commandType}`,
         );
       }
 
       commands.set(commandType, { plugin, handler });
     }
-  }
-
-  for (const target of projectionTargets) {
-    if (projectionTargetNames.has(target.name)) {
-      throw new ConcordBoundaryError(
-        "DUPLICATE_PROJECTION_TARGET_NAME",
-        `Duplicate Concord projection target name: ${target.name}`
-      );
-    }
-
-    projectionTargetNames.add(target.name);
   }
 
   if (!input.ledger) {
@@ -182,15 +212,11 @@ export async function createConcordApp(
   const ledger =
     input.ledger ??
     (await createLedger<LedgerReplayEntry[]>({
-      identity: {
-        signer: input.identity.signer as LedgerIdentityContext["signer"],
-        authorResolver: () => input.identity.author,
-        decryptor: input.identity.decryptor as LedgerDecryptor | undefined
-      },
+      identity: resolveLedgerIdentity(input.identity),
       initialProjection: [],
       projector: (entries: LedgerReplayEntry[], entry: LedgerReplayEntry) => [
         ...entries,
-        entry
+        entry,
       ],
       storage: input.storage,
       now,
@@ -200,23 +226,23 @@ export async function createConcordApp(
       autoCommit: false,
       replayPolicy: {
         verify: false,
-        decrypt: true
-      }
+        decrypt: true,
+      },
     }));
 
   let state: ConcordState = {
     ready: false,
     integrityValid: false,
     stagedCount: 0,
-    plugins: createInitialPluginState(plugins),
-    verification: null
+    replay: createInitialReplayState(plugins),
+    verification: null,
   };
 
   const listeners = new Set<(value: Readonly<ConcordState>) => void>();
 
-  function getPluginState<T = unknown>(pluginId: string, source = state): T {
+  function getReplayState<T = unknown>(pluginId: string, source = state): T {
     assertKnownPlugin(pluginsById, pluginId);
-    return source.plugins[pluginId] as T;
+    return source.replay[pluginId] as T;
   }
 
   function publish(nextState: ConcordState): void {
@@ -226,73 +252,96 @@ export async function createConcordApp(
     }
   }
 
-  async function rebuildFromEntries(
-    entriesValue: unknown,
-    options: RebuildStateOptions
-  ): Promise<void> {
-    const entries = assertReplayEntries(entriesValue);
+  function createReplayDraft(
+    options: RebuildStateOptions,
+    range: ReplayRange,
+  ): ReplayDraft {
     const nextState: ConcordState = {
       ready: options.ready,
       integrityValid: options.integrityValid,
       stagedCount: ledger.getState().staged.length,
-      plugins: createInitialPluginState(plugins),
-      verification: options.verification
+      replay: createInitialReplayState(plugins),
+      verification: options.verification,
     };
 
-    const replayView = {
-      getState(): Readonly<ConcordState> {
-        return nextState;
-      },
-      getPluginState<T = unknown>(pluginId: string): T {
-        return getPluginState<T>(pluginId, nextState);
-      }
-    };
+    const contexts = new Map<string, ConcordReplayContext>();
 
-    const replayContext: ConcordProjectionReplayContext = {
-      app: replayView
-    };
-
-    for (const target of projectionTargets) {
-      await target.reset();
+    for (const plugin of plugins) {
+      const metadata = createReplayMetadata(range);
+      const context: ConcordReplayContext = {
+        pluginId: plugin.id,
+        decryptAvailable: Boolean(input.identity.decryptor),
+        replay: metadata,
+        getState() {
+          return nextState.replay[plugin.id] as unknown;
+        },
+        setState(next) {
+          const prev = nextState.replay[plugin.id];
+          nextState.replay[plugin.id] =
+            typeof next === "function"
+              ? (next as (value: unknown) => unknown)(prev)
+              : next;
+        },
+      };
+      contexts.set(plugin.id, context);
     }
 
-    for (const target of projectionTargets) {
-      await target.beginReplay?.(replayContext);
+    return { nextState, contexts };
+  }
+
+  async function rebuildFromReplayEntries(
+    replayEntries: unknown,
+    options: RebuildStateOptions,
+    range: ReplayRange = createReplayRange(),
+  ): Promise<void> {
+    const entries = assertReplayEntries(replayEntries);
+    const { nextState, contexts } = createReplayDraft(options, range);
+
+    for (const plugin of plugins) {
+      const context = contexts.get(plugin.id) as ConcordReplayContext;
+      context.replay.phase = "reset";
+      context.replay.entryIndex = undefined;
+      context.replay.entryCount = entries.length;
+      await plugin.reset?.(context as never);
     }
 
-    for (const entry of entries) {
+    for (const plugin of plugins) {
+      const context = contexts.get(plugin.id) as ConcordReplayContext;
+      context.replay.phase = "beginReplay";
+      context.replay.entryIndex = undefined;
+      context.replay.entryCount = entries.length;
+      await plugin.beginReplay?.(context as never);
+    }
+
+    // Any ordered replay slice is deterministic, but authoritative full-state
+    // reconstruction still requires replay from genesis or a valid checkpoint.
+    for (let index = 0; index < entries.length; index += 1) {
+      const entry = entries[index];
       for (const plugin of plugins) {
-        nextState.plugins[plugin.id] = plugin.project(
-          nextState.plugins[plugin.id],
-          entry,
-          { decryptAvailable: Boolean(input.identity.decryptor) }
-        );
-      }
-
-      for (const target of projectionTargets) {
-        await target.applyEntry(entry, replayContext);
+        const context = contexts.get(plugin.id) as ConcordReplayContext;
+        context.replay.phase = "applyEntry";
+        context.replay.entryIndex = index;
+        context.replay.entryCount = entries.length;
+        await plugin.applyEntry?.(entry, context as never);
       }
     }
 
-    for (const target of projectionTargets) {
-      await target.endReplay?.(replayContext);
+    for (const plugin of plugins) {
+      const context = contexts.get(plugin.id) as ConcordReplayContext;
+      context.replay.phase = "endReplay";
+      context.replay.entryIndex = undefined;
+      context.replay.entryCount = entries.length;
+      await plugin.endReplay?.(context as never);
     }
 
     publish(nextState);
-  }
-
-  async function rebuildFromReplay(
-    replayEntries: unknown,
-    options: RebuildStateOptions
-  ): Promise<void> {
-    await rebuildFromEntries(replayEntries, options);
   }
 
   function requireReady(): void {
     if (!state.ready) {
       throw new ConcordBoundaryError(
         "APP_NOT_READY",
-        "Concord app must be loaded or created before commands can run."
+        "Concord app must be loaded or created before commands can run.",
       );
     }
   }
@@ -301,28 +350,28 @@ export async function createConcordApp(
     return {
       now,
       identity: input.identity,
-      getPluginState<T = unknown>(pluginId: string): T {
-        return getPluginState<T>(pluginId);
-      }
+      getReplayState<T = unknown>(pluginId: string): T {
+        return getReplayState<T>(pluginId);
+      },
     };
   }
 
   function publishIntegrityFailure(
     verification: LedgerVerificationResult,
-    resetPlugins: boolean
+    resetReplay: boolean,
   ): void {
     publish({
       ready: false,
       integrityValid: false,
       stagedCount: ledger.getState().staged.length,
-      plugins: resetPlugins ? createInitialPluginState(plugins) : state.plugins,
-      verification
+      replay: resetReplay ? createInitialReplayState(plugins) : state.replay,
+      verification,
     });
   }
 
   async function ensureCommittedHistoryUsable(options?: {
     allowInspectionOnly?: boolean;
-    resetPluginsOnFailure?: boolean;
+    resetReplayOnFailure?: boolean;
   }): Promise<boolean> {
     const verification = await ledger.verify();
     if (verification.committedHistoryValid) {
@@ -331,7 +380,7 @@ export async function createConcordApp(
 
     publishIntegrityFailure(
       verification,
-      options?.resetPluginsOnFailure ?? true
+      options?.resetReplayOnFailure ?? true,
     );
 
     if (options?.allowInspectionOnly) {
@@ -340,7 +389,7 @@ export async function createConcordApp(
 
     throw new ConcordBoundaryError(
       "INVALID_COMMITTED_HISTORY",
-      "Concord cannot project runtime state from invalid committed history."
+      "Concord cannot project runtime state from invalid committed history.",
     );
   }
 
@@ -350,11 +399,15 @@ export async function createConcordApp(
     }
 
     const replayEntries = await ledger.replay(options);
-    await rebuildFromReplay(replayEntries, {
-      ready: state.ready,
-      integrityValid: true,
-      verification: state.verification
-    });
+    await rebuildFromReplayEntries(
+      replayEntries,
+      {
+        ready: state.ready,
+        integrityValid: true,
+        verification: state.verification,
+      },
+      createReplayRange(options),
+    );
   }
 
   async function create(params?: ConcordCreateParams): Promise<void> {
@@ -364,10 +417,10 @@ export async function createConcordApp(
       return;
     }
 
-    await rebuildFromReplay(await ledger.replay(), {
+    await rebuildFromReplayEntries(await ledger.replay(), {
       ready: true,
       integrityValid: true,
-      verification: null
+      verification: null,
     });
   }
 
@@ -380,22 +433,22 @@ export async function createConcordApp(
     if (
       !(await ensureCommittedHistoryUsable({
         allowInspectionOnly: true,
-        resetPluginsOnFailure: true
+        resetReplayOnFailure: true,
       }))
     ) {
       return;
     }
 
-    await rebuildFromReplay(await ledger.replay(), {
+    await rebuildFromReplayEntries(await ledger.replay(), {
       ready: true,
       integrityValid: true,
-      verification: null
+      verification: null,
     });
   }
 
   async function command<TInput = unknown>(
     type: string,
-    inputValue: TInput
+    inputValue: TInput,
   ): Promise<ConcordCommandResult> {
     requireReady();
 
@@ -403,12 +456,12 @@ export async function createConcordApp(
     if (!registration) {
       throw new ConcordBoundaryError(
         "UNKNOWN_COMMAND",
-        `Unknown Concord command type: ${type}`
+        `Unknown Concord command type: ${type}`,
       );
     }
 
     const appendInputs = normalizeAppendInputs(
-      await registration.handler(createCommandContext(), inputValue)
+      await registration.handler(createCommandContext(), inputValue),
     );
 
     const appendResults = await ledger.appendMany(appendInputs);
@@ -421,30 +474,26 @@ export async function createConcordApp(
     if (!(await ensureCommittedHistoryUsable())) {
       return {
         commitId: commitResult?.commit.commitId,
-        entryIds: appendResults.map(
-          (result: { entry: { entryId: string } }) => result.entry.entryId
-        ),
-        stagedCount: ledger.getState().staged.length
+        entryIds: appendResults.map((result) => result.entry.entryId),
+        stagedCount: ledger.getState().staged.length,
       };
     }
 
-    await rebuildFromReplay(await ledger.replay(), {
+    await rebuildFromReplayEntries(await ledger.replay(), {
       ready: true,
       integrityValid: true,
-      verification: null
+      verification: null,
     });
 
     return {
       commitId: commitResult?.commit.commitId,
-      entryIds: appendResults.map(
-        (result: { entry: { entryId: string } }) => result.entry.entryId
-      ),
-      stagedCount: state.stagedCount
+      entryIds: appendResults.map((result) => result.entry.entryId),
+      stagedCount: state.stagedCount,
     };
   }
 
   async function commit(
-    input?: ConcordCommitInput
+    input?: ConcordCommitInput,
   ): Promise<ConcordCommitResult> {
     requireReady();
 
@@ -453,19 +502,19 @@ export async function createConcordApp(
     if (!(await ensureCommittedHistoryUsable())) {
       return {
         commitId: result.commit.commitId,
-        entryIds: result.committedEntryIds
+        entryIds: result.committedEntryIds,
       };
     }
 
-    await rebuildFromReplay(await ledger.replay(), {
+    await rebuildFromReplayEntries(await ledger.replay(), {
       ready: true,
       integrityValid: true,
-      verification: null
+      verification: null,
     });
 
     return {
       commitId: result.commit.commitId,
-      entryIds: result.committedEntryIds
+      entryIds: result.committedEntryIds,
     };
   }
 
@@ -475,10 +524,10 @@ export async function createConcordApp(
     }
 
     const replayEntries = await ledger.recompute();
-    await rebuildFromReplay(replayEntries, {
+    await rebuildFromReplayEntries(replayEntries, {
       ready: state.ready,
       integrityValid: true,
-      verification: state.verification
+      verification: state.verification,
     });
   }
 
@@ -488,8 +537,8 @@ export async function createConcordApp(
       ready: state.ready && verification.committedHistoryValid,
       integrityValid: verification.committedHistoryValid,
       stagedCount: state.stagedCount,
-      plugins: state.plugins,
-      verification
+      replay: state.replay,
+      verification,
     });
     return verification;
   }
@@ -504,21 +553,21 @@ export async function createConcordApp(
     if (
       !(await ensureCommittedHistoryUsable({
         allowInspectionOnly: true,
-        resetPluginsOnFailure: true
+        resetReplayOnFailure: true,
       }))
     ) {
       return;
     }
 
-    await rebuildFromReplay(await ledger.replay(), {
+    await rebuildFromReplayEntries(await ledger.replay(), {
       ready: true,
       integrityValid: true,
-      verification: null
+      verification: null,
     });
   }
 
   function subscribe(
-    listener: (value: Readonly<ConcordState>) => void
+    listener: (value: Readonly<ConcordState>) => void,
   ): () => void {
     listeners.add(listener);
     return () => {
@@ -527,8 +576,8 @@ export async function createConcordApp(
   }
 
   async function destroy(): Promise<void> {
-    for (const target of projectionTargets) {
-      await target.destroy?.();
+    for (const plugin of plugins) {
+      await plugin.destroy?.();
     }
 
     await ledger.destroy();
@@ -536,8 +585,8 @@ export async function createConcordApp(
       ready: false,
       integrityValid: false,
       stagedCount: 0,
-      plugins: createInitialPluginState(plugins),
-      verification: null
+      replay: createInitialReplayState(plugins),
+      verification: null,
     });
     listeners.clear();
   }
@@ -555,10 +604,10 @@ export async function createConcordApp(
     getState() {
       return state;
     },
-    getPluginState<T = unknown>(pluginId: string): T {
-      return getPluginState<T>(pluginId);
+    getReplayState<T = unknown>(pluginId: string): T {
+      return getReplayState<T>(pluginId);
     },
     subscribe,
-    destroy
+    destroy,
   };
 }
