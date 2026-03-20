@@ -1,13 +1,13 @@
 app:
   id: concord
-  title: Concord - Build apps on signed history.
+  title: Concord - Build apps from replayable, signed history.
   host: concord.ternent.dev
   themeName: concord
   defaultThemeMode: dark
 
 seo:
   shortName: Concord
-  description: Concord is a runtime for building applications from signed, optionally encrypted, append-only history.
+  description: Concord is a runtime for building applications from replayable, signed, optionally encrypted history.
   lang: en
 
 landing:
@@ -25,10 +25,10 @@ landing:
 
   hero:
     eyebrow: concord
-    title: Build apps on signed history.
-    description: Concord is a runtime for building applications where state is derived from signed, append-only history. You dispatch commands. You commit deliberately. Sensitive payloads can be encrypted. State is rebuilt through replay.
+    title: Build apps from replayable, signed history.
+    description: Concord is a runtime for building applications where state is derived from signed, append-only history. Dispatch commands. Commit intentionally. Encrypt sensitive payloads client-side. Replay history into state. The result is a portable, verifiable document instead of a mutable app database.
     supportingLine: Write intent. Commit it. Replay into state.
-    note: Storage persists. History defines. Concord keeps that boundary clear.
+    note: Small, replayable documents you can verify, move, and rebuild anywhere.
     primaryAction:
       href: https://www.npmjs.com/package/@ternent/concord
       label: Install package
@@ -59,29 +59,29 @@ landing:
 
   proofModelSection:
     eyebrow: Runtime Model
-    title: How Concord turns history into state
-    description: Commands produce entries. Commits make them durable. Replay rebuilds application state from ordered history. If committed history is modified, verification fails. If it can be replayed and verified, it can be trusted.
+    title: History is the source of truth. State is a projection.
+    description: Commands produce entries. Commits make them durable. Replay rebuilds application state from ordered history. If committed history changes, verification fails. If history can be replayed and verified, it can be trusted.
     items:
       - title: Command-first ergonomics
-        description: Work with domain commands like "todo.create-item" instead of constructing low-level entries yourself.
+        description: Work with domain commands like "todo.create-item" instead of hand-authoring low-level entries.
       - title: Explicit commit boundaries
-        description: Decide when staged work becomes permanent. Commits bind ordered entries into a signed chain.
+        description: Decide when staged work becomes durable. Commits bind ordered entries into a signed chain.
       - title: Optional encrypted payloads
-        description: Protect sensitive data before it enters history. Encryption remains explicit and portable.
+        description: Encrypt sensitive data before it enters history. Encryption stays explicit and portable.
       - title: Deterministic replay
-        description: State is rebuilt from ordered history through replay plugins. No hidden mutation. No silent drift.
+        description: Rebuild state from ordered history through replay plugins. No hidden mutation. No silent drift.
 
   proofJsonSection:
     eyebrow: Portable History
     title: A signed artifact you can inspect and validate
-    description: "This artifact is exported from the live Concord runtime above. Change a commit. Break a parent link. Edit a payload. Verification fails immediately. This is the full, portable application history."
+    description: "This artifact is exported from the live Concord runtime above. Change a commit. Break a parent link. Edit a payload. Verification fails immediately. This is the full portable application history."
     code: |-
       {
         "format": "concord-ledger",
         "version": "1",
         ...
       }
-    supportingText: "Concord will not derive runtime state from corrupted or unverified history."
+    supportingText: "Concord artifacts behave more like portable documents than traditional databases. Concord will not derive runtime state from corrupted or unverified history."
 
   suiteSection:
     eyebrow: The Suite
@@ -111,7 +111,7 @@ landing:
   staticBuildSection:
     eyebrow: Example
     title: Build without giving storage authority
-    description: Create a Concord app, load or create its history, dispatch commands, commit authored changes, optionally encrypt payloads, and replay entries into isolated plugins.
+    description: Create a Concord app, load or create its history, dispatch commands, commit authored changes, optionally encrypt payloads, and replay entries into isolated plugins. Query derived state, not raw history. Keep history for audit, verification, and rebuild.
     steps:
       - title: Create an app runtime
         description: Combine identity, storage, and replay plugins into a Concord app.
@@ -131,8 +131,8 @@ landing:
 
   developerSection:
     eyebrow: Developers
-    title: A small runtime layer for signed applications
-    description: Concord handles command routing, commit control, encryption boundaries, replay orchestration, and integrity enforcement without turning into a framework.
+    title: A small runtime for replayable, verifiable applications
+    description: Concord handles command routing, commit control, encryption boundaries, replay orchestration, and integrity enforcement without turning into a framework. History is durable truth. Projections are the query surface.
     surfaces:
       - Command runtime
       - Explicit commit boundaries
@@ -167,15 +167,15 @@ landing:
 
           const verification = await app.verify()
           const todoState = app.getReplayState("todo")
-        supportingCopy: Dispatch commands. Commit deliberately. Replay signed history into state.
+        supportingCopy: Dispatch commands. Commit intentionally. Replay signed history into state.
         link:
           href: https://github.com/samternent/home/tree/main/packages/concord
           label: View source
 
   ctaSection:
     eyebrow: Ready
-    title: Build apps on signed history.
-    description: Use Concord for command ergonomics and replay-driven state, with optional encryption for sensitive data.
+    title: Build apps from replayable, signed history.
+    description: Use Concord for command ergonomics, replay-driven state, and optional client-side encryption for sensitive data.
     primaryAction:
       href: https://www.npmjs.com/package/@ternent/concord
       label: Install package
