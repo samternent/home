@@ -1,5 +1,11 @@
 # @ternent/concord
 
+## 0.2.6
+
+### Patch Changes
+
+- [`583a65c2dc6917a634019ea53c6987dc3960a8b2`](https://github.com/samternent/home/commit/583a65c2dc6917a634019ea53c6987dc3960a8b2) Thanks [@samternent](https://github.com/samternent)! - Update concord
+
 ## 0.2.5
 
 ### Patch Changes
