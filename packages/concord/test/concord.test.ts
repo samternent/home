@@ -6,13 +6,13 @@ import {
   type LedgerContainer,
   type LedgerInstance,
   type LedgerReplayEntry,
-  type LedgerStorageAdapter
+  type LedgerStorageAdapter,
 } from "@ternent/ledger";
 import {
   ConcordBoundaryError,
   createConcordApp,
-  type ConcordPlugin,
-  type ConcordProjectionTarget
+  type ConcordReplayMetadata,
+  type ConcordReplayPlugin,
 } from "../src/index.ts";
 
 function createSequenceNow(values: string[]): () => string {
@@ -34,11 +34,11 @@ function createMemoryStorage(): LedgerStorageAdapter & {
     },
     async clear() {
       this.snapshot = null;
-    }
+    },
   };
 }
 
-function createTodoPlugin(): ConcordPlugin<{
+function createTodoPlugin(): ConcordReplayPlugin<{
   items: Record<string, { id: string; title: string; completed: boolean }>;
 }> {
   return {
@@ -49,66 +49,78 @@ function createTodoPlugin(): ConcordPlugin<{
     commands: {
       "todo.create-item": async (_ctx, input: { id: string; title: string }) => ({
         kind: "todo.item.created",
-        payload: input
+        payload: input,
       }),
       "todo.complete-item": async (_ctx, input: { id: string }) => ({
         kind: "todo.item.completed",
-        payload: input
-      })
+        payload: input,
+      }),
     },
-    project(state, entry) {
+    applyEntry(entry, ctx) {
       if (entry.kind === "todo.item.created" && entry.payload.type === "plain") {
         const payload = entry.payload.data as { id: string; title: string };
-        return {
-          items: {
-            ...state.items,
-            [payload.id]: {
-              id: payload.id,
-              title: payload.title,
-              completed: false
-            }
-          }
-        };
+        ctx.setState((state) => {
+          const current = state as {
+            items: Record<string, { id: string; title: string; completed: boolean }>;
+          };
+          return {
+            items: {
+              ...current.items,
+              [payload.id]: {
+                id: payload.id,
+                title: payload.title,
+                completed: false,
+              },
+            },
+          };
+        });
+        return;
       }
 
-      if (entry.kind === "todo.item.completed" && entry.payload.type === "plain") {
+      if (
+        entry.kind === "todo.item.completed" &&
+        entry.payload.type === "plain"
+      ) {
         const payload = entry.payload.data as { id: string };
-        const item = state.items[payload.id];
-        if (!item) {
-          return state;
-        }
-
-        return {
-          items: {
-            ...state.items,
-            [payload.id]: {
-              ...item,
-              completed: true
-            }
+        ctx.setState((state) => {
+          const current = state as {
+            items: Record<string, { id: string; title: string; completed: boolean }>;
+          };
+          const item = current.items[payload.id];
+          if (!item) {
+            return current;
           }
-        };
-      }
 
-      return state;
-    }
+          return {
+            items: {
+              ...current.items,
+              [payload.id]: {
+                ...item,
+                completed: true,
+              },
+            },
+          };
+        });
+      }
+    },
   };
 }
 
-function createAuditPlugin(): ConcordPlugin<{ entryIds: string[] }> {
+function createAuditPlugin(): ConcordReplayPlugin<{ entryIds: string[] }> {
   return {
     id: "audit",
     initialState() {
       return { entryIds: [] };
     },
-    project(state, entry) {
-      return {
-        entryIds: [...state.entryIds, entry.entryId]
-      };
-    }
+    applyEntry(entry, ctx) {
+      ctx.setState((state) => ({
+        entryIds: [...(state as { entryIds: string[] }).entryIds, entry.entryId],
+      }));
+    },
   };
 }
 
-function createSecretPlugin(): ConcordPlugin<{ values: string[] }> {
+function createSecretPlugin(): ConcordReplayPlugin<{ values: string[] }> {
   return {
     id: "secret",
     initialState() {
@@ -117,33 +129,36 @@ function createSecretPlugin(): ConcordPlugin<{ values: string[] }> {
     commands: {
       "secret.write": async (
         _ctx,
-        input: { text: string; recipients: string[] }
+        input: { text: string; recipients: string[] },
       ) => ({
         kind: "secret.created",
         payload: { text: input.text },
         protection: {
           type: "recipients",
           recipients: input.recipients,
-          encoding: "armor"
-        }
-      })
+          encoding: "armor",
+        },
+      }),
     },
-    project(state, entry) {
+    applyEntry(entry, ctx) {
       if (entry.kind !== "secret.created") {
-        return state;
+        return;
       }
 
-      if (entry.payload.type === "decrypted") {
-        const payload = entry.payload.data as { text: string };
+      ctx.setState((state) => {
+        const current = state as { values: string[] };
+        if (entry.payload.type === "decrypted") {
+          const payload = entry.payload.data as { text: string };
+          return {
+            values: [...current.values, payload.text],
+          };
+        }
+
         return {
-          values: [...state.values, payload.text]
+          values: [...current.values, entry.payload.type],
         };
-      }
-
-      return {
-        values: [...state.values, entry.payload.type]
-      };
-    }
+      });
+    },
   };
 }
 
@@ -152,12 +167,9 @@ describe("@ternent/concord", () => {
     const identity = await createIdentity("2026-03-18T12:00:00.000Z");
     const storage = createMemoryStorage();
     const app = await createConcordApp({
-      identity: {
-        author: "did:alice",
-        signer: { identity }
-      },
+      identity,
       storage,
-      plugins: [createTodoPlugin(), createAuditPlugin()]
+      plugins: [createTodoPlugin(), createAuditPlugin()],
     });
 
     const notifications: boolean[] = [];
@@ -178,12 +190,9 @@ describe("@ternent/concord", () => {
     const identity = await createIdentity("2026-03-18T12:00:00.000Z");
     const storage = createMemoryStorage();
     const app = await createConcordApp({
-      identity: {
-        author: "did:alice",
-        signer: { identity }
-      },
+      identity,
       storage,
-      plugins: [createTodoPlugin(), createAuditPlugin()]
+      plugins: [createTodoPlugin(), createAuditPlugin()],
     });
 
     const notifications: number[] = [];
@@ -195,11 +204,11 @@ describe("@ternent/concord", () => {
 
     const first = await app.command("todo.create-item", {
       id: "todo-1",
-      title: "Buy milk"
+      title: "Buy milk",
     });
     const second = await app.command("todo.create-item", {
       id: "todo-2",
-      title: "Buy oats"
+      title: "Buy oats",
     });
 
     expect(first.commitId).toBeUndefined();
@@ -208,40 +217,38 @@ describe("@ternent/concord", () => {
     expect(second.stagedCount).toBe(2);
     expect(notifications).toHaveLength(3);
     expect(app.getState().stagedCount).toBe(2);
-    expect(
-      app.getPluginState<ReturnType<typeof createTodoPlugin>["initialState"]>("todo")
-    ).toEqual({
+    expect(app.getReplayState("todo")).toEqual({
       items: {
         "todo-1": {
           id: "todo-1",
           title: "Buy milk",
-          completed: false
+          completed: false,
         },
         "todo-2": {
           id: "todo-2",
           title: "Buy oats",
-          completed: false
-        }
-      }
+          completed: false,
+        },
+      },
     });
     expect(Object.keys((await app.exportLedger()).entries)).toHaveLength(0);
 
     const commit = await app.commit({
       metadata: {
-        message: "Create first todo batch"
-      }
+        message: "Create first todo batch",
+      },
     });
 
     expect(commit.entryIds).toHaveLength(2);
     expect(app.getState().stagedCount).toBe(0);
     expect(app.getState().integrityValid).toBe(true);
     expect(notifications).toHaveLength(4);
-    expect(app.getPluginState<{ entryIds: string[] }>("audit").entryIds).toHaveLength(2);
+    expect(app.getReplayState<{ entryIds: string[] }>("audit").entryIds).toHaveLength(2);
 
     const exported = await app.exportLedger();
     expect(Object.keys(exported.entries)).toHaveLength(2);
     expect(exported.commits[commit.commitId]?.metadata).toEqual({
-      message: "Create first todo batch"
+      message: "Create first todo batch",
     });
   });
 
@@ -251,31 +258,27 @@ describe("@ternent/concord", () => {
     const ledger = await createLedger<LedgerReplayEntry[]>({
       identity: {
         signer: { identity },
-        authorResolver: () => "did:bob"
+        authorResolver: () => "did:bob",
       },
       initialProjection: [],
       projector: (entries, entry) => [...entries, entry],
       storage,
-      autoCommit: false
+      autoCommit: false,
     });
 
     const app = await createConcordApp({
-      identity: {
-        author: "did:bob",
-        signer: { identity }
-      },
-      storage,
+      identity,
       plugins: [createTodoPlugin()],
       ledger,
       policy: {
-        autoCommit: true
-      }
+        autoCommit: true,
+      },
     });
 
     await app.load();
     const result = await app.command("todo.create-item", {
       id: "todo-2",
-      title: "Commit me"
+      title: "Commit me",
     });
 
     expect(result.commitId).toEqual(expect.any(String));
@@ -291,14 +294,11 @@ describe("@ternent/concord", () => {
       "2026-03-18T12:07:00.000Z",
       "2026-03-18T12:07:01.000Z",
       "2026-03-18T12:07:02.000Z",
-      "2026-03-18T12:07:03.000Z"
+      "2026-03-18T12:07:03.000Z",
     ]);
     const storage = createMemoryStorage();
     const app = await createConcordApp({
-      identity: {
-        author: "did:bob",
-        signer: { identity }
-      },
+      identity,
       now,
       storage,
       plugins: [
@@ -311,32 +311,40 @@ describe("@ternent/concord", () => {
             "clock.tick": async (ctx) => ({
               kind: "clock.ticked",
               payload: {
-                observedAt: ctx.now()
-              }
-            })
+                observedAt: ctx.now(),
+                actorKeyId: ctx.identity.keyId,
+              },
+            }),
           },
-          project(state, entry) {
+          applyEntry(entry, ctx) {
             if (entry.kind !== "clock.ticked" || entry.payload.type !== "plain") {
-              return state;
+              return;
             }
 
-            return {
+            ctx.setState((state) => ({
               timestamps: [
-                ...state.timestamps,
-                String((entry.payload.data as { observedAt: string }).observedAt)
-              ]
-            };
-          }
-        }
-      ]
+                ...(state as { timestamps: string[] }).timestamps,
+                String(
+                  (
+                    entry.payload.data as {
+                      observedAt: string;
+                      actorKeyId: string;
+                    }
+                  ).observedAt,
+                ),
+              ],
+            }));
+          },
+        },
+      ],
     });
 
     await app.load();
     const staged = await app.command("clock.tick", undefined);
     const commit = await app.commit({
       metadata: {
-        message: "Tick clock"
-      }
+        message: "Tick clock",
+      },
     });
 
     const exported = await app.exportLedger();
@@ -344,129 +352,124 @@ describe("@ternent/concord", () => {
 
     expect(staged.stagedCount).toBe(1);
     expect(commit.entryIds).toEqual([entryId]);
-    expect(
-      app.getPluginState<{ timestamps: string[] }>("clock").timestamps
-    ).toEqual(["2026-03-18T12:07:01.000Z"]);
+    expect(app.getReplayState<{ timestamps: string[] }>("clock").timestamps).toEqual([
+      "2026-03-18T12:07:01.000Z",
+    ]);
     expect(exported.entries[entryId]?.authoredAt).toBe("2026-03-18T12:07:02.000Z");
-    expect(exported.commits[commit.commitId]?.committedAt).toBe("2026-03-18T12:07:03.000Z");
+    expect(exported.commits[commit.commitId]?.committedAt).toBe(
+      "2026-03-18T12:07:03.000Z",
+    );
   });
 
-  it("create replaces currently loaded state in memory", async () => {
+  it("create replaces currently loaded replay state in memory", async () => {
     const identity = await createIdentity("2026-03-18T12:10:00.000Z");
     const storage = createMemoryStorage();
     const app = await createConcordApp({
-      identity: {
-        author: "did:carol",
-        signer: { identity }
-      },
+      identity,
       storage,
-      plugins: [createTodoPlugin()]
+      plugins: [createTodoPlugin()],
     });
 
     await app.load();
     await app.command("todo.create-item", {
       id: "todo-3",
-      title: "Reset me"
+      title: "Reset me",
     });
 
     expect(
-      app.getPluginState<{ items: Record<string, { title: string }> }>("todo").items[
+      app.getReplayState<{ items: Record<string, { title: string }> }>("todo").items[
         "todo-3"
-      ]?.title
+      ]?.title,
     ).toBe("Reset me");
 
     await app.create();
 
-    expect(app.getPluginState<{ items: Record<string, unknown> }>("todo").items).toEqual({});
+    expect(app.getReplayState<{ items: Record<string, unknown> }>("todo").items).toEqual(
+      {},
+    );
     expect(app.getState().integrityValid).toBe(true);
   });
 
-  it("feeds projection targets with in-progress app state", async () => {
+  it("lets replay plugins buffer external materialization and publish in endReplay", async () => {
     const identity = await createIdentity("2026-03-18T12:15:00.000Z");
     const storage = createMemoryStorage();
     const source = await createConcordApp({
-      identity: {
-        author: "did:dana",
-        signer: { identity }
-      },
+      identity,
       storage,
-      plugins: [createTodoPlugin()]
+      plugins: [createTodoPlugin()],
     });
 
     await source.load();
     await source.command("todo.create-item", {
       id: "todo-a",
-      title: "A"
+      title: "A",
     });
     await source.command("todo.create-item", {
       id: "todo-b",
-      title: "B"
+      title: "B",
     });
     await source.commit({
       metadata: {
-        message: "Commit imported todos"
-      }
+        message: "Commit imported todos",
+      },
     });
 
     const events: string[] = [];
-    const snapshots: string[][] = [];
-    const projectionTarget: ConcordProjectionTarget = {
-      name: "memory-index",
+    let working: string[] = [];
+    let published: string[] = ["stale"];
+    const materializer: ConcordReplayPlugin<undefined> = {
+      id: "memory-index",
       reset() {
         events.push("reset");
+        working = [];
       },
       beginReplay(ctx) {
-        events.push(`begin:${ctx.app.getState().ready}`);
+        events.push(`begin:${ctx.replay.entryCount}`);
       },
-      applyEntry(_entry, ctx) {
-        events.push("apply");
-        snapshots.push(
-          Object.keys(
-            ctx.app.getPluginState<{ items: Record<string, unknown> }>("todo").items
-          )
-        );
+      applyEntry(entry) {
+        events.push(`apply:${entry.entryId}`);
+        working.push(entry.entryId);
       },
       endReplay() {
         events.push("end");
-      }
+        published = [...working];
+      },
     };
 
     const targetApp = await createConcordApp({
-      identity: {
-        author: "did:dana",
-        signer: { identity }
-      },
+      identity,
       storage: createMemoryStorage(),
-      plugins: [createTodoPlugin()],
-      projectionTargets: [projectionTarget]
+      plugins: [createTodoPlugin(), materializer],
     });
 
     await targetApp.importLedger(await source.exportLedger());
 
-    expect(events).toEqual(["reset", "begin:true", "apply", "apply", "end"]);
-    expect(snapshots).toEqual([["todo-a"], ["todo-a", "todo-b"]]);
+    expect(events).toEqual([
+      "reset",
+      "begin:2",
+      expect.stringMatching(/^apply:/),
+      expect.stringMatching(/^apply:/),
+      "end",
+    ]);
+    expect(published).toHaveLength(2);
+    expect(published).not.toEqual(["stale"]);
   });
 
-  it("fails the operation when a projection target throws in beginReplay and does not publish partial state", async () => {
+  it("fails the operation when a replay plugin throws in beginReplay and does not publish partial state", async () => {
     const identity = await createIdentity("2026-03-18T12:20:00.000Z");
     const storage = createMemoryStorage();
     const app = await createConcordApp({
-      identity: {
-        author: "did:erin",
-        signer: { identity }
-      },
+      identity,
       storage,
-      plugins: [createTodoPlugin()],
-      projectionTargets: [
+      plugins: [
+        createTodoPlugin(),
         {
-          name: "broken",
-          reset() {},
+          id: "broken",
           beginReplay() {
-            throw new Error("target begin failed");
+            throw new Error("plugin begin failed");
           },
-          applyEntry() {}
-        }
-      ]
+        },
+      ],
     });
 
     const notifications: number[] = [];
@@ -474,123 +477,117 @@ describe("@ternent/concord", () => {
       notifications.push(notifications.length + 1);
     });
 
-    await expect(app.load()).rejects.toThrow("target begin failed");
+    await expect(app.load()).rejects.toThrow("plugin begin failed");
     expect(notifications).toHaveLength(0);
     expect(app.getState().ready).toBe(false);
-    expect(app.getPluginState<{ items: Record<string, unknown> }>("todo").items).toEqual({});
+    expect(app.getReplayState<{ items: Record<string, unknown> }>("todo").items).toEqual(
+      {},
+    );
   });
 
-  it("fails the operation when a projection target throws in applyEntry and does not publish partial state", async () => {
+  it("keeps the last published state untouched when a replay plugin throws in applyEntry", async () => {
     const identity = await createIdentity("2026-03-18T12:20:00.000Z");
     const storage = createMemoryStorage();
+    let shouldThrow = false;
     const app = await createConcordApp({
-      identity: {
-        author: "did:erin",
-        signer: { identity }
-      },
+      identity,
       storage,
-      plugins: [createTodoPlugin()],
-      projectionTargets: [
+      plugins: [
+        createTodoPlugin(),
         {
-          name: "broken",
-          reset() {},
-          applyEntry() {
-            throw new Error("target apply failed");
-          }
-        }
-      ]
-    });
-
-    const notifications: number[] = [];
-    app.subscribe(() => {
-      notifications.push(notifications.length + 1);
+          id: "broken",
+          applyEntry(entry) {
+            if (shouldThrow && entry.kind === "todo.item.created") {
+              throw new Error("plugin apply failed");
+            }
+          },
+        },
+      ],
     });
 
     await app.load();
-    expect(notifications).toHaveLength(1);
+    await app.command("todo.create-item", {
+      id: "todo-good",
+      title: "Safe state",
+    });
+    await app.commit({
+      metadata: {
+        message: "Initial good state",
+      },
+    });
+
+    const before = structuredClone(
+      app.getReplayState<{ items: Record<string, { title: string }> }>("todo"),
+    );
+    shouldThrow = true;
 
     await expect(
       app.command("todo.create-item", {
-        id: "todo-4",
-        title: "Fails projection"
-      })
-    ).rejects.toThrow("target apply failed");
+        id: "todo-bad",
+        title: "Break replay",
+      }),
+    ).rejects.toThrow("plugin apply failed");
 
-    expect(notifications).toHaveLength(1);
-    expect(app.getPluginState<{ items: Record<string, unknown> }>("todo").items).toEqual({});
+    expect(app.getReplayState("todo")).toEqual(before);
     expect(app.getState().stagedCount).toBe(0);
-    expect(Object.keys((await app.exportLedger()).entries)).toHaveLength(0);
+    expect(Object.keys((await app.exportLedger()).entries)).toHaveLength(1);
   });
 
-  it("fails the operation when a projection target throws in endReplay and does not publish partial state", async () => {
+  it("keeps the last published state untouched when a replay plugin throws in endReplay", async () => {
     const identity = await createIdentity("2026-03-18T12:22:00.000Z");
     const storage = createMemoryStorage();
     const source = await createConcordApp({
-      identity: {
-        author: "did:erin",
-        signer: { identity }
-      },
+      identity,
       storage,
-      plugins: [createTodoPlugin()]
+      plugins: [createTodoPlugin()],
     });
 
     await source.load();
     await source.command("todo.create-item", {
       id: "todo-end",
-      title: "End fails"
+      title: "End fails",
     });
     await source.commit({
       metadata: {
-        message: "Commit end failure source"
-      }
-    });
-
-    const target = await createConcordApp({
-      identity: {
-        author: "did:erin",
-        signer: { identity }
+        message: "Commit end failure source",
       },
-      storage: createMemoryStorage(),
-      plugins: [createTodoPlugin()],
-      projectionTargets: [
-        {
-          name: "broken",
-          reset() {},
-          applyEntry() {},
-          endReplay() {
-            throw new Error("target end failed");
-          }
-        }
-      ]
     });
 
-    const notifications: number[] = [];
-    target.subscribe(() => {
-      notifications.push(notifications.length + 1);
+    let shouldThrow = false;
+    const target = await createConcordApp({
+      identity,
+      storage: createMemoryStorage(),
+      plugins: [
+        createTodoPlugin(),
+        {
+          id: "broken",
+          endReplay() {
+            if (shouldThrow) {
+              throw new Error("plugin end failed");
+            }
+          },
+        },
+      ],
     });
+
+    await target.load();
+    const before = structuredClone(target.getState());
+    shouldThrow = true;
 
     await expect(target.importLedger(await source.exportLedger())).rejects.toThrow(
-      "target end failed"
+      "plugin end failed",
     );
 
-    expect(notifications).toHaveLength(0);
-    expect(target.getState().ready).toBe(false);
-    expect(target.getState().integrityValid).toBe(false);
-    expect(target.getPluginState<{ items: Record<string, unknown> }>("todo").items).toEqual(
-      {}
-    );
+    expect(target.getState()).toEqual(before);
   });
 
   it("notifies subscribers with a final reset state on destroy, then clears listeners", async () => {
     const identity = await createIdentity("2026-03-18T12:23:00.000Z");
     const storage = createMemoryStorage();
     const app = await createConcordApp({
-      identity: {
-        author: "did:ivy",
-        signer: { identity }
-      },
+      identity,
       storage,
-      plugins: [createTodoPlugin()]
+      plugins: [createTodoPlugin()],
     });
 
     const notifications: boolean[] = [];
@@ -604,56 +601,26 @@ describe("@ternent/concord", () => {
     expect(notifications).toEqual([true, false]);
     expect(app.getState().ready).toBe(false);
     expect(app.getState().integrityValid).toBe(false);
-    expect(app.getPluginState<{ items: Record<string, unknown> }>("todo").items).toEqual({});
-  });
-
-  it("rejects duplicate projection target names eagerly", async () => {
-    const identity = await createIdentity("2026-03-18T12:24:00.000Z");
-
-    await expect(
-      createConcordApp({
-        identity: {
-          author: "did:jane",
-          signer: { identity }
-        },
-        storage: createMemoryStorage(),
-        plugins: [createTodoPlugin()],
-        projectionTargets: [
-          {
-            name: "index",
-            reset() {},
-            applyEntry() {}
-          },
-          {
-            name: "index",
-            reset() {},
-            applyEntry() {}
-          }
-        ]
-      })
-    ).rejects.toMatchObject({
-      name: "ConcordBoundaryError",
-      code: "DUPLICATE_PROJECTION_TARGET_NAME"
-    });
+    expect(app.getReplayState<{ items: Record<string, unknown> }>("todo").items).toEqual(
+      {},
+    );
   });
 
   it("fails fast when internal ledger requirements are missing", async () => {
     await expect(
       createConcordApp({
-        identity: {
-          author: ""
-        },
+        identity: { keyId: "" } as never,
         storage: createMemoryStorage(),
-        plugins: [createTodoPlugin()]
-      })
+        plugins: [createTodoPlugin()],
+      }),
     ).rejects.toMatchObject({
       name: "ConcordBoundaryError",
-      code: "INVALID_IDENTITY"
+      code: "INVALID_IDENTITY",
     });
   });
 
   it("fails fast when a supplied ledger does not replay LedgerReplayEntry[]", async () => {
-    const fakeLedger: LedgerInstance<unknown> = {
+    const fakeLedger = {
       async create() {},
       async load() {},
       async loadFromStorage() {
@@ -685,7 +652,7 @@ describe("@ternent/concord", () => {
           payloadHashesValid: true,
           proofsValid: true,
           invalidCommitIds: [],
-          invalidEntryIds: []
+          invalidEntryIds: [],
         };
       },
       async export() {
@@ -697,97 +664,73 @@ describe("@ternent/concord", () => {
           container: null,
           staged: [],
           projection: { invalid: true },
-          verification: null
+          verification: null,
         };
       },
       subscribe() {
         return () => {};
       },
       async clearStaged() {},
-      async destroy() {}
-    };
+      async destroy() {},
+    } as unknown as LedgerInstance<LedgerReplayEntry[]>;
 
     const app = await createConcordApp({
-      identity: {
-        author: "did:fran"
-      },
+      identity: await createIdentity("2026-03-18T12:24:00.000Z"),
       storage: createMemoryStorage(),
       plugins: [createTodoPlugin()],
-      ledger: fakeLedger
+      ledger: fakeLedger,
     });
 
     await expect(app.load()).rejects.toMatchObject({
       name: "ConcordBoundaryError",
-      code: "INVALID_LEDGER_PROJECTION"
+      code: "INVALID_LEDGER_PROJECTION",
     });
     expect(app.getState().ready).toBe(false);
     expect(app.getState().integrityValid).toBe(false);
   });
 
-  it("replays encrypted entries as encrypted or decrypted based on capability", async () => {
+  it("replays encrypted entries as decrypted using identity-derived decrypt capability", async () => {
     const identity = await createIdentity("2026-03-18T12:25:00.000Z");
     const recipient = await recipientFromIdentity(identity);
     const encryptedApp = await createConcordApp({
-      identity: {
-        author: "did:gail",
-        signer: { identity }
-      },
+      identity,
       storage: createMemoryStorage(),
-      plugins: [createSecretPlugin()]
+      plugins: [createSecretPlugin()],
     });
 
     await encryptedApp.load();
     await encryptedApp.command("secret.write", {
       text: "secret note",
-      recipients: [recipient]
+      recipients: [recipient],
     });
     await encryptedApp.commit({
       metadata: {
-        message: "Commit secret note"
-      }
-    });
-
-    expect(encryptedApp.getPluginState<{ values: string[] }>("secret").values).toEqual([
-      "encrypted"
-    ]);
-
-    const decryptingApp = await createConcordApp({
-      identity: {
-        author: "did:gail",
-        signer: { identity },
-        decryptor: { identity }
+        message: "Commit secret note",
       },
-      storage: createMemoryStorage(),
-      plugins: [createSecretPlugin()]
     });
 
-    await decryptingApp.importLedger(await encryptedApp.exportLedger());
-
-    expect(decryptingApp.getPluginState<{ values: string[] }>("secret").values).toEqual([
-      "secret note"
+    expect(encryptedApp.getReplayState<{ values: string[] }>("secret").values).toEqual([
+      "secret note",
     ]);
   });
 
   it("marks imported corrupted history as globally invalid and does not project it", async () => {
     const identity = await createIdentity("2026-03-18T12:30:00.000Z");
     const source = await createConcordApp({
-      identity: {
-        author: "did:hana",
-        signer: { identity }
-      },
+      identity,
       storage: createMemoryStorage(),
-      plugins: [createTodoPlugin()]
+      plugins: [createTodoPlugin()],
     });
 
     await source.load();
     await source.command("todo.create-item", {
       id: "todo-5",
-      title: "Verify me"
+      title: "Verify me",
     });
     await source.commit({
       metadata: {
-        message: "Commit verification example"
-      }
+        message: "Commit verification example",
+      },
     });
 
     const tampered = structuredClone(await source.exportLedger());
@@ -796,24 +739,23 @@ describe("@ternent/concord", () => {
       ...tampered.entries[entryId],
       payload: {
         type: "plain",
-        data: { id: "todo-5", title: "tampered" }
-      }
+        data: { id: "todo-5", title: "tampered" },
+      },
     };
 
     const target = await createConcordApp({
-      identity: {
-        author: "did:hana",
-        signer: { identity }
-      },
+      identity,
       storage: createMemoryStorage(),
-      plugins: [createTodoPlugin()]
+      plugins: [createTodoPlugin()],
     });
 
     await target.importLedger(tampered);
 
     expect(target.getState().ready).toBe(false);
     expect(target.getState().integrityValid).toBe(false);
-    expect(target.getPluginState<{ items: Record<string, unknown> }>("todo").items).toEqual({});
+    expect(target.getReplayState<{ items: Record<string, unknown> }>("todo").items).toEqual(
+      {},
+    );
     expect(target.getState().verification?.valid).toBe(false);
     expect(target.getState().verification?.committedHistoryValid).toBe(false);
 
@@ -822,6 +764,60 @@ describe("@ternent/concord", () => {
     expect(verification.valid).toBe(false);
     expect(verification.committedHistoryValid).toBe(false);
     expect(target.getState().verification).toEqual(verification);
-    expect(() => target.getPluginState("missing")).toThrow(ConcordBoundaryError);
+    expect(() => target.getReplayState("missing")).toThrow(ConcordBoundaryError);
+  });
+
+  it("passes ranged replay metadata to replay plugins", async () => {
+    const identity = await createIdentity("2026-03-18T12:35:00.000Z");
+    const storage = createMemoryStorage();
+    const seen: ConcordReplayMetadata[] = [];
+    const app = await createConcordApp({
+      identity,
+      storage,
+      plugins: [
+        createTodoPlugin(),
+        {
+          id: "range-probe",
+          applyEntry(_entry, ctx) {
+            seen.push(structuredClone(ctx.replay));
+          },
+        },
+      ],
+    });
+
+    await app.load();
+    await app.command("todo.create-item", {
+      id: "todo-r1",
+      title: "One",
+    });
+    await app.command("todo.create-item", {
+      id: "todo-r2",
+      title: "Two",
+    });
+    const commit = await app.commit({
+      metadata: {
+        message: "Range probe",
+      },
+    });
+
+    const exported = await app.exportLedger();
+    const [firstEntryId, secondEntryId] = commit.entryIds;
+    expect(Object.keys(exported.entries)).toEqual([firstEntryId, secondEntryId]);
+
+    seen.length = 0;
+    await app.replay({
+      fromEntryId: secondEntryId,
+      toEntryId: secondEntryId,
+    });
+
+    expect(seen).toHaveLength(1);
+    expect(seen[0]).toMatchObject({
+      phase: "applyEntry",
+      entryIndex: 0,
+      entryCount: 1,
+      fromEntryId: secondEntryId,
+      toEntryId: secondEntryId,
+      isPartial: true,
+    });
   });
 });

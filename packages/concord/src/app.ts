@@ -8,10 +8,11 @@ import {
   type LedgerReplayEntry,
   type LedgerVerificationResult,
 } from "@ternent/ledger";
+import type { SerializedIdentity } from "@ternent/identity";
 import { ConcordBoundaryError } from "./errors.js";
 import type {
   ConcordApp,
-  ConcordAppIdentity,
+  ConcordAppOptions,
   ConcordCommandContext,
   ConcordCommandResult,
   ConcordCommitInput,
@@ -22,7 +23,6 @@ import type {
   ConcordReplayOptions,
   ConcordReplayPlugin,
   ConcordState,
-  CreateConcordAppInput,
 } from "./types.js";
 
 type CommandRegistration = {
@@ -127,29 +127,52 @@ function normalizeAppendInputs(
   return inputs;
 }
 
-function assertInternalLedgerRequirements(input: CreateConcordAppInput): void {
-  if (!input.identity?.signer) {
+function assertInternalLedgerRequirements(input: ConcordAppOptions): void {
+  if (!input.identity) {
     throw new ConcordBoundaryError(
       "INVALID_IDENTITY",
-      "Concord requires identity.signer when creating an internal ledger.",
+      "Concord requires an identity when creating an internal ledger.",
     );
   }
+
+  resolveAuthorFromIdentity(input.identity);
 }
 
-function resolveLedgerIdentity(
-  identity: ConcordAppIdentity,
-): LedgerIdentityContext {
-  if (!identity.signer) {
+function resolveAuthorFromIdentity(identity: SerializedIdentity): string {
+  if (!identity.keyId || typeof identity.keyId !== "string") {
     throw new ConcordBoundaryError(
       "INVALID_IDENTITY",
-      "Concord requires identity.signer when creating an internal ledger.",
+      "Concord identity is missing a valid keyId.",
+    );
+  }
+
+  return `did:key:${identity.keyId}`;
+}
+
+function resolveSignerFromIdentity(
+  identity: SerializedIdentity,
+): LedgerIdentityContext["signer"] {
+  return { identity };
+}
+
+function resolveDecryptorFromIdentity(
+  identity: SerializedIdentity,
+): LedgerDecryptor | undefined {
+  return { identity } as LedgerDecryptor;
+}
+
+function resolveLedgerIdentity(identity: SerializedIdentity): LedgerIdentityContext {
+  if (!identity) {
+    throw new ConcordBoundaryError(
+      "INVALID_IDENTITY",
+      "Concord requires an identity when creating an internal ledger.",
     );
   }
 
   return {
-    signer: identity.signer as LedgerIdentityContext["signer"],
-    authorResolver: () => identity.author,
-    decryptor: identity.decryptor as LedgerDecryptor | undefined,
+    signer: resolveSignerFromIdentity(identity),
+    authorResolver: () => resolveAuthorFromIdentity(identity),
+    decryptor: resolveDecryptorFromIdentity(identity),
   };
 }
 
@@ -172,7 +195,7 @@ function createReplayMetadata(range: ReplayRange): ConcordReplayMetadata {
 }
 
 export async function createConcordApp(
-  input: CreateConcordAppInput,
+  input: ConcordAppOptions,
 ): Promise<ConcordApp> {
   const plugins = [...input.plugins];
   const now = input.now ?? createDefaultNow;
@@ -270,7 +293,7 @@ export async function createConcordApp(
       const metadata = createReplayMetadata(range);
       const context: ConcordReplayContext = {
         pluginId: plugin.id,
-        decryptAvailable: Boolean(input.identity.decryptor),
+        decryptAvailable: Boolean(resolveDecryptorFromIdentity(input.identity)),
         replay: metadata,
         getState() {
           return nextState.replay[plugin.id] as unknown;

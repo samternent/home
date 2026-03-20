@@ -2,7 +2,7 @@ export { createConcordApp } from "./app.js";
 export { ConcordBoundaryError } from "./errors.js";
 export type {
   ConcordApp,
-  ConcordAppIdentity,
+  ConcordAppOptions,
   ConcordCommandContext,
   ConcordCommandHandler,
   ConcordCommitInput,
@@ -16,5 +16,5 @@ export type {
   ConcordReplayPlugin,
   ConcordRuntimePolicy,
   ConcordState,
-  CreateConcordAppInput
+  CreateConcordAppInput,
 } from "./types.js";

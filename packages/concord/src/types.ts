@@ -50,19 +50,9 @@ export type ConcordRuntimePolicy = {
   autoCommit?: boolean;
 };
 
-export type ConcordAppIdentity = {
-  author: string;
-  signer?: {
-    identity: SerializedIdentity;
-  };
-  decryptor?: {
-    identity: SerializedIdentity;
-  };
-};
-
 export type ConcordCommandContext = {
   now(): string;
-  identity: ConcordAppIdentity;
+  identity: SerializedIdentity;
   getReplayState<T = unknown>(pluginId: string): T;
 };
 
@@ -112,8 +102,8 @@ export type ConcordReplayPlugin<TState = unknown> = {
   selectors?: Record<string, (state: TState) => unknown>;
 };
 
-export type CreateConcordAppInput = {
-  identity: ConcordAppIdentity;
+export type ConcordAppOptions = {
+  identity: SerializedIdentity;
   storage?: LedgerStorageAdapter;
   plugins: ConcordReplayPlugin[];
   now?: () => string;
@@ -123,6 +113,8 @@ export type CreateConcordAppInput = {
   ledger?: LedgerInstance<LedgerReplayEntry[]>;
   policy?: ConcordRuntimePolicy;
 };
+
+export type CreateConcordAppInput = ConcordAppOptions;
 
 export type ConcordApp = {
   create(params?: ConcordCreateParams): Promise<void>;

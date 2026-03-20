@@ -2,11 +2,13 @@ import { reactive } from "vue";
 import {
   createConcordApp,
   type ConcordApp,
-  type ConcordPlugin,
+  type ConcordReplayPlugin,
 } from "@ternent/concord";
 import type {
   LedgerArmourContract,
   LedgerContainer,
+  LedgerEntryRecord,
+  LedgerIdentityContext,
   LedgerReplayEntry,
   LedgerStorageAdapter,
   LedgerVerificationResult,
@@ -156,7 +158,7 @@ function hexToBytes(value: string) {
 }
 
 function createMemoryStorage(): LedgerStorageAdapter & {
-  snapshot: { container: LedgerContainer | null; staged: unknown[] } | null;
+  snapshot: { container: LedgerContainer | null; staged: LedgerEntryRecord[] } | null;
 } {
   return {
     name: "memory",
@@ -188,7 +190,7 @@ const demoArmour: LedgerArmourContract = {
   },
 };
 
-function createTodoPlugin(): ConcordPlugin<TodoPluginState> {
+function createTodoPlugin(): ConcordReplayPlugin<TodoPluginState> {
   return {
     id: "todo",
     initialState() {
@@ -200,32 +202,38 @@ function createTodoPlugin(): ConcordPlugin<TodoPluginState> {
     commands: {
       "todo.create-item": async (
         _ctx,
-        input: { id: string; title: string },
-      ) => ({
-        kind: "todo.item.created",
-        meta: {
-          pluginId: "todo",
-          command: "todo.create-item",
-        },
-        payload: {
-          id: input.id,
-          title: input.title,
-          completed: false,
-        },
-      }),
-      "todo.complete-item": async (ctx, input: { id: string }) => ({
-        kind: "todo.item.completed",
-        meta: {
-          pluginId: "todo",
-          command: "todo.complete-item",
-        },
-        payload: {
-          id: input.id,
-          completedAt: ctx.now(),
-        },
-      }),
+        inputValue: unknown,
+      ) => {
+        const input = inputValue as { id: string; title: string };
+        return {
+          kind: "todo.item.created",
+          meta: {
+            pluginId: "todo",
+            command: "todo.create-item",
+          },
+          payload: {
+            id: input.id,
+            title: input.title,
+            completed: false,
+          },
+        };
+      },
+      "todo.complete-item": async (ctx, inputValue: unknown) => {
+        const input = inputValue as { id: string };
+        return {
+          kind: "todo.item.completed",
+          meta: {
+            pluginId: "todo",
+            command: "todo.complete-item",
+          },
+          payload: {
+            id: input.id,
+            completedAt: ctx.now(),
+          },
+        };
+      },
     },
-    project(currentState, entry) {
+    applyEntry(entry, ctx) {
       if (
         entry.kind === "todo.item.created" &&
         entry.payload.type === "plain"
@@ -236,20 +244,24 @@ function createTodoPlugin(): ConcordPlugin<TodoPluginState> {
           completed: boolean;
         };
 
-        return {
-          items: {
-            ...currentState.items,
-            [payload.id]: {
-              id: payload.id,
-              title: payload.title,
-              completed: payload.completed,
-              completedAt: null,
+        ctx.setState((currentState) => {
+          const state = currentState as TodoPluginState;
+          return {
+            items: {
+              ...state.items,
+              [payload.id]: {
+                id: payload.id,
+                title: payload.title,
+                completed: payload.completed,
+                completedAt: null,
+              },
             },
-          },
-          order: currentState.order.includes(payload.id)
-            ? currentState.order
-            : [...currentState.order, payload.id],
-        };
+            order: state.order.includes(payload.id)
+              ? state.order
+              : [...state.order, payload.id],
+          };
+        });
+        return;
       }
 
       if (
@@ -260,30 +272,31 @@ function createTodoPlugin(): ConcordPlugin<TodoPluginState> {
           id: string;
           completedAt: string;
         };
-        const item = currentState.items[payload.id];
-        if (!item) {
-          return currentState;
-        }
+        ctx.setState((currentState) => {
+          const state = currentState as TodoPluginState;
+          const item = state.items[payload.id];
+          if (!item) {
+            return state;
+          }
 
-        return {
-          items: {
-            ...currentState.items,
-            [payload.id]: {
-              ...item,
-              completed: true,
-              completedAt: payload.completedAt,
+          return {
+            items: {
+              ...state.items,
+              [payload.id]: {
+                ...item,
+                completed: true,
+                completedAt: payload.completedAt,
+              },
             },
-          },
-          order: currentState.order,
-        };
+            order: state.order,
+          };
+        });
       }
-
-      return currentState;
     },
   };
 }
 
-function createAuditPlugin(): ConcordPlugin<AuditPluginState> {
+function createAuditPlugin(): ConcordReplayPlugin<AuditPluginState> {
   return {
     id: "audit",
     initialState() {
@@ -294,31 +307,34 @@ function createAuditPlugin(): ConcordPlugin<AuditPluginState> {
     commands: {
       "audit.write-private-note": async (
         _ctx,
-        input: { text: string; recipients: string[] },
-      ) => ({
-        kind: "audit.private-note.recorded",
-        meta: {
-          pluginId: "audit",
-          command: "audit.write-private-note",
-        },
-        payload: {
-          text: input.text,
-        },
-        protection: {
-          type: "recipients",
-          recipients: input.recipients,
-          encoding: "armor",
-        },
-      }),
+        inputValue: unknown,
+      ) => {
+        const input = inputValue as { text: string; recipients: string[] };
+        return {
+          kind: "audit.private-note.recorded",
+          meta: {
+            pluginId: "audit",
+            command: "audit.write-private-note",
+          },
+          payload: {
+            text: input.text,
+          },
+          protection: {
+            type: "recipients",
+            recipients: input.recipients,
+            encoding: "armor",
+          },
+        };
+      },
     },
-    project(currentState, entry) {
+    applyEntry(entry, ctx) {
       if (entry.kind !== "audit.private-note.recorded") {
-        return currentState;
+        return;
       }
 
-      return {
-        privateNotes: currentState.privateNotes + 1,
-      };
+      ctx.setState((currentState) => ({
+        privateNotes: (currentState as AuditPluginState).privateNotes + 1,
+      }));
     },
   };
 }
@@ -481,7 +497,11 @@ async function verifyArtifact(
   artifact: LedgerContainer,
 ): Promise<LedgerVerificationResult> {
   const ledger = await createLedger<LedgerReplayEntry[]>({
-    identity: demoIdentity,
+    identity: {
+      signer: { identity: demoIdentity } as LedgerIdentityContext["signer"],
+      authorResolver: () => `did:key:${demoIdentity.keyId}`,
+      decryptor: { identity: demoIdentity } as LedgerIdentityContext["decryptor"],
+    },
     initialProjection: [],
     projector: (entries, entry) => [...entries, entry],
     replayPolicy: {
@@ -506,7 +526,7 @@ function syncProjectedState() {
   }
 
   const appState = app.getState();
-  const todoState = app.getPluginState<TodoPluginState>("todo");
+  const todoState = app.getReplayState<TodoPluginState>("todo");
 
   state.ready = appState.ready && appState.integrityValid;
   state.stagedCount = appState.stagedCount;
@@ -586,7 +606,10 @@ async function initializeDemo() {
       identity: demoIdentity,
       storage,
       armour: demoArmour,
-      plugins: [createTodoPlugin(), createAuditPlugin()],
+      plugins: [
+        createTodoPlugin() as ConcordReplayPlugin,
+        createAuditPlugin() as ConcordReplayPlugin,
+      ],
     });
 
     unsubscribe?.();
