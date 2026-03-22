@@ -1,6 +1,6 @@
 {
   "name": "@ternent/pixpax-issuer",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Issuer-side PixPax v2 issuance contracts and Seal-native proofs",
   "license": "ISC",
   "type": "module",

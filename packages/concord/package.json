@@ -1,6 +1,6 @@
 {
   "name": "@ternent/concord",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "Command-driven developer runtime for building non-custodial apps on @ternent/ledger",
   "license": "ISC",
   "type": "module",

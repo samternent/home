@@ -1,6 +1,6 @@
 {
   "name": "ternent-identity",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "",
   "main": "dist/identity.umd.js",
   "module": "dist/identity.es.js",
