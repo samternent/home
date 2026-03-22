@@ -86,20 +86,33 @@ export default defineConfig({
     },
   },
   resolve: {
-    alias: {
-      "@": resolve(__dirname, "./src"),
-      "@ternent/armour": resolve(workspaceRoot, "armour/src/index.ts"),
-      "@ternent/concord": resolve(workspaceRoot, "concord/src/index.ts"),
-      "@ternent/concord-protocol": resolve(workspaceRoot, "concord-protocol/src/index.ts"),
-      "@ternent/identity": resolve(workspaceRoot, "identity-v2/src/index.ts"),
-      "@ternent/ledger": resolve(workspaceRoot, "ledger-v2/src/index.ts"),
-      "@ternent/pixpax-concord": resolve(workspaceRoot, "pixpax-concord/src/index.ts"),
-      "@ternent/pixpax-core": resolve(workspaceRoot, "pixpax-core/src/index.ts"),
-      "@ternent/pixpax-issuer": resolve(workspaceRoot, "pixpax-issuer/src/index.ts"),
-      "@ternent/rage": resolve(workspaceRoot, "rage/src/index.ts"),
-      "@ternent/seal-cli": resolve(workspaceRoot, "seal-cli/src/index.ts"),
-      "ternent-utils": resolve(workspaceRoot, "utils/src/index.ts"),
-    },
+    alias: [
+      { find: "@", replacement: resolve(__dirname, "./src") },
+      { find: "@ternent/armour", replacement: resolve(workspaceRoot, "armour/src/index.ts") },
+      { find: "@ternent/concord", replacement: resolve(workspaceRoot, "concord/src/index.ts") },
+      {
+        find: "@ternent/concord-protocol",
+        replacement: resolve(workspaceRoot, "concord-protocol/src/index.ts"),
+      },
+      { find: "@ternent/identity", replacement: resolve(workspaceRoot, "identity-v2/src/index.ts") },
+      { find: "@ternent/ledger", replacement: resolve(workspaceRoot, "ledger-v2/src/index.ts") },
+      {
+        find: "@ternent/pixpax-concord",
+        replacement: resolve(workspaceRoot, "pixpax-concord/src/index.ts"),
+      },
+      { find: "@ternent/pixpax-core", replacement: resolve(workspaceRoot, "pixpax-core/src/index.ts") },
+      {
+        find: "@ternent/pixpax-issuer",
+        replacement: resolve(workspaceRoot, "pixpax-issuer/src/index.ts"),
+      },
+      { find: "@ternent/rage", replacement: resolve(workspaceRoot, "rage/src/index.ts") },
+      {
+        find: "@ternent/seal-cli/proof",
+        replacement: resolve(workspaceRoot, "seal-cli/src/proof.ts"),
+      },
+      { find: "@ternent/seal-cli", replacement: resolve(workspaceRoot, "seal-cli/src/index.ts") },
+      { find: "ternent-utils", replacement: resolve(workspaceRoot, "utils/src/index.ts") },
+    ],
   },
   optimizeDeps: {
     exclude: [
