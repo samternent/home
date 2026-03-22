@@ -1,5 +1,12 @@
 # @ternent/ledger
 
+## 0.1.8
+
+### Patch Changes
+
+- Updated dependencies [[`9d23630e3dd0d0ffb22b62e3bf159dd01d60bbaa`](https://github.com/samternent/home/commit/9d23630e3dd0d0ffb22b62e3bf159dd01d60bbaa)]:
+  - @ternent/seal-cli@0.3.10
+
 ## 0.1.7
 
 ### Patch Changes
