@@ -37,6 +37,41 @@ function parsePasskeyOrigins() {
   return configured.length === 1 ? configured[0] : configured;
 }
 
+function resolveCookiePolicy() {
+  const baseUrl = String(process.env.AUTH_BASE_URL || "").trim();
+  if (!baseUrl) {
+    return {
+      useSecureCookies: true,
+      sameSite: "none",
+      secure: true,
+    };
+  }
+
+  try {
+    const parsed = new URL(baseUrl);
+    const isLocalHost =
+      parsed.hostname === "localhost" ||
+      parsed.hostname === "127.0.0.1" ||
+      parsed.hostname === "[::1]";
+    const isSecure = parsed.protocol === "https:";
+    if (isLocalHost || !isSecure) {
+      return {
+        useSecureCookies: false,
+        sameSite: "lax",
+        secure: false,
+      };
+    }
+  } catch {
+    // Fall back to production-safe cookie defaults when AUTH_BASE_URL is invalid.
+  }
+
+  return {
+    useSecureCookies: true,
+    sameSite: "none",
+    secure: true,
+  };
+}
+
 function isConfigured() {
   const secret = String(process.env.AUTH_SECRET || "").trim();
   const baseUrl = String(process.env.AUTH_BASE_URL || "").trim();
@@ -184,6 +219,7 @@ async function buildRuntime() {
       process.env.CORS_ALLOW_ORIGINS ||
       process.env.AUTH_BASE_URL,
   );
+  const cookiePolicy = resolveCookiePolicy();
   const passkeyRpID = String(process.env.AUTH_PASSKEY_RP_ID || "").trim();
   const passkeyRpName = String(
     process.env.AUTH_PASSKEY_RP_NAME || "Ternent",
@@ -200,11 +236,11 @@ async function buildRuntime() {
     trustedOrigins,
     database: pool,
     advanced: {
-      useSecureCookies: true,
+      useSecureCookies: cookiePolicy.useSecureCookies,
       defaultCookieAttributes: {
         httpOnly: true,
-        sameSite: "none",
-        secure: true,
+        sameSite: cookiePolicy.sameSite,
+        secure: cookiePolicy.secure,
       },
     },
     emailAndPassword: {

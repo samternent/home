@@ -1,0 +1,12 @@
+{
+  "format": "ternent-identity",
+  "version": "2",
+  "algorithm": "Ed25519",
+  "createdAt": "2026-03-21T10:33:50.597Z",
+  "publicKey": "D9LxSxYNwJSKmOauVQqDdLvzN7HS_NxW7BbyYG558ck",
+  "keyId": "df55cd3e193665bf85042fbc9b5f53158b7c3dd7fd07ea69ff58d75923b63676",
+  "material": {
+    "kind": "seed",
+    "seed": "9FZOexCRQ9o2xdbeExZ7w56vyn4f2KbrJtgYA5EyEN8"
+  }
+}

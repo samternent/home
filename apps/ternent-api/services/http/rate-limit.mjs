@@ -77,3 +77,13 @@ export function createCommandRateLimit() {
     limiter(req, res, next);
   };
 }
+
+export function createPixpaxRedeemRateLimit() {
+  return createLimiter({
+    windowMs: asInt(process.env.RATE_LIMIT_PIXPAX_REDEEM_WINDOW_MS, 60_000),
+    limit: asInt(process.env.RATE_LIMIT_PIXPAX_REDEEM_MAX, 20),
+    keyResolver(req) {
+      return `pixpax-redeem:${clientIp(req)}`;
+    },
+  });
+}

@@ -1,5 +1,6 @@
 export const buttonVariantValues = [
   "primary",
+  "accent",
   "secondary",
   "tertiary",
   "critical",
@@ -8,7 +9,7 @@ export const buttonVariantValues = [
   "critical-secondary",
 ] as const;
 
-export const buttonSizeValues = ["micro", "xs", "sm", "md", "lg", "xl"] as const;
+export const buttonSizeValues = ["micro", "xs", "sm", "md", "lg", "xl", "hero"] as const;
 export const buttonElementValues = ["button", "a", "RouterLink"] as const;
 export const buttonTypeValues = ["button", "submit", "reset"] as const;
 

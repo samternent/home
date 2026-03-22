@@ -4,6 +4,7 @@ export const cardVariantValues = [
   "outline",
   "elevated",
   "panel",
+  "showcase",
 ] as const;
 export const cardPaddingValues = ["sm", "md", "lg"] as const;
 

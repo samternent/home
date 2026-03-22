@@ -12,6 +12,7 @@ import { errorMiddleware } from "./services/http/error-middleware.mjs";
 import {
   createAuthRateLimit,
   createCommandRateLimit,
+  createPixpaxRedeemRateLimit,
 } from "./services/http/rate-limit.mjs";
 import { getPlatformDbStatus } from "./services/platform-db/index.mjs";
 
@@ -99,6 +100,7 @@ export function createApp() {
     }
     jsonBodyParser(req, res, next);
   });
+  app.use("/v1/pixpax/v2/designated/redeem", createPixpaxRedeemRateLimit());
 
   app.use((req, res, next) => {
     res.setHeader("Content-Security-Policy", "default-src 'self';");

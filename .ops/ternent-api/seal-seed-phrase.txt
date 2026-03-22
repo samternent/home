@@ -1,0 +1,6 @@
+Seal seed phrase backup
+
+Mnemonic:
+area message vast rib need monster outside cherry estate dolphin sight fade seat surface napkin level skirt vessel mammal century case receive rack cook
+
+Store this file securely. Anyone with this recovery material can recreate the signer.

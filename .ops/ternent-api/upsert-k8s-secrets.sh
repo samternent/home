@@ -97,6 +97,8 @@ echo "runtime env secret upsert complete"
 # -----------------------------------------------------------------------------
 patch_key "$NAMESPACE" "ternent-api-pixpax-content" "pix-pax-override-code-secret" "${PIX_PAX_OVERRIDE_CODE_SECRET:-}"
 patch_key "$NAMESPACE" "ternent-api-pixpax-content" "pix-pax-admin-token" "${PIX_PAX_ADMIN_TOKEN:-}"
+patch_key "$NAMESPACE" "ternent-api-pixpax-content" "pix-pax-public-app-url" "${PIX_PAX_PUBLIC_APP_URL:-}"
+patch_key "$NAMESPACE" "ternent-api-pixpax-content" "pix-pax-v2-available-collections" "${PIX_PAX_V2_AVAILABLE_COLLECTIONS:-${PIX_PAX_V2_COLLECTION_ALLOWLIST:-}}"
 patch_key "$NAMESPACE" "ternent-api-pixpax-content" "ledger-content-prefix" "${LEDGER_CONTENT_PREFIX:-}"
 patch_key "$NAMESPACE" "ternent-api-pixpax-content" "ledger-content-bucket" "${LEDGER_CONTENT_BUCKET:-}"
 

@@ -5,6 +5,7 @@ const appsToPublish = [
   "../apps/concord",
   "../apps/concord-demo",
   "../apps/ledger",
+  "../apps/pixpax",
   "../apps/seal",
   "../apps/ternent-api",
   "../apps/ternentdotdev",

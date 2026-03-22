@@ -4,6 +4,7 @@
   "description": "Deterministic artifact signing for Seal",
   "license": "ISC",
   "type": "module",
+  "sideEffects": false,
   "files": [
     "bin",
     "dist",

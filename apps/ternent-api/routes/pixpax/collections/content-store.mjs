@@ -274,6 +274,37 @@ export class CollectionContentStore {
     return buildCollectionScopedObjectKey(this.prefix, "__codes", `${trimSegment(codeId)}.json`);
   }
 
+  buildGlobalCodesPrefix() {
+    return `${[this.prefix, "__codes"].map((part) => trimSegment(part)).filter(Boolean).join("/")}/`;
+  }
+
+  buildGlobalCodeSummaryKey(codeId) {
+    return buildCollectionScopedObjectKey(
+      this.prefix,
+      "__code-summaries",
+      `${trimSegment(codeId)}.json`
+    );
+  }
+
+  buildGlobalSwapRecordKey(transferId) {
+    return buildCollectionScopedObjectKey(
+      this.prefix,
+      "__swaps",
+      `${trimSegment(transferId)}.json`
+    );
+  }
+
+  buildGlobalSwapsPrefix() {
+    return `${[this.prefix, "__swaps"].map((part) => trimSegment(part)).filter(Boolean).join("/")}/`;
+  }
+
+  buildGlobalCodeSummariesPrefix() {
+    return `${[this.prefix, "__code-summaries"]
+      .map((part) => trimSegment(part))
+      .filter(Boolean)
+      .join("/")}/`;
+  }
+
   buildEventsPrefix(collectionId, version) {
     return `${buildObjectKey(this.prefix, collectionId, version, "events")}/`;
   }
@@ -408,6 +439,97 @@ export class CollectionContentStore {
   async getGlobalCodeRecord(codeId) {
     const key = this.buildGlobalCodeRecordKey(codeId);
     return getJson(this.gateway, this.bucket, key);
+  }
+
+  async listGlobalCodeRecords(options = {}) {
+    if (typeof this.gateway.listObjects !== "function") {
+      throw new Error("Collection content gateway does not support listObjects.");
+    }
+    const prefix = this.buildGlobalCodesPrefix();
+    const listed = await this.gateway.listObjects({
+      bucket: this.bucket,
+      prefix,
+      cursor: options.cursor || null,
+      maxKeys: options.limit || 100,
+    });
+    const records = [];
+    for (const key of listed.keys || []) {
+      records.push(await getJson(this.gateway, this.bucket, key));
+    }
+    return {
+      records,
+      nextCursor: listed?.nextCursor || null,
+    };
+  }
+
+  async putGlobalCodeSummary(codeId, payload) {
+    const key = this.buildGlobalCodeSummaryKey(codeId);
+    await putJson(this.gateway, this.bucket, key, payload);
+    return { bucket: this.bucket, key };
+  }
+
+  async getGlobalCodeSummary(codeId) {
+    const key = this.buildGlobalCodeSummaryKey(codeId);
+    return getJson(this.gateway, this.bucket, key);
+  }
+
+  async listGlobalCodeSummaries(options = {}) {
+    if (typeof this.gateway.listObjects !== "function") {
+      throw new Error("Collection content gateway does not support listObjects.");
+    }
+    const prefix = this.buildGlobalCodeSummariesPrefix();
+    const listed = await this.gateway.listObjects({
+      bucket: this.bucket,
+      prefix,
+      cursor: options.cursor || null,
+      maxKeys: options.limit || 100,
+    });
+    const summaries = [];
+    for (const key of listed.keys || []) {
+      summaries.push(await getJson(this.gateway, this.bucket, key));
+    }
+    return {
+      summaries,
+      nextCursor: listed?.nextCursor || null,
+    };
+  }
+
+  async putGlobalSwapRecordIfAbsent(transferId, payload) {
+    const key = this.buildGlobalSwapRecordKey(transferId);
+    const result = await putJsonIfAbsent(this.gateway, this.bucket, key, payload);
+    return { bucket: this.bucket, key, created: result.created };
+  }
+
+  async putGlobalSwapRecord(transferId, payload) {
+    const key = this.buildGlobalSwapRecordKey(transferId);
+    await putJson(this.gateway, this.bucket, key, payload);
+    return { bucket: this.bucket, key };
+  }
+
+  async getGlobalSwapRecord(transferId) {
+    const key = this.buildGlobalSwapRecordKey(transferId);
+    return getJson(this.gateway, this.bucket, key);
+  }
+
+  async listGlobalSwapRecords(options = {}) {
+    if (typeof this.gateway.listObjects !== "function") {
+      throw new Error("Collection content gateway does not support listObjects.");
+    }
+    const prefix = this.buildGlobalSwapsPrefix();
+    const listed = await this.gateway.listObjects({
+      bucket: this.bucket,
+      prefix,
+      cursor: options.cursor || null,
+      maxKeys: options.limit || 100,
+    });
+    const records = [];
+    for (const key of listed.keys || []) {
+      records.push(await getJson(this.gateway, this.bucket, key));
+    }
+    return {
+      records,
+      nextCursor: listed?.nextCursor || null,
+    };
   }
 
   async putEventIfAbsent(collectionId, version, event) {

@@ -23,6 +23,11 @@ export const buttonVariantClasses: Record<ButtonVariant, string> = {
     "hover:bg-[var(--ui-primary-hover)] active:bg-[var(--ui-primary-active)] " +
     "hover:shadow-[var(--ui-glow-primary)]",
 
+  accent:
+    "bg-[var(--ui-accent)] text-[var(--ui-on-accent)] " +
+    "hover:bg-[var(--ui-accent-hover)] active:bg-[var(--ui-accent-active)] " +
+    "hover:shadow-[var(--ui-glow-accent)]",
+
   secondary:
     "bg-[var(--ui-tonal-secondary)] text-[var(--ui-fg)] " +
     "hover:bg-[var(--ui-tonal-secondary-hover)]",
@@ -58,6 +63,7 @@ export const buttonSizeClasses: Record<ButtonSize, string> = {
   md: "h-10 px-4 text-sm",
   lg: "h-11 px-5 text-base",
   xl: "h-12 px-6 text-base",
+  hero: "h-16 px-8 text-base uppercase tracking-[0.14em]",
 };
 
 export const buttonLabelClass = "inline-flex items-center gap-2";

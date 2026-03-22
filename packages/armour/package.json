@@ -4,6 +4,7 @@
   "description": "Opinionated identity-aware encryption bridge over @ternent/rage",
   "license": "ISC",
   "type": "module",
+  "sideEffects": false,
   "files": [
     "dist",
     "README.md",

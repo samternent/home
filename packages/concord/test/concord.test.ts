@@ -606,6 +606,53 @@ describe("@ternent/concord", () => {
     );
   });
 
+  it("preserves persisted storage across destroy and reload", async () => {
+    const identity = await createIdentity("2026-03-18T12:24:00.000Z");
+    const storage = createMemoryStorage();
+    const first = await createConcordApp({
+      identity,
+      storage,
+      plugins: [createTodoPlugin()],
+    });
+
+    await first.load();
+    await first.command("todo.create-item", {
+      id: "todo-persisted",
+      title: "Still here after destroy",
+    });
+    await first.commit({
+      metadata: {
+        message: "Persist before destroy",
+      },
+    });
+
+    expect(storage.snapshot?.container).not.toBeNull();
+
+    await first.destroy();
+
+    expect(storage.snapshot?.container).not.toBeNull();
+
+    const second = await createConcordApp({
+      identity,
+      storage,
+      plugins: [createTodoPlugin()],
+    });
+
+    await second.load();
+
+    expect(
+      second.getReplayState<{
+        items: Record<string, { id: string; title: string; completed: boolean }>;
+      }>("todo").items,
+    ).toEqual({
+      "todo-persisted": {
+        id: "todo-persisted",
+        title: "Still here after destroy",
+        completed: false,
+      },
+    });
+  });
+
   it("fails fast when internal ledger requirements are missing", async () => {
     await expect(
       createConcordApp({

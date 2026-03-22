@@ -12,6 +12,11 @@ export const cardVariantClasses: Record<CardVariant, string> = {
     "border-[var(--ui-border)] bg-[var(--ui-surface)] shadow-[var(--ui-shadow-md)]",
   panel:
     "border-[var(--ui-border)] bg-[var(--ui-tonal-secondary)] shadow-[var(--ui-shadow-md)]",
+  showcase:
+    "border-[color-mix(in_srgb,var(--ui-border)_74%,var(--ui-primary-muted))] " +
+    "bg-[linear-gradient(180deg,color-mix(in_srgb,var(--ui-primary)_12%,var(--ui-tonal-secondary))_0%,color-mix(in_srgb,var(--ui-bg)_84%,var(--ui-tonal-secondary))_100%)] " +
+    "shadow-[0_18px_48px_color-mix(in_srgb,var(--ui-primary)_14%,transparent),inset_0_1px_0_color-mix(in_srgb,var(--ui-fg)_8%,transparent)] " +
+    "backdrop-blur-sm",
 };
 
 export const cardPaddingClasses: Record<CardPadding, string> = {

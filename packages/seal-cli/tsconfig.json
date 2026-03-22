@@ -5,12 +5,7 @@
     "module": "ESNext",
     "moduleResolution": "Node",
     "lib": ["ES2022", "DOM"],
-    "types": ["vitest/globals"],
-    "baseUrl": ".",
-    "paths": {
-      "@ternent/identity": ["../identity-v2/src/index.ts"],
-      "ternent-utils": ["../utils/src/index.ts"]
-    }
+    "types": ["vitest/globals"]
   },
   "include": ["src/**/*.ts", "test/**/*.ts", "vite.config.ts"],
   "exclude": ["dist", "node_modules"]

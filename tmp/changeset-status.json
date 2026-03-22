@@ -1,0 +1,187 @@
+{
+  "changesets": [
+    {
+      "releases": [
+        {
+          "name": "ternent-api",
+          "type": "patch"
+        },
+        {
+          "name": "@ternent/pixpax-core",
+          "type": "patch"
+        },
+        {
+          "name": "@ternent/pixpax-issuer",
+          "type": "patch"
+        },
+        {
+          "name": "@ternent/pixpax-concord",
+          "type": "patch"
+        },
+        {
+          "name": "ternent-utils",
+          "type": "patch"
+        }
+      ],
+      "summary": "Prepare the PixPax beta release with v2 redeem and swaps flow support, local auth fixes, and unique-card pack issuance.",
+      "id": "bright-sheep-jog"
+    },
+    {
+      "releases": [
+        {
+          "name": "concord",
+          "type": "patch"
+        }
+      ],
+      "summary": "Update copy",
+      "id": "dry-countries-stare"
+    }
+  ],
+  "releases": [
+    {
+      "name": "ternent-api",
+      "type": "patch",
+      "oldVersion": "0.2.33",
+      "changesets": [
+        "bright-sheep-jog"
+      ],
+      "newVersion": "0.2.34"
+    },
+    {
+      "name": "@ternent/pixpax-core",
+      "type": "patch",
+      "oldVersion": "0.1.0",
+      "changesets": [
+        "bright-sheep-jog"
+      ],
+      "newVersion": "0.1.1"
+    },
+    {
+      "name": "@ternent/pixpax-issuer",
+      "type": "patch",
+      "oldVersion": "0.1.0",
+      "changesets": [
+        "bright-sheep-jog"
+      ],
+      "newVersion": "0.1.1"
+    },
+    {
+      "name": "@ternent/pixpax-concord",
+      "type": "patch",
+      "oldVersion": "0.1.0",
+      "changesets": [
+        "bright-sheep-jog"
+      ],
+      "newVersion": "0.1.1"
+    },
+    {
+      "name": "ternent-utils",
+      "type": "patch",
+      "oldVersion": "1.1.1",
+      "changesets": [
+        "bright-sheep-jog"
+      ],
+      "newVersion": "1.1.2"
+    },
+    {
+      "name": "concord",
+      "type": "patch",
+      "oldVersion": "0.4.15",
+      "changesets": [
+        "dry-countries-stare"
+      ],
+      "newVersion": "0.4.16"
+    },
+    {
+      "name": "pixpax",
+      "type": "patch",
+      "oldVersion": "0.0.14",
+      "changesets": [],
+      "newVersion": "0.0.15"
+    },
+    {
+      "name": "__APP_ID__",
+      "type": "patch",
+      "oldVersion": "0.0.14",
+      "changesets": [],
+      "newVersion": "0.0.15"
+    },
+    {
+      "name": "armour",
+      "type": "patch",
+      "oldVersion": "0.0.34",
+      "changesets": [],
+      "newVersion": "0.0.35"
+    },
+    {
+      "name": "concord-demo",
+      "type": "patch",
+      "oldVersion": "0.3.77",
+      "changesets": [],
+      "newVersion": "0.3.78"
+    },
+    {
+      "name": "ledger",
+      "type": "patch",
+      "oldVersion": "0.0.34",
+      "changesets": [],
+      "newVersion": "0.0.35"
+    },
+    {
+      "name": "seal",
+      "type": "patch",
+      "oldVersion": "0.0.44",
+      "changesets": [],
+      "newVersion": "0.0.45"
+    },
+    {
+      "name": "ternentdotdev",
+      "type": "patch",
+      "oldVersion": "0.4.30",
+      "changesets": [],
+      "newVersion": "0.4.31"
+    },
+    {
+      "name": "ternent-identity",
+      "type": "patch",
+      "oldVersion": "0.0.15",
+      "changesets": [],
+      "newVersion": "0.0.16"
+    },
+    {
+      "name": "ternent-ledger",
+      "type": "patch",
+      "oldVersion": "1.0.29",
+      "changesets": [],
+      "newVersion": "1.0.30"
+    },
+    {
+      "name": "@ternent/seal-cli",
+      "type": "patch",
+      "oldVersion": "0.3.7",
+      "changesets": [],
+      "newVersion": "0.3.8"
+    },
+    {
+      "name": "ternent-ledger-vue",
+      "type": "patch",
+      "oldVersion": "0.1.8",
+      "changesets": [],
+      "newVersion": "0.1.9"
+    },
+    {
+      "name": "@ternent/concord",
+      "type": "patch",
+      "oldVersion": "0.2.6",
+      "changesets": [],
+      "newVersion": "0.2.7"
+    },
+    {
+      "name": "@ternent/ledger",
+      "type": "patch",
+      "oldVersion": "0.1.5",
+      "changesets": [],
+      "newVersion": "0.1.6"
+    }
+  ]
+}

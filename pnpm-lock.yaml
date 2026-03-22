@@ -390,6 +390,100 @@ importers:
         specifier: ^7.4.0
         version: 7.4.0
 
+  apps/pixpax:
+    dependencies:
+      '@better-auth/passkey':
+        specifier: ^1.4.18
+        version: 1.4.18(@better-auth/core@1.4.18)(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-auth@1.4.18)(better-call@1.1.8)(nanostores@1.1.0)
+      '@tailwindcss/vite':
+        specifier: ^4.1.18
+        version: 4.1.18(rolldown-vite@7.2.5)
+      '@ternent/concord':
+        specifier: workspace:*
+        version: link:../../packages/concord
+      '@ternent/identity':
+        specifier: workspace:*
+        version: link:../../packages/identity-v2
+      '@ternent/pixpax-concord':
+        specifier: workspace:*
+        version: link:../../packages/pixpax-concord
+      '@ternent/pixpax-core':
+        specifier: workspace:*
+        version: link:../../packages/pixpax-core
+      '@ternent/pixpax-issuer':
+        specifier: workspace:*
+        version: link:../../packages/pixpax-issuer
+      '@ternent/seal-cli':
+        specifier: workspace:*
+        version: link:../../packages/seal-cli
+      '@vueuse/core':
+        specifier: ^10.11.1
+        version: 10.11.1(vue@3.5.26)
+      better-auth:
+        specifier: ^1.4.18
+        version: 1.4.18(vitest@1.6.0)(vue@3.5.26)
+      html-to-image:
+        specifier: ^1.11.13
+        version: 1.11.13
+      jszip:
+        specifier: ^3.10.1
+        version: 3.10.1
+      ternent-identity:
+        specifier: workspace:*
+        version: link:../../packages/identity
+      ternent-ui:
+        specifier: workspace:*
+        version: link:../../packages/ternent-ui
+      ternent-utils:
+        specifier: workspace:*
+        version: link:../../packages/utils
+      vue:
+        specifier: ^3.5.24
+        version: 3.5.26(typescript@5.9.3)
+      vue-router:
+        specifier: ^4.4.3
+        version: 4.4.3(vue@3.5.26)
+    devDependencies:
+      '@lhci/cli':
+        specifier: ^0.14.0
+        version: 0.14.0(encoding@0.1.13)
+      '@playwright/test':
+        specifier: ^1.46.1
+        version: 1.58.2
+      '@vitejs/plugin-vue':
+        specifier: ^6.0.1
+        version: 6.0.3(rolldown-vite@7.2.5)(vue@3.5.26)
+      '@vitest/coverage-v8':
+        specifier: ^1.6.0
+        version: 1.6.1(vitest@1.6.0)
+      '@vue/test-utils':
+        specifier: ^2.4.6
+        version: 2.4.6
+      jsdom:
+        specifier: ^24.1.1
+        version: 24.1.3
+      tailwindcss:
+        specifier: ^4.1.18
+        version: 4.1.18
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+      vite:
+        specifier: npm:rolldown-vite@7.2.5
+        version: /rolldown-vite@7.2.5(@types/node@24.10.4)(yaml@2.5.0)
+      vite-plugin-pwa:
+        specifier: ^0.21.1
+        version: 0.21.2(rolldown-vite@7.2.5)(workbox-build@7.4.0)(workbox-window@7.4.0)
+      vite-ssg:
+        specifier: ^28.2.2
+        version: 28.2.2(rolldown-vite@7.2.5)(unhead@2.1.1)(vue-router@4.4.3)(vue@3.5.26)
+      vitest:
+        specifier: ^1.6.0
+        version: 1.6.0(jsdom@24.1.3)
+      workbox-window:
+        specifier: ^7.4.0
+        version: 7.4.0
+
   apps/seal:
     dependencies:
       '@tailwindcss/vite':
@@ -468,6 +562,15 @@ importers:
       '@ternent/concord-protocol':
         specifier: workspace:^
         version: link:../../packages/concord-protocol
+      '@ternent/identity':
+        specifier: workspace:*
+        version: link:../../packages/identity-v2
+      '@ternent/pixpax-core':
+        specifier: workspace:*
+        version: link:../../packages/pixpax-core
+      '@ternent/pixpax-issuer':
+        specifier: workspace:*
+        version: link:../../packages/pixpax-issuer
       axios:
         specifier: ^0.27.2
         version: 0.27.2
@@ -947,6 +1050,93 @@ importers:
       '@ternent/seal-cli':
         specifier: workspace:*
         version: link:../seal-cli
+    devDependencies:
+      '@types/node':
+        specifier: ^24.3.0
+        version: 24.10.4
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+      vite:
+        specifier: ^4.5.3
+        version: 4.5.3(@types/node@24.10.4)
+      vite-plugin-dts:
+        specifier: ^1.7.3
+        version: 1.7.3(@types/node@24.10.4)(vite@4.5.3)
+      vitest:
+        specifier: ^1.6.0
+        version: 1.6.0(@types/node@24.10.4)
+
+  packages/pixpax-concord:
+    dependencies:
+      '@ternent/concord':
+        specifier: workspace:*
+        version: link:../concord
+      '@ternent/pixpax-core':
+        specifier: workspace:*
+        version: link:../pixpax-core
+      '@ternent/pixpax-issuer':
+        specifier: workspace:*
+        version: link:../pixpax-issuer
+      ternent-utils:
+        specifier: workspace:*
+        version: link:../utils
+    devDependencies:
+      '@ternent/identity':
+        specifier: workspace:*
+        version: link:../identity-v2
+      '@types/node':
+        specifier: ^24.3.0
+        version: 24.10.4
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+      vite:
+        specifier: ^4.5.3
+        version: 4.5.3(@types/node@24.10.4)
+      vite-plugin-dts:
+        specifier: ^1.7.3
+        version: 1.7.3(@types/node@24.10.4)(vite@4.5.3)
+      vitest:
+        specifier: ^1.6.0
+        version: 1.6.0(@types/node@24.10.4)
+
+  packages/pixpax-core:
+    dependencies:
+      ternent-utils:
+        specifier: workspace:*
+        version: link:../utils
+    devDependencies:
+      '@types/node':
+        specifier: ^24.3.0
+        version: 24.10.4
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+      vite:
+        specifier: ^4.5.3
+        version: 4.5.3(@types/node@24.10.4)
+      vite-plugin-dts:
+        specifier: ^1.7.3
+        version: 1.7.3(@types/node@24.10.4)(vite@4.5.3)
+      vitest:
+        specifier: ^1.6.0
+        version: 1.6.0(@types/node@24.10.4)
+
+  packages/pixpax-issuer:
+    dependencies:
+      '@ternent/identity':
+        specifier: workspace:*
+        version: link:../identity-v2
+      '@ternent/pixpax-core':
+        specifier: workspace:*
+        version: link:../pixpax-core
+      '@ternent/seal-cli':
+        specifier: workspace:*
+        version: link:../seal-cli
+      ternent-utils:
+        specifier: workspace:*
+        version: link:../utils
     devDependencies:
       '@types/node':
         specifier: ^24.3.0
@@ -9442,6 +9632,10 @@ packages:
     requiresBuild: true
     dev: false
 
+  /core-util-is@1.0.3:
+    resolution: {integrity: sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ==}
+    dev: false
+
   /cors@2.8.5:
     resolution: {integrity: sha512-KIHbLJqu73RGr/hnbrO9uBeixNGuvSQjul/jdFvS/KFSIH1hWVd1ng7zOHx+YrEfInLG7q4n6GHQ9cDtxv/P6g==}
     engines: {node: '>= 0.10'}
@@ -11502,6 +11696,10 @@ packages:
     engines: {node: '>=8'}
     dev: false
 
+  /html-to-image@1.11.13:
+    resolution: {integrity: sha512-cuOPoI7WApyhBElTTb9oqsawRvZ0rHhaHwghRLlTuffoD1B2aDemlCruLeZrUIIdvG7gs9xeELEPm6PhuASqrg==}
+    dev: false
+
   /html5parser@2.0.2:
     resolution: {integrity: sha512-L0y+IdTVxHsovmye8MBtFgBvWZnq1C9WnI/SmJszxoQjmUH1psX2uzDk21O5k5et6udxdGjwxkbmT9eVRoG05w==}
     dependencies:
@@ -11671,6 +11869,10 @@ packages:
   /image-ssim@0.2.0:
     resolution: {integrity: sha512-W7+sO6/yhxy83L0G7xR8YAc5Z5QFtYEXXRV6EaE8tuYBZJnA3gVgp3q7X7muhLZVodeb9UfvjSbwt9VJwjIYAg==}
     dev: true
+
+  /immediate@3.0.6:
+    resolution: {integrity: sha512-XXOFtyqDjNDAQxVfYxuF7g9Il/IbWmmlQg2MYKOH8ExIT1qg6xc4zyS3HaEEATgs1btfzxq15ciUiY7gjSXRGQ==}
+    dev: false
 
   /immutable@4.3.7:
     resolution: {integrity: sha512-1hqclzwYwjRDFLjcFxOM5AYkkG0rpFPpr1RLPMEuGczoS7YA8gLhy8SWXYRAA/XwfEHpfo3cw5JGioS32fnMRw==}
@@ -12021,6 +12223,10 @@ packages:
       is-inside-container: 1.0.0
     dev: false
 
+  /isarray@1.0.0:
+    resolution: {integrity: sha512-VLghIWNM6ELQzo7zwmcg0NmTVyWKYjvIeM83yjp0wRDTmUnrM678fQbcKBo6n2CJEF0szoG//ytg+TKla89ALQ==}
+    dev: false
+
   /isarray@2.0.5:
     resolution: {integrity: sha512-xHjhDr3cNBK0BzdUJSPXZntQUx/mwMS5Rw4A7lPJ90XGAO6ISP/ePDNuo0vhqOZU+UD5JoodwCAAoZQd3FeAKw==}
     dev: true
@@ -12336,6 +12542,15 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
+  /jszip@3.10.1:
+    resolution: {integrity: sha512-xXDvecyTpGLrqFrvkrUSoxxfJI5AH7U8zxxtVclpsUtMCq4JQ290LY8AW5c7Ggnr/Y/oK+bQMbqK2qmtk3pN4g==}
+    dependencies:
+      lie: 3.3.0
+      pako: 1.0.11
+      readable-stream: 2.3.8
+      setimmediate: 1.0.5
+    dev: false
+
   /katex@0.16.11:
     resolution: {integrity: sha512-RQrI8rlHY92OLf3rho/Ts8i/XvjgguEjOkO1BEXcU3N8BqPpSzBNwV/G0Ukr+P/l3ivvJUE/Fa/CwbS6HesGNQ==}
     hasBin: true
@@ -12394,6 +12609,12 @@ packages:
     resolution: {integrity: sha512-qsda+H8jTaUaN/x5vzW2rzc+8Rw4TAQ/4KjB46IwK5VH+IlVeeeje/EoZRpiXvIqjFgK84QffqPztGI3VBLG1A==}
     engines: {node: '>=6'}
     dev: true
+
+  /lie@3.3.0:
+    resolution: {integrity: sha512-UaiMJzeWRlEujzAuw5LokY1L5ecNQYZKfmyZ9L7wDHb/p5etKaxXhohBcrw0EYby+G/NA52vRSN4N39dxHAIwQ==}
+    dependencies:
+      immediate: 3.0.6
+    dev: false
 
   /lighthouse-logger@1.2.0:
     resolution: {integrity: sha512-wzUvdIeJZhRsG6gpZfmSCfysaxNEr43i+QT+Hie94wvHDKFLi4n7C2GqZ4sTC+PH5b5iktmXJvU87rWvhP3lHw==}
@@ -14341,6 +14562,10 @@ packages:
     engines: {node: '>=6'}
     dev: false
 
+  /process-nextick-args@2.0.1:
+    resolution: {integrity: sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==}
+    dev: false
+
   /process@0.11.10:
     resolution: {integrity: sha512-cdGef/drWFoydD1JsMzuFf8100nZl+GT+yacc2bEced5f9Rjk4z+WtFUTBu9PhOi9j/jfmBPu0mMEY4wIdAF8A==}
     engines: {node: '>= 0.6.0'}
@@ -14548,6 +14773,18 @@ packages:
       pify: 4.0.1
       strip-bom: 3.0.0
     dev: true
+
+  /readable-stream@2.3.8:
+    resolution: {integrity: sha512-8p0AUk4XODgIewSi0l8Epjs+EVnWiK7NoDIEGU0HhE7+ZyY8D1IMY7odu5lRrFXGg71L15KG8QrPmum45RTtdA==}
+    dependencies:
+      core-util-is: 1.0.3
+      inherits: 2.0.4
+      isarray: 1.0.0
+      process-nextick-args: 2.0.1
+      safe-buffer: 5.1.2
+      string_decoder: 1.1.1
+      util-deprecate: 1.0.2
+    dev: false
 
   /readable-stream@4.5.2:
     resolution: {integrity: sha512-yjavECdqeZ3GLXNgRXgeQEdz9fvDDkNKyHnbHRFtOr7/LcfgBcmct7t/ET+HaCTqfh06OzoAxrkN/IfjJBVe+g==}
@@ -15089,6 +15326,10 @@ packages:
       has-property-descriptors: 1.0.2
     dev: true
 
+  /setimmediate@1.0.5:
+    resolution: {integrity: sha512-MATJdZp8sLqDl/68LfQmbP8zKPLQNV6BIZoIgrscFDQ+RsvK/BxeDQOgyxKKoh0y/8h3BqVFnCqQ/gd+reiIXA==}
+    dev: false
+
   /setprototypeof@1.2.0:
     resolution: {integrity: sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw==}
 
@@ -15392,6 +15633,12 @@ packages:
       define-properties: 1.2.1
       es-object-atoms: 1.0.0
     dev: true
+
+  /string_decoder@1.1.1:
+    resolution: {integrity: sha512-n/ShnvDi6FHbbVfviro+WojiFzv+s8MPMHBczVePfUpDJLwoLT0ht1l4YwBCbi8pJAveEEdnkHyPyTP/mzRfwg==}
+    dependencies:
+      safe-buffer: 5.1.2
+    dev: false
 
   /string_decoder@1.3.0:
     resolution: {integrity: sha512-hkRX8U1WjJFd8LsDJ2yQ/wWWxaopEsABU1XfkM8A+j0+85JAGppt16cr1Whg6KIbb4okU6Mql6BOj+uup/wKeA==}

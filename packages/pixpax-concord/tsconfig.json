@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2020", "DOM"],
+    "types": ["node", "vitest/globals"],
+    "baseUrl": ".",
+    "paths": {
+      "@ternent/concord": ["src/shims/concord.d.ts"],
+      "@ternent/ledger": ["../ledger-v2/dist/index.d.ts"],
+      "@ternent/pixpax-core": ["../pixpax-core/dist/index.d.ts"],
+      "@ternent/pixpax-issuer": ["src/shims/pixpax-issuer.d.ts"]
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "test/**/*.ts", "vite.config.ts"],
+  "exclude": ["dist", "node_modules"]
+}

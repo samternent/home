@@ -150,6 +150,18 @@ spec:
                 secretKeyRef:
                   name: ternent-api-pixpax-content
                   key: pix-pax-admin-token
+            - name: PIX_PAX_PUBLIC_APP_URL
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-pixpax-content
+                  key: pix-pax-public-app-url
+                  optional: true
+            - name: PIX_PAX_V2_AVAILABLE_COLLECTIONS
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-pixpax-content
+                  key: pix-pax-v2-available-collections
+                  optional: true
             - name: LEDGER_CONTENT_PREFIX
               valueFrom:
                 secretKeyRef:

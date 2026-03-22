@@ -1,0 +1,44 @@
+{
+  "name": "@ternent/pixpax-concord",
+  "version": "0.1.0",
+  "description": "PixPax v2 Concord plugin, commands, and replay state",
+  "license": "ISC",
+  "type": "module",
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "README.md",
+    "SPEC.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "vite build",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@ternent/concord": "workspace:*",
+    "@ternent/pixpax-core": "workspace:*",
+    "@ternent/pixpax-issuer": "workspace:*",
+    "ternent-utils": "workspace:*"
+  },
+  "devDependencies": {
+    "@ternent/identity": "workspace:*",
+    "@types/node": "^24.3.0",
+    "typescript": "^5.6.3",
+    "vite": "^4.5.3",
+    "vite-plugin-dts": "^1.7.3",
+    "vitest": "^1.6.0"
+  }
+}

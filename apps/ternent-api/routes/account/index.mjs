@@ -32,7 +32,7 @@ import { createIdentityBackupRepo } from "../../services/account/identity-backup
 const DEFAULT_COLLECTION_ID = "primary";
 const IDENTITY_BACKUP_MAX_ENVELOPE_BYTES = 128 * 1024;
 const IDENTITY_BACKUP_FORMAT = "pixpax-identity-backup-encrypted";
-const IDENTITY_BACKUP_VERSION = "1.0";
+const IDENTITY_BACKUP_VERSIONS = new Set(["1.0", "2.0"]);
 const IDENTITY_BACKUP_KDF_NAME = "PBKDF2-SHA256";
 const IDENTITY_BACKUP_KDF_ITERATIONS = 310000;
 const IDENTITY_BACKUP_CIPHER_NAME = "AES-256-GCM";
@@ -119,8 +119,8 @@ function validateEncryptedIdentityBackupEnvelope(body = {}) {
   if (metadata.format !== IDENTITY_BACKUP_FORMAT) {
     throw new Error(`envelope.format must be ${IDENTITY_BACKUP_FORMAT}.`);
   }
-  if (metadata.version !== IDENTITY_BACKUP_VERSION) {
-    throw new Error(`envelope.version must be ${IDENTITY_BACKUP_VERSION}.`);
+  if (!IDENTITY_BACKUP_VERSIONS.has(metadata.version)) {
+    throw new Error(`envelope.version must be one of ${Array.from(IDENTITY_BACKUP_VERSIONS).join(", ")}.`);
   }
   if (!metadata.accountId || !metadata.managedUserId || !metadata.profileId) {
     throw new Error("envelope account/profile identifiers are required.");
@@ -178,6 +178,9 @@ function validateEncryptedIdentityBackupEnvelope(body = {}) {
     !aadVersion
   ) {
     throw new Error("envelope.crypto.aad is missing required fields.");
+  }
+  if (!IDENTITY_BACKUP_VERSIONS.has(aadVersion)) {
+    throw new Error(`envelope.crypto.aad.version must be one of ${Array.from(IDENTITY_BACKUP_VERSIONS).join(", ")}.`);
   }
 
   return {

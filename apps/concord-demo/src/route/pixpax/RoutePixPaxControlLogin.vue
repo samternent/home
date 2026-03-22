@@ -18,6 +18,7 @@ const controlRouteNames = new Set([
   "pixpax-control-creator",
   "pixpax-control-analytics",
   "pixpax-control-admin",
+  "pixpax-control-admin-v2",
 ]);
 
 function getDefaultRedirectPath() {
@@ -49,6 +50,12 @@ function resolvePostLoginPath() {
   }
   if (
     targetName === "pixpax-control-admin" &&
+    !auth.hasPermission("pixpax.admin.manage")
+  ) {
+    return router.resolve({ name: "pixpax-control-creator" }).fullPath;
+  }
+  if (
+    targetName === "pixpax-control-admin-v2" &&
     !auth.hasPermission("pixpax.admin.manage")
   ) {
     return router.resolve({ name: "pixpax-control-creator" }).fullPath;

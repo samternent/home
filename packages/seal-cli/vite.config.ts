@@ -1,13 +1,12 @@
-import { builtinModules } from "node:module";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite";
+import { createPackageExternal, resolvePackageDir } from "../../scripts/vite/package-lib-config";
 
 const configDir = dirname(fileURLToPath(import.meta.url));
-const external = new Set([
-  ...builtinModules,
-  ...builtinModules.map((name) => `node:${name}`),
-]);
+const external = createPackageExternal(resolvePackageDir(import.meta.url), {
+  includeNodeBuiltins: true,
+});
 
 export default defineConfig({
   build: {
@@ -26,7 +25,7 @@ export default defineConfig({
         crypto: resolve(configDir, "src/crypto.ts"),
         errors: resolve(configDir, "src/errors.ts"),
       },
-      external: Array.from(external),
+      external,
       output: {
         format: "es",
         entryFileNames: "[name].js",

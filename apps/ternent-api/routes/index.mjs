@@ -5,6 +5,7 @@ import billingRoutes from "./billing/index.mjs";
 import pixbookRoutes from "../modules/pixbooks/routes.mjs";
 import pixpaxCollectionRoutes from "./pixpax/collections/index.mjs";
 import pixpaxIssuerRoutes from "./pixpax/issuers/index.mjs";
+import pixpaxV2Routes from "./pixpax/v2/index.mjs";
 import stickerbookRoutes from "./stickerbook/index.mjs";
 
 const router = express.Router();
@@ -21,6 +22,7 @@ accountRoutes(router);
 stickerbookRoutes(router);
 pixpaxCollectionRoutes(router);
 pixpaxIssuerRoutes(router);
+pixpaxV2Routes(router);
 // createMediaServer();
 
 export default router;

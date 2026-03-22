@@ -21,7 +21,7 @@
   min-height: 100vh;
   overflow-x: clip;
   overflow-y: visible;
-  background: radial-gradient(
+  /* background: radial-gradient(
       circle at top center,
       color-mix(in srgb, var(--ui-primary-muted) 70%, transparent),
       transparent 42%
@@ -31,7 +31,7 @@
       color-mix(in srgb, var(--ui-tonal-tertiary) 72%, transparent),
       transparent 34%
     ),
-    var(--ui-bg);
+    var(--ui-bg); */
   color: var(--ui-fg);
   isolation: isolate;
 }
@@ -39,6 +39,11 @@
 .ui-page-surface__content {
   position: relative;
   z-index: 1;
+  background: color-mix(in srgb, var(--ui-bg) 35%, transparent);
+  box-shadow: 0 20px 50px rgba(8, 10, 24, 0.14),
+    inset 0 24px 48px color-mix(in srgb, var(--ui-bg) 26%, transparent),
+    inset 0 -24px 48px color-mix(in srgb, var(--ui-bg) 22%, transparent);
+  backdrop-filter: blur(16px) saturate(120%);
 }
 
 .ui-page-surface__mesh,

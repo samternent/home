@@ -1374,3 +1374,112 @@ export function putCardJson(
     }
   );
 }
+
+export type PixPaxV2MetaResponse = {
+  ok: boolean;
+  version: string;
+  invariants: string[];
+  capabilities: {
+    deterministicPreview: boolean;
+    deterministicIssue: boolean;
+    designatedIssue: boolean;
+    proofVerify: boolean;
+  };
+  issuer: {
+    sealIdentityConfigured: boolean;
+  };
+};
+
+export type PixPaxV2IssueResponse = {
+  ok: boolean;
+  codeId?: string;
+  redeemUrl?: string;
+  qrSvg?: string;
+  artifact: Record<string, unknown>;
+  verification: {
+    ok: boolean;
+    hashMatch: boolean;
+    signatureValid: boolean;
+    keyId: string;
+    errors: string[];
+  };
+};
+
+export type PixPaxV2PreviewResponse = {
+  ok: boolean;
+  issuance: Record<string, unknown>;
+};
+
+export function getPixpaxV2Meta() {
+  return requestJson<PixPaxV2MetaResponse>("/v1/pixpax/v2/meta");
+}
+
+export function previewPixpaxV2DeterministicIssue(
+  payload: {
+    collectionId: string;
+    collectionVersion: string;
+    dropId: string;
+    claimantPublicKey: string;
+    count: number;
+  },
+  token?: string | null
+) {
+  return requestJson<PixPaxV2PreviewResponse>("/v1/pixpax/v2/deterministic/preview", {
+    method: "POST",
+    token: token || undefined,
+    body: payload,
+  });
+}
+
+export function issuePixpaxV2DeterministicPack(
+  payload: {
+    collectionId: string;
+    collectionVersion: string;
+    dropId: string;
+    claimantPublicKey: string;
+    count: number;
+  },
+  token?: string | null
+) {
+  return requestJson<PixPaxV2IssueResponse>("/v1/pixpax/v2/deterministic/issue", {
+    method: "POST",
+    token: token || undefined,
+    body: payload,
+  });
+}
+
+export function issuePixpaxV2DesignatedPack(
+  payload: {
+    collectionId: string;
+    collectionVersion: string;
+    dropId: string;
+    claimantPublicKey: string;
+    sourceCodeId: string;
+    cardIds: string[];
+  },
+  token?: string | null
+) {
+  return requestJson<PixPaxV2IssueResponse>("/v1/pixpax/v2/designated/issue", {
+    method: "POST",
+    token: token || undefined,
+    body: payload,
+  });
+}
+
+export function verifyPixpaxV2Proof(
+  artifact: Record<string, unknown>,
+) {
+  return requestJson<{
+    ok: boolean;
+    verification: {
+      ok: boolean;
+      hashMatch: boolean;
+      signatureValid: boolean;
+      keyId: string;
+      errors: string[];
+    };
+  }>("/v1/pixpax/v2/proofs/verify", {
+    method: "POST",
+    body: artifact,
+  });
+}

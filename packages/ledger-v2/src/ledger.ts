@@ -10,16 +10,6 @@ import {
   type Entry as ProtocolEntry,
   type LedgerContainer as ProtocolLedgerContainer
 } from "@ternent/concord-protocol";
-import {
-  decryptWithIdentity,
-  encryptForRecipients,
-  initArmour
-} from "@ternent/armour";
-import {
-  createSealHash,
-  createSealProof,
-  verifySealProofAgainstBytes
-} from "@ternent/seal-cli";
 import type {
   CreateLedgerConfig,
   CreateLedgerParams,
@@ -60,6 +50,38 @@ const LEDGER_SPEC = "@ternent/ledger@2";
 
 const textEncoder = new TextEncoder();
 const textDecoder = new TextDecoder();
+let armourRuntimePromise: Promise<{
+  decryptWithIdentity: typeof import("@ternent/armour").decryptWithIdentity;
+  encryptForRecipients: typeof import("@ternent/armour").encryptForRecipients;
+  initArmour: typeof import("@ternent/armour").initArmour;
+}> | null = null;
+let sealRuntimePromise: Promise<{
+  createSealHash: typeof import("@ternent/seal-cli").createSealHash;
+  createSealProof: typeof import("@ternent/seal-cli").createSealProof;
+  verifySealProofAgainstBytes: typeof import("@ternent/seal-cli").verifySealProofAgainstBytes;
+}> | null = null;
+
+async function loadArmourRuntime() {
+  if (!armourRuntimePromise) {
+    armourRuntimePromise = import("@ternent/armour").then((module) => ({
+      decryptWithIdentity: module.decryptWithIdentity,
+      encryptForRecipients: module.encryptForRecipients,
+      initArmour: module.initArmour,
+    }));
+  }
+  return await armourRuntimePromise;
+}
+
+async function loadSealRuntime() {
+  if (!sealRuntimePromise) {
+    sealRuntimePromise = import("@ternent/seal-cli").then((module) => ({
+      createSealHash: module.createSealHash,
+      createSealProof: module.createSealProof,
+      verifySealProofAgainstBytes: module.verifySealProofAgainstBytes,
+    }));
+  }
+  return await sealRuntimePromise;
+}
 
 function cloneValue<T>(value: T): T {
   if (typeof structuredClone === "function") {
@@ -344,6 +366,7 @@ function createDefaultProtocolContract(): LedgerProtocolContract {
 function createDefaultSealContract(): LedgerSealContract {
   return {
     async createEntryProof(input) {
+      const { createSealHash, createSealProof } = await loadSealRuntime();
       return (await createSealProof({
         createdAt: input.entry.authoredAt,
         signer: input.signer,
@@ -355,6 +378,7 @@ function createDefaultSealContract(): LedgerSealContract {
       })) as SealProof;
     },
     async verifyEntryProof(input) {
+      const { verifySealProofAgainstBytes } = await loadSealRuntime();
       const result = await verifySealProofAgainstBytes(
         input.proof as never,
         input.subjectBytes
@@ -362,6 +386,7 @@ function createDefaultSealContract(): LedgerSealContract {
       return result.valid;
     },
     async createCommitProof(input) {
+      const { createSealHash, createSealProof } = await loadSealRuntime();
       return (await createSealProof({
         createdAt: input.commit.committedAt,
         signer: input.signer,
@@ -373,6 +398,7 @@ function createDefaultSealContract(): LedgerSealContract {
       })) as SealProof;
     },
     async verifyCommitProof(input) {
+      const { verifySealProofAgainstBytes } = await loadSealRuntime();
       const result = await verifySealProofAgainstBytes(
         input.proof as never,
         input.subjectBytes
@@ -385,6 +411,8 @@ function createDefaultSealContract(): LedgerSealContract {
 function createDefaultArmourContract(): LedgerArmourContract {
   return {
     async encrypt(input) {
+      const { createSealHash } = await loadSealRuntime();
+      const { encryptForRecipients, initArmour } = await loadArmourRuntime();
       await initArmour();
       const ciphertext = await encryptForRecipients({
         recipients: input.recipients,
@@ -400,6 +428,7 @@ function createDefaultArmourContract(): LedgerArmourContract {
       };
     },
     async decrypt(input) {
+      const { decryptWithIdentity, initArmour } = await loadArmourRuntime();
       await initArmour();
       const plaintext = await decryptWithIdentity({
         identity: input.decryptor.identity,
@@ -808,6 +837,7 @@ export async function createLedger<P>(
 
       if (entry.payload.type === "encrypted" && options?.includePayloadHashes !== false) {
         try {
+          const { createSealHash } = await loadSealRuntime();
           const payloadHash = await createSealHash(toCiphertextBytes(entry.payload));
           if (payloadHash !== entry.payload.payloadHash) {
             invalidEntryIds.add(entry.entryId);
@@ -1174,9 +1204,6 @@ export async function createLedger<P>(
     state.projection = createEmptyProjection(config.initialProjection);
     state.verification = null;
     notify();
-    if (config.storage?.clear) {
-      await config.storage.clear();
-    }
   }
 
   return {

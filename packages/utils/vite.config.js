@@ -1,6 +1,9 @@
-import { resolve } from "path";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite";
 import dts from "vite-plugin-dts";
+
+const configDir = dirname(fileURLToPath(import.meta.url));
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -8,19 +11,24 @@ export default defineConfig({
     exports: "named",
   },
   build: {
+    outDir: "dist",
+    minify: false,
     lib: {
-      // Could also be a dictionary or array of multiple entry points
-      entry: resolve(__dirname, "src/index.ts"),
+      entry: resolve(configDir, "src/index.ts"),
       name: "ternent-utils",
-      // the proper extensions will be added
       fileName: "utils",
+      formats: ["es"],
     },
-
-    rollupOptions: {},
+    rollupOptions: {
+      output: {
+        format: "es",
+        entryFileNames: "utils.es.js",
+      },
+    },
   },
   plugins: [
     dts({
-      tsConfigFilePath: resolve("../../tsconfig.json"),
+      tsConfigFilePath: resolve(configDir, "../../tsconfig.json"),
     }),
   ],
 });

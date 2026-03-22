@@ -125,6 +125,12 @@ export const pixpaxChildren = [
     beforeEnter: requirePixPaxPermission("pixpax.admin.manage"),
   },
   {
+    path: "control/admin-v2",
+    name: "pixpax-control-admin-v2",
+    component: () => import("./RoutePixPaxAdminV2.vue"),
+    beforeEnter: requirePixPaxPermission("pixpax.admin.manage"),
+  },
+  {
     path: "control",
     name: "pixpax-control",
     component: () => import("./RoutePixPaxControlShell.vue"),

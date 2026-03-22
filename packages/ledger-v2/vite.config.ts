@@ -2,8 +2,10 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite";
 import dts from "vite-plugin-dts";
+import { createPackageExternal, resolvePackageDir } from "../../scripts/vite/package-lib-config";
 
 const configDir = dirname(fileURLToPath(import.meta.url));
+const external = createPackageExternal(resolvePackageDir(import.meta.url));
 
 export default defineConfig({
   build: {
@@ -18,6 +20,7 @@ export default defineConfig({
       formats: ["es"],
     },
     rollupOptions: {
+      external,
       output: {
         format: "es",
         entryFileNames: "index.js",

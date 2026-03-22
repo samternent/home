@@ -34,6 +34,11 @@ const items: NavItem[] = [
     to: "pixpax-control-admin",
     permission: "pixpax.admin.manage",
   },
+  {
+    label: "Admin v2",
+    to: "pixpax-control-admin-v2",
+    permission: "pixpax.admin.manage",
+  },
 ];
 
 const authLabel = computed(() => {

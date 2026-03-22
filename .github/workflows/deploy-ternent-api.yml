@@ -72,10 +72,14 @@ jobs:
           check_key backend ternent-api-ledger ledger-region
 
           check_key backend ternent-api-pixpax-content pix-pax-admin-token
+          check_key backend ternent-api-pixpax-content pix-pax-public-app-url
+          check_key backend ternent-api-pixpax-content pix-pax-v2-available-collections
           check_key backend ternent-api-pixpax-content ledger-content-prefix
 
           check_key backend ternent-api-auth database-url
           check_key backend ternent-api-auth auth-secret
+          check_key backend ternent-api-auth auth-trusted-origins
+          check_key backend ternent-api-auth cors-allow-origins
 
           # Required for passkey behavior in production.
           check_key backend ternent-api-auth auth-passkey-rp-id
