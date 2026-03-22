@@ -1,5 +1,11 @@
 # **APP_ID**
 
+## 0.4.25
+
+### Patch Changes
+
+- [`d7d07a72014f2fe7ad1ce1efe2cdb8f62ed55c8a`](https://github.com/samternent/home/commit/d7d07a72014f2fe7ad1ce1efe2cdb8f62ed55c8a) Thanks [@samternent](https://github.com/samternent)! - Generated hero copy
+
 ## 0.4.24
 
 ### Patch Changes
