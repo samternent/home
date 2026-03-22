@@ -1,5 +1,11 @@
 # **APP_ID**
 
+## 0.4.21
+
+### Patch Changes
+
+- [`e1740c02c0476800cf22df6e54f6bb44b61274fe`](https://github.com/samternent/home/commit/e1740c02c0476800cf22df6e54f6bb44b61274fe) Thanks [@samternent](https://github.com/samternent)! - Redirect to demo
+
 ## 0.4.20
 
 ### Patch Changes
