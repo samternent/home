@@ -1,5 +1,11 @@
 # ternent-api
 
+## 0.2.40
+
+### Patch Changes
+
+- [`d15a4fa9832adcab2e63a3a80b17eb35d65e9c77`](https://github.com/samternent/home/commit/d15a4fa9832adcab2e63a3a80b17eb35d65e9c77) Thanks [@samternent](https://github.com/samternent)! - Update pixpax redeem url
+
 ## 0.2.39
 
 ### Patch Changes
