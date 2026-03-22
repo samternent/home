@@ -1,6 +1,6 @@
 {
   "name": "@ternent/seal-cli",
-  "version": "0.3.9",
+  "version": "0.3.10",
   "description": "Deterministic artifact signing for Seal",
   "license": "ISC",
   "type": "module",
