@@ -16,35 +16,35 @@ export type HomeFeature = {
 };
 
 export const heroContent = {
-  headline: "Open packs. Build your Pixbook.",
+  headline: "Build your Pixbook, one pack at a time.",
   supporting:
-    "PixPax is a digital collectible game built around issued cards, pack reveals, and a Pixbook you build over time.",
+    "PixPax is a collectible experience built around issued cards, pack reveals, and a Pixbook that grows with what you uncover.",
   ctaLabel: "Get started",
 } as const;
 
 export const whyItFeelsGoodSection = {
   title: "How it works",
   supporting:
-    "Packs contain digitally issued cards. Open a pack, reveal what was issued inside, and add them to your Pixbook.",
+    "Packs contain issued cards. Open a pack, reveal what was inside, and add them to your Pixbook.",
   items: [
     {
       title: "Issued cards",
       description:
-        "Each card is issued as a real digital collectible, not just a temporary app reward.",
+        "Each card is issued intentionally, so every reveal has a clear and consistent result.",
       iconLabel: "Pack",
       tone: "primary",
     },
     {
       title: "Open and reveal",
       description:
-        "Packs are opened in the app so players can reveal what was issued inside.",
+        "Packs are opened in the app, turning each reveal into something that actually happened, not just something you saw.",
       iconLabel: "Set",
       tone: "secondary",
     },
     {
       title: "Build your Pixbook",
       description:
-        "Each reveal grows your collection.",
+        "Each reveal becomes part of your collection, not just a temporary state.",
       iconLabel: "Drop",
       tone: "accent",
     },
@@ -56,7 +56,7 @@ export const keepGoingSection = {
   supporting: [
     "QR cards, events, and rewards can unlock the next pack.",
     "Each collectible has its own place in your Pixbook.",
-    "Every reveal leaves behind a record.",
+    "Every reveal leaves behind a record you can revisit and verify.",
   ],
   items: [
     {
@@ -68,18 +68,29 @@ export const keepGoingSection = {
     {
       title: "Digital issuance",
       description:
-        "Cards are issued intentionally, giving each reveal a clear collectible result.",
+        "Cards are issued intentionally, so every reveal has a clear and consistent outcome.",
       iconLabel: "Unlock",
       tone: "accent",
     },
     {
       title: "Recorded to keep",
       description:
-        "Each reveal is recorded to your Pixbook so the collection is more than just a screen state.",
+        "Each reveal is recorded to your Pixbook as part of your collection, not just a temporary screen state.",
       iconLabel: "Book",
       tone: "success",
     },
   ] satisfies readonly HomeFeature[],
+} as const;
+export const concordSection = {
+  title: "Powered by Concord",
+  description:
+    "Each PixPax card is backed by signed, replayable history. Ownership and issuance aren’t just stored — they’re derived and verifiable from the record itself.",
+  supporting: [
+    "Cards don’t rely on a database to be correct. Their state can be rebuilt and checked from signed history.",
+    "You can inspect, export, and validate the underlying record at any time. If it’s been altered, verification fails.",
+  ],
+  ctaLabel: "See Concord",
+  ctaHref: "https://concord.ternent.dev",
 } as const;
 
 export const finalCtaSection = {
@@ -87,11 +98,7 @@ export const finalCtaSection = {
   description:
     "Open your first issued pack. Reveal what lands inside and start building your Pixbook.",
   ctaLabel: "Get started",
-  details: [
-    "Issued cards",
-    "QR unlocks",
-    "Recorded to keep",
-  ],
+  details: ["Issued cards", "QR unlocks", "Recorded to keep"],
 } as const;
 
 export const heroBundle: PixpaxPublicCollectionBundle = {
@@ -152,6 +159,10 @@ export const heroCards =
   heroBundle.cards as readonly PixpaxPublicCollectionCard[];
 
 export const footerLinks: readonly HomeLink[] = [
+  {
+    href: "https://concord.ternent.dev",
+    label: "Powered by Concord",
+  },
   {
     href: "/app/pixbook",
     label: "Pixbook",

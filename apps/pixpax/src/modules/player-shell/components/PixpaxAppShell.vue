@@ -69,7 +69,14 @@ const activeIdentity = computed(() => identities.identity.value);
         >
           <p class="m-0 leading-relaxed">
             Verifiable ownership.<br />
-            POWERED BY CONCORD
+            <a
+              href="https://concord.ternent.dev"
+              target="_blank"
+              rel="noreferrer"
+              class="inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.22em] text-[var(--ui-fg)] no-underline transition-colors hover:text-[var(--ui-primary)]"
+            >
+              Powered by Concord
+            </a>
           </p>
           <div
             class="flex items-center gap-3 text-[11px] uppercase tracking-[0.2em]"

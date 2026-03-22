@@ -4,6 +4,7 @@ import { Button, Card, Separator } from "ternent-ui/primitives";
 import { appConfig } from "@/app/config/app.config";
 import PixpaxLogoText from "@/modules/ui/components/PixpaxLogoText.vue";
 import {
+  concordSection,
   finalCtaSection,
   footerLinks,
   heroBundle,
@@ -145,6 +146,46 @@ function resolveLinkProps(link: LinkItem) {
         </div>
       </section>
 
+      <section class="pixpax-section pixpax-section--concord">
+        <Card variant="elevated" padding="lg" class="pixpax-concord-card">
+          <div class="pixpax-concord">
+            <div class="pixpax-concord__copy">
+              <p class="pixpax-concord__eyebrow">Powered by Concord</p>
+              <h2 class="pixpax-concord__title">
+                {{ concordSection.title }}
+              </h2>
+              <p class="pixpax-concord__description">
+                {{ concordSection.description }}
+              </p>
+            </div>
+
+            <div class="pixpax-concord__details">
+              <p
+                v-for="line in concordSection.supporting"
+                :key="line"
+                class="pixpax-concord__line"
+              >
+                {{ line }}
+              </p>
+              <div class="pixpax-concord__actions">
+                <Button
+                  v-bind="
+                    resolveButtonProps({
+                      href: concordSection.ctaHref,
+                      label: concordSection.ctaLabel,
+                    })
+                  "
+                  size="sm"
+                  variant="secondary"
+                >
+                  {{ concordSection.ctaLabel }}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </Card>
+      </section>
+
       <section class="pixpax-final-cta">
         <Card variant="elevated" padding="lg" class="pixpax-final-cta__card">
           <SectionIntro
@@ -187,9 +228,17 @@ function resolveLinkProps(link: LinkItem) {
       >
         <div class="space-y-2">
           <PixpaxLogoText class="h-4 w-auto text-[var(--ui-fg)]" />
-          <p class="m-0">
+          <!-- <p class="m-0">
             {{ appConfig.defaultHost }}
-          </p>
+          </p> -->
+          <a
+            href="https://concord.ternent.dev"
+            target="_blank"
+            rel="noreferrer"
+            class="inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.22em] text-[var(--ui-fg)] no-underline transition-colors hover:text-[var(--ui-primary)]"
+          >
+            Powered by Concord
+          </a>
         </div>
 
         <div class="flex flex-wrap gap-x-4 gap-y-2">
@@ -335,6 +384,58 @@ function resolveLinkProps(link: LinkItem) {
   padding-bottom: 1rem;
 }
 
+.pixpax-section--concord {
+  padding-top: 1rem;
+}
+
+.pixpax-concord-card {
+  border-color: rgba(255, 255, 255, 0.06);
+  border-radius: 1.5rem;
+  background: color-mix(in srgb, var(--ui-surface) 52%, transparent);
+  box-shadow: 0 18px 46px rgba(8, 10, 24, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(14px) saturate(115%);
+}
+
+.pixpax-concord {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.pixpax-concord__copy,
+.pixpax-concord__details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.pixpax-concord__eyebrow {
+  margin: 0;
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ui-primary);
+}
+
+.pixpax-concord__title {
+  margin: 0;
+  font-family: var(--ui-font-mono, inherit);
+  font-size: clamp(1.75rem, 4vw, 2.8rem);
+  line-height: 0.95;
+  letter-spacing: -0.07em;
+}
+
+.pixpax-concord__description,
+.pixpax-concord__line {
+  margin: 0;
+  color: var(--ui-fg-muted);
+  line-height: 1.7;
+}
+
+.pixpax-concord__actions {
+  padding-top: 0.25rem;
+}
+
 .pixpax-final-cta__card {
   border-color: rgba(255, 255, 255, 0.06);
   border-radius: 1.5rem;
@@ -409,6 +510,11 @@ function resolveLinkProps(link: LinkItem) {
     grid-template-columns: minmax(0, 1.1fr) minmax(20rem, 0.9fr);
     align-items: start;
     gap: 3rem;
+  }
+
+  .pixpax-concord {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+    align-items: start;
   }
 }
 </style>

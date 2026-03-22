@@ -1,0 +1,30 @@
+{
+  "collectionId": "my-first-v2-book",
+  "version": "v1",
+  "format": "pixpax-v2",
+  "name": "My First V2 Book",
+  "description": "Physical-card-first PixPax v2 test collection.",
+  "gridSize": 16,
+  "createdAt": "2026-03-22T00:00:00.000Z",
+  "palette": {
+    "id": "my-first-v2-book-default",
+    "colors": [
+      0,
+      4280352540,
+      4294967295,
+      4293238528,
+      4288716960,
+      4284506208,
+      4294198070,
+      4286578944,
+      4281348144,
+      4287067800,
+      4291813376,
+      4294769916,
+      4285558896,
+      4290304512,
+      4294896128,
+      4282400832
+    ]
+  }
+}

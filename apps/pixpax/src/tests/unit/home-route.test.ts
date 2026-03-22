@@ -28,6 +28,8 @@ describe("RouteHome landing page", () => {
     expect(text).toContain("Keep collecting");
     expect(text).toContain("QR cards, events, and rewards can unlock the next pack.");
     expect(text).toContain("Every reveal leaves behind a record.");
+    expect(text).toContain("Powered by Concord");
+    expect(text).toContain("PixPax is the first real app built on Concord.");
     expect(text).toContain("Start your Pixbook");
     expect(text).toContain("Open your first issued pack. Reveal what lands inside and start building your Pixbook.");
     expect(text).toContain("Get started");
