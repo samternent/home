@@ -90,6 +90,7 @@ export default defineConfig({
       "@": resolve(__dirname, "./src"),
       "@ternent/armour": resolve(workspaceRoot, "armour/src/index.ts"),
       "@ternent/concord": resolve(workspaceRoot, "concord/src/index.ts"),
+      "@ternent/concord-protocol": resolve(workspaceRoot, "concord-protocol/src/index.ts"),
       "@ternent/identity": resolve(workspaceRoot, "identity-v2/src/index.ts"),
       "@ternent/ledger": resolve(workspaceRoot, "ledger-v2/src/index.ts"),
       "@ternent/pixpax-concord": resolve(workspaceRoot, "pixpax-concord/src/index.ts"),
@@ -104,6 +105,7 @@ export default defineConfig({
     exclude: [
       "@ternent/armour",
       "@ternent/concord",
+      "@ternent/concord-protocol",
       "@ternent/identity",
       "@ternent/ledger",
       "@ternent/pixpax-concord",

@@ -1,0 +1,5 @@
+---
+"pixpax": patch
+---
+
+Fix build
