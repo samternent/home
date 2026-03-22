@@ -12,7 +12,10 @@ import {
   type PixpaxTransferAcceptance,
   type PixpaxTransferOffer,
 } from "@ternent/pixpax-core";
-import { createSealProof, verifySealProofAgainstBytes } from "@ternent/seal-cli";
+import {
+  createSealProof,
+  verifySealProofAgainstBytes,
+} from "@ternent/seal-cli/proof";
 import { createDeterministicPackIssuance, createIssuanceProofSubjectPath } from "./issuance.js";
 
 const utf8 = new TextEncoder();

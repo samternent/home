@@ -9,7 +9,7 @@
     "baseUrl": ".",
     "paths": {
       "@ternent/pixpax-core": ["../pixpax-core/dist/index.d.ts"],
-      "@ternent/seal-cli": ["src/shims/seal-cli.d.ts"]
+      "@ternent/seal-cli/proof": ["src/shims/seal-cli-proof.d.ts"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "test/**/*.ts", "vite.config.ts"],

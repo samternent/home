@@ -43,6 +43,7 @@
     "./errors": "./dist/errors.js"
   },
   "scripts": {
+    "build:proof": "vite build --mode proof-only",
     "build": "pnpm --filter @ternent/rage build && vite build",
     "test": "pnpm --filter @ternent/rage build && vitest run"
   },
