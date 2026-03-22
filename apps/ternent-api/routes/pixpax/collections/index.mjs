@@ -151,8 +151,10 @@ const DEFAULT_MAX_REDEEM_TOKEN_TTL_SECONDS = 10 * 365 * 24 * 60 * 60;
 const DEFAULT_TOKEN_EXP_LEEWAY_SECONDS = 60;
 const DEFAULT_COLLECTION_VISIBILITY = "public";
 const DEFAULT_COLLECTION_ISSUANCE_MODE = "scheduled";
+const DEFAULT_COLLECTION_FORMAT = "";
 const COLLECTION_VISIBILITY_VALUES = new Set(["public", "unlisted"]);
 const COLLECTION_ISSUANCE_MODE_VALUES = new Set(["scheduled", "codes-only"]);
+const COLLECTION_FORMAT_VALUES = new Set(["pixpax-v2"]);
 const PIXPAX_ADMIN_PERMISSIONS = Object.freeze([
   "pixpax.admin.manage",
   "pixpax.analytics.read",
@@ -180,6 +182,13 @@ function normalizeCollectionSettings(input) {
   normalized.issuanceMode = COLLECTION_ISSUANCE_MODE_VALUES.has(issuanceMode)
     ? issuanceMode
     : DEFAULT_COLLECTION_ISSUANCE_MODE;
+
+  const format = String(source.format || "")
+    .trim()
+    .toLowerCase();
+  normalized.format = COLLECTION_FORMAT_VALUES.has(format)
+    ? format
+    : DEFAULT_COLLECTION_FORMAT;
 
   return normalized;
 }

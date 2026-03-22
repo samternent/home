@@ -19,6 +19,8 @@ import { buildQrSvg } from "../domain/code-token-qr.mjs";
 import { createAlreadyClaimedPayload } from "./public-claim.mjs";
 import {
   isV2CollectionAvailable,
+  isPixpaxV2CollectionFormat,
+  normalizeCollectionFormat,
   parseV2AvailableCollections,
   resolveAvailableCollectionVersion,
 } from "./availability.mjs";
@@ -380,6 +382,15 @@ async function loadBundle({ collectionId, collectionVersion = "" }) {
     store.getIndex(collectionId, resolvedVersion),
     store.getCollectionSettings(collectionId).catch(() => null),
   ]);
+
+  const settingsFormat = normalizeCollectionFormat(settings?.format);
+  const collectionFormat = normalizeCollectionFormat(collection?.format);
+  const isSupportedFormat =
+    isPixpaxV2CollectionFormat(settingsFormat) ||
+    isPixpaxV2CollectionFormat(collectionFormat);
+  if (!isSupportedFormat) {
+    throw new Error("Collection is not available on this PixPax app.");
+  }
 
   const cardIds = Array.isArray(index?.cards)
     ? index.cards.map((value) => trim(value)).filter(Boolean)

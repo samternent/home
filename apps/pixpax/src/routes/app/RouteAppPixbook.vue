@@ -30,13 +30,6 @@ const claims = computed(() =>
 );
 const latestClaim = computed(() => claims.value[0] || null);
 const activeCollection = computed(() => {
-  const primary = collections.primaryCollection.value;
-  if (primary) {
-    return {
-      collectionId: primary.collectionId,
-      resolvedVersion: primary.resolvedVersion,
-    };
-  }
   if (latestClaim.value) {
     return {
       collectionId: latestClaim.value.artifact.payload.collectionId,

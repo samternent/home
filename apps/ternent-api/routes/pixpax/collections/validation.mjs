@@ -13,6 +13,7 @@ function isNonNegativeInt(value) {
 
 const COLLECTION_VISIBILITY_VALUES = new Set(["public", "unlisted"]);
 const COLLECTION_ISSUANCE_MODE_VALUES = new Set(["scheduled", "codes-only"]);
+const COLLECTION_FORMAT_VALUES = new Set(["pixpax-v2"]);
 
 export function validateCollectionPayload(payload) {
   const errors = [];
@@ -39,6 +40,12 @@ export function validateCollectionPayload(payload) {
       }
     }
   }
+  if (payload.format !== undefined) {
+    const normalizedFormat = String(payload.format || "").trim().toLowerCase();
+    if (!COLLECTION_FORMAT_VALUES.has(normalizedFormat)) {
+      errors.push("collection.format must be pixpax-v2 when provided.");
+    }
+  }
   return { ok: errors.length === 0, errors };
 }
 
@@ -60,6 +67,13 @@ export function validateCollectionSettingsPayload(payload) {
     const normalizedIssuanceMode = String(payload.issuanceMode || "").trim().toLowerCase();
     if (!COLLECTION_ISSUANCE_MODE_VALUES.has(normalizedIssuanceMode)) {
       errors.push("settings.issuanceMode must be one of: scheduled, codes-only.");
+    }
+  }
+
+  if (payload.format !== undefined) {
+    const normalizedFormat = String(payload.format || "").trim().toLowerCase();
+    if (!COLLECTION_FORMAT_VALUES.has(normalizedFormat)) {
+      errors.push("settings.format must be pixpax-v2 when provided.");
     }
   }
 

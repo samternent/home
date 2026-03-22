@@ -2,6 +2,16 @@ function trim(value) {
   return String(value || "").trim();
 }
 
+export const PIXPAX_V2_COLLECTION_FORMAT = "pixpax-v2";
+
+export function normalizeCollectionFormat(value) {
+  return trim(value).toLowerCase();
+}
+
+export function isPixpaxV2CollectionFormat(value) {
+  return normalizeCollectionFormat(value) === PIXPAX_V2_COLLECTION_FORMAT;
+}
+
 export function parseV2AvailableCollections(raw) {
   return Array.from(
     new Map(
@@ -34,7 +44,7 @@ export function isV2CollectionAvailable(availableCollections, collectionId, vers
   const normalizedCollectionId = trim(collectionId);
   const normalizedVersion = trim(version);
   if (!availableCollections.length) {
-    return true;
+    return false;
   }
   return availableCollections.some((entry) => {
     if (entry.collectionId !== normalizedCollectionId) {
