@@ -63,7 +63,7 @@ export const landingPageConfig = {
   ],
   "hero": {
     "eyebrow": "concord",
-    "title": "Build apps from replayable, signed history.",
+    "title": "Apps that don't store state. They replay it.",
     "description": "Concord is a runtime for building applications where state is derived from signed, append-only history. Dispatch commands. Commit intentionally. Encrypt sensitive payloads client-side. Replay history into state. The result is a portable, verifiable document instead of a mutable app database.",
     "supportingLine": "Write intent. Commit it. Replay into state.",
     "note": "Small, replayable documents you can verify, move, and rebuild anywhere.",
