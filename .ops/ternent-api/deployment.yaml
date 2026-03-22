@@ -53,6 +53,12 @@ spec:
                 secretKeyRef:
                   name: ternent-api-env
                   key: issuer-master-seed
+            - name: SEAL_IDENTITY
+              valueFrom:
+                secretKeyRef:
+                  name: ternent-api-env
+                  key: seal-identity
+                  optional: true
             - name: VAULT_ADDR
               valueFrom:
                 secretKeyRef:

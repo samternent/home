@@ -63,6 +63,7 @@ jobs:
           check_key backend ternent-api-env digitalocean-token
           check_key backend ternent-api-env issuer-private-key-pem
           check_key backend ternent-api-env issuer-master-seed
+          check_key backend ternent-api-env seal-identity
 
           check_key backend ternent-api-ledger ledger-s3-endpoint
           check_key backend ternent-api-ledger ledger-bucket
