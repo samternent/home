@@ -88,24 +88,28 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": resolve(__dirname, "./src"),
+      "@ternent/armour": resolve(workspaceRoot, "armour/src/index.ts"),
       "@ternent/concord": resolve(workspaceRoot, "concord/src/index.ts"),
       "@ternent/identity": resolve(workspaceRoot, "identity-v2/src/index.ts"),
       "@ternent/ledger": resolve(workspaceRoot, "ledger-v2/src/index.ts"),
       "@ternent/pixpax-concord": resolve(workspaceRoot, "pixpax-concord/src/index.ts"),
       "@ternent/pixpax-core": resolve(workspaceRoot, "pixpax-core/src/index.ts"),
       "@ternent/pixpax-issuer": resolve(workspaceRoot, "pixpax-issuer/src/index.ts"),
+      "@ternent/rage": resolve(workspaceRoot, "rage/src/index.ts"),
       "@ternent/seal-cli": resolve(workspaceRoot, "seal-cli/src/index.ts"),
       "ternent-utils": resolve(workspaceRoot, "utils/src/index.ts"),
     },
   },
   optimizeDeps: {
     exclude: [
+      "@ternent/armour",
       "@ternent/concord",
       "@ternent/identity",
       "@ternent/ledger",
       "@ternent/pixpax-concord",
       "@ternent/pixpax-core",
       "@ternent/pixpax-issuer",
+      "@ternent/rage",
       "@ternent/seal-cli",
       "ternent-utils",
     ],

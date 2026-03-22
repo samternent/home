@@ -3,6 +3,10 @@
     {
       "releases": [
         {
+          "name": "pixpax",
+          "type": "patch"
+        },
+        {
           "name": "ternent-api",
           "type": "patch"
         },
@@ -23,165 +27,155 @@
           "type": "patch"
         }
       ],
-      "summary": "Prepare the PixPax beta release with v2 redeem and swaps flow support, local auth fixes, and unique-card pack issuance.",
-      "id": "bright-sheep-jog"
-    },
-    {
-      "releases": [
-        {
-          "name": "concord",
-          "type": "patch"
-        }
-      ],
-      "summary": "Update copy",
-      "id": "dry-countries-stare"
+      "summary": "Prepare the PixPax beta release with v2 redeem and swaps flow support, local auth fixes, unique-card pack issuance, and build/deploy hardening.",
+      "id": "green-geckos-jam"
     }
   ],
   "releases": [
     {
+      "name": "pixpax",
+      "type": "patch",
+      "oldVersion": "0.0.15",
+      "changesets": [
+        "green-geckos-jam"
+      ],
+      "newVersion": "0.0.16"
+    },
+    {
       "name": "ternent-api",
       "type": "patch",
-      "oldVersion": "0.2.33",
+      "oldVersion": "0.2.34",
       "changesets": [
-        "bright-sheep-jog"
+        "green-geckos-jam"
       ],
-      "newVersion": "0.2.34"
+      "newVersion": "0.2.35"
     },
     {
       "name": "@ternent/pixpax-core",
       "type": "patch",
-      "oldVersion": "0.1.0",
+      "oldVersion": "0.1.1",
       "changesets": [
-        "bright-sheep-jog"
+        "green-geckos-jam"
       ],
-      "newVersion": "0.1.1"
+      "newVersion": "0.1.2"
     },
     {
       "name": "@ternent/pixpax-issuer",
       "type": "patch",
-      "oldVersion": "0.1.0",
+      "oldVersion": "0.1.1",
       "changesets": [
-        "bright-sheep-jog"
+        "green-geckos-jam"
       ],
-      "newVersion": "0.1.1"
+      "newVersion": "0.1.2"
     },
     {
       "name": "@ternent/pixpax-concord",
       "type": "patch",
-      "oldVersion": "0.1.0",
+      "oldVersion": "0.1.1",
       "changesets": [
-        "bright-sheep-jog"
+        "green-geckos-jam"
       ],
-      "newVersion": "0.1.1"
+      "newVersion": "0.1.2"
     },
     {
       "name": "ternent-utils",
       "type": "patch",
-      "oldVersion": "1.1.1",
+      "oldVersion": "1.1.2",
       "changesets": [
-        "bright-sheep-jog"
+        "green-geckos-jam"
       ],
-      "newVersion": "1.1.2"
-    },
-    {
-      "name": "concord",
-      "type": "patch",
-      "oldVersion": "0.4.15",
-      "changesets": [
-        "dry-countries-stare"
-      ],
-      "newVersion": "0.4.16"
-    },
-    {
-      "name": "pixpax",
-      "type": "patch",
-      "oldVersion": "0.0.14",
-      "changesets": [],
-      "newVersion": "0.0.15"
+      "newVersion": "1.1.3"
     },
     {
       "name": "__APP_ID__",
-      "type": "patch",
-      "oldVersion": "0.0.14",
-      "changesets": [],
-      "newVersion": "0.0.15"
-    },
-    {
-      "name": "armour",
-      "type": "patch",
-      "oldVersion": "0.0.34",
-      "changesets": [],
-      "newVersion": "0.0.35"
-    },
-    {
-      "name": "concord-demo",
-      "type": "patch",
-      "oldVersion": "0.3.77",
-      "changesets": [],
-      "newVersion": "0.3.78"
-    },
-    {
-      "name": "ledger",
-      "type": "patch",
-      "oldVersion": "0.0.34",
-      "changesets": [],
-      "newVersion": "0.0.35"
-    },
-    {
-      "name": "seal",
-      "type": "patch",
-      "oldVersion": "0.0.44",
-      "changesets": [],
-      "newVersion": "0.0.45"
-    },
-    {
-      "name": "ternentdotdev",
-      "type": "patch",
-      "oldVersion": "0.4.30",
-      "changesets": [],
-      "newVersion": "0.4.31"
-    },
-    {
-      "name": "ternent-identity",
       "type": "patch",
       "oldVersion": "0.0.15",
       "changesets": [],
       "newVersion": "0.0.16"
     },
     {
+      "name": "armour",
+      "type": "patch",
+      "oldVersion": "0.0.35",
+      "changesets": [],
+      "newVersion": "0.0.36"
+    },
+    {
+      "name": "concord",
+      "type": "patch",
+      "oldVersion": "0.4.17",
+      "changesets": [],
+      "newVersion": "0.4.18"
+    },
+    {
+      "name": "concord-demo",
+      "type": "patch",
+      "oldVersion": "0.3.78",
+      "changesets": [],
+      "newVersion": "0.3.79"
+    },
+    {
+      "name": "ledger",
+      "type": "patch",
+      "oldVersion": "0.0.35",
+      "changesets": [],
+      "newVersion": "0.0.36"
+    },
+    {
+      "name": "seal",
+      "type": "patch",
+      "oldVersion": "0.0.45",
+      "changesets": [],
+      "newVersion": "0.0.46"
+    },
+    {
+      "name": "ternentdotdev",
+      "type": "patch",
+      "oldVersion": "0.4.31",
+      "changesets": [],
+      "newVersion": "0.4.32"
+    },
+    {
+      "name": "ternent-identity",
+      "type": "patch",
+      "oldVersion": "0.0.16",
+      "changesets": [],
+      "newVersion": "0.0.17"
+    },
+    {
       "name": "ternent-ledger",
       "type": "patch",
-      "oldVersion": "1.0.29",
+      "oldVersion": "1.0.30",
       "changesets": [],
-      "newVersion": "1.0.30"
+      "newVersion": "1.0.31"
     },
     {
       "name": "@ternent/seal-cli",
       "type": "patch",
-      "oldVersion": "0.3.7",
+      "oldVersion": "0.3.8",
       "changesets": [],
-      "newVersion": "0.3.8"
+      "newVersion": "0.3.9"
     },
     {
       "name": "ternent-ledger-vue",
       "type": "patch",
-      "oldVersion": "0.1.8",
+      "oldVersion": "0.1.9",
       "changesets": [],
-      "newVersion": "0.1.9"
+      "newVersion": "0.1.10"
     },
     {
       "name": "@ternent/concord",
       "type": "patch",
-      "oldVersion": "0.2.6",
+      "oldVersion": "0.2.7",
       "changesets": [],
-      "newVersion": "0.2.7"
+      "newVersion": "0.2.8"
     },
     {
       "name": "@ternent/ledger",
       "type": "patch",
-      "oldVersion": "0.1.5",
+      "oldVersion": "0.1.6",
       "changesets": [],
-      "newVersion": "0.1.6"
+      "newVersion": "0.1.7"
     }
   ]
 }
