@@ -3,179 +3,68 @@
     {
       "releases": [
         {
-          "name": "pixpax",
+          "name": "ledger",
+          "type": "patch"
+        },
+        {
+          "name": "armour",
           "type": "patch"
         },
         {
           "name": "ternent-api",
           "type": "patch"
-        },
+        }
+      ],
+      "summary": "Fix production build and deploy issues by restoring legacy identity package resolution for ledger and armour and constraining platform migrations inside the ternent-api pod.",
+      "id": "sharp-dingos-smoke"
+    },
+    {
+      "releases": [
         {
-          "name": "@ternent/pixpax-core",
-          "type": "patch"
-        },
-        {
-          "name": "@ternent/pixpax-issuer",
-          "type": "patch"
-        },
-        {
-          "name": "@ternent/pixpax-concord",
-          "type": "patch"
-        },
-        {
-          "name": "ternent-utils",
+          "name": "pixpax",
           "type": "patch"
         }
       ],
-      "summary": "Prepare the PixPax beta release with v2 redeem and swaps flow support, local auth fixes, unique-card pack issuance, and build/deploy hardening.",
-      "id": "green-geckos-jam"
+      "summary": "Fix build",
+      "id": "tender-fans-compete"
     }
   ],
   "releases": [
     {
-      "name": "pixpax",
+      "name": "ledger",
       "type": "patch",
-      "oldVersion": "0.0.15",
+      "oldVersion": "0.0.36",
       "changesets": [
-        "green-geckos-jam"
+        "sharp-dingos-smoke"
       ],
-      "newVersion": "0.0.16"
-    },
-    {
-      "name": "ternent-api",
-      "type": "patch",
-      "oldVersion": "0.2.34",
-      "changesets": [
-        "green-geckos-jam"
-      ],
-      "newVersion": "0.2.35"
-    },
-    {
-      "name": "@ternent/pixpax-core",
-      "type": "patch",
-      "oldVersion": "0.1.1",
-      "changesets": [
-        "green-geckos-jam"
-      ],
-      "newVersion": "0.1.2"
-    },
-    {
-      "name": "@ternent/pixpax-issuer",
-      "type": "patch",
-      "oldVersion": "0.1.1",
-      "changesets": [
-        "green-geckos-jam"
-      ],
-      "newVersion": "0.1.2"
-    },
-    {
-      "name": "@ternent/pixpax-concord",
-      "type": "patch",
-      "oldVersion": "0.1.1",
-      "changesets": [
-        "green-geckos-jam"
-      ],
-      "newVersion": "0.1.2"
-    },
-    {
-      "name": "ternent-utils",
-      "type": "patch",
-      "oldVersion": "1.1.2",
-      "changesets": [
-        "green-geckos-jam"
-      ],
-      "newVersion": "1.1.3"
-    },
-    {
-      "name": "__APP_ID__",
-      "type": "patch",
-      "oldVersion": "0.0.15",
-      "changesets": [],
-      "newVersion": "0.0.16"
+      "newVersion": "0.0.37"
     },
     {
       "name": "armour",
       "type": "patch",
-      "oldVersion": "0.0.35",
-      "changesets": [],
-      "newVersion": "0.0.36"
+      "oldVersion": "0.0.36",
+      "changesets": [
+        "sharp-dingos-smoke"
+      ],
+      "newVersion": "0.0.37"
     },
     {
-      "name": "concord",
+      "name": "ternent-api",
       "type": "patch",
-      "oldVersion": "0.4.17",
-      "changesets": [],
-      "newVersion": "0.4.18"
+      "oldVersion": "0.2.35",
+      "changesets": [
+        "sharp-dingos-smoke"
+      ],
+      "newVersion": "0.2.36"
     },
     {
-      "name": "concord-demo",
-      "type": "patch",
-      "oldVersion": "0.3.78",
-      "changesets": [],
-      "newVersion": "0.3.79"
-    },
-    {
-      "name": "ledger",
-      "type": "patch",
-      "oldVersion": "0.0.35",
-      "changesets": [],
-      "newVersion": "0.0.36"
-    },
-    {
-      "name": "seal",
-      "type": "patch",
-      "oldVersion": "0.0.45",
-      "changesets": [],
-      "newVersion": "0.0.46"
-    },
-    {
-      "name": "ternentdotdev",
-      "type": "patch",
-      "oldVersion": "0.4.31",
-      "changesets": [],
-      "newVersion": "0.4.32"
-    },
-    {
-      "name": "ternent-identity",
+      "name": "pixpax",
       "type": "patch",
       "oldVersion": "0.0.16",
-      "changesets": [],
+      "changesets": [
+        "tender-fans-compete"
+      ],
       "newVersion": "0.0.17"
-    },
-    {
-      "name": "ternent-ledger",
-      "type": "patch",
-      "oldVersion": "1.0.30",
-      "changesets": [],
-      "newVersion": "1.0.31"
-    },
-    {
-      "name": "@ternent/seal-cli",
-      "type": "patch",
-      "oldVersion": "0.3.8",
-      "changesets": [],
-      "newVersion": "0.3.9"
-    },
-    {
-      "name": "ternent-ledger-vue",
-      "type": "patch",
-      "oldVersion": "0.1.9",
-      "changesets": [],
-      "newVersion": "0.1.10"
-    },
-    {
-      "name": "@ternent/concord",
-      "type": "patch",
-      "oldVersion": "0.2.7",
-      "changesets": [],
-      "newVersion": "0.2.8"
-    },
-    {
-      "name": "@ternent/ledger",
-      "type": "patch",
-      "oldVersion": "0.1.6",
-      "changesets": [],
-      "newVersion": "0.1.7"
     }
   ]
 }

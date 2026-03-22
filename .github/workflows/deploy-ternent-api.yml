@@ -95,4 +95,4 @@ jobs:
         run: kubectl -n backend rollout status deployment/ternent-api --timeout=180s
 
       - name: Run platform migrations
-        run: kubectl -n backend exec deploy/ternent-api -- sh -lc "cd /app/apps/ternent-api && node scripts/platform-migrate.mjs"
+        run: kubectl -n backend exec deploy/ternent-api -- sh -lc "cd /app/apps/ternent-api && NODE_OPTIONS=--max-old-space-size=256 node scripts/platform-migrate.mjs"

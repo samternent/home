@@ -77,6 +77,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": resolve(__dirname, "./src"),
+      "ternent-identity": resolve(__dirname, "../../packages/identity/src/index.ts"),
     },
   },
   plugins: [
@@ -146,5 +147,8 @@ export default defineConfig({
   },
   ssgOptions: {
     formatting: "minify",
+  },
+  optimizeDeps: {
+    exclude: ["ternent-identity"],
   },
 });
