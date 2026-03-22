@@ -1,5 +1,13 @@
 # **APP_ID**
 
+## 0.0.37
+
+### Patch Changes
+
+- [`8a0674ce3cd6bed987dc3b60b01eb3edb9ce03a2`](https://github.com/samternent/home/commit/8a0674ce3cd6bed987dc3b60b01eb3edb9ce03a2) Thanks [@samternent](https://github.com/samternent)! - some attempted fixes
+
+- [`8a0674ce3cd6bed987dc3b60b01eb3edb9ce03a2`](https://github.com/samternent/home/commit/8a0674ce3cd6bed987dc3b60b01eb3edb9ce03a2) Thanks [@samternent](https://github.com/samternent)! - Fix production build and deploy issues by restoring legacy identity package resolution for ledger and armour and constraining platform migrations inside the ternent-api pod.
+
 ## 0.0.36
 
 ### Patch Changes
