@@ -1,5 +1,13 @@
 # ternent-ledger
 
+## 1.0.31
+
+### Patch Changes
+
+- Updated dependencies [[`ad1b704fb8ba54b12d6140ffbed0fee66adcb6fd`](https://github.com/samternent/home/commit/ad1b704fb8ba54b12d6140ffbed0fee66adcb6fd)]:
+  - ternent-utils@1.1.3
+  - ternent-identity@0.0.17
+
 ## 1.0.30
 
 ### Patch Changes

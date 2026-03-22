@@ -1,5 +1,12 @@
 # identity
 
+## 0.0.17
+
+### Patch Changes
+
+- Updated dependencies [[`ad1b704fb8ba54b12d6140ffbed0fee66adcb6fd`](https://github.com/samternent/home/commit/ad1b704fb8ba54b12d6140ffbed0fee66adcb6fd)]:
+  - ternent-utils@1.1.3
+
 ## 0.0.16
 
 ### Patch Changes
