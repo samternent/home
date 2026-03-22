@@ -1,5 +1,11 @@
 # ternent-ui
 
+## 0.4.14
+
+### Patch Changes
+
+- [`9141d333ba1f6da7295f55661fcaa309c14af4e6`](https://github.com/samternent/home/commit/9141d333ba1f6da7295f55661fcaa309c14af4e6) Thanks [@samternent](https://github.com/samternent)! - Update loading states
+
 ## 0.4.13
 
 ### Patch Changes
