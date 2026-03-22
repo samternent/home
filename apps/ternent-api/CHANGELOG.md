@@ -1,5 +1,16 @@
 # ternent-api
 
+## 0.2.39
+
+### Patch Changes
+
+- more deps
+
+- [`9d23630e3dd0d0ffb22b62e3bf159dd01d60bbaa`](https://github.com/samternent/home/commit/9d23630e3dd0d0ffb22b62e3bf159dd01d60bbaa) Thanks [@samternent](https://github.com/samternent)! - Fix ternent-api deploy packaging by building the proof-only Seal surface used by PixPax issuer and including the missing runtime package outputs in the image build.
+
+- Updated dependencies [[`9d23630e3dd0d0ffb22b62e3bf159dd01d60bbaa`](https://github.com/samternent/home/commit/9d23630e3dd0d0ffb22b62e3bf159dd01d60bbaa)]:
+  - @ternent/pixpax-issuer@0.1.3
+
 ## 0.2.38
 
 ### Patch Changes

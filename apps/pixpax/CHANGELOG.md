@@ -1,5 +1,15 @@
 # **APP_ID**
 
+## 0.0.18
+
+### Patch Changes
+
+- Updated dependencies [[`9d23630e3dd0d0ffb22b62e3bf159dd01d60bbaa`](https://github.com/samternent/home/commit/9d23630e3dd0d0ffb22b62e3bf159dd01d60bbaa)]:
+  - @ternent/pixpax-issuer@0.1.3
+  - @ternent/seal-cli@0.3.10
+  - @ternent/pixpax-concord@0.1.3
+  - @ternent/concord@0.2.9
+
 ## 0.0.17
 
 ### Patch Changes

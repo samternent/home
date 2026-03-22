@@ -1,5 +1,11 @@
 # @ternent/seal-cli
 
+## 0.3.10
+
+### Patch Changes
+
+- [`9d23630e3dd0d0ffb22b62e3bf159dd01d60bbaa`](https://github.com/samternent/home/commit/9d23630e3dd0d0ffb22b62e3bf159dd01d60bbaa) Thanks [@samternent](https://github.com/samternent)! - Fix ternent-api deploy packaging by building the proof-only Seal surface used by PixPax issuer and including the missing runtime package outputs in the image build.
+
 ## 0.3.9
 
 ### Patch Changes
