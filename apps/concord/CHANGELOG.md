@@ -1,5 +1,11 @@
 # **APP_ID**
 
+## 0.4.24
+
+### Patch Changes
+
+- [`8d45606b482818a1951a3c59352ea7b97b124321`](https://github.com/samternent/home/commit/8d45606b482818a1951a3c59352ea7b97b124321) Thanks [@samternent](https://github.com/samternent)! - Update her copy
+
 ## 0.4.23
 
 ### Patch Changes
