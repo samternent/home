@@ -1,5 +1,11 @@
 # **APP_ID**
 
+## 0.0.17
+
+### Patch Changes
+
+- [`0a9fc72b7aceba9acf5ee868b58d19cf91efccde`](https://github.com/samternent/home/commit/0a9fc72b7aceba9acf5ee868b58d19cf91efccde) Thanks [@samternent](https://github.com/samternent)! - Fix build
+
 ## 0.0.16
 
 ### Patch Changes
