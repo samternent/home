@@ -1,5 +1,14 @@
 # @ternent/pixpax-core
 
+## 0.1.2
+
+### Patch Changes
+
+- [`ad1b704fb8ba54b12d6140ffbed0fee66adcb6fd`](https://github.com/samternent/home/commit/ad1b704fb8ba54b12d6140ffbed0fee66adcb6fd) Thanks [@samternent](https://github.com/samternent)! - Prepare the PixPax beta release with v2 redeem and swaps flow support, local auth fixes, unique-card pack issuance, and build/deploy hardening.
+
+- Updated dependencies [[`ad1b704fb8ba54b12d6140ffbed0fee66adcb6fd`](https://github.com/samternent/home/commit/ad1b704fb8ba54b12d6140ffbed0fee66adcb6fd)]:
+  - ternent-utils@1.1.3
+
 ## 0.1.1
 
 ### Patch Changes

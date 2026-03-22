@@ -1,5 +1,13 @@
 # **APP_ID**
 
+## 0.0.36
+
+### Patch Changes
+
+- Updated dependencies [[`ad1b704fb8ba54b12d6140ffbed0fee66adcb6fd`](https://github.com/samternent/home/commit/ad1b704fb8ba54b12d6140ffbed0fee66adcb6fd)]:
+  - ternent-utils@1.1.3
+  - @ternent/seal-cli@0.3.9
+
 ## 0.0.35
 
 ### Patch Changes

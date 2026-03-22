@@ -1,5 +1,12 @@
 # @ternent/concord
 
+## 0.2.8
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @ternent/ledger@0.1.7
+
 ## 0.2.7
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@ternent/pixpax-concord",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "PixPax v2 Concord plugin, commands, and replay state",
   "license": "ISC",
   "type": "module",
