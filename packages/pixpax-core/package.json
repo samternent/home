@@ -1,6 +1,6 @@
 {
   "name": "@ternent/pixpax-core",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Core PixPax v2 domain rules, canonical types, and deterministic derivation",
   "license": "ISC",
   "type": "module",

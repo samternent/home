@@ -1,5 +1,12 @@
 # @ternent/ledger
 
+## 0.1.6
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @ternent/seal-cli@0.3.8
+
 ## 0.1.5
 
 ### Patch Changes
