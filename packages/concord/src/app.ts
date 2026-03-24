@@ -541,6 +541,22 @@ export async function createConcordApp(
     };
   }
 
+  async function clearStaged(): Promise<void> {
+    requireReady();
+
+    await ledger.clearStaged();
+
+    if (!(await ensureCommittedHistoryUsable())) {
+      return;
+    }
+
+    await rebuildFromReplayEntries(await ledger.replay(), {
+      ready: true,
+      integrityValid: true,
+      verification: null,
+    });
+  }
+
   async function recompute(): Promise<void> {
     if (!(await ensureCommittedHistoryUsable())) {
       return;
@@ -619,6 +635,7 @@ export async function createConcordApp(
     load,
     command,
     commit,
+    clearStaged,
     replay,
     recompute,
     verify,

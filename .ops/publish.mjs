@@ -7,6 +7,7 @@ const appsToPublish = [
   "../apps/ledger",
   "../apps/pixpax",
   "../apps/seal",
+  "../apps/solid",
   "../apps/ternent-api",
   "../apps/ternentdotdev",
 ];

@@ -121,6 +121,40 @@ describe("@ternent/ledger", () => {
     expect(await ledger.replay()).toEqual(["committed-1", "staged-2"]);
   });
 
+  it("does not persist staged entries before an explicit commit", async () => {
+    const identity = await createIdentity("2026-03-18T10:04:00.000Z");
+    const storage = createMemoryStorage();
+    const ledger = await createLedger({
+      identity: {
+        signer: { identity },
+        authorResolver: () => "did:local"
+      },
+      initialProjection: [] as string[],
+      projector: (projection, entry) => [
+        ...projection,
+        String((entry.payload as { data: { id: string } }).data.id)
+      ],
+      storage,
+      now: createClock([
+        "2026-03-18T10:04:00.000Z",
+        "2026-03-18T10:04:01.000Z",
+        "2026-03-18T10:04:02.000Z"
+      ])
+    });
+
+    await ledger.create();
+    expect(storage.snapshot?.staged).toEqual([]);
+
+    await ledger.append({
+      kind: "todo.item.created",
+      payload: { id: "local-only" }
+    });
+
+    expect(ledger.getState().staged).toHaveLength(1);
+    expect(storage.snapshot?.staged).toEqual([]);
+    expect(storage.snapshot?.container?.entries).toEqual({});
+  });
+
   it("replays encrypted entries as encrypted or decrypted based on capability", async () => {
     const identity = await createIdentity("2026-03-18T10:05:00.000Z");
     const recipient = await recipientFromIdentity(identity);

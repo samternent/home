@@ -1038,7 +1038,6 @@ export async function createLedger<P>(
     }
 
     await rebuildProjection();
-    await persist();
 
     return results;
   }

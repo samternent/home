@@ -124,6 +124,7 @@ export type ConcordApp = {
     input: TInput,
   ): Promise<ConcordCommandResult>;
   commit(input?: ConcordCommitInput): Promise<ConcordCommitResult>;
+  clearStaged(): Promise<void>;
   replay(options?: ConcordReplayOptions): Promise<void>;
   recompute(): Promise<void>;
   verify(): Promise<LedgerVerificationResult>;

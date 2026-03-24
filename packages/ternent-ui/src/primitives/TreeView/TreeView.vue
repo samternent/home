@@ -2,6 +2,7 @@
 import { TreeView, createTreeCollection } from "@ark-ui/vue/tree-view";
 import type { TreeCollection } from "@ark-ui/vue/tree-view";
 import { computed } from "vue";
+import type { SelectionChangeDetails } from "@zag-js/tree-view";
 import TreeViewNode from "./TreeViewNode.vue";
 import type { TreeNode } from "./TreeView.types";
 
@@ -12,6 +13,7 @@ const props = withDefaults(
     nodes: TreeNode[];
     ariaLabel?: string;
     selectionMode?: "single" | "multiple";
+    selectedValue?: string[];
     defaultExpandedDepth?: number;
     editableValues?: boolean;
     textSize?: "xs" | "sm" | "md" | "lg";
@@ -27,6 +29,8 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   (event: "value-change", payload: { path: string; raw: string }): void;
+  (event: "update:selectedValue", value: string[]): void;
+  (event: "selection-change", payload: SelectionChangeDetails<TreeNode>): void;
 }>();
 
 const hasNodes = computed(() => props.nodes?.length > 0);
@@ -71,6 +75,14 @@ const defaultExpandedValue = computed(() =>
 function handleValueEdit(path: string, raw: string) {
   emit("value-change", { path, raw });
 }
+
+function handleSelectedValueChange(value: string[]) {
+  emit("update:selectedValue", value);
+}
+
+function handleSelectionChange(details: SelectionChangeDetails<TreeNode>) {
+  emit("selection-change", details);
+}
 </script>
 
 <template>
@@ -78,7 +90,10 @@ function handleValueEdit(path: string, raw: string) {
     :aria-label="ariaLabel"
     :collection="collection"
     :selection-mode="selectionMode"
+    :selected-value="selectedValue"
     :default-expanded-value="defaultExpandedValue"
+    @update:selected-value="handleSelectedValueChange"
+    @selection-change="handleSelectionChange"
     class="w-full text-[var(--ui-text)]"
     :class="{
       'text-xs': textSize === 'xs',
