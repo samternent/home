@@ -4,7 +4,7 @@ const homeRoutes: RouteModule = [
   {
     path: "/",
     name: "home",
-    component: () => import("./RouteHome.vue"),
+    component: () => import("../app/RouteApp.vue"),
   },
 ];
 

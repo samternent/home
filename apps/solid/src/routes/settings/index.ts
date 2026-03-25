@@ -7,6 +7,10 @@ const settingsRoutes: RouteModule = [
     children: [
       {
         path: "",
+        redirect: "/settings/appearance",
+      },
+      {
+        path: "appearance",
         component: () => import("./RouteSettings.vue"),
       },
     ],

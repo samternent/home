@@ -16,149 +16,162 @@ const logout = vi.fn(async () => undefined);
 const setIssuer = vi.fn((next: string) => {
   mockState.issuer.value = next;
 });
-const workspaceInit = vi.fn(async () => undefined);
-const toggleSidebar = vi.fn(() => undefined);
-const toggleConsole = vi.fn(() => undefined);
+const runtimeInit = vi.fn(async () => undefined);
+const selectScope = vi.fn(async () => undefined);
+const selectLedger = vi.fn(async () => undefined);
+const openApp = vi.fn(async () => true);
+const closeApp = vi.fn(async () => undefined);
+const explorerOpenItem = vi.fn(async () => true);
+const explorerGoUp = vi.fn(async () => true);
+const terminalRun = vi.fn(async () => true);
 
-const mockWorkspace = {
-  status: ref<"idle" | "loading" | "ready" | "error">("ready"),
-  currentScope: ref<"private" | "shared" | "public">("private"),
-  currentTargetUrl: ref<string | null>("https://pod.example/concord/workspace/private/"),
-};
-const mockAccount = {
-  selectedPod: ref("https://pod.example/"),
-};
-const mockUi = {
-  sidebarCollapsed: ref(false),
-  consoleOpen: ref(true),
-  inspectorOpen: ref(true),
-};
-const mockSurface = ref<"home" | "app" | "sharing" | "people" | "account">("home");
-const mockHost = {
-  activeAppLabel: ref<string | null>(null),
-  activeTarget: ref<{ url: string; title: string } | null>(null),
-  error: ref<string | null>(null),
-  tabs: ref([] as Array<{ id: string; label: string; appId: string; appLabel: string; target: { title: string; url: string } }>),
-  activeTabId: ref<string | null>(null),
-};
-const mockLibrary = {
-  selectedItem: ref(null as null | { kind: string; title: string; modifiedLabel?: string; capabilities?: Array<{ id: string; label: string; description: string; status: string }> }),
-};
-const mockTodoWorkingCopy = {
-  items: ref([] as Array<{ completed: boolean }>),
-  stagedCount: ref(0),
-  saving: ref(false),
-  pendingTransactions: ref([] as Array<{ id: string; message: string; stagedCount: number }>),
-  commitMessage: ref(""),
-  error: ref<string | null>(null),
-  lastAction: ref<string | null>(null),
-  setCommitMessage: vi.fn(() => undefined),
-  commitPending: vi.fn(async () => true),
-};
-
-vi.mock("@/modules/solid-session", () => ({
-  useSolidSession: () => ({
-    session: computed(() => null),
-    status: computed(() => mockState.status.value),
-    isAuthenticated: computed(() => mockState.isAuthenticated.value),
-    webId: computed(() => mockState.webId.value),
-    issuer: computed(() => mockState.issuer.value),
-    error: computed(() => mockState.error.value),
-    providers: ["https://login.inrupt.com", "https://solidcommunity.net"],
-    setIssuer,
-    login,
-    logout,
-    restore: vi.fn(async () => undefined),
-    completeRedirect: vi.fn(async () => undefined),
+const mockRuntime = {
+  bootStatus: ref<"booting" | "ready" | "error">("ready"),
+  authStatus: ref<"anonymous" | "authenticating" | "authenticated" | "error">("anonymous"),
+  identityStatus: ref<"unresolved" | "resolving" | "verified" | "error">("verified"),
+  verificationMode: ref<"strict">("strict"),
+  facts: ref([
+    { label: "Solid session", value: "https://alice.example/profile/card#me" },
+    { label: "Concord identity", value: "Ready" },
+    { label: "Verification", value: "Strict verification runtime" },
+    { label: "Selected pod", value: "https://pod.example/" },
+  ]),
+  summaryLines: ref([
+    "boot ready",
+    "auth authenticated",
+    "identity verified",
+    "mounts 3",
+    "resources 12",
+    "ledgers 4",
+    "active selection none",
+    "host status idle",
+    "active projection none",
+  ]),
+  mounts: ref([
+    { id: "private", label: "Private", scope: "private", rootUrl: "https://pod.example/private/", writable: true },
+    { id: "shared", label: "Shared", scope: "shared", rootUrl: "https://pod.example/shared/", writable: true },
+    { id: "public", label: "Public", scope: "public", rootUrl: "https://pod.example/public/", writable: true },
+  ]),
+  ledgers: ref([
+    { id: "https://pod.example/private/a.json", resourceId: "https://pod.example/private/a.json", title: "alpha", url: "https://pod.example/private/a.json", path: "a.json", scope: "private", verificationStatus: "verified" },
+    { id: "https://pod.example/private/b.json", resourceId: "https://pod.example/private/b.json", title: "beta", url: "https://pod.example/private/b.json", path: "b.json", scope: "private", verificationStatus: "verified" },
+  ]),
+  selection: ref({
+    activeResourceId: null,
+    activeLedgerId: null,
+    activeLedgerIds: [],
+    activeScope: "private",
   }),
-}));
+  activeProjection: ref({
+    id: null,
+    ledgerId: null,
+    status: "idle",
+    inputs: null,
+    openContext: null,
+    provenance: {
+      source: "none",
+      includedCommitIds: [],
+      excludedCommitIds: [],
+    },
+    verification: {
+      status: "unknown",
+      summary: "No active projection.",
+    },
+  }),
+  surfaces: ref([
+    { id: "core", label: "Core", available: true, active: true, reason: null },
+    { id: "explorer", label: "Explorer", available: true, active: false, reason: null },
+    { id: "terminal", label: "Terminal", available: true, active: false, reason: null },
+    { id: "concord-host", label: "Concord Host", available: false, active: false, reason: "Select a compatible ledger." },
+    { id: "identity", label: "Identity", available: true, active: false, reason: null },
+  ]),
+  activeSurface: ref<"core" | "explorer" | "terminal" | "concord-host" | "identity" | null>("explorer"),
+  activeApp: ref<{ appId: string; ledgerId: string; projectionId: string | null } | null>(null),
+  explorer: {
+    currentUrl: ref("https://pod.example/private/"),
+    currentPath: ref("/private"),
+    parentUrl: ref(null),
+    canGoUp: ref(false),
+    items: ref([
+      { id: "https://pod.example/private/projects/", url: "https://pod.example/private/projects/", name: "projects", title: "projects", kind: "container", scope: "private", active: false },
+      { id: "https://pod.example/private/a.json", url: "https://pod.example/private/a.json", name: "a.json", title: "alpha", kind: "ledger", scope: "private", active: false },
+    ]),
+  },
+  terminalHistory: ref([
+    { id: "terminal:1", kind: "output", lines: ["Verified workspace terminal ready."] },
+  ]),
+};
 
-vi.mock("@/modules/concord-os", () => ({
-  useConcordOsKernel: () => ({
-    solid: {
-      session: computed(() => null),
-      status: computed(() => mockState.status.value),
+vi.mock("@/modules/run/core", () => ({
+  useRunCoreRuntime: () => ({
+    boot: {
+      status: computed(() => mockRuntime.bootStatus.value),
+      ready: computed(() => mockRuntime.bootStatus.value === "ready"),
+    },
+    auth: {
       isAuthenticated: computed(() => mockState.isAuthenticated.value),
-      webId: computed(() => mockState.webId.value),
+      status: computed(() => mockRuntime.authStatus.value),
       issuer: computed(() => mockState.issuer.value),
-      error: computed(() => mockState.error.value),
       providers: ["https://login.inrupt.com", "https://solidcommunity.net"],
-      setIssuer,
+      webId: computed(() => mockState.webId.value),
+      error: computed(() => mockState.error.value),
       login,
       logout,
+      setIssuer,
+    },
+    identity: {
+      status: computed(() => mockRuntime.identityStatus.value),
+      ready: computed(() => mockRuntime.identityStatus.value === "verified"),
+      verificationMode: computed(() => mockRuntime.verificationMode.value),
     },
     workspace: {
-      init: workspaceInit,
-      status: computed(() => mockWorkspace.status.value),
-      selectedPod: computed(() => mockAccount.selectedPod.value),
+      mounts: computed(() => mockRuntime.mounts.value),
+      resources: computed(() => []),
+      ledgers: computed(() => mockRuntime.ledgers.value),
+      selection: computed(() => mockRuntime.selection.value),
+      activeProjection: computed(() => mockRuntime.activeProjection.value),
     },
-    appHost: {
-      activeTarget: computed(() => mockHost.activeTarget.value),
-      activeTabId: computed(() => mockHost.activeTabId.value),
-      activateTab: vi.fn(),
-      closeTab: vi.fn(),
+    surfaces: {
+      available: computed(() => mockRuntime.surfaces.value),
+      active: computed(() => mockRuntime.activeSurface.value),
     },
-    ui: {
-      sidebarCollapsed: computed(() => mockUi.sidebarCollapsed.value),
-      inspectorOpen: computed(() => mockUi.inspectorOpen.value),
-      toggleSidebar,
-      toggleConsole,
-      toggleInspector: vi.fn(),
+    apps: {
+      active: computed(() => mockRuntime.activeApp.value),
     },
-    openContexts: computed(() => mockHost.tabs.value),
-    shellStatus: computed(() => "connected"),
-    statusTone: computed(() => "neutral" as const),
-    webIdShort: computed(() => mockState.webId.value || "No active WebID"),
-    surfaceLabel: computed(() => "Library"),
-    surface: computed(() => mockSurface.value),
-    consoleVisible: computed(() => mockUi.consoleOpen.value),
-    consolePulse: computed(() => false),
-    launcherOpen: computed(() => false),
-    setSurface: vi.fn(),
-    toggleLauncher: vi.fn(),
-    hideLauncher: vi.fn(),
+    diagnostics: {
+      facts: computed(() => mockRuntime.facts.value),
+      summaryLines: computed(() => mockRuntime.summaryLines.value),
+    },
+    explorer: {
+      currentUrl: computed(() => mockRuntime.explorer.currentUrl.value),
+      currentPath: computed(() => mockRuntime.explorer.currentPath.value),
+      parentUrl: computed(() => mockRuntime.explorer.parentUrl.value),
+      canGoUp: computed(() => mockRuntime.explorer.canGoUp.value),
+      items: computed(() => mockRuntime.explorer.items.value),
+      openItem: explorerOpenItem,
+      goUp: explorerGoUp,
+      createFolder: vi.fn(async () => true),
+      createLedger: vi.fn(async () => true),
+    },
+    terminal: {
+      history: computed(() => mockRuntime.terminalHistory.value),
+      run: terminalRun,
+      clear: vi.fn(),
+    },
+    actions: {
+      selectScope,
+      selectLedger,
+      openApp,
+      closeApp,
+    },
+    init: runtimeInit,
   }),
 }));
-
-vi.mock("vue-router", async () => {
-  const actual = await vi.importActual<typeof import("vue-router")>("vue-router");
-  return {
-    ...actual,
-    useRoute: () => ({
-      path: "/app/library",
-    }),
-    useRouter: () => ({
-      push: vi.fn(async () => undefined),
-    }),
-  };
-});
 
 function createWrapper() {
   return mount(RouteApp, {
     global: {
       stubs: {
-        RouterLink: {
-          props: ["to"],
-          template: "<a :href=\"to\"><slot /></a>",
-        },
-        ThemeModeToggle: {
-          template: "<span>Theme toggle</span>",
-        },
-        RouterView: {
-          template: "<div>Library section</div>",
-        },
-        ConcordInspectorOverlay: {
-          template: "<div>Inspector</div>",
-        },
-        ConcordConsoleOverlay: {
-          template: "<div>Console</div>",
-        },
-        ConcordLauncherSurface: {
-          template: "<div>Launcher</div>",
-        },
-        ConcordHomeSurface: {
-          template: "<div>Home surface</div>",
-        },
       },
     },
   });
@@ -171,27 +184,29 @@ describe("RouteApp", () => {
     mockState.webId.value = null;
     mockState.issuer.value = "https://login.inrupt.com";
     mockState.error.value = null;
-    mockWorkspace.status.value = "ready";
-    mockWorkspace.currentScope.value = "private";
-    mockWorkspace.currentTargetUrl.value =
-      "https://pod.example/concord/workspace/private/";
-    mockAccount.selectedPod.value = "https://pod.example/";
-    mockUi.sidebarCollapsed.value = false;
-    mockUi.consoleOpen.value = true;
-    mockUi.inspectorOpen.value = true;
-    mockSurface.value = "home";
-    mockHost.activeAppLabel.value = null;
-    mockHost.activeTarget.value = null;
-    mockHost.error.value = null;
-    mockHost.tabs.value = [];
-    mockHost.activeTabId.value = null;
-    mockLibrary.selectedItem.value = null;
+    mockRuntime.bootStatus.value = "ready";
+    mockRuntime.authStatus.value = "anonymous";
+    mockRuntime.identityStatus.value = "verified";
+    mockRuntime.surfaces.value = [
+      { id: "core", label: "Core", available: true, active: true, reason: null },
+      { id: "explorer", label: "Explorer", available: true, active: false, reason: null },
+      { id: "terminal", label: "Terminal", available: true, active: false, reason: null },
+      { id: "concord-host", label: "Concord Host", available: false, active: false, reason: "Select a compatible ledger." },
+      { id: "identity", label: "Identity", available: true, active: false, reason: null },
+    ];
+    mockRuntime.activeSurface.value = "explorer";
+    mockRuntime.activeApp.value = null;
     login.mockClear();
     logout.mockClear();
     setIssuer.mockClear();
-    workspaceInit.mockClear();
-    toggleSidebar.mockClear();
-    toggleConsole.mockClear();
+    runtimeInit.mockClear();
+    selectScope.mockClear();
+    selectLedger.mockClear();
+    openApp.mockClear();
+    closeApp.mockClear();
+    explorerOpenItem.mockClear();
+    explorerGoUp.mockClear();
+    terminalRun.mockClear();
   });
 
   it("renders an inline Solid login gate for unauthenticated users", async () => {
@@ -200,8 +215,7 @@ describe("RouteApp", () => {
     expect(wrapper.text()).toContain("Sign in with Solid");
     expect(wrapper.text()).toContain("Continue with Solid");
     expect(wrapper.text()).toContain("login.inrupt.com");
-    expect(wrapper.text()).not.toContain("Console");
-    expect(wrapper.text()).not.toContain("Home surface");
+    expect(wrapper.text()).not.toContain("Workspace Core");
 
     await wrapper.get('input[aria-label="OIDC issuer"]').setValue("https://solidcommunity.net");
     expect(setIssuer).toHaveBeenCalledWith("https://solidcommunity.net");
@@ -223,18 +237,90 @@ describe("RouteApp", () => {
     expect(login).toHaveBeenCalledTimes(1);
   });
 
-  it("renders the authenticated workspace shell when Solid session is present", () => {
+  it("renders the authenticated workspace core when Solid session is present", () => {
     mockState.isAuthenticated.value = true;
     mockState.webId.value = "https://alice.example/profile/card#me";
+    mockRuntime.authStatus.value = "authenticated";
 
     const wrapper = createWrapper();
 
-    expect(wrapper.text()).toContain("Library");
-    expect(wrapper.text()).toContain("Sharing");
-    expect(wrapper.text()).toContain("People");
-    expect(wrapper.text()).toContain("Search");
-    expect(wrapper.text()).toContain("Home surface");
+    expect(wrapper.text()).toContain("Workspace Core");
+    expect(wrapper.text()).toContain("strict");
+    expect(wrapper.text()).toContain("Multiple ledgers in one verified workspace. One active projection at a time.");
+    expect(wrapper.text()).toContain("Current core signals");
+    expect(wrapper.text()).toContain("Explorer");
+    expect(wrapper.text()).toContain("Terminal");
+    expect(wrapper.text()).toContain("Command-driven workspace control");
+    expect(wrapper.text()).toContain("projects");
+    expect(wrapper.text()).toContain("App context");
+    expect(wrapper.text()).toContain("Identity");
+    expect(wrapper.text()).toContain("Private");
+    expect(wrapper.text()).toContain("alpha");
+    expect(wrapper.text()).toContain("beta");
+    expect(wrapper.text()).toContain("Open app");
+    expect(wrapper.text()).toContain("Close app");
     expect(wrapper.text()).toContain("Log out");
-    expect(workspaceInit).toHaveBeenCalledTimes(1);
+    expect(wrapper.text()).toContain("boot ready");
+    expect(wrapper.text()).toContain("ledgers 4");
+    expect(runtimeInit).toHaveBeenCalledTimes(1);
+  });
+
+  it("routes scope, explorer, and ledger selection through runtime actions", async () => {
+    mockState.isAuthenticated.value = true;
+    mockState.webId.value = "https://alice.example/profile/card#me";
+    mockRuntime.authStatus.value = "authenticated";
+
+    const wrapper = createWrapper();
+
+    const sharedButton = wrapper
+      .findAll("button")
+      .find((candidate) => candidate.text().trim() === "Shared");
+
+    expect(sharedButton).toBeTruthy();
+
+    await sharedButton!.trigger("click");
+    await wrapper.get('button[aria-label="Open explorer item projects"]').trigger("click");
+    await wrapper.get('button[aria-label="Select ledger alpha"]').trigger("click");
+
+    expect(selectScope).toHaveBeenCalledWith("shared");
+    expect(explorerOpenItem).toHaveBeenCalledWith("https://pod.example/private/projects/");
+    expect(selectLedger).toHaveBeenCalledWith("https://pod.example/private/a.json");
+  });
+
+  it("routes terminal command execution through the runtime surface", async () => {
+    mockState.isAuthenticated.value = true;
+    mockState.webId.value = "https://alice.example/profile/card#me";
+    mockRuntime.authStatus.value = "authenticated";
+
+    const wrapper = createWrapper();
+
+    await wrapper.get('input[aria-label="Terminal command"]').setValue("ls");
+    await wrapper.get("form").trigger("submit");
+
+    expect(terminalRun).toHaveBeenCalledWith("ls");
+  });
+
+  it("routes app opening through runtime actions", async () => {
+    mockState.isAuthenticated.value = true;
+    mockState.webId.value = "https://alice.example/profile/card#me";
+    mockRuntime.authStatus.value = "authenticated";
+    mockRuntime.surfaces.value = [
+      { id: "core", label: "Core", available: true, active: true, reason: null },
+      { id: "explorer", label: "Explorer", available: true, active: false, reason: null },
+      { id: "terminal", label: "Terminal", available: true, active: false, reason: null },
+      { id: "concord-host", label: "Concord Host", available: true, active: false, reason: null },
+      { id: "identity", label: "Identity", available: true, active: false, reason: null },
+    ];
+
+    const wrapper = createWrapper();
+
+    const activateButton = wrapper
+      .findAll("button")
+      .find((candidate) => candidate.text().trim() === "Open app");
+
+    expect(activateButton).toBeTruthy();
+    await activateButton!.trigger("click");
+
+    expect(openApp).toHaveBeenCalledTimes(1);
   });
 });

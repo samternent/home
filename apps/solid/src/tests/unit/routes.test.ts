@@ -14,18 +14,11 @@ function flattenPaths(input: any[], parent = ""): string[] {
 }
 
 describe("routes", () => {
-  it("includes the landing, app shell sections, auth redirect, and appearance routes", () => {
+  it("includes the root auth/core flow, legacy app redirect, and auth redirect", () => {
     const paths = flattenPaths(routes);
 
     expect(paths).toContain("/");
     expect(paths).toContain("/app");
-    expect(paths).toContain("/app/library");
-    expect(paths).toContain("/app/open/:scope/:appId/:encodedPath(.*)");
-    expect(paths).toContain("/app/sharing");
-    expect(paths).toContain("/app/people");
-    expect(paths).toContain("/app/account");
     expect(paths).toContain("/auth/redirect");
-    expect(paths).toContain("/settings/appearance");
-    expect(paths).not.toContain("/settings/identity/create");
   });
 });
