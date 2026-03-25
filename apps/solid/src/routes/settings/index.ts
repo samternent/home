@@ -1,5 +1,4 @@
 import type { RouteModule } from "@/routes/types";
-import appearanceRoutes from "./appearance";
 
 const settingsRoutes: RouteModule = [
   {
@@ -9,13 +8,6 @@ const settingsRoutes: RouteModule = [
       {
         path: "",
         component: () => import("./RouteSettings.vue"),
-        children: [
-          {
-            path: "",
-            redirect: { name: "settings-appearance" },
-          },
-          ...appearanceRoutes,
-        ],
       },
     ],
   },

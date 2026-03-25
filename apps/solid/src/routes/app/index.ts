@@ -8,16 +8,17 @@ const appRoutes: RouteModule = [
     children: [
       {
         path: "",
-        redirect: "/app/library",
+        component: () => import("./RouteAppDesktop.vue"),
       },
       {
-        path: "files",
-        redirect: "/app/library",
+        path: "finder",
+        name: "app-finder",
+        component: () => import("./RouteAppFinder.vue"),
       },
       {
-        path: "library",
-        name: "app-library",
-        component: () => import("./RouteAppFiles.vue"),
+        path: "terminal",
+        name: "app-terminal",
+        component: () => import("./RouteAppTerminal.vue"),
       },
       {
         path: "open/:scope/:appId/:encodedPath(.*)",

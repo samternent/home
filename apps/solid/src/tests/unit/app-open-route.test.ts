@@ -38,30 +38,32 @@ const state = {
 };
 
 vi.mock("@/modules/concord-os", () => ({
-  useConcordOsAppHost: () => ({
-    status: computed(() => state.status.value),
-    error: computed(() => state.hostError.value),
-    activeApp: computed(() => null),
-    activeAppId: computed(() => state.activeAppId.value),
-    activeTarget: computed(() => state.activeTarget.value),
-    activeAppLabel: computed(() => state.activeAppLabel.value),
-    loadHostedApp,
-    backToLibrary,
-    destroyActiveApp,
-  }),
-  useConcordTodoWorkingCopy: () => ({
-    items: computed(() => state.todoItems.value),
-    saving: computed(() => state.saving.value),
-    stagedCount: computed(() => state.stagedCount.value),
-    pendingTransactions: computed(() => state.pendingTransactions.value),
-    commitMessage: computed(() => state.commitMessage.value),
-    error: computed(() => state.draftError.value),
-    lastAction: computed(() => state.lastAction.value),
-    createTodo,
-    toggleTodo,
-    deleteTodo,
-    setCommitMessage,
-    commitPending,
+  useConcordOsKernel: () => ({
+    appHost: {
+      status: computed(() => state.status.value),
+      error: computed(() => state.hostError.value),
+      activeApp: computed(() => null),
+      activeAppId: computed(() => state.activeAppId.value),
+      activeTarget: computed(() => state.activeTarget.value),
+      activeAppLabel: computed(() => state.activeAppLabel.value),
+      loadHostedApp,
+      backToLibrary,
+      destroyActiveApp,
+    },
+    todo: {
+      items: computed(() => state.todoItems.value),
+      saving: computed(() => state.saving.value),
+      stagedCount: computed(() => state.stagedCount.value),
+      pendingTransactions: computed(() => state.pendingTransactions.value),
+      commitMessage: computed(() => state.commitMessage.value),
+      error: computed(() => state.draftError.value),
+      lastAction: computed(() => state.lastAction.value),
+      createTodo,
+      toggleTodo,
+      deleteTodo,
+      setCommitMessage,
+      commitPending,
+    },
   }),
 }));
 

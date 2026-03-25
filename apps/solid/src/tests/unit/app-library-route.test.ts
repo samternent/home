@@ -117,58 +117,48 @@ vi.mock("@/modules/concord-os", () => ({
     entry,
     ledgerSummary: null,
   }),
-  useConcordOsCore: () => ({
-    currentBrowse: computed(() => state.currentBrowse.value),
-    paths: computed(() => state.paths.value),
-    currentScope: computed(() => state.currentScope.value),
-    treeNodes: computed(() => state.treeNodes.value),
-    treeSelection: computed(() => state.treeSelection.value),
-    identityReady: computed(() => state.identityReady.value),
-    selectedEntry: computed(() => state.selectedEntry.value),
-    preview: computed(() => state.preview.value),
-    navigateTo: vi.fn(async () => undefined),
-    selectScope: vi.fn(async () => undefined),
-    activateTreeNode: vi.fn(async () => undefined),
-    createFolder: vi.fn(async () => undefined),
-    createLedger: vi.fn(async () => undefined),
-    openEntry: vi.fn(async () => undefined),
-    selectEntry: vi.fn(async () => undefined),
-    renameSelected: vi.fn(async () => undefined),
-    moveSelected: vi.fn(async () => undefined),
-    downloadSelected: vi.fn(async () => undefined),
-    deleteSelected: vi.fn(async () => undefined),
-    lookupEntry: vi.fn(async (url: string) =>
-      url === state.selectedEntry.value.url ? state.selectedEntry.value : null,
-    ),
-  }),
-  useConcordOsAppHost: () => ({
-    activeTarget: computed(() => null),
-    chooserOpen: computed(() => false),
-    chooserTarget: computed(() => null),
-    chooserApps: computed(() => []),
-    tabs: computed(() => []),
-    activeTabId: computed(() => null),
-    openChooser,
-    closeChooser: vi.fn(),
-    openChosenApp: vi.fn(async () => undefined),
-    activateTab: vi.fn(async () => undefined),
-    closeTab: vi.fn(async () => undefined),
-  }),
-  useConcordOsLibrary: () => ({
-    ledgers: computed(() => library.ledgers.value),
-    spaces: computed(() => library.spaces.value),
-    resources: computed(() => library.resources.value),
-    selectedItem: computed(() => library.selectedItem.value),
-  }),
-  useConcordOsWorkbenchView: () => ({
-    currentWork: computed(() => workbench.currentWork.value),
-    recentWork: computed(() => workbench.recentWork.value),
-    ledgerCreationHint: computed(() => workbench.ledgerCreationHint.value),
-    libraryEmptyLabel: computed(() => workbench.libraryEmptyLabel.value),
-  }),
-  useConcordOsUi: () => ({
-    inspectorOpen: computed(() => true),
-    toggleInspector: vi.fn(),
+  useConcordOsKernel: () => ({
+    workspace: {
+      currentBrowse: computed(() => state.currentBrowse.value),
+      paths: computed(() => state.paths.value),
+      currentScope: computed(() => state.currentScope.value),
+      treeNodes: computed(() => state.treeNodes.value),
+      treeSelection: computed(() => state.treeSelection.value),
+      identityReady: computed(() => state.identityReady.value),
+      selectedEntry: computed(() => state.selectedEntry.value),
+      preview: computed(() => state.preview.value),
+      navigateTo: vi.fn(async () => undefined),
+      selectScope: vi.fn(async () => undefined),
+      activateTreeNode: vi.fn(async () => undefined),
+      createFolder: vi.fn(async () => undefined),
+      createLedger: vi.fn(async () => undefined),
+      openEntry: vi.fn(async () => undefined),
+      selectEntry: vi.fn(async () => undefined),
+      lookupEntry: vi.fn(async (url: string) =>
+        url === state.selectedEntry.value.url ? state.selectedEntry.value : null,
+      ),
+    },
+    appHost: {
+      activeTarget: computed(() => null),
+      chooserOpen: computed(() => false),
+      chooserTarget: computed(() => null),
+      chooserApps: computed(() => []),
+      openChooser,
+      closeChooser: vi.fn(),
+      openChosenApp: vi.fn(async () => undefined),
+    },
+    library: {
+      ledgers: computed(() => library.ledgers.value),
+      spaces: computed(() => library.spaces.value),
+      resources: computed(() => library.resources.value),
+      selectedItem: computed(() => library.selectedItem.value),
+    },
+    workbench: {
+      currentWork: computed(() => workbench.currentWork.value),
+      recentWork: computed(() => workbench.recentWork.value),
+      ledgerCreationHint: computed(() => workbench.ledgerCreationHint.value),
+      libraryEmptyLabel: computed(() => workbench.libraryEmptyLabel.value),
+    },
   }),
 }));
 
@@ -205,8 +195,9 @@ describe("RouteAppFiles", () => {
 
     expect(wrapper.text()).toContain("Recent");
     expect(wrapper.text()).toContain("New");
+    expect(wrapper.text()).toContain("Locations");
+    expect(wrapper.text()).toContain("Private");
     expect(wrapper.text()).toContain("Open in Todo");
-    expect(wrapper.text()).toContain("Show structure");
     expect(wrapper.text()).not.toContain("Add resource");
     expect(wrapper.text()).not.toContain("Supporting resources");
   });

@@ -2,6 +2,7 @@ export * from "./apps";
 export * from "./core";
 export * from "./todo";
 export * from "./useConcordOsAppHost";
+export * from "./useConcordOsKernel";
 export * from "./useConcordOsLibrary";
 export * from "./useConcordOsWorkingCopy";
 export * from "./useConcordTodoWorkingCopy";

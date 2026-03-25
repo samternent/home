@@ -33,6 +33,7 @@ const mockUi = {
   consoleOpen: ref(true),
   inspectorOpen: ref(true),
 };
+const mockSurface = ref<"home" | "app" | "sharing" | "people" | "account">("home");
 const mockHost = {
   activeAppLabel: ref<string | null>(null),
   activeTarget: ref<{ url: string; title: string } | null>(null),
@@ -73,45 +74,49 @@ vi.mock("@/modules/solid-session", () => ({
 }));
 
 vi.mock("@/modules/concord-os", () => ({
-  useConcordOsCore: () => ({
-    status: computed(() => mockWorkspace.status.value),
-    selectedPod: computed(() => mockAccount.selectedPod.value),
-    currentScope: computed(() => mockWorkspace.currentScope.value),
-    currentTargetUrl: computed(() => mockWorkspace.currentTargetUrl.value),
-    selectedEntry: computed(() => null),
-    init: workspaceInit,
-  }),
-  useConcordOsAppHost: () => ({
-    activeAppLabel: computed(() => mockHost.activeAppLabel.value),
-    activeTarget: computed(() => mockHost.activeTarget.value),
-    error: computed(() => mockHost.error.value),
-    tabs: computed(() => mockHost.tabs.value),
-    activeTabId: computed(() => mockHost.activeTabId.value),
-    openChooser: vi.fn(),
-    activateTab: vi.fn(),
-    closeTab: vi.fn(),
-  }),
-  useConcordOsLibrary: () => ({
-    selectedItem: computed(() => mockLibrary.selectedItem.value),
-  }),
-  useConcordTodoWorkingCopy: () => ({
-    items: computed(() => mockTodoWorkingCopy.items.value),
-    stagedCount: computed(() => mockTodoWorkingCopy.stagedCount.value),
-    saving: computed(() => mockTodoWorkingCopy.saving.value),
-    pendingTransactions: computed(() => mockTodoWorkingCopy.pendingTransactions.value),
-    commitMessage: computed(() => mockTodoWorkingCopy.commitMessage.value),
-    error: computed(() => mockTodoWorkingCopy.error.value),
-    lastAction: computed(() => mockTodoWorkingCopy.lastAction.value),
-    setCommitMessage: mockTodoWorkingCopy.setCommitMessage,
-    commitPending: mockTodoWorkingCopy.commitPending,
-  }),
-  useConcordOsUi: () => ({
-    sidebarCollapsed: computed(() => mockUi.sidebarCollapsed.value),
-    consoleOpen: computed(() => mockUi.consoleOpen.value),
-    inspectorOpen: computed(() => mockUi.inspectorOpen.value),
-    toggleSidebar,
-    toggleConsole,
-    toggleInspector: vi.fn(),
+  useConcordOsKernel: () => ({
+    solid: {
+      session: computed(() => null),
+      status: computed(() => mockState.status.value),
+      isAuthenticated: computed(() => mockState.isAuthenticated.value),
+      webId: computed(() => mockState.webId.value),
+      issuer: computed(() => mockState.issuer.value),
+      error: computed(() => mockState.error.value),
+      providers: ["https://login.inrupt.com", "https://solidcommunity.net"],
+      setIssuer,
+      login,
+      logout,
+    },
+    workspace: {
+      init: workspaceInit,
+      status: computed(() => mockWorkspace.status.value),
+      selectedPod: computed(() => mockAccount.selectedPod.value),
+    },
+    appHost: {
+      activeTarget: computed(() => mockHost.activeTarget.value),
+      activeTabId: computed(() => mockHost.activeTabId.value),
+      activateTab: vi.fn(),
+      closeTab: vi.fn(),
+    },
+    ui: {
+      sidebarCollapsed: computed(() => mockUi.sidebarCollapsed.value),
+      inspectorOpen: computed(() => mockUi.inspectorOpen.value),
+      toggleSidebar,
+      toggleConsole,
+      toggleInspector: vi.fn(),
+    },
+    openContexts: computed(() => mockHost.tabs.value),
+    shellStatus: computed(() => "connected"),
+    statusTone: computed(() => "neutral" as const),
+    webIdShort: computed(() => mockState.webId.value || "No active WebID"),
+    surfaceLabel: computed(() => "Library"),
+    surface: computed(() => mockSurface.value),
+    consoleVisible: computed(() => mockUi.consoleOpen.value),
+    consolePulse: computed(() => false),
+    launcherOpen: computed(() => false),
+    setSurface: vi.fn(),
+    toggleLauncher: vi.fn(),
+    hideLauncher: vi.fn(),
   }),
 }));
 
@@ -121,6 +126,9 @@ vi.mock("vue-router", async () => {
     ...actual,
     useRoute: () => ({
       path: "/app/library",
+    }),
+    useRouter: () => ({
+      push: vi.fn(async () => undefined),
     }),
   };
 });
@@ -138,6 +146,18 @@ function createWrapper() {
         },
         RouterView: {
           template: "<div>Library section</div>",
+        },
+        ConcordInspectorOverlay: {
+          template: "<div>Inspector</div>",
+        },
+        ConcordConsoleOverlay: {
+          template: "<div>Console</div>",
+        },
+        ConcordLauncherSurface: {
+          template: "<div>Launcher</div>",
+        },
+        ConcordHomeSurface: {
+          template: "<div>Home surface</div>",
         },
       },
     },
@@ -159,6 +179,7 @@ describe("RouteApp", () => {
     mockUi.sidebarCollapsed.value = false;
     mockUi.consoleOpen.value = true;
     mockUi.inspectorOpen.value = true;
+    mockSurface.value = "home";
     mockHost.activeAppLabel.value = null;
     mockHost.activeTarget.value = null;
     mockHost.error.value = null;
@@ -179,8 +200,8 @@ describe("RouteApp", () => {
     expect(wrapper.text()).toContain("Sign in with Solid");
     expect(wrapper.text()).toContain("Continue with Solid");
     expect(wrapper.text()).toContain("login.inrupt.com");
-    expect(wrapper.text()).toContain("Console");
-    expect(wrapper.text()).toContain("Library");
+    expect(wrapper.text()).not.toContain("Console");
+    expect(wrapper.text()).not.toContain("Home surface");
 
     await wrapper.get('input[aria-label="OIDC issuer"]').setValue("https://solidcommunity.net");
     expect(setIssuer).toHaveBeenCalledWith("https://solidcommunity.net");
@@ -211,10 +232,8 @@ describe("RouteApp", () => {
     expect(wrapper.text()).toContain("Library");
     expect(wrapper.text()).toContain("Sharing");
     expect(wrapper.text()).toContain("People");
-    expect(wrapper.text()).toContain("Account");
-    expect(wrapper.text()).toContain("Library section");
-    expect(wrapper.text()).toContain("Console");
-    expect(wrapper.text()).toContain("Inspector");
+    expect(wrapper.text()).toContain("Search");
+    expect(wrapper.text()).toContain("Home surface");
     expect(wrapper.text()).toContain("Log out");
     expect(workspaceInit).toHaveBeenCalledTimes(1);
   });

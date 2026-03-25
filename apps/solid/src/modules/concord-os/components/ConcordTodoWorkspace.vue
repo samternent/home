@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { Badge, Button, Card, Checkbox, Input } from "ternent-ui/primitives";
+import { Badge, Button, Checkbox, Input } from "ternent-ui/primitives";
 import type { ConcordTodoItem } from "@/modules/concord-os/todo";
 
 const props = defineProps<{
@@ -39,10 +39,10 @@ function submitCreate() {
 <template>
   <div class="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)] gap-4 p-4">
     <section class="overflow-auto">
-      <Card variant="subtle" padding="sm" class="space-y-3 rounded-[1.5rem]">
+      <div class="space-y-3 rounded-xl bg-[color-mix(in_srgb,var(--ui-bg-muted)_6%,transparent)] p-4">
         <div class="flex items-center justify-between gap-3">
           <div>
-            <p class="m-0 text-[11px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
+            <p class="m-0 text-[11px] text-[var(--ui-fg-muted)]">
               {{ appLabel }} workspace
             </p>
             <p class="m-0 text-base font-medium text-[var(--ui-fg)]">
@@ -80,13 +80,13 @@ function submitCreate() {
         <p v-else-if="lastAction" class="m-0 text-[11px] text-[var(--ui-fg-muted)]">
           Last action: {{ lastAction }}
         </p>
-      </Card>
+      </div>
     </section>
 
     <section class="grid min-h-0 gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-      <Card variant="subtle" padding="sm" class="space-y-3 overflow-auto rounded-[1.5rem]">
+      <div class="space-y-3 overflow-auto rounded-xl border border-[color-mix(in_srgb,var(--ui-border)_48%,transparent)] p-4">
         <div class="flex items-center justify-between gap-3">
-          <p class="m-0 text-[11px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
+          <p class="m-0 text-[11px] text-[var(--ui-fg-muted)]">
             Active
           </p>
           <Badge tone="neutral" variant="soft">
@@ -98,7 +98,7 @@ function submitCreate() {
           <div
             v-for="item in openItems"
             :key="item.id"
-            class="flex items-center justify-between gap-3 rounded-xl border border-[var(--ui-border)] px-3 py-3"
+            class="flex items-center justify-between gap-3 border-b border-[color-mix(in_srgb,var(--ui-border)_45%,transparent)] py-3 last:border-b-0"
           >
             <label class="flex min-w-0 flex-1 items-center gap-3">
               <Checkbox :model-value="item.completed" @update:model-value="$emit('toggle', item)" />
@@ -115,11 +115,11 @@ function submitCreate() {
         <p v-else class="m-0 text-[11px] text-[var(--ui-fg-muted)]">
           No active tasks in this ledger yet.
         </p>
-      </Card>
+      </div>
 
-      <Card variant="subtle" padding="sm" class="space-y-3 overflow-auto rounded-[1.5rem]">
+      <div class="space-y-3 overflow-auto rounded-xl border border-[color-mix(in_srgb,var(--ui-border)_48%,transparent)] p-4">
         <div class="flex items-center justify-between gap-3">
-          <p class="m-0 text-[11px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
+          <p class="m-0 text-[11px] text-[var(--ui-fg-muted)]">
             Completed
           </p>
           <Badge tone="neutral" variant="soft">
@@ -131,7 +131,7 @@ function submitCreate() {
           <div
             v-for="item in completedItems"
             :key="item.id"
-            class="flex items-center justify-between gap-3 rounded-xl border border-[var(--ui-border)] px-3 py-3 opacity-80"
+            class="flex items-center justify-between gap-3 border-b border-[color-mix(in_srgb,var(--ui-border)_45%,transparent)] py-3 opacity-80 last:border-b-0"
           >
             <label class="flex min-w-0 flex-1 items-center gap-3">
               <Checkbox :model-value="item.completed" @update:model-value="$emit('toggle', item)" />
@@ -148,7 +148,7 @@ function submitCreate() {
         <p v-else class="m-0 text-[11px] text-[var(--ui-fg-muted)]">
           Completed work will collect here.
         </p>
-      </Card>
+      </div>
     </section>
   </div>
 </template>
