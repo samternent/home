@@ -3,12 +3,13 @@
 Target product statement:
 
 - A workspace runtime for mounted ledger-backed resources
-- Built on Solid for storage and Concord for deterministic replay
+- Built on Concord for deterministic replay with pluggable storage providers
 - Library, terminal, and hosted apps are separate surfaces over the same workspace state
 
 Important constraints:
 
 - Storage is persistence, never truth.
+- Storage providers are plugins, never the root runtime dependency.
 - Ledgers are truth.
 - Replay is the core abstraction.
 - Schema packages define meaning.
@@ -19,9 +20,10 @@ Important constraints:
 - All mutations happen via commands.
 - All interfaces operate on the same workspace state.
 - Verification is mandatory. Unverified history is not valid runtime input.
-- Solid login provisions the Concord identity used for signing and verification.
+- Solid may provision one storage session and one identity path, but the runtime must not depend on Solid existing.
 
 Migration note:
 
 - `src/modules/run` is the implementation home.
 - Do not reintroduce a catch-all shell/runtime module outside this tree.
+- `useRunWorkspaceSource.ts` should not remain the root workspace abstraction; it should become provider-specific as the storage-provider split lands.

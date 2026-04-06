@@ -22,7 +22,7 @@ export const appConfig = {
   "appId": "solid",
   "appTitle": "Concord OS for Solid",
   "defaultHost": "solid.ternent.dev",
-  "themeName": "concord",
+  "themeName": "concordos",
   "defaultThemeMode": "dark"
 } as const satisfies AppConfig;
 
@@ -34,7 +34,7 @@ export const appSeoConfig = {
   "lang": "en"
 } as const satisfies AppSeoConfig;
 
-export const appThemeName = "concord";
+export const appThemeName = "concordos";
 
 export const appThemePrefix = appThemeName;
 

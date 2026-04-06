@@ -45,7 +45,7 @@ describe("solid session controller", () => {
 
     expect(session.login).toHaveBeenCalledWith({
       oidcIssuer: "https://solidcommunity.net",
-      redirectUrl: `${window.location.origin}/auth/redirect`,
+      redirectUrl: `${window.location.origin}/`,
       clientName: "Concord OS for Solid",
     });
     expect(localStorage.getItem("solid/solid-issuer")).toBe(

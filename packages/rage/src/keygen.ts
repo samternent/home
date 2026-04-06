@@ -1,12 +1,12 @@
 import { RageInitError } from "./errors.js";
 import { assertRageInitialized } from "./init.js";
+import { getRageRuntime } from "./runtime.js";
 import type { RageKeyPair } from "./types.js";
-import { getWasmBindings } from "./wasm.js";
 
 export async function generateKeyPair(): Promise<RageKeyPair> {
   assertRageInitialized();
 
-  const result = await getWasmBindings().generateKeyPair();
+  const result = await getRageRuntime().generateKeyPair();
   if (!Array.isArray(result) || result.length !== 2) {
     throw new RageInitError(
       "RAGE_INIT_FAILED",

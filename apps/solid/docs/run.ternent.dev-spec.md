@@ -16,7 +16,7 @@ It is not a desktop skin and not a file browser with a terminal bolted on.
 
 It is a Concord-aligned runtime where:
 
-- storage mounts expose resources
+- storage providers expose mounts and resources
 - ledgers remain the source of truth
 - replay produces usable state
 - schemas define meaning
@@ -60,7 +60,7 @@ This follows the Concord rule:
 
 ### What should be preserved
 
-- Solid as the storage and mounting system
+- Solid as one storage and mounting plugin, not the required substrate
 - Concord as the replay and command runtime
 - ternent-ui as the only UI component system
 - the current sharing/people/account work as system-level services, not app features
@@ -70,6 +70,7 @@ This follows the Concord rule:
 
 - Resource: any addressable thing in the workspace
 - Mount: a source of resources, such as a Solid Pod root or exported bundle
+- Storage provider: a plugin that can expose mounts and optional browse/read/write capabilities
 - Ledger: append-only signed history
 - Commit: a single signed ledger event
 - Projection: deterministic replay output over one or more ledgers
@@ -248,6 +249,7 @@ type WorkspaceState = {
 - Storage, replay, and schema layers may maintain internal implementation state, but they must project into the canonical runtime shapes above.
 - New features should extend these types rather than inventing parallel state containers.
 - Phase 1 supports many verified ledgers in one workspace, but only one active projection at a time. `activeLedgerIds` stay plural because selection and switching are core from the start.
+- Storage providers are optional. Workspace state must still be valid when no provider is connected.
 
 ## Layered Runtime Model
 
@@ -255,6 +257,7 @@ type WorkspaceState = {
 
 Responsibilities:
 
+- provider registration and connection
 - mount discovery
 - resource addressing
 - path and handle abstractions
@@ -269,6 +272,7 @@ Must not know:
 
 Primary outputs:
 
+- connected storage providers
 - `Mount[]`
 - `Resource[]`
 - addressable `ResourceRef`
@@ -276,6 +280,10 @@ Primary outputs:
 Initial implementation home:
 
 - `src/modules/run/storage`
+
+Correction:
+
+- Solid is a storage provider implementation, not the storage layer itself
 
 ### 2. Ledger layer
 
@@ -448,6 +456,7 @@ Surface rule:
 
 - surfaces must not mutate state directly
 - all mutations happen through commands
+- surfaces must consume provider capabilities rather than assuming Solid exists
 
 Terminal contract:
 
@@ -479,6 +488,7 @@ Initial command groups:
 Phase 1 focus:
 
 - terminal operations should target inspection, verification, replay, and command execution for a single active ledger context
+- terminal core commands should work without any storage provider connected
 
 Initial implementation home:
 
@@ -610,6 +620,7 @@ Status:
 - move hosted app boot from direct storage wiring to active-projection wiring
 - harden resource and ledger switching across the workspace
 - harden mandatory verification and identity-driven history inspection
+- remove Solid as a top-level runtime dependency by introducing storage provider contracts
 
 ### Phase 4: upgrade replay from active-projection host to workspace replay
 
@@ -636,3 +647,4 @@ Status:
 - each runtime layer has explicit ownership rules
 - future implementation work can be delegated into those layers without re-deciding architecture
 - the runtime can evolve inside `run/*` without reintroducing a monolithic shell module
+- storage providers can be reasoned about as plugins rather than the runtime substrate

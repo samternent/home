@@ -1,6 +1,6 @@
 import { dirname, resolve } from "node:path";
 import { readFile } from "node:fs/promises";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { describe, expect, it, vi } from "vitest";
 import { createIdentity, serializeIdentity } from "../../identity-v2/src/index.ts";
 
@@ -246,5 +246,24 @@ describe("@ternent/armour", () => {
         data: new TextEncoder().encode("async"),
       })
     ).resolves.toBeInstanceOf(Uint8Array);
+  });
+
+  it("imports from built ESM output without manual path hacks", async () => {
+    const entryUrl = pathToFileURL(resolve(packageDir, "dist/index.js")).href;
+    const armour = await import(entryUrl);
+    const identity = await createIdentity();
+
+    await armour.initArmour();
+
+    const ciphertext = await armour.encryptForIdentities({
+      identities: [identity],
+      data: new TextEncoder().encode("built package"),
+    });
+    const plaintext = await armour.decryptWithIdentity({
+      identity,
+      data: ciphertext,
+    });
+
+    expect(new TextDecoder().decode(plaintext)).toBe("built package");
   });
 });

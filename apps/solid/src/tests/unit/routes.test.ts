@@ -14,11 +14,20 @@ function flattenPaths(input: any[], parent = ""): string[] {
 }
 
 describe("routes", () => {
-  it("includes the root auth/core flow, legacy app redirect, and auth redirect", () => {
+  it("includes the home shell surfaces without a dedicated auth screen", () => {
     const paths = flattenPaths(routes);
 
     expect(paths).toContain("/");
-    expect(paths).toContain("/app");
-    expect(paths).toContain("/auth/redirect");
+    expect(paths).toContain("/terminal");
+    expect(paths).toContain("/explorer");
+    expect(paths).toContain("/tasks");
+    expect(paths).toContain("/tasks/permissions");
+    expect(paths).toContain("/demo");
+    expect(paths).toContain("/permissions");
+    expect(paths).toContain("/launch");
+    expect(paths).toContain("/launch/start");
+    expect(paths).toContain("/launch/items");
+    expect(paths).toContain("/launch/tasks");
+    expect(paths).not.toContain("/auth/redirect");
   });
 });

@@ -1,36 +1,48 @@
 import { computed } from "vue";
-import { useRunWorkspaceSource, useRunWorkspaceState } from "@/modules/run/workspace";
+import { useRunTasksRuntime } from "@/modules/run/tasks/useRunTasksRuntime";
+import { useRunWorkspaceRuntime, useRunWorkspaceState } from "@/modules/run/workspace";
 import { useRunWorkspaceActions } from "@/modules/run/services";
 import type { RunExplorerItem, RunExplorerSurface } from "./types";
 
 let singleton: RunExplorerSurface | null = null;
 
 function createExplorerSurface(): RunExplorerSurface {
-  const source = useRunWorkspaceSource();
+  const runtime = useRunWorkspaceRuntime();
   const workspace = useRunWorkspaceState();
   const actions = useRunWorkspaceActions();
+  const tasks = useRunTasksRuntime();
 
   const items = computed<RunExplorerItem[]>(() =>
-    (source.currentBrowse.value?.entries ?? []).map((entry) => ({
+    (runtime.currentBrowse.value?.entries ?? []).map((entry) => ({
       id: entry.url,
       url: entry.url,
       name: entry.name,
       title: entry.name.replace(/\.json$/i, ""),
-      kind: entry.isLedger ? "ledger" : entry.kind,
+      kind: entry.kind,
       scope: entry.scope,
       active: workspace.selection.value.activeResourceId === entry.url,
+      contentType: entry.contentType,
+      writable: entry.writable,
+      lastModified: entry.lastModified,
     })),
   );
 
   return {
-    currentUrl: computed(() => source.currentBrowse.value?.url ?? null),
-    currentPath: computed(() => source.currentBrowse.value?.path || "/"),
-    parentUrl: computed(() => source.currentBrowse.value?.parentUrl ?? null),
+    currentUrl: computed(() => runtime.currentBrowse.value?.url ?? null),
+    currentPath: computed(() => runtime.currentBrowse.value?.path || "/"),
+    parentUrl: computed(() => runtime.currentBrowse.value?.parentUrl ?? null),
     items,
-    canGoUp: computed(() => Boolean(source.currentBrowse.value?.parentUrl)),
-    async openItem(url: string) {
-      const result = await actions.openEntryByUrl(url);
+    canGoUp: computed(() => Boolean(runtime.currentBrowse.value?.parentUrl)),
+    async navigateItem(url: string) {
+      const result = await actions.navigateEntryByUrl(url);
       return result.ok;
+    },
+    async selectItem(url: string) {
+      const result = await actions.selectEntryByUrl(url);
+      return result.ok;
+    },
+    async openTasks(url: string) {
+      return await tasks.openTasksForLedger(url);
     },
     async goUp() {
       const result = await actions.navigateUp();
@@ -42,7 +54,12 @@ function createExplorerSurface(): RunExplorerSurface {
     },
     async createLedger(name: string) {
       const result = await actions.createLedger(name);
-      return result.ok;
+      if (!result.ok) {
+        return false;
+      }
+
+      await actions.selectEntryByUrl(result.value.entry.url);
+      return true;
     },
   };
 }

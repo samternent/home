@@ -4,29 +4,24 @@ export const buttonBaseClass =
   "inline-flex items-center justify-center gap-2 border border-transparent " +
   "font-medium select-none whitespace-nowrap align-middle " +
   "rounded-[var(--ui-radius-md)] " +
-  "transition-[transform,box-shadow,background-color,opacity,border-color,color] " +
+  "transition-[background-color,opacity,border-color,color] " +
   "duration-[var(--ui-duration-normal)] ease-[var(--ui-ease-out)] " +
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ui-ring)]";
 
 export const buttonStateClasses = {
-  interactive:
-    "cursor-pointer shadow-[var(--ui-shadow-sm)] " +
-    "hover:shadow-[var(--ui-shadow-md)] hover:translate-y-[var(--ui-lift-hover)] " +
-    "active:translate-y-0 active:scale-[var(--ui-scale-active)]",
+  interactive: "cursor-pointer",
   disabled: "cursor-not-allowed pointer-events-none opacity-40 shadow-none",
-  loading: "cursor-progress pointer-events-none opacity-75 shadow-[var(--ui-shadow-sm)]",
+  loading: "cursor-progress pointer-events-none opacity-75 shadow-none",
 } as const;
 
 export const buttonVariantClasses: Record<ButtonVariant, string> = {
   primary:
     "bg-[var(--ui-primary)] text-[var(--ui-on-primary)] " +
-    "hover:bg-[var(--ui-primary-hover)] active:bg-[var(--ui-primary-active)] " +
-    "hover:shadow-[var(--ui-glow-primary)]",
+    "hover:bg-[var(--ui-primary-hover)] active:bg-[var(--ui-primary-active)]",
 
   accent:
     "bg-[var(--ui-accent)] text-[var(--ui-on-accent)] " +
-    "hover:bg-[var(--ui-accent-hover)] active:bg-[var(--ui-accent-active)] " +
-    "hover:shadow-[var(--ui-glow-accent)]",
+    "hover:bg-[var(--ui-accent-hover)] active:bg-[var(--ui-accent-active)]",
 
   secondary:
     "bg-[var(--ui-tonal-secondary)] text-[var(--ui-fg)] " +
@@ -38,8 +33,7 @@ export const buttonVariantClasses: Record<ButtonVariant, string> = {
 
   critical:
     "bg-[var(--ui-critical)] text-[var(--ui-on-critical)] " +
-    "hover:bg-[var(--ui-critical-hover)] active:bg-[var(--ui-critical-active)] " +
-    "hover:shadow-[var(--ui-glow-critical)]",
+    "hover:bg-[var(--ui-critical-hover)] active:bg-[var(--ui-critical-active)]",
 
   "plain-primary":
     "bg-transparent text-[var(--ui-primary)] shadow-none " +

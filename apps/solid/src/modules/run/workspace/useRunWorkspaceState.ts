@@ -1,28 +1,30 @@
 import { computed, type ComputedRef } from "vue";
-import type { SolidWorkspaceScope } from "@ternent/solid";
 import { useRunStorageCatalog } from "@/modules/run/storage";
 import type { RunCoreSelection } from "@/modules/run/core/types";
-import { useRunWorkspaceSource } from "./useRunWorkspaceSource";
+import type { RunWorkspaceScope } from "@/modules/run/storage/types";
+import { useRunWorkspaceRuntime } from "./useRunWorkspaceRuntime";
 
 export type RunWorkspaceState = {
   selection: ComputedRef<RunCoreSelection>;
-  selectScope(scope: SolidWorkspaceScope): Promise<void>;
+  selectScope(scope: RunWorkspaceScope): Promise<void>;
   selectLedger(ledgerId: string): Promise<void>;
 };
 
 let singleton: RunWorkspaceState | null = null;
 
 function createWorkspaceState(): RunWorkspaceState {
-  const workspace = useRunWorkspaceSource();
+  const workspace = useRunWorkspaceRuntime();
   const storage = useRunStorageCatalog();
 
   const selection = computed<RunCoreSelection>(() => {
-    const selected = workspace.selectedEntry.value;
     return {
-      activeResourceId: selected?.url ?? null,
-      activeLedgerId: selected?.isLedger ? selected.url : null,
-      activeLedgerIds: selected?.isLedger ? [selected.url] : [],
-      activeScope: selected?.scope ?? workspace.currentBrowse.value?.scope ?? null,
+      activeProviderId: workspace.selection.value.activeProviderId,
+      activeMountId: workspace.selection.value.activeMountId,
+      activeBrowseUrl: workspace.selection.value.activeBrowseUrl,
+      activeResourceId: workspace.selection.value.activeResourceId,
+      activeLedgerId: workspace.selection.value.activeLedgerIds[0] ?? null,
+      activeLedgerIds: workspace.selection.value.activeLedgerIds,
+      activeScope: workspace.selection.value.activeScope,
     };
   });
 
@@ -43,8 +45,13 @@ function createWorkspaceState(): RunWorkspaceState {
         return;
       }
 
-      if (workspace.currentScope.value !== cached.scope) {
+      if (cached.scope && workspace.selection.value.activeScope !== cached.scope) {
         await workspace.selectScope(cached.scope);
+      } else if (
+        cached.mountId &&
+        workspace.selection.value.activeMountId !== cached.mountId
+      ) {
+        await workspace.selectMount(cached.mountId);
       }
 
       const entry =

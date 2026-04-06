@@ -71,7 +71,12 @@ const todoState = app.getReplayState("todo");
 
 ## Identity
 
-The app passes a single `SerializedIdentity` into Concord:
+Concord now supports two runtime modes:
+
+- read-only: omit `identity` and use Concord for load/import/verify/replay only
+- interactive: provide `identity` and use Concord for signed commands and commits
+
+Interactive mode:
 
 ```ts
 const app = await createConcordApp({
@@ -82,6 +87,21 @@ const app = await createConcordApp({
 ```
 
 Concord derives author, signer, and decrypt capability internally. Command handlers receive the same high-level `SerializedIdentity` at `ctx.identity`. Ledger-facing identity adaptation stays private to Concord.
+
+Read-only mode:
+
+```ts
+const app = await createConcordApp({
+  storage,
+  plugins,
+});
+```
+
+In read-only mode:
+
+- `load`, `importLedger`, `verify`, `replay`, and `recompute` are allowed
+- `create`, `command`, `commit`, and `clearStaged` fail with `READ_ONLY_RUNTIME`
+- encrypted entries remain encrypted unless an identity is present for decrypt capability
 
 ## Replay Plugins
 

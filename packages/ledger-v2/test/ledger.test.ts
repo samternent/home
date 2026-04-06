@@ -1,3 +1,5 @@
+import { dirname, resolve } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { describe, expect, it } from "vitest";
 import { createIdentity } from "@ternent/identity";
 import { recipientFromIdentity } from "@ternent/armour";
@@ -7,6 +9,9 @@ import {
   type LedgerPersistenceSnapshot,
   type LedgerStorageAdapter
 } from "../src/index.ts";
+
+const testDir = dirname(fileURLToPath(import.meta.url));
+const packageDir = resolve(testDir, "..");
 
 function createClock(values: string[]) {
   let index = 0;
@@ -121,7 +126,7 @@ describe("@ternent/ledger", () => {
     expect(await ledger.replay()).toEqual(["committed-1", "staged-2"]);
   });
 
-  it("does not persist staged entries before an explicit commit", async () => {
+  it("persists staged entries before an explicit commit", async () => {
     const identity = await createIdentity("2026-03-18T10:04:00.000Z");
     const storage = createMemoryStorage();
     const ledger = await createLedger({
@@ -151,8 +156,63 @@ describe("@ternent/ledger", () => {
     });
 
     expect(ledger.getState().staged).toHaveLength(1);
-    expect(storage.snapshot?.staged).toEqual([]);
+    expect(storage.snapshot?.staged).toHaveLength(1);
+    expect(storage.snapshot?.staged[0]).toMatchObject({
+      kind: "todo.item.created"
+    });
     expect(storage.snapshot?.container?.entries).toEqual({});
+  });
+
+  it("reloads persisted staged entries from storage", async () => {
+    const identity = await createIdentity("2026-03-18T10:04:00.000Z");
+    const storage = createMemoryStorage();
+
+    const first = await createLedger({
+      identity: {
+        signer: { identity },
+        authorResolver: () => "did:local"
+      },
+      initialProjection: [] as string[],
+      projector: (projection, entry) => [
+        ...projection,
+        String((entry.payload as { data: { id: string } }).data.id)
+      ],
+      storage,
+      now: createClock([
+        "2026-03-18T10:04:00.000Z",
+        "2026-03-18T10:04:01.000Z",
+        "2026-03-18T10:04:02.000Z"
+      ])
+    });
+
+    await first.create();
+    await first.append({
+      kind: "todo.item.created",
+      payload: { id: "staged-only" }
+    });
+
+    const restored = await createLedger({
+      identity: {
+        signer: { identity },
+        authorResolver: () => "did:local"
+      },
+      initialProjection: [] as string[],
+      projector: (projection, entry) => [
+        ...projection,
+        String((entry.payload as { data: { id: string } }).data.id)
+      ],
+      storage,
+      now: createClock([
+        "2026-03-18T10:04:03.000Z",
+        "2026-03-18T10:04:04.000Z",
+        "2026-03-18T10:04:05.000Z"
+      ])
+    });
+
+    expect(await restored.loadFromStorage()).toBe(true);
+    expect(restored.getState().staged).toHaveLength(1);
+    expect(restored.getState().projection).toEqual(["staged-only"]);
+    expect(restored.getState().container?.entries).toEqual({});
   });
 
   it("replays encrypted entries as encrypted or decrypted based on capability", async () => {
@@ -198,6 +258,57 @@ describe("@ternent/ledger", () => {
     const decryptingLedger = await makeLedger(true);
     await decryptingLedger.import(await encryptedLedger.export());
     expect(await decryptingLedger.replay()).toEqual(["secret note"]);
+  });
+
+  it("keeps replay moving when a decryptor is present but cannot decrypt an entry", async () => {
+    const alice = await createIdentity("2026-03-18T10:06:00.000Z");
+    const bob = await createIdentity("2026-03-18T10:06:30.000Z");
+    const recipient = await recipientFromIdentity(alice);
+
+    const writer = await createLedger({
+      identity: {
+        signer: { identity: alice },
+        authorResolver: () => "did:alice",
+        decryptor: { identity: alice }
+      },
+      initialProjection: [] as string[],
+      projector: (projection, entry) => [...projection, entry.payload.type],
+      now: createClock([
+        "2026-03-18T10:06:00.000Z",
+        "2026-03-18T10:06:01.000Z",
+        "2026-03-18T10:06:02.000Z"
+      ])
+    });
+
+    await writer.create();
+    await writer.append({
+      kind: "journal.entry.created",
+      payload: { text: "alice only" },
+      protection: {
+        type: "recipients",
+        recipients: [recipient],
+        encoding: "armor"
+      }
+    });
+    await writer.commit();
+
+    const reader = await createLedger({
+      identity: {
+        signer: { identity: bob },
+        authorResolver: () => "did:bob",
+        decryptor: { identity: bob }
+      },
+      initialProjection: [] as string[],
+      projector: (projection, entry) => [...projection, entry.payload.type],
+      now: createClock([
+        "2026-03-18T10:06:30.000Z",
+        "2026-03-18T10:06:31.000Z",
+        "2026-03-18T10:06:32.000Z"
+      ])
+    });
+
+    await reader.import(await writer.export());
+    expect(await reader.replay()).toEqual(["encrypted"]);
   });
 
   it("verifies encrypted records deterministically even when ciphertext differs", async () => {
@@ -682,5 +793,45 @@ describe("@ternent/ledger", () => {
     expect(await restored.loadFromStorage()).toBe(true);
     expect(restored.getState()).not.toHaveProperty("signingKey");
     expect(restored.getState().projection.ids).toEqual([staged.entry.entryId]);
+  });
+
+  it("imports from built ESM output without manual path hacks", async () => {
+    const entryUrl = pathToFileURL(resolve(packageDir, "dist/index.js")).href;
+    const ledgerModule = await import(entryUrl);
+    const identity = await createIdentity("2026-03-18T10:21:00.000Z");
+    const recipient = await recipientFromIdentity(identity);
+    const ledger = await ledgerModule.createLedger({
+      identity: {
+        signer: { identity },
+        authorResolver: () => "did:built",
+        decryptor: { identity }
+      },
+      initialProjection: [] as string[],
+      projector: (projection, entry) => [
+        ...projection,
+        entry.payload.type === "decrypted"
+          ? String((entry.payload as { data: { text: string } }).data.text)
+          : entry.payload.type
+      ],
+      now: createClock([
+        "2026-03-18T10:21:00.000Z",
+        "2026-03-18T10:21:01.000Z",
+        "2026-03-18T10:21:02.000Z"
+      ])
+    });
+
+    await ledger.create();
+    await ledger.append({
+      kind: "journal.entry.created",
+      payload: { text: "built ledger" },
+      protection: {
+        type: "recipients",
+        recipients: [recipient],
+        encoding: "armor"
+      }
+    });
+    await ledger.commit();
+
+    expect(await ledger.replay()).toEqual(["built ledger"]);
   });
 });

@@ -2,7 +2,7 @@
 
 Purpose:
 
-- orchestrate mounts, selection, open contexts, active surfaces, and session-aware runtime state
+- orchestrate providers, mounts, selection, open contexts, active surfaces, and runtime state
 
 Canonical output:
 
@@ -39,14 +39,26 @@ type WorkspaceState = {
 
 Own here:
 
+- provider registration and connection orchestration
+- active mount inventory above providers
+- provider-agnostic browse/selection state
 - current workspace context
 - selected resource and scope
 - active app contexts and tabs
 - mounted source inventory
 - shell-level state shared by all surfaces
+- provider and mount selection above specific provider implementations
 
 Do not own here:
 
-- low-level Solid client details
+- low-level provider client details
 - schema reducer internals
 - domain app presentation
+
+Current seam:
+
+- `useRunProviderRegistry.ts`: registry of connected storage providers
+- `useRunMountRegistry.ts`: browsable mount inventory across providers
+- `useRunWorkspaceRuntime.ts`: provider-agnostic browse and selection runtime
+- `useRunWorkspaceRuntime.ts#reset()`: hard reset seam used when the active identity changes
+- `useRunWorkspaceSource.ts`: temporary Solid compatibility shim only

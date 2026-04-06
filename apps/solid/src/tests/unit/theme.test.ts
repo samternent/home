@@ -7,11 +7,11 @@ describe("theme mode", () => {
     theme.start();
 
     expect(theme.mode.value).toBe("dark");
-    expect(document.documentElement.getAttribute("data-theme")).toBe("concord-dark");
+    expect(document.documentElement.getAttribute("data-theme")).toBe("concordos-dark");
 
     theme.toggleTheme();
 
     expect(theme.mode.value).toBe("light");
-    expect(document.documentElement.getAttribute("data-theme")).toBe("concord-light");
+    expect(document.documentElement.getAttribute("data-theme")).toBe("concordos-light");
   });
 });

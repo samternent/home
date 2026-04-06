@@ -1,10 +1,11 @@
 import type { DialogSize } from "./Dialog.types";
 
-export const dialogBackdropClass = "fixed inset-0 z-40 bg-[var(--ui-fg)]/40 backdrop-blur-sm";
+export const dialogBackdropClass =
+  "fixed inset-0 z-40 bg-[color:color-mix(in_srgb,var(--ui-bg)_28%,transparent)] backdrop-blur-md";
 export const dialogPositionerClass = "fixed inset-0 z-50 grid place-items-center p-4";
 export const dialogContentBaseClass =
   "w-full overflow-hidden rounded-[var(--ui-radius-lg)] border border-[var(--ui-border)] " +
-  "bg-[var(--ui-surface)] text-[var(--ui-fg)] shadow-[var(--ui-shadow-md)]";
+  "bg-[var(--ui-surface)] text-[var(--ui-fg)] shadow-none";
 
 export const dialogContentSizeClasses: Record<DialogSize, string> = {
   sm: "max-w-md",

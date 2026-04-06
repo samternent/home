@@ -41,11 +41,11 @@ const defaultProviders = [
 ] as const;
 
 const issuerStorageKey = `${appConfig.appId}/solid-issuer`;
-const providerList = [...defaultProviders];
+const providerList: readonly string[] = [...defaultProviders];
 const stateSession = shallowRef<Session | null>(null);
 const stateIsAuthenticated = ref(false);
 const stateStatus = ref<SolidSessionStatus>("idle");
-const stateIssuer = ref(defaultProviders[0]);
+const stateIssuer = ref<string>(defaultProviders[0]);
 const stateError = ref<string | null>(null);
 const stateWebId = ref<string | null>(null);
 let restorePromise: Promise<void> | null = null;
@@ -110,7 +110,7 @@ function redirectUrl(): string {
     return "";
   }
 
-  return new URL("/auth/redirect", window.location.origin).toString();
+  return new URL("/", window.location.origin).toString();
 }
 
 async function restoreInternal() {

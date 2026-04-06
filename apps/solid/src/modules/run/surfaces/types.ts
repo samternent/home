@@ -1,5 +1,5 @@
 import type { ComputedRef } from "vue";
-import type { SolidWorkspaceScope } from "@ternent/solid";
+import type { RunWorkspaceScope } from "@/modules/run/storage/types";
 
 export type RunExplorerItemKind = "container" | "ledger" | "file";
 
@@ -9,8 +9,11 @@ export type RunExplorerItem = {
   name: string;
   title: string;
   kind: RunExplorerItemKind;
-  scope: SolidWorkspaceScope;
+  scope: RunWorkspaceScope | null;
   active: boolean;
+  contentType: string | null;
+  writable: boolean;
+  lastModified: string | null;
 };
 
 export type RunExplorerSurface = {
@@ -19,7 +22,9 @@ export type RunExplorerSurface = {
   parentUrl: ComputedRef<string | null>;
   items: ComputedRef<RunExplorerItem[]>;
   canGoUp: ComputedRef<boolean>;
-  openItem(url: string): Promise<boolean>;
+  navigateItem(url: string): Promise<boolean>;
+  selectItem(url: string): Promise<boolean>;
+  openTasks(url: string): Promise<boolean>;
   goUp(): Promise<boolean>;
   createFolder(name: string): Promise<boolean>;
   createLedger(name: string): Promise<boolean>;
@@ -35,6 +40,27 @@ export type RunTerminalEntry = {
 
 export type RunTerminalSurface = {
   history: ComputedRef<RunTerminalEntry[]>;
+  draft: ComputedRef<string>;
+  promptPath: ComputedRef<string>;
   run(input: string): Promise<boolean>;
+  setDraft(input: string): void;
   clear(): void;
+};
+
+export type RunDashboardLedgerCard = {
+  id: string;
+  title: string;
+  url: string;
+  scope: RunWorkspaceScope | null;
+  active: boolean;
+  verificationSummary: string;
+  interactive: boolean;
+};
+
+export type RunDashboardSurface = {
+  activeLedgerLabel: ComputedRef<string>;
+  activeLedgerSummary: ComputedRef<string>;
+  recentLedgers: ComputedRef<RunDashboardLedgerCard[]>;
+  hasActiveLedger: ComputedRef<boolean>;
+  openTasks(url: string): Promise<boolean>;
 };

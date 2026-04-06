@@ -2,7 +2,7 @@ app:
   id: solid
   title: Concord OS for Solid
   host: solid.ternent.dev
-  themeName: concord
+  themeName: concordos
   defaultThemeMode: dark
 seo:
   shortName: Concord OS

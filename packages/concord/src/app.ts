@@ -127,15 +127,23 @@ function normalizeAppendInputs(
   return inputs;
 }
 
-function assertInternalLedgerRequirements(input: ConcordAppOptions): void {
-  if (!input.identity) {
+function hasInteractiveIdentity(
+  identity: SerializedIdentity | undefined,
+): identity is SerializedIdentity {
+  return Boolean(identity);
+}
+
+function requireInteractiveIdentity(
+  identity: SerializedIdentity | undefined,
+): SerializedIdentity {
+  if (!hasInteractiveIdentity(identity)) {
     throw new ConcordBoundaryError(
-      "INVALID_IDENTITY",
-      "Concord requires an identity when creating an internal ledger.",
+      "READ_ONLY_RUNTIME",
+      "Concord requires an identity for create, command, commit, and other signed mutations.",
     );
   }
 
-  resolveAuthorFromIdentity(input.identity);
+  return identity;
 }
 
 function resolveAuthorFromIdentity(identity: SerializedIdentity): string {
@@ -161,12 +169,27 @@ function resolveDecryptorFromIdentity(
   return { identity } as LedgerDecryptor;
 }
 
-function resolveLedgerIdentity(identity: SerializedIdentity): LedgerIdentityContext {
+function resolveReadOnlyLedgerIdentity(): LedgerIdentityContext {
+  return {
+    signer: {
+      identity: {
+        keyId: "readonly",
+      } as SerializedIdentity,
+    },
+    authorResolver() {
+      throw new ConcordBoundaryError(
+        "READ_ONLY_RUNTIME",
+        "Concord cannot derive an author without an interactive identity.",
+      );
+    },
+  };
+}
+
+function resolveLedgerIdentity(
+  identity: SerializedIdentity | undefined,
+): LedgerIdentityContext {
   if (!identity) {
-    throw new ConcordBoundaryError(
-      "INVALID_IDENTITY",
-      "Concord requires an identity when creating an internal ledger.",
-    );
+    return resolveReadOnlyLedgerIdentity();
   }
 
   return {
@@ -194,9 +217,30 @@ function createReplayMetadata(range: ReplayRange): ConcordReplayMetadata {
   };
 }
 
+const REPLAY_YIELD_INTERVAL = 25;
+
+async function yieldToHost(): Promise<void> {
+  if (typeof requestAnimationFrame === "function") {
+    await new Promise<void>((resolve) => {
+      requestAnimationFrame(() => resolve());
+    });
+    return;
+  }
+
+  await new Promise<void>((resolve) => {
+    globalThis.setTimeout(resolve, 0);
+  });
+}
+
 export async function createConcordApp(
   input: ConcordAppOptions,
 ): Promise<ConcordApp> {
+  if (hasInteractiveIdentity(input.identity)) {
+    resolveAuthorFromIdentity(input.identity);
+  }
+
+  const appIdentity = input.identity;
+
   const plugins = [...input.plugins];
   const now = input.now ?? createDefaultNow;
   const policy = {
@@ -228,14 +272,10 @@ export async function createConcordApp(
     }
   }
 
-  if (!input.ledger) {
-    assertInternalLedgerRequirements(input);
-  }
-
   const ledger =
     input.ledger ??
     (await createLedger<LedgerReplayEntry[]>({
-      identity: resolveLedgerIdentity(input.identity),
+      identity: resolveLedgerIdentity(appIdentity),
       initialProjection: [],
       projector: (entries: LedgerReplayEntry[], entry: LedgerReplayEntry) => [
         ...entries,
@@ -262,6 +302,18 @@ export async function createConcordApp(
   };
 
   const listeners = new Set<(value: Readonly<ConcordState>) => void>();
+  let committedVerificationCache:
+    | {
+        headCommitId: string | null;
+        verification: LedgerVerificationResult;
+      }
+    | null = null;
+  let replayEntriesCache:
+    | {
+        fingerprint: string;
+        replayEntries: unknown;
+      }
+    | null = null;
 
   function getReplayState<T = unknown>(pluginId: string, source = state): T {
     assertKnownPlugin(pluginsById, pluginId);
@@ -273,6 +325,37 @@ export async function createConcordApp(
     for (const listener of listeners) {
       listener(state);
     }
+  }
+
+  function getCommittedHeadCommitId(): string | null {
+    return ledger.getState().container?.head ?? null;
+  }
+
+  function getReplayFingerprint(): string {
+    const ledgerState = ledger.getState();
+    return `${ledgerState.container?.head ?? "none"}::${ledgerState.staged
+      .map((entry) => entry.entryId)
+      .join("|")}`;
+  }
+
+  async function getReplayEntries(
+    options?: ConcordReplayOptions,
+  ): Promise<unknown> {
+    if (options?.fromEntryId || options?.toEntryId) {
+      return await ledger.replay(options);
+    }
+
+    const fingerprint = getReplayFingerprint();
+    if (replayEntriesCache?.fingerprint === fingerprint) {
+      return replayEntriesCache.replayEntries;
+    }
+
+    const replayEntries = await ledger.replay();
+    replayEntriesCache = {
+      fingerprint,
+      replayEntries,
+    };
+    return replayEntries;
   }
 
   function createReplayDraft(
@@ -293,7 +376,7 @@ export async function createConcordApp(
       const metadata = createReplayMetadata(range);
       const context: ConcordReplayContext = {
         pluginId: plugin.id,
-        decryptAvailable: Boolean(resolveDecryptorFromIdentity(input.identity)),
+        decryptAvailable: hasInteractiveIdentity(appIdentity),
         replay: metadata,
         getState() {
           return nextState.replay[plugin.id] as unknown;
@@ -347,6 +430,10 @@ export async function createConcordApp(
         context.replay.entryCount = entries.length;
         await plugin.applyEntry?.(entry, context as never);
       }
+
+      if ((index + 1) % REPLAY_YIELD_INTERVAL === 0) {
+        await yieldToHost();
+      }
     }
 
     for (const plugin of plugins) {
@@ -370,9 +457,10 @@ export async function createConcordApp(
   }
 
   function createCommandContext(): ConcordCommandContext {
+    const identity = requireInteractiveIdentity(appIdentity);
     return {
       now,
-      identity: input.identity,
+      identity,
       getReplayState<T = unknown>(pluginId: string): T {
         return getReplayState<T>(pluginId);
       },
@@ -396,7 +484,19 @@ export async function createConcordApp(
     allowInspectionOnly?: boolean;
     resetReplayOnFailure?: boolean;
   }): Promise<boolean> {
-    const verification = await ledger.verify();
+    const currentHeadCommitId = getCommittedHeadCommitId();
+    const verification =
+      committedVerificationCache?.headCommitId === currentHeadCommitId
+        ? committedVerificationCache.verification
+        : await ledger.verify();
+
+    if (committedVerificationCache?.headCommitId !== currentHeadCommitId) {
+      committedVerificationCache = {
+        headCommitId: currentHeadCommitId,
+        verification,
+      };
+    }
+
     if (verification.committedHistoryValid) {
       return true;
     }
@@ -421,7 +521,7 @@ export async function createConcordApp(
       return;
     }
 
-    const replayEntries = await ledger.replay(options);
+    const replayEntries = await getReplayEntries(options);
     await rebuildFromReplayEntries(
       replayEntries,
       {
@@ -434,13 +534,14 @@ export async function createConcordApp(
   }
 
   async function create(params?: ConcordCreateParams): Promise<void> {
+    requireInteractiveIdentity(appIdentity);
     await ledger.create(params);
 
     if (!(await ensureCommittedHistoryUsable())) {
       return;
     }
 
-    await rebuildFromReplayEntries(await ledger.replay(), {
+    await rebuildFromReplayEntries(await getReplayEntries(), {
       ready: true,
       integrityValid: true,
       verification: null,
@@ -450,6 +551,7 @@ export async function createConcordApp(
   async function load(): Promise<void> {
     const loaded = await ledger.loadFromStorage();
     if (!loaded) {
+      requireInteractiveIdentity(appIdentity);
       await ledger.create();
     }
 
@@ -462,7 +564,7 @@ export async function createConcordApp(
       return;
     }
 
-    await rebuildFromReplayEntries(await ledger.replay(), {
+    await rebuildFromReplayEntries(await getReplayEntries(), {
       ready: true,
       integrityValid: true,
       verification: null,
@@ -474,6 +576,7 @@ export async function createConcordApp(
     inputValue: TInput,
   ): Promise<ConcordCommandResult> {
     requireReady();
+    requireInteractiveIdentity(appIdentity);
 
     const registration = commands.get(type);
     if (!registration) {
@@ -502,7 +605,7 @@ export async function createConcordApp(
       };
     }
 
-    await rebuildFromReplayEntries(await ledger.replay(), {
+    await rebuildFromReplayEntries(await getReplayEntries(), {
       ready: true,
       integrityValid: true,
       verification: null,
@@ -519,6 +622,7 @@ export async function createConcordApp(
     input?: ConcordCommitInput,
   ): Promise<ConcordCommitResult> {
     requireReady();
+    requireInteractiveIdentity(appIdentity);
 
     const result = await ledger.commit(input);
 
@@ -529,7 +633,7 @@ export async function createConcordApp(
       };
     }
 
-    await rebuildFromReplayEntries(await ledger.replay(), {
+    await rebuildFromReplayEntries(await getReplayEntries(), {
       ready: true,
       integrityValid: true,
       verification: null,
@@ -543,6 +647,7 @@ export async function createConcordApp(
 
   async function clearStaged(): Promise<void> {
     requireReady();
+    requireInteractiveIdentity(appIdentity);
 
     await ledger.clearStaged();
 
@@ -550,7 +655,7 @@ export async function createConcordApp(
       return;
     }
 
-    await rebuildFromReplayEntries(await ledger.replay(), {
+    await rebuildFromReplayEntries(await getReplayEntries(), {
       ready: true,
       integrityValid: true,
       verification: null,
@@ -572,6 +677,10 @@ export async function createConcordApp(
 
   async function verify(): Promise<LedgerVerificationResult> {
     const verification = await ledger.verify();
+    committedVerificationCache = {
+      headCommitId: getCommittedHeadCommitId(),
+      verification,
+    };
     publish({
       ready: state.ready && verification.committedHistoryValid,
       integrityValid: verification.committedHistoryValid,
@@ -598,7 +707,7 @@ export async function createConcordApp(
       return;
     }
 
-    await rebuildFromReplayEntries(await ledger.replay(), {
+    await rebuildFromReplayEntries(await getReplayEntries(), {
       ready: true,
       integrityValid: true,
       verification: null,
@@ -620,6 +729,8 @@ export async function createConcordApp(
     }
 
     await ledger.destroy();
+    committedVerificationCache = null;
+    replayEntriesCache = null;
     publish({
       ready: false,
       integrityValid: false,

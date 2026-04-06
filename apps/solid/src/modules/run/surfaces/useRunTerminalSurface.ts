@@ -1,5 +1,6 @@
 import { computed, ref } from "vue";
 import { useRunTerminalLanguage } from "@/modules/run/services";
+import { useRunExplorerSurface } from "./useRunExplorerSurface";
 import type { RunTerminalEntry, RunTerminalSurface } from "./types";
 
 let singleton: RunTerminalSurface | null = null;
@@ -16,12 +17,14 @@ function createTerminalEntry(kind: RunTerminalEntry["kind"], lines: string[]): R
 
 function createTerminalSurface(): RunTerminalSurface {
   const language = useRunTerminalLanguage();
+  const explorer = useRunExplorerSurface();
   const history = ref<RunTerminalEntry[]>([
     createTerminalEntry("output", [
       "Verified workspace terminal ready.",
-      "Try: help, ls, pwd, cd private, select alpha, mkdir notes, mkledger journal, app open",
+      "Try: help, ls, pwd, cd private, select journal, mkdir notes, mkledger journal, app open tasks",
     ]),
   ]);
+  const draft = ref("");
 
   async function run(input: string) {
     const trimmed = input.trim();
@@ -29,6 +32,7 @@ function createTerminalSurface(): RunTerminalSurface {
       return false;
     }
 
+    draft.value = "";
     history.value = [...history.value, createTerminalEntry("command", [`$ ${trimmed}`])];
     const result = await language.execute(trimmed);
 
@@ -48,9 +52,15 @@ function createTerminalSurface(): RunTerminalSurface {
 
   return {
     history: computed(() => history.value),
+    draft: computed(() => draft.value),
+    promptPath: computed(() => explorer.currentPath.value || "/"),
     run,
+    setDraft(input: string) {
+      draft.value = input;
+    },
     clear() {
       history.value = [];
+      draft.value = "";
     },
   };
 }

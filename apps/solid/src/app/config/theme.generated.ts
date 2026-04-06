@@ -1,1 +1,1 @@
-import "ternent-ui/themes/concord.css";
+import "ternent-ui/themes/concordos.css";

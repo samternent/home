@@ -1,10 +1,13 @@
 import { computed } from "vue";
 import { useSolidSession } from "@/modules/solid-session";
+import { useRunIdentityService } from "@/modules/run/identity";
 import { useRunStorageCatalog } from "@/modules/run/storage";
-import { useRunWorkspaceSource, useRunWorkspaceState } from "@/modules/run/workspace";
+import {
+  useRunWorkspaceRuntime,
+  useRunWorkspaceState,
+} from "@/modules/run/workspace";
 import { useRunProjectionState } from "@/modules/run/replay";
-import { useRunHostedAppRuntime } from "@/modules/run/hosted-apps";
-import { useRunWorkspaceActions } from "@/modules/run/services";
+import { useRunTasksRuntime } from "@/modules/run/tasks/useRunTasksRuntime";
 import { useRunExplorerSurface, useRunTerminalSurface } from "@/modules/run/surfaces";
 import type {
   RunSurfaceDescriptor,
@@ -15,25 +18,21 @@ let singleton: RunCoreRuntime | null = null;
 
 function createRuntime(): RunCoreRuntime {
   const solid = useSolidSession();
-  const workspace = useRunWorkspaceSource();
+  const identity = useRunIdentityService();
+  const workspace = useRunWorkspaceRuntime();
   const storage = useRunStorageCatalog();
   const workspaceState = useRunWorkspaceState();
   const projectionState = useRunProjectionState();
-  const hostedApps = useRunHostedAppRuntime();
-  const workspaceActions = useRunWorkspaceActions();
+  const tasks = useRunTasksRuntime();
   const explorer = useRunExplorerSurface();
   const terminal = useRunTerminalSurface();
 
   const bootStatus = computed<"booting" | "ready" | "error">(() => {
-    if (
-      solid.status.value === "restoring" ||
-      solid.status.value === "redirecting" ||
-      (solid.isAuthenticated.value && workspace.status.value === "loading")
-    ) {
+    if (workspace.status.value === "loading") {
       return "booting";
     }
 
-    if (workspace.status.value === "error" || solid.status.value === "error") {
+    if (workspace.status.value === "error") {
       return "error";
     }
 
@@ -41,23 +40,28 @@ function createRuntime(): RunCoreRuntime {
   });
 
   const surfaces = computed<RunSurfaceDescriptor[]>(() => {
-    const authenticated = solid.isAuthenticated.value;
-    const ready = bootStatus.value === "ready" && authenticated;
+    const ready = bootStatus.value === "ready";
+    const hasBrowsableMounts = workspace.hasBrowsableMounts.value;
 
     return [
       {
         id: "core",
         label: "Core",
-        available: authenticated,
+        available: true,
         active: true,
-        reason: authenticated ? null : "Sign in with Solid to initialize the workspace runtime.",
+        reason: null,
       },
       {
         id: "explorer",
         label: "Explorer",
-        available: ready,
+        available: ready && hasBrowsableMounts,
         active: false,
-        reason: ready ? null : "Workspace discovery unlocks after Solid authentication and workspace init.",
+        reason:
+          ready && !hasBrowsableMounts
+            ? "Explorer unlocks when a connected provider exposes a browsable mount."
+            : ready
+              ? null
+              : "Workspace runtime is still booting.",
       },
       {
         id: "terminal",
@@ -67,23 +71,14 @@ function createRuntime(): RunCoreRuntime {
         reason: ready ? null : "Terminal depends on the workspace runtime being ready.",
       },
       {
-        id: "concord-host",
-        label: "Concord Host",
-        available: ready && hostedApps.canHostSelection.value,
-        active: hostedApps.hasActiveHost.value,
-        reason:
-          ready && !hostedApps.canHostSelection.value
-            ? "Select a compatible ledger to host it in a Concord app."
-            : ready
-              ? null
-              : "Host activation depends on the workspace runtime being ready.",
-      },
-      {
         id: "identity",
         label: "Identity",
-        available: authenticated,
-        active: false,
-        reason: authenticated ? null : "Identity is provisioned from the Solid-authenticated session.",
+        available: ready,
+        active: identity.status.value !== "ready",
+        reason:
+          identity.status.value === "ready"
+            ? null
+            : "Create, import, or recover a valid local identity when you need signed actions.",
       },
     ];
   });
@@ -101,57 +96,52 @@ function createRuntime(): RunCoreRuntime {
     return "anonymous" as const;
   });
 
-  const identityStatus = computed(() => {
-    if (bootStatus.value === "error") {
-      return "error" as const;
-    }
-    if (workspace.identityReady.value) {
-      return "verified" as const;
-    }
-    if (solid.isAuthenticated.value && workspace.status.value === "loading") {
-      return "resolving" as const;
-    }
-    return "unresolved" as const;
-  });
-
   const facts = computed(() => [
     {
-      label: "Solid session",
-      value: solid.webId.value || "Authenticated",
+      label: "Storage providers",
+      value: `${workspace.providers.value.filter((provider) => provider.status === "ready").length}/${workspace.providers.value.length} ready`,
     },
     {
       label: "Concord identity",
-      value: workspace.identityReady.value ? "Ready" : "Required",
+      value: identity.activeIdentity.value?.profile.label ?? "Unavailable",
     },
     {
       label: "Verification",
       value: "Strict verification runtime",
     },
     {
-      label: "Selected pod",
-      value: workspace.selectedPod.value || "Unselected",
+      label: "Projection",
+      value: projectionState.activeProjection.value.readiness.inspectable
+        ? projectionState.activeProjection.value.readiness.interactive
+          ? "Interactive"
+          : "Inspectable"
+        : "Unavailable",
+    },
+    {
+      label: "Active provider",
+      value: workspaceState.selection.value.activeProviderId || "Unselected",
+    },
+    {
+      label: "Tasks",
+      value: tasks.mode.value,
     },
   ]);
 
   const summaryLines = computed(() => {
-    if (!solid.isAuthenticated.value) {
-      return [
-        "auth anonymous",
-        "workspace unavailable",
-        "ledgers undiscovered",
-      ];
-    }
-
     return [
       `boot ${bootStatus.value}`,
       `auth ${authStatus.value}`,
-      `identity ${identityStatus.value}`,
+      `identity ${identity.status.value}`,
+      `providers ${workspace.providers.value.length}`,
       `mounts ${storage.mounts.value.length}`,
       `resources ${storage.resources.value.length}`,
       `ledgers ${storage.ledgers.value.length}`,
+      `active mount ${workspaceState.selection.value.activeMountId || "none"}`,
       `active scope ${workspaceState.selection.value.activeScope || "none"}`,
       `active selection ${workspaceState.selection.value.activeResourceId || "none"}`,
-      `host status ${hostedApps.hostStatusLabel.value}`,
+      `projection inspectable ${projectionState.activeProjection.value.readiness.inspectable ? "yes" : "no"}`,
+      `projection interactive ${projectionState.activeProjection.value.readiness.interactive ? "yes" : "no"}`,
+      `tasks status ${tasks.status.value}`,
       `active projection ${projectionState.activeProjection.value.ledgerId || "none"}`,
     ];
   });
@@ -179,11 +169,47 @@ function createRuntime(): RunCoreRuntime {
       },
     },
     identity: {
-      status: identityStatus,
-      ready: computed(() => workspace.identityReady.value),
+      status: computed(() => identity.status.value),
+      ready: computed(() => identity.status.value === "ready"),
       verificationMode: computed(() => "strict" as const),
+      activeIdentity: identity.activeIdentity,
+      identities: identity.identities,
+      bootstrapCandidates: identity.bootstrapCandidates,
+      async createMnemonicIdentity(input) {
+        return await identity.createMnemonicIdentity(input);
+      },
+      async importMnemonic(input) {
+        return await identity.importMnemonic(input);
+      },
+      async importSerializedIdentity(input) {
+        return await identity.importSerializedIdentity(input);
+      },
+      async switchIdentity(identityId) {
+        if (identity.activeIdentity.value?.id === identityId) {
+          return identity.activeIdentity.value;
+        }
+
+        return await identity.setActiveIdentity(identityId);
+      },
+      async removeIdentity(identityId) {
+        await identity.removeIdentity(identityId);
+      },
+      async exportActiveIdentity() {
+        return await identity.exportIdentity(identity.activeIdentity.value?.id ?? undefined);
+      },
+      async syncActiveIdentityToProvider(providerId) {
+        await identity.syncIdentityToProvider(providerId, identity.activeIdentity.value?.id ?? undefined);
+      },
+      async adoptBootstrapCandidate(candidateId) {
+        return await identity.adoptBootstrapCandidate(candidateId);
+      },
+      async refreshBootstrapCandidates() {
+        await identity.refreshBootstrapCandidates();
+      },
+      error: identity.error,
     },
     workspace: {
+      providers: workspace.providers,
       mounts: storage.mounts,
       resources: storage.resources,
       ledgers: storage.ledgers,
@@ -193,30 +219,16 @@ function createRuntime(): RunCoreRuntime {
     surfaces: {
       available: surfaces,
       active: computed(() => {
-        if (hostedApps.hasActiveHost.value) {
-          return "concord-host" as const;
-        }
-        if (bootStatus.value === "ready" && solid.isAuthenticated.value) {
+        if (
+          bootStatus.value === "ready" &&
+          workspace.hasBrowsableMounts.value
+        ) {
           return "explorer" as const;
         }
-        return null;
-      }),
-    },
-    apps: {
-      active: computed(() => {
-        if (
-          !hostedApps.activeHostAppId.value ||
-          !hostedApps.activeHostLedgerId.value ||
-          !hostedApps.activeHostProjectionId.value
-        ) {
-          return null;
+        if (bootStatus.value === "ready") {
+          return "terminal" as const;
         }
-
-        return {
-          appId: hostedApps.activeHostAppId.value,
-          ledgerId: hostedApps.activeHostLedgerId.value,
-          projectionId: hostedApps.activeHostProjectionId.value,
-        };
+        return null;
       }),
     },
     diagnostics: {
@@ -226,16 +238,15 @@ function createRuntime(): RunCoreRuntime {
     explorer,
     terminal,
     actions: {
-      selectScope: workspaceState.selectScope,
-      selectLedger: workspaceState.selectLedger,
-      async openApp(appId) {
-        const result = await workspaceActions.openApp(appId);
-        return result.ok;
+      async selectScope(scope) {
+        await workspaceState.selectScope(scope);
       },
-      closeApp: workspaceActions.closeApp,
+      async selectLedger(ledgerId) {
+        await workspaceState.selectLedger(ledgerId);
+      },
     },
     async init() {
-      await workspace.init();
+      await Promise.all([identity.init(), workspace.init()]);
     },
   };
 }

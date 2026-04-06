@@ -9,7 +9,7 @@ Phase 1 rule:
 
 - only verified history is valid runtime input
 - Concord identity is required for valid commits and entries
-- Solid login is the entrypoint for provisioning that identity
+- the active identity comes from the core local identity catalog, not from a storage provider
 
 Own here:
 

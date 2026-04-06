@@ -28,9 +28,9 @@
     }
   },
   "scripts": {
-    "build:browser": "pnpm --filter @ternent/rage build && vite build -c vite.browser.config.ts",
-    "build": "pnpm --filter @ternent/rage build && vite build && vite build -c vite.browser.config.ts",
-    "test": "pnpm --filter @ternent/rage build && vitest run"
+    "build:browser": "pnpm --filter @ternent/armour build && vite build -c vite.browser.config.ts",
+    "build": "pnpm --filter @ternent/armour build && vite build && vite build -c vite.browser.config.ts",
+    "test": "pnpm run build && vitest run"
   },
   "dependencies": {
     "@ternent/armour": "workspace:*",

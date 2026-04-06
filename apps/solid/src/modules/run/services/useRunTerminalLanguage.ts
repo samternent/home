@@ -1,7 +1,8 @@
-import { useRunHostedAppRuntime } from "@/modules/run/hosted-apps";
+import { useRunIdentityService } from "@/modules/run/identity";
 import { useRunProjectionState } from "@/modules/run/replay";
 import { useRunStorageCatalog } from "@/modules/run/storage";
-import { useRunWorkspaceSource, useRunWorkspaceState } from "@/modules/run/workspace";
+import { useRunTasksRuntime } from "@/modules/run/tasks/useRunTasksRuntime";
+import { useRunWorkspaceRuntime, useRunWorkspaceState } from "@/modules/run/workspace";
 import { useRunWorkspaceActions } from "./useRunWorkspaceActions";
 import type { RunTerminalLanguageResult } from "./types";
 
@@ -29,11 +30,12 @@ function error(message: string): RunTerminalLanguageResult {
 }
 
 function createTerminalLanguage() {
-  const source = useRunWorkspaceSource();
+  const runtime = useRunWorkspaceRuntime();
   const storage = useRunStorageCatalog();
   const workspace = useRunWorkspaceState();
-  const hostedApps = useRunHostedAppRuntime();
+  const identity = useRunIdentityService();
   const projection = useRunProjectionState();
+  const tasks = useRunTasksRuntime();
   const actions = useRunWorkspaceActions();
 
   return {
@@ -52,7 +54,7 @@ function createTerminalLanguage() {
       switch (name) {
         case "help":
           return output(
-            "Commands: help, pwd, ls, mounts, status, cd <target>, select <target>, mkdir <name>, mkledger <name>, app open [appId], app close, clear",
+            "Commands: help, pwd, ls, mounts, status, cd <target>, select <target>, mkdir <name>, mkledger <name>, tasks, app open [tasks], clear",
           );
 
         case "clear":
@@ -63,34 +65,40 @@ function createTerminalLanguage() {
           };
 
         case "pwd":
-          return output(source.currentBrowse.value?.url ?? "No active workspace path.");
+          return output(runtime.currentBrowse.value?.url ?? "No active workspace path.");
 
         case "ls": {
-          const entries = source.currentBrowse.value?.entries ?? [];
+          const entries = runtime.currentBrowse.value?.entries ?? [];
           if (!entries.length) {
             return output("No entries in the current location.");
           }
 
           return output(
             ...entries.map((entry) => {
-              const kind = entry.isLedger ? "ledger" : entry.kind;
-              return `${kind.padEnd(9, " ")} ${entry.name}`;
+              return `${entry.kind.padEnd(9, " ")} ${entry.name}`;
             }),
           );
         }
 
         case "mounts":
           return output(
-            ...storage.mounts.value.map((mount) => `${mount.scope.padEnd(7, " ")} ${mount.rootUrl}`),
+            ...storage.mounts.value.map((mount) => {
+              const label = mount.scope ?? mount.id;
+              return `${label.padEnd(7, " ")} ${mount.rootUrl}`;
+            }),
           );
 
         case "status":
           return output(
+            `identity: ${identity.activeIdentity.value?.profile.label ?? "missing"}`,
             `scope: ${workspace.selection.value.activeScope ?? "none"}`,
+            `mount: ${workspace.selection.value.activeMountId ?? "none"}`,
             `selection: ${workspace.selection.value.activeResourceId ?? "none"}`,
             `projection: ${projection.activeProjection.value.id ?? "none"}`,
+            `inspectable: ${projection.activeProjection.value.readiness.inspectable ? "yes" : "no"}`,
             `verification: ${projection.activeProjection.value.verification.status}`,
-            `app: ${hostedApps.activeHostAppId.value ?? "none"}`,
+            `interactive: ${projection.activeProjection.value.openContext?.capabilities.interactive ? "yes" : "no"}`,
+            `tasks: ${tasks.mode.value}`,
           );
 
         case "cd": {
@@ -152,6 +160,10 @@ function createTerminalLanguage() {
         }
 
         case "mkledger": {
+          if (!identity.activeIdentity.value) {
+            return error("Set an identity before creating a ledger.");
+          }
+
           const ledgerName = args.join(" ").trim();
           if (!ledgerName) {
             return error("Usage: mkledger <name>");
@@ -161,21 +173,32 @@ function createTerminalLanguage() {
           return result.ok ? output(`Created ledger ${result.value.entry.name}`) : error(result.error);
         }
 
+        case "tasks": {
+          const ready = await tasks.ensureReady();
+          if (!ready) {
+            return error(tasks.reason.value ?? "Tasks is not ready for the current projection.");
+          }
+
+          return output(
+            `Tasks ready (${tasks.mode.value}) on ${tasks.activeLedgerId.value ?? "unknown"}`,
+          );
+        }
+
         case "app": {
           const mode = args[0]?.trim();
-          if (mode === "close") {
-            await actions.closeApp();
-            return output("Hosted app deactivated.");
-          }
-
           if (mode === "open") {
-            const result = await actions.openApp(args[1]);
-            return result.ok
-              ? output(`Hosted app active on ${result.value.ledgerId ?? "unknown"}`)
-              : error(result.error);
+            const appId = args[1]?.trim();
+            if (appId && appId !== "tasks") {
+              return error("Tasks is the only app available in this runtime right now.");
+            }
+
+            const ready = await tasks.ensureReady();
+            return ready
+              ? output(`Tasks ready (${tasks.mode.value}) on ${tasks.activeLedgerId.value ?? "unknown"}`)
+              : error(tasks.reason.value ?? "Tasks is not ready for the current projection.");
           }
 
-          return error("Usage: app <open [appId]|close>");
+          return error("Usage: app open [tasks]");
         }
 
         default:

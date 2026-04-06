@@ -1,33 +1,37 @@
 import type { ComputedRef } from "vue";
-import type { SolidWorkspaceScope } from "@ternent/solid";
+import type {
+  RunIdentityBootstrapCandidate,
+  RunIdentityRecord,
+  RunIdentityStatus,
+} from "@/modules/run/identity";
+import type {
+  RunMountDescriptor,
+  RunStorageProviderRecord,
+  RunWorkspaceScope,
+} from "@/modules/run/storage/types";
 import type { RunExplorerSurface, RunTerminalSurface } from "@/modules/run/surfaces";
 
 export type RunSurfaceId =
   | "core"
   | "explorer"
   | "terminal"
-  | "concord-host"
   | "identity";
 
-export type RunCoreMount = {
-  id: string;
-  label: string;
-  scope: SolidWorkspaceScope;
-  rootUrl: string;
-  writable: boolean;
-};
+export type RunCoreMount = RunMountDescriptor;
 
 export type RunCoreResourceKind = "ledger" | "container" | "file";
 export type RunVerificationStatus = "verified" | "unverified" | "invalid" | "unknown";
 
 export type RunCoreResourceRecord = {
   id: string;
+  mountId: string;
+  providerId: string;
   kind: RunCoreResourceKind;
   title: string;
   name: string;
   url: string;
   path: string;
-  scope: SolidWorkspaceScope;
+  scope: RunWorkspaceScope | null;
   lastModified: string | null;
   contentType: string | null;
   verificationStatus: RunVerificationStatus;
@@ -36,18 +40,23 @@ export type RunCoreResourceRecord = {
 export type RunCoreLedgerRecord = {
   id: string;
   resourceId: string;
+  mountId: string;
+  providerId: string;
   title: string;
   url: string;
   path: string;
-  scope: SolidWorkspaceScope;
+  scope: RunWorkspaceScope | null;
   verificationStatus: RunVerificationStatus;
 };
 
 export type RunCoreSelection = {
+  activeProviderId: string | null;
+  activeMountId: string | null;
+  activeBrowseUrl: string | null;
   activeResourceId: string | null;
   activeLedgerId: string | null;
   activeLedgerIds: string[];
-  activeScope: SolidWorkspaceScope | null;
+  activeScope: RunWorkspaceScope | null;
 };
 
 export type RunProjectionTrustPolicy = {
@@ -56,15 +65,52 @@ export type RunProjectionTrustPolicy = {
 };
 
 export type RunProjectionOpenContext = {
-  kind: "solid-ledger";
+  kind: "storage-ledger";
+  providerId: string;
+  mountId: string;
   ledgerId: string;
   resourceUrl: string;
+  capabilities: {
+    ledgerStorage: boolean;
+    hostableApp: boolean;
+    interactive: boolean;
+  };
+};
+
+export type RunProjectionCandidate = {
+  providerId: string;
+  mountId: string;
+  ledgerId: string;
+  resourceUrl: string;
+};
+
+export type RunProjectionResolution = {
+  candidate: RunProjectionCandidate;
+  resolvedAt: string;
+  replayReady: boolean;
+  issues: string[];
+};
+
+export type RunProjectionReadiness = {
+  inspectable: boolean;
+  verified: boolean;
+  interactive: boolean;
+};
+
+export type RunProjectionTaskSupport = {
+  supported: boolean;
+  reason: string | null;
+  classification: "empty" | "task-document" | "mixed" | "unsupported";
 };
 
 export type RunCoreProjectionState = {
   id: string | null;
   ledgerId: string | null;
-  status: "idle" | "selected";
+  status: "idle" | "resolving" | "ready" | "blocked" | "error";
+  candidate: RunProjectionCandidate | null;
+  resolution: RunProjectionResolution | null;
+  readiness: RunProjectionReadiness;
+  taskSupport: RunProjectionTaskSupport;
   inputs: {
     ledgerIds: string[];
     resourceIds: string[];
@@ -79,6 +125,12 @@ export type RunCoreProjectionState = {
   verification: {
     status: RunVerificationStatus;
     summary: string;
+    details: string[];
+  };
+  replay: {
+    ready: boolean;
+    commitCount: number;
+    headCommitId: string | null;
   };
 };
 
@@ -95,18 +147,6 @@ export type RunAuthFacadeStatus =
   | "authenticating"
   | "authenticated"
   | "error";
-
-export type RunIdentityFacadeStatus =
-  | "unresolved"
-  | "resolving"
-  | "verified"
-  | "error";
-
-export type RunHostedAppContext = {
-  appId: string;
-  ledgerId: string;
-  projectionId: string | null;
-};
 
 export type RunRuntimeFacade = {
   boot: {
@@ -125,11 +165,35 @@ export type RunRuntimeFacade = {
     setIssuer(next: string): void;
   };
   identity: {
-    status: ComputedRef<RunIdentityFacadeStatus>;
+    status: ComputedRef<RunIdentityStatus>;
     ready: ComputedRef<boolean>;
     verificationMode: ComputedRef<"strict">;
+    activeIdentity: ComputedRef<RunIdentityRecord | null>;
+    identities: ComputedRef<RunIdentityRecord[]>;
+    bootstrapCandidates: ComputedRef<RunIdentityBootstrapCandidate[]>;
+    createMnemonicIdentity(input?: {
+      label?: string;
+      words?: 12 | 24;
+    }): Promise<{ record: RunIdentityRecord; mnemonic: string }>;
+    importMnemonic(input: {
+      mnemonic: string;
+      label?: string;
+      passphrase?: string;
+    }): Promise<RunIdentityRecord>;
+    importSerializedIdentity(input: {
+      serializedIdentity: string;
+      label?: string;
+    }): Promise<RunIdentityRecord>;
+    switchIdentity(identityId: string): Promise<RunIdentityRecord>;
+    removeIdentity(identityId: string): Promise<void>;
+    exportActiveIdentity(): Promise<string>;
+    syncActiveIdentityToProvider(providerId: string): Promise<void>;
+    adoptBootstrapCandidate(candidateId: string): Promise<RunIdentityRecord>;
+    refreshBootstrapCandidates(): Promise<void>;
+    error: ComputedRef<string | null>;
   };
   workspace: {
+    providers: ComputedRef<RunStorageProviderRecord[]>;
     mounts: ComputedRef<RunCoreMount[]>;
     resources: ComputedRef<RunCoreResourceRecord[]>;
     ledgers: ComputedRef<RunCoreLedgerRecord[]>;
@@ -140,9 +204,6 @@ export type RunRuntimeFacade = {
     available: ComputedRef<RunSurfaceDescriptor[]>;
     active: ComputedRef<RunSurfaceId | null>;
   };
-  apps: {
-    active: ComputedRef<RunHostedAppContext | null>;
-  };
   diagnostics: {
     facts: ComputedRef<Array<{ label: string; value: string }>>;
     summaryLines: ComputedRef<string[]>;
@@ -150,10 +211,8 @@ export type RunRuntimeFacade = {
   explorer: RunExplorerSurface;
   terminal: RunTerminalSurface;
   actions: {
-    selectScope(scope: SolidWorkspaceScope): Promise<void>;
+    selectScope(scope: RunWorkspaceScope): Promise<void>;
     selectLedger(ledgerId: string): Promise<void>;
-    openApp(appId?: string): Promise<boolean>;
-    closeApp(): Promise<void>;
   };
   init(): Promise<void>;
 };

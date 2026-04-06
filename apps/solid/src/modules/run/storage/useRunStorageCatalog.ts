@@ -4,7 +4,7 @@ import type {
   RunCoreMount,
   RunCoreResourceRecord,
 } from "@/modules/run/core/types";
-import { useRunWorkspaceSource } from "@/modules/run/workspace";
+import { useRunWorkspaceRuntime } from "@/modules/run/workspace";
 
 export type RunStorageCatalog = {
   mounts: ComputedRef<RunCoreMount[]>;
@@ -15,38 +15,9 @@ export type RunStorageCatalog = {
 let singleton: RunStorageCatalog | null = null;
 
 function createCatalog(): RunStorageCatalog {
-  const workspace = useRunWorkspaceSource();
+  const workspace = useRunWorkspaceRuntime();
 
-  const mounts = computed<RunCoreMount[]>(() => {
-    const paths = workspace.paths.value;
-    if (!paths) {
-      return [];
-    }
-
-    return [
-      {
-        id: "private",
-        label: "Private",
-        scope: "private",
-        rootUrl: paths.workspacePrivateRootUrl,
-        writable: true,
-      },
-      {
-        id: "shared",
-        label: "Shared",
-        scope: "shared",
-        rootUrl: paths.workspaceSharedRootUrl,
-        writable: true,
-      },
-      {
-        id: "public",
-        label: "Public",
-        scope: "public",
-        rootUrl: paths.workspacePublicRootUrl,
-        writable: true,
-      },
-    ];
-  });
+  const mounts = computed<RunCoreMount[]>(() => workspace.mounts.value);
 
   const resources = computed<RunCoreResourceRecord[]>(() => {
     const seen = new Map<string, RunCoreResourceRecord>();
@@ -59,11 +30,9 @@ function createCatalog(): RunStorageCatalog {
 
         seen.set(entry.url, {
           id: entry.url,
-          kind: entry.isLedger
-            ? "ledger"
-            : entry.kind === "container"
-              ? "container"
-              : "file",
+          mountId: entry.mountId,
+          providerId: entry.providerId,
+          kind: entry.kind,
           title: entry.name.replace(/\.json$/i, ""),
           name: entry.name,
           url: entry.url,
@@ -71,7 +40,7 @@ function createCatalog(): RunStorageCatalog {
           scope: entry.scope,
           lastModified: entry.lastModified,
           contentType: entry.contentType,
-          verificationStatus: "verified",
+          verificationStatus: "unknown",
         });
       }
     }
@@ -87,6 +56,8 @@ function createCatalog(): RunStorageCatalog {
       .map((resource) => ({
         id: resource.id,
         resourceId: resource.id,
+        mountId: resource.mountId,
+        providerId: resource.providerId,
         title: resource.title,
         url: resource.url,
         path: resource.path,

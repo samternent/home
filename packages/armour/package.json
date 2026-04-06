@@ -25,7 +25,7 @@
   },
   "scripts": {
     "build": "pnpm --filter @ternent/rage build && vite build",
-    "test": "pnpm --filter @ternent/rage build && vitest run"
+    "test": "pnpm run build && vitest run"
   },
   "dependencies": {
     "@ternent/identity": "workspace:*",

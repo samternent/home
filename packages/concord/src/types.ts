@@ -103,7 +103,7 @@ export type ConcordReplayPlugin<TState = unknown> = {
 };
 
 export type ConcordAppOptions = {
-  identity: SerializedIdentity;
+  identity?: SerializedIdentity;
   storage?: LedgerStorageAdapter;
   plugins: ConcordReplayPlugin[];
   now?: () => string;

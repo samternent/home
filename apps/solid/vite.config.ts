@@ -67,6 +67,14 @@ export default defineConfig({
         __dirname,
         "../../packages/concord/src/index.ts",
       ),
+      "@ternent/rage": resolve(
+        __dirname,
+        "../../packages/rage/src/index.ts",
+      ),
+      "@ternent/armour": resolve(
+        __dirname,
+        "../../packages/armour/src/index.ts",
+      ),
       "@ternent/seal-cli/proof": resolve(
         __dirname,
         "../../packages/seal-cli/src/proof.ts",
