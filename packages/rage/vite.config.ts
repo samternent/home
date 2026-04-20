@@ -21,6 +21,9 @@ export default defineConfig({
       },
     },
   },
+  worker: {
+    format: "es",
+  },
   plugins: [
     dts({
       tsConfigFilePath: resolve(__dirname, "tsconfig.json"),

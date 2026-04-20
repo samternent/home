@@ -8,4 +8,6 @@ test("loads and decrypts in the browser", async ({ page }) => {
   expect(output).toContain('"status": "ok"');
   expect(output).toContain('"recipientPlaintext": "browser recipient"');
   expect(output).toContain('"passphrasePlaintext": "browser passphrase"');
+  expect(output).toContain('"workerCreations": 1');
+  expect(output).toContain('"workerMessages": 7');
 });

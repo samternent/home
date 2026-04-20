@@ -1,5 +1,5 @@
 import { RageInitError } from "./errors.js";
-import { loadWasmBindings } from "./wasm.js";
+import { loadRageRuntime } from "./runtime.js";
 
 let initialized = false;
 let initPromise: Promise<void> | null = null;
@@ -10,7 +10,7 @@ export async function initRage(): Promise<void> {
   }
 
   if (!initPromise) {
-    initPromise = loadWasmBindings();
+    initPromise = loadRageRuntime();
   }
 
   try {

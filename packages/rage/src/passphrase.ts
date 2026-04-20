@@ -7,6 +7,7 @@ import {
 } from "./errors.js";
 import { assertRageInitialized } from "./init.js";
 import { MAX_MESSAGE_SIZE } from "./limits.js";
+import { getRageRuntime } from "./runtime.js";
 import type {
   DecryptTextWithPassphraseInput,
   DecryptWithPassphraseInput,
@@ -14,7 +15,6 @@ import type {
   EncryptWithPassphraseInput,
   RageOutputFormat,
 } from "./types.js";
-import { getWasmBindings } from "./wasm.js";
 
 const utf8Encoder = new TextEncoder();
 const utf8Decoder = new TextDecoder("utf-8", { fatal: true });
@@ -85,7 +85,7 @@ export async function encryptWithPassphrase(
 
   const output = input.output ?? "armor";
   try {
-    const ciphertext = await getWasmBindings().encryptWithPassphrase(
+    const ciphertext = await getRageRuntime().encryptWithPassphrase(
       input.passphrase,
       input.data,
       output === "armor"
@@ -104,7 +104,7 @@ export async function decryptWithPassphrase(
   validateData(input.data);
 
   try {
-    const plaintext = await getWasmBindings().decryptWithPassphrase(
+    const plaintext = await getRageRuntime().decryptWithPassphrase(
       input.passphrase,
       input.data
     );
