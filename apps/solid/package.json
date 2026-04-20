@@ -9,6 +9,7 @@
     "preview": "vite preview --host",
     "test": "pnpm test:unit",
     "test:unit": "vitest run",
+    "test:unit:v2": "vitest run src/tests/v2",
     "test:unit:watch": "vitest",
     "test:e2e": "playwright test",
     "lighthouse:ci": "lhci autorun"
