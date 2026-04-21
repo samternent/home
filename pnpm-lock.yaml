@@ -574,9 +574,6 @@ importers:
       '@ternent/concord':
         specifier: workspace:*
         version: link:../../packages/concord
-      '@ternent/concord-plugin-task':
-        specifier: workspace:*
-        version: link:../../packages/concord-plugin-task
       '@ternent/identity':
         specifier: workspace:*
         version: link:../../packages/identity-v2
@@ -1192,6 +1189,24 @@ importers:
         specifier: ^1.6.0
         version: 1.6.0(@types/node@24.10.4)
 
+  packages/passkey:
+    devDependencies:
+      '@types/node':
+        specifier: ^24.3.0
+        version: 24.10.4
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+      vite:
+        specifier: ^4.5.3
+        version: 4.5.3(@types/node@24.10.4)
+      vite-plugin-dts:
+        specifier: ^1.7.3
+        version: 1.7.3(@types/node@24.10.4)(vite@4.5.3)
+      vitest:
+        specifier: ^1.6.0
+        version: 1.6.0(@types/node@24.10.4)
+
   packages/pixpax-concord:
     dependencies:
       '@ternent/concord':
@@ -1353,6 +1368,9 @@ importers:
       '@ternent/ledger':
         specifier: workspace:*
         version: link:../ledger-v2
+      '@ternent/passkey':
+        specifier: workspace:*
+        version: link:../passkey
     devDependencies:
       '@types/node':
         specifier: ^24.3.0

@@ -20,7 +20,6 @@
     "@tailwindcss/vite": "^4.1.18",
     "@ternent/armour": "workspace:*",
     "@ternent/concord": "workspace:*",
-    "@ternent/concord-plugin-task": "workspace:*",
     "@ternent/identity": "workspace:*",
     "@ternent/seal-cli": "workspace:*",
     "@ternent/solid": "workspace:*",

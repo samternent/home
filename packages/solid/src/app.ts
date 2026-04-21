@@ -31,7 +31,12 @@ export async function createSolidConcordApp(
     profileEnabled && (!input.ledgerUrl || shouldBootstrapProfile)
       ? await createSolidConcordPaths(input.session, input.profile)
       : null;
-  const mnemonicUrl = input.mnemonicUrl ?? discoveredResources?.mnemonicUrl ?? undefined;
+  const encryptedIdentityUrl =
+    input.encryptedIdentityUrl ??
+    input.identityUrl ??
+    discoveredResources?.identityUrl ??
+    defaultPaths?.identityUrl ??
+    undefined;
   const walletUrl = input.walletUrl ?? discoveredResources?.walletUrl ?? undefined;
   const ledgerUrl =
     input.ledgerUrl ??
@@ -50,12 +55,13 @@ export async function createSolidConcordApp(
     : undefined;
   const identity = await resolveSolidIdentity(input.session, {
     cache,
+    unlocker: input.unlocker,
     identity: input.identity,
+    encryptedIdentity: input.encryptedIdentity,
+    encryptedIdentityUrl,
+    encryptedIdentityContentType: input.encryptedIdentityContentType ?? input.identityContentType,
     mnemonic: input.mnemonic,
     mnemonicPassphrase: input.mnemonicPassphrase,
-    mnemonicSecret: input.mnemonicSecret,
-    mnemonicUrl,
-    mnemonicContentType: input.mnemonicContentType,
     walletBackup: input.walletBackup,
     walletUrl,
     walletPassphrase: input.walletPassphrase,
@@ -91,7 +97,7 @@ export async function createSolidConcordApp(
       ? await bootstrapSolidConcordProfile({
           session: input.session,
           ...input.profile,
-          mnemonicUrl: mnemonicUrl ?? null,
+          identityUrl: encryptedIdentityUrl ?? null,
           walletUrl: walletUrl ?? null,
           ledgerUrl,
           identity,
@@ -116,6 +122,7 @@ export async function createSolidConcordApp(
               preferencesUrl: defaultPaths?.preferencesUrl ?? null,
               publicTypeIndexUrl: defaultPaths?.publicTypeIndexUrl ?? null,
               privateTypeIndexUrl: defaultPaths?.privateTypeIndexUrl ?? null,
+              identityUrl: null,
               mnemonicUrl: null,
               walletUrl: null,
               ledgerUrl: null,
@@ -123,7 +130,8 @@ export async function createSolidConcordApp(
               verificationUrl: input.profile?.verificationUrl ?? null,
               seeAlso: [],
             }),
-            mnemonicUrl: mnemonicUrl ?? discoveredResources?.mnemonicUrl ?? null,
+            identityUrl:
+              encryptedIdentityUrl ?? discoveredResources?.identityUrl ?? null,
             walletUrl: walletUrl ?? discoveredResources?.walletUrl ?? null,
             ledgerUrl,
           }

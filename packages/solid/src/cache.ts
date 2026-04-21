@@ -1,11 +1,15 @@
 import {
   parseIdentity,
-  serializeIdentity,
   validateIdentity,
   type SerializedIdentity,
 } from "@ternent/identity";
 import {
+  createSolidEncryptedIdentityBlob,
   getSolidWebId,
+  isSolidEncryptedIdentityBlob,
+  resolveSolidIdentityUnlocker,
+  restoreSolidIdentityFromEncryptedBlob,
+  serializeSolidEncryptedIdentityBlob,
 } from "./identity.js";
 import type {
   CreateSolidIdentityCacheOptions,
@@ -13,7 +17,7 @@ import type {
   SolidIdentityCacheStorageLike,
 } from "./types.js";
 
-const DEFAULT_CACHE_NAMESPACE = "@ternent/solid/cache/v1";
+const DEFAULT_CACHE_NAMESPACE = "@ternent/solid/cache/v2";
 
 function resolveStorage(
   storage?: SolidIdentityCacheStorageLike,
@@ -58,6 +62,12 @@ export function createSolidIdentityCache(
 ): SolidIdentityCacheLike {
   const storage = resolveStorage(input.storage);
   const key = resolveCacheKey(input);
+  const expectedWebId = input.webId
+    ? String(input.webId).trim()
+    : input.session?.info?.webId
+      ? String(input.session.info.webId).trim()
+      : undefined;
+  const unlocker = resolveSolidIdentityUnlocker(input.unlocker);
 
   return {
     name: "solid-identity-cache",
@@ -67,11 +77,40 @@ export function createSolidIdentityCache(
       if (!raw) {
         return null;
       }
-      return await validateIdentity(parseIdentity(raw));
+
+      const parsed = JSON.parse(raw);
+      if (!isSolidEncryptedIdentityBlob(parsed)) {
+        throw new Error(
+          `Solid identity cache entry ${key} is not a ternent-solid-encrypted-identity v2 blob.`,
+        );
+      }
+      try {
+        return await restoreSolidIdentityFromEncryptedBlob({
+          blob: parsed,
+          unlocker,
+          expectedWebId,
+          storage: "local-cache",
+          cacheKey: key,
+        });
+      } catch (error) {
+        if (typeof console !== "undefined" && typeof console.warn === "function") {
+          console.warn(
+            `[ternent/solid] Failed to decrypt cached identity for ${key}: ${String(error)}`,
+          );
+        }
+        throw error;
+      }
     },
     async save(identity: SerializedIdentity): Promise<void> {
       const validated = await validateIdentity(parseIdentity(identity));
-      storage.setItem(key, serializeIdentity(validated, false));
+      const blob = await createSolidEncryptedIdentityBlob({
+        identity: validated,
+        unlocker,
+        webId: expectedWebId ?? null,
+        storage: "local-cache",
+        cacheKey: key,
+      });
+      storage.setItem(key, serializeSolidEncryptedIdentityBlob(blob, false).trimEnd());
     },
     async clear(): Promise<void> {
       storage.removeItem(key);

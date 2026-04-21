@@ -105,58 +105,40 @@ onMounted(async () => {
 
 <template>
   <section class="space-y-6" data-test="permissions-v2">
-    <div>
-      <p class="m-0 text-xs uppercase tracking-[0.18em] text-[var(--ui-fg-muted)]">
-        Permissions
-      </p>
-      <h2 class="m-0 mt-2 text-2xl font-semibold text-[var(--ui-fg)]">
-        Minimal permissions CRUD
-      </h2>
-      <p class="m-0 mt-2 max-w-2xl text-sm leading-6 text-[var(--ui-fg-muted)]">
-        Commands stage first. Replay shows staged and committed state together. Commit promotes staged entries; discard removes them.
-      </p>
-      <p class="m-0 mt-2 text-sm text-[var(--ui-fg)]" data-test="permissions-v2-active-identity">
-        Active identity: {{ activeIdentityLabel }}
-      </p>
-      <p class="m-0 mt-1 text-sm text-[var(--ui-fg)]" data-test="permissions-v2-status">
-        Status: {{ appApi.status.value }}
-      </p>
-      <p class="m-0 mt-1 text-sm text-[var(--ui-fg)]" data-test="permissions-v2-staged-count">
-        Staged entries: {{ stagedCount }}
-      </p>
-      <div class="mt-3 flex gap-2">
-        <button
-          type="button"
-          class="rounded-lg border border-[var(--ui-border)] px-3 py-2 text-sm text-[var(--ui-fg)] transition hover:bg-[var(--ui-tonal-secondary)]"
-          data-test="permissions-v2-commit"
-          @click="commitStaged"
-        >
-          Commit
-        </button>
-        <button
-          type="button"
-          class="rounded-lg border border-[var(--ui-border)] px-3 py-2 text-sm text-[var(--ui-fg)] transition hover:bg-[var(--ui-tonal-secondary)]"
-          data-test="permissions-v2-discard"
-          @click="discardStaged"
-        >
-          Discard
-        </button>
-      </div>
-      <p
-        v-if="pageError || appApi.lastError.value"
-        class="m-0 mt-2 text-sm text-[var(--ui-critical)]"
-        data-test="permissions-v2-page-error"
+    <div class="mt-3 flex gap-2">
+      <button
+        type="button"
+        class="rounded-lg border border-[var(--ui-border)] px-3 py-2 text-sm text-[var(--ui-fg)] transition hover:bg-[var(--ui-tonal-secondary)]"
+        data-test="permissions-v2-commit"
+        @click="commitStaged"
       >
-        {{ pageError ?? appApi.lastError.value }}
-      </p>
+        Commit
+      </button>
+      <button
+        type="button"
+        class="rounded-lg border border-[var(--ui-border)] px-3 py-2 text-sm text-[var(--ui-fg)] transition hover:bg-[var(--ui-tonal-secondary)]"
+        data-test="permissions-v2-discard"
+        @click="discardStaged"
+      >
+        Discard
+      </button>
     </div>
+    <p
+      v-if="pageError || appApi.lastError.value"
+      class="m-0 mt-2 text-sm text-[var(--ui-critical)]"
+      data-test="permissions-v2-page-error"
+    >
+      {{ pageError ?? appApi.lastError.value }}
+    </p>
 
     <form
       class="rounded-xl border border-[var(--ui-border)] p-4"
       data-test="permission-create-form"
       @submit.prevent="createPermission"
     >
-      <p class="m-0 text-sm font-medium text-[var(--ui-fg)]">Create permission</p>
+      <p class="m-0 text-sm font-medium text-[var(--ui-fg)]">
+        Create permission
+      </p>
       <div class="mt-3 grid gap-3 md:grid-cols-2">
         <label class="text-sm text-[var(--ui-fg-muted)]">
           Title
@@ -166,7 +148,7 @@ onMounted(async () => {
             type="text"
             class="mt-1 w-full rounded-lg border border-[var(--ui-border)] bg-[var(--ui-surface)] px-3 py-2 text-[var(--ui-fg)]"
             placeholder="Document editors"
-          >
+          />
         </label>
         <label class="text-sm text-[var(--ui-fg-muted)]">
           Scope (optional)
@@ -176,10 +158,14 @@ onMounted(async () => {
             type="text"
             class="mt-1 w-full rounded-lg border border-[var(--ui-border)] bg-[var(--ui-surface)] px-3 py-2 text-[var(--ui-fg)]"
             placeholder="workspace"
-          >
+          />
         </label>
       </div>
-      <p v-if="createError" class="m-0 mt-2 text-sm text-[var(--ui-critical)]" data-test="permission-create-error">
+      <p
+        v-if="createError"
+        class="m-0 mt-2 text-sm text-[var(--ui-critical)]"
+        data-test="permission-create-error"
+      >
         {{ createError }}
       </p>
       <button
@@ -206,9 +192,14 @@ onMounted(async () => {
         class="rounded-xl border border-[var(--ui-border)] p-4"
         :data-test="`permission-card-${permission.id}`"
       >
-        <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+        <div
+          class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between"
+        >
           <div>
-            <h3 class="m-0 text-base font-medium text-[var(--ui-fg)]" :data-test="`permission-title-${permission.id}`">
+            <h3
+              class="m-0 text-base font-medium text-[var(--ui-fg)]"
+              :data-test="`permission-title-${permission.id}`"
+            >
               {{ permission.title }}
             </h3>
             <p class="m-0 text-sm text-[var(--ui-fg-muted)]">
@@ -233,10 +224,15 @@ onMounted(async () => {
           >
             <span class="text-sm text-[var(--ui-fg)]">
               {{ member.memberLabel ?? member.memberId }}
-              <span class="text-[var(--ui-fg-muted)]">({{ member.memberId }})</span>
+              <span class="text-[var(--ui-fg-muted)]"
+                >({{ member.memberId }})</span
+              >
             </span>
             <button
-              v-if="member.memberId !== appApi.identity.activeIdentity.value?.identityId"
+              v-if="
+                member.memberId !==
+                appApi.identity.activeIdentity.value?.identityId
+              "
               type="button"
               class="rounded-lg border border-[var(--ui-border)] px-2 py-1 text-xs text-[var(--ui-fg)] transition hover:bg-[var(--ui-tonal-secondary)]"
               :data-test="`permission-revoke-${permission.id}-${member.memberId}`"
@@ -258,14 +254,14 @@ onMounted(async () => {
             type="text"
             class="rounded-lg border border-[var(--ui-border)] bg-[var(--ui-surface)] px-3 py-2 text-sm text-[var(--ui-fg)]"
             placeholder="member id"
-          >
+          />
           <input
             v-model="grantMemberLabelByPermission[permission.id]"
             :data-test="`permission-grant-member-label-${permission.id}`"
             type="text"
             class="rounded-lg border border-[var(--ui-border)] bg-[var(--ui-surface)] px-3 py-2 text-sm text-[var(--ui-fg)]"
             placeholder="member label (optional)"
-          >
+          />
           <button
             type="submit"
             class="rounded-lg border border-[var(--ui-border)] px-3 py-2 text-sm text-[var(--ui-fg)] transition hover:bg-[var(--ui-tonal-secondary)]"

@@ -156,7 +156,7 @@ const bottomItems = computed(() => [
             class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 hover:bg-base-300/50"
             :class="{
               'bg-primary/10 text-primary font-medium': $route.path.startsWith(
-                item.to
+                item.to,
               ),
               'text-base-content/80 hover:text-base-content font-thin':
                 !$route.path.startsWith(item.to),
@@ -231,34 +231,6 @@ const bottomItems = computed(() => [
           </RouterLink>
         </div>
       </nav>
-    </div>
-
-    <!-- Collapse Button (Desktop) -->
-    <div class="p-4 border-t border-base-300/30">
-      <button
-        v-if="mdAndLarger"
-        @click="collapsedSideBar = !collapsedSideBar"
-        class="w-full flex items-center justify-start gap-2 px-3 py-2 rounded-lg bg-base-300/50 hover:bg-base-300 transition-all duration-200"
-        :class="{ 'px-2': collapsedSideBar }"
-      >
-        <svg
-          class="w-4 h-4 transition-transform duration-200"
-          :class="{ 'rotate-180': collapsedSideBar }"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M15 19l-7-7 7-7"
-          />
-        </svg>
-        <span v-if="!collapsedSideBar" class="text-sm font-medium"
-          >Collapse</span
-        >
-      </button>
     </div>
   </div>
 </template>

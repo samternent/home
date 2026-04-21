@@ -1,8 +1,8 @@
 import type { RouteRecordRaw } from "vue-router";
-import v2Routes from "./v2";
+import appRoutes from "./app";
 
 export const routes: RouteRecordRaw[] = [
-  ...v2Routes,
+  ...appRoutes,
   {
     path: "/:pathMatch(.*)*",
     redirect: "/",

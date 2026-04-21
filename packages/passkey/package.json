@@ -1,7 +1,7 @@
 {
-  "name": "@ternent/solid",
+  "name": "@ternent/passkey",
   "version": "0.1.0",
-  "description": "Solid session integrations for Concord identity, storage, and lifecycle management",
+  "description": "Origin-bound passkey unlock and approval helpers for Concord apps",
   "license": "ISC",
   "type": "module",
   "sideEffects": false,
@@ -25,14 +25,6 @@
   "scripts": {
     "build": "vite build",
     "test": "vitest run"
-  },
-  "dependencies": {
-    "@inrupt/solid-client": "^3.0.0",
-    "@ternent/armour": "workspace:*",
-    "@ternent/concord": "workspace:*",
-    "@ternent/identity": "workspace:*",
-    "@ternent/passkey": "workspace:*",
-    "@ternent/ledger": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^24.3.0",

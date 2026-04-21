@@ -89,6 +89,16 @@ export async function validateSolidConcordAccess(
 ): Promise<SolidConcordAccessReport> {
   const checks = (
     await Promise.all([
+      resources.identityUrl
+        ? probeAnonymousRead(resources.identityUrl).then((anonymousRead) =>
+            createCheck({
+              name: "identity",
+              url: resources.identityUrl,
+              expectedAccess: "private",
+              anonymousRead,
+            }),
+          )
+        : Promise.resolve(null),
       resources.mnemonicUrl
         ? probeAnonymousRead(resources.mnemonicUrl).then((anonymousRead) =>
             createCheck({
@@ -155,4 +165,80 @@ export async function enforceSolidConcordAccess(
   }
 
   return report;
+}
+
+export function validateSolidPrivateResourceTarget(
+  url: string,
+  input: { privateRootUrl?: string | null } = {},
+): { safe: boolean; issue: string | null } {
+  const normalized = new URL(url).toString();
+  const expectedRoot = input.privateRootUrl ? new URL(input.privateRootUrl).toString() : null;
+
+  if (expectedRoot && !normalized.startsWith(expectedRoot)) {
+    return {
+      safe: false,
+      issue: `Sensitive Solid resource must be written under ${expectedRoot}: ${normalized}`,
+    };
+  }
+
+  if (!expectedRoot && !normalized.includes("/private/")) {
+    return {
+      safe: false,
+      issue: `Sensitive Solid resource must target a private path containing '/private/': ${normalized}`,
+    };
+  }
+
+  return {
+    safe: true,
+    issue: null,
+  };
+}
+
+export function enforceSolidPrivateResourceTarget(
+  url: string,
+  input: { privateRootUrl?: string | null } = {},
+): void {
+  const report = validateSolidPrivateResourceTarget(url, input);
+  if (!report.safe && report.issue) {
+    throw new Error(report.issue);
+  }
+}
+
+export async function validateSolidPrivateResourceWrite(
+  url: string,
+  input: { privateRootUrl?: string | null } = {},
+): Promise<{ safe: boolean; issue: string | null; anonymousRead: "yes" | "no" | "unknown" }> {
+  const target = validateSolidPrivateResourceTarget(url, input);
+  if (!target.safe) {
+    return {
+      safe: false,
+      issue: target.issue,
+      anonymousRead: "unknown",
+    };
+  }
+
+  const anonymousRead = await probeAnonymousRead(url);
+  if (anonymousRead === "yes") {
+    return {
+      safe: false,
+      issue: `Sensitive Solid resource is anonymously readable and cannot be written safely: ${url}`,
+      anonymousRead,
+    };
+  }
+
+  return {
+    safe: true,
+    issue: null,
+    anonymousRead,
+  };
+}
+
+export async function enforceSolidPrivateResourceWrite(
+  url: string,
+  input: { privateRootUrl?: string | null } = {},
+): Promise<void> {
+  const report = await validateSolidPrivateResourceWrite(url, input);
+  if (!report.safe && report.issue) {
+    throw new Error(report.issue);
+  }
 }
