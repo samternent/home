@@ -1368,9 +1368,6 @@ importers:
       '@ternent/ledger':
         specifier: workspace:*
         version: link:../ledger-v2
-      '@ternent/passkey':
-        specifier: workspace:*
-        version: link:../passkey
     devDependencies:
       '@types/node':
         specifier: ^24.3.0

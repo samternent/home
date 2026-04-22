@@ -178,7 +178,7 @@ function createMemoryStorage() {
 }
 
 function createTestUnlocker(seed = "default") {
-  return createStaticSolidIdentityUnlocker(`test-passkey:${seed}`);
+  return createStaticSolidIdentityUnlocker(`test-passphrase:${seed}`);
 }
 
 const RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
@@ -784,7 +784,7 @@ describe("@ternent/solid", () => {
     expect(result.identity.keyId).toBe(created.identity.keyId);
   });
 
-  it("loads encrypted identity blobs from Solid storage with a passkey unlocker", async () => {
+  it("loads encrypted identity blobs from Solid storage with a passphrase unlocker", async () => {
     const created = await createSolidMnemonicIdentity({
       words: 12,
       createdAt: "2026-03-22T00:00:00.000Z",

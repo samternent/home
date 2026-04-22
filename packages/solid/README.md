@@ -5,7 +5,7 @@ Solid integrations for `@ternent/concord`.
 ## What it provides
 
 - mnemonic-backed `@ternent/identity` provisioning
-- passkey-gated encrypted identity blob persistence for local cache and Solid
+- passphrase-gated encrypted identity blob persistence for local cache and Solid
 - encrypted Solid wallet backup primitives
 - a Solid Pod-backed `LedgerStorageAdapter`
 - Solid profile/bootstrap helpers for `pim:preferencesFile`, type indexes, and public verification metadata
@@ -24,12 +24,12 @@ pnpm add @ternent/solid @ternent/concord @ternent/identity
 ```ts
 import {
   createSolidIdentityCache,
-  createSolidWebAuthnIdentityUnlocker,
+  createPassphraseSolidIdentityUnlocker,
   createSolidConcordApp,
   provisionSolidIdentity,
 } from "@ternent/solid";
 
-const unlocker = createSolidWebAuthnIdentityUnlocker();
+const unlocker = createPassphraseSolidIdentityUnlocker(userProvidedPassword);
 const cache = createSolidIdentityCache({ session, unlocker });
 
 const { identity, mnemonic, resources } = await provisionSolidIdentity({
@@ -72,9 +72,7 @@ When `profile.accessValidation` is `"strict"` (the default when profile mode is 
 - Concord identity comes from a mnemonic-backed `@ternent/identity` seed.
 - Solid is used for session access, Pod storage of encrypted identity blobs, optional encrypted wallet backup discovery, and profile/type-index resource discovery.
 - Local identity cache stores encrypted identity blobs only (`ternent-solid-encrypted-identity` v2).
-- Passkeys/WebAuthn are used as the MFA unlock mechanism for encrypted identity decrypt/encrypt flows.
-- Encrypted identity blobs use passkey PRF-derived unlock material (`webauthn-prf-v1`) for WebAuthn mechanisms.
-- WebAuthn ceremony/challenge/validation is delegated to `@ternent/passkey`.
-- Concord identity is not derived from Solid auth state and is not derived from passkeys.
+- Unlocking encrypted identity blobs requires an explicit passphrase unlocker from the host application.
+- Concord identity is not derived from Solid auth state.
 - The package preserves existing `pim:preferencesFile` and type-index links by default. It only rewires them when you explicitly override those URLs.
 - Access validation is conservative: it proves unsafe public readability when it can, but it cannot guarantee every Pod’s ACL/ACP policy is configured ideally.

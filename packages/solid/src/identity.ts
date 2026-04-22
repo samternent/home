@@ -14,11 +14,9 @@ export {
 
 export {
   createStaticSolidIdentityUnlocker,
-  createSolidWebAuthnIdentityUnlocker,
+  createPassphraseSolidIdentityUnlocker,
   createDefaultSolidIdentityUnlocker,
   resolveSolidIdentityUnlocker,
-  isSolidPasskeyBinding,
-  normalizePasskeyBinding,
 } from "./identity-unlocker.js";
 
 export {

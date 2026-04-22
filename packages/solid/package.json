@@ -31,7 +31,6 @@
     "@ternent/armour": "workspace:*",
     "@ternent/concord": "workspace:*",
     "@ternent/identity": "workspace:*",
-    "@ternent/passkey": "workspace:*",
     "@ternent/ledger": "workspace:*"
   },
   "devDependencies": {

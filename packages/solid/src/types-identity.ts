@@ -43,24 +43,6 @@ export type SolidWalletBackup = {
   };
 };
 
-export type SolidPasskeyBindingRole =
-  | "unlock"
-  | "approval"
-  | "unlock-and-approval";
-
-export type SolidPasskeyBinding = {
-  version: 1;
-  type: "webauthn-passkey";
-  label?: string;
-  credentialId: string;
-  credentialPublicKeyJwk: JsonWebKey;
-  rpId: string;
-  origin: string;
-  createdAt: string;
-  role: SolidPasskeyBindingRole;
-  userVerification: "required" | "preferred" | "discouraged";
-};
-
 export type SolidEncryptedIdentityBlob = {
   format: "ternent-solid-encrypted-identity";
   version: "2";
@@ -72,15 +54,8 @@ export type SolidEncryptedIdentityBlob = {
   encryption: {
     scheme: "armour-passphrase";
     encoding: "armor";
-    unlockMechanism: "webauthn-passkey" | string;
-    passkeyDerivation:
-      | {
-          scheme: "webauthn-prf-v1";
-          salt: string;
-        }
-      | null;
+    unlockMechanism: "password-passphrase" | "unsafe-static-passphrase" | string;
   };
-  passkeyBinding: SolidPasskeyBinding | null;
 };
 
 export type SolidVerificationDocument = {
@@ -153,24 +128,11 @@ export type SolidIdentityUnlockContext = {
   storage: "local-cache" | "solid-resource";
   cacheKey?: string;
   resourceUrl?: string;
-  passkeyBinding?: SolidPasskeyBinding | null;
-  passkeyDerivationSalt?: string | null;
 };
 
 export type SolidIdentityUnlocker = {
-  mechanism: "webauthn-passkey" | string;
-  binding?: SolidPasskeyBinding;
+  mechanism: "password-passphrase" | "unsafe-static-passphrase" | string;
   unlock(context: SolidIdentityUnlockContext): Promise<string>;
-};
-
-export type CreateSolidWebAuthnIdentityUnlockerOptions = {
-  rpId?: string;
-  credentialId?: string;
-  credentialPublicKeyJwk?: JsonWebKey;
-  label?: string;
-  role?: SolidPasskeyBindingRole;
-  userVerification?: "required" | "preferred" | "discouraged";
-  timeoutMs?: number;
 };
 
 export type CreateSolidIdentityCacheOptions = {

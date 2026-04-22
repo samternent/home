@@ -1,18 +1,21 @@
-<script setup>
+<script setup lang="ts">
 import {
   useLocalStorage,
   breakpointsTailwind,
   useBreakpoints,
 } from "@vueuse/core";
 import { computed, watch, shallowRef } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
+import { useAppApi } from "@/app/api";
 import { Button } from "ternent-ui/primitives";
 
 const breakpoints = useBreakpoints(breakpointsTailwind);
 const route = useRoute();
+const router = useRouter();
+const appApi = useAppApi();
+
 const mdAndLarger = breakpoints.greaterOrEqual("md");
 const smallerThanMd = breakpoints.smaller("md");
-const smallerThanLg = breakpoints.smaller("lg");
 
 watch(route, () => {
   openSideBar.value = false;
@@ -57,8 +60,15 @@ const bottomItems = computed(() => [
   // },
 ]);
 const appVersion = shallowRef(
-  document.querySelector("html").dataset.appVersion,
+  typeof document !== "undefined"
+    ? document.querySelector("html")?.dataset.appVersion
+    : undefined,
 );
+
+async function relaunchOnboarding(): Promise<void> {
+  await appApi.identity.lock();
+  await router.push("/");
+}
 </script>
 <template>
   <div
@@ -153,6 +163,9 @@ const appVersion = shallowRef(
           >
             v{{ appVersion }}
           </a>
+          <Button variant="secondary" @click="relaunchOnboarding">
+            Lock
+          </Button>
         </div>
         <div class="flex items-center justify-between py-2 font-sans text-xs">
           <!-- <SThemeToggle v-model="themeMode" size="sm" class="w-20" /> -->
@@ -160,6 +173,7 @@ const appVersion = shallowRef(
       </nav>
     </div>
   </div>
+
   <!-- Collapse Button (Desktop) -->
   <div v-if="smallerThanMd && !openSideBar" class="fixed top-0 left-0 z-40">
     <Button @click="openSideBar = !openSideBar" variant="ghost" size="sm">

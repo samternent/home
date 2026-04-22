@@ -3,12 +3,17 @@ import type { SerializedIdentity } from "@ternent/identity";
 import type { ConcordState } from "@ternent/concord";
 import { readonly, ref, shallowRef } from "vue";
 import {
+  createIdentityService,
   createApp as createRuntimeApp,
   createConcordLocalStorageAdapter,
-  resolvePersistedIdentity,
+  type EncryptedIdentityBlobV2,
+  type IdentityOnboardingDraft,
+  type IdentityBootstrapMode,
+  type IdentityService,
   type AppProjectionPlugin,
   type AppRuntime,
   type LocalStorageLike,
+  type StoredIdentitySummary,
 } from "@/app/runtime";
 import {
   createPermissionsPlugin,
@@ -24,10 +29,14 @@ import {
 } from "@/app/plugins";
 import type { AppApi, AppIdentity, AppStatus } from "./types";
 
-type CreateAppApiOptions = {
+export type CreateAppApiOptions = {
   identity?: SerializedIdentity;
+  encryptedIdentity?: EncryptedIdentityBlobV2 | string;
+  identityBootstrapMode?: IdentityBootstrapMode;
   identityStorage?: LocalStorageLike;
   identityStorageKey?: string;
+  devSessionUnlockBypass?: boolean;
+  rpName?: string;
   concordStorage?: LocalStorageLike;
   concordStorageKey?: string;
   storage?: LedgerStorageAdapter;
@@ -35,11 +44,7 @@ type CreateAppApiOptions = {
 };
 
 let singleton: AppApi | null = null;
-
-function toIdentityLabel(identity: SerializedIdentity): string {
-  const suffix = identity.keyId.slice(-8);
-  return `User ${suffix}`;
-}
+let singletonOptionsForTests: CreateAppApiOptions | null = null;
 
 function toErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
@@ -101,25 +106,54 @@ export function createAppApi(options?: CreateAppApiOptions): AppApi {
   const activeIdentity = ref<AppIdentity | null>(null);
 
   let runtime: AppRuntime | null = null;
+  let identityService: IdentityService | null = null;
   let bootstrapPromise: Promise<void> | null = null;
   let runtimeSubscription: (() => void) | null = null;
 
-  async function bootstrap() {
+  function ensureIdentityService(): IdentityService {
+    if (identityService) {
+      return identityService;
+    }
+
+    identityService = createIdentityService({
+      identity: options?.identity,
+      encryptedIdentity: options?.encryptedIdentity,
+      identityBootstrapMode: options?.identityBootstrapMode,
+      storage: options?.identityStorage,
+      storageKey: options?.identityStorageKey,
+      devSessionUnlockBypass:
+        options?.devSessionUnlockBypass ?? import.meta.env.DEV,
+      rpName: options?.rpName,
+    });
+
+    return identityService;
+  }
+
+  async function teardownRuntime(): Promise<void> {
+    if (runtimeSubscription) {
+      runtimeSubscription();
+      runtimeSubscription = null;
+    }
+
+    if (runtime) {
+      await runtime.destroy();
+      runtime = null;
+    }
+
+    bootstrapPromise = null;
+    state.value = createInitialState(plugins);
+    status.value = "restoring";
+    lastError.value = null;
+    activeIdentity.value = null;
+  }
+
+  async function bootstrap(mode?: IdentityBootstrapMode) {
     if (runtime) {
       return;
     }
 
     try {
-      const resolvedIdentity = options?.identity
-        ? {
-            identityId: options.identity.keyId,
-            label: toIdentityLabel(options.identity),
-            identity: options.identity,
-          }
-        : await resolvePersistedIdentity({
-            storage: options?.identityStorage,
-            storageKey: options?.identityStorageKey,
-          });
+      const resolvedIdentity = await ensureIdentityService().ensureUnlocked(mode);
 
       activeIdentity.value = {
         identityId: resolvedIdentity.identityId,
@@ -196,6 +230,81 @@ export function createAppApi(options?: CreateAppApiOptions): AppApi {
           throw new Error("Active identity is unavailable.");
         }
         return current;
+      },
+      async ensureUnlocked(mode) {
+        if (activeIdentity.value && status.value === "ready") {
+          return activeIdentity.value;
+        }
+        await bootstrap(mode);
+        const current = activeIdentity.value;
+        if (!current) {
+          throw new Error("Active identity is unavailable.");
+        }
+        return current;
+      },
+      async lock() {
+        await ensureIdentityService().lock();
+        await teardownRuntime();
+      },
+      async createOnboardingDraft(input?: {
+        words?: 12 | 24;
+        totpIssuer?: string;
+        totpAccountName?: string;
+      }): Promise<IdentityOnboardingDraft> {
+        return await ensureIdentityService().createOnboardingDraft(input);
+      },
+      async completeOnboarding(input: {
+        draft: IdentityOnboardingDraft;
+        password: string;
+        confirmPassword: string;
+        mnemonicConfirmed: boolean;
+        mfaEnabled: boolean;
+        totpCode?: string;
+      }): Promise<AppIdentity> {
+        await ensureIdentityService().completeOnboarding(input);
+        await teardownRuntime();
+        await bootstrap("auto");
+        const current = activeIdentity.value;
+        if (!current) {
+          throw new Error("Active identity is unavailable after onboarding.");
+        }
+        return current;
+      },
+      async recoverFromMnemonic(input: {
+        mnemonic: string;
+        password: string;
+        confirmPassword: string;
+        mfaEnabled: boolean;
+        totpSecretBase32?: string;
+        totpCode?: string;
+        totpIssuer?: string;
+        totpAccountName?: string;
+        createdAt?: string;
+      }): Promise<AppIdentity> {
+        await ensureIdentityService().recoverFromMnemonic(input);
+        await teardownRuntime();
+        await bootstrap("auto");
+        const current = activeIdentity.value;
+        if (!current) {
+          throw new Error("Active identity is unavailable after recovery.");
+        }
+        return current;
+      },
+      async unlockWithPassword(input: {
+        password: string;
+        totpCode?: string;
+      }): Promise<AppIdentity> {
+        await ensureIdentityService().unlockWithPassword(input);
+        await teardownRuntime();
+        await bootstrap("unlock-only");
+        const current = activeIdentity.value;
+        if (!current) {
+          throw new Error("Active identity is unavailable after unlock.");
+        }
+        return current;
+      },
+      getStoredIdentitySummary(): StoredIdentitySummary | null {
+        return ensureIdentityService().getStoredIdentitySummary();
       },
     },
     users: {
@@ -308,18 +417,7 @@ export function createAppApi(options?: CreateAppApiOptions): AppApi {
       };
     },
     async destroy() {
-      if (runtimeSubscription) {
-        runtimeSubscription();
-        runtimeSubscription = null;
-      }
-
-      if (runtime) {
-        await runtime.destroy();
-      }
-
-      runtime = null;
-      bootstrapPromise = null;
-      status.value = "restoring";
+      await teardownRuntime();
     },
   };
 
@@ -331,7 +429,7 @@ export function createAppApi(options?: CreateAppApiOptions): AppApi {
  */
 export function useAppApi(): AppApi {
   if (!singleton) {
-    singleton = createAppApi();
+    singleton = createAppApi(singletonOptionsForTests ?? undefined);
   }
 
   return singleton;
@@ -341,10 +439,18 @@ export function useAppApi(): AppApi {
  * Test helper that clears the shared singleton between test cases.
  */
 export async function resetAppApiSingletonForTests(): Promise<void> {
-  if (!singleton) {
-    return;
+  if (singleton) {
+    await singleton.destroy();
+    singleton = null;
   }
+  singletonOptionsForTests = null;
+}
 
-  await singleton.destroy();
-  singleton = null;
+/**
+ * Test helper to inject bootstrap options into the shared singleton factory.
+ */
+export function configureAppApiSingletonForTests(
+  options: CreateAppApiOptions | null,
+): void {
+  singletonOptionsForTests = options;
 }

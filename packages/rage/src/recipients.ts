@@ -19,20 +19,39 @@ import type {
 const utf8Encoder = new TextEncoder();
 const utf8Decoder = new TextDecoder("utf-8", { fatal: true });
 
-function validateData(data: Uint8Array): void {
-  if (!(data instanceof Uint8Array) || data.byteLength === 0) {
+function normalizeData(data: Uint8Array): Uint8Array {
+  if (data instanceof Uint8Array) {
+    return data;
+  }
+
+  if (ArrayBuffer.isView(data)) {
+    const view = data as ArrayBufferView;
+    return new Uint8Array(view.buffer, view.byteOffset, view.byteLength);
+  }
+
+  throw new RageValidationError(
+    "RAGE_EMPTY_DATA",
+    "Data must be a non-empty Uint8Array."
+  );
+}
+
+function validateData(data: Uint8Array): Uint8Array {
+  const normalized = normalizeData(data);
+  if (normalized.byteLength === 0) {
     throw new RageValidationError(
       "RAGE_EMPTY_DATA",
       "Data must be a non-empty Uint8Array."
     );
   }
 
-  if (data.byteLength > MAX_MESSAGE_SIZE) {
+  if (normalized.byteLength > MAX_MESSAGE_SIZE) {
     throw new RageValidationError(
       "RAGE_DATA_TOO_LARGE",
       "Data exceeds the 64MB maximum message size."
     );
   }
+
+  return normalized;
 }
 
 function validateRecipients(recipients: string[]): void {
@@ -102,13 +121,13 @@ export async function encryptWithRecipients(
 ): Promise<Uint8Array> {
   assertRageInitialized();
   validateRecipients(input.recipients);
-  validateData(input.data);
+  const data = validateData(input.data);
 
   const output = input.output ?? "armor";
   try {
     const ciphertext = await getRageRuntime().encryptWithRecipients(
       input.recipients,
-      input.data,
+      data,
       output === "armor"
     );
     return normalizeCiphertext(ciphertext, output);
@@ -122,12 +141,12 @@ export async function decryptWithIdentity(
 ): Promise<Uint8Array> {
   assertRageInitialized();
   const identity = validateIdentity(input.identity);
-  validateData(input.data);
+  const data = validateData(input.data);
 
   try {
     const plaintext = await getRageRuntime().decryptWithIdentity(
       identity,
-      input.data
+      data
     );
     return normalizePlaintext(plaintext);
   } catch (error) {

@@ -28,20 +28,39 @@ function validatePassphrase(passphrase: string): void {
   }
 }
 
-function validateData(data: Uint8Array): void {
-  if (!(data instanceof Uint8Array) || data.byteLength === 0) {
+function normalizeData(data: Uint8Array): Uint8Array {
+  if (data instanceof Uint8Array) {
+    return data;
+  }
+
+  if (ArrayBuffer.isView(data)) {
+    const view = data as ArrayBufferView;
+    return new Uint8Array(view.buffer, view.byteOffset, view.byteLength);
+  }
+
+  throw new RageValidationError(
+    "RAGE_EMPTY_DATA",
+    "Data must be a non-empty Uint8Array."
+  );
+}
+
+function validateData(data: Uint8Array): Uint8Array {
+  const normalized = normalizeData(data);
+  if (normalized.byteLength === 0) {
     throw new RageValidationError(
       "RAGE_EMPTY_DATA",
       "Data must be a non-empty Uint8Array."
     );
   }
 
-  if (data.byteLength > MAX_MESSAGE_SIZE) {
+  if (normalized.byteLength > MAX_MESSAGE_SIZE) {
     throw new RageValidationError(
       "RAGE_DATA_TOO_LARGE",
       "Data exceeds the 64MB maximum message size."
     );
   }
+
+  return normalized;
 }
 
 function normalizeCiphertext(value: unknown, output: RageOutputFormat): Uint8Array {
@@ -81,13 +100,13 @@ export async function encryptWithPassphrase(
 ): Promise<Uint8Array> {
   assertRageInitialized();
   validatePassphrase(input.passphrase);
-  validateData(input.data);
+  const data = validateData(input.data);
 
   const output = input.output ?? "armor";
   try {
     const ciphertext = await getRageRuntime().encryptWithPassphrase(
       input.passphrase,
-      input.data,
+      data,
       output === "armor"
     );
     return normalizeCiphertext(ciphertext, output);
@@ -101,12 +120,12 @@ export async function decryptWithPassphrase(
 ): Promise<Uint8Array> {
   assertRageInitialized();
   validatePassphrase(input.passphrase);
-  validateData(input.data);
+  const data = validateData(input.data);
 
   try {
     const plaintext = await getRageRuntime().decryptWithPassphrase(
       input.passphrase,
-      input.data
+      data
     );
     return normalizePlaintext(plaintext);
   } catch (error) {

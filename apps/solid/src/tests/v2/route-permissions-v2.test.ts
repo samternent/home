@@ -1,11 +1,15 @@
 import { flushPromises, mount } from "@vue/test-utils";
 import { beforeEach, describe, expect, it } from "vitest";
-import RoutePermissionsV2 from "@/routes/v2/RoutePermissionsV2.vue";
+import { createIdentity } from "@ternent/identity";
+import RoutePermissions from "@/routes/app/RoutePermissions.vue";
 import {
   DEFAULT_CONCORD_STORAGE_KEY,
-  DEFAULT_IDENTITY_STORAGE_KEY,
+  DEFAULT_ENCRYPTED_IDENTITY_STORAGE_KEY,
 } from "@/app/runtime";
-import { resetAppApiSingletonForTests } from "@/app/api";
+import {
+  configureAppApiSingletonForTests,
+  resetAppApiSingletonForTests,
+} from "@/app/api";
 
 async function waitFor(check: () => boolean): Promise<boolean> {
   for (let attempt = 0; attempt < 400; attempt += 1) {
@@ -18,15 +22,18 @@ async function waitFor(check: () => boolean): Promise<boolean> {
   return false;
 }
 
-describe("RoutePermissionsV2", () => {
+describe("RoutePermissions", () => {
   beforeEach(async () => {
     await resetAppApiSingletonForTests();
+    configureAppApiSingletonForTests({
+      identity: await createIdentity("2026-04-20T10:00:00.000Z"),
+    });
     localStorage.removeItem(DEFAULT_CONCORD_STORAGE_KEY);
-    localStorage.removeItem(DEFAULT_IDENTITY_STORAGE_KEY);
+    localStorage.removeItem(DEFAULT_ENCRYPTED_IDENTITY_STORAGE_KEY);
   });
 
   it("stages create/grant/revoke and supports commit/discard", async () => {
-    const wrapper = mount(RoutePermissionsV2);
+    const wrapper = mount(RoutePermissions);
     const ready = await waitFor(
       () => wrapper.get('[data-test="permissions-v2-status"]').text().includes("ready"),
     );

@@ -5,6 +5,7 @@ import type {
   ConcordReplayOptions,
   ConcordState,
 } from "@ternent/concord";
+import type { SerializedIdentity } from "@ternent/identity";
 import type { Ref } from "vue";
 import type {
   PermissionCreateInput,
@@ -16,12 +17,29 @@ import type {
   UserRecord,
   UserUpdateProfileInput,
 } from "@/app/plugins";
+import type {
+  EncryptedIdentityBlobV2,
+  IdentityOnboardingDraft,
+  IdentityBootstrapMode,
+  LocalStorageLike,
+  StoredIdentitySummary,
+} from "@/app/runtime";
 
 export type AppStatus = "restoring" | "ready" | "error";
 
 export type AppIdentity = {
   identityId: string;
   label: string;
+};
+
+export type AppIdentityBootstrapOptions = {
+  identity?: SerializedIdentity;
+  encryptedIdentity?: EncryptedIdentityBlobV2 | string;
+  identityBootstrapMode?: IdentityBootstrapMode;
+  identityStorage?: LocalStorageLike;
+  identityStorageKey?: string;
+  devSessionUnlockBypass?: boolean;
+  rpName?: string;
 };
 
 export type AppUsersApi = {
@@ -50,6 +68,37 @@ export type AppApi = {
     activeIdentity: Readonly<Ref<AppIdentity | null>>;
     getActiveIdentity(): AppIdentity | null;
     ensureActiveIdentity(): Promise<AppIdentity>;
+    ensureUnlocked(mode?: IdentityBootstrapMode): Promise<AppIdentity>;
+    lock(): Promise<void>;
+    createOnboardingDraft(input?: {
+      words?: 12 | 24;
+      totpIssuer?: string;
+      totpAccountName?: string;
+    }): Promise<IdentityOnboardingDraft>;
+    completeOnboarding(input: {
+      draft: IdentityOnboardingDraft;
+      password: string;
+      confirmPassword: string;
+      mnemonicConfirmed: boolean;
+      mfaEnabled: boolean;
+      totpCode?: string;
+    }): Promise<AppIdentity>;
+    recoverFromMnemonic(input: {
+      mnemonic: string;
+      password: string;
+      confirmPassword: string;
+      mfaEnabled: boolean;
+      totpSecretBase32?: string;
+      totpCode?: string;
+      totpIssuer?: string;
+      totpAccountName?: string;
+      createdAt?: string;
+    }): Promise<AppIdentity>;
+    unlockWithPassword(input: {
+      password: string;
+      totpCode?: string;
+    }): Promise<AppIdentity>;
+    getStoredIdentitySummary(): StoredIdentitySummary | null;
   };
   users: AppUsersApi;
   permissions: AppPermissionsApi;

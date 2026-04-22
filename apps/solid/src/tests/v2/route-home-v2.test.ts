@@ -1,7 +1,11 @@
 import { flushPromises, mount, RouterLinkStub } from "@vue/test-utils";
 import { beforeEach, describe, expect, it } from "vitest";
-import RouteHomeV2 from "@/routes/v2/RouteHomeV2.vue";
-import { resetAppApiSingletonForTests } from "@/app/api";
+import { createIdentity } from "@ternent/identity";
+import RouteHome from "@/routes/app/RouteHome.vue";
+import {
+  configureAppApiSingletonForTests,
+  resetAppApiSingletonForTests,
+} from "@/app/api";
 
 async function waitFor(check: () => boolean): Promise<boolean> {
   for (let attempt = 0; attempt < 400; attempt += 1) {
@@ -14,13 +18,16 @@ async function waitFor(check: () => boolean): Promise<boolean> {
   return false;
 }
 
-describe("RouteHomeV2", () => {
+describe("RouteHome", () => {
   beforeEach(async () => {
     await resetAppApiSingletonForTests();
+    configureAppApiSingletonForTests({
+      identity: await createIdentity("2026-04-20T10:00:00.000Z"),
+    });
   });
 
   it("renders concord host status and link to permissions", async () => {
-    const wrapper = mount(RouteHomeV2, {
+    const wrapper = mount(RouteHome, {
       global: {
         stubs: {
           RouterLink: RouterLinkStub,

@@ -2,6 +2,8 @@
 import { shallowRef } from "vue";
 import { breakpointsTailwind, useBreakpoints } from "@vueuse/core";
 import SideNav from "./SideNav.vue";
+import Console from "./Console.vue";
+import IdentityOnboardingDialog from "./IdentityOnboardingDialog.vue";
 
 const breakpoints = useBreakpoints(breakpointsTailwind);
 const contentArea = shallowRef<HTMLElement | null>();
@@ -29,15 +31,11 @@ const smallerThanMd = breakpoints.smaller("md");
                 'flex items-start gap-2 w-64 px-4 py-2',
                 { 'pl-16': smallerThanMd },
               ]"
-            >
-              2
-            </div>
+            ></div>
 
             <nav
               class="flex items-center justify-between text-xs font-mono px-4 py-2"
-            >
-              1
-            </nav>
+            ></nav>
           </div>
         </header>
 
@@ -53,8 +51,9 @@ const smallerThanMd = breakpoints.smaller("md");
           </div>
         </div>
 
-        <slot name="console" v-bind="{ container: contentArea }" />
+        <Console />
       </div>
     </div>
+    <IdentityOnboardingDialog />
   </div>
 </template>

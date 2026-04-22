@@ -16,38 +16,16 @@ import type {
 import {
   assertPassphrase,
   isRecord,
-  randomBase64Url,
   SOLID_ENCRYPTED_IDENTITY_FORMAT,
   SOLID_ENCRYPTED_IDENTITY_VERSION,
 } from "./identity-shared.js";
-import {
-  isSolidPasskeyBinding,
-  normalizePasskeyBinding,
-  resolveSolidIdentityUnlocker,
-} from "./identity-unlocker.js";
+import { resolveSolidIdentityUnlocker } from "./identity-unlocker.js";
 
 export function isSolidEncryptedIdentityBlob(value: unknown): value is SolidEncryptedIdentityBlob {
-  const isVersion =
-    isRecord(value) && value.version === SOLID_ENCRYPTED_IDENTITY_VERSION;
-  const hasValidPasskeyDerivation =
-    isRecord(value) &&
-    isRecord(value.encryption) &&
-    (value.encryption.unlockMechanism === "webauthn-passkey"
-      ? isRecord(value.encryption.passkeyDerivation) &&
-        value.encryption.passkeyDerivation.scheme === "webauthn-prf-v1" &&
-        typeof value.encryption.passkeyDerivation.salt === "string"
-      : value.encryption.passkeyDerivation === null);
-  const hasRequiredWebauthnDerivation =
-    isRecord(value) &&
-    isRecord(value.encryption) &&
-    value.encryption.unlockMechanism === "webauthn-passkey"
-      ? hasValidPasskeyDerivation
-      : true;
-
   return (
     isRecord(value) &&
     value.format === SOLID_ENCRYPTED_IDENTITY_FORMAT &&
-    isVersion &&
+    value.version === SOLID_ENCRYPTED_IDENTITY_VERSION &&
     typeof value.createdAt === "string" &&
     (value.webId === null || typeof value.webId === "string") &&
     typeof value.keyId === "string" &&
@@ -56,10 +34,7 @@ export function isSolidEncryptedIdentityBlob(value: unknown): value is SolidEncr
     isRecord(value.encryption) &&
     value.encryption.scheme === "armour-passphrase" &&
     value.encryption.encoding === "armor" &&
-    typeof value.encryption.unlockMechanism === "string" &&
-    hasValidPasskeyDerivation &&
-    hasRequiredWebauthnDerivation &&
-    (value.passkeyBinding === null || isSolidPasskeyBinding(value.passkeyBinding))
+    typeof value.encryption.unlockMechanism === "string"
   );
 }
 
@@ -85,9 +60,7 @@ function parseSolidEncryptedIdentityBlob(
       scheme: parsed.encryption.scheme,
       encoding: parsed.encryption.encoding,
       unlockMechanism: parsed.encryption.unlockMechanism,
-      passkeyDerivation: parsed.encryption.passkeyDerivation,
     },
-    passkeyBinding: normalizePasskeyBinding(parsed.passkeyBinding),
   };
 }
 
@@ -109,8 +82,6 @@ export async function createSolidEncryptedIdentityBlob(input: {
 }): Promise<SolidEncryptedIdentityBlob> {
   const identity = await validateIdentity(parseIdentity(input.identity));
   const unlocker = resolveSolidIdentityUnlocker(input.unlocker);
-  const passkeyDerivationSalt =
-    unlocker.mechanism === "webauthn-passkey" ? randomBase64Url(32) : null;
   const passphrase = assertPassphrase(
     await unlocker.unlock({
       reason: "encrypt",
@@ -119,8 +90,6 @@ export async function createSolidEncryptedIdentityBlob(input: {
       storage: input.storage,
       cacheKey: input.cacheKey,
       resourceUrl: input.resourceUrl,
-      passkeyBinding: unlocker.binding ?? null,
-      passkeyDerivationSalt,
     }),
   );
 
@@ -142,14 +111,7 @@ export async function createSolidEncryptedIdentityBlob(input: {
       scheme: "armour-passphrase",
       encoding: "armor",
       unlockMechanism: unlocker.mechanism,
-      passkeyDerivation: passkeyDerivationSalt
-        ? {
-            scheme: "webauthn-prf-v1",
-            salt: passkeyDerivationSalt,
-          }
-        : null,
     },
-    passkeyBinding: normalizePasskeyBinding(unlocker.binding),
   };
 }
 
@@ -180,12 +142,6 @@ export async function restoreSolidIdentityFromEncryptedBlob(input: {
     );
   }
 
-  const passkeyDerivationSalt =
-    blob.encryption.passkeyDerivation &&
-    blob.encryption.passkeyDerivation.scheme === "webauthn-prf-v1"
-      ? blob.encryption.passkeyDerivation.salt
-      : null;
-
   const passphrase = assertPassphrase(
     await unlocker.unlock({
       reason: "decrypt",
@@ -194,8 +150,6 @@ export async function restoreSolidIdentityFromEncryptedBlob(input: {
       storage: input.storage,
       cacheKey: input.cacheKey,
       resourceUrl: input.resourceUrl,
-      passkeyBinding: blob.passkeyBinding,
-      passkeyDerivationSalt,
     }),
   );
 

@@ -18,5 +18,6 @@ if (typeof window !== "undefined" && !window.matchMedia) {
 
 beforeEach(() => {
   localStorage.clear();
+  sessionStorage.clear();
   document.documentElement.removeAttribute("data-theme");
 });

@@ -105,6 +105,33 @@ onMounted(async () => {
 
 <template>
   <section class="space-y-6" data-test="permissions-v2">
+    <dl class="m-0 grid gap-2 rounded-lg border border-[var(--ui-border)] p-3 text-sm">
+      <div class="flex items-center justify-between gap-4">
+        <dt class="text-[var(--ui-fg-muted)]">
+          Status
+        </dt>
+        <dd class="m-0 text-[var(--ui-fg)]" data-test="permissions-v2-status">
+          {{ appApi.status.value }}
+        </dd>
+      </div>
+      <div class="flex items-center justify-between gap-4">
+        <dt class="text-[var(--ui-fg-muted)]">
+          Active identity
+        </dt>
+        <dd class="m-0 text-[var(--ui-fg)]" data-test="permissions-v2-active-identity">
+          {{ activeIdentityLabel }}
+        </dd>
+      </div>
+      <div class="flex items-center justify-between gap-4">
+        <dt class="text-[var(--ui-fg-muted)]">
+          Staged entries
+        </dt>
+        <dd class="m-0 text-[var(--ui-fg)]" data-test="permissions-v2-staged-count">
+          {{ stagedCount }}
+        </dd>
+      </div>
+    </dl>
+
     <div class="mt-3 flex gap-2">
       <button
         type="button"
