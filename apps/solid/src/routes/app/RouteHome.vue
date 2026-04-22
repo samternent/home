@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import { useAppApi } from "@/app/api";
+import { Button } from "ternent-ui/primitives";
+import { KeyValueList } from "ternent-ui/patterns";
 
 const appApi = useAppApi();
 const loadError = ref<string | null>(null);
@@ -10,6 +12,39 @@ const activeIdentityLabel = computed(
 );
 const userCount = computed(() => appApi.users.all().length);
 const permissionCount = computed(() => appApi.permissions.all().length);
+
+const summaryItems = computed(() => [
+  {
+    label: "Status",
+    value: appApi.status.value,
+    dataTest: "home-v2-status",
+  },
+  {
+    label: "Integrity valid",
+    value: appApi.getState().integrityValid,
+    dataTest: "home-v2-integrity",
+  },
+  {
+    label: "Staged entries",
+    value: appApi.getState().stagedCount,
+    dataTest: "home-v2-staged-count",
+  },
+  {
+    label: "Active identity",
+    value: activeIdentityLabel.value,
+    dataTest: "home-v2-active-identity",
+  },
+  {
+    label: "Users",
+    value: userCount.value,
+    dataTest: "home-v2-user-count",
+  },
+  {
+    label: "Permissions",
+    value: permissionCount.value,
+    dataTest: "home-v2-permission-count",
+  },
+]);
 
 onMounted(async () => {
   try {
@@ -32,56 +67,9 @@ onMounted(async () => {
     <p class="m-0 max-w-2xl text-sm leading-6 text-[var(--ui-fg-muted)]">
       This app runs as a thin host over Concord. Replay of committed plus staged entries is the only state source.
     </p>
-    <dl class="m-0 grid gap-2 rounded-lg border border-[var(--ui-border)] p-3 text-sm">
-      <div class="flex items-center justify-between gap-4">
-        <dt class="text-[var(--ui-fg-muted)]">
-          Status
-        </dt>
-        <dd class="m-0 text-[var(--ui-fg)]" data-test="home-v2-status">
-          {{ appApi.status.value }}
-        </dd>
-      </div>
-      <div class="flex items-center justify-between gap-4">
-        <dt class="text-[var(--ui-fg-muted)]">
-          Integrity valid
-        </dt>
-        <dd class="m-0 text-[var(--ui-fg)]" data-test="home-v2-integrity">
-          {{ appApi.getState().integrityValid ? "yes" : "no" }}
-        </dd>
-      </div>
-      <div class="flex items-center justify-between gap-4">
-        <dt class="text-[var(--ui-fg-muted)]">
-          Staged entries
-        </dt>
-        <dd class="m-0 text-[var(--ui-fg)]" data-test="home-v2-staged-count">
-          {{ appApi.getState().stagedCount }}
-        </dd>
-      </div>
-      <div class="flex items-center justify-between gap-4">
-        <dt class="text-[var(--ui-fg-muted)]">
-          Active identity
-        </dt>
-        <dd class="m-0 text-[var(--ui-fg)]" data-test="home-v2-active-identity">
-          {{ activeIdentityLabel }}
-        </dd>
-      </div>
-      <div class="flex items-center justify-between gap-4">
-        <dt class="text-[var(--ui-fg-muted)]">
-          Users
-        </dt>
-        <dd class="m-0 text-[var(--ui-fg)]" data-test="home-v2-user-count">
-          {{ userCount }}
-        </dd>
-      </div>
-      <div class="flex items-center justify-between gap-4">
-        <dt class="text-[var(--ui-fg-muted)]">
-          Permissions
-        </dt>
-        <dd class="m-0 text-[var(--ui-fg)]" data-test="home-v2-permission-count">
-          {{ permissionCount }}
-        </dd>
-      </div>
-    </dl>
+
+    <KeyValueList :items="summaryItems" />
+
     <p
       v-if="loadError || appApi.lastError.value"
       class="m-0 text-sm text-[var(--ui-critical)]"
@@ -89,12 +77,15 @@ onMounted(async () => {
     >
       {{ loadError ?? appApi.lastError.value }}
     </p>
-    <RouterLink
+
+    <Button
+      as="RouterLink"
       to="/permissions"
-      class="inline-flex rounded-lg border border-[var(--ui-border)] px-3 py-2 text-sm text-[var(--ui-fg)] no-underline transition hover:bg-[var(--ui-tonal-secondary)]"
+      variant="secondary"
+      size="sm"
       data-test="home-v2-permissions-link"
     >
       Open permissions
-    </RouterLink>
+    </Button>
   </section>
 </template>

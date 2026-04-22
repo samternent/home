@@ -7,11 +7,13 @@
     "dev": "vite --host",
     "build": "vite-ssg build",
     "preview": "vite preview --host",
-    "test": "pnpm test:unit",
+    "test": "pnpm test:unit && pnpm check:ui-contract",
     "test:unit": "vitest run",
     "test:unit:v2": "vitest run src/tests/v2",
     "test:unit:watch": "vitest",
     "test:e2e": "playwright test",
+    "check:ui-contract": "node ./scripts/check-ui-contract.mjs",
+    "check:ui-contract:strict": "node ./scripts/check-ui-contract.mjs --strict",
     "lighthouse:ci": "lhci autorun"
   },
   "dependencies": {

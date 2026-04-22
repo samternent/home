@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import { useAppApi } from "@/app/api";
+import { Button, Card, Input } from "ternent-ui/primitives";
+import { FormField, KeyValueList } from "ternent-ui/patterns";
 
 const appApi = useAppApi();
 
@@ -19,6 +21,24 @@ const activeIdentityLabel = computed(
 );
 
 const stagedCount = computed(() => appApi.getState().stagedCount);
+
+const summaryItems = computed(() => [
+  {
+    label: "Status",
+    value: appApi.status.value,
+    dataTest: "permissions-v2-status",
+  },
+  {
+    label: "Active identity",
+    value: activeIdentityLabel.value,
+    dataTest: "permissions-v2-active-identity",
+  },
+  {
+    label: "Staged entries",
+    value: stagedCount.value,
+    dataTest: "permissions-v2-staged-count",
+  },
+]);
 
 function clearCreateForm() {
   createTitle.value = "";
@@ -105,51 +125,29 @@ onMounted(async () => {
 
 <template>
   <section class="space-y-6" data-test="permissions-v2">
-    <dl class="m-0 grid gap-2 rounded-lg border border-[var(--ui-border)] p-3 text-sm">
-      <div class="flex items-center justify-between gap-4">
-        <dt class="text-[var(--ui-fg-muted)]">
-          Status
-        </dt>
-        <dd class="m-0 text-[var(--ui-fg)]" data-test="permissions-v2-status">
-          {{ appApi.status.value }}
-        </dd>
-      </div>
-      <div class="flex items-center justify-between gap-4">
-        <dt class="text-[var(--ui-fg-muted)]">
-          Active identity
-        </dt>
-        <dd class="m-0 text-[var(--ui-fg)]" data-test="permissions-v2-active-identity">
-          {{ activeIdentityLabel }}
-        </dd>
-      </div>
-      <div class="flex items-center justify-between gap-4">
-        <dt class="text-[var(--ui-fg-muted)]">
-          Staged entries
-        </dt>
-        <dd class="m-0 text-[var(--ui-fg)]" data-test="permissions-v2-staged-count">
-          {{ stagedCount }}
-        </dd>
-      </div>
-    </dl>
+    <KeyValueList :items="summaryItems" />
 
     <div class="mt-3 flex gap-2">
-      <button
+      <Button
         type="button"
-        class="rounded-lg border border-[var(--ui-border)] px-3 py-2 text-sm text-[var(--ui-fg)] transition hover:bg-[var(--ui-tonal-secondary)]"
+        variant="secondary"
+        size="sm"
         data-test="permissions-v2-commit"
         @click="commitStaged"
       >
         Commit
-      </button>
-      <button
+      </Button>
+      <Button
         type="button"
-        class="rounded-lg border border-[var(--ui-border)] px-3 py-2 text-sm text-[var(--ui-fg)] transition hover:bg-[var(--ui-tonal-secondary)]"
+        variant="secondary"
+        size="sm"
         data-test="permissions-v2-discard"
         @click="discardStaged"
       >
         Discard
-      </button>
+      </Button>
     </div>
+
     <p
       v-if="pageError || appApi.lastError.value"
       class="m-0 mt-2 text-sm text-[var(--ui-critical)]"
@@ -158,51 +156,60 @@ onMounted(async () => {
       {{ pageError ?? appApi.lastError.value }}
     </p>
 
-    <form
-      class="rounded-xl border border-[var(--ui-border)] p-4"
-      data-test="permission-create-form"
-      @submit.prevent="createPermission"
-    >
-      <p class="m-0 text-sm font-medium text-[var(--ui-fg)]">
-        Create permission
-      </p>
-      <div class="mt-3 grid gap-3 md:grid-cols-2">
-        <label class="text-sm text-[var(--ui-fg-muted)]">
-          Title
-          <input
-            v-model="createTitle"
-            data-test="permission-create-title"
-            type="text"
-            class="mt-1 w-full rounded-lg border border-[var(--ui-border)] bg-[var(--ui-surface)] px-3 py-2 text-[var(--ui-fg)]"
-            placeholder="Document editors"
-          />
-        </label>
-        <label class="text-sm text-[var(--ui-fg-muted)]">
-          Scope (optional)
-          <input
-            v-model="createScope"
-            data-test="permission-create-scope"
-            type="text"
-            class="mt-1 w-full rounded-lg border border-[var(--ui-border)] bg-[var(--ui-surface)] px-3 py-2 text-[var(--ui-fg)]"
-            placeholder="workspace"
-          />
-        </label>
-      </div>
-      <p
-        v-if="createError"
-        class="m-0 mt-2 text-sm text-[var(--ui-critical)]"
-        data-test="permission-create-error"
+    <Card variant="outline" padding="md">
+      <form
+        data-test="permission-create-form"
+        @submit.prevent="createPermission"
       >
-        {{ createError }}
-      </p>
-      <button
-        type="submit"
-        data-test="permission-create-submit"
-        class="mt-3 rounded-lg border border-[var(--ui-border)] px-3 py-2 text-sm text-[var(--ui-fg)] transition hover:bg-[var(--ui-tonal-secondary)]"
-      >
-        Stage create
-      </button>
-    </form>
+        <p class="m-0 text-sm font-medium text-[var(--ui-fg)]">
+          Create permission
+        </p>
+        <div class="mt-3 grid gap-3 md:grid-cols-2">
+          <FormField label="Title">
+            <template #default="{ id, describedBy }">
+              <Input
+                :id="id"
+                v-model="createTitle"
+                data-test="permission-create-title"
+                type="text"
+                :aria-describedby="describedBy"
+                placeholder="Document editors"
+              />
+            </template>
+          </FormField>
+          <FormField label="Scope (optional)">
+            <template #default="{ id, describedBy }">
+              <Input
+                :id="id"
+                v-model="createScope"
+                data-test="permission-create-scope"
+                type="text"
+                :aria-describedby="describedBy"
+                placeholder="workspace"
+              />
+            </template>
+          </FormField>
+        </div>
+
+        <p
+          v-if="createError"
+          class="m-0 mt-2 text-sm text-[var(--ui-critical)]"
+          data-test="permission-create-error"
+        >
+          {{ createError }}
+        </p>
+
+        <Button
+          type="submit"
+          data-test="permission-create-submit"
+          variant="secondary"
+          size="sm"
+          class="mt-3"
+        >
+          Stage create
+        </Button>
+      </form>
+    </Card>
 
     <div
       v-if="permissions.length === 0"
@@ -213,10 +220,11 @@ onMounted(async () => {
     </div>
 
     <div v-else class="space-y-4" data-test="permissions-list">
-      <article
+      <Card
         v-for="permission in permissions"
         :key="permission.id"
-        class="rounded-xl border border-[var(--ui-border)] p-4"
+        variant="outline"
+        padding="md"
         :data-test="`permission-card-${permission.id}`"
       >
         <div
@@ -255,18 +263,19 @@ onMounted(async () => {
                 >({{ member.memberId }})</span
               >
             </span>
-            <button
+            <Button
               v-if="
                 member.memberId !==
                 appApi.identity.activeIdentity.value?.identityId
               "
               type="button"
-              class="rounded-lg border border-[var(--ui-border)] px-2 py-1 text-xs text-[var(--ui-fg)] transition hover:bg-[var(--ui-tonal-secondary)]"
+              variant="secondary"
+              size="xs"
               :data-test="`permission-revoke-${permission.id}-${member.memberId}`"
               @click="revokePermission(permission.id, member.memberId)"
             >
               Stage revoke
-            </button>
+            </Button>
           </li>
         </ul>
 
@@ -275,27 +284,26 @@ onMounted(async () => {
           :data-test="`permission-grant-form-${permission.id}`"
           @submit.prevent="grantPermission(permission.id)"
         >
-          <input
+          <Input
             v-model="grantMemberIdByPermission[permission.id]"
             :data-test="`permission-grant-member-id-${permission.id}`"
             type="text"
-            class="rounded-lg border border-[var(--ui-border)] bg-[var(--ui-surface)] px-3 py-2 text-sm text-[var(--ui-fg)]"
             placeholder="member id"
           />
-          <input
+          <Input
             v-model="grantMemberLabelByPermission[permission.id]"
             :data-test="`permission-grant-member-label-${permission.id}`"
             type="text"
-            class="rounded-lg border border-[var(--ui-border)] bg-[var(--ui-surface)] px-3 py-2 text-sm text-[var(--ui-fg)]"
             placeholder="member label (optional)"
           />
-          <button
+          <Button
             type="submit"
-            class="rounded-lg border border-[var(--ui-border)] px-3 py-2 text-sm text-[var(--ui-fg)] transition hover:bg-[var(--ui-tonal-secondary)]"
+            variant="secondary"
+            size="sm"
             :data-test="`permission-grant-submit-${permission.id}`"
           >
             Stage grant
-          </button>
+          </Button>
         </form>
 
         <p
@@ -305,7 +313,7 @@ onMounted(async () => {
         >
           {{ grantErrorByPermission[permission.id] }}
         </p>
-      </article>
+      </Card>
     </div>
   </section>
 </template>

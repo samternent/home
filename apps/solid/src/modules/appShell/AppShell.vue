@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { shallowRef } from "vue";
 import { breakpointsTailwind, useBreakpoints } from "@vueuse/core";
+import { Input } from "ternent-ui/primitives";
 import SideNav from "./SideNav.vue";
 import Console from "./Console.vue";
 import IdentityOnboardingDialog from "./IdentityOnboardingDialog.vue";
@@ -12,46 +13,53 @@ const smallerThanMd = breakpoints.smaller("md");
 </script>
 <template>
   <div
-    class="max-h-screen max-w-screen w-screen h-screen overflow-hidden flex flex-col"
+    class="flex h-screen max-h-screen w-screen max-w-screen flex-col overflow-hidden"
   >
     <div
       ref="contentArea"
-      class="flex-1 h-full relative flex z-10 overflow-hidden"
+      class="relative z-10 flex h-full flex-1 overflow-hidden"
     >
       <SideNav />
 
       <slot name="drawer" />
-      <div class="flex flex-col flex-1 w-full h-full overflow-hidden">
+      <div class="flex h-full w-full flex-1 flex-col overflow-hidden">
         <header
-          class="sticky top-0 z-20 bg-[color-mix(in srgb, var(--ui-bg) 58%, transparent)] backdrop-blur-[12px] border-b border-[var(--ui-border)] w-full"
+          class="sticky top-0 z-20 w-full border-b border-[var(--ui-border)] bg-[color-mix(in_srgb,var(--ui-bg)_58%,transparent)] backdrop-blur-[12px]"
         >
-          <div class="mx-auto flex items-center w-full justify-between">
+          <div class="mx-auto flex w-full items-center justify-between px-4 py-2">
             <div
               :class="[
-                'flex items-start gap-2 w-64 px-4 py-2',
-                { 'pl-16': smallerThanMd },
+                'w-64',
+                { 'pl-12': smallerThanMd },
               ]"
             ></div>
 
-            <nav class="flex items-center justify-between px-4 py-2">
-              <input type="text" placeholder="Search..." />
+            <nav class="flex items-center justify-between gap-2">
+              <Input
+                placeholder="Search..."
+                size="sm"
+                class="w-56"
+                aria-label="Search"
+              />
             </nav>
           </div>
         </header>
 
-        <div class="flex flex-1 h-full w-full overflow-auto">
-          <div class="flex-1 relative">
+        <div class="flex h-full w-full flex-1 overflow-auto">
+          <div class="relative flex-1">
             <slot />
           </div>
           <div
             v-if="$slots['right-side']"
-            class="w-64 border-l border-[var(--ui-border)] sticky top-0"
+            class="sticky top-0 w-64 border-l border-[var(--ui-border)]"
           >
             <slot name="right-side" />
           </div>
         </div>
 
-        <Console />
+        <Console :container="contentArea">
+          <slot name="console" />
+        </Console>
       </div>
     </div>
     <IdentityOnboardingDialog />

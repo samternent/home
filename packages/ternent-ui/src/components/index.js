@@ -1,5 +1,8 @@
 import "../style.css";
 
+// Deprecated legacy surface.
+// Keep for compatibility only while apps migrate to `ternent-ui/primitives` and `ternent-ui/patterns`.
+
 // Components
 export { default as SBrandHeader } from "./SBrandHeader.vue";
 export { default as SButton } from "./SButton.vue";
