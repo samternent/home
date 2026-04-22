@@ -4,7 +4,14 @@ import {
   breakpointsTailwind,
   useBreakpoints,
 } from "@vueuse/core";
-import { computed, watch, shallowRef } from "vue";
+import {
+  computed,
+  watch,
+  shallowRef,
+  defineAsyncComponent,
+  onMounted,
+  ref,
+} from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useAppApi } from "@/app/api";
 import { Button } from "ternent-ui/primitives";
@@ -64,6 +71,16 @@ const appVersion = shallowRef(
     ? document.querySelector("html")?.dataset.appVersion
     : undefined,
 );
+const showThemeToggle = ref(false);
+
+const AppThemeToggle = defineAsyncComponent(async () => {
+  const module = await import("ternent-ui/components");
+  return module.SThemeToggle;
+});
+
+onMounted(() => {
+  showThemeToggle.value = true;
+});
 
 async function relaunchOnboarding(): Promise<void> {
   await appApi.identity.lock();
@@ -82,7 +99,7 @@ async function relaunchOnboarding(): Promise<void> {
     <!-- Header -->
     <div
       v-if="smallerThanMd"
-      class="p-4 border-b border-base-300/30 z-40 left-0 w-full flex items-center justify-between"
+      class="p-2 border-b border-[var(--ui-border)] z-40 left-0 w-full flex items-center justify-between"
     >
       <div class="flex items-center justify-end">
         <!-- Mobile close button -->
@@ -91,7 +108,7 @@ async function relaunchOnboarding(): Promise<void> {
           class="btn btn-sm btn-circle btn-ghost hover:bg-base-300"
         >
           <svg
-            class="w-5 h-5"
+            class="w-6 h-6"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -106,13 +123,11 @@ async function relaunchOnboarding(): Promise<void> {
         </button>
       </div>
     </div>
-
+    Concord. OS
     <!-- Navigation Items -->
-    <div
-      class="flex-1 flex flex-col justify-between p-2 overflow-hidden font-mono"
-    >
+    <div class="flex-1 flex flex-col justify-between p-2 overflow-hidden">
       <!-- Top Items -->
-      <nav class="space-y-1 text-xs">
+      <nav class="space-y-1">
         <div v-for="item in topItems" :key="item.to" class="group">
           <!-- Main Item -->
           <RouterLink
@@ -128,7 +143,7 @@ async function relaunchOnboarding(): Promise<void> {
           </RouterLink>
         </div>
         <hr class="m-4 border-t border-[var(--ui-border)]" />
-        <div v-for="item in middleItems" :key="item.to" class="group text-xs">
+        <div v-for="item in middleItems" :key="item.to" class="group">
           <!-- Main Item -->
           <RouterLink
             :to="item.to"
@@ -146,7 +161,7 @@ async function relaunchOnboarding(): Promise<void> {
 
       <!-- Bottom Items -->
       <nav class="space-y-2 pt-4">
-        <div class="py-2 flex flex-col w-auto gap-2 font-mono"></div>
+        <div class="py-2 flex flex-col w-auto gap-2"></div>
         <div class="flex flex-col w-auto gap-1 font-sans">
           <RouterLink
             v-for="item in bottomItems"
@@ -163,12 +178,16 @@ async function relaunchOnboarding(): Promise<void> {
           >
             v{{ appVersion }}
           </a>
-          <Button variant="secondary" @click="relaunchOnboarding">
-            Lock
-          </Button>
-        </div>
-        <div class="flex items-center justify-between py-2 font-sans text-xs">
-          <!-- <SThemeToggle v-model="themeMode" size="sm" class="w-20" /> -->
+          <div class="flex items-center gap-2">
+            <Button
+              class="flex-1"
+              variant="secondary"
+              @click="relaunchOnboarding"
+            >
+              Lock
+            </Button>
+            <AppThemeToggle v-if="showThemeToggle" size="sm" />
+          </div>
         </div>
       </nav>
     </div>

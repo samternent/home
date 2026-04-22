@@ -16,7 +16,7 @@ const smallerThanMd = breakpoints.smaller("md");
   >
     <div
       ref="contentArea"
-      class="flex-1 h-full relative flex z-10 overflow-hidden font-mono text-xs"
+      class="flex-1 h-full relative flex z-10 overflow-hidden"
     >
       <SideNav />
 
@@ -33,9 +33,9 @@ const smallerThanMd = breakpoints.smaller("md");
               ]"
             ></div>
 
-            <nav
-              class="flex items-center justify-between text-xs font-mono px-4 py-2"
-            ></nav>
+            <nav class="flex items-center justify-between px-4 py-2">
+              <input type="text" placeholder="Search..." />
+            </nav>
           </div>
         </header>
 
