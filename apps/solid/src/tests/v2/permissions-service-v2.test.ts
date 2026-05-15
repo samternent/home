@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createIdentity } from "@ternent/identity";
 import { createAppApi } from "@/app/api";
+import { toDidKeyFromPublicKey } from "@/app/plugins/identityKey";
 import { createConcordLocalStorageAdapter, type LocalStorageLike } from "@/app/runtime";
 
 function createMemoryStorage(): LocalStorageLike {
@@ -94,5 +95,141 @@ describe("concord host permissions flow", () => {
     await app.permissions.create({ title: "B" });
 
     expect(app.permissions.all().map((record) => record.title)).toEqual(["A", "B"]);
+  });
+
+  it("prevents re-adding the creator identity to the same permission", async () => {
+    const { app } = await createTestApp("test/v2/no-duplicate-creator");
+    const actor = await app.identity.ensureActiveIdentity();
+
+    await app.permissions.create({
+      title: "Unique Members",
+    });
+
+    const permission = app.permissions.all().at(0);
+    expect(permission).toBeTruthy();
+
+    expect(() =>
+      app.permissions.grantFromUser({
+        permissionId: permission!.id,
+        identityKey: actor.identityKey,
+      }),
+    ).toThrow("already assigned");
+  });
+
+  it("allows revoking the current user from a permission", async () => {
+    const { app } = await createTestApp("test/v2/revoke-current-user");
+    const actor = await app.identity.ensureActiveIdentity();
+
+    await app.permissions.create({
+      title: "Temporary Membership",
+    });
+
+    const permission = app.permissions.all().at(0);
+    expect(permission).toBeTruthy();
+    expect(permission!.members.some((member) => member.memberId === actor.identityKey)).toBe(true);
+
+    await app.permissions.revoke({
+      permissionId: permission!.id,
+      memberId: actor.identityKey,
+    });
+
+    const updated = app.permissions.byId(permission!.id);
+    expect(updated).toBeNull();
+  });
+
+  it("hides groups from non-members and blocks self-escalation", async () => {
+    const sharedStorage = createMemoryStorage();
+    const ownerIdentity = await createIdentity("2026-04-20T10:00:00.000Z");
+    const guestIdentity = await createIdentity("2026-04-21T10:00:00.000Z");
+    const guestIdentityKey = toDidKeyFromPublicKey(guestIdentity.publicKey);
+    const storageKey = "test/v2/non-member-cannot-escalate";
+
+    const ownerApp = createAppApi({
+      identity: ownerIdentity,
+      storage: createConcordLocalStorageAdapter({
+        storage: sharedStorage,
+        storageKey,
+      }),
+    });
+    await ownerApp.load();
+
+    await ownerApp.users.create({
+      identityKey: guestIdentityKey,
+    });
+    await ownerApp.permissions.create({
+      title: "Owners",
+    });
+    const permissionId = ownerApp.permissions.all().at(0)?.id;
+    expect(permissionId).toBeTruthy();
+    await ownerApp.commit();
+
+    const guestApp = createAppApi({
+      identity: guestIdentity,
+      storage: createConcordLocalStorageAdapter({
+        storage: sharedStorage,
+        storageKey,
+      }),
+    });
+    await guestApp.load();
+
+    expect(guestApp.permissions.all()).toHaveLength(0);
+    expect(guestApp.permissions.byId(permissionId!)).toBeNull();
+
+    await expect(
+      guestApp.command("permission.grant", {
+        permissionId: permissionId!,
+        memberId: guestIdentityKey,
+        actor: {
+          memberId: guestIdentityKey,
+        },
+      }),
+    ).rejects.toThrow("existing group members");
+  });
+
+  it("rejects forged actor ids for permission mutations", async () => {
+    const sharedStorage = createMemoryStorage();
+    const ownerIdentity = await createIdentity("2026-04-20T10:00:00.000Z");
+    const guestIdentity = await createIdentity("2026-04-21T10:00:00.000Z");
+    const ownerIdentityKey = toDidKeyFromPublicKey(ownerIdentity.publicKey);
+    const guestIdentityKey = toDidKeyFromPublicKey(guestIdentity.publicKey);
+    const storageKey = "test/v2/forged-actor-blocked";
+
+    const ownerApp = createAppApi({
+      identity: ownerIdentity,
+      storage: createConcordLocalStorageAdapter({
+        storage: sharedStorage,
+        storageKey,
+      }),
+    });
+    await ownerApp.load();
+
+    await ownerApp.users.create({
+      identityKey: guestIdentityKey,
+    });
+    await ownerApp.permissions.create({
+      title: "Owners",
+    });
+    const permissionId = ownerApp.permissions.all().at(0)?.id;
+    expect(permissionId).toBeTruthy();
+    await ownerApp.commit();
+
+    const guestApp = createAppApi({
+      identity: guestIdentity,
+      storage: createConcordLocalStorageAdapter({
+        storage: sharedStorage,
+        storageKey,
+      }),
+    });
+    await guestApp.load();
+
+    await expect(
+      guestApp.command("permission.grant", {
+        permissionId: permissionId!,
+        memberId: guestIdentityKey,
+        actor: {
+          memberId: ownerIdentityKey,
+        },
+      }),
+    ).rejects.toThrow("does not match the active signer");
   });
 });

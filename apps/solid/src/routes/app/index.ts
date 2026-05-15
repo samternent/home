@@ -13,16 +13,16 @@ const v2Routes: RouteModule = [
         component: () => import("./RouteHome.vue"),
       },
       {
-        path: "launch",
-        component: () => import("./RouteLaunch.vue"),
+        path: "s/users",
+        component: () => import("./RouteUsers.vue"),
       },
       {
-        path: "users",
-        component: () => import("./RouteHome.vue"),
-      },
-      {
-        path: "permissions",
+        path: "s/permissions/:permissionKey?",
         component: () => import("./RoutePermissions.vue"),
+      },
+      {
+        path: "w/:appId/:surfaceId?",
+        component: () => import("./RouteRuntimeApp.vue"),
       },
     ],
   },

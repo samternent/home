@@ -35,11 +35,6 @@ describe("concord host contracts", () => {
 
     const actor = await appA.identity.ensureActiveIdentity();
 
-    await appA.users.create({
-      identityId: actor.identityId,
-      label: actor.label,
-      displayName: "Reload User",
-    });
     await appA.permissions.create({
       title: "Reload Permission",
       scope: "workspace",
@@ -77,10 +72,6 @@ describe("concord host contracts", () => {
 
     const actor = await app.identity.ensureActiveIdentity();
 
-    await app.users.create({
-      identityId: actor.identityId,
-      label: actor.label,
-    });
     const usersBeforePermissionCommand = app.users.all();
 
     await app.permissions.create({

@@ -69,6 +69,7 @@ type EncryptedIdentityPayload = {
 
 export type StoredIdentitySummary = {
   identityId: string;
+  publicKey: string;
   label: string;
   createdAt: string;
   mfaEnabled: boolean;
@@ -336,6 +337,7 @@ function toSummary(blob: EncryptedIdentityBlobV2): StoredIdentitySummary {
   const suffix = blob.keyId.slice(-8);
   return {
     identityId: blob.keyId,
+    publicKey: blob.publicKey,
     label: `User ${suffix}`,
     createdAt: blob.createdAt,
     mfaEnabled: blob.unlockPolicy.totp,

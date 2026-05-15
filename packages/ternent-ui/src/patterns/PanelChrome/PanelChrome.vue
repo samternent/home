@@ -125,8 +125,9 @@ onBeforeUnmount(() => {
   <section
     class="relative z-40 flex min-h-0 flex-col"
     :class="{
-      'h-8': !open,
-      'transition-[height] duration-[var(--ui-duration-normal)] ease-[var(--ui-ease-out)]': !dragging,
+      'h-9': !open,
+      'transition-[height] duration-[var(--ui-duration-normal)] ease-[var(--ui-ease-out)]':
+        !dragging,
     }"
     :style="open ? { height: `${clampedHeight}px` } : undefined"
   >
@@ -134,13 +135,15 @@ onBeforeUnmount(() => {
       v-if="open && props.resizable"
       role="separator"
       aria-orientation="horizontal"
-      class="cursor-row-resize px-2 py-1"
+      class="cursor-row-resize px-2 py-1 bg-[var(--ui-border)]"
       @pointerdown="startResize"
     >
       <Separator orientation="horizontal" />
     </div>
 
-    <div class="relative z-10 flex items-center justify-between border-y border-[var(--ui-border)] bg-[var(--ui-surface)] px-2 py-1">
+    <div
+      class="relative z-10 flex items-center justify-between border-y border-[var(--ui-border)] bg-[var(--ui-bg)] px-2 py-1"
+    >
       <div class="flex min-w-0 flex-1 items-center gap-2">
         <slot name="header">
           <p v-if="props.title" class="m-0 text-xs text-[var(--ui-fg-muted)]">
@@ -178,7 +181,10 @@ onBeforeUnmount(() => {
       </div>
     </div>
 
-    <div v-show="open" class="flex min-h-0 flex-1 overflow-auto">
+    <div
+      v-show="open"
+      class="flex min-h-0 flex-1 overflow-auto bg-[var(--ui-surface)]"
+    >
       <slot />
     </div>
   </section>

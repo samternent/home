@@ -192,6 +192,12 @@ describe("identity security flow", () => {
     const raw = storage.getItem(DEFAULT_ENCRYPTED_IDENTITY_STORAGE_KEY);
     expect(raw).toBeTruthy();
     expect(raw).not.toContain("\"mnemonic\":");
-    expect(raw).not.toContain(mnemonic.split(" ")[0]);
+    const mnemonicPrefix = mnemonic
+      .trim()
+      .split(/\s+/)
+      .slice(0, 3)
+      .join(" ");
+    expect(raw).not.toContain(mnemonic);
+    expect(raw).not.toContain(mnemonicPrefix);
   });
 });

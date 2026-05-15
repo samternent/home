@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createIdentity } from "@ternent/identity";
 import { createAppApi } from "@/app/api";
+import { toDidKeyFromPublicKey } from "@/app/plugins/identityKey";
 import { createConcordLocalStorageAdapter, type LocalStorageLike } from "@/app/runtime";
 
 function createMemoryStorage(): LocalStorageLike {
@@ -34,55 +35,55 @@ async function createTestApp(storageKey: string) {
 }
 
 describe("concord host users flow", () => {
-  it("creates and updates user profiles via replay", async () => {
+  it("creates users and stages self profile updates via linked projection", async () => {
     const app = await createTestApp("test/v2/users-create-update");
     const identity = await app.identity.ensureActiveIdentity();
 
-    await app.users.create({
-      identityId: identity.identityId,
-      label: identity.label,
+    await app.profiles.upsert({
+      identityKey: identity.identityKey,
       displayName: "Primary User",
-      attributes: {
-        tier: "owner",
-      },
+      bio: "Replay-first builder",
+      avatarUrl: "https://example.test/avatar.png",
     });
 
-    await app.users.updateProfile({
-      identityId: identity.identityId,
-      email: "primary@example.test",
-      attributes: {
-        tier: "admin",
-      },
-    });
+    const user = app.users.byIdentityKey(identity.identityKey);
+    const profile = app.profiles.byIdentityKey(identity.identityKey);
 
-    const user = app.users.byId(identity.identityId);
-    expect(user?.profile.displayName).toBe("Primary User");
-    expect(user?.profile.email).toBe("primary@example.test");
-    expect(user?.profile.attributes.tier).toBe("admin");
+    expect(user?.identityKey).toBe(identity.identityKey);
+    expect(user?.addedBy).toBe(identity.identityKey);
+    expect(profile?.displayName).toBe("Primary User");
+    expect(profile?.bio).toBe("Replay-first builder");
+    expect(profile?.avatarUrl).toBe("https://example.test/avatar.png");
   });
 
-  it("keeps plugin state isolated", async () => {
-    const app = await createTestApp("test/v2/plugin-isolation");
+  it("rejects duplicate user create and non-owner profile updates", async () => {
+    const app = await createTestApp("test/v2/users-rules");
     const identity = await app.identity.ensureActiveIdentity();
 
-    const permissionsBefore = app.permissions.all();
+    await expect(
+      app.users.create({
+        identityKey: identity.identityKey,
+      }),
+    ).rejects.toThrow("User already exists");
+
+    const anotherIdentity = await createIdentity("2026-04-21T10:00:00.000Z");
+    const anotherIdentityKey = toDidKeyFromPublicKey(anotherIdentity.publicKey);
 
     await app.users.create({
-      identityId: identity.identityId,
-      label: identity.label,
+      identityKey: anotherIdentityKey,
     });
 
-    expect(app.permissions.all()).toEqual(permissionsBefore);
+    await expect(
+      app.profiles.upsert({
+        identityKey: anotherIdentityKey,
+        displayName: "Should fail",
+      }),
+    ).rejects.toThrow("self-service only");
   });
 
   it("does not mutate state outside replay operations", async () => {
     const app = await createTestApp("test/v2/no-hidden-mutation");
-    const identity = await app.identity.ensureActiveIdentity();
-
-    await app.users.create({
-      identityId: identity.identityId,
-      label: identity.label,
-    });
+    await app.identity.ensureActiveIdentity();
 
     const before = structuredClone(app.getState());
     await Promise.resolve();

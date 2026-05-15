@@ -1,6 +1,12 @@
 import type { ConcordReplayPlugin } from "@ternent/concord";
 import type { LedgerReplayEntry } from "@ternent/ledger";
 import type { AppProjectionPlugin } from "@/app/runtime";
+import {
+  isIdentityKeyFormat,
+  toDidKeyFromPublicKey,
+  toLegacyAuthorDidFromIdentityKey,
+  validateIdentityKey,
+} from "./identityKey";
 
 export type PermissionMember = {
   memberId: string;
@@ -102,6 +108,14 @@ function normalizeOptionalText(value: unknown, label: string): string | null {
   return normalized || null;
 }
 
+function readOptionalText(value: unknown): string | null {
+  if (typeof value !== "string") {
+    return null;
+  }
+  const normalized = value.trim();
+  return normalized || null;
+}
+
 function normalizeActor(value: unknown): PermissionMember {
   if (!value || typeof value !== "object") {
     throw new Error("Actor is required.");
@@ -115,46 +129,66 @@ function normalizeActor(value: unknown): PermissionMember {
   };
 }
 
-function parsePermissionCreateInput(inputValue: unknown): PermissionCreateInput {
+async function parsePermissionCreateInput(
+  inputValue: unknown,
+): Promise<PermissionCreateInput> {
   if (!inputValue || typeof inputValue !== "object") {
     throw new Error("Permission create input is required.");
   }
 
   const input = inputValue as Record<string, unknown>;
+  const actor = normalizeActor(input.actor);
 
   return {
     title: normalizeRequiredText(input.title, "Permission title"),
     scope: normalizeOptionalText(input.scope, "Permission scope"),
-    actor: normalizeActor(input.actor),
+    actor: {
+      ...actor,
+      memberId: await validateIdentityKey(actor.memberId),
+    },
   };
 }
 
-function parsePermissionGrantInput(inputValue: unknown): PermissionGrantInput {
+async function parsePermissionGrantInput(
+  inputValue: unknown,
+): Promise<PermissionGrantInput> {
   if (!inputValue || typeof inputValue !== "object") {
     throw new Error("Permission grant input is required.");
   }
 
   const input = inputValue as Record<string, unknown>;
+  const actor = normalizeActor(input.actor);
 
   return {
     permissionId: normalizeRequiredText(input.permissionId, "Permission id"),
-    memberId: normalizeRequiredText(input.memberId, "Member id"),
+    memberId: await validateIdentityKey(
+      normalizeRequiredText(input.memberId, "Member id"),
+    ),
     memberLabel: normalizeOptionalText(input.memberLabel, "Member label"),
-    actor: normalizeActor(input.actor),
+    actor: {
+      ...actor,
+      memberId: await validateIdentityKey(actor.memberId),
+    },
   };
 }
 
-function parsePermissionRevokeInput(inputValue: unknown): PermissionRevokeInput {
+async function parsePermissionRevokeInput(
+  inputValue: unknown,
+): Promise<PermissionRevokeInput> {
   if (!inputValue || typeof inputValue !== "object") {
     throw new Error("Permission revoke input is required.");
   }
 
   const input = inputValue as Record<string, unknown>;
+  const actor = normalizeActor(input.actor);
 
   return {
     permissionId: normalizeRequiredText(input.permissionId, "Permission id"),
     memberId: normalizeRequiredText(input.memberId, "Member id"),
-    actor: normalizeActor(input.actor),
+    actor: {
+      ...actor,
+      memberId: await validateIdentityKey(actor.memberId),
+    },
   };
 }
 
@@ -189,23 +223,6 @@ function clonePermissionsState(state: PermissionsState): PermissionsState {
   };
 }
 
-function ensureActorMember(
-  members: PermissionMember[],
-  actor: PermissionMember,
-): PermissionMember[] {
-  const withoutActor = members.filter(
-    (member) => member.memberId !== actor.memberId,
-  );
-
-  return [
-    ...withoutActor,
-    {
-      memberId: actor.memberId,
-      memberLabel: actor.memberLabel,
-    },
-  ];
-}
-
 function applyPermissionCreate(
   state: PermissionsState,
   payloadValue: unknown,
@@ -224,7 +241,12 @@ function applyPermissionCreate(
     id: payload.permissionId,
     title: payload.title,
     scope: payload.scope,
-    members: ensureActorMember([], payload.actor),
+    members: [
+      {
+        memberId: payload.actor.memberId,
+        memberLabel: payload.actor.memberLabel,
+      },
+    ],
     createdAt: payload.createdAt,
     updatedAt: payload.updatedAt,
   };
@@ -269,7 +291,7 @@ function applyPermissionGrant(
       ...state.byId,
       [payload.permissionId]: {
         ...existing,
-        members: ensureActorMember(withTarget, payload.actor),
+        members: withTarget,
         updatedAt: payload.updatedAt,
       },
     },
@@ -300,7 +322,7 @@ function applyPermissionRevoke(
       ...state.byId,
       [payload.permissionId]: {
         ...existing,
-        members: ensureActorMember(withoutMember, payload.actor),
+        members: withoutMember,
         updatedAt: payload.updatedAt,
       },
     },
@@ -330,6 +352,62 @@ function createPermissionId(
   return `permission:${slug}:${timestamp}:${fingerprint}`;
 }
 
+function permissionIncludesMember(
+  record: PermissionRecord | undefined,
+  candidates: Set<string>,
+): boolean {
+  if (!record) {
+    return false;
+  }
+  return record.members.some((member) => candidates.has(member.memberId));
+}
+
+function resolveRuntimeActorCandidates(
+  identity: { publicKey: string; keyId: string },
+): Set<string> {
+  const identityKey = toDidKeyFromPublicKey(identity.publicKey);
+  return new Set([identityKey, identity.keyId, `did:key:${identity.keyId}`]);
+}
+
+function normalizeAuthorCandidateFromMemberId(memberId: string): string {
+  return memberId.startsWith("did:key:") ? memberId : `did:key:${memberId}`;
+}
+
+async function resolveActorAuthorCandidates(
+  actorMemberId: string,
+): Promise<Set<string>> {
+  const candidates = new Set<string>([
+    normalizeAuthorCandidateFromMemberId(actorMemberId),
+    actorMemberId,
+  ]);
+  if (isIdentityKeyFormat(actorMemberId)) {
+    try {
+      candidates.add(await toLegacyAuthorDidFromIdentityKey(actorMemberId));
+    } catch {
+      // Ignore malformed identity keys during replay hardening.
+    }
+  }
+  return candidates;
+}
+
+function resolveViewerCandidates(
+  viewerIdentityKey: unknown,
+  viewerIdentityId: unknown,
+): Set<string> {
+  const candidates = new Set<string>();
+
+  if (typeof viewerIdentityKey === "string" && viewerIdentityKey.trim()) {
+    candidates.add(viewerIdentityKey.trim());
+  }
+  if (typeof viewerIdentityId === "string" && viewerIdentityId.trim()) {
+    const value = viewerIdentityId.trim();
+    candidates.add(value);
+    candidates.add(`did:key:${value}`);
+  }
+
+  return candidates;
+}
+
 /**
  * Creates the local permissions replay plugin and selectors for v2.
  */
@@ -339,7 +417,11 @@ export function createPermissionsPlugin(): AppProjectionPlugin<PermissionsState>
     initialState: initialPermissionsState,
     commands: {
       "permission.create": async (ctx, inputValue) => {
-        const input = parsePermissionCreateInput(inputValue);
+        const input = await parsePermissionCreateInput(inputValue);
+        const runtimeCandidates = resolveRuntimeActorCandidates(ctx.identity);
+        if (!runtimeCandidates.has(input.actor.memberId)) {
+          throw new Error("Actor identity does not match the active signer.");
+        }
         const now = ctx.now();
 
         return {
@@ -360,7 +442,20 @@ export function createPermissionsPlugin(): AppProjectionPlugin<PermissionsState>
         };
       },
       "permission.grant": async (ctx, inputValue) => {
-        const input = parsePermissionGrantInput(inputValue);
+        const input = await parsePermissionGrantInput(inputValue);
+        const runtimeCandidates = resolveRuntimeActorCandidates(ctx.identity);
+        if (!runtimeCandidates.has(input.actor.memberId)) {
+          throw new Error("Actor identity does not match the active signer.");
+        }
+
+        const permissionsState = ctx.getReplayState<PermissionsState>("permissions");
+        const permission = permissionsState.byId[input.permissionId];
+        if (!permission) {
+          throw new Error("Permission does not exist.");
+        }
+        if (!permissionIncludesMember(permission, runtimeCandidates)) {
+          throw new Error("Only existing group members can add collaborators.");
+        }
 
         return {
           kind: "permission.grant",
@@ -374,9 +469,19 @@ export function createPermissionsPlugin(): AppProjectionPlugin<PermissionsState>
         };
       },
       "permission.revoke": async (ctx, inputValue) => {
-        const input = parsePermissionRevokeInput(inputValue);
-        if (input.memberId === input.actor.memberId) {
-          throw new Error("Active identity cannot be removed from a permission.");
+        const input = await parsePermissionRevokeInput(inputValue);
+        const runtimeCandidates = resolveRuntimeActorCandidates(ctx.identity);
+        if (!runtimeCandidates.has(input.actor.memberId)) {
+          throw new Error("Actor identity does not match the active signer.");
+        }
+
+        const permissionsState = ctx.getReplayState<PermissionsState>("permissions");
+        const permission = permissionsState.byId[input.permissionId];
+        if (!permission) {
+          throw new Error("Permission does not exist.");
+        }
+        if (!permissionIncludesMember(permission, runtimeCandidates)) {
+          throw new Error("Only existing group members can remove collaborators.");
         }
 
         return {
@@ -390,21 +495,96 @@ export function createPermissionsPlugin(): AppProjectionPlugin<PermissionsState>
         };
       },
     },
-    applyEntry(entry, ctx) {
+    async applyEntry(entry, ctx) {
       const state = clonePermissionsState(ctx.getState());
       const payload = getEntryPayload(entry);
 
       if (entry.kind === "permission.create") {
+        const actorMemberId =
+          payload && typeof payload === "object"
+            ? readOptionalText(
+                (payload as Record<string, unknown>).actor &&
+                  typeof (payload as Record<string, unknown>).actor === "object"
+                  ? (
+                      (payload as Record<string, unknown>)
+                        .actor as Record<string, unknown>
+                    ).memberId
+                  : null,
+              )
+            : null;
+        if (!actorMemberId) {
+          return;
+        }
+        const authorCandidates = await resolveActorAuthorCandidates(actorMemberId);
+        if (!authorCandidates.has(entry.author)) {
+          return;
+        }
         ctx.setState(applyPermissionCreate(state, payload));
         return;
       }
 
       if (entry.kind === "permission.grant") {
+        const grantPayload =
+          payload && typeof payload === "object"
+            ? (payload as Record<string, unknown>)
+            : null;
+        const actorValue =
+          grantPayload && typeof grantPayload.actor === "object"
+            ? (grantPayload.actor as Record<string, unknown>).memberId
+            : null;
+        const actorMemberId = readOptionalText(actorValue);
+        if (!actorMemberId) {
+          return;
+        }
+        const authorCandidates = await resolveActorAuthorCandidates(actorMemberId);
+        if (!authorCandidates.has(entry.author)) {
+          return;
+        }
+        const permissionId = readOptionalText(grantPayload?.permissionId ?? null);
+        if (!permissionId) {
+          return;
+        }
+        const permission = state.byId[permissionId];
+        const actorCandidates = new Set<string>([
+          actorMemberId,
+          normalizeAuthorCandidateFromMemberId(actorMemberId),
+        ]);
+        if (!permissionIncludesMember(permission, actorCandidates)) {
+          return;
+        }
         ctx.setState(applyPermissionGrant(state, payload));
         return;
       }
 
       if (entry.kind === "permission.revoke") {
+        const revokePayload =
+          payload && typeof payload === "object"
+            ? (payload as Record<string, unknown>)
+            : null;
+        const actorValue =
+          revokePayload && typeof revokePayload.actor === "object"
+            ? (revokePayload.actor as Record<string, unknown>).memberId
+            : null;
+        const actorMemberId = readOptionalText(actorValue);
+        if (!actorMemberId) {
+          return;
+        }
+        const authorCandidates = await resolveActorAuthorCandidates(actorMemberId);
+        if (!authorCandidates.has(entry.author)) {
+          return;
+        }
+        const permissionId = readOptionalText(revokePayload?.permissionId ?? null);
+        if (!permissionId) {
+          return;
+        }
+        const permission = state.byId[permissionId];
+        const actorCandidates = new Set<string>([
+          actorMemberId,
+          normalizeAuthorCandidateFromMemberId(actorMemberId),
+        ]);
+        if (!permissionIncludesMember(permission, actorCandidates)) {
+          return;
+        }
         ctx.setState(applyPermissionRevoke(state, payload));
       }
     },
@@ -413,19 +593,47 @@ export function createPermissionsPlugin(): AppProjectionPlugin<PermissionsState>
   return {
     plugin,
     selectors: {
-      all(state) {
-        return state.order
+      all(state, viewerIdentityKey: unknown, viewerIdentityId: unknown) {
+        const viewerCandidates = resolveViewerCandidates(
+          viewerIdentityKey,
+          viewerIdentityId,
+        );
+        const visibleRecords = state.order
           .map((permissionId) => state.byId[permissionId])
           .filter((record): record is PermissionRecord => Boolean(record))
           .map(clonePermissionRecord);
+        if (viewerCandidates.size === 0) {
+          return visibleRecords;
+        }
+        return visibleRecords.filter((record) =>
+          permissionIncludesMember(record, viewerCandidates),
+        );
       },
-      byId(state, permissionId: unknown) {
+      byId(
+        state,
+        permissionId: unknown,
+        viewerIdentityKey: unknown,
+        viewerIdentityId: unknown,
+      ) {
         if (typeof permissionId !== "string") {
           return null;
         }
 
         const record = state.byId[permissionId] ?? null;
-        return record ? clonePermissionRecord(record) : null;
+        if (!record) {
+          return null;
+        }
+        const viewerCandidates = resolveViewerCandidates(
+          viewerIdentityKey,
+          viewerIdentityId,
+        );
+        if (
+          viewerCandidates.size > 0 &&
+          !permissionIncludesMember(record, viewerCandidates)
+        ) {
+          return null;
+        }
+        return clonePermissionRecord(record);
       },
     },
   };

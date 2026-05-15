@@ -1,4 +1,4 @@
-import { flushPromises, mount, RouterLinkStub } from "@vue/test-utils";
+import { flushPromises, mount } from "@vue/test-utils";
 import { beforeEach, describe, expect, it } from "vitest";
 import { createIdentity } from "@ternent/identity";
 import RouteHome from "@/routes/app/RouteHome.vue";
@@ -26,27 +26,16 @@ describe("RouteHome", () => {
     });
   });
 
-  it("renders concord host status and link to permissions", async () => {
-    const wrapper = mount(RouteHome, {
-      global: {
-        stubs: {
-          RouterLink: RouterLinkStub,
-        },
-      },
-    });
-    const ready = await waitFor(
-      () => wrapper.get('[data-test="home-v2-status"]').text() === "ready",
+  it("renders placeholder copy and no route-level status blocks", async () => {
+    const wrapper = mount(RouteHome);
+    const placeholderVisible = await waitFor(
+      () => wrapper.get('[data-test="home-v2-placeholder-text"]').text().includes("Home placeholder"),
     );
-    expect(ready).toBe(true);
+    expect(placeholderVisible).toBe(true);
 
-    expect(wrapper.get('[data-test="home-v2"]').text()).toContain(
-      "Concord host is active",
+    expect(wrapper.get('[data-test="home-v2-placeholder"]').text()).toContain(
+      "console status bar",
     );
-    expect(wrapper.get('[data-test="home-v2-status"]').text()).toBe("ready");
-    expect(wrapper.get('[data-test="home-v2-active-identity"]').text()).toContain("User");
-    expect(wrapper.get('[data-test="home-v2-integrity"]').text()).toBe("yes");
-
-    const link = wrapper.getComponent(RouterLinkStub);
-    expect(link.props("to")).toBe("/permissions");
+    expect(wrapper.find('[data-test="home-v2-error"]').exists()).toBe(false);
   });
 });

@@ -1,6 +1,8 @@
 import { flushPromises, mount } from "@vue/test-utils";
 import { beforeEach, describe, expect, it } from "vitest";
 import { createIdentity } from "@ternent/identity";
+import { createMemoryHistory, createRouter } from "vue-router";
+import { toDidKeyFromPublicKey } from "@/app/plugins/identityKey";
 import RoutePermissions from "@/routes/app/RoutePermissions.vue";
 import {
   DEFAULT_CONCORD_STORAGE_KEY,
@@ -9,6 +11,7 @@ import {
 import {
   configureAppApiSingletonForTests,
   resetAppApiSingletonForTests,
+  useAppApi,
 } from "@/app/api";
 
 async function waitFor(check: () => boolean): Promise<boolean> {
@@ -22,6 +25,24 @@ async function waitFor(check: () => boolean): Promise<boolean> {
   return false;
 }
 
+function createPermissionsRouter() {
+  return createRouter({
+    history: createMemoryHistory(),
+    routes: [
+      {
+        path: "/permissions/:permissionKey?",
+        component: RoutePermissions,
+      },
+      {
+        path: "/users",
+        component: {
+          template: "<div>Users</div>",
+        },
+      },
+    ],
+  });
+}
+
 describe("RoutePermissions", () => {
   beforeEach(async () => {
     await resetAppApiSingletonForTests();
@@ -32,60 +53,113 @@ describe("RoutePermissions", () => {
     localStorage.removeItem(DEFAULT_ENCRYPTED_IDENTITY_STORAGE_KEY);
   });
 
-  it("stages create/grant/revoke and supports commit/discard", async () => {
-    const wrapper = mount(RoutePermissions);
+  it("auto-selects first permission and uses projection-backed add/revoke", async () => {
+    const router = createPermissionsRouter();
+    await router.push("/permissions");
+    await router.isReady();
+
+    const wrapper = mount(RoutePermissions, {
+      global: {
+        plugins: [router],
+      },
+    });
+
     const ready = await waitFor(
       () => wrapper.get('[data-test="permissions-v2-status"]').text().includes("ready"),
     );
     expect(ready).toBe(true);
 
-    expect(wrapper.get('[data-test="permissions-v2-active-identity"]').text()).toContain(
-      "User",
-    );
-    expect(wrapper.find('[data-test="permissions-empty"]').exists()).toBe(true);
-    expect(wrapper.get('[data-test="permissions-v2-staged-count"]').text()).toContain("0");
-
     await wrapper.get('[data-test="permission-create-title"]').setValue("Reviewers");
-    await wrapper.get('[data-test="permission-create-scope"]').setValue("workspace");
     await wrapper.get('[data-test="permission-create-form"]').trigger("submit");
-    const created = await waitFor(
-      () => wrapper.find('[data-test="permissions-empty"]').exists() === false,
-    );
-    expect(created).toBe(true);
 
-    expect(wrapper.find('[data-test="permissions-empty"]').exists()).toBe(false);
-    expect(wrapper.get('[data-test="permissions-v2-staged-count"]').text()).toContain("1");
-    expect(wrapper.get('[data-test^="permission-title-"]').text()).toContain(
-      "Reviewers",
+    const selected = await waitFor(
+      () =>
+        typeof router.currentRoute.value.params.permissionKey === "string" &&
+        router.currentRoute.value.path.startsWith("/permissions/"),
     );
+    expect(selected).toBe(true);
+
+    const actor = await useAppApi().identity.ensureActiveIdentity();
+    const permissionRecord = useAppApi().permissions.all().at(0);
+    expect(permissionRecord).toBeTruthy();
+    const permissionId = permissionRecord!.id;
+    expect(
+      wrapper
+        .get(
+          `[data-test="permission-member-glyph-${permissionId}-${actor.identityKey}"]`,
+        )
+        .attributes("data-glyph-fallback"),
+    ).toBe("false");
+
+    const appApi = useAppApi();
+    const memberIdentity = await createIdentity("2026-04-21T10:00:00.000Z");
+    const memberIdentityKey = toDidKeyFromPublicKey(memberIdentity.publicKey);
+    await appApi.users.create({
+      identityKey: memberIdentityKey,
+    });
+
+    const addVisible = await waitFor(() =>
+      wrapper.find(`[data-test^="permission-grant-submit-${permissionId}-"]`).exists(),
+    );
+    expect(addVisible).toBe(true);
+    expect(
+      wrapper.find(`[data-test^="permission-grant-glyph-${permissionId}-"]`).exists(),
+    ).toBe(true);
 
     await wrapper
-      .get('[data-test^="permission-grant-member-id-"]')
-      .setValue("member:7");
-    await wrapper
-      .get('[data-test^="permission-grant-member-label-"]')
-      .setValue("Morgan");
-    await wrapper.get('[data-test^="permission-grant-form-"]').trigger("submit");
-    const granted = await waitFor(() => wrapper.text().includes("member:7"));
+      .get(`[data-test="permission-grant-submit-${permissionId}-${memberIdentityKey}"]`)
+      .trigger("click");
+
+    const granted = await waitFor(() =>
+      wrapper
+        .find(`[data-test="permission-member-${permissionId}-${memberIdentityKey}"]`)
+        .exists(),
+    );
     expect(granted).toBe(true);
+    expect(
+      wrapper
+        .find(`[data-test="permission-member-glyph-${permissionId}-${memberIdentityKey}"]`)
+        .exists(),
+    ).toBe(true);
 
-    await wrapper.get('[data-test="permissions-v2-commit"]').trigger("click");
-    const committed = await waitFor(() =>
-      wrapper.get('[data-test="permissions-v2-staged-count"]').text().includes("0"),
-    );
-    expect(committed).toBe(true);
+    await wrapper
+      .get(`[data-test="permission-revoke-${permissionId}-${memberIdentityKey}"]`)
+      .trigger("click");
 
-    await wrapper.get('[data-test^="permission-revoke-"]').trigger("click");
-    const revoked = await waitFor(() =>
-      wrapper.get('[data-test="permissions-v2-staged-count"]').text().includes("1"),
+    const revoked = await waitFor(
+      () =>
+        wrapper
+          .find(`[data-test="permission-member-${permissionId}-${memberIdentityKey}"]`)
+          .exists() === false,
     );
     expect(revoked).toBe(true);
 
-    await wrapper.get('[data-test="permissions-v2-discard"]').trigger("click");
-    await waitFor(() =>
-      wrapper.get('[data-test="permissions-v2-staged-count"]').text().includes("0"),
+    expect(wrapper.find('[data-test^="permission-grant-member-id-"]').exists()).toBe(false);
+    expect(wrapper.find('[data-test^="permission-grant-member-label-"]').exists()).toBe(false);
+  });
+
+  it("does not offer the creator identity as assignable after permission create", async () => {
+    const router = createPermissionsRouter();
+    await router.push("/permissions");
+    await router.isReady();
+
+    const wrapper = mount(RoutePermissions, {
+      global: {
+        plugins: [router],
+      },
+    });
+
+    await waitFor(
+      () => wrapper.get('[data-test="permissions-v2-status"]').text().includes("ready"),
     );
-    expect(wrapper.text()).toContain("member:7");
-    expect(wrapper.get('[data-test="permissions-v2-staged-count"]').text()).toContain("0");
+
+    await wrapper.get('[data-test="permission-create-title"]').setValue("Auditors");
+    await wrapper.get('[data-test="permission-create-form"]').trigger("submit");
+
+    const assignableEmpty = await waitFor(
+      () => wrapper.find('[data-test="permission-assignable-empty"]').exists(),
+    );
+    expect(assignableEmpty).toBe(true);
+    expect(wrapper.find('[data-test="permissions-users-empty"]').exists()).toBe(false);
   });
 });

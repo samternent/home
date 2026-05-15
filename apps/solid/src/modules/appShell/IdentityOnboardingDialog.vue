@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
 import { useAppApi } from "@/app/api";
+import {
+  shortIdentityKey,
+  toDidKeyFromPublicKey,
+} from "@/app/plugins/identityKey";
 import { DEFAULT_DEV_SESSION_UNLOCK_STORAGE_KEY } from "@/app/runtime";
 import type {
   IdentityOnboardingDraft,
   StoredIdentitySummary,
 } from "@/app/runtime";
+import { buildQrDataUri, createOtpAuthUri } from "@/app/runtime";
 import {
-  buildQrDataUri,
-  createOtpAuthUri,
-} from "@/app/runtime";
-import {
+  Badge,
   Button,
   Card,
   Checkbox,
@@ -18,6 +20,7 @@ import {
   Input,
   Textarea,
 } from "ternent-ui/primitives";
+import { IdentityHandle } from "ternent-ui/patterns";
 
 const appApi = useAppApi();
 const isBrowser = typeof window !== "undefined";
@@ -47,12 +50,37 @@ const recoverTotpSecretBase32 = ref("");
 const recoverTotpCode = ref("");
 
 const isUnlocked = computed(
-  () => appApi.status.value === "ready" && appApi.identity.activeIdentity.value !== null,
+  () =>
+    appApi.status.value === "ready" &&
+    appApi.identity.activeIdentity.value !== null,
 );
 const hasStoredIdentity = computed(() => summary.value !== null);
-const showUnlockMfaField = computed(
-  () => Boolean(summary.value?.mfaEnabled),
+const showUnlockMfaField = computed(() => Boolean(summary.value?.mfaEnabled));
+const unlockIdentityKey = computed(() => {
+  if (!summary.value) {
+    return "invalid-identity";
+  }
+
+  try {
+    return toDidKeyFromPublicKey(summary.value.publicKey);
+  } catch {
+    return summary.value.publicKey;
+  }
+});
+const unlockIdentityText = computed(() =>
+  summary.value ? shortIdentityKey(unlockIdentityKey.value) : "",
 );
+const draftWords = computed(() => draft.value?.mnemonic.split(" ") ?? []);
+const createTotpSecretDisplay = computed(() => {
+  if (!draft.value) {
+    return "";
+  }
+  const raw = draft.value.mfa.totpSecretBase32
+    .replace(/\s+/g, "")
+    .toUpperCase();
+  const groups = raw.match(/.{1,4}/g);
+  return groups ? groups.join(" - ") : raw;
+});
 const createTotpQrDataUri = computed<string | null>(() => {
   if (!mfaEnabled.value || !draft.value) {
     return null;
@@ -113,6 +141,10 @@ const canCreate = computed(() => {
   return true;
 });
 
+function formatWordIndex(index: number): string {
+  return String(index + 1).padStart(2, "0");
+}
+
 function refreshSummary(): void {
   summary.value = appApi.identity.getStoredIdentitySummary();
 }
@@ -159,7 +191,8 @@ async function ensureDraft(force = false): Promise<void> {
     draft.value = await appApi.identity.createOnboardingDraft();
     resetCreateFields();
   } catch (nextError) {
-    error.value = nextError instanceof Error ? nextError.message : String(nextError);
+    error.value =
+      nextError instanceof Error ? nextError.message : String(nextError);
   } finally {
     creatingDraft.value = false;
   }
@@ -184,6 +217,21 @@ async function copyMnemonic(): Promise<void> {
   }
 }
 
+async function copyCreateTotpSecret(): Promise<void> {
+  if (!draft.value) {
+    return;
+  }
+  if (typeof navigator === "undefined" || !navigator.clipboard?.writeText) {
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(draft.value.mfa.totpSecretBase32);
+  } catch {
+    // Keep copy failure non-fatal.
+  }
+}
+
 async function unlockIdentity(): Promise<void> {
   if (submitting.value) {
     return;
@@ -201,7 +249,8 @@ async function unlockIdentity(): Promise<void> {
     unlockTotpCode.value = "";
     refreshSummary();
   } catch (nextError) {
-    error.value = nextError instanceof Error ? nextError.message : String(nextError);
+    error.value =
+      nextError instanceof Error ? nextError.message : String(nextError);
   } finally {
     submitting.value = false;
   }
@@ -226,7 +275,8 @@ async function createIdentity(): Promise<void> {
     });
     refreshSummary();
   } catch (nextError) {
-    error.value = nextError instanceof Error ? nextError.message : String(nextError);
+    error.value =
+      nextError instanceof Error ? nextError.message : String(nextError);
   } finally {
     submitting.value = false;
   }
@@ -253,7 +303,8 @@ async function recoverIdentity(): Promise<void> {
     });
     refreshSummary();
   } catch (nextError) {
-    error.value = nextError instanceof Error ? nextError.message : String(nextError);
+    error.value =
+      nextError instanceof Error ? nextError.message : String(nextError);
   } finally {
     submitting.value = false;
   }
@@ -310,286 +361,333 @@ onMounted(async () => {
     :close-on-escape="false"
     :close-on-interact-outside="false"
     size="lg"
-    title="Identity Required"
-    description="Unlock an existing identity or create one locally to continue."
   >
-    <div class="space-y-5" data-test="identity-global-dialog">
+    <div class="w-full space-y-8" data-test="identity-global-dialog">
       <template v-if="hasStoredIdentity && summary && mode === 'unlock'">
-        <Card padding="md" variant="subtle">
-          <dl class="m-0 grid gap-2 text-sm">
-            <div class="flex items-center justify-between gap-4">
-              <dt class="text-[var(--ui-fg-muted)]">
-                Identity
-              </dt>
-              <dd class="m-0 text-[var(--ui-fg)]">
-                {{ summary.label }}
-              </dd>
-            </div>
-            <div class="flex items-center justify-between gap-4">
-              <dt class="text-[var(--ui-fg-muted)]">
-                Created
-              </dt>
-              <dd class="m-0 text-[var(--ui-fg)]">
-                {{ summary.createdAt }}
-              </dd>
-            </div>
-            <div class="flex items-center justify-between gap-4">
-              <dt class="text-[var(--ui-fg-muted)]">
-                MFA
-              </dt>
-              <dd class="m-0 text-[var(--ui-fg)]">
-                {{ summary.mfaEnabled ? "enabled" : "disabled" }}
-              </dd>
-            </div>
-          </dl>
-        </Card>
+        <section class="mx-auto w-full max-w-lg space-y-6">
+          <div class="space-y-2 text-center">
+            <h2 class="m-0 text-4xl font-semibold text-[var(--ui-fg)]">
+              Identity Required
+            </h2>
+            <p class="m-0 text-base text-[var(--ui-fg-muted)]">
+              Please authenticate to access your vault.
+            </p>
+          </div>
 
-        <form class="space-y-4" @submit.prevent="unlockIdentity">
-          <input
-            type="text"
-            name="username"
-            autocomplete="username"
-            :value="summary.label"
-            readonly
-            class="sr-only"
-            tabindex="-1"
-          >
-          <label class="block space-y-2 text-sm text-[var(--ui-fg-muted)]">
-            <span>Password</span>
-            <Input
-              v-model="unlockPassword"
-              id="identity-unlock-password"
-              name="password"
-              type="password"
-              autocomplete="current-password"
-              placeholder="Enter identity password"
-              data-test="identity-dialog-unlock-password"
+          <Card padding="sm" variant="showcase">
+            <IdentityHandle
+              :identity="unlockIdentityKey"
+              :identity-text="unlockIdentityText"
+              :label="summary.label"
+              size="md"
+              data-test="identity-dialog-unlock-handle"
             />
-          </label>
+          </Card>
 
-          <label
-            v-if="showUnlockMfaField"
-            class="block space-y-2 text-sm text-[var(--ui-fg-muted)]"
-          >
-            <span>Authenticator code (if enabled)</span>
-            <Input
-              v-model="unlockTotpCode"
-              id="identity-unlock-totp"
-              name="otp"
+          <form class="space-y-4" @submit.prevent="unlockIdentity">
+            <input
               type="text"
-              inputmode="numeric"
-              maxlength="6"
-              autocomplete="one-time-code"
-              placeholder="123456"
-              data-test="identity-dialog-unlock-totp"
+              name="username"
+              autocomplete="username"
+              :value="summary.label"
+              readonly
+              class="sr-only"
+              tabindex="-1"
             />
-          </label>
+            <label class="block space-y-2 text-sm text-[var(--ui-fg-muted)]">
+              <span>Master password</span>
+              <Input
+                v-model="unlockPassword"
+                id="identity-unlock-password"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                placeholder="Enter your password"
+                data-test="identity-dialog-unlock-password"
+              />
+            </label>
 
-          <div class="flex justify-end">
+            <label
+              v-if="showUnlockMfaField"
+              class="block space-y-2 text-sm text-[var(--ui-fg-muted)]"
+            >
+              <span>Authenticator code (2FA)</span>
+              <Input
+                v-model="unlockTotpCode"
+                id="identity-unlock-totp"
+                name="otp"
+                type="text"
+                inputmode="numeric"
+                maxlength="6"
+                autocomplete="one-time-code"
+                placeholder="000 000"
+                data-test="identity-dialog-unlock-totp"
+              />
+            </label>
+
             <Button
               type="submit"
               variant="primary"
+              class="w-full"
               :loading="submitting"
               data-test="identity-dialog-unlock-submit"
             >
-              Unlock
+              Unlock Identity
             </Button>
-          </div>
-        </form>
+          </form>
 
-        <div class="flex flex-wrap items-center gap-2">
-          <Button variant="tertiary" @click="startRecoverMode">
+          <div class="flex items-center gap-3 py-1">
+            <span class="h-px flex-1 bg-[var(--ui-border)]"></span>
+            <span
+              class="text-xs uppercase tracking-[0.14em] text-[var(--ui-fg-muted)]"
+              >Or</span
+            >
+            <span class="h-px flex-1 bg-[var(--ui-border)]"></span>
+          </div>
+
+          <Button variant="tertiary" class="w-full" @click="startRecoverMode">
             Recover From Mnemonic
           </Button>
-          <Button variant="tertiary" @click="startCreateMode">
-            Create New Identity
-          </Button>
-        </div>
+
+          <div class="flex justify-center">
+            <Button
+              variant="plain-secondary"
+              size="sm"
+              @click="startCreateMode"
+            >
+              Create New Identity
+            </Button>
+          </div>
+        </section>
       </template>
 
       <template v-else-if="mode === 'recover'">
-        <form class="space-y-4" @submit.prevent="recoverIdentity">
-          <label class="block space-y-2 text-sm text-[var(--ui-fg-muted)]">
-            <span>Recovery mnemonic</span>
-            <Textarea
-              v-model="recoverMnemonic"
-              name="recovery-mnemonic"
-              rows="3"
-              autocomplete="off"
-              placeholder="Enter your 12 or 24 word recovery phrase"
-              data-test="identity-dialog-recover-mnemonic"
+        <section class="mx-auto w-full max-w-2xl">
+          <form @submit.prevent="recoverIdentity">
+            <input
+              type="text"
+              name="username"
+              autocomplete="username"
+              value="local-identity-recovery"
+              readonly
+              class="sr-only"
+              tabindex="-1"
             />
-          </label>
 
-          <input
-            type="text"
-            name="username"
-            autocomplete="username"
-            value="local-identity-recovery"
-            readonly
-            class="sr-only"
-            tabindex="-1"
-          >
-          <label class="block space-y-2 text-sm text-[var(--ui-fg-muted)]">
-            <span>New password</span>
-            <Input
-              v-model="recoverPassword"
-              id="identity-recover-password"
-              name="new-password"
-              type="password"
-              autocomplete="new-password"
-              placeholder="At least 8 characters"
-              data-test="identity-dialog-recover-password"
-            />
-          </label>
-
-          <label class="block space-y-2 text-sm text-[var(--ui-fg-muted)]">
-            <span>Confirm password</span>
-            <Input
-              v-model="recoverConfirmPassword"
-              id="identity-recover-password-confirm"
-              name="new-password-confirm"
-              type="password"
-              autocomplete="new-password"
-              placeholder="Re-enter password"
-              data-test="identity-dialog-recover-password-confirm"
-            />
-          </label>
-
-          <Card padding="md" variant="subtle">
-            <div class="space-y-3">
-              <Checkbox
-                v-model="recoverMfaEnabled"
-                data-test="identity-dialog-recover-mfa-enabled"
-              >
-                Enable authenticator verification
-              </Checkbox>
-
-              <template v-if="recoverMfaEnabled">
-                <label class="block space-y-2 text-sm text-[var(--ui-fg-muted)]">
-                  <span>Authenticator secret (Base32)</span>
-                  <Input
-                    v-model="recoverTotpSecretBase32"
-                    name="recover-totp-secret"
-                    autocomplete="off"
-                    placeholder="JBSWY3DPEHPK3PXP"
-                    data-test="identity-dialog-recover-totp-secret"
-                  />
-                </label>
-
-                <div v-if="recoverTotpQrDataUri" class="space-y-2">
-                  <p class="m-0 text-xs text-[var(--ui-fg-muted)]">
-                    Scan in your authenticator app
-                  </p>
-                  <img
-                    :src="recoverTotpQrDataUri"
-                    alt="Recovery authenticator QR code"
-                    class="h-44 w-44 rounded-md border border-[var(--ui-border)] bg-white p-2"
-                    data-test="identity-dialog-recover-totp-qr"
-                  >
-                </div>
-
-                <label class="block space-y-2 text-sm text-[var(--ui-fg-muted)]">
-                  <span>Verify authenticator code</span>
-                  <Input
-                    v-model="recoverTotpCode"
-                    type="text"
-                    name="otp"
-                    inputmode="numeric"
-                    maxlength="6"
-                    autocomplete="one-time-code"
-                    placeholder="123456"
-                    data-test="identity-dialog-recover-totp-code"
-                  />
-                </label>
-              </template>
+            <div class="space-y-2">
+              <h2 class="m-0 text-3xl font-semibold text-[var(--ui-fg)]">
+                Identity Recovery
+              </h2>
+              <p class="m-0 text-base text-[var(--ui-fg-muted)]">
+                Restore access using your recovery mnemonic and a new password.
+              </p>
             </div>
-          </Card>
 
-          <div class="flex items-center justify-between gap-2">
-            <Button variant="tertiary" @click="startUnlockMode">
-              Back To Unlock
-            </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              :loading="submitting"
-              data-test="identity-dialog-recover-submit"
-            >
-              Recover Identity
-            </Button>
-          </div>
-        </form>
+            <div class="mt-5 space-y-4 border-t border-[var(--ui-border)] pt-5">
+              <label class="block space-y-2 text-sm text-[var(--ui-fg-muted)]">
+                <div class="flex items-center justify-between">
+                  <span>Recovery mnemonic</span>
+                  <span class="text-xs">24 words</span>
+                </div>
+                <Textarea
+                  v-model="recoverMnemonic"
+                  name="recovery-mnemonic"
+                  :rows="4"
+                  autocomplete="off"
+                  placeholder="Enter your words separated by spaces..."
+                  data-test="identity-dialog-recover-mnemonic"
+                />
+              </label>
+
+              <div class="grid gap-3 sm:grid-cols-2">
+                <label
+                  class="block space-y-2 text-sm text-[var(--ui-fg-muted)]"
+                >
+                  <span>New password</span>
+                  <Input
+                    v-model="recoverPassword"
+                    id="identity-recover-password"
+                    name="new-password"
+                    type="password"
+                    autocomplete="new-password"
+                    placeholder="At least 8 characters"
+                    data-test="identity-dialog-recover-password"
+                  />
+                </label>
+
+                <label
+                  class="block space-y-2 text-sm text-[var(--ui-fg-muted)]"
+                >
+                  <span>Confirm password</span>
+                  <Input
+                    v-model="recoverConfirmPassword"
+                    id="identity-recover-password-confirm"
+                    name="new-password-confirm"
+                    type="password"
+                    autocomplete="new-password"
+                    placeholder="Re-enter password"
+                    data-test="identity-dialog-recover-password-confirm"
+                  />
+                </label>
+              </div>
+
+              <Card padding="md" variant="subtle">
+                <div class="space-y-3">
+                  <Checkbox
+                    v-model="recoverMfaEnabled"
+                    data-test="identity-dialog-recover-mfa-enabled"
+                  >
+                    Enable authenticator verification
+                  </Checkbox>
+
+                  <template v-if="recoverMfaEnabled">
+                    <label
+                      class="block space-y-2 text-sm text-[var(--ui-fg-muted)]"
+                    >
+                      <span>Authenticator secret (Base32)</span>
+                      <Input
+                        v-model="recoverTotpSecretBase32"
+                        name="recover-totp-secret"
+                        autocomplete="off"
+                        placeholder="JBSWY3DPEHPK3PXP"
+                        data-test="identity-dialog-recover-totp-secret"
+                      />
+                    </label>
+
+                    <div v-if="recoverTotpQrDataUri" class="space-y-2">
+                      <p class="m-0 text-xs text-[var(--ui-fg-muted)]">
+                        Scan this in your authenticator app.
+                      </p>
+                      <img
+                        :src="recoverTotpQrDataUri"
+                        alt="Recovery authenticator QR code"
+                        class="h-40 w-40 rounded-md border border-[var(--ui-border)] bg-white p-2"
+                        data-test="identity-dialog-recover-totp-qr"
+                      />
+                    </div>
+
+                    <label
+                      class="block space-y-2 text-sm text-[var(--ui-fg-muted)]"
+                    >
+                      <span>Verify authenticator code</span>
+                      <Input
+                        v-model="recoverTotpCode"
+                        type="text"
+                        name="otp"
+                        inputmode="numeric"
+                        maxlength="6"
+                        autocomplete="one-time-code"
+                        placeholder="000 000"
+                        data-test="identity-dialog-recover-totp-code"
+                      />
+                    </label>
+                  </template>
+                </div>
+              </Card>
+
+              <div
+                class="flex items-center justify-between gap-2 border-t border-[var(--ui-border)] pt-4"
+              >
+                <Button variant="tertiary" @click="startUnlockMode">
+                  Back To Unlock
+                </Button>
+                <Button
+                  type="submit"
+                  variant="primary"
+                  :loading="submitting"
+                  data-test="identity-dialog-recover-submit"
+                >
+                  Recover Identity
+                </Button>
+              </div>
+            </div>
+          </form>
+        </section>
       </template>
 
       <template v-else>
         <template v-if="creatingDraft || !draft">
-          <Card padding="md" variant="subtle">
+          <Card padding="md" variant="subtle" class="mx-auto w-full max-w-xl">
             <p class="m-0 text-sm text-[var(--ui-fg-muted)]">
               Preparing identity draft...
             </p>
           </Card>
         </template>
         <template v-else>
-          <div v-if="step === 1" class="space-y-4">
-            <p class="m-0 text-sm text-[var(--ui-fg-muted)]">
-              Save this recovery phrase offline before continuing.
-            </p>
+          <div v-if="step === 1" class="mx-auto w-full max-w-2xl space-y-5">
+            <div class="space-y-2 text-center">
+              <h2 class="m-0 text-4xl font-semibold text-[var(--ui-fg)]">
+                Secure Your Identity
+              </h2>
+              <p class="m-0 text-base text-[var(--ui-fg-muted)]">
+                Save your recovery phrase offline before continuing.
+              </p>
+            </div>
 
-            <Card padding="md" variant="subtle">
+            <div class="space-y-5 border-t border-[var(--ui-border)] pt-5">
+              <div
+                class="rounded-md border border-[var(--ui-critical)]/20 bg-[var(--ui-critical)]/10 p-3"
+              >
+                <p class="m-0 text-sm font-medium text-[var(--ui-critical)]">
+                  Anyone with this phrase can recover your identity.
+                </p>
+              </div>
+
               <div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
                 <div
-                  v-for="(word, index) in draft.mnemonic.split(' ')"
+                  v-for="(word, index) in draftWords"
                   :key="`${index}-${word}`"
-                  class="rounded-md border border-[var(--ui-border)] bg-[var(--ui-surface)] px-2 py-1"
+                  class="rounded-md border border-[var(--ui-border)] bg-[var(--ui-surface)] px-3 py-2"
                 >
                   <p class="m-0 text-xs text-[var(--ui-fg-muted)]">
-                    {{ index + 1 }}
+                    {{ formatWordIndex(index) }}
                   </p>
-                  <p class="m-0 text-sm text-[var(--ui-fg)]">
+                  <p class="m-0 text-sm font-semibold text-[var(--ui-fg)]">
                     {{ word }}
                   </p>
                 </div>
               </div>
-            </Card>
 
-            <div class="flex flex-wrap gap-2">
-              <Button variant="secondary" @click="copyMnemonic">
-                Copy phrase
-              </Button>
-              <Button
-                variant="tertiary"
-                :disabled="submitting"
-                @click="regenerateDraft"
-              >
-                Regenerate
-              </Button>
-            </div>
-
-            <Checkbox
-              v-model="mnemonicConfirmed"
-              data-test="identity-dialog-mnemonic-confirmed"
-            >
-              I have saved this phrase offline.
-            </Checkbox>
-
-            <div class="flex justify-end">
-              <div class="flex gap-2">
-                <Button variant="tertiary" @click="startRecoverMode">
-                  Recover Instead
+              <div class="flex flex-wrap gap-2">
+                <Button variant="secondary" @click="copyMnemonic">
+                  Copy phrase
                 </Button>
                 <Button
-                  variant="primary"
-                  :disabled="!mnemonicConfirmed"
-                  @click="step = 2"
+                  variant="tertiary"
+                  :disabled="submitting"
+                  @click="regenerateDraft"
                 >
-                  Continue
+                  Regenerate
                 </Button>
               </div>
+
+              <Checkbox
+                v-model="mnemonicConfirmed"
+                data-test="identity-dialog-mnemonic-confirmed"
+              >
+                I have saved this phrase offline.
+              </Checkbox>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-end gap-2">
+              <Button variant="tertiary" @click="startRecoverMode">
+                Recover Instead
+              </Button>
+              <Button
+                variant="primary"
+                :disabled="!mnemonicConfirmed"
+                @click="step = 2"
+              >
+                Continue
+              </Button>
             </div>
           </div>
 
-          <form v-else class="space-y-4" @submit.prevent="createIdentity">
+          <form
+            v-else
+            class="mx-auto w-full max-w-2xl"
+            @submit.prevent="createIdentity"
+          >
             <input
               type="text"
               name="username"
@@ -598,84 +696,152 @@ onMounted(async () => {
               readonly
               class="sr-only"
               tabindex="-1"
+            />
+            <div class="space-y-2">
+              <div class="flex items-start gap-3">
+                <div
+                  class="mt-0.5 inline-flex size-8 items-center justify-center rounded-full bg-[var(--ui-primary-muted)] text-[var(--ui-primary)]"
+                  aria-hidden="true"
+                >
+                  <svg viewBox="0 0 24 24" class="size-4 fill-current">
+                    <path
+                      d="M12 2 4 5v6c0 5.25 3.45 9.48 8 10.83 4.55-1.35 8-5.58 8-10.83V5l-8-3Zm0 2.2 6 2.25V11c0 4.17-2.58 7.79-6 9-3.42-1.21-6-4.83-6-9V6.45l6-2.25Zm0 2.55a3 3 0 0 0-3 3V11H8v6h8v-6h-1V9.75a3 3 0 0 0-3-3Zm-1 3a1 1 0 0 1 2 0V11h-2V9.75Z"
+                    />
+                  </svg>
+                </div>
+                <div class="space-y-1">
+                  <h2 class="m-0 text-4xl font-semibold text-[var(--ui-fg)]">
+                    Identity Required
+                  </h2>
+                  <p class="m-0 text-base text-[var(--ui-fg-muted)]">
+                    Set up your secure credentials and multi-factor
+                    authentication.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="mt-5 grid gap-3 border-t border-[var(--ui-border)] pt-5 sm:grid-cols-2"
             >
-            <label class="block space-y-2 text-sm text-[var(--ui-fg-muted)]">
-              <span>Password</span>
-              <Input
-                v-model="password"
-                id="identity-create-password"
-                name="new-password"
-                type="password"
-                autocomplete="new-password"
-                placeholder="At least 8 characters"
-                data-test="identity-dialog-password"
-              />
-            </label>
+              <label class="block space-y-2 text-sm text-[var(--ui-fg-muted)]">
+                <span>Choose Password</span>
+                <Input
+                  v-model="password"
+                  id="identity-create-password"
+                  name="new-password"
+                  type="password"
+                  autocomplete="new-password"
+                  placeholder="At least 8 characters"
+                  data-test="identity-dialog-password"
+                />
+              </label>
 
-            <label class="block space-y-2 text-sm text-[var(--ui-fg-muted)]">
-              <span>Confirm password</span>
-              <Input
-                v-model="confirmPassword"
-                id="identity-create-password-confirm"
-                name="new-password-confirm"
-                type="password"
-                autocomplete="new-password"
-                placeholder="Re-enter password"
-                data-test="identity-dialog-password-confirm"
-              />
-            </label>
+              <label class="block space-y-2 text-sm text-[var(--ui-fg-muted)]">
+                <span>Confirm Password</span>
+                <Input
+                  v-model="confirmPassword"
+                  id="identity-create-password-confirm"
+                  name="new-password-confirm"
+                  type="password"
+                  autocomplete="new-password"
+                  placeholder="Re-enter password"
+                  data-test="identity-dialog-password-confirm"
+                />
+              </label>
+            </div>
 
-            <Card padding="md" variant="subtle">
-              <div class="space-y-3">
+            <div class="mt-5 space-y-4 border-t border-[var(--ui-border)] pt-5">
+              <div class="flex items-start justify-between gap-3">
                 <Checkbox
                   v-model="mfaEnabled"
                   data-test="identity-dialog-mfa-enabled"
                 >
-                  Enable authenticator verification
+                  Require authenticator app verification
                 </Checkbox>
+                <Badge tone="neutral" variant="soft" size="xs">
+                  Recommended
+                </Badge>
+              </div>
 
-                <template v-if="mfaEnabled">
-                  <div v-if="createTotpQrDataUri" class="space-y-2">
-                    <p class="m-0 text-xs text-[var(--ui-fg-muted)]">
-                      Scan in your authenticator app
-                    </p>
+              <template v-if="mfaEnabled">
+                <Card padding="md" variant="showcase">
+                  <div class="flex flex-col gap-4">
                     <img
+                      v-if="createTotpQrDataUri"
                       :src="createTotpQrDataUri"
                       alt="Authenticator QR code"
-                      class="h-44 w-44 rounded-md border border-[var(--ui-border)] bg-white p-2"
+                      class="w-full max-w-64 h-auto mx-auto p-4"
                       data-test="identity-dialog-totp-qr"
-                    >
-                  </div>
-
-                  <p class="m-0 text-xs text-[var(--ui-fg-muted)]">
-                    Manual secret (fallback)
-                  </p>
-                  <code
-                    class="block break-all text-xs text-[var(--ui-fg)]"
-                    data-test="identity-dialog-totp-secret"
-                  >{{ draft.mfa.totpSecretBase32 }}</code>
-
-                  <label class="block space-y-2 text-sm text-[var(--ui-fg-muted)]">
-                    <span>Verify authenticator code</span>
-                    <Input
-                      v-model="totpCode"
-                      type="text"
-                      name="otp"
-                      inputmode="numeric"
-                      maxlength="6"
-                      autocomplete="one-time-code"
-                      placeholder="123456"
-                      data-test="identity-dialog-totp-code"
                     />
-                  </label>
-                </template>
-              </div>
-            </Card>
 
-            <div class="flex items-center justify-between gap-2">
-              <Button variant="tertiary" @click="step = 1">
-                Back
-              </Button>
+                    <p class="m-0 text-sm text-[var(--ui-fg-muted)]">
+                      Scan this QR code with your authenticator app.
+                    </p>
+                    <div class="space-y-2">
+                      <p
+                        class="m-0 text-xs font-semibold uppercase tracking-[0.08em] text-[var(--ui-fg-muted)]"
+                      >
+                        Manual secret key
+                      </p>
+                      <div class="flex items-center gap-2">
+                        <code
+                          class="block flex-1 rounded-md border border-[var(--ui-border)] bg-[var(--ui-surface)] px-2 py-2 text-xs font-semibold text-[var(--ui-fg)]"
+                          data-test="identity-dialog-totp-secret"
+                          >{{ createTotpSecretDisplay }}</code
+                        >
+                        <Button
+                          type="button"
+                          variant="plain-secondary"
+                          size="xs"
+                          @click="copyCreateTotpSecret"
+                        >
+                          Copy
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+
+                <div class="space-y-2">
+                  <label
+                    class="block space-y-2 text-sm text-[var(--ui-fg-muted)]"
+                  >
+                    <span>Verify authenticator code</span>
+                    <div class="flex items-center gap-2">
+                      <Input
+                        v-model="totpCode"
+                        type="text"
+                        name="otp"
+                        inputmode="numeric"
+                        maxlength="6"
+                        autocomplete="one-time-code"
+                        placeholder="000 000"
+                        data-test="identity-dialog-totp-code"
+                      />
+                      <div
+                        class="inline-flex h-10 w-10 items-center justify-center rounded-[var(--ui-radius-md)] border border-[var(--ui-primary-muted)] bg-[var(--ui-primary-muted)] text-[var(--ui-primary)]"
+                        aria-hidden="true"
+                      >
+                        <svg viewBox="0 0 24 24" class="size-5 fill-current">
+                          <path
+                            d="m9.2 16.1-3.3-3.3L4.5 14.2 9.2 19l10.3-10.3-1.4-1.4-8.9 8.8Z"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  </label>
+                  <p class="m-0 text-xs text-[var(--ui-fg-muted)]">
+                    Enter the 6-digit code from your app to verify setup.
+                  </p>
+                </div>
+              </template>
+            </div>
+
+            <div
+              class="mt-5 flex flex-wrap items-center justify-between gap-2 border-t border-[var(--ui-border)] pt-4"
+            >
+              <Button variant="tertiary" @click="step = 1"> Back </Button>
               <div class="flex gap-2">
                 <Button
                   v-if="hasStoredIdentity"

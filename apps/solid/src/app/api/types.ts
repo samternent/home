@@ -1,4 +1,5 @@
 import type {
+  ConcordApp,
   ConcordCommandResult,
   ConcordCommitInput,
   ConcordCommitResult,
@@ -12,10 +13,10 @@ import type {
   PermissionGrantInput,
   PermissionRecord,
   PermissionRevokeInput,
+  ProfileRecord,
+  ProfileUpsertInput,
   UserCreateInput,
-  UserEncryptionGroupInput,
   UserRecord,
-  UserUpdateProfileInput,
 } from "@/app/plugins";
 import type {
   EncryptedIdentityBlobV2,
@@ -26,9 +27,11 @@ import type {
 } from "@/app/runtime";
 
 export type AppStatus = "restoring" | "ready" | "error";
+export type AppLedgerContainer = Awaited<ReturnType<ConcordApp["exportLedger"]>>;
 
 export type AppIdentity = {
   identityId: string;
+  identityKey: string;
   label: string;
 };
 
@@ -43,17 +46,24 @@ export type AppIdentityBootstrapOptions = {
 };
 
 export type AppUsersApi = {
-  create(input: UserCreateInput): Promise<ConcordCommandResult>;
-  updateProfile(input: UserUpdateProfileInput): Promise<ConcordCommandResult>;
-  addToEncryptionGroup(input: UserEncryptionGroupInput): Promise<ConcordCommandResult>;
-  removeFromEncryptionGroup(input: UserEncryptionGroupInput): Promise<ConcordCommandResult>;
+  create(input: Omit<UserCreateInput, "actorIdentityKey">): Promise<ConcordCommandResult>;
   all(): UserRecord[];
-  byId(identityId: string): UserRecord | null;
+  byIdentityKey(identityKey: string): UserRecord | null;
+};
+
+export type AppProfilesApi = {
+  upsert(input: Omit<ProfileUpsertInput, "actorIdentityKey">): Promise<ConcordCommandResult>;
+  all(): ProfileRecord[];
+  byIdentityKey(identityKey: string): ProfileRecord | null;
 };
 
 export type AppPermissionsApi = {
   create(input: Omit<PermissionCreateInput, "actor">): Promise<ConcordCommandResult>;
   grant(input: Omit<PermissionGrantInput, "actor">): Promise<ConcordCommandResult>;
+  grantFromUser(input: {
+    permissionId: string;
+    identityKey: string;
+  }): Promise<ConcordCommandResult>;
   revoke(input: Omit<PermissionRevokeInput, "actor">): Promise<ConcordCommandResult>;
   all(): PermissionRecord[];
   byId(permissionId: string): PermissionRecord | null;
@@ -102,11 +112,15 @@ export type AppApi = {
   };
   users: AppUsersApi;
   permissions: AppPermissionsApi;
+  profiles: AppProfilesApi;
   load(): Promise<void>;
   command<TInput = unknown>(type: string, input: TInput): Promise<ConcordCommandResult>;
   commit(input?: ConcordCommitInput): Promise<ConcordCommitResult>;
   discard(): Promise<void>;
   replay(options?: ConcordReplayOptions): Promise<void>;
+  createLedger(metadata?: Record<string, unknown>): Promise<void>;
+  exportLedger(): Promise<AppLedgerContainer>;
+  importLedger(container: AppLedgerContainer): Promise<void>;
   getState(): Readonly<ConcordState>;
   getPluginState<TState = unknown>(pluginId: string): TState;
   select<TValue = unknown>(pluginId: string, selectorId: string, ...args: unknown[]): TValue;

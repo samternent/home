@@ -22,14 +22,39 @@ test("shell and permissions happy path", async ({ page }) => {
     await page.locator('[data-test="identity-dialog-create-submit"]').click();
   }
 
-  await expect(page.locator('[data-test="home-v2-status"]')).toHaveText("ready");
+  await expect(page.locator('[data-test="home-v2-placeholder"]')).toBeVisible();
+  await expect(page.locator('[data-test="console-status-runtime"]')).toHaveText("ready");
+  await expect(page.locator('[data-test="sidebar-active-identity-label"]')).toContainText("User");
+  await expect(page.locator('[data-test="nav-app-tasks"]')).toBeVisible();
 
-  await page.locator('[data-test="home-v2-permissions-link"]').click();
+  await page.locator('[data-test="nav-app-tasks"]').click();
+  await expect(page.locator('[data-test="runtime-app-v0"]')).toBeVisible();
+  await expect(page.locator('[data-test="runtime-app-title"]')).toContainText("Tasks");
+
+  await page.locator('[data-test="nav-permissions"]').click();
   await expect(page.locator('[data-test="permissions-v2"]')).toBeVisible();
 
   await page.locator('[data-test="permission-create-title"]').fill("Reviewers");
-  await page.locator('[data-test="permission-create-scope"]').fill("workspace");
   await page.locator('[data-test="permission-create-submit"]').click();
 
   await expect(page.locator('[data-test="permissions-empty"]')).toHaveCount(0);
+  await expect(page.locator('[data-test^="permission-selected-title-"]')).toContainText(
+    "Reviewers",
+  );
+  await expect(page.locator('[data-test="permissions-users-empty"]')).toBeVisible();
+  await expect(page.locator('[data-test="console-status-staged"]')).toContainText(
+    "needs attention",
+  );
+
+  const commitMessage = page.locator('[data-test="console-commit-message"]');
+  if (!(await commitMessage.isVisible())) {
+    await page.getByRole("button", { name: "Toggle panel" }).click();
+  }
+
+  await commitMessage.fill("Create reviewers permission");
+  await page.locator('[data-test="console-commit-submit"]').click();
+
+  await expect(page.locator('[data-test="console-status-staged"]')).toContainText(
+    "No staged entries",
+  );
 });

@@ -1,171 +1,40 @@
 import type { ConcordReplayPlugin } from "@ternent/concord";
 import type { LedgerReplayEntry } from "@ternent/ledger";
 import type { AppProjectionPlugin } from "@/app/runtime";
-
-export type UserProfileRecord = {
-  displayName: string | null;
-  email: string | null;
-  avatarUrl: string | null;
-  attributes: Record<string, string>;
-};
+import { validateIdentityKey } from "./identityKey";
 
 export type UserRecord = {
-  identityId: string;
-  label: string;
-  profile: UserProfileRecord;
-  encryptionGroupIds: string[];
-  createdAt: string;
-  updatedAt: string;
+  identityKey: string;
+  addedAt: string;
+  addedBy: string;
+  label?: string | null;
 };
 
 export type UsersState = {
-  byId: Record<string, UserRecord>;
+  byKey: Record<string, UserRecord>;
   order: string[];
 };
 
 export type UserCreateInput = {
-  identityId: string;
+  identityKey: string;
+  actorIdentityKey: string;
+};
+
+type UserCreatePayload = {
+  identityKey: string;
   label?: string | null;
-  displayName?: string | null;
-  email?: string | null;
-  avatarUrl?: string | null;
-  attributes?: Record<string, string | null>;
-  encryptionGroupIds?: string[];
-};
-
-export type UserUpdateProfileInput = {
-  identityId: string;
-  label?: string | null;
-  displayName?: string | null;
-  email?: string | null;
-  avatarUrl?: string | null;
-  attributes?: Record<string, string | null>;
-};
-
-export type UserEncryptionGroupInput = {
-  identityId: string;
-  groupId: string;
-};
-
-type UserCreatePayload = UserCreateInput & {
-  createdAt: string;
-  updatedAt: string;
-};
-
-type UserUpdateProfilePayload = UserUpdateProfileInput & {
-  updatedAt: string;
-};
-
-type UserEncryptionGroupPayload = UserEncryptionGroupInput & {
-  updatedAt: string;
+  addedAt: string;
+  addedBy: string;
 };
 
 function initialUsersState(): UsersState {
   return {
-    byId: {},
+    byKey: {},
     order: [],
   };
 }
 
-function normalizeRequiredText(value: unknown, label: string): string {
-  if (typeof value !== "string") {
-    throw new Error(`${label} is required.`);
-  }
-
-  const normalized = value.trim();
-  if (!normalized) {
-    throw new Error(`${label} is required.`);
-  }
-
-  return normalized;
-}
-
-function normalizeOptionalText(value: unknown, label: string): string | null | undefined {
-  if (value === undefined) {
-    return undefined;
-  }
-
-  if (value === null) {
-    return null;
-  }
-
-  if (typeof value !== "string") {
-    throw new Error(`${label} must be a string.`);
-  }
-
-  const normalized = value.trim();
-  return normalized || null;
-}
-
-function normalizeAttributes(
-  value: unknown,
-): Record<string, string | null> | undefined {
-  if (value === undefined) {
-    return undefined;
-  }
-
-  if (!value || typeof value !== "object" || Array.isArray(value)) {
-    throw new Error("Attributes must be an object.");
-  }
-
-  const next: Record<string, string | null> = {};
-
-  for (const [rawKey, rawValue] of Object.entries(value)) {
-    const key = rawKey.trim();
-    if (!key) {
-      throw new Error("Attribute keys cannot be empty.");
-    }
-
-    if (rawValue === null) {
-      next[key] = null;
-      continue;
-    }
-
-    if (typeof rawValue !== "string") {
-      throw new Error(`Attribute '${key}' must be a string or null.`);
-    }
-
-    const normalizedValue = rawValue.trim();
-    if (!normalizedValue) {
-      throw new Error(`Attribute '${key}' cannot be empty.`);
-    }
-
-    next[key] = normalizedValue;
-  }
-
-  return next;
-}
-
-function normalizeGroupIds(value: unknown): string[] | undefined {
-  if (value === undefined) {
-    return undefined;
-  }
-
-  if (!Array.isArray(value)) {
-    throw new Error("Encryption group ids must be an array.");
-  }
-
-  const seen = new Set<string>();
-  const groupIds: string[] = [];
-
-  for (const item of value) {
-    if (typeof item !== "string") {
-      throw new Error("Encryption group ids must be strings.");
-    }
-
-    const normalized = item.trim();
-    if (!normalized || seen.has(normalized)) {
-      continue;
-    }
-
-    seen.add(normalized);
-    groupIds.push(normalized);
-  }
-
-  return groupIds;
-}
-
-function parseUserCreateInput(inputValue: unknown): UserCreateInput {
+async function parseUserCreateInput(inputValue: unknown): Promise<UserCreateInput> {
   if (!inputValue || typeof inputValue !== "object") {
     throw new Error("User create input is required.");
   }
@@ -173,44 +42,18 @@ function parseUserCreateInput(inputValue: unknown): UserCreateInput {
   const input = inputValue as Record<string, unknown>;
 
   return {
-    identityId: normalizeRequiredText(input.identityId, "Identity id"),
-    label: normalizeOptionalText(input.label, "Label"),
-    displayName: normalizeOptionalText(input.displayName, "Display name"),
-    email: normalizeOptionalText(input.email, "Email"),
-    avatarUrl: normalizeOptionalText(input.avatarUrl, "Avatar URL"),
-    attributes: normalizeAttributes(input.attributes),
-    encryptionGroupIds: normalizeGroupIds(input.encryptionGroupIds),
+    identityKey: await validateIdentityKey(String(input.identityKey ?? "")),
+    actorIdentityKey: await validateIdentityKey(String(input.actorIdentityKey ?? "")),
   };
 }
 
-function parseUserUpdateProfileInput(inputValue: unknown): UserUpdateProfileInput {
-  if (!inputValue || typeof inputValue !== "object") {
-    throw new Error("User profile input is required.");
+function normalizeLegacyLabel(value: unknown): string | null {
+  if (typeof value !== "string") {
+    return null;
   }
 
-  const input = inputValue as Record<string, unknown>;
-
-  return {
-    identityId: normalizeRequiredText(input.identityId, "Identity id"),
-    label: normalizeOptionalText(input.label, "Label"),
-    displayName: normalizeOptionalText(input.displayName, "Display name"),
-    email: normalizeOptionalText(input.email, "Email"),
-    avatarUrl: normalizeOptionalText(input.avatarUrl, "Avatar URL"),
-    attributes: normalizeAttributes(input.attributes),
-  };
-}
-
-function parseUserEncryptionGroupInput(inputValue: unknown): UserEncryptionGroupInput {
-  if (!inputValue || typeof inputValue !== "object") {
-    throw new Error("Encryption group input is required.");
-  }
-
-  const input = inputValue as Record<string, unknown>;
-
-  return {
-    identityId: normalizeRequiredText(input.identityId, "Identity id"),
-    groupId: normalizeRequiredText(input.groupId, "Group id"),
-  };
+  const normalized = value.trim();
+  return normalized || null;
 }
 
 function getEntryPayload(entry: LedgerReplayEntry): unknown {
@@ -228,49 +71,16 @@ function getEntryPayload(entry: LedgerReplayEntry): unknown {
 function cloneUserRecord(record: UserRecord): UserRecord {
   return {
     ...record,
-    profile: {
-      ...record.profile,
-      attributes: { ...record.profile.attributes },
-    },
-    encryptionGroupIds: [...record.encryptionGroupIds],
   };
 }
 
 function cloneUsersState(state: UsersState): UsersState {
   return {
-    byId: Object.fromEntries(
-      Object.entries(state.byId).map(([identityId, record]) => [identityId, cloneUserRecord(record)]),
+    byKey: Object.fromEntries(
+      Object.entries(state.byKey).map(([identityKey, record]) => [identityKey, cloneUserRecord(record)]),
     ),
     order: [...state.order],
   };
-}
-
-function removeUndefinedFields<T extends Record<string, unknown>>(input: T): T {
-  return Object.fromEntries(
-    Object.entries(input).filter(([, value]) => value !== undefined),
-  ) as T;
-}
-
-function mergeAttributes(
-  previous: Record<string, string>,
-  patch?: Record<string, string | null>,
-): Record<string, string> {
-  if (!patch) {
-    return { ...previous };
-  }
-
-  const next = { ...previous };
-
-  for (const [key, value] of Object.entries(patch)) {
-    if (value === null) {
-      delete next[key];
-      continue;
-    }
-
-    next[key] = value;
-  }
-
-  return next;
 }
 
 function applyUserCreate(state: UsersState, payloadValue: unknown): UsersState {
@@ -279,140 +89,23 @@ function applyUserCreate(state: UsersState, payloadValue: unknown): UsersState {
   }
 
   const payload = payloadValue as UserCreatePayload;
-  if (state.byId[payload.identityId]) {
+  if (state.byKey[payload.identityKey]) {
     return state;
   }
 
   const nextRecord: UserRecord = {
-    identityId: payload.identityId,
-    label: payload.label ?? payload.identityId,
-    profile: {
-      displayName: payload.displayName ?? null,
-      email: payload.email ?? null,
-      avatarUrl: payload.avatarUrl ?? null,
-      attributes: mergeAttributes({}, payload.attributes),
-    },
-    encryptionGroupIds: payload.encryptionGroupIds ?? [],
-    createdAt: payload.createdAt,
-    updatedAt: payload.updatedAt,
+    identityKey: payload.identityKey,
+    label: normalizeLegacyLabel(payload.label),
+    addedAt: payload.addedAt,
+    addedBy: payload.addedBy,
   };
 
   return {
-    byId: {
-      ...state.byId,
-      [payload.identityId]: nextRecord,
+    byKey: {
+      ...state.byKey,
+      [payload.identityKey]: nextRecord,
     },
-    order: [...state.order, payload.identityId],
-  };
-}
-
-function applyUserUpdateProfile(
-  state: UsersState,
-  payloadValue: unknown,
-): UsersState {
-  if (!payloadValue || typeof payloadValue !== "object") {
-    return state;
-  }
-
-  const payload = payloadValue as UserUpdateProfilePayload;
-  const existing = state.byId[payload.identityId];
-
-  const fallbackRecord: UserRecord = {
-    identityId: payload.identityId,
-    label: payload.identityId,
-    profile: {
-      displayName: null,
-      email: null,
-      avatarUrl: null,
-      attributes: {},
-    },
-    encryptionGroupIds: [],
-    createdAt: payload.updatedAt,
-    updatedAt: payload.updatedAt,
-  };
-
-  const baseRecord = existing ?? fallbackRecord;
-
-  const nextRecord: UserRecord = {
-    ...baseRecord,
-    label: payload.label ?? baseRecord.label,
-    profile: {
-      displayName:
-        payload.displayName === undefined
-          ? baseRecord.profile.displayName
-          : payload.displayName,
-      email: payload.email === undefined ? baseRecord.profile.email : payload.email,
-      avatarUrl:
-        payload.avatarUrl === undefined
-          ? baseRecord.profile.avatarUrl
-          : payload.avatarUrl,
-      attributes: mergeAttributes(baseRecord.profile.attributes, payload.attributes),
-    },
-    updatedAt: payload.updatedAt,
-  };
-
-  return {
-    byId: {
-      ...state.byId,
-      [payload.identityId]: nextRecord,
-    },
-    order: existing ? state.order : [...state.order, payload.identityId],
-  };
-}
-
-function applyGroupAdded(state: UsersState, payloadValue: unknown): UsersState {
-  if (!payloadValue || typeof payloadValue !== "object") {
-    return state;
-  }
-
-  const payload = payloadValue as UserEncryptionGroupPayload;
-  const existing = state.byId[payload.identityId];
-  if (!existing) {
-    return state;
-  }
-
-  if (existing.encryptionGroupIds.includes(payload.groupId)) {
-    return state;
-  }
-
-  return {
-    ...state,
-    byId: {
-      ...state.byId,
-      [payload.identityId]: {
-        ...existing,
-        encryptionGroupIds: [...existing.encryptionGroupIds, payload.groupId],
-        updatedAt: payload.updatedAt,
-      },
-    },
-  };
-}
-
-function applyGroupRemoved(state: UsersState, payloadValue: unknown): UsersState {
-  if (!payloadValue || typeof payloadValue !== "object") {
-    return state;
-  }
-
-  const payload = payloadValue as UserEncryptionGroupPayload;
-  const existing = state.byId[payload.identityId];
-  if (!existing) {
-    return state;
-  }
-
-  if (!existing.encryptionGroupIds.includes(payload.groupId)) {
-    return state;
-  }
-
-  return {
-    ...state,
-    byId: {
-      ...state.byId,
-      [payload.identityId]: {
-        ...existing,
-        encryptionGroupIds: existing.encryptionGroupIds.filter((groupId) => groupId !== payload.groupId),
-        updatedAt: payload.updatedAt,
-      },
-    },
+    order: [...state.order, payload.identityKey],
   };
 }
 
@@ -425,49 +118,22 @@ export function createUsersPlugin(): AppProjectionPlugin<UsersState> {
     initialState: initialUsersState,
     commands: {
       "user.create": async (ctx, inputValue) => {
-        const input = parseUserCreateInput(inputValue);
+        const input = await parseUserCreateInput(inputValue);
+
+        const usersState = ctx.getReplayState<UsersState>("users");
+        if (usersState.byKey[input.identityKey]) {
+          throw new Error("User already exists.");
+        }
+
         const now = ctx.now();
 
         return {
           kind: "user.create",
-          payload: removeUndefinedFields({
-            ...input,
-            createdAt: now,
-            updatedAt: now,
-          }) satisfies UserCreatePayload,
-        };
-      },
-      "user.updateProfile": async (ctx, inputValue) => {
-        const input = parseUserUpdateProfileInput(inputValue);
-
-        return {
-          kind: "user.updateProfile",
-          payload: removeUndefinedFields({
-            ...input,
-            updatedAt: ctx.now(),
-          }) satisfies UserUpdateProfilePayload,
-        };
-      },
-      "user.group.add": async (ctx, inputValue) => {
-        const input = parseUserEncryptionGroupInput(inputValue);
-
-        return {
-          kind: "user.group.add",
           payload: {
-            ...input,
-            updatedAt: ctx.now(),
-          } satisfies UserEncryptionGroupPayload,
-        };
-      },
-      "user.group.remove": async (ctx, inputValue) => {
-        const input = parseUserEncryptionGroupInput(inputValue);
-
-        return {
-          kind: "user.group.remove",
-          payload: {
-            ...input,
-            updatedAt: ctx.now(),
-          } satisfies UserEncryptionGroupPayload,
+            identityKey: input.identityKey,
+            addedAt: now,
+            addedBy: input.actorIdentityKey,
+          } satisfies UserCreatePayload,
         };
       },
     },
@@ -477,21 +143,6 @@ export function createUsersPlugin(): AppProjectionPlugin<UsersState> {
 
       if (entry.kind === "user.create") {
         ctx.setState(applyUserCreate(state, payload));
-        return;
-      }
-
-      if (entry.kind === "user.updateProfile") {
-        ctx.setState(applyUserUpdateProfile(state, payload));
-        return;
-      }
-
-      if (entry.kind === "user.group.add") {
-        ctx.setState(applyGroupAdded(state, payload));
-        return;
-      }
-
-      if (entry.kind === "user.group.remove") {
-        ctx.setState(applyGroupRemoved(state, payload));
       }
     },
   };
@@ -501,16 +152,25 @@ export function createUsersPlugin(): AppProjectionPlugin<UsersState> {
     selectors: {
       all(state) {
         return state.order
-          .map((identityId) => state.byId[identityId])
+          .map((identityKey) => state.byKey[identityKey])
           .filter((record): record is UserRecord => Boolean(record))
           .map(cloneUserRecord);
       },
-      byId(state, identityId: unknown) {
-        if (typeof identityId !== "string") {
+      byIdentityKey(state, identityKey: unknown) {
+        if (typeof identityKey !== "string") {
           return null;
         }
 
-        const record = state.byId[identityId] ?? null;
+        const record = state.byKey[identityKey] ?? null;
+        return record ? cloneUserRecord(record) : null;
+      },
+      // Transition alias for older callers.
+      byId(state, identityKey: unknown) {
+        if (typeof identityKey !== "string") {
+          return null;
+        }
+
+        const record = state.byKey[identityKey] ?? null;
         return record ? cloneUserRecord(record) : null;
       },
     },

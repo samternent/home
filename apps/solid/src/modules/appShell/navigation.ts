@@ -1,0 +1,61 @@
+import type { SidebarNavSection } from "ternent-ui/patterns";
+import {
+  isRuntimeAppRegistryValid,
+  listRuntimeApps,
+  type RuntimeAppDefinition,
+} from "@/runtime/apps";
+
+export function listValidRuntimeApps(
+  apps: RuntimeAppDefinition[] = listRuntimeApps(),
+): RuntimeAppDefinition[] {
+  return apps.filter((app) => isRuntimeAppRegistryValid(app));
+}
+
+function isAppRouteActive(path: string, appId: string): boolean {
+  return path === `/w/${appId}` || path.startsWith(`/w/${appId}/`);
+}
+
+export function buildSidebarNavigationSections(
+  path: string,
+  apps: RuntimeAppDefinition[] = listRuntimeApps(),
+): SidebarNavSection[] {
+  const validApps = listValidRuntimeApps(apps);
+
+  const appsSection: SidebarNavSection = {
+    id: "apps",
+    label: "Workspace",
+    items: validApps.map((app) => ({
+      id: `app-${app.id}`,
+      label: app.label,
+      to: `/w/${app.id}`,
+      dataTest: `nav-app-${app.id}`,
+      active: isAppRouteActive(path, app.id),
+    })),
+  };
+
+  const systemSection: SidebarNavSection = {
+    id: "system",
+    label: "System",
+    items: [
+      {
+        id: "users",
+        label: "Users",
+        to: "/s/users",
+        dataTest: "nav-users",
+        active: path.startsWith("/s/users"),
+      },
+      {
+        id: "permissions",
+        label: "Permissions",
+        to: "/s/permissions",
+        dataTest: "nav-permissions",
+        active: path.startsWith("/s/permissions"),
+      },
+    ],
+  };
+
+  return [
+    ...(appsSection.items.length > 0 ? [appsSection] : []),
+    systemSection,
+  ];
+}

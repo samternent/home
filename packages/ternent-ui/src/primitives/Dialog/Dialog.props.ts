@@ -14,6 +14,10 @@ export const dialogProps = {
     type: String as PropType<DialogSize>,
     default: "md",
   },
+  contentClass: {
+    type: String,
+    default: "",
+  },
   showClose: {
     type: Boolean,
     default: true,
