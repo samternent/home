@@ -1,25 +1,11 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
 import { useAppApi } from "@/app/api";
-import {
-  shortIdentityKey,
-  toDidKeyFromPublicKey,
-} from "@/app/plugins/identityKey";
+import { shortIdentityKey, toDidKeyFromPublicKey } from "@/app/plugins/identityKey";
 import { DEFAULT_DEV_SESSION_UNLOCK_STORAGE_KEY } from "@/app/runtime";
-import type {
-  IdentityOnboardingDraft,
-  StoredIdentitySummary,
-} from "@/app/runtime";
+import type { IdentityOnboardingDraft, StoredIdentitySummary } from "@/app/runtime";
 import { buildQrDataUri, createOtpAuthUri } from "@/app/runtime";
-import {
-  Badge,
-  Button,
-  Card,
-  Checkbox,
-  Dialog,
-  Input,
-  Textarea,
-} from "ternent-ui/primitives";
+import { Badge, Button, Card, Checkbox, Dialog, Input, Textarea } from "ternent-ui/primitives";
 import { IdentityHandle } from "ternent-ui/patterns";
 
 const appApi = useAppApi();
@@ -50,9 +36,7 @@ const recoverTotpSecretBase32 = ref("");
 const recoverTotpCode = ref("");
 
 const isUnlocked = computed(
-  () =>
-    appApi.status.value === "ready" &&
-    appApi.identity.activeIdentity.value !== null,
+  () => appApi.status.value === "ready" && appApi.identity.activeIdentity.value !== null,
 );
 const hasStoredIdentity = computed(() => summary.value !== null);
 const showUnlockMfaField = computed(() => Boolean(summary.value?.mfaEnabled));
@@ -75,9 +59,7 @@ const createTotpSecretDisplay = computed(() => {
   if (!draft.value) {
     return "";
   }
-  const raw = draft.value.mfa.totpSecretBase32
-    .replace(/\s+/g, "")
-    .toUpperCase();
+  const raw = draft.value.mfa.totpSecretBase32.replace(/\s+/g, "").toUpperCase();
   const groups = raw.match(/.{1,4}/g);
   return groups ? groups.join(" - ") : raw;
 });
@@ -156,9 +138,7 @@ function hasPendingDevSessionResume(): boolean {
   if (appApi.status.value !== "restoring") {
     return false;
   }
-  return Boolean(
-    window.sessionStorage.getItem(DEFAULT_DEV_SESSION_UNLOCK_STORAGE_KEY),
-  );
+  return Boolean(window.sessionStorage.getItem(DEFAULT_DEV_SESSION_UNLOCK_STORAGE_KEY));
 }
 
 function resetCreateFields(): void {
@@ -191,8 +171,7 @@ async function ensureDraft(force = false): Promise<void> {
     draft.value = await appApi.identity.createOnboardingDraft();
     resetCreateFields();
   } catch (nextError) {
-    error.value =
-      nextError instanceof Error ? nextError.message : String(nextError);
+    error.value = nextError instanceof Error ? nextError.message : String(nextError);
   } finally {
     creatingDraft.value = false;
   }
@@ -249,8 +228,7 @@ async function unlockIdentity(): Promise<void> {
     unlockTotpCode.value = "";
     refreshSummary();
   } catch (nextError) {
-    error.value =
-      nextError instanceof Error ? nextError.message : String(nextError);
+    error.value = nextError instanceof Error ? nextError.message : String(nextError);
   } finally {
     submitting.value = false;
   }
@@ -275,8 +253,7 @@ async function createIdentity(): Promise<void> {
     });
     refreshSummary();
   } catch (nextError) {
-    error.value =
-      nextError instanceof Error ? nextError.message : String(nextError);
+    error.value = nextError instanceof Error ? nextError.message : String(nextError);
   } finally {
     submitting.value = false;
   }
@@ -296,15 +273,12 @@ async function recoverIdentity(): Promise<void> {
       password: recoverPassword.value,
       confirmPassword: recoverConfirmPassword.value,
       mfaEnabled: recoverMfaEnabled.value,
-      totpSecretBase32: recoverMfaEnabled.value
-        ? recoverTotpSecretBase32.value
-        : undefined,
+      totpSecretBase32: recoverMfaEnabled.value ? recoverTotpSecretBase32.value : undefined,
       totpCode: recoverMfaEnabled.value ? recoverTotpCode.value : undefined,
     });
     refreshSummary();
   } catch (nextError) {
-    error.value =
-      nextError instanceof Error ? nextError.message : String(nextError);
+    error.value = nextError instanceof Error ? nextError.message : String(nextError);
   } finally {
     submitting.value = false;
   }
@@ -366,9 +340,7 @@ onMounted(async () => {
       <template v-if="hasStoredIdentity && summary && mode === 'unlock'">
         <section class="mx-auto w-full max-w-lg space-y-6">
           <div class="space-y-2 text-center">
-            <h2 class="m-0 text-4xl font-semibold text-[var(--ui-fg)]">
-              Identity Required
-            </h2>
+            <h2 class="m-0 text-4xl font-semibold text-[var(--ui-fg)]">Identity Required</h2>
             <p class="m-0 text-base text-[var(--ui-fg-muted)]">
               Please authenticate to access your vault.
             </p>
@@ -438,10 +410,7 @@ onMounted(async () => {
 
           <div class="flex items-center gap-3 py-1">
             <span class="h-px flex-1 bg-[var(--ui-border)]"></span>
-            <span
-              class="text-xs uppercase tracking-[0.14em] text-[var(--ui-fg-muted)]"
-              >Or</span
-            >
+            <span class="text-xs uppercase tracking-[0.14em] text-[var(--ui-fg-muted)]">Or</span>
             <span class="h-px flex-1 bg-[var(--ui-border)]"></span>
           </div>
 
@@ -450,11 +419,7 @@ onMounted(async () => {
           </Button>
 
           <div class="flex justify-center">
-            <Button
-              variant="plain-secondary"
-              size="sm"
-              @click="startCreateMode"
-            >
+            <Button variant="plain-secondary" size="sm" @click="startCreateMode">
               Create New Identity
             </Button>
           </div>
@@ -475,9 +440,7 @@ onMounted(async () => {
             />
 
             <div class="space-y-2">
-              <h2 class="m-0 text-3xl font-semibold text-[var(--ui-fg)]">
-                Identity Recovery
-              </h2>
+              <h2 class="m-0 text-3xl font-semibold text-[var(--ui-fg)]">Identity Recovery</h2>
               <p class="m-0 text-base text-[var(--ui-fg-muted)]">
                 Restore access using your recovery mnemonic and a new password.
               </p>
@@ -500,9 +463,7 @@ onMounted(async () => {
               </label>
 
               <div class="grid gap-3 sm:grid-cols-2">
-                <label
-                  class="block space-y-2 text-sm text-[var(--ui-fg-muted)]"
-                >
+                <label class="block space-y-2 text-sm text-[var(--ui-fg-muted)]">
                   <span>New password</span>
                   <Input
                     v-model="recoverPassword"
@@ -515,9 +476,7 @@ onMounted(async () => {
                   />
                 </label>
 
-                <label
-                  class="block space-y-2 text-sm text-[var(--ui-fg-muted)]"
-                >
+                <label class="block space-y-2 text-sm text-[var(--ui-fg-muted)]">
                   <span>Confirm password</span>
                   <Input
                     v-model="recoverConfirmPassword"
@@ -541,9 +500,7 @@ onMounted(async () => {
                   </Checkbox>
 
                   <template v-if="recoverMfaEnabled">
-                    <label
-                      class="block space-y-2 text-sm text-[var(--ui-fg-muted)]"
-                    >
+                    <label class="block space-y-2 text-sm text-[var(--ui-fg-muted)]">
                       <span>Authenticator secret (Base32)</span>
                       <Input
                         v-model="recoverTotpSecretBase32"
@@ -566,9 +523,7 @@ onMounted(async () => {
                       />
                     </div>
 
-                    <label
-                      class="block space-y-2 text-sm text-[var(--ui-fg-muted)]"
-                    >
+                    <label class="block space-y-2 text-sm text-[var(--ui-fg-muted)]">
                       <span>Verify authenticator code</span>
                       <Input
                         v-model="recoverTotpCode"
@@ -588,9 +543,7 @@ onMounted(async () => {
               <div
                 class="flex items-center justify-between gap-2 border-t border-[var(--ui-border)] pt-4"
               >
-                <Button variant="tertiary" @click="startUnlockMode">
-                  Back To Unlock
-                </Button>
+                <Button variant="tertiary" @click="startUnlockMode"> Back To Unlock </Button>
                 <Button
                   type="submit"
                   variant="primary"
@@ -608,17 +561,13 @@ onMounted(async () => {
       <template v-else>
         <template v-if="creatingDraft || !draft">
           <Card padding="md" variant="subtle" class="mx-auto w-full max-w-xl">
-            <p class="m-0 text-sm text-[var(--ui-fg-muted)]">
-              Preparing identity draft...
-            </p>
+            <p class="m-0 text-sm text-[var(--ui-fg-muted)]">Preparing identity draft...</p>
           </Card>
         </template>
         <template v-else>
           <div v-if="step === 1" class="mx-auto w-full max-w-2xl space-y-5">
             <div class="space-y-2 text-center">
-              <h2 class="m-0 text-4xl font-semibold text-[var(--ui-fg)]">
-                Secure Your Identity
-              </h2>
+              <h2 class="m-0 text-4xl font-semibold text-[var(--ui-fg)]">Secure Your Identity</h2>
               <p class="m-0 text-base text-[var(--ui-fg-muted)]">
                 Save your recovery phrase offline before continuing.
               </p>
@@ -649,45 +598,26 @@ onMounted(async () => {
               </div>
 
               <div class="flex flex-wrap gap-2">
-                <Button variant="secondary" @click="copyMnemonic">
-                  Copy phrase
-                </Button>
-                <Button
-                  variant="tertiary"
-                  :disabled="submitting"
-                  @click="regenerateDraft"
-                >
+                <Button variant="secondary" @click="copyMnemonic"> Copy phrase </Button>
+                <Button variant="tertiary" :disabled="submitting" @click="regenerateDraft">
                   Regenerate
                 </Button>
               </div>
 
-              <Checkbox
-                v-model="mnemonicConfirmed"
-                data-test="identity-dialog-mnemonic-confirmed"
-              >
+              <Checkbox v-model="mnemonicConfirmed" data-test="identity-dialog-mnemonic-confirmed">
                 I have saved this phrase offline.
               </Checkbox>
             </div>
 
             <div class="flex flex-wrap items-center justify-end gap-2">
-              <Button variant="tertiary" @click="startRecoverMode">
-                Recover Instead
-              </Button>
-              <Button
-                variant="primary"
-                :disabled="!mnemonicConfirmed"
-                @click="step = 2"
-              >
+              <Button variant="tertiary" @click="startRecoverMode"> Recover Instead </Button>
+              <Button variant="primary" :disabled="!mnemonicConfirmed" @click="step = 2">
                 Continue
               </Button>
             </div>
           </div>
 
-          <form
-            v-else
-            class="mx-auto w-full max-w-2xl"
-            @submit.prevent="createIdentity"
-          >
+          <form v-else class="mx-auto w-full max-w-2xl" @submit.prevent="createIdentity">
             <input
               type="text"
               name="username"
@@ -710,20 +640,15 @@ onMounted(async () => {
                   </svg>
                 </div>
                 <div class="space-y-1">
-                  <h2 class="m-0 text-4xl font-semibold text-[var(--ui-fg)]">
-                    Identity Required
-                  </h2>
+                  <h2 class="m-0 text-4xl font-semibold text-[var(--ui-fg)]">Identity Required</h2>
                   <p class="m-0 text-base text-[var(--ui-fg-muted)]">
-                    Set up your secure credentials and multi-factor
-                    authentication.
+                    Set up your secure credentials and multi-factor authentication.
                   </p>
                 </div>
               </div>
             </div>
 
-            <div
-              class="mt-5 grid gap-3 border-t border-[var(--ui-border)] pt-5 sm:grid-cols-2"
-            >
+            <div class="mt-5 grid gap-3 border-t border-[var(--ui-border)] pt-5 sm:grid-cols-2">
               <label class="block space-y-2 text-sm text-[var(--ui-fg-muted)]">
                 <span>Choose Password</span>
                 <Input
@@ -753,15 +678,10 @@ onMounted(async () => {
 
             <div class="mt-5 space-y-4 border-t border-[var(--ui-border)] pt-5">
               <div class="flex items-start justify-between gap-3">
-                <Checkbox
-                  v-model="mfaEnabled"
-                  data-test="identity-dialog-mfa-enabled"
-                >
+                <Checkbox v-model="mfaEnabled" data-test="identity-dialog-mfa-enabled">
                   Require authenticator app verification
                 </Checkbox>
-                <Badge tone="neutral" variant="soft" size="xs">
-                  Recommended
-                </Badge>
+                <Badge tone="neutral" variant="soft" size="xs"> Recommended </Badge>
               </div>
 
               <template v-if="mfaEnabled">
@@ -804,9 +724,7 @@ onMounted(async () => {
                 </Card>
 
                 <div class="space-y-2">
-                  <label
-                    class="block space-y-2 text-sm text-[var(--ui-fg-muted)]"
-                  >
+                  <label class="block space-y-2 text-sm text-[var(--ui-fg-muted)]">
                     <span>Verify authenticator code</span>
                     <div class="flex items-center gap-2">
                       <Input
@@ -824,9 +742,7 @@ onMounted(async () => {
                         aria-hidden="true"
                       >
                         <svg viewBox="0 0 24 24" class="size-5 fill-current">
-                          <path
-                            d="m9.2 16.1-3.3-3.3L4.5 14.2 9.2 19l10.3-10.3-1.4-1.4-8.9 8.8Z"
-                          />
+                          <path d="m9.2 16.1-3.3-3.3L4.5 14.2 9.2 19l10.3-10.3-1.4-1.4-8.9 8.8Z" />
                         </svg>
                       </div>
                     </div>
@@ -843,11 +759,7 @@ onMounted(async () => {
             >
               <Button variant="tertiary" @click="step = 1"> Back </Button>
               <div class="flex gap-2">
-                <Button
-                  v-if="hasStoredIdentity"
-                  variant="tertiary"
-                  @click="startUnlockMode"
-                >
+                <Button v-if="hasStoredIdentity" variant="tertiary" @click="startUnlockMode">
                   Back To Unlock
                 </Button>
                 <Button

@@ -93,7 +93,9 @@ async function discoverCards(cardsDir) {
 }
 
 function normalizeBaseUrl(value) {
-  return String(value || "").trim().replace(/\/+$/, "");
+  return String(value || "")
+    .trim()
+    .replace(/\/+$/, "");
 }
 
 function toEndpoint(baseUrl, path) {
@@ -172,15 +174,12 @@ async function main() {
     String(collectionJson.collectionId) !== String(options.collectionId)
   ) {
     warnMismatch(
-      `collection.json collectionId '${collectionJson.collectionId}' differs from --collectionId '${options.collectionId}'.`
+      `collection.json collectionId '${collectionJson.collectionId}' differs from --collectionId '${options.collectionId}'.`,
     );
   }
-  if (
-    collectionJson?.version &&
-    String(collectionJson.version) !== String(options.version)
-  ) {
+  if (collectionJson?.version && String(collectionJson.version) !== String(options.version)) {
     warnMismatch(
-      `collection.json version '${collectionJson.version}' differs from --version '${options.version}'.`
+      `collection.json version '${collectionJson.version}' differs from --version '${options.version}'.`,
     );
   }
 
@@ -216,21 +215,21 @@ async function main() {
 
     summary.failed += 1;
     throw new Error(
-      `${kind} upload failed (${result.status}) ${url}\n${JSON.stringify(result.body)}`
+      `${kind} upload failed (${result.status}) ${url}\n${JSON.stringify(result.body)}`,
     );
   }
 
   const collectionUrl = toEndpoint(
     options.api,
     `/v1/pixpax/collections/${encodeURIComponent(
-      options.collectionId
-    )}/${encodeURIComponent(options.version)}/collection`
+      options.collectionId,
+    )}/${encodeURIComponent(options.version)}/collection`,
   );
   const indexUrl = toEndpoint(
     options.api,
     `/v1/pixpax/collections/${encodeURIComponent(
-      options.collectionId
-    )}/${encodeURIComponent(options.version)}/index`
+      options.collectionId,
+    )}/${encodeURIComponent(options.version)}/index`,
   );
 
   await uploadOne("collection", collectionUrl, collectionJson);
@@ -244,21 +243,21 @@ async function main() {
 
     if (payloadCardId && payloadCardId !== fileCardId) {
       warnMismatch(
-        `card id mismatch for ${cardPath}: filename '${fileCardId}' vs payload '${payloadCardId}'. Using payload id.`
+        `card id mismatch for ${cardPath}: filename '${fileCardId}' vs payload '${payloadCardId}'. Using payload id.`,
       );
     }
 
     const cardUrl = toEndpoint(
       options.api,
       `/v1/pixpax/collections/${encodeURIComponent(
-        options.collectionId
-      )}/${encodeURIComponent(options.version)}/cards/${encodeURIComponent(cardId)}`
+        options.collectionId,
+      )}/${encodeURIComponent(options.version)}/cards/${encodeURIComponent(cardId)}`,
     );
     await uploadOne("card", cardUrl, cardJson);
   });
 
   console.log(
-    `[pixpax:seed] complete uploaded=${summary.uploaded} skipped=${summary.skipped} failed=${summary.failed}`
+    `[pixpax:seed] complete uploaded=${summary.uploaded} skipped=${summary.skipped} failed=${summary.failed}`,
   );
 }
 

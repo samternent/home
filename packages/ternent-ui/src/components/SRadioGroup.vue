@@ -19,7 +19,7 @@ const props = withDefaults(
     ariaLabel: undefined,
     orientation: "horizontal",
     size: "sm",
-  }
+  },
 );
 
 const model = defineModel<string>({
@@ -28,7 +28,12 @@ const model = defineModel<string>({
 </script>
 
 <template>
-  <RadioGroup.Root v-model="model" :orientation="orientation" class="s-radio-group" :aria-label="ariaLabel">
+  <RadioGroup.Root
+    v-model="model"
+    :orientation="orientation"
+    class="s-radio-group"
+    :aria-label="ariaLabel"
+  >
     <div class="s-radio-group__items" :data-orientation="orientation">
       <RadioGroup.Item
         v-for="option in options"
@@ -75,7 +80,8 @@ const model = defineModel<string>({
   border-radius: 999px;
   color: var(--ui-fg-muted);
   background: transparent;
-  transition: color var(--ui-duration-fast, 120ms) var(--ui-ease-out, ease-out),
+  transition:
+    color var(--ui-duration-fast, 120ms) var(--ui-ease-out, ease-out),
     background-color var(--ui-duration-fast, 120ms) var(--ui-ease-out, ease-out),
     border-color var(--ui-duration-fast, 120ms) var(--ui-ease-out, ease-out);
   cursor: pointer;

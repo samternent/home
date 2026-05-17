@@ -22,7 +22,7 @@ export function usePixpaxActivityLock() {
   const activeLocks = computed(() =>
     Object.entries(locks.value)
       .filter(([, value]) => Boolean(value))
-      .map(([name]) => name as PixpaxActivityLock)
+      .map(([name]) => name as PixpaxActivityLock),
   );
 
   return {

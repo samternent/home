@@ -23,18 +23,15 @@ describe("verification utils", () => {
   });
 
   it("derives context subtext and truncates long values", () => {
-    expect(
-      getVerificationContextSubtext("verified", { surface: "browser" })
-    ).toBe("Verified in browser");
-    expect(
-      getVerificationContextSubtext("failed", { surface: "cli" })
-    ).toBe("Verification failed via CLI");
+    expect(getVerificationContextSubtext("verified", { surface: "browser" })).toBe(
+      "Verified in browser",
+    );
+    expect(getVerificationContextSubtext("failed", { surface: "cli" })).toBe(
+      "Verification failed via CLI",
+    );
     expect(getVerificationContextSubtext("unknown", { surface: "ci" })).toBeUndefined();
 
     expect(truncateMiddle("abcdef")).toBe("abcdef");
-    expect(truncateMiddle("abcdefghijklmnopqrstuvwxyz", 4, 4)).toBe(
-      "abcd...wxyz"
-    );
+    expect(truncateMiddle("abcdefghijklmnopqrstuvwxyz", 4, 4)).toBe("abcd...wxyz");
   });
 });
-

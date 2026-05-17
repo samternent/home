@@ -63,20 +63,12 @@ export function createReceiptRepo() {
       const normalizedBookId = trim(bookId);
       const lockKey = `${normalizedAccountId}:${normalizedBookId}`;
       return dbTx(async (client) => {
-        await client.query(
-          "SELECT pg_advisory_xact_lock(hashtextextended($1, 0))",
-          [lockKey]
-        );
+        await client.query("SELECT pg_advisory_xact_lock(hashtextextended($1, 0))", [lockKey]);
         return fn(client);
       });
     },
 
-    async getIdempotencyForUpdate(client, {
-      accountId,
-      routeTemplate,
-      bookId,
-      idempotencyKey,
-    }) {
+    async getIdempotencyForUpdate(client, { accountId, routeTemplate, bookId, idempotencyKey }) {
       const result = await client.query(
         `
         SELECT account_id, route_template, book_id, idempotency_key, request_hash, status, http_status, response_body, error_code, error_body, event_id, expires_at, created_at, updated_at
@@ -87,19 +79,22 @@ export function createReceiptRepo() {
           AND idempotency_key = $4
         FOR UPDATE
         `,
-        [trim(accountId), trim(routeTemplate), trim(bookId), trim(idempotencyKey)]
+        [trim(accountId), trim(routeTemplate), trim(bookId), trim(idempotencyKey)],
       );
       return mapIdempotencyRow(result.rows[0]);
     },
 
-    async createIdempotencyInProgress(client, {
-      accountId,
-      routeTemplate,
-      bookId,
-      idempotencyKey,
-      requestHash,
-      responseBody = { status: "in_progress" },
-    }) {
+    async createIdempotencyInProgress(
+      client,
+      {
+        accountId,
+        routeTemplate,
+        bookId,
+        idempotencyKey,
+        requestHash,
+        responseBody = { status: "in_progress" },
+      },
+    ) {
       await client.query(
         `
         INSERT INTO command_idempotency
@@ -115,18 +110,21 @@ export function createReceiptRepo() {
           trim(requestHash),
           toJson(responseBody),
           inProgressTtlSeconds(),
-        ]
+        ],
       );
     },
 
-    async restartIdempotencyInProgress(client, {
-      accountId,
-      routeTemplate,
-      bookId,
-      idempotencyKey,
-      requestHash,
-      responseBody = { status: "in_progress" },
-    }) {
+    async restartIdempotencyInProgress(
+      client,
+      {
+        accountId,
+        routeTemplate,
+        bookId,
+        idempotencyKey,
+        requestHash,
+        responseBody = { status: "in_progress" },
+      },
+    ) {
       await client.query(
         `
         UPDATE command_idempotency
@@ -153,20 +151,23 @@ export function createReceiptRepo() {
           trim(requestHash),
           toJson(responseBody),
           inProgressTtlSeconds(),
-        ]
+        ],
       );
     },
 
-    async completeIdempotency(client, {
-      accountId,
-      routeTemplate,
-      bookId,
-      idempotencyKey,
-      requestHash,
-      httpStatus,
-      responseBody,
-      eventId,
-    }) {
+    async completeIdempotency(
+      client,
+      {
+        accountId,
+        routeTemplate,
+        bookId,
+        idempotencyKey,
+        requestHash,
+        httpStatus,
+        responseBody,
+        eventId,
+      },
+    ) {
       await client.query(
         `
         UPDATE command_idempotency
@@ -195,21 +196,24 @@ export function createReceiptRepo() {
           toJson(responseBody),
           trim(eventId) || null,
           successTtlSeconds(),
-        ]
+        ],
       );
     },
 
-    async failIdempotency(client, {
-      accountId,
-      routeTemplate,
-      bookId,
-      idempotencyKey,
-      requestHash,
-      httpStatus,
-      errorCode,
-      errorBody,
-      responseBody,
-    }) {
+    async failIdempotency(
+      client,
+      {
+        accountId,
+        routeTemplate,
+        bookId,
+        idempotencyKey,
+        requestHash,
+        httpStatus,
+        errorCode,
+        errorBody,
+        responseBody,
+      },
+    ) {
       await client.query(
         `
         UPDATE command_idempotency
@@ -238,7 +242,7 @@ export function createReceiptRepo() {
           trim(errorCode) || "COMMAND_FAILED",
           toJson(errorBody || {}),
           failureTtlSeconds(),
-        ]
+        ],
       );
     },
 
@@ -251,7 +255,7 @@ export function createReceiptRepo() {
           AND book_id = $2
         FOR UPDATE
         `,
-        [trim(accountId), trim(bookId)]
+        [trim(accountId), trim(bookId)],
       );
       const row = result.rows[0];
       if (!row) {
@@ -274,13 +278,7 @@ export function createReceiptRepo() {
       };
     },
 
-    async upsertLedgerHead(client, {
-      accountId,
-      bookId,
-      lastEventId,
-      lastHash,
-      streamVersion,
-    }) {
+    async upsertLedgerHead(client, { accountId, bookId, lastEventId, lastHash, streamVersion }) {
       await client.query(
         `
         INSERT INTO pixbook_ledger_heads
@@ -300,23 +298,26 @@ export function createReceiptRepo() {
           trim(lastEventId) || null,
           trim(lastHash) || null,
           Number(streamVersion || 0),
-        ]
+        ],
       );
     },
 
-    async insertReceiptIndex(client, {
-      accountId,
-      bookId,
-      eventId,
-      streamVersion,
-      eventType,
-      createdAt,
-      prevHash,
-      hash,
-      spacesKey,
-      signingIdentityId,
-      idempotencyKey,
-    }) {
+    async insertReceiptIndex(
+      client,
+      {
+        accountId,
+        bookId,
+        eventId,
+        streamVersion,
+        eventType,
+        createdAt,
+        prevHash,
+        hash,
+        spacesKey,
+        signingIdentityId,
+        idempotencyKey,
+      },
+    ) {
       await client.query(
         `
         INSERT INTO pixbook_receipt_index
@@ -336,7 +337,7 @@ export function createReceiptRepo() {
           trim(spacesKey),
           trim(signingIdentityId),
           trim(idempotencyKey),
-        ]
+        ],
       );
     },
 
@@ -356,7 +357,7 @@ export function createReceiptRepo() {
             AND event_id = $3
           LIMIT 1
           `,
-          [trim(accountId), trim(bookId), after]
+          [trim(accountId), trim(bookId), after],
         );
         streamVersionCursor = Number(cursorRow.rows?.[0]?.stream_version || -1);
       }
@@ -371,7 +372,7 @@ export function createReceiptRepo() {
         ORDER BY stream_version ASC
         LIMIT $4
         `,
-        [trim(accountId), trim(bookId), streamVersionCursor, normalizedLimit]
+        [trim(accountId), trim(bookId), streamVersionCursor, normalizedLimit],
       );
       return rows.rows.map((row) => ({
         accountId: trim(row.account_id),
@@ -398,7 +399,7 @@ export function createReceiptRepo() {
         ORDER BY stream_version DESC
         LIMIT 1
         `,
-        [trim(accountId), trim(bookId)]
+        [trim(accountId), trim(bookId)],
       );
       const row = result.rows[0];
       if (!row) return null;

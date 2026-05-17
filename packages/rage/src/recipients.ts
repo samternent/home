@@ -29,25 +29,19 @@ function normalizeData(data: Uint8Array): Uint8Array {
     return new Uint8Array(view.buffer, view.byteOffset, view.byteLength);
   }
 
-  throw new RageValidationError(
-    "RAGE_EMPTY_DATA",
-    "Data must be a non-empty Uint8Array."
-  );
+  throw new RageValidationError("RAGE_EMPTY_DATA", "Data must be a non-empty Uint8Array.");
 }
 
 function validateData(data: Uint8Array): Uint8Array {
   const normalized = normalizeData(data);
   if (normalized.byteLength === 0) {
-    throw new RageValidationError(
-      "RAGE_EMPTY_DATA",
-      "Data must be a non-empty Uint8Array."
-    );
+    throw new RageValidationError("RAGE_EMPTY_DATA", "Data must be a non-empty Uint8Array.");
   }
 
   if (normalized.byteLength > MAX_MESSAGE_SIZE) {
     throw new RageValidationError(
       "RAGE_DATA_TOO_LARGE",
-      "Data exceeds the 64MB maximum message size."
+      "Data exceeds the 64MB maximum message size.",
     );
   }
 
@@ -56,10 +50,7 @@ function validateData(data: Uint8Array): Uint8Array {
 
 function validateRecipients(recipients: string[]): void {
   if (!Array.isArray(recipients) || recipients.length === 0) {
-    throw new RageValidationError(
-      "RAGE_EMPTY_RECIPIENTS",
-      "At least one recipient is required."
-    );
+    throw new RageValidationError("RAGE_EMPTY_RECIPIENTS", "At least one recipient is required.");
   }
 
   for (const recipient of recipients) {
@@ -67,7 +58,7 @@ function validateRecipients(recipients: string[]): void {
     if (!normalized.startsWith("age1")) {
       throw new RageValidationError(
         "RAGE_INVALID_RECIPIENT",
-        "Recipient must be an age recipient string."
+        "Recipient must be an age recipient string.",
       );
     }
   }
@@ -78,7 +69,7 @@ function validateIdentity(identity: string): string {
   if (!normalized.startsWith("AGE-SECRET-KEY-")) {
     throw new RageValidationError(
       "RAGE_INVALID_IDENTITY",
-      "Identity must be an age secret key string."
+      "Identity must be an age secret key string.",
     );
   }
   return normalized;
@@ -88,7 +79,7 @@ function normalizeCiphertext(value: unknown, output: RageOutputFormat): Uint8Arr
   if (!(value instanceof Uint8Array)) {
     throw new RageEncryptionError(
       "RAGE_ENCRYPT_FAILED",
-      `Rage WASM returned an invalid ${output} ciphertext payload.`
+      `Rage WASM returned an invalid ${output} ciphertext payload.`,
     );
   }
   return value;
@@ -98,7 +89,7 @@ function normalizePlaintext(value: unknown): Uint8Array {
   if (!(value instanceof Uint8Array)) {
     throw new RageDecryptionError(
       "RAGE_DECRYPT_FAILED",
-      "Rage WASM returned an invalid plaintext payload."
+      "Rage WASM returned an invalid plaintext payload.",
     );
   }
   return value;
@@ -111,13 +102,13 @@ function decodeUtf8(data: Uint8Array): string {
     throw new RageDecryptionError(
       "RAGE_DECRYPT_FAILED",
       "Decrypted data is not valid UTF-8.",
-      error
+      error,
     );
   }
 }
 
 export async function encryptWithRecipients(
-  input: EncryptWithRecipientsInput
+  input: EncryptWithRecipientsInput,
 ): Promise<Uint8Array> {
   assertRageInitialized();
   validateRecipients(input.recipients);
@@ -128,7 +119,7 @@ export async function encryptWithRecipients(
     const ciphertext = await getRageRuntime().encryptWithRecipients(
       input.recipients,
       data,
-      output === "armor"
+      output === "armor",
     );
     return normalizeCiphertext(ciphertext, output);
   } catch (error) {
@@ -136,18 +127,13 @@ export async function encryptWithRecipients(
   }
 }
 
-export async function decryptWithIdentity(
-  input: DecryptWithIdentityInput
-): Promise<Uint8Array> {
+export async function decryptWithIdentity(input: DecryptWithIdentityInput): Promise<Uint8Array> {
   assertRageInitialized();
   const identity = validateIdentity(input.identity);
   const data = validateData(input.data);
 
   try {
-    const plaintext = await getRageRuntime().decryptWithIdentity(
-      identity,
-      data
-    );
+    const plaintext = await getRageRuntime().decryptWithIdentity(identity, data);
     return normalizePlaintext(plaintext);
   } catch (error) {
     throw toDecryptionError(error);
@@ -155,7 +141,7 @@ export async function decryptWithIdentity(
 }
 
 export async function encryptTextWithRecipients(
-  input: EncryptTextWithRecipientsInput
+  input: EncryptTextWithRecipientsInput,
 ): Promise<string> {
   const ciphertext = await encryptWithRecipients({
     recipients: input.recipients,
@@ -167,10 +153,9 @@ export async function encryptTextWithRecipients(
 }
 
 export async function decryptTextWithIdentity(
-  input: DecryptTextWithIdentityInput
+  input: DecryptTextWithIdentityInput,
 ): Promise<string> {
-  const ciphertext =
-    typeof input.data === "string" ? utf8Encoder.encode(input.data) : input.data;
+  const ciphertext = typeof input.data === "string" ? utf8Encoder.encode(input.data) : input.data;
   const plaintext = await decryptWithIdentity({
     identity: input.identity,
     data: ciphertext,

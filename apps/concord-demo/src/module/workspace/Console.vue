@@ -37,21 +37,15 @@ const ledgerStatus = shallowRef<VerificationStatus>({
 
 const activeTab = shallowRef<"pending" | "history">("pending");
 const commitMessage = shallowRef("");
-const commits = computed(() =>
-  Object.entries(ledger.value?.commits || {}).reverse()
-);
+const commits = computed(() => Object.entries(ledger.value?.commits || {}).reverse());
 const entries = computed(() => ledger.value?.entries ?? {});
 const pendingEntries = computed(() => {
   const items = pending.value ? [...pending.value] : [];
-  return items.sort((a, b) =>
-    (b.entry.timestamp || "").localeCompare(a.entry.timestamp || "")
-  );
+  return items.sort((a, b) => (b.entry.timestamp || "").localeCompare(a.entry.timestamp || ""));
 });
 const pendingCount = computed(() => bridge.flags.value.pendingCount);
 
-const consoleTone = computed(() =>
-  ledgerStatus.value.status === "error" ? "danger" : "default"
-);
+const consoleTone = computed(() => (ledgerStatus.value.status === "error" ? "danger" : "default"));
 
 const commitIssuesById = computed(() => {
   const map: Record<string, VerificationIssue[]> = {};
@@ -124,7 +118,7 @@ function formatDate(
   options: Intl.DateTimeFormatOptions = {
     dateStyle: "medium",
     timeStyle: "short",
-  }
+  },
 ) {
   return new Intl.DateTimeFormat(undefined, options).format(new Date(iso));
 }
@@ -143,9 +137,7 @@ function formatDate(
     </template>
     <div class="flex w-full flex-1">
       <div class="flex flex-col w-1/2 border-r border-[var(--ui-border)]">
-        <div
-          class="flex items-center gap-2 border-b border-[var(--ui-border)] px-2 py-2"
-        >
+        <div class="flex items-center gap-2 border-b border-[var(--ui-border)] px-2 py-2">
           <button
             class="text-xs border-1 rounded-full px-3 py-1"
             :class="
@@ -156,9 +148,7 @@ function formatDate(
             @click="activeTab = 'pending'"
           >
             Pending
-            <span class="ml-1 text-[var(--ui-fg-muted)]">{{
-              pendingCount
-            }}</span>
+            <span class="ml-1 text-[var(--ui-fg-muted)]">{{ pendingCount }}</span>
           </button>
           <button
             class="text-xs border-1 rounded-full px-3 py-1"
@@ -170,17 +160,12 @@ function formatDate(
             @click="activeTab = 'history'"
           >
             History
-            <span class="ml-1 text-[var(--ui-fg-muted)]">{{
-              commits.length
-            }}</span>
+            <span class="ml-1 text-[var(--ui-fg-muted)]">{{ commits.length }}</span>
           </button>
         </div>
         <div class="flex-1 overflow-auto p-2">
           <div v-if="activeTab === 'pending'">
-            <div
-              v-if="!pendingEntries.length"
-              class="text-xs text-[var(--ui-fg-muted)] p-2"
-            >
+            <div v-if="!pendingEntries.length" class="text-xs text-[var(--ui-fg-muted)] p-2">
               No pending entries.
             </div>
             <Accordian v-else>
@@ -195,16 +180,11 @@ function formatDate(
                       {{ pendingEntry.entry.kind }}
                     </span>
                     <span class="text-xs text-[var(--ui-fg-muted)]">
-                      #{{
-                        entryDisplayId(pendingEntry.entryId, pendingEntry.entry)
-                      }}
+                      #{{ entryDisplayId(pendingEntry.entryId, pendingEntry.entry) }}
                     </span>
                   </div>
                   <div class="flex items-center gap-2">
-                    <IdentityAvatar
-                      :identity="pendingEntry.entry.author"
-                      size="xs"
-                    />
+                    <IdentityAvatar :identity="pendingEntry.entry.author" size="xs" />
                     <span
                       v-if="pendingEntry.entry?.timestamp"
                       class="text-xs text-[var(--ui-fg-muted)]"
@@ -220,9 +200,7 @@ function formatDate(
                       <span class="text-[var(--ui-fg-muted)] text-xs">
                         @{{ shortId(pendingEntry.entryId) }}
                       </span>
-                      <div
-                        class="text-xs py1 px-2 border-1 border-[var(--ui-border)] rounded-full"
-                      >
+                      <div class="text-xs py1 px-2 border-1 border-[var(--ui-border)] rounded-full">
                         {{ pendingEntry.entry.kind }}
                       </div>
                     </div>
@@ -230,7 +208,7 @@ function formatDate(
                   <pre class="w-full overflow-auto text-xs py-2">{{
                     JSON.stringify(pendingEntry.entry.payload, null, 2).replace(
                       /^\{\n?|\n?\}$/g,
-                      ""
+                      "",
                     )
                   }}</pre>
                 </div>
@@ -238,10 +216,7 @@ function formatDate(
             </Accordian>
           </div>
           <div v-else>
-            <div
-              v-if="!commits.length"
-              class="text-xs text-[var(--ui-fg-muted)] p-2"
-            >
+            <div v-if="!commits.length" class="text-xs text-[var(--ui-fg-muted)] p-2">
               No commit history yet.
             </div>
             <Accordian v-else>
@@ -271,10 +246,7 @@ function formatDate(
                       {{ commit.metadata?.message }}
                     </div>
                   </div>
-                  <div
-                    v-if="commit.timestamp"
-                    class="text-xs text-[var(--ui-fg-muted)]"
-                  >
+                  <div v-if="commit.timestamp" class="text-xs text-[var(--ui-fg-muted)]">
                     {{ formatDate(commit.timestamp) }}
                   </div>
                 </template>
@@ -309,20 +281,14 @@ function formatDate(
                           {{ entries[entryId].kind }}
                         </div>
                         <span
-                          v-if="
-                            entryDisplayId(entryId, entries[entryId]) !==
-                            shortId(entryId)
-                          "
+                          v-if="entryDisplayId(entryId, entries[entryId]) !== shortId(entryId)"
                           class="text-[var(--ui-fg-muted)]"
                         >
                           #{{ entryDisplayId(entryId, entries[entryId]) }}
                         </span>
                       </div>
                       <div class="flex items-center gap-2">
-                        <IdentityAvatar
-                          :identity="entries[entryId].author"
-                          size="xs"
-                        />
+                        <IdentityAvatar :identity="entries[entryId].author" size="xs" />
 
                         <span
                           v-if="entries[entryId]?.timestamp"
@@ -335,17 +301,12 @@ function formatDate(
                     <pre
                       v-if="entries[entryId]"
                       class="w-full overflow-auto pt-2"
-                      :class="
-                        entryHasIssue(entryId)
-                          ? 'text-[var(--text-critical)]'
-                          : ''
-                      "
+                      :class="entryHasIssue(entryId) ? 'text-[var(--text-critical)]' : ''"
                       >{{
-                        JSON.stringify(
-                          entries[entryId].payload,
-                          null,
-                          2
-                        ).replace(/^\{\n?|\n?\}$/g, "")
+                        JSON.stringify(entries[entryId].payload, null, 2).replace(
+                          /^\{\n?|\n?\}$/g,
+                          "",
+                        )
                       }}</pre
                     >
                   </div>

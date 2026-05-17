@@ -6,9 +6,7 @@ export type ConcordConfig = {
 };
 
 export function loadConfig(path?: string): ConcordConfig {
-  const configPath = path
-    ? resolve(path)
-    : resolve(process.cwd(), "concord.config.json");
+  const configPath = path ? resolve(path) : resolve(process.cwd(), "concord.config.json");
   if (!existsSync(configPath)) {
     return {};
   }

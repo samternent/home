@@ -11,8 +11,7 @@ useBreadcrumbs({
   name: "Permissions",
 });
 
-const { ledger, getCollection, createPermission, addUserPermission } =
-  useLedger();
+const { ledger, getCollection, createPermission, addUserPermission } = useLedger();
 const { publicKeyPEM } = useIdentity();
 
 const permissions = shallowRef([]);
@@ -32,28 +31,22 @@ watch(
     permissions.value = [...(getCollection("permissions")?.data || [])];
     users.value = [...(getCollection("users")?.data || [])];
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 // Get permissions owned by current user
 const myPermissions = computed(() => {
-  return permissions.value.filter(
-    (permission) => permission.data.identity === publicKeyPEM.value
-  );
+  return permissions.value.filter((permission) => permission.data.identity === publicKeyPEM.value);
 });
 
 // Get permissions shared with current user
 const sharedPermissions = computed(() => {
-  return permissions.value.filter(
-    (permission) => permission.data.identity !== publicKeyPEM.value
-  );
+  return permissions.value.filter((permission) => permission.data.identity !== publicKeyPEM.value);
 });
 
 // Get users for a specific permission
 function getPermissionUsers(permissionTitle) {
-  return permissions.value.filter(
-    (permission) => permission.data.title === permissionTitle
-  );
+  return permissions.value.filter((permission) => permission.data.title === permissionTitle);
 }
 
 // Create new permission
@@ -67,17 +60,12 @@ async function handleCreatePermission() {
 
 // Share permission with user
 async function handleSharePermission() {
-  if (
-    !selectedPermission.value ||
-    !selectedUser.value ||
-    !userEncryptionKey.value
-  )
-    return;
+  if (!selectedPermission.value || !selectedUser.value || !userEncryptionKey.value) return;
 
   await addUserPermission(
     selectedPermission.value.data.title,
     selectedUser.value,
-    userEncryptionKey.value
+    userEncryptionKey.value,
   );
 
   selectedUser.value = "";
@@ -96,23 +84,16 @@ function openManageDrawer(permission) {
     <div class="flex justify-between items-center mb-6">
       <div>
         <h1 class="text-2xl font-bold">🔐 Permissions</h1>
-        <p class="text-base-content/70">
-          Manage encrypted permissions and access control
-        </p>
+        <p class="text-base-content/70">Manage encrypted permissions and access control</p>
       </div>
-      <SButton @click="isCreateDrawerOpen = true" type="primary">
-        + Create Permission
-      </SButton>
+      <SButton @click="isCreateDrawerOpen = true" type="primary"> + Create Permission </SButton>
     </div>
 
     <!-- My Permissions -->
     <div class="mb-8">
       <h2 class="text-lg font-semibold mb-4">📋 My Permissions</h2>
 
-      <div
-        v-if="myPermissions.length === 0"
-        class="text-center py-8 text-base-content/50"
-      >
+      <div v-if="myPermissions.length === 0" class="text-center py-8 text-base-content/50">
         <div class="text-4xl mb-2">🔑</div>
         <p>No permissions created yet</p>
         <p class="text-sm">Create your first permission to get started</p>
@@ -128,20 +109,14 @@ function openManageDrawer(permission) {
             <div class="flex justify-between items-start">
               <div class="flex-1">
                 <h3 class="font-semibold">{{ permission.data.title }}</h3>
-                <p class="text-sm text-base-content/70 mt-1">
-                  Owner permission
-                </p>
+                <p class="text-sm text-base-content/70 mt-1">Owner permission</p>
                 <div class="mt-2">
                   <span class="badge badge-primary badge-sm">
                     {{ getPermissionUsers(permission.data.title).length }} users
                   </span>
                 </div>
               </div>
-              <SButton
-                @click="openManageDrawer(permission)"
-                type="ghost"
-                class="btn-sm"
-              >
+              <SButton @click="openManageDrawer(permission)" type="ghost" class="btn-sm">
                 ⚙️
               </SButton>
             </div>
@@ -165,13 +140,8 @@ function openManageDrawer(permission) {
               <div class="flex-1">
                 <h3 class="font-semibold">{{ permission.data.title }}</h3>
                 <div class="flex items-center gap-2 mt-1">
-                  <IdentityAvatar
-                    :identity="permission.data.identity"
-                    size="sm"
-                  />
-                  <span class="text-sm text-base-content/70"
-                    >Shared by owner</span
-                  >
+                  <IdentityAvatar :identity="permission.data.identity" size="sm" />
+                  <span class="text-sm text-base-content/70">Shared by owner</span>
                 </div>
               </div>
               <span class="badge badge-secondary badge-sm"> Shared </span>
@@ -214,8 +184,8 @@ function openManageDrawer(permission) {
           <div>
             <h3 class="font-bold">About Permissions</h3>
             <div class="text-sm">
-              Permissions create encrypted access tokens that can be shared with
-              users. Each permission generates its own encryption keys.
+              Permissions create encrypted access tokens that can be shared with users. Each
+              permission generates its own encryption keys.
             </div>
           </div>
         </div>
@@ -229,9 +199,7 @@ function openManageDrawer(permission) {
           >
             🔑 Create Permission
           </SButton>
-          <SButton @click="isCreateDrawerOpen = false" type="ghost">
-            Cancel
-          </SButton>
+          <SButton @click="isCreateDrawerOpen = false" type="ghost"> Cancel </SButton>
         </div>
       </div>
     </SDrawerRight>
@@ -259,11 +227,7 @@ function openManageDrawer(permission) {
             >
               <IdentityAvatar :identity="user.data.identity" size="sm" />
               <span class="text-sm flex-1">
-                {{
-                  user.data.identity === publicKeyPEM
-                    ? "You (Owner)"
-                    : "Shared User"
-                }}
+                {{ user.data.identity === publicKeyPEM ? "You (Owner)" : "Shared User" }}
               </span>
             </div>
           </div>
@@ -278,11 +242,7 @@ function openManageDrawer(permission) {
           </label>
           <select v-model="selectedUser" class="select select-bordered">
             <option value="">Select a user...</option>
-            <option
-              v-for="user in users"
-              :key="user.id"
-              :value="user.data.identity"
-            >
+            <option v-for="user in users" :key="user.id" :value="user.data.identity">
               {{
                 user.data.identity === publicKeyPEM
                   ? "You"
@@ -319,8 +279,7 @@ function openManageDrawer(permission) {
             />
           </svg>
           <div class="text-sm">
-            You need the user's public encryption key to share permissions
-            securely.
+            You need the user's public encryption key to share permissions securely.
           </div>
         </div>
 
@@ -333,9 +292,7 @@ function openManageDrawer(permission) {
           >
             🤝 Share Permission
           </SButton>
-          <SButton @click="isManageDrawerOpen = false" type="ghost">
-            Close
-          </SButton>
+          <SButton @click="isManageDrawerOpen = false" type="ghost"> Close </SButton>
         </div>
       </div>
     </SDrawerRight>

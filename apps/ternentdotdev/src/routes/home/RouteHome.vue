@@ -18,10 +18,7 @@ function startResistance() {
       class="relative isolate w-full bg-gradient-to-br from-base-100 via-base-200 to-base-300 flex justify-center"
     >
       <!-- Background Pattern -->
-      <div
-        class="pointer-events-none absolute inset-0 opacity-5"
-        aria-hidden="true"
-      >
+      <div class="pointer-events-none absolute inset-0 opacity-5" aria-hidden="true">
         <div
           class="absolute inset-0"
           style="
@@ -36,9 +33,7 @@ function startResistance() {
       </div>
 
       <!-- Content -->
-      <div
-        class="relative z-10 text-center space-y-6 px-6 max-w-4xl mx-auto py-8"
-      >
+      <div class="relative z-10 text-center space-y-6 px-6 max-w-4xl mx-auto py-8">
         <!-- Context Badge -->
         <p
           class="inline-flex items-center gap-2 bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-300 px-3 py-1 rounded-full text-sm font-medium"
@@ -48,28 +43,21 @@ function startResistance() {
         </p>
 
         <!-- Main Headline -->
-        <h1
-          id="hero-title"
-          class="text-4xl md:text-6xl font-thin tracking-tighter"
-        >
+        <h1 id="hero-title" class="text-4xl md:text-6xl font-thin tracking-tighter">
           <span class="text-base-content">ternent</span>
           <span class="text-primary">.dev</span>
         </h1>
 
         <!-- Explanation -->
-        <p
-          class="text-lg md:text-xl text-base-content/80 max-w-2xl mx-auto leading-relaxed"
-        >
-          This site is an experiment in building collaboration tools that work
-          entirely in your browser. Everything you do is stored locally,
-          cryptographically signed, and can be synced or backed up when you
-          decide.
+        <p class="text-lg md:text-xl text-base-content/80 max-w-2xl mx-auto leading-relaxed">
+          This site is an experiment in building collaboration tools that work entirely in your
+          browser. Everything you do is stored locally, cryptographically signed, and can be synced
+          or backed up when you decide.
         </p>
 
         <p class="text-base text-base-content/70 max-w-xl mx-auto">
-          You’re looking at a practical demonstration of decentralized,
-          open-source software: no central accounts, no hidden servers. Just
-          your device, your keys, and your data.
+          You’re looking at a practical demonstration of decentralized, open-source software: no
+          central accounts, no hidden servers. Just your device, your keys, and your data.
         </p>
 
         <!-- Key Features -->
@@ -82,8 +70,7 @@ function startResistance() {
             </div>
             <h2 class="font-bold text-sm">Signed &amp; Encrypted</h2>
             <p class="text-xs text-base-content/70">
-              Actions are protected with cryptography so they can’t be altered
-              without detection.
+              Actions are protected with cryptography so they can’t be altered without detection.
             </p>
           </li>
 
@@ -95,8 +82,7 @@ function startResistance() {
             </div>
             <h2 class="font-bold text-sm">Offline First</h2>
             <p class="text-xs text-base-content/70">
-              The app works without a network; you can sync or export whenever
-              it’s useful.
+              The app works without a network; you can sync or export whenever it’s useful.
             </p>
           </li>
 
@@ -108,8 +94,7 @@ function startResistance() {
             </div>
             <h2 class="font-bold text-sm">No Central Service</h2>
             <p class="text-xs text-base-content/70">
-              There’s no company server behind this. What you see here runs on
-              your machine.
+              There’s no company server behind this. What you see here runs on your machine.
             </p>
           </li>
         </ul>
@@ -148,23 +133,15 @@ function startResistance() {
         <!-- Product Values -->
         <section aria-labelledby="values-title" class="pt-8">
           <h2 id="values-title" class="sr-only">What you can expect here</h2>
-          <p class="text-xs text-base-content/50 mb-3">
-            What you can expect here
-          </p>
+          <p class="text-xs text-base-content/50 mb-3">What you can expect here</p>
           <div class="flex justify-center items-center gap-6 opacity-60">
-            <div
-              class="w-20 h-8 bg-base-content/10 rounded flex items-center justify-center"
-            >
+            <div class="w-20 h-8 bg-base-content/10 rounded flex items-center justify-center">
               <span class="text-xs font-medium">OFFLINE</span>
             </div>
-            <div
-              class="w-20 h-8 bg-base-content/10 rounded flex items-center justify-center"
-            >
+            <div class="w-20 h-8 bg-base-content/10 rounded flex items-center justify-center">
               <span class="text-xs font-medium">ENCRYPTED</span>
             </div>
-            <div
-              class="w-20 h-8 bg-base-content/10 rounded flex items-center justify-center"
-            >
+            <div class="w-20 h-8 bg-base-content/10 rounded flex items-center justify-center">
               <span class="text-xs font-medium">OPEN</span>
             </div>
           </div>

@@ -14,7 +14,12 @@ const props = withDefaults(
 const pathData = computed(() => {
   switch (props.name) {
     case "globe":
-      return ["circle 12 12 9", "path M3 12h18", "path M12 3a14 14 0 0 1 0 18", "path M12 3a14 14 0 0 0 0 18"];
+      return [
+        "circle 12 12 9",
+        "path M3 12h18",
+        "path M12 3a14 14 0 0 1 0 18",
+        "path M12 3a14 14 0 0 0 0 18",
+      ];
     case "pin":
       return [
         "path M12 3a7 7 0 0 0-7 7c0 5 7 11 7 11s7-6 7-11a7 7 0 0 0-7-7Z",
@@ -26,11 +31,7 @@ const pathData = computed(() => {
     case "check":
       return ["rect 4 4 16 16 2", "path m8 12 2.5 2.5L16 9"];
     case "stack":
-      return [
-        "path M12 3 4 7l8 4 8-4-8-4Z",
-        "path M4 12l8 4 8-4",
-        "path M4 17l8 4 8-4",
-      ];
+      return ["path M12 3 4 7l8 4 8-4-8-4Z", "path M4 12l8 4 8-4", "path M4 17l8 4 8-4"];
     case "document":
       return ["rect 5 3 14 18 2", "path M9 8h6", "path M9 12h6", "path M9 16h4"];
     case "terminal":
@@ -42,12 +43,7 @@ const pathData = computed(() => {
         "path M5 11v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6",
       ];
     case "grid":
-      return [
-        "rect 4 4 7 7 1.5",
-        "rect 13 4 7 7 1.5",
-        "rect 4 13 7 7 1.5",
-        "rect 13 13 7 7 1.5",
-      ];
+      return ["rect 4 4 7 7 1.5", "rect 13 4 7 7 1.5", "rect 4 13 7 7 1.5", "rect 13 13 7 7 1.5"];
     default:
       return ["path M12 3 14.8 8.2 20 11l-5.2 2.8L12 19l-2.8-5.2L4 11l5.2-2.8L12 3Z"];
   }

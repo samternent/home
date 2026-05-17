@@ -17,7 +17,7 @@ const props = withDefaults(
     triggerClass: "",
     disabled: false,
     lazyMount: true,
-  }
+  },
 );
 
 const open = defineModel("open", {
@@ -71,7 +71,8 @@ const triggerText = computed(() => {
   padding: 0.5rem 0.75rem;
   font-size: 0.88rem;
   line-height: 1.2;
-  transition: color var(--ui-duration-fast, 120ms) var(--ui-ease-out, ease-out),
+  transition:
+    color var(--ui-duration-fast, 120ms) var(--ui-ease-out, ease-out),
     border-color var(--ui-duration-fast, 120ms) var(--ui-ease-out, ease-out),
     background-color var(--ui-duration-fast, 120ms) var(--ui-ease-out, ease-out);
 }

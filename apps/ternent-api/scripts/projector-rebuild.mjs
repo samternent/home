@@ -14,8 +14,8 @@ async function main() {
         elapsedMs,
       },
       null,
-      2
-    )
+      2,
+    ),
   );
 }
 

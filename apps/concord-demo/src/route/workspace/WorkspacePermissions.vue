@@ -34,15 +34,13 @@ type PermissionGrantEntry = {
 const permissionGroups = computed<PermissionGroupEntry[]>(
   () =>
     Object.values(
-      bridge.collections.byKind.value?.["permission-groups"] || {}
-    ) as PermissionGroupEntry[]
+      bridge.collections.byKind.value?.["permission-groups"] || {},
+    ) as PermissionGroupEntry[],
 );
 
-const permissionGrantsByPermissionId = computed<
-  Record<string, PermissionGrantEntry[]>
->(() => {
+const permissionGrantsByPermissionId = computed<Record<string, PermissionGrantEntry[]>>(() => {
   const grants = Object.values(
-    bridge.collections.byKind.value?.["permission-grants"] || {}
+    bridge.collections.byKind.value?.["permission-grants"] || {},
   ) as PermissionGrantEntry[];
   const grouped: Record<string, PermissionGrantEntry[]> = {};
 
@@ -55,9 +53,7 @@ const permissionGrantsByPermissionId = computed<
   return grouped;
 });
 
-const canAddItem = computed(
-  () => bridge.flags.value.hasLedger && bridge.flags.value.authed
-);
+const canAddItem = computed(() => bridge.flags.value.hasLedger && bridge.flags.value.authed);
 
 const selectedUsersByPermission = reactive<Record<string, any>>({});
 const permissionTitle = shallowRef("");
@@ -74,7 +70,7 @@ async function addUserToPermission(permissionId: string) {
   await addUserPermission(
     permissionId,
     selectedUser.publicIdentityKey,
-    selectedUser.publicEncryptionKey
+    selectedUser.publicEncryptionKey,
   );
   selectedUsersByPermission[permissionId] = null;
 }
@@ -103,24 +99,15 @@ async function addUserToPermission(permissionId: string) {
                 <h2 class="text-lg font-thin">
                   {{ permissionEntry.data.title }}
                 </h2>
+                <p class="text-xs opacity-60">Scope: {{ permissionEntry.data.scope }}</p>
                 <p class="text-xs opacity-60">
-                  Scope: {{ permissionEntry.data.scope }}
-                </p>
-                <p class="text-xs opacity-60">
-                  {{
-                    (
-                      permissionGrantsByPermissionId[permissionEntry.data.id] ||
-                      []
-                    ).length
-                  }}
+                  {{ (permissionGrantsByPermissionId[permissionEntry.data.id] || []).length }}
                   grants
                 </p>
               </div>
               <div class="flex items-center gap-2">
                 <IdentityAvatar
-                  v-for="grant in permissionGrantsByPermissionId[
-                    permissionEntry.data.id
-                  ] || []"
+                  v-for="grant in permissionGrantsByPermissionId[permissionEntry.data.id] || []"
                   :key="grant.entryId"
                   :identity="grant.data.identity"
                   size="xs"
@@ -128,13 +115,9 @@ async function addUserToPermission(permissionId: string) {
               </div>
             </div>
             <div class="flex flex-wrap items-center gap-2">
-              <div class="text-xs uppercase tracking-wide opacity-60">
-                Add member
-              </div>
+              <div class="text-xs uppercase tracking-wide opacity-60">Add member</div>
               <div class="flex flex-1 min-w-[12rem] items-center gap-2">
-                <UserPicker
-                  v-model="selectedUsersByPermission[permissionEntry.data.id]"
-                />
+                <UserPicker v-model="selectedUsersByPermission[permissionEntry.data.id]" />
                 <button
                   class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-xs"
                   @click="addUserToPermission(permissionEntry.data.id)"
@@ -155,9 +138,7 @@ async function addUserToPermission(permissionId: string) {
       v-if="canAddItem"
       class="border border-[var(--ui-border)] rounded-2xl p-4 flex flex-col gap-3"
     >
-      <h2 class="text-sm uppercase tracking-wide opacity-60">
-        Create permission
-      </h2>
+      <h2 class="text-sm uppercase tracking-wide opacity-60">Create permission</h2>
       <div class="flex flex-wrap gap-2">
         <input
           v-model="permissionTitle"

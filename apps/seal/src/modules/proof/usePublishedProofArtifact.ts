@@ -1,14 +1,7 @@
 import { computed, onMounted, ref, toValue, type MaybeRefOrGetter } from "vue";
-import {
-  verifyPublishedArtifacts,
-  type PublishedArtifactsVerification,
-} from "./deployed";
+import { verifyPublishedArtifacts, type PublishedArtifactsVerification } from "./deployed";
 
-export type PublishedProofArtifactStatus =
-  | "loading"
-  | "verified"
-  | "failed"
-  | "unavailable";
+export type PublishedProofArtifactStatus = "loading" | "verified" | "failed" | "unavailable";
 
 function formatProofJson(raw: string): string {
   try {
@@ -18,9 +11,7 @@ function formatProofJson(raw: string): string {
   }
 }
 
-export function usePublishedProofArtifact(
-  baseUrl: MaybeRefOrGetter<string> = "",
-) {
+export function usePublishedProofArtifact(baseUrl: MaybeRefOrGetter<string> = "") {
   const result = ref<PublishedArtifactsVerification | null>(null);
   const isLoading = ref(true);
   const errorMessage = ref<string | null>(null);
@@ -32,8 +23,7 @@ export function usePublishedProofArtifact(
     try {
       result.value = await verifyPublishedArtifacts(fetch, toValue(baseUrl));
     } catch (caught) {
-      errorMessage.value =
-        caught instanceof Error ? caught.message : String(caught);
+      errorMessage.value = caught instanceof Error ? caught.message : String(caught);
       result.value = null;
     } finally {
       isLoading.value = false;

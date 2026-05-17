@@ -47,11 +47,7 @@ const months = [
         <template v-if="costsData?.history">
           <tr v-for="item in costsData?.history" :key="item.id">
             <td>
-              {{
-                `${months[new Date(item.date).getMonth()]} ${new Date(
-                  item.date
-                ).getFullYear()}`
-              }}
+              {{ `${months[new Date(item.date).getMonth()]} ${new Date(item.date).getFullYear()}` }}
             </td>
             <td>{{ item.amount.replace("", "$") }}</td>
             <td>$3</td>

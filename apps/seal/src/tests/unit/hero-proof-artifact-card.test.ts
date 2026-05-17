@@ -56,10 +56,7 @@ describe("HeroProofArtifactCard", () => {
 
     const text = wrapper.text();
 
-    expect(verifyPublishedArtifacts).toHaveBeenCalledWith(
-      fetch,
-      "https://seal.ternent.dev",
-    );
+    expect(verifyPublishedArtifacts).toHaveBeenCalledWith(fetch, "https://seal.ternent.dev");
     expect(text).toContain("Proof verified");
     expect(text).toContain("dist-manifest.json");
     expect(text).toContain("Ed25519");
@@ -68,9 +65,9 @@ describe("HeroProofArtifactCard", () => {
     expect(text).toContain("signature");
     expect(text).not.toContain("Version");
     expect(text).not.toContain("Type");
-    expect(
-      wrapper.find('a[href="https://seal.ternent.dev/proof.json"]').text(),
-    ).toContain("View proof.json");
+    expect(wrapper.find('a[href="https://seal.ternent.dev/proof.json"]').text()).toContain(
+      "View proof.json",
+    );
 
     toLocaleStringSpy.mockRestore();
   });

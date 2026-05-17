@@ -61,17 +61,11 @@ const activeMenu = computed({
                   stroke="currentColor"
                   class="w-6 h-6"
                 >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    :d="item.d"
-                  />
+                  <path stroke-linecap="round" stroke-linejoin="round" :d="item.d" />
                 </svg>
 
                 {{ item.name }}
-                <SIndicator v-if="item.tag">{{
-                  item.tag
-                }}</SIndicator></RouterLink
+                <SIndicator v-if="item.tag">{{ item.tag }}</SIndicator></RouterLink
               >
               <button
                 v-else
@@ -90,11 +84,7 @@ const activeMenu = computed({
                   stroke="currentColor"
                   class="w-6 h-6"
                 >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    :d="item.d"
-                  />
+                  <path stroke-linecap="round" stroke-linejoin="round" :d="item.d" />
                 </svg>
               </button>
             </template>
@@ -126,11 +116,7 @@ const activeMenu = computed({
                 stroke="currentColor"
                 class="w-6 h-6"
               >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  :d="item.d"
-                />
+                <path stroke-linecap="round" stroke-linejoin="round" :d="item.d" />
               </svg>
 
               <Transition
@@ -144,9 +130,7 @@ const activeMenu = computed({
                 <span v-if="!collapsed">{{ item.name }}</span></Transition
               >
             </div>
-            <SIndicator v-if="item.tag && !collapsed">{{
-              item.tag
-            }}</SIndicator></RouterLink
+            <SIndicator v-if="item.tag && !collapsed">{{ item.tag }}</SIndicator></RouterLink
           >
           <ul
             class="flex flex-col max-h-44 overflow-auto bg-base-200 p-2 m-2 opacity-100"
@@ -184,16 +168,23 @@ const activeMenu = computed({
 }
 
 .link {
-  background: linear-gradient(to right, oklch(var(--b1)), oklch(var(--b1))),
+  background:
+    linear-gradient(to right, oklch(var(--b1)), oklch(var(--b1))),
     linear-gradient(to right, oklch(var(--p)), oklch(var(--s)), oklch(var(--s)));
-  background-size: 100% 1px, 0 1px;
-  background-position: 100% 100%, 0 100%;
+  background-size:
+    100% 1px,
+    0 1px;
+  background-position:
+    100% 100%,
+    0 100%;
   background-repeat: no-repeat;
   transition: background-size 400ms;
 }
 
 .link-active,
 .link:hover {
-  background-size: 0 1px, 100% 1px;
+  background-size:
+    0 1px,
+    100% 1px;
 }
 </style>

@@ -60,11 +60,7 @@ function formatTime(time) {
               </div>
             </div>
             <div class="grid grid-flow-col">
-              <div
-                v-for="key of Object.keys(record.data)"
-                :key="key"
-                class="w-32 truncate"
-              >
+              <div v-for="key of Object.keys(record.data)" :key="key" class="w-32 truncate">
                 <span class="italic">{{ record.data[key] }}</span>
               </div>
             </div>

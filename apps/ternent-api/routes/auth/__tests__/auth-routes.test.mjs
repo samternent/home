@@ -8,7 +8,11 @@ function createRouterHarness() {
     routes.set(`${method}:${path}`, handlers);
   };
 
-  const invoke = async (method, path, { body = {}, params = {}, headers = {}, query = {} } = {}) => {
+  const invoke = async (
+    method,
+    path,
+    { body = {}, params = {}, headers = {}, query = {} } = {},
+  ) => {
     let handlers = routes.get(`${method}:${path}`) || routes.get(`ALL:${path}`);
     if (!handlers) {
       for (const [key, value] of routes.entries()) {

@@ -10,9 +10,7 @@ import {
 } from "../api/client";
 
 vi.mock("../api/client", async () => {
-  const actual = await vi.importActual<typeof import("../api/client")>(
-    "../api/client",
-  );
+  const actual = await vi.importActual<typeof import("../api/client")>("../api/client");
   return {
     ...actual,
     getPlatformAuthSession: vi.fn(),
@@ -51,11 +49,7 @@ describe("usePixpaxAuth", () => {
         status: "active",
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        capabilities: [
-          "pixpax.admin.manage",
-          "pixpax.analytics.read",
-          "pixpax.creator.publish",
-        ],
+        capabilities: ["pixpax.admin.manage", "pixpax.analytics.read", "pixpax.creator.publish"],
       },
     });
 
@@ -80,11 +74,7 @@ describe("usePixpaxAuth", () => {
     vi.mocked(validateAdminSession).mockResolvedValue({
       ok: true,
       authenticated: true,
-      permissions: [
-        "pixpax.admin.manage",
-        "pixpax.analytics.read",
-        "pixpax.creator.publish",
-      ],
+      permissions: ["pixpax.admin.manage", "pixpax.analytics.read", "pixpax.creator.publish"],
     });
 
     const auth = usePixpaxAuth();
@@ -123,10 +113,7 @@ describe("pixpax permission guards", () => {
 
   it("redirects to login with redirect query when missing permission", async () => {
     const guard = requirePixPaxPermission("pixpax.analytics.read");
-    const result = await guard(
-      { fullPath: "/control/analytics" } as any,
-      {} as any,
-    );
+    const result = await guard({ fullPath: "/control/analytics" } as any, {} as any);
 
     expect(result).toEqual({
       name: "pixpax-control-login",

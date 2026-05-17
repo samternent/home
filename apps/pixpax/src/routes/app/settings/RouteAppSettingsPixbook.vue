@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { Button, Card } from "ternent-ui/primitives";
-import {
-  useIdentityExport,
-  useIdentityImport,
-} from "@/modules/identity";
+import { useIdentityExport, useIdentityImport } from "@/modules/identity";
 import { usePixbookSession } from "@/modules/pixbook/usePixbookSession";
 
 const pixbook = usePixbookSession();
@@ -39,7 +36,9 @@ async function importIdentityPayload() {
   <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
     <Card variant="showcase" padding="sm" class="space-y-4">
       <div class="space-y-1">
-        <p class="m-0 text-[11px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">Identity export</p>
+        <p class="m-0 text-[11px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
+          Identity export
+        </p>
         <h2 class="m-0 text-xl font-semibold">Move a child safely</h2>
       </div>
 
@@ -80,9 +79,12 @@ async function importIdentityPayload() {
 
     <Card variant="subtle" padding="sm" class="space-y-4">
       <div class="space-y-1">
-        <p class="m-0 text-[11px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">Pixbook export</p>
+        <p class="m-0 text-[11px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
+          Pixbook export
+        </p>
         <p class="m-0 text-sm text-[var(--ui-fg-muted)]">
-          Use this only for manual rescue or careful transfer. Family backup is the easier option for normal households.
+          Use this only for manual rescue or careful transfer. Family backup is the easier option
+          for normal households.
         </p>
       </div>
 
@@ -120,7 +122,9 @@ async function importIdentityPayload() {
       </Button>
 
       <p v-if="actionMessage" class="m-0 text-sm text-[var(--ui-fg-muted)]">{{ actionMessage }}</p>
-      <p v-if="pixbook.error.value" class="m-0 text-sm text-[var(--ui-danger)]">{{ pixbook.error.value }}</p>
+      <p v-if="pixbook.error.value" class="m-0 text-sm text-[var(--ui-danger)]">
+        {{ pixbook.error.value }}
+      </p>
     </Card>
   </div>
 </template>

@@ -41,25 +41,13 @@ const animated = computed(() => props.animated !== false);
 const showBackdrop = computed(() => props.backdrop !== false);
 
 const showAccentDots = computed(
-  () =>
-    animated.value &&
-    !props.missing &&
-    tone.value === "mythic" &&
-    props.accentDots !== false,
+  () => animated.value && !props.missing && tone.value === "mythic" && props.accentDots !== false,
 );
 const showAccentGlow = computed(
-  () =>
-    animated.value &&
-    !props.missing &&
-    tone.value === "mythic" &&
-    props.accentGlow !== false,
+  () => animated.value && !props.missing && tone.value === "mythic" && props.accentGlow !== false,
 );
 const showAccentBorder = computed(
-  () =>
-    animated.value &&
-    !props.missing &&
-    tone.value === "mythic" &&
-    props.accentBorder !== false,
+  () => animated.value && !props.missing && tone.value === "mythic" && props.accentBorder !== false,
 );
 const mythicBorderDelay = computed(() => {
   const seconds = hashToRange(`${frameSeed.value}:border`, -6, 0);
@@ -120,7 +108,10 @@ const backdropFill = computed(() => {
                 repeatCount="indefinite"
               />
             </stop>
-            <stop offset="70%" stop-color="color-mix(in srgb, var(--ui-secondary) 42%, var(--ui-bg))">
+            <stop
+              offset="70%"
+              stop-color="color-mix(in srgb, var(--ui-secondary) 42%, var(--ui-bg))"
+            >
               <animate
                 v-if="showAccentGlow"
                 attributeName="stop-color"
@@ -149,10 +140,22 @@ const backdropFill = computed(() => {
             />
           </radialGradient>
           <radialGradient :id="`rare-${frameId}`" cx="35%" cy="30%" r="85%">
-            <stop offset="0%" stop-color="color-mix(in srgb, var(--ui-primary) 38%, var(--ui-bg))" />
-            <stop offset="45%" stop-color="color-mix(in srgb, var(--ui-secondary) 34%, var(--ui-bg))" />
-            <stop offset="75%" stop-color="color-mix(in srgb, var(--ui-accent) 32%, var(--ui-bg))" />
-            <stop offset="100%" stop-color="color-mix(in srgb, var(--ui-primary) 26%, var(--ui-bg))" />
+            <stop
+              offset="0%"
+              stop-color="color-mix(in srgb, var(--ui-primary) 38%, var(--ui-bg))"
+            />
+            <stop
+              offset="45%"
+              stop-color="color-mix(in srgb, var(--ui-secondary) 34%, var(--ui-bg))"
+            />
+            <stop
+              offset="75%"
+              stop-color="color-mix(in srgb, var(--ui-accent) 32%, var(--ui-bg))"
+            />
+            <stop
+              offset="100%"
+              stop-color="color-mix(in srgb, var(--ui-primary) 26%, var(--ui-bg))"
+            />
             <animateTransform
               v-if="animated"
               attributeName="gradientTransform"
@@ -165,10 +168,7 @@ const backdropFill = computed(() => {
           </radialGradient>
           <filter :id="`frame-glow-${frameId}`" x="-30%" y="-30%" width="160%" height="160%">
             <feGaussianBlur stdDeviation="8" result="blur" />
-            <feColorMatrix
-              type="matrix"
-              values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.7 0"
-            />
+            <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.7 0" />
             <feMerge>
               <feMergeNode in="blur" />
               <feMergeNode in="SourceGraphic" />
@@ -238,7 +238,10 @@ const backdropFill = computed(() => {
         />
       </svg>
 
-      <div class="relative z-10 flex h-full flex-col overflow-hidden" :class="[!missing ? '' : 'opacity-40']">
+      <div
+        class="relative z-10 flex h-full flex-col overflow-hidden"
+        :class="[!missing ? '' : 'opacity-40']"
+      >
         <div class="bg-[var(--ui-bg)]/92 p-2 text-center uppercase text-[var(--ui-fg-muted)]">
           <span class="block truncate font-semibold text-[var(--ui-fg)]">
             {{ label || "Sticker" }}

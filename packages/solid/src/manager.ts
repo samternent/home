@@ -4,15 +4,9 @@ import type {
   ConcordCommitResult,
   ConcordReplayOptions,
 } from "@ternent/concord";
-import type {
-  LedgerVerificationResult,
-} from "@ternent/ledger";
-import {
-  createSolidConcordApp,
-} from "./app.js";
-import {
-  getSolidWebId,
-} from "./identity.js";
+import type { LedgerVerificationResult } from "@ternent/ledger";
+import { createSolidConcordApp } from "./app.js";
+import { getSolidWebId } from "./identity.js";
 import type {
   CreateSolidConcordAppOptions,
   CreateSolidConcordAppResult,
@@ -62,14 +56,10 @@ export function createSolidConcordManager(
   let appSubscription: (() => void) | null = null;
   let initPromise: Promise<CreateSolidConcordAppResult> | null = null;
   let currentApp: ConcordApp | null = null;
-  const listeners = new Set<
-    (nextState: Readonly<SolidConcordManagerState>) => void
-  >();
+  const listeners = new Set<(nextState: Readonly<SolidConcordManagerState>) => void>();
 
   function publish(
-    next:
-      | SolidConcordManagerState
-      | ((prev: SolidConcordManagerState) => SolidConcordManagerState),
+    next: SolidConcordManagerState | ((prev: SolidConcordManagerState) => SolidConcordManagerState),
   ) {
     state = typeof next === "function" ? next(state) : next;
     for (const listener of listeners) {
@@ -121,8 +111,7 @@ export function createSolidConcordManager(
           return result;
         })
         .catch((error: unknown) => {
-          const normalized =
-            error instanceof Error ? error : new Error(String(error));
+          const normalized = error instanceof Error ? error : new Error(String(error));
           publish((prev) => ({
             ...prev,
             status: "error",
@@ -181,8 +170,7 @@ export function createSolidConcordManager(
           concordState,
         }));
       } catch (error: unknown) {
-        const normalized =
-          error instanceof Error ? error : new Error(String(error));
+        const normalized = error instanceof Error ? error : new Error(String(error));
         publish((prev) => ({
           ...prev,
           status: "error",

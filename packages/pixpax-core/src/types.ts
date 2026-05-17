@@ -21,9 +21,7 @@ export type PixpaxDropScope = {
 
 export type PixpaxPackIssuanceKind = "deterministic" | "designated";
 
-export type PixpaxClaimUniqueness =
-  | "claimant-drop"
-  | "designated-code-first-claim";
+export type PixpaxClaimUniqueness = "claimant-drop" | "designated-code-first-claim";
 
 export type PixpaxPackCard = {
   cardId: string;

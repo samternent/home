@@ -1,14 +1,8 @@
 <template>
   <div class="ui-page-surface">
     <div class="ui-page-surface__mesh" aria-hidden="true"></div>
-    <div
-      class="ui-page-surface__glow ui-page-surface__glow--primary"
-      aria-hidden="true"
-    ></div>
-    <div
-      class="ui-page-surface__glow ui-page-surface__glow--accent"
-      aria-hidden="true"
-    ></div>
+    <div class="ui-page-surface__glow ui-page-surface__glow--primary" aria-hidden="true"></div>
+    <div class="ui-page-surface__glow ui-page-surface__glow--accent" aria-hidden="true"></div>
     <div class="ui-page-surface__content">
       <slot />
     </div>
@@ -40,7 +34,8 @@
   position: relative;
   z-index: 1;
   background: color-mix(in srgb, var(--ui-bg) 35%, transparent);
-  box-shadow: 0 20px 50px rgba(8, 10, 24, 0.14),
+  box-shadow:
+    0 20px 50px rgba(8, 10, 24, 0.14),
     inset 0 24px 48px color-mix(in srgb, var(--ui-bg) 26%, transparent),
     inset 0 -24px 48px color-mix(in srgb, var(--ui-bg) 22%, transparent);
   backdrop-filter: blur(16px) saturate(120%);
@@ -55,10 +50,8 @@
 
 .ui-page-surface__mesh {
   opacity: 0.3;
-  background-image: linear-gradient(
-      color-mix(in srgb, var(--ui-border) 72%, transparent) 1px,
-      transparent 1px
-    ),
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--ui-border) 72%, transparent) 1px, transparent 1px),
     linear-gradient(
       90deg,
       color-mix(in srgb, var(--ui-border) 72%, transparent) 1px,

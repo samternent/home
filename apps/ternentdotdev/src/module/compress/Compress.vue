@@ -14,9 +14,7 @@ const textInput = shallowRef("");
 watch(textInput, async (_textInput) => {
   if (!_textInput) return;
   const stream = new Blob([_textInput], { type: "application/gzip" }).stream();
-  const compressedReadableStream = stream.pipeThrough(
-    new CompressionStream("gzip")
-  );
+  const compressedReadableStream = stream.pipeThrough(new CompressionStream("gzip"));
   const compressedFile = await new Response(compressedReadableStream).blob();
 
   emit("update:modelValue", compressedFile);
@@ -64,9 +62,7 @@ async function fetchUrl() {
     } else {
       urlFile.value = await urlStream.clone().text();
     }
-    const compressedReadableStream = urlStream.body?.pipeThrough(
-      new CompressionStream("gzip")
-    );
+    const compressedReadableStream = urlStream.body?.pipeThrough(new CompressionStream("gzip"));
     const compressedFile = await new Response(compressedReadableStream).blob();
 
     emit("update:modelValue", compressedFile);

@@ -1,9 +1,5 @@
 import { ref } from "vue";
-import {
-  createIdentity,
-  exportPrivateKeyAsPem,
-  exportPublicKeyAsPem,
-} from "ternent-identity";
+import { createIdentity, exportPrivateKeyAsPem, exportPublicKeyAsPem } from "ternent-identity";
 import { hashData, stripIdentityKey } from "ternent-utils";
 import { useIdentitySession, type StoredIdentity } from "./useIdentitySession";
 

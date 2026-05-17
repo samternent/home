@@ -1,8 +1,5 @@
 import { computed, shallowRef } from "vue";
-import {
-  PixPaxApiError,
-  getPlatformAccountSession,
-} from "../api/client";
+import { PixPaxApiError, getPlatformAccountSession } from "../api/client";
 import { platformAuthClient } from "./platform-auth-client";
 import { usePixpaxAuth } from "./usePixpaxAuth";
 
@@ -32,7 +29,7 @@ let refreshInFlight: Promise<boolean> | null = null;
 
 function assertAuthSuccess<T extends { data: unknown; error: unknown }>(
   result: T,
-  fallback: string
+  fallback: string,
 ) {
   if (!result || !("error" in result) || !("data" in result)) {
     throw new Error(fallback);
@@ -83,7 +80,7 @@ async function refreshSession(options: { force?: boolean } = {}) {
             name: authSession.data.user.name,
             image: authSession.data.user.image,
           },
-          accountSession.workspace
+          accountSession.workspace,
         );
       } catch (accountError: unknown) {
         if (accountError instanceof PixPaxApiError && accountError.status === 401) {
@@ -104,7 +101,7 @@ async function refreshSession(options: { force?: boolean } = {}) {
       }
       applyGuest(
         "error",
-        String((nextError as Error)?.message || "Unable to resolve account session.")
+        String((nextError as Error)?.message || "Unable to resolve account session."),
       );
       return false;
     } finally {
@@ -118,7 +115,9 @@ async function refreshSession(options: { force?: boolean } = {}) {
 
 async function requestLoginOtp(email: string) {
   const result = await platformAuthClient.emailOtp.sendVerificationOtp({
-    email: String(email || "").trim().toLowerCase(),
+    email: String(email || "")
+      .trim()
+      .toLowerCase(),
     type: "sign-in",
   });
   assertAuthSuccess(result, "Unable to send email verification code.");
@@ -126,7 +125,9 @@ async function requestLoginOtp(email: string) {
 
 async function loginWithOtp(input: { email: string; otp: string }) {
   const result = await platformAuthClient.signIn.emailOtp({
-    email: String(input.email || "").trim().toLowerCase(),
+    email: String(input.email || "")
+      .trim()
+      .toLowerCase(),
     otp: String(input.otp || "").trim(),
   });
   assertAuthSuccess(result, "Unable to verify code.");

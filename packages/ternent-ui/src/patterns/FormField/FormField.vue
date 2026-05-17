@@ -38,11 +38,9 @@ const hasMessage = computed(() => Boolean(props.message || slots.message));
 const descriptionId = computed(() =>
   hasDescription.value ? `${fieldId.value}-description` : undefined,
 );
-const messageId = computed(() =>
-  hasMessage.value ? `${fieldId.value}-message` : undefined,
-);
-const describedBy = computed(() =>
-  [descriptionId.value, messageId.value].filter(Boolean).join(" ") || undefined,
+const messageId = computed(() => (hasMessage.value ? `${fieldId.value}-message` : undefined));
+const describedBy = computed(
+  () => [descriptionId.value, messageId.value].filter(Boolean).join(" ") || undefined,
 );
 
 const slotProps = computed<FormFieldSlotProps>(() => ({

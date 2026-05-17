@@ -2,9 +2,7 @@ import { randomUUID } from "node:crypto";
 
 function resolveRequestId(req) {
   const incoming = String(
-    req?.headers?.["x-request-id"] ||
-      req?.headers?.["x-correlation-id"] ||
-      ""
+    req?.headers?.["x-request-id"] || req?.headers?.["x-correlation-id"] || "",
   ).trim();
   return incoming || randomUUID();
 }

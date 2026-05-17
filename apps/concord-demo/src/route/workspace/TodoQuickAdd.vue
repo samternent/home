@@ -1,12 +1,5 @@
 <script setup lang="ts">
-import {
-  computed,
-  onBeforeUnmount,
-  onMounted,
-  ref,
-  shallowRef,
-  watch,
-} from "vue";
+import { computed, onBeforeUnmount, onMounted, ref, shallowRef, watch } from "vue";
 import { SBadge } from "ternent-ui/components";
 import { Button } from "ternent-ui/primitives";
 
@@ -48,33 +41,27 @@ const isExpanded = ref(false);
 const title = shallowRef(props.initialTitle ?? "");
 const selectedUser = shallowRef(props.initialAssignee ?? null);
 const selectedListValue = shallowRef<string | null>(
-  props.fixedListValue ?? props.initialListValue ?? null
+  props.fixedListValue ?? props.initialListValue ?? null,
 );
 const selectedBoardColumnId = shallowRef<string | null>(
-  props.fixedBoardColumnId ?? props.initialBoardColumnId ?? null
+  props.fixedBoardColumnId ?? props.initialBoardColumnId ?? null,
 );
 const errorMessage = shallowRef("");
 const isSubmitting = ref(false);
 
 const hasListOptions = computed(() => (props.listOptions?.length ?? 0) > 0);
 
-const hasBoardColumns = computed(
-  () => (props.boardColumns?.length ?? 0) > 0
-);
+const hasBoardColumns = computed(() => (props.boardColumns?.length ?? 0) > 0);
 
 const selectedListLabel = computed(() => {
   if (!hasListOptions.value) return null;
-  const match = props.listOptions?.find(
-    (option) => option.value === selectedListValue.value
-  );
+  const match = props.listOptions?.find((option) => option.value === selectedListValue.value);
   return match?.label ?? "Public";
 });
 
 const selectedBoardColumnLabel = computed(() => {
   if (!hasBoardColumns.value) return null;
-  const match = props.boardColumns?.find(
-    (column) => column.id === selectedBoardColumnId.value
-  );
+  const match = props.boardColumns?.find((column) => column.id === selectedBoardColumnId.value);
   return match?.title ?? "No column";
 });
 
@@ -82,13 +69,9 @@ const hasUnsavedChanges = computed(() => {
   return title.value.trim().length > 0 || !!selectedUser.value;
 });
 
-const isExpandedView = computed(
-  () => props.forceExpanded || isExpanded.value
-);
+const isExpandedView = computed(() => props.forceExpanded || isExpanded.value);
 
-const isCollapsed = computed(
-  () => !isExpandedView.value && !hasUnsavedChanges.value
-);
+const isCollapsed = computed(() => !isExpandedView.value && !hasUnsavedChanges.value);
 
 function expand() {
   if (props.disabled || props.forceExpanded) return;
@@ -125,18 +108,15 @@ async function submit() {
       assigneeId: selectedUser.value?.id ?? null,
       ...(selectedListValue.value?.startsWith("permission:")
         ? {
-            permissionId:
-              selectedListValue.value.replace("permission:", "") || null,
+            permissionId: selectedListValue.value.replace("permission:", "") || null,
           }
         : {}),
       ...(selectedListValue.value?.startsWith("public-list:")
         ? {
-            tasklistId:
-              selectedListValue.value.replace("public-list:", "") || null,
+            tasklistId: selectedListValue.value.replace("public-list:", "") || null,
           }
         : {}),
-      boardColumnId:
-        props.fixedBoardColumnId ?? selectedBoardColumnId.value ?? null,
+      boardColumnId: props.fixedBoardColumnId ?? selectedBoardColumnId.value ?? null,
     });
     emit("created");
     title.value = "";
@@ -180,23 +160,21 @@ watch(
   () => props.disabled,
   (value) => {
     if (value) collapse(true);
-  }
+  },
 );
 
 watch(
   () => [props.fixedBoardColumnId, props.initialBoardColumnId],
   () => {
-    selectedBoardColumnId.value =
-      props.fixedBoardColumnId ?? props.initialBoardColumnId ?? null;
-  }
+    selectedBoardColumnId.value = props.fixedBoardColumnId ?? props.initialBoardColumnId ?? null;
+  },
 );
 
 watch(
   () => [props.fixedListValue, props.initialListValue],
   () => {
-    selectedListValue.value =
-      props.fixedListValue ?? props.initialListValue ?? null;
-  }
+    selectedListValue.value = props.fixedListValue ?? props.initialListValue ?? null;
+  },
 );
 
 watch(
@@ -207,7 +185,7 @@ watch(
       selectedListValue.value = nextOptions[0].value;
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 </script>
 
@@ -240,11 +218,7 @@ watch(
             stroke="currentColor"
             class="size-5"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M12 4.5v15m7.5-7.5h-15"
-            />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
           </svg>
         </span>
         <span class="text-base font-thin">Add a task</span>
@@ -278,25 +252,16 @@ watch(
         <div class="flex flex-wrap items-center gap-2 text-xs">
           <span class="uppercase tracking-[0.16em] opacity-60">List</span>
           <SBadge size="xs" tone="neutral" variant="outline">
-            {{
-              selectedListLabel ??
-              listLabel ??
-              "Public"
-            }}
+            {{ selectedListLabel ?? listLabel ?? "Public" }}
           </SBadge>
           <template v-if="hasBoardColumns">
-            <span class="uppercase tracking-[0.16em] opacity-60">
-              Board column
-            </span>
+            <span class="uppercase tracking-[0.16em] opacity-60"> Board column </span>
             <SBadge size="xs" tone="neutral" variant="outline">
               {{ selectedBoardColumnLabel }}
             </SBadge>
           </template>
         </div>
-        <div
-          v-if="isExpandedView"
-          class="grid grid-cols-1 md:grid-cols-2 gap-4"
-        >
+        <div v-if="isExpandedView" class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div v-if="hasListOptions" class="flex flex-col gap-2">
             <label class="font-thin"> List </label>
             <select
@@ -304,11 +269,7 @@ watch(
               :disabled="disabled || !!fixedListValue"
               class="border border-[var(--ui-border)] px-3 py-2 bg-transparent"
             >
-              <option
-                v-for="option in listOptions"
-                :key="option.value"
-                :value="option.value"
-              >
+              <option v-for="option in listOptions" :key="option.value" :value="option.value">
                 {{ option.label }}
               </option>
             </select>
@@ -325,22 +286,13 @@ watch(
               class="border border-[var(--ui-border)] px-3 py-2 bg-transparent"
             >
               <option :value="null">No column</option>
-              <option
-                v-for="column in boardColumns"
-                :key="column.id"
-                :value="column.id"
-              >
+              <option v-for="column in boardColumns" :key="column.id" :value="column.id">
                 {{ column.title }}
               </option>
             </select>
           </div>
         </div>
-        <p
-          v-if="errorMessage"
-          class="text-xs text-red-500"
-          role="alert"
-          aria-live="assertive"
-        >
+        <p v-if="errorMessage" class="text-xs text-red-500" role="alert" aria-live="assertive">
           {{ errorMessage }}
         </p>
       </div>

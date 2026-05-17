@@ -23,9 +23,7 @@ function toRoutePath(filePath: string): string {
   // "./content/spec/v0/ledger-format.md" -> "/spec/v0/ledger-format"
   const withoutPrefix = filePath.replace("../../content", "");
   const withoutExt = withoutPrefix.replace(/\.md$/, "");
-  const normalized = withoutExt
-    .replace(/\/README$/i, "")
-    .replace(/\/index$/i, "");
+  const normalized = withoutExt.replace(/\/README$/i, "").replace(/\/index$/i, "");
   return normalized.length ? normalized : "/";
 }
 

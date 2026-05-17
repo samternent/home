@@ -16,9 +16,7 @@ async function openFile() {
   window.document.body.removeChild(elem);
 }
 
-const sizeInKb = computed(() =>
-  props.modelValue?.size ? props.modelValue.size / 1024 : 0
-);
+const sizeInKb = computed(() => (props.modelValue?.size ? props.modelValue.size / 1024 : 0));
 const sizeInMb = computed(() => sizeInKb.value / 1024);
 
 const filename = computed({
@@ -34,12 +32,7 @@ const filename = computed({
   <div class="flex justify-between flex-col px-4">
     <div class="flex flex-col items-center mb-8">
       <div class="text-xl mb-8">{{ filename }}</div>
-      <input
-        density="compact"
-        v-model="filename"
-        class="w-full"
-        placeholder="filename.extension"
-      />
+      <input density="compact" v-model="filename" class="w-full" placeholder="filename.extension" />
       <SButton
         :disabled="!props.modelValue"
         variant="tonal"
@@ -49,18 +42,12 @@ const filename = computed({
         >Download gzip file</SButton
       >
     </div>
-    <div
-      class="text-6xl font-bold text-zinc-500 justify-center items-center flex"
-    >
+    <div class="text-6xl font-bold text-zinc-500 justify-center items-center flex">
       {{
         sizeInKb > 1
           ? sizeInMb > 1
-            ? `${(Math.round((sizeInMb + Number.EPSILON) * 100) / 100).toFixed(
-                1
-              )}MB`
-            : `${(Math.round((sizeInKb + Number.EPSILON) * 100) / 100).toFixed(
-                1
-              )}KB`
+            ? `${(Math.round((sizeInMb + Number.EPSILON) * 100) / 100).toFixed(1)}MB`
+            : `${(Math.round((sizeInKb + Number.EPSILON) * 100) / 100).toFixed(1)}KB`
           : `${modelValue?.size || 0}B`
       }}
     </div>

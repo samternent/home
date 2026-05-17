@@ -1,11 +1,6 @@
 import loki from "lokijs";
 import type { Collection } from "lokijs";
-import type {
-  EntryWithId,
-  LedgerPlugin,
-  LedgerEvent,
-  PendingEntry,
-} from "../ledger";
+import type { EntryWithId, LedgerPlugin, LedgerEvent, PendingEntry } from "../ledger";
 import { getCommitChain, isGenesisCommit } from "@ternent/concord-protocol";
 import type { LedgerContainer } from "@ternent/concord-protocol";
 
@@ -22,9 +17,7 @@ function getPayloadId(payload: PayloadObject): string | null {
 export function lokiPlugin<P>(opts: {
   name?: string;
   mapCollectionName?: (kind: string) => string;
-  transformEntry?: (
-    entry: EntryWithId
-  ) => Promise<EntryWithId | null> | EntryWithId | null;
+  transformEntry?: (entry: EntryWithId) => Promise<EntryWithId | null> | EntryWithId | null;
   bootstrapKinds?: string[];
 }) {
   const db = new loki(`${opts.name ?? "ledger"}.db`, { env: "BROWSER" });
@@ -48,9 +41,7 @@ export function lokiPlugin<P>(opts: {
     }
   }
 
-  async function transformEntryIfNeeded(
-    entry: EntryWithId
-  ): Promise<EntryWithId | null> {
+  async function transformEntryIfNeeded(entry: EntryWithId): Promise<EntryWithId | null> {
     if (!opts.transformEntry) return entry;
     return opts.transformEntry(entry);
   }
@@ -62,9 +53,7 @@ export function lokiPlugin<P>(opts: {
   }
 
   function toRecord(entry: EntryWithId) {
-    const payload = isPayloadObject(entry.payload)
-      ? toLokiDoc(entry.payload)
-      : null;
+    const payload = isPayloadObject(entry.payload) ? toLokiDoc(entry.payload) : null;
     return {
       entryId: entry.entryId,
       kind: entry.kind,
@@ -83,9 +72,7 @@ export function lokiPlugin<P>(opts: {
 
     const doc = toLokiDoc(toRecord(entry));
 
-    const payloadId = isPayloadObject(doc.payload)
-      ? getPayloadId(doc.payload)
-      : null;
+    const payloadId = isPayloadObject(doc.payload) ? getPayloadId(doc.payload) : null;
 
     if (payloadId) {
       const existing = col.findOne({ "payload.id": payloadId });
@@ -98,10 +85,7 @@ export function lokiPlugin<P>(opts: {
     col.insert(doc);
   }
 
-  function buildOrderedEntries(
-    ledger: LedgerContainer,
-    pending: PendingEntry[]
-  ): EntryWithId[] {
+  function buildOrderedEntries(ledger: LedgerContainer, pending: PendingEntry[]): EntryWithId[] {
     const chain = getCommitChain(ledger);
     const ordered: EntryWithId[] = [];
 
@@ -163,10 +147,7 @@ export function lokiPlugin<P>(opts: {
         if (!transformed) return;
         upsert(transformed);
         upsert({ ...transformed, kind: "concord/all" });
-        currentPending = [
-          ...currentPending,
-          { entryId: ev.entry.entryId, entry: ev.entry },
-        ];
+        currentPending = [...currentPending, { entryId: ev.entry.entryId, entry: ev.entry }];
         if (bootstrapKinds.has(ev.entry.kind)) {
           await rebuildFromState();
         }

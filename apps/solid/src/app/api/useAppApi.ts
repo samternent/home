@@ -29,12 +29,7 @@ import {
   type UserRecord,
 } from "@/app/plugins";
 import { toDidKeyFromPublicKey } from "@/app/plugins/identityKey";
-import type {
-  AppApi,
-  AppIdentity,
-  AppLedgerContainer,
-  AppStatus,
-} from "./types";
+import type { AppApi, AppIdentity, AppLedgerContainer, AppStatus } from "./types";
 
 export type CreateAppApiOptions = {
   identity?: SerializedIdentity;
@@ -73,11 +68,7 @@ function createInitialState(plugins: AppProjectionPlugin[]): ConcordState {
   };
 }
 
-function requireSelector(
-  plugins: AppProjectionPlugin[],
-  pluginId: string,
-  selectorId: string,
-) {
+function requireSelector(plugins: AppProjectionPlugin[], pluginId: string, selectorId: string) {
   const plugin = plugins.find((candidate) => candidate.plugin.id === pluginId);
   if (!plugin) {
     throw new Error(`Unknown plugin id '${pluginId}'.`);
@@ -136,9 +127,7 @@ function toAppIdentity(input: {
   };
 }
 
-function isFreshLedger(
-  resolvedRuntime: AppRuntime,
-): boolean {
+function isFreshLedger(resolvedRuntime: AppRuntime): boolean {
   const users = resolvedRuntime.select<UserRecord[]>("users", "all");
   const profiles = resolvedRuntime.select<ProfileRecord[]>("profiles", "all");
   const permissions = resolvedRuntime.select<PermissionRecord[]>("permissions", "all");
@@ -197,8 +186,7 @@ export function createAppApi(options?: CreateAppApiOptions): AppApi {
       identityBootstrapMode: options?.identityBootstrapMode,
       storage: options?.identityStorage,
       storageKey: options?.identityStorageKey,
-      devSessionUnlockBypass:
-        options?.devSessionUnlockBypass ?? import.meta.env.DEV,
+      devSessionUnlockBypass: options?.devSessionUnlockBypass ?? import.meta.env.DEV,
       rpName: options?.rpName,
     });
 
@@ -399,11 +387,7 @@ export function createAppApi(options?: CreateAppApiOptions): AppApi {
         return api.select<UserRecord[]>("users", "all");
       },
       byIdentityKey(identityKey: string) {
-        return api.select<UserRecord | null>(
-          "users",
-          "byIdentityKey",
-          identityKey,
-        );
+        return api.select<UserRecord | null>("users", "byIdentityKey", identityKey);
       },
     },
     profiles: {
@@ -418,11 +402,7 @@ export function createAppApi(options?: CreateAppApiOptions): AppApi {
         return api.select<ProfileRecord[]>("profiles", "all");
       },
       byIdentityKey(identityKey: string) {
-        return api.select<ProfileRecord | null>(
-          "profiles",
-          "byIdentityKey",
-          identityKey,
-        );
+        return api.select<ProfileRecord | null>("profiles", "byIdentityKey", identityKey);
       },
     },
     permissions: {
@@ -433,15 +413,17 @@ export function createAppApi(options?: CreateAppApiOptions): AppApi {
           actor,
         } satisfies PermissionCreateInput);
       },
+      createGroup(input: Omit<PermissionCreateInput, "actor">) {
+        const actor = buildPermissionActor(activeIdentity.value);
+        return api.command("permission.group.create", {
+          ...input,
+          actor,
+        } satisfies PermissionCreateInput);
+      },
       grant(input: Omit<PermissionGrantInput, "actor">) {
         const actor = buildPermissionActor(activeIdentity.value);
         const projectedUser = requireProjectedUser(
-          (identityKey) =>
-            api.select<UserRecord | null>(
-              "users",
-              "byIdentityKey",
-              identityKey,
-            ),
+          (identityKey) => api.select<UserRecord | null>("users", "byIdentityKey", identityKey),
           input.memberId,
         );
         return api.command("permission.grant", {
@@ -450,19 +432,23 @@ export function createAppApi(options?: CreateAppApiOptions): AppApi {
           actor,
         } satisfies PermissionGrantInput);
       },
-      grantFromUser(input: {
-        permissionId: string;
-        identityKey: string;
-      }) {
+      issueGrant(input: Omit<PermissionGrantInput, "actor">) {
+        const actor = buildPermissionActor(activeIdentity.value);
+        const projectedUser = requireProjectedUser(
+          (identityKey) => api.select<UserRecord | null>("users", "byIdentityKey", identityKey),
+          input.memberId,
+        );
+        return api.command("permission.grant.issue", {
+          ...input,
+          memberLabel: projectedUser.label ?? null,
+          actor,
+        } satisfies PermissionGrantInput);
+      },
+      grantFromUser(input: { permissionId: string; identityKey: string }) {
         const active = requireActiveIdentity(activeIdentity.value);
         const actor = buildPermissionActor(activeIdentity.value);
         const projectedUser = requireProjectedUser(
-          (identityKey) =>
-            api.select<UserRecord | null>(
-              "users",
-              "byIdentityKey",
-              identityKey,
-            ),
+          (identityKey) => api.select<UserRecord | null>("users", "byIdentityKey", identityKey),
           input.identityKey,
         );
         const permission = api.select<PermissionRecord | null>(
@@ -496,10 +482,9 @@ export function createAppApi(options?: CreateAppApiOptions): AppApi {
           "byIdentityKey",
           projectedUser.identityKey,
         );
-        const resolvedMemberLabel =
-          profile?.displayName ?? projectedUser.label ?? null;
+        const resolvedMemberLabel = profile?.displayName ?? projectedUser.label ?? null;
 
-        return api.command("permission.grant", {
+        return api.command("permission.grant.issue", {
           permissionId: input.permissionId,
           memberId: projectedUser.identityKey,
           memberLabel: resolvedMemberLabel,
@@ -645,8 +630,6 @@ export async function resetAppApiSingletonForTests(): Promise<void> {
 /**
  * Test helper to inject bootstrap options into the shared singleton factory.
  */
-export function configureAppApiSingletonForTests(
-  options: CreateAppApiOptions | null,
-): void {
+export function configureAppApiSingletonForTests(options: CreateAppApiOptions | null): void {
   singletonOptionsForTests = options;
 }

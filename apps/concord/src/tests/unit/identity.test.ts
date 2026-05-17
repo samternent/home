@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { useIdentityCreate, useIdentityExport, useIdentityImport, useIdentitySession } from "@/modules/identity";
+import {
+  useIdentityCreate,
+  useIdentityExport,
+  useIdentityImport,
+  useIdentitySession,
+} from "@/modules/identity";
 
 describe("identity flows", () => {
   it("creates and exports identity", async () => {

@@ -33,7 +33,7 @@ function isJsonSerializable(value: unknown, seen = new Set<unknown>()): boolean 
     }
     seen.add(value);
     return Object.values(value as Record<string, unknown>).every((entry) =>
-      isJsonSerializable(entry, seen)
+      isJsonSerializable(entry, seen),
     );
   }
   return false;
@@ -74,6 +74,4 @@ export const identityUpsertPayloadSchema = z.object({
     }),
 });
 
-export type IdentityUpsertPayload = z.infer<
-  typeof identityUpsertPayloadSchema
->;
+export type IdentityUpsertPayload = z.infer<typeof identityUpsertPayloadSchema>;

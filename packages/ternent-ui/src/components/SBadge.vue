@@ -23,7 +23,7 @@ const props = withDefaults(
     tone: "neutral",
     variant: "soft",
     size: "sm",
-  }
+  },
 );
 
 const toneStyles = computed(() => {
@@ -45,12 +45,7 @@ const toneStyles = computed(() => {
 </script>
 
 <template>
-  <span
-    class="s-badge"
-    :data-variant="variant"
-    :data-size="size"
-    :style="toneStyles"
-  >
+  <span class="s-badge" :data-variant="variant" :data-size="size" :style="toneStyles">
     <slot />
   </span>
 </template>

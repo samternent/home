@@ -68,9 +68,7 @@ const collectorPubKey = computed(() => {
 const canRedeem = computed(
   () => offlineStatus.value === "official" || offlineStatus.value === "expired",
 );
-const redeemedCollectionId = computed(() =>
-  String(redeemResult.value?.collectionId || "").trim(),
-);
+const redeemedCollectionId = computed(() => String(redeemResult.value?.collectionId || "").trim());
 const canGoToCollection = computed(() => Boolean(redeemedCollectionId.value));
 
 function toStickerArtFromRenderPayload(payload: unknown): StickerArt16 | null {
@@ -174,7 +172,10 @@ async function hydrateRevealFromRedeem(response: PixPaxRedeemResponse) {
     const cards = Array.isArray(response.cards) ? response.cards : [];
     const collectionId = String(response.collectionId || "").trim();
     const version = String(response.collectionVersion || "").trim();
-    const labelsById = new Map<string, { label: string; seriesId: string; slotIndex: number | null }>();
+    const labelsById = new Map<
+      string,
+      { label: string; seriesId: string; slotIndex: number | null }
+    >();
 
     if (collectionId && version) {
       try {
@@ -186,9 +187,7 @@ async function hydrateRevealFromRedeem(response: PixPaxRedeemResponse) {
           labelsById.set(cardId, {
             label: String(entry?.label || cardId).trim() || cardId,
             seriesId: String(entry?.seriesId || "").trim(),
-            slotIndex: Number.isFinite(Number(entry?.slotIndex))
-              ? Number(entry?.slotIndex)
-              : null,
+            slotIndex: Number.isFinite(Number(entry?.slotIndex)) ? Number(entry?.slotIndex) : null,
           });
         }
         const paletteInput =
@@ -372,7 +371,8 @@ watch(
     <section class="rounded-xl border border-[var(--ui-border)] bg-[var(--ui-bg)]/70 p-4">
       <h1 class="text-lg font-semibold">Redeem Code</h1>
       <p class="mt-1 text-xs text-[var(--ui-fg-muted)]">
-        Offline check only confirms signature authenticity. Claimed status is server-verified when you redeem.
+        Offline check only confirms signature authenticity. Claimed status is server-verified when
+        you redeem.
       </p>
 
       <label class="field mt-4">
@@ -387,28 +387,26 @@ watch(
 
       <div class="mt-3 text-xs">
         <p v-if="offlineStatus === 'official'" class="text-green-700">Official</p>
-        <p v-else-if="offlineStatus === 'expired'" class="text-amber-700">Official (expired candidate)</p>
+        <p v-else-if="offlineStatus === 'expired'" class="text-amber-700">
+          Official (expired candidate)
+        </p>
         <p v-else-if="offlineStatus === 'not-official'" class="text-red-700">Not official</p>
         <p v-else class="text-[var(--ui-fg-muted)]">Verification pending</p>
         <p class="mt-1 text-[var(--ui-fg-muted)]">{{ offlineDetail }}</p>
       </div>
 
       <div class="mt-4 flex flex-wrap items-center gap-2">
-        <Button class="!px-4 !py-2" :disabled="redeeming || verifying || !canRedeem" @click="redeem">
+        <Button
+          class="!px-4 !py-2"
+          :disabled="redeeming || verifying || !canRedeem"
+          @click="redeem"
+        >
           {{ redeeming ? "Redeeming..." : "Redeem and open pack" }}
         </Button>
-        <Button
-          v-if="canGoToCollection"
-          class="!px-4 !py-2"
-          @click="goToCollection"
-        >
+        <Button v-if="canGoToCollection" class="!px-4 !py-2" @click="goToCollection">
           View collection
         </Button>
-        <Button
-          v-if="redeemResult"
-          class="!px-4 !py-2"
-          @click="redeemAnother"
-        >
+        <Button v-if="redeemResult" class="!px-4 !py-2" @click="redeemAnother">
           Redeem another code
         </Button>
       </div>
@@ -454,7 +452,8 @@ watch(
           <p class="reveal-title">{{ card.label || card.cardId }}</p>
           <p class="reveal-sub mono">{{ card.cardId }}</p>
           <p class="reveal-sub">
-            series {{ card.seriesId || "—" }} · slot {{ card.slotIndex != null ? card.slotIndex : "—" }}
+            series {{ card.seriesId || "—" }} · slot
+            {{ card.slotIndex != null ? card.slotIndex : "—" }}
           </p>
         </article>
       </div>
@@ -481,7 +480,9 @@ watch(
 }
 
 .mono {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New",
+    monospace;
 }
 
 .reveal-grid {

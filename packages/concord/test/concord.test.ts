@@ -82,10 +82,7 @@ function createTodoPlugin(): ConcordReplayPlugin<{
         return;
       }
 
-      if (
-        entry.kind === "todo.item.completed" &&
-        entry.payload.type === "plain"
-      ) {
+      if (entry.kind === "todo.item.completed" && entry.payload.type === "plain") {
         const payload = entry.payload.data as { id: string };
         ctx.setState((state) => {
           const current = state as {
@@ -132,10 +129,7 @@ function createSecretPlugin(): ConcordReplayPlugin<{ values: string[] }> {
       return { values: [] };
     },
     commands: {
-      "secret.write": async (
-        _ctx,
-        input: { text: string; recipients: string[] },
-      ) => ({
+      "secret.write": async (_ctx, input: { text: string; recipients: string[] }) => ({
         kind: "secret.created",
         payload: { text: input.text },
         protection: {
@@ -361,9 +355,7 @@ describe("@ternent/concord", () => {
       "2026-03-18T12:07:01.000Z",
     ]);
     expect(exported.entries[entryId]?.authoredAt).toBe("2026-03-18T12:07:02.000Z");
-    expect(exported.commits[commit.commitId]?.committedAt).toBe(
-      "2026-03-18T12:07:03.000Z",
-    );
+    expect(exported.commits[commit.commitId]?.committedAt).toBe("2026-03-18T12:07:03.000Z");
   });
 
   it("create replaces currently loaded replay state in memory", async () => {
@@ -382,16 +374,13 @@ describe("@ternent/concord", () => {
     });
 
     expect(
-      app.getReplayState<{ items: Record<string, { title: string }> }>("todo").items[
-        "todo-3"
-      ]?.title,
+      app.getReplayState<{ items: Record<string, { title: string }> }>("todo").items["todo-3"]
+        ?.title,
     ).toBe("Reset me");
 
     await app.create();
 
-    expect(app.getReplayState<{ items: Record<string, unknown> }>("todo").items).toEqual(
-      {},
-    );
+    expect(app.getReplayState<{ items: Record<string, unknown> }>("todo").items).toEqual({});
     expect(app.getState().integrityValid).toBe(true);
   });
 
@@ -485,9 +474,7 @@ describe("@ternent/concord", () => {
     await expect(app.load()).rejects.toThrow("plugin begin failed");
     expect(notifications).toHaveLength(0);
     expect(app.getState().ready).toBe(false);
-    expect(app.getReplayState<{ items: Record<string, unknown> }>("todo").items).toEqual(
-      {},
-    );
+    expect(app.getReplayState<{ items: Record<string, unknown> }>("todo").items).toEqual({});
   });
 
   it("keeps the last published state untouched when a replay plugin throws in applyEntry", async () => {
@@ -606,9 +593,7 @@ describe("@ternent/concord", () => {
     expect(notifications).toEqual([true, false]);
     expect(app.getState().ready).toBe(false);
     expect(app.getState().integrityValid).toBe(false);
-    expect(app.getReplayState<{ items: Record<string, unknown> }>("todo").items).toEqual(
-      {},
-    );
+    expect(app.getReplayState<{ items: Record<string, unknown> }>("todo").items).toEqual({});
   });
 
   it("preserves persisted storage across destroy and reload", async () => {
@@ -900,9 +885,7 @@ describe("@ternent/concord", () => {
 
     expect(target.getState().ready).toBe(false);
     expect(target.getState().integrityValid).toBe(false);
-    expect(target.getReplayState<{ items: Record<string, unknown> }>("todo").items).toEqual(
-      {},
-    );
+    expect(target.getReplayState<{ items: Record<string, unknown> }>("todo").items).toEqual({});
     expect(target.getState().verification?.valid).toBe(false);
     expect(target.getState().verification?.committedHistoryValid).toBe(false);
 
@@ -990,8 +973,6 @@ describe("@ternent/concord", () => {
       },
     });
 
-    expect(app.getReplayState<{ values: string[] }>("secret").values).toEqual([
-      "built concord",
-    ]);
+    expect(app.getReplayState<{ values: string[] }>("secret").values).toEqual(["built concord"]);
   });
 });

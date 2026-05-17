@@ -15,7 +15,7 @@ function normalizeRelativePath(value: string): string {
 async function collectFiles(
   rootPath: string,
   currentPath: string,
-  files: Record<string, SealManifestV1["files"][string]>
+  files: Record<string, SealManifestV1["files"][string]>,
 ): Promise<void> {
   const entries = await readdir(currentPath, { withFileTypes: true });
   const sorted = entries
@@ -60,7 +60,7 @@ export async function createManifestArtifact(inputPath: string): Promise<{
     type: SEAL_MANIFEST_TYPE,
     root,
     files: Object.fromEntries(
-      Object.entries(files).sort(([left], [right]) => left.localeCompare(right))
+      Object.entries(files).sort(([left], [right]) => left.localeCompare(right)),
     ),
   };
 

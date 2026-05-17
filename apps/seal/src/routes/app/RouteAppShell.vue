@@ -17,9 +17,7 @@ const tabs = [
 ];
 
 const copied = ref(false);
-const publishedSiteBaseUrl = import.meta.env.DEV
-  ? "/_seal"
-  : `https://${appConfig.defaultHost}`;
+const publishedSiteBaseUrl = import.meta.env.DEV ? "/_seal" : `https://${appConfig.defaultHost}`;
 
 const keyIdShort = computed(() => {
   if (!identity.value?.keyId) return "No identity loaded";
@@ -33,9 +31,7 @@ const currentTabTitle = computed(() => {
   return tabs.find((tab) => route.path.startsWith(tab.path))?.title ?? "Workspace";
 });
 const statusTone = computed(() => (hasIdentity.value ? "success" : "neutral"));
-const statusLabel = computed(() =>
-  hasIdentity.value ? "Signer ready" : "No signer",
-);
+const statusLabel = computed(() => (hasIdentity.value ? "Signer ready" : "No signer"));
 
 const copyKeyId = async () => {
   if (!identity.value?.keyId || copied.value) return;
@@ -60,13 +56,8 @@ const copyKeyId = async () => {
       >
         <div class="mx-auto max-w-6xl px-6 py-6 lg:px-8">
           <div class="flex flex-col gap-5">
-            <div
-              class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between"
-            >
-              <RouterLink
-                to="/"
-                class="flex items-center gap-3 text-[var(--ui-fg)] no-underline"
-              >
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <RouterLink to="/" class="flex items-center gap-3 text-[var(--ui-fg)] no-underline">
                 <svg
                   aria-hidden="true"
                   viewBox="0 0 24 24"
@@ -78,32 +69,19 @@ const copyKeyId = async () => {
                   stroke-linecap="round"
                   stroke-linejoin="round"
                 >
-                  <path
-                    d="M10 13a5 5 0 0 1 0-7l1.2-1.2a5 5 0 1 1 7.1 7.1L17 13"
-                  />
-                  <path
-                    d="M14 11a5 5 0 0 1 0 7l-1.2 1.2a5 5 0 0 1-7.1-7.1L7 11"
-                  />
+                  <path d="M10 13a5 5 0 0 1 0-7l1.2-1.2a5 5 0 1 1 7.1 7.1L17 13" />
+                  <path d="M14 11a5 5 0 0 1 0 7l-1.2 1.2a5 5 0 0 1-7.1-7.1L7 11" />
                 </svg>
                 <div class="flex flex-col gap-0.5">
                   <span class="text-lg font-medium tracking-tight">Seal</span>
-                  <span
-                    class="text-xs uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]"
-                  >
+                  <span class="text-xs uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
                     ternent.dev suite
                   </span>
                 </div>
               </RouterLink>
 
               <div class="flex flex-wrap items-center gap-2">
-                <Button
-                  as="RouterLink"
-                  to="/"
-                  size="sm"
-                  variant="plain-secondary"
-                >
-                  Home
-                </Button>
+                <Button as="RouterLink" to="/" size="sm" variant="plain-secondary"> Home </Button>
                 <Button
                   as="a"
                   href="https://github.com/samternent/home/tree/main/apps/seal"
@@ -114,12 +92,7 @@ const copyKeyId = async () => {
                 >
                   GitHub
                 </Button>
-                <Button
-                  as="RouterLink"
-                  to="/settings/identity"
-                  size="sm"
-                  variant="plain-secondary"
-                >
+                <Button as="RouterLink" to="/settings/identity" size="sm" variant="plain-secondary">
                   Settings
                 </Button>
               </div>
@@ -134,7 +107,9 @@ const copyKeyId = async () => {
             <Card variant="panel" padding="sm" class="space-y-4">
               <div class="flex flex-wrap items-center justify-between gap-3">
                 <div class="space-y-1">
-                  <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
+                  <p
+                    class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]"
+                  >
                     Workspace
                   </p>
                   <p class="m-0 text-sm text-[var(--ui-fg-muted)]">
@@ -154,11 +129,7 @@ const copyKeyId = async () => {
                   as="RouterLink"
                   :to="tab.path"
                   size="sm"
-                  :variant="
-                    currentPath.startsWith(tab.path)
-                      ? 'secondary'
-                      : 'plain-secondary'
-                  "
+                  :variant="currentPath.startsWith(tab.path) ? 'secondary' : 'plain-secondary'"
                 >
                   {{ tab.title }}
                 </Button>
@@ -168,7 +139,9 @@ const copyKeyId = async () => {
             <Card variant="subtle" padding="sm" class="space-y-4">
               <div class="flex items-start justify-between gap-3">
                 <div class="space-y-1">
-                  <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
+                  <p
+                    class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]"
+                  >
                     Signer status
                   </p>
                   <p class="proof-shell-copy m-0 text-sm text-[var(--ui-fg)]">
@@ -182,20 +155,10 @@ const copyKeyId = async () => {
               </div>
 
               <div class="flex flex-wrap gap-2">
-                <Button
-                  size="xs"
-                  variant="secondary"
-                  :disabled="!hasIdentity"
-                  @click="copyKeyId"
-                >
+                <Button size="xs" variant="secondary" :disabled="!hasIdentity" @click="copyKeyId">
                   {{ copied ? "Copied" : "Copy key ID" }}
                 </Button>
-                <Button
-                  as="RouterLink"
-                  to="/settings/identity"
-                  size="xs"
-                  variant="plain-secondary"
-                >
+                <Button as="RouterLink" to="/settings/identity" size="xs" variant="plain-secondary">
                   Advanced settings
                 </Button>
               </div>
@@ -217,11 +180,7 @@ const copyKeyId = async () => {
         >
           <div class="flex items-center gap-3">
             <p class="m-0">Fully client-side. No data leaves your browser.</p>
-            <PublishedSiteProofPreview
-              mode="badge"
-              :base-url="publishedSiteBaseUrl"
-              with-popover
-            />
+            <PublishedSiteProofPreview mode="badge" :base-url="publishedSiteBaseUrl" with-popover />
           </div>
           <p class="m-0">
             Seal emits portable proof artifacts for builds, files, and release flows.

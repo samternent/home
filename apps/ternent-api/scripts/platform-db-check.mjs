@@ -105,7 +105,7 @@ async function collectStatus() {
       inet_server_addr()::text AS server_addr,
       inet_server_port() AS server_port,
       version() AS postgres_version,
-      NOW() AT TIME ZONE 'UTC' AS now_utc`
+      NOW() AT TIME ZONE 'UTC' AS now_utc`,
   );
 
   return {
@@ -123,7 +123,7 @@ async function collectTables() {
       n_live_tup::bigint AS estimated_rows,
       pg_size_pretty(pg_total_relation_size(relid)) AS total_size
     FROM pg_stat_user_tables
-    ORDER BY pg_total_relation_size(relid) DESC, relname ASC`
+    ORDER BY pg_total_relation_size(relid) DESC, relname ASC`,
   );
   return query.rows || [];
 }
@@ -164,7 +164,7 @@ async function collectPixpaxSummary() {
         updated_at
       FROM platform_managed_users
       ORDER BY updated_at DESC
-      LIMIT 20`
+      LIMIT 20`,
     );
     recentManagedUsers = users.rows || [];
   }
@@ -183,7 +183,7 @@ async function collectPixpaxSummary() {
         updated_at
       FROM platform_books
       ORDER BY updated_at DESC
-      LIMIT 20`
+      LIMIT 20`,
     );
     recentBooks = books.rows || [];
   }
@@ -242,7 +242,7 @@ function printPixpaxHuman(summary) {
   } else {
     for (const user of summary.recentManagedUsers) {
       console.log(
-        `${user.display_name || "(no-name)"} | profile=${user.profile_id || "-"} | id=${user.id} | status=${user.status}`
+        `${user.display_name || "(no-name)"} | profile=${user.profile_id || "-"} | id=${user.id} | status=${user.status}`,
       );
     }
   }
@@ -253,7 +253,7 @@ function printPixpaxHuman(summary) {
   } else {
     for (const book of summary.recentBooks) {
       console.log(
-        `${book.name || "(unnamed)"} | version=${book.current_version} | managedUser=${book.managed_user_id} | id=${book.id}`
+        `${book.name || "(unnamed)"} | version=${book.current_version} | managedUser=${book.managed_user_id} | id=${book.id}`,
       );
     }
   }

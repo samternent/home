@@ -8,9 +8,7 @@ const { exportedPayload, downloadExport } = useIdentityExport();
 <template>
   <SCard class="space-y-4 p-5">
     <h3 class="m-0 text-lg">Export identity</h3>
-    <p class="text-sm text-fg-muted">
-      Export current identity as JSON and store securely.
-    </p>
+    <p class="text-sm text-fg-muted">Export current identity as JSON and store securely.</p>
 
     <SButton type="primary" :disabled="!exportedPayload" @click="downloadExport">
       Download export file

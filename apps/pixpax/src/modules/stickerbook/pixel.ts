@@ -20,11 +20,13 @@ function toBase64Bytes(value: string) {
     return new Uint8Array();
   }
 
-  const buffer = (globalThis as typeof globalThis & {
-    Buffer?: {
-      from(input: string, encoding: "base64"): Uint8Array;
-    };
-  }).Buffer;
+  const buffer = (
+    globalThis as typeof globalThis & {
+      Buffer?: {
+        from(input: string, encoding: "base64"): Uint8Array;
+      };
+    }
+  ).Buffer;
 
   if (buffer) {
     return new Uint8Array(buffer.from(normalized, "base64"));

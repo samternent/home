@@ -3,7 +3,7 @@ import { getPlatformSession } from "../auth/platform-auth.mjs";
 
 const MAX_WS_PAYLOAD_BYTES = Number.parseInt(
   String(process.env.WS_MAX_PAYLOAD_BYTES || "65536"),
-  10
+  10,
 );
 
 function parseMessage(input) {
@@ -33,11 +33,7 @@ function parseMessage(input) {
 }
 
 function closeUpgrade(socket, statusCode, statusText) {
-  socket.write(
-    `HTTP/1.1 ${statusCode} ${statusText}\r\n` +
-      "Connection: close\r\n" +
-      "\r\n"
-  );
+  socket.write(`HTTP/1.1 ${statusCode} ${statusText}\r\n` + "Connection: close\r\n" + "\r\n");
   socket.destroy();
 }
 
@@ -57,7 +53,7 @@ export function createWebSocketServer(server, appVersion) {
             ok: false,
             error: "Binary payloads are not supported.",
             code: "WS_BINARY_UNSUPPORTED",
-          })
+          }),
         );
         return;
       }
@@ -70,7 +66,7 @@ export function createWebSocketServer(server, appVersion) {
             error: "Invalid websocket message.",
             code: "WS_MESSAGE_INVALID",
             reason: parsed.reason,
-          })
+          }),
         );
         return;
       }
@@ -82,7 +78,7 @@ export function createWebSocketServer(server, appVersion) {
           serverVersion: String(appVersion || "0.0.0"),
           sessionUserId: String(authSession?.session?.user?.id || ""),
           message: parsed.value,
-        })
+        }),
       );
     });
   });

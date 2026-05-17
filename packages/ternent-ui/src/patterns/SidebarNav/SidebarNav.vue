@@ -50,7 +50,10 @@ function handleSelect(item: SidebarNavItem, event: MouseEvent): void {
       </slot>
     </div>
 
-    <nav class="flex min-h-0 flex-1 flex-col gap-3 overflow-auto p-3" aria-label="Sidebar navigation">
+    <nav
+      class="flex min-h-0 flex-1 flex-col gap-3 overflow-auto p-3"
+      aria-label="Sidebar navigation"
+    >
       <template
         v-for="(section, sectionIndex) in normalizedSections"
         :key="section.id ?? `sidebar-section-${sectionIndex}`"
@@ -82,17 +85,11 @@ function handleSelect(item: SidebarNavItem, event: MouseEvent): void {
           </Button>
         </div>
 
-        <Separator
-          v-if="sectionIndex < normalizedSections.length - 1"
-          orientation="horizontal"
-        />
+        <Separator v-if="sectionIndex < normalizedSections.length - 1" orientation="horizontal" />
       </template>
     </nav>
 
-    <footer
-      v-if="$slots.footer"
-      class="border-t border-[var(--ui-border)] p-3"
-    >
+    <footer v-if="$slots.footer" class="border-t border-[var(--ui-border)] p-3">
       <slot name="footer" />
     </footer>
   </aside>

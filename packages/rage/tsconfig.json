@@ -8,10 +8,5 @@
     "types": ["node", "vitest/globals", "vite/client"],
     "allowJs": false
   },
-  "include": [
-    "src/**/*.ts",
-    "test/**/*.ts",
-    "vite.config.ts",
-    "playwright.config.ts"
-  ]
+  "include": ["src/**/*.ts", "test/**/*.ts", "vite.config.ts", "playwright.config.ts"]
 }

@@ -1,9 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { PackPalette16, StickerArt16 } from "../sticker-types";
-import {
-  assertPalette16,
-  assertStickerArt16,
-} from "../domain/protocol";
+import { assertPalette16, assertStickerArt16 } from "../domain/protocol";
 import { decodeIdx4ToIndices, packIndicesToIdx4Base64 } from "../pixel";
 import {
   computeMerkleRootFromItemHashes,
@@ -132,20 +129,20 @@ describe("pixpax collection discovery helpers", () => {
         forcedCollectionId: "forced",
         routeCollectionId: "route",
         houseCollectionId: "house",
-      })
+      }),
     ).toBe("forced");
     expect(
       pickCollectionRouteTarget({
         forcedCollectionId: "",
         routeCollectionId: "route",
         houseCollectionId: "house",
-      })
+      }),
     ).toBe("route");
     expect(
       pickCollectionRouteTarget({
         routeCollectionId: "",
         houseCollectionId: "house",
-      })
+      }),
     ).toBe("house");
   });
 
@@ -183,10 +180,7 @@ describe("pixpax collection discovery helpers", () => {
       },
     ];
 
-    expect(deriveOwnedCollectionIdsFromPacks(packs as any[])).toEqual([
-      "dragons",
-      "house",
-    ]);
+    expect(deriveOwnedCollectionIdsFromPacks(packs as any[])).toEqual(["dragons", "house"]);
   });
 
   it("derives owned card ids per collection and version", () => {
@@ -213,11 +207,7 @@ describe("pixpax collection discovery helpers", () => {
       },
     ];
 
-    const ownedV1 = deriveOwnedCardIdsForCollectionVersion(
-      packs as any[],
-      "dragons",
-      "v1"
-    );
+    const ownedV1 = deriveOwnedCardIdsForCollectionVersion(packs as any[], "dragons", "v1");
     expect(Array.from(ownedV1.values()).sort()).toEqual(["d-1", "d-2"]);
   });
 });
@@ -228,7 +218,7 @@ describe("pixpax short redeem helpers", () => {
       resolveShortRedeemInput({
         queryT: "query-token",
         paramCode: "path-code",
-      })
+      }),
     ).toEqual({ token: "query-token" });
   });
 
@@ -239,7 +229,7 @@ describe("pixpax short redeem helpers", () => {
         queryToken: "legacy-token",
         queryCode: "query-code",
         paramCode: "path-code",
-      })
+      }),
     ).toEqual({ token: "legacy-token" });
     expect(
       resolveShortRedeemInput({
@@ -247,7 +237,7 @@ describe("pixpax short redeem helpers", () => {
         queryToken: "",
         queryCode: "query-code",
         paramCode: "path-code",
-      })
+      }),
     ).toEqual({ code: "query-code" });
     expect(
       resolveShortRedeemInput({
@@ -255,7 +245,7 @@ describe("pixpax short redeem helpers", () => {
         queryToken: "",
         queryCode: "",
         paramCode: "path-code",
-      })
+      }),
     ).toEqual({ code: "path-code" });
     expect(
       resolveShortRedeemInput({
@@ -263,7 +253,7 @@ describe("pixpax short redeem helpers", () => {
         queryToken: "",
         queryCode: "",
         paramCode: "eyJ2IjozfQ.ZXlKaGJHY2lPaUpJVXpJMU5pSjku",
-      })
+      }),
     ).toEqual({ token: "eyJ2IjozfQ.ZXlKaGJHY2lPaUpJVXpJMU5pSjku" });
   });
 });

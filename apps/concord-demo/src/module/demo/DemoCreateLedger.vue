@@ -88,8 +88,7 @@ const pendingItemsMerged = computed(() => {
   const merged: Record<string, any> = {};
   for (const p of pending.value) {
     const e = p.entry;
-    if (e.kind !== "items" || !e.payload || typeof e.payload !== "object")
-      continue;
+    if (e.kind !== "items" || !e.payload || typeof e.payload !== "object") continue;
     const payload: any = e.payload;
     if (typeof payload.id !== "string") continue;
     merged[payload.id] = { ...(merged[payload.id] ?? {}), ...payload };
@@ -101,17 +100,11 @@ const pendingItemsMerged = computed(() => {
 <template>
   <div class="p-4 space-y-4">
     <div class="flex gap-2 flex-wrap">
-      <Button @click="startDemo" :disabled="!canStart">
-        Start demo (auth + ensure ledger)
-      </Button>
+      <Button @click="startDemo" :disabled="!canStart"> Start demo (auth + ensure ledger) </Button>
 
-      <Button @click="addItem" :disabled="!canWrite">
-        Add item (3 changes)
-      </Button>
+      <Button @click="addItem" :disabled="!canWrite"> Add item (3 changes) </Button>
 
-      <Button @click="commit" :disabled="!canCommit">
-        Commit (auto-squash)
-      </Button>
+      <Button @click="commit" :disabled="!canCommit"> Commit (auto-squash) </Button>
 
       <Button @click="reset"> Reset </Button>
     </div>
@@ -121,32 +114,29 @@ const pendingItemsMerged = computed(() => {
     </div>
 
     <div class="text-sm opacity-80">
-      identityReady: {{ identityReady }} • authed: {{ isAuthed }} • hasLedger:
-      {{ hasLedger }} • pending: {{ pendingCount }}
+      identityReady: {{ identityReady }} • authed: {{ isAuthed }} • hasLedger: {{ hasLedger }} •
+      pending: {{ pendingCount }}
     </div>
 
     <div class="grid md:grid-cols-2 gap-4">
       <div>
         <h3 class="font-bold mb-2">Pending (merged items)</h3>
-        <pre
-          class="bg-neutral-900 text-neutral-100 p-2 rounded text-xs max-h-72 overflow-auto"
-          >{{ pendingItemsMerged }}</pre
-        >
+        <pre class="bg-neutral-900 text-neutral-100 p-2 rounded text-xs max-h-72 overflow-auto">{{
+          pendingItemsMerged
+        }}</pre>
       </div>
 
       <div>
         <h3 class="font-bold mb-2">Pending (raw entries)</h3>
-        <pre
-          class="bg-neutral-900 text-neutral-100 p-2 rounded text-xs max-h-72 overflow-auto"
-          >{{ pending }}</pre
-        >
+        <pre class="bg-neutral-900 text-neutral-100 p-2 rounded text-xs max-h-72 overflow-auto">{{
+          pending
+        }}</pre>
       </div>
     </div>
 
     <h3 class="font-bold">Ledger</h3>
-    <pre
-      class="bg-neutral-900 text-neutral-100 p-2 rounded text-xs max-h-96 overflow-auto"
-      >{{ state.ledger }}</pre
-    >
+    <pre class="bg-neutral-900 text-neutral-100 p-2 rounded text-xs max-h-96 overflow-auto">{{
+      state.ledger
+    }}</pre>
   </div>
 </template>

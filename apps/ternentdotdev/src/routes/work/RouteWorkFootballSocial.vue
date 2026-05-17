@@ -18,9 +18,8 @@ const viewType = useLocalStorage("work/footballSocial/viewType", "mobile");
         A free-to-play, open-source football predictions app.
       </p>
       <p class="text-body-md text-foreground">
-        This projects serves as the base for the ternent.dev application stack. It
-        is a playground to try and deploy new ideas and create a reusable
-        infrastructure.
+        This projects serves as the base for the ternent.dev application stack. It is a playground
+        to try and deploy new ideas and create a reusable infrastructure.
       </p>
     </SCard>
   </div>

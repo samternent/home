@@ -52,15 +52,13 @@ function sha256HexFromBytes(bytes) {
 
 export function base64UrlEncode(input) {
   const bytes = Buffer.isBuffer(input) ? input : Buffer.from(input);
-  return bytes
-    .toString("base64")
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/g, "");
+  return bytes.toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
 }
 
 export function base64UrlDecode(input) {
-  const normalized = String(input || "").replace(/-/g, "+").replace(/_/g, "/");
+  const normalized = String(input || "")
+    .replace(/-/g, "+")
+    .replace(/_/g, "/");
   const pad = normalized.length % 4 === 0 ? "" : "=".repeat(4 - (normalized.length % 4));
   return Buffer.from(`${normalized}${pad}`, "base64");
 }
@@ -86,8 +84,10 @@ function derToRaw64(der) {
   const sLen = bytes[offset + 1];
   const s = bytes.slice(offset + 2, offset + 2 + sLen);
 
-  const rRaw = r.length > 32 ? r.slice(r.length - 32) : Buffer.concat([Buffer.alloc(32 - r.length, 0), r]);
-  const sRaw = s.length > 32 ? s.slice(s.length - 32) : Buffer.concat([Buffer.alloc(32 - s.length, 0), s]);
+  const rRaw =
+    r.length > 32 ? r.slice(r.length - 32) : Buffer.concat([Buffer.alloc(32 - r.length, 0), r]);
+  const sRaw =
+    s.length > 32 ? s.slice(s.length - 32) : Buffer.concat([Buffer.alloc(32 - s.length, 0), s]);
   return Buffer.concat([rRaw, sRaw]);
 }
 
@@ -125,25 +125,15 @@ function raw64ToDer(raw) {
 async function importSigningKey(privateKeyPem) {
   const subtleApi = ensureSubtle();
   const der = pemBodyToDer(ensurePrivatePem(privateKeyPem), "PRIVATE KEY");
-  return subtleApi.importKey(
-    "pkcs8",
-    der,
-    { name: "ECDSA", namedCurve: "P-256" },
-    false,
-    ["sign"]
-  );
+  return subtleApi.importKey("pkcs8", der, { name: "ECDSA", namedCurve: "P-256" }, false, ["sign"]);
 }
 
 async function importVerifyKey(publicKeyPem) {
   const subtleApi = ensureSubtle();
   const der = pemBodyToDer(ensurePublicPem(publicKeyPem), "PUBLIC KEY");
-  return subtleApi.importKey(
-    "spki",
-    der,
-    { name: "ECDSA", namedCurve: "P-256" },
-    false,
-    ["verify"]
-  );
+  return subtleApi.importKey("spki", der, { name: "ECDSA", namedCurve: "P-256" }, false, [
+    "verify",
+  ]);
 }
 
 async function signRaw64(privateKeyPem, messageBytes) {
@@ -309,7 +299,9 @@ export async function signTokenV3(payload, privateKeyPem) {
 }
 
 export async function verifyTokenV3(token, options = {}) {
-  const parts = String(token || "").trim().split(".");
+  const parts = String(token || "")
+    .trim()
+    .split(".");
   if (parts.length !== 2) {
     return { ok: false, reason: "invalid-token-format" };
   }
@@ -343,7 +335,11 @@ export async function verifyTokenV3(token, options = {}) {
   try {
     issuer = await options.resolveIssuerByKid?.(payload.k);
   } catch (error) {
-    return { ok: false, reason: "issuer-resolution-failed", error: String(error?.message || error) };
+    return {
+      ok: false,
+      reason: "issuer-resolution-failed",
+      error: String(error?.message || error),
+    };
   }
 
   if (!issuer || issuer.status !== "active" || !issuer.publicKeyPem) {
@@ -412,6 +408,11 @@ export async function verifyRaw64WithNode(publicKeyPem, messageBytes, signatureR
   const der = raw64ToDer(signatureRaw64);
   const subtleApi = ensureSubtle();
   const key = await importVerifyKey(publicKeyPem);
-  const subtleOk = await subtleApi.verify({ name: "ECDSA", hash: "SHA-256" }, key, signatureRaw64, messageBytes);
+  const subtleOk = await subtleApi.verify(
+    { name: "ECDSA", hash: "SHA-256" },
+    key,
+    signatureRaw64,
+    messageBytes,
+  );
   return { subtleOk, der };
 }

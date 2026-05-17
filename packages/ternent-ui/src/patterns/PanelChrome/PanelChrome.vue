@@ -29,9 +29,7 @@ const dragging = defineModel<boolean>("dragging", { default: false });
 
 const draggingPointerId = ref<number | null>(null);
 
-const clampedHeight = computed(() =>
-  clamp(height.value, props.minHeight, resolveMaxHeight()),
-);
+const clampedHeight = computed(() => clamp(height.value, props.minHeight, resolveMaxHeight()));
 
 watch(clampedHeight, (nextHeight) => {
   if (nextHeight !== height.value) {
@@ -181,10 +179,7 @@ onBeforeUnmount(() => {
       </div>
     </div>
 
-    <div
-      v-show="open"
-      class="flex min-h-0 flex-1 overflow-auto bg-[var(--ui-surface)]"
-    >
+    <div v-show="open" class="flex min-h-0 flex-1 overflow-auto bg-[var(--ui-surface)]">
       <slot />
     </div>
   </section>

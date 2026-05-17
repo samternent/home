@@ -35,6 +35,23 @@ async function createTestApp(storageKey: string) {
 }
 
 describe("concord host permissions flow", () => {
+  it("creates key-bearing groups with a root grant for the creator", async () => {
+    const { app } = await createTestApp("test/v2/key-bearing-root-grant");
+
+    await app.permissions.create({
+      title: "Editors",
+      scope: "workspace",
+    });
+
+    const created = app.permissions.all().at(0);
+    expect(created).toBeTruthy();
+    expect(created?.publicKey).toMatch(/^age1/);
+    expect(created?.createdBy).toBeTruthy();
+    expect(created?.grantCount).toBe(1);
+    expect(created?.viewerHasKey).toBe(true);
+    expect(created?.viewerGrantId).toMatch(/^permission-grant:/);
+  });
+
   it("shows staged state immediately after command", async () => {
     const { app } = await createTestApp("test/v2/staged-visibility");
 
@@ -183,7 +200,7 @@ describe("concord host permissions flow", () => {
           memberId: guestIdentityKey,
         },
       }),
-    ).rejects.toThrow("existing group members");
+    ).rejects.toThrow("existing key holders");
   });
 
   it("rejects forged actor ids for permission mutations", async () => {
@@ -231,5 +248,59 @@ describe("concord host permissions flow", () => {
         },
       }),
     ).rejects.toThrow("does not match the active signer");
+  });
+
+  it("supports alias commands for create and delegated grant issue", async () => {
+    const sharedStorage = createMemoryStorage();
+    const ownerIdentity = await createIdentity("2026-04-20T10:00:00.000Z");
+    const guestIdentity = await createIdentity("2026-04-21T10:00:00.000Z");
+    const guestIdentityKey = toDidKeyFromPublicKey(guestIdentity.publicKey);
+    const storageKey = "test/v2/permission-alias-commands";
+
+    const ownerApp = createAppApi({
+      identity: ownerIdentity,
+      storage: createConcordLocalStorageAdapter({
+        storage: sharedStorage,
+        storageKey,
+      }),
+    });
+    await ownerApp.load();
+
+    await ownerApp.users.create({
+      identityKey: guestIdentityKey,
+    });
+
+    await ownerApp.command("permission.group.create", {
+      title: "Alias Group",
+      actor: {
+        memberId: (await ownerApp.identity.ensureActiveIdentity()).identityKey,
+      },
+    });
+
+    const permissionId = ownerApp.permissions.all().at(0)?.id;
+    expect(permissionId).toBeTruthy();
+
+    await ownerApp.command("permission.grant.issue", {
+      permissionId: permissionId!,
+      memberId: guestIdentityKey,
+      actor: {
+        memberId: (await ownerApp.identity.ensureActiveIdentity()).identityKey,
+      },
+    });
+
+    await ownerApp.commit();
+
+    const guestApp = createAppApi({
+      identity: guestIdentity,
+      storage: createConcordLocalStorageAdapter({
+        storage: sharedStorage,
+        storageKey,
+      }),
+    });
+    await guestApp.load();
+
+    const granted = guestApp.permissions.byId(permissionId!);
+    expect(granted).toBeTruthy();
+    expect(granted?.viewerHasKey).toBe(true);
   });
 });

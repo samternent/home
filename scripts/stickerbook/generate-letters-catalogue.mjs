@@ -6,7 +6,7 @@ const OUTPUT_PATH =
   process.env.OUTPUT_PATH ||
   join(
     process.cwd(),
-    "apps/ternent-api/persisted/stickerbook/series/series-SERIES-L1.catalogue.json"
+    "apps/ternent-api/persisted/stickerbook/series/series-SERIES-L1.catalogue.json",
   );
 
 const SERIES_ID = "SERIES-L1";
@@ -75,11 +75,7 @@ function createHmacRng(seed) {
     hmac.update(`${seed}:${counter}`);
     const digest = hmac.digest();
     counter += 1;
-    const int =
-      (digest[0] << 24) |
-      (digest[1] << 16) |
-      (digest[2] << 8) |
-      digest[3];
+    const int = (digest[0] << 24) | (digest[1] << 16) | (digest[2] << 8) | digest[3];
     return (int >>> 0) / 0xffffffff;
   };
 }
@@ -93,9 +89,7 @@ function luminance(hex) {
     .replace("#", "")
     .match(/.{2}/g)
     .map((v) => parseInt(v, 16) / 255);
-  const [r, g, b] = rgb.map((c) =>
-    c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)
-  );
+  const [r, g, b] = rgb.map((c) => (c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)));
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
@@ -107,10 +101,7 @@ function contrastRatio(colorA, colorB) {
 
 function scoreSticker(palette) {
   const contrast = contrastRatio(palette.background, palette.foreground);
-  const accentContrast = contrastRatio(
-    palette.background,
-    palette.accent
-  );
+  const accentContrast = contrastRatio(palette.background, palette.accent);
   const contrastScore = Math.min((contrast - 3) / 5, 1);
   const accentScore = Math.min((accentContrast - 2) / 4, 1);
   return Math.max(0, contrastScore * 0.8 + accentScore * 0.2);

@@ -50,8 +50,7 @@ function exportIdentity() {
     const cleanData = JSON.parse(JSON.stringify(data));
 
     exportData.value = JSON.stringify(cleanData, null, 2);
-    exportSuccess.value =
-      "Identity exported successfully! Raw data ready for backup.";
+    exportSuccess.value = "Identity exported successfully! Raw data ready for backup.";
   } catch (error) {
     console.error("Export error:", error);
     exportSuccess.value = "Export failed: " + error.message;
@@ -77,18 +76,12 @@ useBreadcrumbs({
 </script>
 <template>
   <div class="flex flex-col flex-1 h-full overflow-hidden">
-    <div
-      class="flex-1 mx-micro border-x border-muted flex flex-col bg-background overflow-y-auto"
-    >
+    <div class="flex-1 mx-micro border-x border-muted flex flex-col bg-background overflow-y-auto">
       <div class="p-micro max-w-6xl mx-auto w-full min-h-0">
         <!-- Header -->
-        <div
-          class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-micro mb-micro"
-        >
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-micro mb-micro">
           <div>
-            <h1
-              class="gradient-heading text-heading-lg flex items-center gap-micro"
-            >
+            <h1 class="gradient-heading text-heading-lg flex items-center gap-micro">
               👤 Identity & Profile
             </h1>
             <p class="text-subtle text-base mt-1">
@@ -98,9 +91,7 @@ useBreadcrumbs({
 
           <div class="flex gap-micro">
             <router-link to="/app/profile/management">
-              <SButton variant="primary" size="small">
-                👥 Manage Profile
-              </SButton>
+              <SButton variant="primary" size="small"> 👥 Manage Profile </SButton>
             </router-link>
           </div>
         </div>
@@ -109,14 +100,8 @@ useBreadcrumbs({
         <SCard class="mb-micro">
           <div class="flex flex-col lg:flex-row items-start gap-micro">
             <!-- Avatar Section -->
-            <div
-              class="flex flex-col items-center text-center lg:items-start lg:text-left"
-            >
-              <IdentityAvatar
-                :identity="publicKeyPEM"
-                size="lg"
-                class="mb-micro"
-              />
+            <div class="flex flex-col items-center text-center lg:items-start lg:text-left">
+              <IdentityAvatar :identity="publicKeyPEM" size="lg" class="mb-micro" />
               <div>
                 <h2 class="text-heading-md font-medium">Your Identity</h2>
                 <p class="text-base text-subtle">Cryptographic identity</p>
@@ -127,9 +112,7 @@ useBreadcrumbs({
             <div class="flex-1 w-full space-y-micro">
               <!-- Identity Keys Section -->
               <div class="space-y-micro">
-                <h3 class="font-medium text-lg flex items-center gap-micro">
-                  🔑 Identity Keys
-                </h3>
+                <h3 class="font-medium text-lg flex items-center gap-micro">🔑 Identity Keys</h3>
                 <div class="bg-surface rounded-lg p-micro space-y-micro">
                   <div>
                     <div class="text-base font-medium text-foreground mb-1">
@@ -149,9 +132,7 @@ useBreadcrumbs({
 
               <!-- Encryption Keys Section -->
               <div class="space-y-micro">
-                <h3 class="font-medium text-lg flex items-center gap-micro">
-                  🛡️ Encryption Keys
-                </h3>
+                <h3 class="font-medium text-lg flex items-center gap-micro">🛡️ Encryption Keys</h3>
                 <div class="bg-surface rounded-lg p-micro space-y-micro">
                   <div>
                     <div class="text-base font-medium text-foreground mb-1">
@@ -185,9 +166,7 @@ useBreadcrumbs({
                   />
                 </svg>
                 <div>
-                  <div class="font-medium">
-                    🔐 Private keys are stored securely in your browser
-                  </div>
+                  <div class="font-medium">🔐 Private keys are stored securely in your browser</div>
                   <div class="text-sm">
                     Remember to backup your keys and profile data regularly!
                   </div>
@@ -202,55 +181,31 @@ useBreadcrumbs({
           <h2 class="text-heading-md font-medium mb-micro">Quick Actions</h2>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-micro">
             <router-link to="/app/profile/management">
-              <SCard
-                class="hover:shadow-lg hover:scale-105 transition-all cursor-pointer group"
-              >
+              <SCard class="hover:shadow-lg hover:scale-105 transition-all cursor-pointer group">
                 <div class="text-center p-micro">
-                  <div
-                    class="text-4xl mb-micro group-hover:scale-110 transition-transform"
-                  >
-                    👥
-                  </div>
+                  <div class="text-4xl mb-micro group-hover:scale-110 transition-transform">👥</div>
                   <h3 class="font-medium text-lg">Profile Management</h3>
-                  <p class="text-base text-subtle">
-                    Edit profile, share with others
-                  </p>
+                  <p class="text-base text-subtle">Edit profile, share with others</p>
                 </div>
               </SCard>
             </router-link>
 
             <router-link to="/t/ledger/users">
-              <SCard
-                class="hover:shadow-lg hover:scale-105 transition-all cursor-pointer group"
-              >
+              <SCard class="hover:shadow-lg hover:scale-105 transition-all cursor-pointer group">
                 <div class="text-center p-micro">
-                  <div
-                    class="text-4xl mb-micro group-hover:scale-110 transition-transform"
-                  >
-                    🔑
-                  </div>
+                  <div class="text-4xl mb-micro group-hover:scale-110 transition-transform">🔑</div>
                   <h3 class="font-medium text-lg">User Management</h3>
-                  <p class="text-base text-subtle">
-                    Manage ledger users and permissions
-                  </p>
+                  <p class="text-base text-subtle">Manage ledger users and permissions</p>
                 </div>
               </SCard>
             </router-link>
 
             <router-link to="/solid">
-              <SCard
-                class="hover:shadow-lg hover:scale-105 transition-all cursor-pointer group"
-              >
+              <SCard class="hover:shadow-lg hover:scale-105 transition-all cursor-pointer group">
                 <div class="text-center p-micro">
-                  <div
-                    class="text-4xl mb-micro group-hover:scale-110 transition-transform"
-                  >
-                    🌐
-                  </div>
+                  <div class="text-4xl mb-micro group-hover:scale-110 transition-transform">🌐</div>
                   <h3 class="font-medium text-lg">Solid Pod</h3>
-                  <p class="text-base text-subtle">
-                    Connect and sync with your pod
-                  </p>
+                  <p class="text-base text-subtle">Connect and sync with your pod</p>
                 </div>
               </SCard>
             </router-link>
@@ -259,9 +214,7 @@ useBreadcrumbs({
 
         <!-- Export Identity Section -->
         <div>
-          <h2 class="text-heading-md font-medium mb-micro">
-            🔄 Backup & Export
-          </h2>
+          <h2 class="text-heading-md font-medium mb-micro">🔄 Backup & Export</h2>
           <SCard>
             <div class="flex flex-col lg:flex-row gap-micro">
               <!-- Export Controls -->
@@ -269,21 +222,16 @@ useBreadcrumbs({
                 <div>
                   <h3 class="font-medium text-lg mb-micro">Export Identity</h3>
                   <p class="text-base text-subtle mb-micro">
-                    Create a local backup of your cryptographic identity and
-                    keys
+                    Create a local backup of your cryptographic identity and keys
                   </p>
 
-                  <label
-                    class="flex items-center gap-micro cursor-pointer mb-micro"
-                  >
+                  <label class="flex items-center gap-micro cursor-pointer mb-micro">
                     <input
                       v-model="includePrivateKeys"
                       type="checkbox"
                       class="checkbox checkbox-primary"
                     />
-                    <span class="text-base"
-                      >Include private keys (⚠️ Keep secure!)</span
-                    >
+                    <span class="text-base">Include private keys (⚠️ Keep secure!)</span>
                   </label>
 
                   <SButton
@@ -310,8 +258,7 @@ useBreadcrumbs({
                 <div class="border-t pt-micro">
                   <h3 class="font-medium text-lg mb-micro">Solid Pod Sync</h3>
                   <p class="text-base text-subtle mb-micro">
-                    Sync profile data to your Solid pod (public keys only -
-                    private keys stay local)
+                    Sync profile data to your Solid pod (public keys only - private keys stay local)
                   </p>
 
                   <router-link to="/solid" class="block mb-micro">
@@ -337,8 +284,8 @@ useBreadcrumbs({
                     <div>
                       <div class="font-medium">🔒 Security Note</div>
                       <div>
-                        Solid sync only stores public profile data and public
-                        keys. Private keys remain secure in your browser.
+                        Solid sync only stores public profile data and public keys. Private keys
+                        remain secure in your browser.
                       </div>
                     </div>
                   </div>
@@ -374,13 +321,13 @@ useBreadcrumbs({
                   />
                   <div class="text-xs text-subtle mt-micro">
                     <div class="mb-1">
-                      <strong>⚠️ Important:</strong> Save this data securely.
-                      You can use it to restore your identity on another device.
+                      <strong>⚠️ Important:</strong> Save this data securely. You can use it to
+                      restore your identity on another device.
                     </div>
                     <div>
-                      <strong>🔒 If private keys are included:</strong> Store in
-                      a secure location (password manager, encrypted drive).
-                      Anyone with this data can impersonate you.
+                      <strong>🔒 If private keys are included:</strong> Store in a secure location
+                      (password manager, encrypted drive). Anyone with this data can impersonate
+                      you.
                     </div>
                   </div>
                 </div>
@@ -390,12 +337,9 @@ useBreadcrumbs({
                 >
                   <div class="text-center text-subtle">
                     <div class="text-4xl mb-micro">📦</div>
-                    <p class="text-lg mb-micro">
-                      Export your identity to see the data here
-                    </p>
+                    <p class="text-lg mb-micro">Export your identity to see the data here</p>
                     <div class="text-base mt-micro max-w-sm">
-                      Choose whether to include private keys based on your
-                      security needs.
+                      Choose whether to include private keys based on your security needs.
                     </div>
                   </div>
                 </div>

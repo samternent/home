@@ -82,10 +82,10 @@ onMounted(async () => {
       </div>
 
       <div class="grid gap-3 md:grid-cols-[1fr_auto]">
-        <div class="rounded-[1.25rem] border border-[var(--ui-border)] bg-[rgba(18,17,23,0.42)] p-4">
-          <p class="m-0 text-sm text-[var(--ui-fg-muted)]">
-            Redirect after login:
-          </p>
+        <div
+          class="rounded-[1.25rem] border border-[var(--ui-border)] bg-[rgba(18,17,23,0.42)] p-4"
+        >
+          <p class="m-0 text-sm text-[var(--ui-fg-muted)]">Redirect after login:</p>
           <p class="m-0 mt-2 break-all font-mono text-xs text-[var(--ui-fg)]">
             {{ redirectTo }}
           </p>

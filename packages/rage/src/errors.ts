@@ -91,11 +91,7 @@ function serializeCause(cause: unknown): unknown {
     return null;
   }
 
-  if (
-    typeof cause === "string" ||
-    typeof cause === "number" ||
-    typeof cause === "boolean"
-  ) {
+  if (typeof cause === "string" || typeof cause === "number" || typeof cause === "boolean") {
     return cause;
   }
 
@@ -150,22 +146,18 @@ export function toEncryptionError(error: unknown): RageError {
     return new RageValidationError(
       "RAGE_INVALID_RECIPIENT",
       "Recipient must be an age recipient string.",
-      error
+      error,
     );
   }
   if (message.includes("data too large")) {
     return new RageValidationError(
       "RAGE_DATA_TOO_LARGE",
       "Data exceeds the 64MB maximum message size.",
-      error
+      error,
     );
   }
 
-  return new RageEncryptionError(
-    "RAGE_ENCRYPT_FAILED",
-    "Failed to encrypt data.",
-    error
-  );
+  return new RageEncryptionError("RAGE_ENCRYPT_FAILED", "Failed to encrypt data.", error);
 }
 
 export function toDecryptionError(error: unknown): RageError {
@@ -178,13 +170,9 @@ export function toDecryptionError(error: unknown): RageError {
     return new RageValidationError(
       "RAGE_INVALID_IDENTITY",
       "Identity must be an age secret key string.",
-      error
+      error,
     );
   }
 
-  return new RageDecryptionError(
-    "RAGE_DECRYPT_FAILED",
-    "Failed to decrypt data.",
-    error
-  );
+  return new RageDecryptionError("RAGE_DECRYPT_FAILED", "Failed to decrypt data.", error);
 }

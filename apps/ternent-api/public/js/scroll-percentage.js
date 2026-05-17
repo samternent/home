@@ -1,10 +1,7 @@
 function getVerticalScrollPercentage(el) {
   const p = el.parentNode;
   return `${
-    100 -
-    Math.round(
-      ((el.scrollTop || p.scrollTop) / (p.scrollHeight - p.clientHeight)) * 100
-    )
+    100 - Math.round(((el.scrollTop || p.scrollTop) / (p.scrollHeight - p.clientHeight)) * 100)
   }%`;
 }
 

@@ -1,9 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {
-  computeMerkleRootFromItemHashes,
-  hashAlbumCard,
-} from "../curated-hashing.mjs";
+import { computeMerkleRootFromItemHashes, hashAlbumCard } from "../curated-hashing.mjs";
 
 function sampleCard(overrides = {}) {
   return {
@@ -32,14 +29,14 @@ test("hashAlbumCard excludes labels and descriptions", () => {
       label: "Player A",
       description: "Original text",
       seriesId: "arsenal",
-    })
+    }),
   );
   const b = hashAlbumCard(
     sampleCard({
       label: "Player Renamed",
       description: "Changed text",
       seriesId: "arsenal",
-    })
+    }),
   );
   assert.equal(a, b);
 });

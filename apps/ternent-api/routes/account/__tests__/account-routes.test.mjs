@@ -8,7 +8,11 @@ function createRouterHarness() {
     routes.set(`${method}:${path}`, handlers);
   };
 
-  const invoke = async (method, path, { body = {}, params = {}, headers = {}, query = {} } = {}) => {
+  const invoke = async (
+    method,
+    path,
+    { body = {}, params = {}, headers = {}, query = {} } = {},
+  ) => {
     const handlers = routes.get(`${method}:${path}`);
     assert.ok(handlers, `Missing handler ${method}:${path}`);
 

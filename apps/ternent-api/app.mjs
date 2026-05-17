@@ -49,7 +49,7 @@ function hasSpacesConfig() {
     process.env.PIXBOOK_LEDGER_BUCKET ||
       process.env.LEDGER_CONTENT_BUCKET ||
       process.env.LEDGER_BUCKET ||
-      ""
+      "",
   ).trim();
   const region = String(process.env.LEDGER_REGION || "").trim();
   const accessKeyId = String(process.env.LEDGER_ACCESS_KEY_ID || "").trim();
@@ -65,8 +65,7 @@ export function createApp() {
   app.set("port", "3000");
 
   const corsAllowOrigins = parseCsv(process.env.CORS_ALLOW_ORIGINS);
-  const localhostOriginPattern =
-    /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(?::\d+)?$/i;
+  const localhostOriginPattern = /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(?::\d+)?$/i;
 
   app.use(
     cors({
@@ -83,7 +82,7 @@ export function createApp() {
         }
         callback(new Error(`Origin is not allowed by CORS policy: ${origin}`));
       },
-    })
+    }),
   );
 
   app.use(requestContextMiddleware);

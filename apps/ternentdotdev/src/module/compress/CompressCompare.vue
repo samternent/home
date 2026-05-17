@@ -1,11 +1,6 @@
 <script setup lang="ts">
 import { shallowRef, computed, onMounted } from "vue";
-import {
-  JSONtoStream,
-  compressStream,
-  responseToBuffer,
-  responseToJSON,
-} from "./compress";
+import { JSONtoStream, compressStream, responseToBuffer, responseToJSON } from "./compress";
 
 const props = defineProps(["url"]);
 
@@ -65,16 +60,12 @@ async function openFile() {
         {{
           compressedSizeInKb > 1
             ? compressedSizeInMb > 1
-              ? `${
-                  Math.round((compressedSizeInMb + Number.EPSILON) * 100) / 100
-                }MB`
+              ? `${Math.round((compressedSizeInMb + Number.EPSILON) * 100) / 100}MB`
               : `${Math.floor(compressedSizeInKb)}KB`
             : `${compressedSize}B`
         }}
       </div>
-      <div class="text-green">
-        {{ Math.round(100 - (compressedSize / size) * 100) }}% reduction
-      </div>
+      <div class="text-green">{{ Math.round(100 - (compressedSize / size) * 100) }}% reduction</div>
       <VBtn variant="tonal" size="x-small" color="secondary" @click="openFile"
         >Download gzip file</VBtn
       >

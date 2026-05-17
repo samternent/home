@@ -83,9 +83,7 @@ function generateJSDocForFunction(funcInfo) {
   let description = `${name} function`;
   for (const [prefix, desc] of Object.entries(descriptions)) {
     if (name.toLowerCase().startsWith(prefix)) {
-      description = `${desc} ${
-        name.substring(prefix.length).toLowerCase() || "data"
-      }`;
+      description = `${desc} ${name.substring(prefix.length).toLowerCase() || "data"}`;
       break;
     }
   }
@@ -95,17 +93,13 @@ function generateJSDocForFunction(funcInfo) {
   // Add parameter documentation
   params.forEach((param) => {
     const optional = param.optional ? " (optional)" : "";
-    lines.push(
-      ` * @param ${param.name} - The ${param.name} parameter${optional}`
-    );
+    lines.push(` * @param ${param.name} - The ${param.name} parameter${optional}`);
   });
 
   // Add return documentation
   if (isAsync) {
     lines.push(
-      ` * @returns Promise that resolves to ${returnType
-        .replace("Promise<", "")
-        .replace(">", "")}`
+      ` * @returns Promise that resolves to ${returnType.replace("Promise<", "").replace(">", "")}`,
     );
   } else {
     lines.push(` * @returns ${returnType}`);
@@ -128,9 +122,7 @@ function generateJSDocForFunction(funcInfo) {
         return `${p.name}Value`;
       })
       .join(", ");
-    lines.push(
-      ` * const result = ${isAsync ? "await " : ""}${name}(${exampleParams});`
-    );
+    lines.push(` * const result = ${isAsync ? "await " : ""}${name}(${exampleParams});`);
   }
 
   lines.push(" * ```");
@@ -168,10 +160,7 @@ function addEnhancedJSDocToFile(filePath) {
     }
 
     // Check for export function without JSDoc
-    if (
-      trimmed.startsWith("export function") ||
-      trimmed.startsWith("export async function")
-    ) {
+    if (trimmed.startsWith("export function") || trimmed.startsWith("export async function")) {
       // Look back to see if there's already JSDoc
       let hasExistingJSDoc = false;
       for (let j = i - 1; j >= 0; j--) {
@@ -290,9 +279,7 @@ async function main() {
       }
 
       if (enhancedCount > 0) {
-        console.log(
-          `  ✨ Enhanced ${enhancedCount} files with better JSDoc comments`
-        );
+        console.log(`  ✨ Enhanced ${enhancedCount} files with better JSDoc comments`);
       } else {
         console.log(`  ✅ JSDoc comments are up to date`);
       }

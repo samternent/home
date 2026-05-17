@@ -191,9 +191,7 @@ const publicKey = await deriveX25519PublicKey(identity);
 ```ts
 import { convertEd25519PublicKeyToX25519PublicKey } from "@ternent/identity";
 
-const x25519 = await convertEd25519PublicKeyToX25519PublicKey(
-  identity.publicKey,
-);
+const x25519 = await convertEd25519PublicKeyToX25519PublicKey(identity.publicKey);
 ```
 
 ### Age Recipient

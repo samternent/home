@@ -9,11 +9,7 @@ describe("sidebar navigation v0.2", () => {
   it("builds Launch + Apps + System sections with tasks app link", () => {
     const sections = buildSidebarNavigationSections("/app/tasks/list");
 
-    expect(sections.map((section) => section.label)).toEqual([
-      "Launch",
-      "Apps",
-      "System",
-    ]);
+    expect(sections.map((section) => section.label)).toEqual(["Launch", "Apps", "System"]);
 
     const appsSection = sections.find((section) => section.label === "Apps");
     expect(appsSection).toBeTruthy();
@@ -51,10 +47,7 @@ describe("sidebar navigation v0.2", () => {
     expect(listValidRuntimeApps(invalidApps)).toHaveLength(0);
 
     const sections = buildSidebarNavigationSections("/launch", invalidApps);
-    expect(sections.map((section) => section.label)).toEqual([
-      "Launch",
-      "System",
-    ]);
+    expect(sections.map((section) => section.label)).toEqual(["Launch", "System"]);
     expect(sections.find((section) => section.label === "Apps")).toBeUndefined();
   });
 });

@@ -161,7 +161,7 @@ test("album pack endpoint validates required fields", async () => {
     {
       params: { collectionId: "premier-league-2026", version: "v1" },
       body: { count: 5 },
-    }
+    },
   );
   assert.equal(missingUser.statusCode, 400);
 
@@ -172,7 +172,7 @@ test("album pack endpoint validates required fields", async () => {
       params: { collectionId: "premier-league-2026", version: "v1" },
       headers: { authorization: "Bearer admin-token" },
       body: { userKey: "school:user:abc123", override: true, count: 0 },
-    }
+    },
   );
   assert.equal(badCount.statusCode, 400);
 });
@@ -200,7 +200,10 @@ test("album issuance uses rngSource.nextInt with issuance context", async () => 
     createStore: () => store,
     rngSource,
     now: () => new Date("2026-02-07T12:00:00.000Z"),
-    issueLedgerEntry: async () => ({ segmentKey: "pixpax/ledger/segments/day/seg_deadbeef.jsonl.gz", segmentHash: "deadbeef" }),
+    issueLedgerEntry: async () => ({
+      segmentKey: "pixpax/ledger/segments/day/seg_deadbeef.jsonl.gz",
+      segmentHash: "deadbeef",
+    }),
   });
 
   const response = await router.invoke(
@@ -212,11 +215,14 @@ test("album issuance uses rngSource.nextInt with issuance context", async () => 
         userKey: "school:user:abc123",
         dropId: "week-2026-W06",
       },
-    }
+    },
   );
   assert.equal(response.statusCode, 200);
   assert.equal(calls.length, 5);
-  assert.deepEqual(calls.map((entry) => entry.context.slotIndex), [0, 1, 2, 3, 4]);
+  assert.deepEqual(
+    calls.map((entry) => entry.context.slotIndex),
+    [0, 1, 2, 3, 4],
+  );
   assert.ok(calls.every((entry) => entry.context.collectionId === "premier-league-2026"));
   assert.ok(calls.every((entry) => entry.context.version === "v1"));
   assert.ok(calls.every((entry) => entry.maxExclusive === 2));
@@ -246,21 +252,17 @@ test("album pack endpoint rejects issuance when all series are retired", async (
       headers: { authorization: "Bearer admin-token" },
       params: { collectionId: "premier-league-2026", version: "v1", seriesId: "arsenal" },
       body: { reason: "season-complete" },
-    }
+    },
   );
   assert.equal(retire.statusCode, 201);
 
-  const issue = await router.invoke(
-    "POST",
-    "/v1/pixpax/collections/:collectionId/:version/packs",
-    {
-      params: { collectionId: "premier-league-2026", version: "v1" },
-      body: {
-        userKey: "school:user:abc123",
-        dropId: "week-2026-W06",
-      },
-    }
-  );
+  const issue = await router.invoke("POST", "/v1/pixpax/collections/:collectionId/:version/packs", {
+    params: { collectionId: "premier-league-2026", version: "v1" },
+    body: {
+      userKey: "school:user:abc123",
+      dropId: "week-2026-W06",
+    },
+  });
   assert.equal(issue.statusCode, 422);
   assert.equal(issue.body.error, "All series are retired for this collection version.");
 });
@@ -284,7 +286,10 @@ test("album pack endpoint issues receipt and keeps ledger payload secret-free", 
     now: () => new Date("2026-02-07T12:00:00.000Z"),
     issueLedgerEntry: async ({ entry }) => {
       captured.push(entry);
-      return { segmentKey: "pixpax/ledger/segments/day/seg_deadbeef.jsonl.gz", segmentHash: "deadbeef" };
+      return {
+        segmentKey: "pixpax/ledger/segments/day/seg_deadbeef.jsonl.gz",
+        segmentHash: "deadbeef",
+      };
     },
   });
 
@@ -297,7 +302,7 @@ test("album pack endpoint issues receipt and keeps ledger payload secret-free", 
         userKey: "school:user:abc123",
         dropId: "week-2026-W06",
       },
-    }
+    },
   );
 
   assert.equal(response.statusCode, 200);
@@ -319,7 +324,13 @@ test("album pack endpoint issues receipt and keeps ledger payload secret-free", 
   assert.equal(payload.packModel, PACK_MODELS.ALBUM);
   assert.equal(payload.collectionId, "premier-league-2026");
   assert.equal(payload.collectionVersion, "v1");
-  assert.deepEqual(payload.cardIds, ["arsenal-02", "arsenal-02", "arsenal-02", "arsenal-02", "arsenal-02"]);
+  assert.deepEqual(payload.cardIds, [
+    "arsenal-02",
+    "arsenal-02",
+    "arsenal-02",
+    "arsenal-02",
+    "arsenal-02",
+  ]);
   assert.ok(/^[a-f0-9]{64}$/.test(payload.issuedTo));
   assert.equal("cards" in payload, false);
   assert.equal(String(JSON.stringify(payload)).includes("Player Two"), false);
@@ -345,7 +356,10 @@ test("album pack endpoint is idempotent per user+drop without override", async (
     now: () => new Date("2026-02-07T12:00:00.000Z"),
     issueLedgerEntry: async () => {
       issuedCount += 1;
-      return { segmentKey: "pixpax/ledger/segments/day/seg_deadbeef.jsonl.gz", segmentHash: "deadbeef" };
+      return {
+        segmentKey: "pixpax/ledger/segments/day/seg_deadbeef.jsonl.gz",
+        segmentHash: "deadbeef",
+      };
     },
     appendEvent: async (event) => {
       events.push(event);
@@ -353,17 +367,13 @@ test("album pack endpoint is idempotent per user+drop without override", async (
     },
   });
 
-  const first = await router.invoke(
-    "POST",
-    "/v1/pixpax/collections/:collectionId/:version/packs",
-    {
-      params: { collectionId: "premier-league-2026", version: "v1" },
-      body: {
-        userKey: "school:user:abc123",
-        dropId: "week-2026-W06",
-      },
-    }
-  );
+  const first = await router.invoke("POST", "/v1/pixpax/collections/:collectionId/:version/packs", {
+    params: { collectionId: "premier-league-2026", version: "v1" },
+    body: {
+      userKey: "school:user:abc123",
+      dropId: "week-2026-W06",
+    },
+  });
   assert.equal(first.statusCode, 200);
   assert.equal(first.body.issuance.reused, false);
 
@@ -376,7 +386,7 @@ test("album pack endpoint is idempotent per user+drop without override", async (
         userKey: "school:user:abc123",
         dropId: "week-2026-W06",
       },
-    }
+    },
   );
   assert.equal(second.statusCode, 200);
   assert.equal(second.body.issuance.reused, true);
@@ -384,7 +394,7 @@ test("album pack endpoint is idempotent per user+drop without override", async (
   assert.equal(issuedCount, 1);
   assert.deepEqual(
     events.map((event) => event.type),
-    [PIXPAX_EVENT_TYPES.PACK_ISSUED, PIXPAX_EVENT_TYPES.PACK_CLAIMED]
+    [PIXPAX_EVENT_TYPES.PACK_ISSUED, PIXPAX_EVENT_TYPES.PACK_CLAIMED],
   );
 });
 
@@ -407,22 +417,21 @@ test("dev-untracked issuance allows unlimited packs and skips ledger receipt per
     now: () => new Date("2026-02-07T12:00:00.000Z"),
     issueLedgerEntry: async () => {
       issuedCount += 1;
-      return { segmentKey: "pixpax/ledger/segments/day/seg_deadbeef.jsonl.gz", segmentHash: "deadbeef" };
+      return {
+        segmentKey: "pixpax/ledger/segments/day/seg_deadbeef.jsonl.gz",
+        segmentHash: "deadbeef",
+      };
     },
     allowDevUntrackedPacks: true,
   });
 
-  const first = await router.invoke(
-    "POST",
-    "/v1/pixpax/collections/:collectionId/:version/packs",
-    {
-      params: { collectionId: "premier-league-2026", version: "v1" },
-      body: {
-        userKey: "school:user:abc123",
-        issuanceMode: "dev-untracked",
-      },
-    }
-  );
+  const first = await router.invoke("POST", "/v1/pixpax/collections/:collectionId/:version/packs", {
+    params: { collectionId: "premier-league-2026", version: "v1" },
+    body: {
+      userKey: "school:user:abc123",
+      issuanceMode: "dev-untracked",
+    },
+  });
   const second = await router.invoke(
     "POST",
     "/v1/pixpax/collections/:collectionId/:version/packs",
@@ -432,7 +441,7 @@ test("dev-untracked issuance allows unlimited packs and skips ledger receipt per
         userKey: "school:user:abc123",
         issuanceMode: "dev-untracked",
       },
-    }
+    },
   );
 
   assert.equal(first.statusCode, 200);
@@ -464,7 +473,10 @@ test("album pack endpoint supports admin override for extra issuance", async () 
     createStore: () => store,
     pickRandomIndex: (max) => (max > 1 ? 1 : 0),
     now: () => new Date("2026-02-07T12:00:00.000Z"),
-    issueLedgerEntry: async () => ({ segmentKey: "pixpax/ledger/segments/day/seg_deadbeef.jsonl.gz", segmentHash: "deadbeef" }),
+    issueLedgerEntry: async () => ({
+      segmentKey: "pixpax/ledger/segments/day/seg_deadbeef.jsonl.gz",
+      segmentHash: "deadbeef",
+    }),
   });
 
   const denied = await router.invoke(
@@ -478,7 +490,7 @@ test("album pack endpoint supports admin override for extra issuance", async () 
         override: true,
         count: 8,
       },
-    }
+    },
   );
   assert.equal(denied.statusCode, 401);
 
@@ -486,9 +498,12 @@ test("album pack endpoint supports admin override for extra issuance", async () 
   const router2 = createRouterHarness();
   pixpaxCollectionRoutes(router2, {
     createStore: () => store,
-    pickRandomIndex: (max) => (max > 1 ? ((nonce += 1) % 2) : 0),
+    pickRandomIndex: (max) => (max > 1 ? (nonce += 1) % 2 : 0),
     now: () => new Date("2026-02-07T12:00:00.000Z"),
-    issueLedgerEntry: async () => ({ segmentKey: "pixpax/ledger/segments/day/seg_deadbeef.jsonl.gz", segmentHash: "deadbeef" }),
+    issueLedgerEntry: async () => ({
+      segmentKey: "pixpax/ledger/segments/day/seg_deadbeef.jsonl.gz",
+      segmentHash: "deadbeef",
+    }),
   });
 
   const first = await router2.invoke(
@@ -500,7 +515,7 @@ test("album pack endpoint supports admin override for extra issuance", async () 
         userKey: "school:user:abc123",
         dropId: "week-2026-W06",
       },
-    }
+    },
   );
   issued.push(first.body.packId);
 
@@ -516,7 +531,7 @@ test("album pack endpoint supports admin override for extra issuance", async () 
         override: true,
         count: 8,
       },
-    }
+    },
   );
   issued.push(override.body.packId);
   assert.equal(override.statusCode, 200);
@@ -544,7 +559,10 @@ test("admin can mint signed token and redeem once via /redeem", async () => {
     createStore: () => store,
     pickRandomIndex: (max) => (max > 1 ? 1 : 0),
     now: () => new Date("2026-02-07T12:00:00.000Z"),
-    issueLedgerEntry: async () => ({ segmentKey: "pixpax/ledger/segments/day/seg_deadbeef.jsonl.gz", segmentHash: "deadbeef" }),
+    issueLedgerEntry: async () => ({
+      segmentKey: "pixpax/ledger/segments/day/seg_deadbeef.jsonl.gz",
+      segmentHash: "deadbeef",
+    }),
     appendEvent: async (event) => {
       events.push(event);
       return { emitted: true };
@@ -563,24 +581,20 @@ test("admin can mint signed token and redeem once via /redeem", async () => {
         count: 8,
         expiresInSeconds: 86400,
       },
-    }
+    },
   );
   assert.equal(mint.statusCode, 201);
   assert.ok(mint.body.token);
   assert.equal(mint.body.kind, "pack");
   assert.equal(mint.body.count, 8);
 
-  const firstUse = await router.invoke(
-    "POST",
-    "/v1/pixpax/redeem",
-    {
-      body: {
-        token: mint.body.token,
-        collectorPubKey: collector.publicKeyPem,
-        collectorSig: signCollectorProofTokenHash(mint.body.tokenHash, collector.privateKeyPem),
-      },
-    }
-  );
+  const firstUse = await router.invoke("POST", "/v1/pixpax/redeem", {
+    body: {
+      token: mint.body.token,
+      collectorPubKey: collector.publicKeyPem,
+      collectorSig: signCollectorProofTokenHash(mint.body.tokenHash, collector.privateKeyPem),
+    },
+  });
   assert.equal(firstUse.statusCode, 200);
   assert.equal(firstUse.body.cards.length, 8);
   assert.equal(firstUse.body.issuance.mode, "redeem-token");
@@ -594,16 +608,12 @@ test("admin can mint signed token and redeem once via /redeem", async () => {
   assert.equal(firstUse.body.collector?.sigProvided, true);
   assert.equal(firstUse.body.collector?.sigVerified, true);
 
-  const secondUse = await router.invoke(
-    "POST",
-    "/v1/pixpax/redeem",
-    {
-      body: {
-        token: mint.body.token,
-        collectorPubKey: collector.publicKeyPem,
-      },
-    }
-  );
+  const secondUse = await router.invoke("POST", "/v1/pixpax/redeem", {
+    body: {
+      token: mint.body.token,
+      collectorPubKey: collector.publicKeyPem,
+    },
+  });
   assert.equal(secondUse.statusCode, 409);
   assert.deepEqual(Object.keys(secondUse.body).sort(), ["claimed", "error", "ok", "status"]);
   assert.equal(secondUse.body.ok, false);
@@ -625,7 +635,7 @@ test("admin can mint signed token and redeem once via /redeem", async () => {
       PIXPAX_EVENT_TYPES.GIFTCODE_CREATED,
       PIXPAX_EVENT_TYPES.PACK_ISSUED,
       PIXPAX_EVENT_TYPES.GIFTCODE_REDEEMED,
-    ]
+    ],
   );
 });
 
@@ -644,7 +654,10 @@ test("revoked code cannot be redeemed", async () => {
     createStore: () => store,
     pickRandomIndex: (max) => (max > 1 ? 1 : 0),
     now: () => new Date("2026-02-07T12:00:00.000Z"),
-    issueLedgerEntry: async () => ({ segmentKey: "pixpax/ledger/segments/day/seg_deadbeef.jsonl.gz", segmentHash: "deadbeef" }),
+    issueLedgerEntry: async () => ({
+      segmentKey: "pixpax/ledger/segments/day/seg_deadbeef.jsonl.gz",
+      segmentHash: "deadbeef",
+    }),
   });
 
   const mint = await router.invoke(
@@ -657,33 +670,25 @@ test("revoked code cannot be redeemed", async () => {
         kind: "pack",
         count: 5,
       },
-    }
+    },
   );
   assert.equal(mint.statusCode, 201);
 
-  const revoke = await router.invoke(
-    "POST",
-    "/v1/pixpax/admin/codes/:codeId/revoke",
-    {
-      headers: { authorization: "Bearer admin-token" },
-      params: { codeId: mint.body.codeId },
-      body: { reason: "lost physical card" },
-    }
-  );
+  const revoke = await router.invoke("POST", "/v1/pixpax/admin/codes/:codeId/revoke", {
+    headers: { authorization: "Bearer admin-token" },
+    params: { codeId: mint.body.codeId },
+    body: { reason: "lost physical card" },
+  });
   assert.equal(revoke.statusCode, 200);
   assert.equal(revoke.body.ok, true);
   assert.equal(revoke.body.status, "revoked");
 
-  const redeem = await router.invoke(
-    "POST",
-    "/v1/pixpax/redeem",
-    {
-      body: {
-        token: mint.body.token,
-        collectorPubKey: "collector:key:test",
-      },
-    }
-  );
+  const redeem = await router.invoke("POST", "/v1/pixpax/redeem", {
+    body: {
+      token: mint.body.token,
+      collectorPubKey: "collector:key:test",
+    },
+  });
   assert.equal(redeem.statusCode, 410);
   assert.equal(redeem.body.ok, false);
   assert.equal(redeem.body.reason, "code-revoked");
@@ -706,7 +711,10 @@ test("redeem rejects invalid collector signature proof", async () => {
     createStore: () => store,
     pickRandomIndex: (max) => (max > 1 ? 1 : 0),
     now: () => new Date("2026-02-07T12:00:00.000Z"),
-    issueLedgerEntry: async () => ({ segmentKey: "pixpax/ledger/segments/day/seg_deadbeef.jsonl.gz", segmentHash: "deadbeef" }),
+    issueLedgerEntry: async () => ({
+      segmentKey: "pixpax/ledger/segments/day/seg_deadbeef.jsonl.gz",
+      segmentHash: "deadbeef",
+    }),
   });
 
   const mint = await router.invoke(
@@ -719,21 +727,17 @@ test("redeem rejects invalid collector signature proof", async () => {
         kind: "pack",
         count: 5,
       },
-    }
+    },
   );
   assert.equal(mint.statusCode, 201);
 
-  const redeem = await router.invoke(
-    "POST",
-    "/v1/pixpax/redeem",
-    {
-      body: {
-        token: mint.body.token,
-        collectorPubKey: collector.publicKeyPem,
-        collectorSig: signCollectorProofTokenHash(mint.body.tokenHash, wrongCollector.privateKeyPem),
-      },
-    }
-  );
+  const redeem = await router.invoke("POST", "/v1/pixpax/redeem", {
+    body: {
+      token: mint.body.token,
+      collectorPubKey: collector.publicKeyPem,
+      collectorSig: signCollectorProofTokenHash(mint.body.tokenHash, wrongCollector.privateKeyPem),
+    },
+  });
   assert.equal(redeem.statusCode, 422);
   assert.equal(redeem.body.reason, "collector-proof-invalid");
 });
@@ -753,7 +757,10 @@ test("redeem endpoint enforces token-only contract", async () => {
     createStore: () => store,
     pickRandomIndex: (max) => (max > 1 ? 1 : 0),
     now: () => new Date("2026-02-07T12:00:00.000Z"),
-    issueLedgerEntry: async () => ({ segmentKey: "pixpax/ledger/segments/day/seg_deadbeef.jsonl.gz", segmentHash: "deadbeef" }),
+    issueLedgerEntry: async () => ({
+      segmentKey: "pixpax/ledger/segments/day/seg_deadbeef.jsonl.gz",
+      segmentHash: "deadbeef",
+    }),
   });
 
   const mint = await router.invoke(
@@ -766,36 +773,28 @@ test("redeem endpoint enforces token-only contract", async () => {
         kind: "pack",
         count: 5,
       },
-    }
+    },
   );
   assert.equal(mint.statusCode, 201);
   assert.ok(mint.body.token);
 
-  const bad = await router.invoke(
-    "POST",
-    "/v1/pixpax/redeem",
-    {
-      body: {
-        token: mint.body.token,
-        collectorPubKey: "collector:key:test",
-        code: "legacy-alias",
-      },
-    }
-  );
+  const bad = await router.invoke("POST", "/v1/pixpax/redeem", {
+    body: {
+      token: mint.body.token,
+      collectorPubKey: "collector:key:test",
+      code: "legacy-alias",
+    },
+  });
   assert.equal(bad.statusCode, 400);
   assert.match(String(bad.body.error || ""), /Token-only redeem contract/);
 
-  const unsupported = await router.invoke(
-    "POST",
-    "/v1/pixpax/redeem",
-    {
-      body: {
-        token: mint.body.token,
-        collectorPubKey: "collector:key:test",
-        notAllowed: true,
-      },
-    }
-  );
+  const unsupported = await router.invoke("POST", "/v1/pixpax/redeem", {
+    body: {
+      token: mint.body.token,
+      collectorPubKey: "collector:key:test",
+      notAllowed: true,
+    },
+  });
   assert.equal(unsupported.statusCode, 400);
   assert.match(String(unsupported.body.error || ""), /Unsupported redeem payload field/);
 });
@@ -827,7 +826,7 @@ test("redeem rejects legacy compact token versions with deterministic error cont
     exp: 1790000000,
   };
   const legacyToken = `${base64UrlEncode(
-    Buffer.from(JSON.stringify(legacyPayload), "utf8")
+    Buffer.from(JSON.stringify(legacyPayload), "utf8"),
   )}.${base64UrlEncode(Buffer.alloc(64, 0x01))}`;
 
   const legacyRedeem = await router.invoke("POST", "/v1/pixpax/redeem", {
@@ -858,7 +857,10 @@ test("fixed-card token invariants are enforced server-side", async () => {
     createStore: () => store,
     pickRandomIndex: (max) => (max > 1 ? 1 : 0),
     now: () => new Date("2026-02-07T12:00:00.000Z"),
-    issueLedgerEntry: async () => ({ segmentKey: "pixpax/ledger/segments/day/seg_deadbeef.jsonl.gz", segmentHash: "deadbeef" }),
+    issueLedgerEntry: async () => ({
+      segmentKey: "pixpax/ledger/segments/day/seg_deadbeef.jsonl.gz",
+      segmentHash: "deadbeef",
+    }),
   });
 
   const missingCardId = await router.invoke(
@@ -870,7 +872,7 @@ test("fixed-card token invariants are enforced server-side", async () => {
       body: {
         kind: "fixed-card",
       },
-    }
+    },
   );
   assert.equal(missingCardId.statusCode, 400);
 
@@ -885,7 +887,7 @@ test("fixed-card token invariants are enforced server-side", async () => {
         cardId: "arsenal-01",
         count: 2,
       },
-    }
+    },
   );
   assert.equal(badCount.statusCode, 400);
 
@@ -900,34 +902,26 @@ test("fixed-card token invariants are enforced server-side", async () => {
         cardId: "arsenal-01",
         dropId: "week-2026-W06",
       },
-    }
+    },
   );
   assert.equal(mint.statusCode, 201);
 
-  const firstUse = await router.invoke(
-    "POST",
-    "/v1/pixpax/redeem",
-    {
-      body: {
-        token: mint.body.token,
-        collectorPubKey: "collector:key:recipient-a",
-      },
-    }
-  );
+  const firstUse = await router.invoke("POST", "/v1/pixpax/redeem", {
+    body: {
+      token: mint.body.token,
+      collectorPubKey: "collector:key:recipient-a",
+    },
+  });
   assert.equal(firstUse.statusCode, 200);
   assert.equal(firstUse.body.cards.length, 1);
   assert.equal(firstUse.body.cards[0].cardId, "arsenal-01");
 
-  const secondUse = await router.invoke(
-    "POST",
-    "/v1/pixpax/redeem",
-    {
-      body: {
-        token: mint.body.token,
-        collectorPubKey: "collector:key:recipient-b",
-      },
-    }
-  );
+  const secondUse = await router.invoke("POST", "/v1/pixpax/redeem", {
+    body: {
+      token: mint.body.token,
+      collectorPubKey: "collector:key:recipient-b",
+    },
+  });
   assert.equal(secondUse.statusCode, 409);
   assert.equal(secondUse.body.status, "already-claimed");
 });
@@ -949,20 +943,19 @@ test("verify-pack route returns ok for a clean dev-untracked pack", async () => 
     pickRandomIndex: (max) => (max > 1 ? 1 : 0),
     now: () => new Date("2026-02-07T12:00:00.000Z"),
     allowDevUntrackedPacks: true,
-    issueLedgerEntry: async () => ({ segmentKey: "pixpax/ledger/segments/day/seg_deadbeef.jsonl.gz", segmentHash: "deadbeef" }),
+    issueLedgerEntry: async () => ({
+      segmentKey: "pixpax/ledger/segments/day/seg_deadbeef.jsonl.gz",
+      segmentHash: "deadbeef",
+    }),
   });
 
-  const issue = await router.invoke(
-    "POST",
-    "/v1/pixpax/collections/:collectionId/:version/packs",
-    {
-      params: { collectionId: "premier-league-2026", version: "v1" },
-      body: {
-        userKey: "school:user:abc123",
-        issuanceMode: "dev-untracked",
-      },
-    }
-  );
+  const issue = await router.invoke("POST", "/v1/pixpax/collections/:collectionId/:version/packs", {
+    params: { collectionId: "premier-league-2026", version: "v1" },
+    body: {
+      userKey: "school:user:abc123",
+      issuanceMode: "dev-untracked",
+    },
+  });
   assert.equal(issue.statusCode, 200);
 
   const verify = await router.invoke(
@@ -974,7 +967,7 @@ test("verify-pack route returns ok for a clean dev-untracked pack", async () => 
         version: "v1",
         packId: issue.body.packId,
       },
-    }
+    },
   );
   assert.equal(verify.statusCode, 200);
   assert.equal(verify.body.ok, true);
@@ -998,20 +991,19 @@ test("verify-pack route fails loudly after cached tamper", async () => {
     pickRandomIndex: (max) => (max > 1 ? 1 : 0),
     now: () => new Date("2026-02-07T12:00:00.000Z"),
     allowDevUntrackedPacks: true,
-    issueLedgerEntry: async () => ({ segmentKey: "pixpax/ledger/segments/day/seg_deadbeef.jsonl.gz", segmentHash: "deadbeef" }),
+    issueLedgerEntry: async () => ({
+      segmentKey: "pixpax/ledger/segments/day/seg_deadbeef.jsonl.gz",
+      segmentHash: "deadbeef",
+    }),
   });
 
-  const issue = await router.invoke(
-    "POST",
-    "/v1/pixpax/collections/:collectionId/:version/packs",
-    {
-      params: { collectionId: "premier-league-2026", version: "v1" },
-      body: {
-        userKey: "school:user:abc123",
-        issuanceMode: "dev-untracked",
-      },
-    }
-  );
+  const issue = await router.invoke("POST", "/v1/pixpax/collections/:collectionId/:version/packs", {
+    params: { collectionId: "premier-league-2026", version: "v1" },
+    body: {
+      userKey: "school:user:abc123",
+      issuanceMode: "dev-untracked",
+    },
+  });
   assert.equal(issue.statusCode, 200);
 
   await store.putCard("premier-league-2026", "v1", "arsenal-02", {
@@ -1032,7 +1024,7 @@ test("verify-pack route fails loudly after cached tamper", async () => {
         version: "v1",
         packId: issue.body.packId,
       },
-    }
+    },
   );
   assert.equal(verify.statusCode, 422);
   assert.equal(verify.body.ok, false);
@@ -1072,7 +1064,7 @@ test("authenticated analytics route returns pack totals, insights, and non-ident
         userKey: "school:user:alpha",
         dropId: "week-2026-W06",
       },
-    }
+    },
   );
   assert.equal(issueA.statusCode, 200);
 
@@ -1085,7 +1077,7 @@ test("authenticated analytics route returns pack totals, insights, and non-ident
         userKey: "school:user:beta",
         dropId: "week-2026-W07",
       },
-    }
+    },
   );
   assert.equal(issueB.statusCode, 200);
 

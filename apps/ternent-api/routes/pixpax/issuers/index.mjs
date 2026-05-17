@@ -1,7 +1,4 @@
-import {
-  loadIssuerRegistry,
-  loadReceiptKeyRegistry,
-} from "./registry.mjs";
+import { loadIssuerRegistry, loadReceiptKeyRegistry } from "./registry.mjs";
 
 export default function pixpaxIssuerRoutes(router) {
   router.get("/v1/pixpax/issuers", async (req, res) => {

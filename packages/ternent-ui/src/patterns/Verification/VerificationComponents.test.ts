@@ -141,7 +141,7 @@ describe("verification components", () => {
         timestamp: "2026-03-14T00:00:00.000Z",
         version: "seal/v1",
         signature: "abcdefg123456",
-        rawProof: "{\"type\":\"seal-proof\"}",
+        rawProof: '{"type":"seal-proof"}',
         variant: "compact",
       },
     });

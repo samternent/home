@@ -76,7 +76,7 @@ async function backfillAccounts(report) {
        ON CONFLICT (id)
        DO UPDATE SET
          name = EXCLUDED.name,
-         updated_at = GREATEST(accounts.updated_at, EXCLUDED.updated_at)`
+         updated_at = GREATEST(accounts.updated_at, EXCLUDED.updated_at)`,
     );
     return result.rowCount || 0;
   });
@@ -96,7 +96,7 @@ async function backfillAccountMembers(report) {
      LEFT JOIN auth_users u ON u.id = m.user_id
      WHERE w.id IS NULL OR u.id IS NULL
      ORDER BY m.created_at ASC
-     LIMIT 100`
+     LIMIT 100`,
   );
   if (orphans.length > 0) {
     appendError(report, "account_members", "source rows missing required workspace/user", orphans);
@@ -116,7 +116,7 @@ async function backfillAccountMembers(report) {
          user_id = EXCLUDED.user_id,
          role = EXCLUDED.role,
          status = EXCLUDED.status,
-         updated_at = GREATEST(account_members.updated_at, EXCLUDED.updated_at)`
+         updated_at = GREATEST(account_members.updated_at, EXCLUDED.updated_at)`,
     );
     return result.rowCount || 0;
   });
@@ -141,7 +141,7 @@ async function backfillIdentities(report) {
      LEFT JOIN accounts a ON a.id = u.workspace_id
      WHERE a.id IS NULL
      ORDER BY u.created_at ASC
-     LIMIT 100`
+     LIMIT 100`,
   );
   if (orphans.length > 0) {
     appendError(report, "identities", "source rows missing required account", orphans);
@@ -159,14 +159,14 @@ async function backfillIdentities(report) {
      GROUP BY workspace_id, identity_key_fingerprint
      HAVING COUNT(*) > 1
      ORDER BY duplicate_count DESC, workspace_id ASC
-     LIMIT 100`
+     LIMIT 100`,
   );
   if (duplicateFingerprints.length > 0) {
     appendWarning(
       report,
       "identities",
       "duplicate active identity_key_fingerprint rows were downgraded to deleted for v2 uniqueness",
-      duplicateFingerprints
+      duplicateFingerprints,
     );
   }
 
@@ -226,7 +226,7 @@ async function backfillIdentities(report) {
          identity_public_key = EXCLUDED.identity_public_key,
          identity_key_fingerprint = EXCLUDED.identity_key_fingerprint,
          status = EXCLUDED.status,
-         updated_at = GREATEST(identities.updated_at, EXCLUDED.updated_at)`
+         updated_at = GREATEST(identities.updated_at, EXCLUDED.updated_at)`,
     );
     return result.rowCount || 0;
   });
@@ -252,7 +252,7 @@ async function backfillPixbooks(report) {
      LEFT JOIN identities i ON i.id = b.managed_user_id
      WHERE i.id IS NULL
      ORDER BY b.created_at ASC
-     LIMIT 100`
+     LIMIT 100`,
   );
   if (identityOrphans.length > 0) {
     appendError(report, "pixbooks", "source rows missing required identity", identityOrphans);
@@ -264,10 +264,15 @@ async function backfillPixbooks(report) {
      INNER JOIN identities i ON i.id = b.managed_user_id
      WHERE i.account_id != b.workspace_id
      ORDER BY b.created_at ASC
-     LIMIT 100`
+     LIMIT 100`,
   );
   if (accountMismatches.length > 0) {
-    appendError(report, "pixbooks", "identity account does not match pixbook account", accountMismatches);
+    appendError(
+      report,
+      "pixbooks",
+      "identity account does not match pixbook account",
+      accountMismatches,
+    );
   }
 
   const inserted = await dbTx(async (client) => {
@@ -306,7 +311,7 @@ async function backfillPixbooks(report) {
          name = EXCLUDED.name,
          status = EXCLUDED.status,
          current_version = EXCLUDED.current_version,
-         updated_at = GREATEST(pixbooks.updated_at, EXCLUDED.updated_at)`
+         updated_at = GREATEST(pixbooks.updated_at, EXCLUDED.updated_at)`,
     );
     return result.rowCount || 0;
   });
@@ -332,7 +337,7 @@ async function backfillSnapshots(report) {
      LEFT JOIN pixbooks p ON p.id = s.book_id
      WHERE p.id IS NULL
      ORDER BY s.created_at ASC
-     LIMIT 100`
+     LIMIT 100`,
   );
   if (orphans.length > 0) {
     appendError(report, "pixbook_snapshots", "source rows missing required pixbook", orphans);
@@ -373,7 +378,7 @@ async function backfillSnapshots(report) {
          wrapped_dek = EXCLUDED.wrapped_dek,
          ledger_head = EXCLUDED.ledger_head,
          payload_json = EXCLUDED.payload_json,
-         created_at = LEAST(pixbook_snapshots.created_at, EXCLUDED.created_at)`
+         created_at = LEAST(pixbook_snapshots.created_at, EXCLUDED.created_at)`,
     );
     return result.rowCount || 0;
   });
@@ -410,7 +415,7 @@ async function backfillAuditEvents(report) {
          actor_user_id = EXCLUDED.actor_user_id,
          event_type = EXCLUDED.event_type,
          payload = EXCLUDED.payload,
-         created_at = LEAST(audit_events.created_at, EXCLUDED.created_at)`
+         created_at = LEAST(audit_events.created_at, EXCLUDED.created_at)`,
     );
     return result.rowCount || 0;
   });
@@ -463,7 +468,7 @@ async function main() {
     console.log(`accounts-v2 backfill ${report.ok ? "passed" : "completed with issues"}`);
     for (const stage of report.stages) {
       console.log(
-        `${stage.stage}: old=${stage.oldCount} before=${stage.beforeCount} after=${stage.afterCount} affected=${stage.affectedRows}`
+        `${stage.stage}: old=${stage.oldCount} before=${stage.beforeCount} after=${stage.afterCount} affected=${stage.affectedRows}`,
       );
     }
     console.log(`errors=${report.errors.length}`);

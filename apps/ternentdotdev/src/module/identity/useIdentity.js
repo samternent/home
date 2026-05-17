@@ -23,9 +23,7 @@ function Identity() {
     let keys = {};
     if (!publicKeyPEM.value || !privateKeyPEM.value) {
       keys = await createIdentity();
-      publicKeyPEM.value = stripIdentityKey(
-        await exportPublicKeyAsPem(keys.publicKey)
-      );
+      publicKeyPEM.value = stripIdentityKey(await exportPublicKeyAsPem(keys.publicKey));
       privateKeyPEM.value = await exportPrivateKeyAsPem(keys.privateKey);
     } else {
       keys.publicKey = await importPublicKeyFromPem(publicKeyPEM.value);

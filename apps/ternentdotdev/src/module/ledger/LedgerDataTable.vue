@@ -98,7 +98,7 @@ watch(
       items.value = [...(getCollection(props.table)?.data || [])];
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const cellTypes = {
@@ -121,14 +121,10 @@ function formatTime(time) {
 }
 
 function getVerifyProps(props) {
-  return [
-    "collection",
-    "id",
-    "timestamp",
-    "data",
-    "signature",
-    "identity",
-  ].reduce((obj, key) => ({ ...obj, [key]: props[key] }), {});
+  return ["collection", "id", "timestamp", "data", "signature", "identity"].reduce(
+    (obj, key) => ({ ...obj, [key]: props[key] }),
+    {},
+  );
 }
 
 const sortBy = useLocalStorage("ledgerTableSortBy", "timestamp");
@@ -155,21 +151,22 @@ const sortedItems = computed(
       if (sortBy.value.startsWith("data.")) {
         if (sortOrder.value === "asc") {
           return ("" + a.data[sortBy.value.split("data.")[1]]).localeCompare(
-            b.data[sortBy.value.split("data.")[1]]
+            b.data[sortBy.value.split("data.")[1]],
           );
         }
         if (sortOrder.value === "desc") {
           return ("" + b.data[sortBy.value.split("data.")[1]]).localeCompare(
-            a.data[sortBy.value.split("data.")[1]]
+            a.data[sortBy.value.split("data.")[1]],
           );
         }
       }
-    }).value
+    }).value,
 );
 
 function getValue(type, name, id) {
-  return getCollection(type.split(":type")[0])?.findOne({ "data.id": id })
-    ?.data[name.split(":")[1]];
+  return getCollection(type.split(":type")[0])?.findOne({ "data.id": id })?.data[
+    name.split(":")[1]
+  ];
 }
 
 const editItem = shallowRef(null);
@@ -233,10 +230,7 @@ const editItem = shallowRef(null);
           </svg>
         </div>
       </th>
-      <th
-        class="uppercase p-4 z-10 font-thin"
-        @click="sortBy = 'data.permission'"
-      >
+      <th class="uppercase p-4 z-10 font-thin" @click="sortBy = 'data.permission'">
         <div class="flex justify-between items-center">
           Permission
           <svg
@@ -331,11 +325,7 @@ const editItem = shallowRef(null);
                 v-if="item.data?.permission?.startsWith('MFkw')"
                 :identity="item.data?.permission"
               />
-              {{
-                item.data?.permission === publicKeyPEM
-                  ? "(you)"
-                  : item.data?.permission
-              }}
+              {{ item.data?.permission === publicKeyPEM ? "(you)" : item.data?.permission }}
             </div>
           </td>
           <td class="text-center">

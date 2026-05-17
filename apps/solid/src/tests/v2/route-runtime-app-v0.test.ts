@@ -44,9 +44,7 @@ describe("RouteRuntimeApp", () => {
       },
     });
 
-    const rendered = await waitFor(
-      () => wrapper.find('[data-test="runtime-app-title"]').exists(),
-    );
+    const rendered = await waitFor(() => wrapper.find('[data-test="runtime-app-title"]').exists());
     expect(rendered).toBe(true);
     expect(router.currentRoute.value.fullPath).toBe("/app/tasks/list");
     expect(wrapper.find('[data-test="runtime-surface-tabs-bar"]').exists()).toBe(true);
@@ -65,8 +63,8 @@ describe("RouteRuntimeApp", () => {
       },
     });
 
-    const rendered = await waitFor(
-      () => wrapper.find('[data-test="runtime-app-surface"]').exists(),
+    const rendered = await waitFor(() =>
+      wrapper.find('[data-test="runtime-app-surface"]').exists(),
     );
     expect(rendered).toBe(true);
     expect(wrapper.get('[data-test="runtime-app-surface"]').text()).toContain("List");
@@ -84,13 +82,13 @@ describe("RouteRuntimeApp", () => {
       },
     });
 
-    const rendered = await waitFor(
-      () => wrapper.find('[data-test="runtime-app-unsupported-title"]').exists(),
+    const rendered = await waitFor(() =>
+      wrapper.find('[data-test="runtime-app-unsupported-title"]').exists(),
     );
     expect(rendered).toBe(true);
-    expect(wrapper.get('[data-test="runtime-app-unsupported-launch-link"]').attributes("href")).toBe(
-      "/launch",
-    );
+    expect(
+      wrapper.get('[data-test="runtime-app-unsupported-launch-link"]').attributes("href"),
+    ).toBe("/launch");
   });
 
   it("keeps unsupported state for unknown surface on known app", async () => {
@@ -104,8 +102,8 @@ describe("RouteRuntimeApp", () => {
       },
     });
 
-    const rendered = await waitFor(
-      () => wrapper.find('[data-test="runtime-app-unsupported-title"]').exists(),
+    const rendered = await waitFor(() =>
+      wrapper.find('[data-test="runtime-app-unsupported-title"]').exists(),
     );
     expect(rendered).toBe(true);
     expect(router.currentRoute.value.fullPath).toBe("/app/tasks/unknown");
@@ -122,14 +120,12 @@ describe("RouteRuntimeApp", () => {
       },
     });
 
-    const rendered = await waitFor(
-      () => wrapper.find('[data-test="runtime-surface-tabs-bar"]').exists(),
+    const rendered = await waitFor(() =>
+      wrapper.find('[data-test="runtime-surface-tabs-bar"]').exists(),
     );
     expect(rendered).toBe(true);
 
-    const boardTab = wrapper
-      .findAll('[role="tab"]')
-      .find((tab) => tab.text().trim() === "Board");
+    const boardTab = wrapper.findAll('[role="tab"]').find((tab) => tab.text().trim() === "Board");
     expect(boardTab).toBeTruthy();
     await boardTab!.trigger("click");
 

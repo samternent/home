@@ -16,10 +16,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
-function hasOnlyKeys(
-  value: Record<string, unknown>,
-  allowed: string[]
-): boolean {
+function hasOnlyKeys(value: Record<string, unknown>, allowed: string[]): boolean {
   return Object.keys(value).every((key) => allowed.includes(key));
 }
 
@@ -84,16 +81,16 @@ export function validateSealManifestShape(value: unknown): {
     return { ok: false, errors, manifest: null };
   }
 
-    return {
-      ok: true,
-      errors: [],
-      manifest: {
-        version: SEAL_MANIFEST_VERSION,
-        type: SEAL_MANIFEST_TYPE,
-        root: value.root as string,
-        files,
-      },
-    };
+  return {
+    ok: true,
+    errors: [],
+    manifest: {
+      version: SEAL_MANIFEST_VERSION,
+      type: SEAL_MANIFEST_TYPE,
+      root: value.root as string,
+      files,
+    },
+  };
 }
 
 export function parseSealManifestJson(raw: string): {

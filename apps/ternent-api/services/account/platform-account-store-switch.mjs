@@ -37,7 +37,7 @@ function logDualWriteIssue(operation, kind, payload) {
       kind,
       payload,
       timestamp: new Date().toISOString(),
-    })
+    }),
   );
 }
 
@@ -176,7 +176,10 @@ export async function removeBook(...args) {
 
 export async function ensurePersonalPixbook(...args) {
   return runWrite("ensurePersonalPixbook", args, {
-    buildMirrorArgs: ({ args: [userId, workspaceId, defaults, binding, options], primaryResult }) => [
+    buildMirrorArgs: ({
+      args: [userId, workspaceId, defaults, binding, options],
+      primaryResult,
+    }) => [
       userId,
       workspaceId,
       defaults,

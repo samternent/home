@@ -54,8 +54,5 @@ export function buildSidebarNavigationSections(
     ],
   };
 
-  return [
-    ...(appsSection.items.length > 0 ? [appsSection] : []),
-    systemSection,
-  ];
+  return [...(appsSection.items.length > 0 ? [appsSection] : []), systemSection];
 }

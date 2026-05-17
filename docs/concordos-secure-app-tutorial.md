@@ -51,6 +51,7 @@ await appApi.load();
 ```
 
 Production note:
+
 - In the current implementation, `devSessionUnlockBypass` defaults to `import.meta.env.DEV` if you do not set it. Set it explicitly in production-facing code.
 
 ## Step 2: Handle identity lifecycle before app routes
@@ -74,6 +75,7 @@ Recommended lifecycle:
    - `await appApi.identity.lock()`
 
 Security behaviors already enforced by the runtime:
+
 - Password minimum length validation.
 - Optional TOTP verification at onboarding/recovery/unlock.
 - Encrypted identity envelope verification (metadata must match decrypted identity).
@@ -105,6 +107,7 @@ await appApi.permissions.grantFromUser({
 ```
 
 Why this is safer:
+
 - Wrapper methods derive actor fields from active identity.
 - You avoid client-side actor spoofing mistakes.
 - `grantFromUser` resolves labels from projected user/profile state and blocks duplicate assignments.
@@ -127,6 +130,7 @@ await appApi.discard();
 ```
 
 Security value:
+
 - You can review and validate pending operations before commit.
 - You can cancel unsafe or accidental mutations deterministically.
 

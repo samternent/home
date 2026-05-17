@@ -6,10 +6,7 @@ const props = defineProps({ time: { type: String, default: undefined } });
 const countdown = shallowRef(null);
 
 let timerInterval = setInterval(() => {
-  countdown.value = Interval.fromDateTimes(
-    DateTime.now(),
-    DateTime.fromISO(props.time)
-  )
+  countdown.value = Interval.fromDateTimes(DateTime.now(), DateTime.fromISO(props.time))
     .toDuration(["days", "hours", "minutes", "seconds"])
     .toObject();
 }, 1 * 1000);

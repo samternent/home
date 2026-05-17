@@ -68,8 +68,8 @@
   --ui-shadow-md: 0 6px 18px rgba(10, 8, 6, 0.22);
   --ui-lift-hover: -0.5px;
   --ui-scale-active: 0.97;
-  --ui-logo-start: #FF5757;
-  --ui-logo-end: #8C52FF;
+  --ui-logo-start: #ff5757;
+  --ui-logo-end: #8c52ff;
   --ui-logo-cutout: #fbf7f0;
 }
 
@@ -141,7 +141,7 @@
   --ui-shadow-md: 0 6px 18px rgba(0, 0, 0, 0.45);
   --ui-lift-hover: -0.5px;
   --ui-scale-active: 0.97;
-  --ui-logo-start: #FF6B6B;
-  --ui-logo-end: #A78BFA;
+  --ui-logo-start: #ff6b6b;
+  --ui-logo-end: #a78bfa;
   --ui-logo-cutout: #141311;
 }

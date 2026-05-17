@@ -24,7 +24,7 @@ function createMemoryStorage(): LocalStorageLike {
 describe("identity security flow", () => {
   it("creates encrypted local identity from onboarding draft and unlocks with password", async () => {
     const storage = createMemoryStorage();
-    storage.setItem(LEGACY_PLAINTEXT_IDENTITY_STORAGE_KEY, "{\"legacy\":true}");
+    storage.setItem(LEGACY_PLAINTEXT_IDENTITY_STORAGE_KEY, '{"legacy":true}');
 
     const service = createIdentityService({
       storage,
@@ -44,7 +44,7 @@ describe("identity security flow", () => {
 
     const raw = storage.getItem(DEFAULT_ENCRYPTED_IDENTITY_STORAGE_KEY);
     expect(raw).toBeTruthy();
-    expect(raw).not.toContain("\"mnemonic\":");
+    expect(raw).not.toContain('"mnemonic":');
     expect(raw).not.toContain(draft.mnemonic.split(" ")[0]);
 
     await service.lock();
@@ -191,12 +191,8 @@ describe("identity security flow", () => {
     expect(recovered.identityId).toBe(expectedKeyId);
     const raw = storage.getItem(DEFAULT_ENCRYPTED_IDENTITY_STORAGE_KEY);
     expect(raw).toBeTruthy();
-    expect(raw).not.toContain("\"mnemonic\":");
-    const mnemonicPrefix = mnemonic
-      .trim()
-      .split(/\s+/)
-      .slice(0, 3)
-      .join(" ");
+    expect(raw).not.toContain('"mnemonic":');
+    const mnemonicPrefix = mnemonic.trim().split(/\s+/).slice(0, 3).join(" ");
     expect(raw).not.toContain(mnemonic);
     expect(raw).not.toContain(mnemonicPrefix);
   });

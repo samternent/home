@@ -39,10 +39,7 @@ export async function createSolidConcordApp(
     undefined;
   const walletUrl = input.walletUrl ?? discoveredResources?.walletUrl ?? undefined;
   const ledgerUrl =
-    input.ledgerUrl ??
-    discoveredResources?.ledgerUrl ??
-    defaultPaths?.ledgerUrl ??
-    null;
+    input.ledgerUrl ?? discoveredResources?.ledgerUrl ?? defaultPaths?.ledgerUrl ?? null;
 
   if (!ledgerUrl) {
     throw new Error(
@@ -74,11 +71,7 @@ export async function createSolidConcordApp(
     await initArmour();
   }
 
-  const storage = createSolidStorage(
-    input.session,
-    ledgerUrl,
-    input.storageOptions,
-  );
+  const storage = createSolidStorage(input.session, ledgerUrl, input.storageOptions);
 
   const app = await createConcordApp({
     identity,
@@ -130,18 +123,14 @@ export async function createSolidConcordApp(
               verificationUrl: input.profile?.verificationUrl ?? null,
               seeAlso: [],
             }),
-            identityUrl:
-              encryptedIdentityUrl ?? discoveredResources?.identityUrl ?? null,
+            identityUrl: encryptedIdentityUrl ?? discoveredResources?.identityUrl ?? null,
             walletUrl: walletUrl ?? discoveredResources?.walletUrl ?? null,
             ledgerUrl,
           }
         : undefined;
   const accessReport =
     resources && profileEnabled
-      ? await enforceSolidConcordAccess(
-          resources,
-          input.profile?.accessValidation ?? "strict",
-        )
+      ? await enforceSolidConcordAccess(resources, input.profile?.accessValidation ?? "strict")
       : undefined;
 
   return {

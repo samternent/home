@@ -1,5 +1,8 @@
 import { getPlatformAuthRuntime, getPlatformSession } from "./platform-auth.mjs";
-import { ensureWorkspaceForUser, userHasCapability } from "../account/platform-account-store-switch.mjs";
+import {
+  ensureWorkspaceForUser,
+  userHasCapability,
+} from "../account/platform-account-store-switch.mjs";
 import { resolveRequestedAccountId } from "../account/account-schema-flags.mjs";
 
 function resolveWorkspaceFromRequest(req) {

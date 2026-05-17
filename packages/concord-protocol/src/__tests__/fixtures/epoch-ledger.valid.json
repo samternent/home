@@ -9,9 +9,7 @@
         "genesis": true,
         "spec": "concord-protocol@1.0"
       },
-      "entries": [
-        "entry-epoch-1"
-      ]
+      "entries": ["entry-epoch-1"]
     },
     "commit-2": {
       "parent": "genesis",
@@ -19,9 +17,7 @@
       "metadata": {
         "message": "rotate epoch"
       },
-      "entries": [
-        "entry-epoch-2"
-      ]
+      "entries": ["entry-epoch-2"]
     }
   },
   "entries": {

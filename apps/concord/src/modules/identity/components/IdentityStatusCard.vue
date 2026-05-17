@@ -15,12 +15,19 @@ const shortFingerprint = computed(() => {
   <SCard class="p-4">
     <h3 class="m-0 text-lg">Identity status</h3>
     <p class="mt-2 text-sm text-fg-muted">
-      {{ hasIdentity ? "An identity is active for this browser profile." : "No identity is active yet." }}
+      {{
+        hasIdentity
+          ? "An identity is active for this browser profile."
+          : "No identity is active yet."
+      }}
     </p>
     <div v-if="identity" class="mt-3 text-sm">
       <div><strong>ID:</strong> {{ identity.id }}</div>
       <div><strong>Fingerprint:</strong> {{ shortFingerprint }}</div>
-      <div><strong>Created:</strong> {{ new Date(identity.serializedIdentity.createdAt).toLocaleString() }}</div>
+      <div>
+        <strong>Created:</strong>
+        {{ new Date(identity.serializedIdentity.createdAt).toLocaleString() }}
+      </div>
     </div>
   </SCard>
 </template>

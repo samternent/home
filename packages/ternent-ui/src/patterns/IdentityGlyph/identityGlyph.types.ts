@@ -8,10 +8,7 @@ export type IdentityGlyphInput =
   | { publicKey: string }
   | { identityKey: string }
   | {
-      identity:
-        | SerializedIdentity
-        | { publicKey: string }
-        | { identityKey: string };
+      identity: SerializedIdentity | { publicKey: string } | { identityKey: string };
     };
 
 export type IdentityGlyphSize = "xs" | "sm" | "md" | "lg";

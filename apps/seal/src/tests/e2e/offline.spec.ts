@@ -7,5 +7,7 @@ test("offline mode banner appears when network drops", async ({ page, context })
   await page.goto("/app/verify");
   await context.setOffline(true);
 
-  await expect(page.getByText("Offline mode active. Signing and verification continue locally.")).toBeVisible();
+  await expect(
+    page.getByText("Offline mode active. Signing and verification continue locally."),
+  ).toBeVisible();
 });

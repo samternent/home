@@ -83,11 +83,7 @@ const wrapperClass = computed(() =>
       class="m-0 flex min-h-0 list-none flex-col gap-1 overflow-auto p-0"
       data-test="record-list-items"
     >
-      <li
-        v-for="(item, index) in normalizedItems"
-        :key="item.id"
-        :data-test="item.dataTest"
-      >
+      <li v-for="(item, index) in normalizedItems" :key="item.id" :data-test="item.dataTest">
         <div class="flex items-center gap-2">
           <Button
             type="button"

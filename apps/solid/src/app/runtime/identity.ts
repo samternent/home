@@ -6,22 +6,12 @@ import {
   type MnemonicWordCount,
   type SerializedIdentity,
 } from "@ternent/identity";
-import {
-  decryptTextWithPassphrase,
-  encryptTextWithPassphrase,
-  initArmour,
-} from "@ternent/armour";
+import { decryptTextWithPassphrase, encryptTextWithPassphrase, initArmour } from "@ternent/armour";
 import type { LocalStorageLike } from "./storage";
-import {
-  createOtpAuthUri,
-  generateTotpSecret,
-  verifyTotpCode,
-  type TotpPolicy,
-} from "./totp";
+import { createOtpAuthUri, generateTotpSecret, verifyTotpCode, type TotpPolicy } from "./totp";
 
 export const LEGACY_PLAINTEXT_IDENTITY_STORAGE_KEY = "solid/v2/concord/identity/v1";
-export const DEFAULT_ENCRYPTED_IDENTITY_STORAGE_KEY =
-  "solid/v2/concord/identity/encrypted/v2";
+export const DEFAULT_ENCRYPTED_IDENTITY_STORAGE_KEY = "solid/v2/concord/identity/encrypted/v2";
 export const DEFAULT_DEV_SESSION_UNLOCK_STORAGE_KEY =
   "solid/v2/concord/identity/unlocked/session/v1";
 
@@ -125,10 +115,7 @@ export type IdentityService = {
     totpAccountName?: string;
     createdAt?: string;
   }): Promise<ActiveIdentity>;
-  unlockWithPassword(input: {
-    password: string;
-    totpCode?: string;
-  }): Promise<ActiveIdentity>;
+  unlockWithPassword(input: { password: string; totpCode?: string }): Promise<ActiveIdentity>;
   getStoredIdentitySummary(): StoredIdentitySummary | null;
   lock(): Promise<void>;
 };
@@ -250,9 +237,7 @@ function isEncryptedIdentityBlobV2(value: unknown): value is EncryptedIdentityBl
 function parseEncryptedBlob(input: EncryptedIdentityBlobV2 | string): EncryptedIdentityBlobV2 {
   const parsed = typeof input === "string" ? JSON.parse(input) : input;
   if (!isEncryptedIdentityBlobV2(parsed)) {
-    throw new Error(
-      "Encrypted identity payload must be a ternent-solid-local-identity v1 blob.",
-    );
+    throw new Error("Encrypted identity payload must be a ternent-solid-local-identity v1 blob.");
   }
   return parsed;
 }
@@ -265,8 +250,7 @@ function isEncryptedIdentityPayload(value: unknown): value is EncryptedIdentityP
     typeof value.mnemonic === "string" &&
     isRecord(value.mfa) &&
     typeof value.mfa.totpEnabled === "boolean" &&
-    (value.mfa.totpSecretBase32 === null ||
-      typeof value.mfa.totpSecretBase32 === "string") &&
+    (value.mfa.totpSecretBase32 === null || typeof value.mfa.totpSecretBase32 === "string") &&
     isRecord(value.mfa.totpPolicy) &&
     typeof value.mfa.totpPolicy.issuer === "string" &&
     typeof value.mfa.totpPolicy.accountName === "string" &&
@@ -281,9 +265,7 @@ async function encryptPayload(input: {
 }): Promise<string> {
   const serialized = JSON.stringify(input.payload);
   if (typeof serialized !== "string" || serialized.length === 0) {
-    throw new Error(
-      `Encrypted identity payload serialization failed (type=${typeof serialized}).`,
-    );
+    throw new Error(`Encrypted identity payload serialization failed (type=${typeof serialized}).`);
   }
   await initArmour();
   return await encryptTextWithPassphrase({
@@ -396,13 +378,10 @@ export function createIdentityService(options: CreateIdentityServiceOptions = {}
   const sessionStorage = devSessionUnlockBypass
     ? resolveSessionStorage(options.sessionStorage)
     : null;
-  const sessionStorageKey =
-    options.sessionStorageKey ?? DEFAULT_DEV_SESSION_UNLOCK_STORAGE_KEY;
+  const sessionStorageKey = options.sessionStorageKey ?? DEFAULT_DEV_SESSION_UNLOCK_STORAGE_KEY;
   const initialIdentity =
     options.identity ??
-    (sessionStorage
-      ? readSessionIdentity(sessionStorage, sessionStorageKey)
-      : undefined);
+    (sessionStorage ? readSessionIdentity(sessionStorage, sessionStorageKey) : undefined);
   let explicitEncryptedBlob: EncryptedIdentityBlobV2 | null = null;
   if (options.encryptedIdentity) {
     explicitEncryptedBlob = parseEncryptedBlob(options.encryptedIdentity);
@@ -444,9 +423,7 @@ export function createIdentityService(options: CreateIdentityServiceOptions = {}
 
       const policy: TotpPolicy = {
         issuer: String(input.totpIssuer || options.rpName || DEFAULT_TOTP_ISSUER),
-        accountName: String(
-          input.totpAccountName || `${formatIdentityLabel(identity)}@local`,
-        ),
+        accountName: String(input.totpAccountName || `${formatIdentityLabel(identity)}@local`),
         digits: 6,
         period: 30,
       };

@@ -13,12 +13,10 @@ export function provideLedgerApps() {
   const hasApps = computed(() => apps.value.length > 0);
 
   // Get apps by type
-  const getAppsByType = (type) =>
-    computed(() => apps.value.filter((app) => app.type === type));
+  const getAppsByType = (type) => computed(() => apps.value.filter((app) => app.type === type));
 
   // Get app by ID
-  const getAppById = (appId) =>
-    computed(() => apps.value.find((app) => app.id === appId));
+  const getAppById = (appId) => computed(() => apps.value.find((app) => app.id === appId));
 
   const ledgerApps = {
     apps,
@@ -36,9 +34,7 @@ export function provideLedgerApps() {
 export function useLedgerApps() {
   const ledgerApps = inject(useLedgerAppsSymbol);
   if (!ledgerApps) {
-    throw new Error(
-      "useLedgerApps must be used within a component that provides ledger apps"
-    );
+    throw new Error("useLedgerApps must be used within a component that provides ledger apps");
   }
   return ledgerApps;
 }

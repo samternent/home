@@ -68,14 +68,14 @@ function createMemoryGateway() {
 
 function createIssuerKeyEnv() {
   const { privateKey } = generateKeyPairSync("ec", { namedCurve: "prime256v1" });
-  const privateKeyPem = privateKey
-    .export({ type: "pkcs8", format: "pem" })
-    .toString();
+  const privateKeyPem = privateKey.export({ type: "pkcs8", format: "pem" }).toString();
   process.env.ISSUER_PRIVATE_KEY_PEM = privateKeyPem;
 }
 
 function issuerAuthorToPem(author) {
-  const normalized = String(author || "").replace(/\\n/g, "\n").trim();
+  const normalized = String(author || "")
+    .replace(/\\n/g, "\n")
+    .trim();
   if (!normalized) return "";
   if (normalized.includes("BEGIN PUBLIC KEY")) return normalized;
   return `-----BEGIN PUBLIC KEY-----\n${normalized}\n-----END PUBLIC KEY-----`;
@@ -134,14 +134,10 @@ test("verifyPack validates issued tracked pack integrity", async () => {
     issueLedgerEntry: async () => ({ segmentKey: "seg", segmentHash: "hash" }),
   });
 
-  const issue = await router.invoke(
-    "POST",
-    "/v1/pixpax/collections/:collectionId/:version/packs",
-    {
-      params: { collectionId: "premier-league-2026", version: "v1" },
-      body: { userKey: "school:user:abc123", dropId: "week-2026-W07" },
-    }
-  );
+  const issue = await router.invoke("POST", "/v1/pixpax/collections/:collectionId/:version/packs", {
+    params: { collectionId: "premier-league-2026", version: "v1" },
+    body: { userKey: "school:user:abc123", dropId: "week-2026-W07" },
+  });
   assert.equal(issue.statusCode, 200);
 
   const issuerKeyId = String(issue.body?.entry?.payload?.issuerKeyId || "");
@@ -179,14 +175,10 @@ test("verifyPack fails loudly when cached card payload is tampered", async () =>
     issueLedgerEntry: async () => ({ segmentKey: "seg", segmentHash: "hash" }),
   });
 
-  const issue = await router.invoke(
-    "POST",
-    "/v1/pixpax/collections/:collectionId/:version/packs",
-    {
-      params: { collectionId: "premier-league-2026", version: "v1" },
-      body: { userKey: "school:user:abc123", dropId: "week-2026-W07" },
-    }
-  );
+  const issue = await router.invoke("POST", "/v1/pixpax/collections/:collectionId/:version/packs", {
+    params: { collectionId: "premier-league-2026", version: "v1" },
+    body: { userKey: "school:user:abc123", dropId: "week-2026-W07" },
+  });
   assert.equal(issue.statusCode, 200);
 
   await store.putCard("premier-league-2026", "v1", "arsenal-02", {

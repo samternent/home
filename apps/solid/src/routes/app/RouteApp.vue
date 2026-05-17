@@ -16,9 +16,7 @@ function hasDevSessionResumeCandidate(): boolean {
   if (typeof window === "undefined") {
     return false;
   }
-  return Boolean(
-    window.sessionStorage.getItem(DEFAULT_DEV_SESSION_UNLOCK_STORAGE_KEY),
-  );
+  return Boolean(window.sessionStorage.getItem(DEFAULT_DEV_SESSION_UNLOCK_STORAGE_KEY));
 }
 
 onMounted(() => {
@@ -33,8 +31,6 @@ onMounted(() => {
 <template>
   <AppShell>
     <RouterView v-if="isUnlocked" />
-    <div v-else class="sr-only" data-test="identity-shell-locked">
-      Identity locked
-    </div>
+    <div v-else class="sr-only" data-test="identity-shell-locked">Identity locked</div>
   </AppShell>
 </template>

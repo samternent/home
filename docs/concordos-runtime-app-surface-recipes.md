@@ -3,6 +3,7 @@
 This guide is for building functional SaaS surfaces inside the runtime app shell (for example, `tasks/list` and `tasks/board`) with a simple, repeatable pattern.
 
 Primary seam:
+
 - route host: `apps/solid/src/routes/app/RouteRuntimeApp.vue`
 - registry: `apps/solid/src/runtime/apps/registry.ts`
 - surfaces: `apps/solid/src/runtime/apps/tasks/list/RuntimeAppsTaskList.vue`, `apps/solid/src/runtime/apps/tasks/board/RuntimeAppsTaskBoard.vue`
@@ -24,13 +25,16 @@ This keeps behavior deterministic and testable while scaling to multiple UI surf
 ## 2) Route + Surface Wiring (already in place)
 
 Runtime surfaces are mounted through:
+
 - `/app/:appId/:surfaceId?`
 
 Registry example already configured:
+
 - app id `tasks`
 - surfaces `list` and `board`
 
 When you add a new surface:
+
 1. Create component file under `apps/solid/src/runtime/apps/<app>/<surface>/...`
 2. Register it in `apps/solid/src/runtime/apps/registry.ts`
 3. It appears automatically in surface tabs inside `RouteRuntimeApp.vue`
@@ -40,6 +44,7 @@ When you add a new surface:
 For each feature, define commands first. Keep command names explicit and scoped.
 
 Example task command set:
+
 - `task.create`
 - `task.rename`
 - `task.move` (status/column change)
@@ -47,16 +52,19 @@ Example task command set:
 - `task.archive`
 
 Recommended command payload shape:
+
 - Required ids and actor identity key
 - Optional metadata only where necessary
 - No client-trusted authorization flags
 
 Example policy checks inside command handlers:
+
 - Actor must match active signer identity.
 - Actor must be a member of the workspace permission/group.
 - Target assignee must exist in users projection.
 
 Use current permissions plugin style as baseline:
+
 - signer check: reject forged actor
 - membership check: only existing members can mutate membership-sensitive records
 
@@ -88,6 +96,7 @@ Today, you should treat data protection in two buckets:
    - Payload-level encryption is optional and should be used for sensitive domain fields.
 
 Pragmatic rule of thumb:
+
 - Public collaboration metadata (titles, statuses, labels): plain payload.
 - Secrets/PII (private notes, tokens, regulated fields): encrypted payload strategy.
 
@@ -101,7 +110,10 @@ Target shape to add in `AppApi`:
 
 ```ts
 export type AppTasksApi = {
-  create(input: { title: string; status?: "todo" | "doing" | "done" }): Promise<ConcordCommandResult>;
+  create(input: {
+    title: string;
+    status?: "todo" | "doing" | "done";
+  }): Promise<ConcordCommandResult>;
   rename(input: { taskId: string; title: string }): Promise<ConcordCommandResult>;
   move(input: { taskId: string; status: "todo" | "doing" | "done" }): Promise<ConcordCommandResult>;
   assign(input: { taskId: string; identityKey: string | null }): Promise<ConcordCommandResult>;
@@ -112,6 +124,7 @@ export type AppTasksApi = {
 ```
 
 Implementation pattern in `useAppApi.ts`:
+
 - Derive actor from `activeIdentity`
 - Validate projected users before assignment
 - Delegate actual authorization to plugin command handlers
@@ -119,6 +132,7 @@ Implementation pattern in `useAppApi.ts`:
 ## 7) Surface Recipe: List View
 
 List view responsibilities:
+
 - Fast create/edit/assign interactions
 - Simple status filtering
 - Bulk actions (optional)
@@ -154,6 +168,7 @@ async function discardChanges(): Promise<void> {
 ## 8) Surface Recipe: Board View
 
 Board view responsibilities:
+
 - Group same tasks by status
 - Drag/drop or action-based move between columns
 - Same command surface as list view (`task.move`)
@@ -181,6 +196,7 @@ async function move(taskId: string, status: "todo" | "doing" | "done"): Promise<
 ```
 
 Key point:
+
 - `list` and `board` share the same command/state model, so switching surfaces never forks data logic.
 
 ## 9) Commit Strategy For Product UX
@@ -214,12 +230,14 @@ Whichever you choose, apply it consistently across list and board.
 ## 11) Minimal Do / Don't
 
 Do:
+
 - keep auth checks in command handlers
 - keep surfaces thin and projection-driven
 - keep command names explicit and domain-scoped
 - use typed API wrappers from `useAppApi`
 
 Don't:
+
 - trust UI-only role checks
 - expose arbitrary raw `command(type, input)` from UI
 - duplicate business logic across list and board
@@ -228,6 +246,7 @@ Don't:
 ---
 
 If you want, the next step can be a concrete scaffold patch that adds:
+
 - `tasks` plugin (`apps/solid/src/app/plugins/tasks.ts`)
 - `appApi.tasks` typed facade
 - first functional list + board surfaces wired to real ledger commands.

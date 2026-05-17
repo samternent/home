@@ -1,12 +1,6 @@
 import { invalidBinaryInputError } from "./errors.js";
-import {
-  decryptWithIdentity,
-  encryptForIdentities,
-} from "./recipients.js";
-import {
-  decryptWithPassphrase,
-  encryptWithPassphrase,
-} from "./passphrase.js";
+import { decryptWithIdentity, encryptForIdentities } from "./recipients.js";
+import { decryptWithPassphrase, encryptWithPassphrase } from "./passphrase.js";
 import type {
   ArmourBinaryInput,
   DecryptBinaryWithIdentityInput,
@@ -41,7 +35,7 @@ async function toUint8Array(data: ArmourBinaryInput): Promise<Uint8Array> {
 }
 
 export async function encryptBinaryForIdentities(
-  input: EncryptBinaryForIdentitiesInput
+  input: EncryptBinaryForIdentitiesInput,
 ): Promise<Uint8Array> {
   return encryptForIdentities({
     identities: input.identities,
@@ -51,7 +45,7 @@ export async function encryptBinaryForIdentities(
 }
 
 export async function decryptBinaryWithIdentity(
-  input: DecryptBinaryWithIdentityInput
+  input: DecryptBinaryWithIdentityInput,
 ): Promise<Uint8Array> {
   return decryptWithIdentity({
     identity: input.identity,
@@ -60,7 +54,7 @@ export async function decryptBinaryWithIdentity(
 }
 
 export async function encryptBinaryWithPassphrase(
-  input: EncryptBinaryWithPassphraseInput
+  input: EncryptBinaryWithPassphraseInput,
 ): Promise<Uint8Array> {
   return encryptWithPassphrase({
     passphrase: input.passphrase,
@@ -70,7 +64,7 @@ export async function encryptBinaryWithPassphrase(
 }
 
 export async function decryptBinaryWithPassphrase(
-  input: DecryptBinaryWithPassphraseInput
+  input: DecryptBinaryWithPassphraseInput,
 ): Promise<Uint8Array> {
   return decryptWithPassphrase({
     passphrase: input.passphrase,

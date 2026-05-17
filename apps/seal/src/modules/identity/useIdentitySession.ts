@@ -78,10 +78,7 @@ function readRememberedIdentity(): {
 
 function writeRememberFlag(value: boolean) {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(
-    rememberIdentityFlagStorageKey,
-    value ? "true" : "false"
-  );
+  window.localStorage.setItem(rememberIdentityFlagStorageKey, value ? "true" : "false");
 }
 
 function writeRememberedIdentity(identity: StoredIdentity | null) {
@@ -92,10 +89,7 @@ function writeRememberedIdentity(identity: StoredIdentity | null) {
     return;
   }
 
-  window.localStorage.setItem(
-    rememberedIdentityStorageKey,
-    JSON.stringify(identity)
-  );
+  window.localStorage.setItem(rememberedIdentityStorageKey, JSON.stringify(identity));
 }
 
 const rememberInBrowserState = shallowRef<boolean>(readRememberFlag());
@@ -103,9 +97,7 @@ const rememberedState = rememberInBrowserState.value
   ? readRememberedIdentity()
   : { identity: null, legacyRejected: false };
 const activeIdentityState = shallowRef<StoredIdentity | null>(rememberedState.identity);
-const legacyIdentityRejectedState = shallowRef<boolean>(
-  rememberedState.legacyRejected
-);
+const legacyIdentityRejectedState = shallowRef<boolean>(rememberedState.legacyRejected);
 
 function syncRememberedIdentity() {
   if (rememberInBrowserState.value) {
@@ -130,9 +122,7 @@ export function useIdentitySession(): IdentitySession {
   const identity = computed(() => activeIdentityState.value);
   const hasIdentity = computed(() => Boolean(activeIdentityState.value));
   const rememberInBrowser = computed(() => rememberInBrowserState.value);
-  const legacyIdentityRejected = computed(
-    () => legacyIdentityRejectedState.value
-  );
+  const legacyIdentityRejected = computed(() => legacyIdentityRejectedState.value);
 
   const setIdentity = (next: StoredIdentity) => {
     activeIdentityState.value = next;

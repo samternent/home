@@ -47,9 +47,7 @@ const result = ref<VerificationResult>({
   issues: [],
 });
 
-const issueCount = computed(
-  () => result.value.errors.length + result.value.warnings.length
-);
+const issueCount = computed(() => result.value.errors.length + result.value.warnings.length);
 
 let runId = 0;
 
@@ -128,9 +126,7 @@ watch(
       pushIssue({
         level: "error",
         code: "commit-chain-invalid",
-        message: `Commit chain invalid: ${
-          (err as Error)?.message || String(err)
-        }`,
+        message: `Commit chain invalid: ${(err as Error)?.message || String(err)}`,
       });
     }
 
@@ -151,9 +147,7 @@ watch(
           level: "error",
           code: "commit-hash-error",
           commitId,
-          message: `Commit hash error for ${commitId}: ${
-            (err as Error)?.message || String(err)
-          }`,
+          message: `Commit hash error for ${commitId}: ${(err as Error)?.message || String(err)}`,
         });
       }
 
@@ -191,9 +185,7 @@ watch(
           level: "error",
           code: "entry-hash-error",
           entryId,
-          message: `Entry hash error for ${entryId}: ${
-            (err as Error)?.message || String(err)
-          }`,
+          message: `Entry hash error for ${entryId}: ${(err as Error)?.message || String(err)}`,
         });
       }
 
@@ -255,7 +247,7 @@ watch(
     };
     emit("status", { status: result.value.status, issues });
   },
-  { immediate: true }
+  { immediate: true },
 );
 </script>
 
@@ -274,8 +266,8 @@ watch(
           result.status === 'ok'
             ? 'bg-[var(--success)]'
             : result.status === 'error'
-            ? 'bg-[var(--critical)]'
-            : 'bg-[var(--ui-fg-muted)]'
+              ? 'bg-[var(--critical)]'
+              : 'bg-[var(--ui-fg-muted)]'
         "
       ></span>
       <span
@@ -283,45 +275,43 @@ watch(
           result.status === 'ok'
             ? 'text-[var(--text-success)]'
             : result.status === 'error'
-            ? 'text-[var(--text-critical)]'
-            : 'text-[var(--ui-fg-muted)]'
+              ? 'text-[var(--text-critical)]'
+              : 'text-[var(--ui-fg-muted)]'
         "
       >
         {{
           result.status === "verifying"
             ? "Verifying..."
             : result.status === "ok"
-            ? ""
-            : result.status === "error"
-            ? `${issueCount} issue${issueCount === 1 ? "" : "s"}`
-            : "Ledger idle"
+              ? ""
+              : result.status === "error"
+                ? `${issueCount} issue${issueCount === 1 ? "" : "s"}`
+                : "Ledger idle"
         }}
       </span>
     </template>
 
     <template v-else>
       <div class="flex items-center justify-between gap-3">
-        <div class="text-xs uppercase tracking-wide opacity-60">
-          Ledger verification
-        </div>
+        <div class="text-xs uppercase tracking-wide opacity-60">Ledger verification</div>
         <div
           class="text-xs"
           :class="
             result.status === 'ok'
               ? 'text-green-600'
               : result.status === 'error'
-              ? 'text-red-600'
-              : 'text-[var(--ui-fg-muted)]'
+                ? 'text-red-600'
+                : 'text-[var(--ui-fg-muted)]'
           "
         >
           {{
             result.status === "verifying"
               ? "Verifying..."
               : result.status === "ok"
-              ? "OK"
-              : result.status === "error"
-              ? `${issueCount} issue${issueCount === 1 ? "" : "s"}`
-              : "Idle"
+                ? "OK"
+                : result.status === "error"
+                  ? `${issueCount} issue${issueCount === 1 ? "" : "s"}`
+                  : "Idle"
           }}
         </div>
       </div>
@@ -341,9 +331,7 @@ watch(
       </p>
 
       <details v-if="result.errors.length || result.warnings.length">
-        <summary class="text-xs cursor-pointer text-[var(--ui-fg-muted)]">
-          View details
-        </summary>
+        <summary class="text-xs cursor-pointer text-[var(--ui-fg-muted)]">View details</summary>
         <div class="mt-2 flex flex-col gap-2">
           <div v-if="result.errors.length" class="text-xs text-red-600">
             <div v-for="(err, index) in result.errors" :key="`err-${index}`">
@@ -351,10 +339,7 @@ watch(
             </div>
           </div>
           <div v-if="result.warnings.length" class="text-xs text-yellow-700">
-            <div
-              v-for="(warn, index) in result.warnings"
-              :key="`warn-${index}`"
-            >
+            <div v-for="(warn, index) in result.warnings" :key="`warn-${index}`">
               {{ warn }}
             </div>
           </div>

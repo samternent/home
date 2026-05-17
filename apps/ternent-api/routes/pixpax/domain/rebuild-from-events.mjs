@@ -88,11 +88,11 @@ export function rebuildCollectionSnapshotFromEvents(events) {
     retiredSeriesIds: [...state.retiredSeriesById].sort((a, b) => a.localeCompare(b)),
     cardIds: [...state.cardIds].sort((a, b) => a.localeCompare(b)),
     packsById: Object.fromEntries(
-      [...state.packsById.entries()].sort(([a], [b]) => a.localeCompare(b))
+      [...state.packsById.entries()].sort(([a], [b]) => a.localeCompare(b)),
     ),
     claimedPackIds: [...state.claimedPackIds].sort((a, b) => a.localeCompare(b)),
     giftCodesById: Object.fromEntries(
-      [...state.giftCodesById.entries()].sort(([a], [b]) => a.localeCompare(b))
+      [...state.giftCodesById.entries()].sort(([a], [b]) => a.localeCompare(b)),
     ),
   };
 }

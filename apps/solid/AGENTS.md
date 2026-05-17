@@ -78,12 +78,14 @@ src/
   stores/
 
   styles/
-  ```
+```
 
 ## Commands
+
 - pnpm dev - Start development server (default port 8923)
 
 ## General Guidelines
+
 - Always format, lint and test your changes.
 - Keep types in the same file where used - extract only when shared
 - Prefer function declaration over named arrow functions
@@ -106,5 +108,6 @@ Must reference actual packages (e.g. @teamwork/lightspeed-app)
 IMPORTANT: Always use patch. Never create major or minor changesets
 
 ## Pull Requests
+
 Use PR template: .github/pull_request_template.md
 Keep the description concise but informative

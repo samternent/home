@@ -5,10 +5,7 @@ import { SButton } from "ternent-ui/components";
 
 const { ledger, api } = useLedger();
 
-const commitMessage = useLocalStorage(
-  "ternentdotdev/LedgerCommit/commitMessage",
-  ""
-);
+const commitMessage = useLocalStorage("ternentdotdev/LedgerCommit/commitMessage", "");
 async function commit() {
   await api.commit(commitMessage.value);
   commitMessage.value = null;

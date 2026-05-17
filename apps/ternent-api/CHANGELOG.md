@@ -123,7 +123,6 @@
 ### Patch Changes
 
 - [`0b3ad35f79ee0874abdedc24c0e3c07a8fda1bf2`](https://github.com/samternent/home/commit/0b3ad35f79ee0874abdedc24c0e3c07a8fda1bf2) Thanks [@samternent](https://github.com/samternent)! - Stabilize PixPax account identity behavior and migration cutover paths, add deterministic switch/read flows, and improve redeem code operations.
-
   - Add explicit account-scoped identity/pixbook refresh on identity switch and remove implicit auto-selection behavior.
   - Move PixPax creator/admin/analytics views into main layout while preserving route auth guards.
   - Improve redeem UX with explicit expired/revoked error messaging.

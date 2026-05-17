@@ -53,10 +53,8 @@ const dragging = defineModel("dragging", { type: Boolean, default: false });
 const resizeHandle = shallowRef(null);
 const resizeHandleBtn = shallowRef(null);
 
-const { width: handleWidth, height: handleHeight } =
-  useElementBounding(resizeHandle);
-const { width: handleBtnWidth, height: handleBtnHeight } =
-  useElementBounding(resizeHandleBtn);
+const { width: handleWidth, height: handleHeight } = useElementBounding(resizeHandle);
+const { width: handleBtnWidth, height: handleBtnHeight } = useElementBounding(resizeHandleBtn);
 const {
   left: containerLeft,
   right: containerRight,
@@ -65,9 +63,7 @@ const {
 } = useElementBounding(computed(() => props.container));
 
 const paddingX = computed(() => (handleWidth.value - handleBtnWidth.value) / 2);
-const paddingY = computed(
-  () => (handleHeight.value - handleBtnHeight.value) / 2
-);
+const paddingY = computed(() => (handleHeight.value - handleBtnHeight.value) / 2);
 
 const { isDragging } = useDraggable(resizeHandle, {
   onStart: () => emit("dragStart"),
@@ -81,12 +77,8 @@ const { isDragging } = useDraggable(resizeHandle, {
       // When dragging, offset the handle padding and container and update with drag position.
       // When dragging reaches right bounds, offset the handle padding and container and fix to the right side.
       // When dragging reaches left bounds, offset the handle padding and container and fix to the left side.
-      if (
-        posX >
-        containerRight.value - (paddingX.value + handleBtnWidth.value)
-      ) {
-        position.value =
-          containerRight.value - containerLeft.value - handleBtnWidth.value;
+      if (posX > containerRight.value - (paddingX.value + handleBtnWidth.value)) {
+        position.value = containerRight.value - containerLeft.value - handleBtnWidth.value;
       } else if (posX < containerLeft.value - paddingX.value) {
         position.value = handleBtnWidth.value * -1;
       } else {
@@ -106,8 +98,7 @@ const { isDragging } = useDraggable(resizeHandle, {
         return;
       }
 
-      position.value =
-        containerHeight.value - (posY - containerTop.value + paddingY.value);
+      position.value = containerHeight.value - (posY - containerTop.value + paddingY.value);
     }
   },
 });

@@ -1,7 +1,7 @@
 {
   "name": "pixpax",
-  "private": true,
   "version": "0.0.19",
+  "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite --host",
@@ -15,13 +15,13 @@
   },
   "dependencies": {
     "@better-auth/passkey": "^1.4.18",
+    "@tailwindcss/vite": "^4.1.18",
     "@ternent/concord": "workspace:*",
     "@ternent/identity": "workspace:*",
     "@ternent/pixpax-concord": "workspace:*",
     "@ternent/pixpax-core": "workspace:*",
     "@ternent/pixpax-issuer": "workspace:*",
     "@ternent/seal-cli": "workspace:*",
-    "@tailwindcss/vite": "^4.1.18",
     "@vueuse/core": "^10.11.1",
     "better-auth": "^1.4.18",
     "html-to-image": "^1.11.13",

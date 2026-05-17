@@ -1,10 +1,5 @@
 import type { PropType } from "vue";
-import type {
-  ButtonElement,
-  ButtonNativeType,
-  ButtonSize,
-  ButtonVariant,
-} from "./Button.types";
+import type { ButtonElement, ButtonNativeType, ButtonSize, ButtonVariant } from "./Button.types";
 
 export const buttonProps = {
   as: {

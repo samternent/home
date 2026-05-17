@@ -7,8 +7,7 @@ export function createDirectRageRuntime(): RageRuntime {
     generateKeyPair: () => getWasmBindings().generateKeyPair(),
     encryptWithRecipients: (recipients, data, armor) =>
       getWasmBindings().encryptWithRecipients(recipients, data, armor),
-    decryptWithIdentity: (identity, data) =>
-      getWasmBindings().decryptWithIdentity(identity, data),
+    decryptWithIdentity: (identity, data) => getWasmBindings().decryptWithIdentity(identity, data),
     encryptWithPassphrase: (passphrase, data, armor) =>
       getWasmBindings().encryptWithPassphrase(passphrase, data, armor),
     decryptWithPassphrase: (passphrase, data) =>

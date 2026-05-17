@@ -36,12 +36,12 @@ async function signPayload(privateKeyPem, payload) {
     privatePemToDer(privateKeyPem),
     { name: "ECDSA", namedCurve: "P-256" },
     false,
-    ["sign"]
+    ["sign"],
   );
   const signature = await subtle.sign(
     { name: "ECDSA", hash: "SHA-256" },
     key,
-    new TextEncoder().encode(payload)
+    new TextEncoder().encode(payload),
   );
   return Buffer.from(signature).toString("base64");
 }

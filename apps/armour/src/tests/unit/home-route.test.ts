@@ -9,7 +9,7 @@ function createWrapper() {
       stubs: {
         RouterLink: {
           props: ["to"],
-          template: "<a :href=\"to\"><slot /></a>",
+          template: '<a :href="to"><slot /></a>',
         },
         ArmourHeroEnvelopeCard: {
           template: "<span>Armour envelope hero</span>",
@@ -25,13 +25,8 @@ function createWrapper() {
   });
 }
 
-async function clickTab(
-  wrapper: ReturnType<typeof createWrapper>,
-  label: string,
-) {
-  const tab = wrapper
-    .findAll('[role="tab"]')
-    .find((candidate) => candidate.text() === label);
+async function clickTab(wrapper: ReturnType<typeof createWrapper>, label: string) {
+  const tab = wrapper.findAll('[role="tab"]').find((candidate) => candidate.text() === label);
 
   expect(tab, `expected tab "${label}" to exist`).toBeTruthy();
   await tab!.trigger("click");
@@ -51,9 +46,7 @@ describe("RouteHome landing page", () => {
     expect(text).toContain("One encryption model. Multiple surfaces.");
     expect(text).toContain("Encrypt for identities without changing the primitive");
     expect(text).toContain("For developers");
-    expect(text).toContain(
-      "Create an identity. Keep the same encryption model everywhere.",
-    );
+    expect(text).toContain("Create an identity. Keep the same encryption model everywhere.");
     expect(text).toContain("Create identity");
     expect(text).toContain("View package source");
     expect(text).toContain("JavaScript package");
@@ -62,14 +55,12 @@ describe("RouteHome landing page", () => {
     expect(text).toContain("JavaScript");
     expect(text).toContain("Envelope");
     expect(text).toContain("Passphrase");
-    expect(text).toContain('@ternent/armour');
+    expect(text).toContain("@ternent/armour");
     expect(text).toContain("Published site proof");
 
     await clickTab(wrapper, "Envelope");
 
-    expect(wrapper.text()).toContain(
-      "Wrap ciphertext in an optional envelope",
-    );
+    expect(wrapper.text()).toContain("Wrap ciphertext in an optional envelope");
 
     await clickTab(wrapper, "Passphrase");
 

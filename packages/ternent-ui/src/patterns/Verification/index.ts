@@ -4,4 +4,3 @@ export { default as VerificationDetailsPanel } from "./VerificationDetailsPanel.
 
 export * from "./verification.types";
 export * from "./verification.utils";
-

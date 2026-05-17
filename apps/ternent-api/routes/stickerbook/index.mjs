@@ -1,12 +1,7 @@
 import { readFileSync, writeFileSync, existsSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
-import {
-  createPrivateKey,
-  createPublicKey,
-  generateKeyPairSync,
-  webcrypto,
-} from "crypto";
+import { createPrivateKey, createPublicKey, generateKeyPairSync, webcrypto } from "crypto";
 import { deriveEntryId } from "@ternent/concord-protocol";
 import {
   computeMerkleRoot,
@@ -40,11 +35,7 @@ const WEEK_SECONDS = 7 * 24 * 60 * 60;
 let issuerAuditLedger = null;
 
 function getNextWeeklyDropAt(now = new Date()) {
-  const utcMidnight = Date.UTC(
-    now.getUTCFullYear(),
-    now.getUTCMonth(),
-    now.getUTCDate()
-  );
+  const utcMidnight = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
   const day = now.getUTCDay();
   let daysUntil = (7 - day) % 7;
   if (daysUntil === 0) daysUntil = 7;
@@ -53,18 +44,16 @@ function getNextWeeklyDropAt(now = new Date()) {
 
 export function toIsoWeek(isoDate = new Date()) {
   const date = new Date(
-    Date.UTC(isoDate.getUTCFullYear(), isoDate.getUTCMonth(), isoDate.getUTCDate())
+    Date.UTC(isoDate.getUTCFullYear(), isoDate.getUTCMonth(), isoDate.getUTCDate()),
   );
   date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay() || 7));
   const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
-  const weekNumber = Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+  const weekNumber = Math.ceil(((date - yearStart) / 86400000 + 1) / 7);
   return `${date.getUTCFullYear()}-W${String(weekNumber).padStart(2, "0")}`;
 }
 
 function stripIdentityKey(key) {
-  return key
-    .replace("-----BEGIN PUBLIC KEY-----\n", "")
-    .replace("\n-----END PUBLIC KEY-----", "");
+  return key.replace("-----BEGIN PUBLIC KEY-----\n", "").replace("\n-----END PUBLIC KEY-----", "");
 }
 
 function normalizePem(pem) {
@@ -97,37 +86,24 @@ async function signPayload(privateKeyPem, payload) {
     pkcs8,
     { name: "ECDSA", namedCurve: "P-256" },
     false,
-    ["sign"]
+    ["sign"],
   );
   const signature = await subtle.sign(
     { name: "ECDSA", hash: "SHA-256" },
     key,
-    new TextEncoder().encode(payload)
+    new TextEncoder().encode(payload),
   );
   return Buffer.from(signature).toString("base64");
 }
 
 function loadCatalogue(seriesId) {
   const filename = `series-${seriesId}.catalogue.json`;
-  const filepath = join(
-    __dirname,
-    "..",
-    "..",
-    "persisted/stickerbook",
-    "series",
-    filename
-  );
+  const filepath = join(__dirname, "..", "..", "persisted/stickerbook", "series", filename);
   return JSON.parse(readFileSync(filepath, "utf8"));
 }
 
 function loadIndex() {
-  const filepath = join(
-    __dirname,
-    "..",
-    "..",
-    "persisted/stickerbook",
-    "index.json"
-  );
+  const filepath = join(__dirname, "..", "..", "persisted/stickerbook", "index.json");
   return JSON.parse(readFileSync(filepath, "utf8"));
 }
 
@@ -149,8 +125,7 @@ export async function loadIssuerKeys() {
   }
   const publicKeyPem = derivePublicKeyPem(privateKeyPem);
   const author = stripIdentityKey(publicKeyPem);
-  const issuerKeyId =
-    process.env.ISSUER_KEY_ID || deriveIssuerKeyIdFromPublicKey(publicKeyPem);
+  const issuerKeyId = process.env.ISSUER_KEY_ID || deriveIssuerKeyIdFromPublicKey(publicKeyPem);
 
   return { privateKeyPem, publicKeyPem, author, issuerKeyId };
 }
@@ -164,9 +139,7 @@ export async function ensureIssuerAuditLedger(keys) {
   });
 
   if (!config.ready) {
-    console.warn(
-      "[pixpax-ledger] disabled: missing LEDGER_* environment configuration"
-    );
+    console.warn("[pixpax-ledger] disabled: missing LEDGER_* environment configuration");
     issuerAuditLedger = new IssuerAuditLedger({
       disabled: true,
       bucket: "",
@@ -228,7 +201,11 @@ function canonicalizeUserKey(value) {
 }
 
 function normalizePackType(value) {
-  return String(value || "").trim().toLowerCase() || "standard";
+  return (
+    String(value || "")
+      .trim()
+      .toLowerCase() || "standard"
+  );
 }
 
 function requireIssuerMasterSeed() {
@@ -364,10 +341,7 @@ export default function stickerbookRoutes(router) {
         author,
         payload,
       };
-      const signature = await signPayload(
-        privateKeyPem,
-        getSigningPayload(entryCore)
-      );
+      const signature = await signPayload(privateKeyPem, getSigningPayload(entryCore));
       const entry = { ...entryCore, signature };
 
       const pending = loadPendingIssuances();
@@ -524,10 +498,7 @@ export default function stickerbookRoutes(router) {
         author,
         payload,
       };
-      const signature = await signPayload(
-        privateKeyPem,
-        getSigningPayload(entryCore)
-      );
+      const signature = await signPayload(privateKeyPem, getSigningPayload(entryCore));
       const entry = { ...entryCore, signature };
       const entryId = await deriveEntryId(entry);
 
@@ -547,8 +518,7 @@ export default function stickerbookRoutes(router) {
 
         if (ledger.options?.disabled) {
           res.status(503).send({
-            error:
-              "Issuer audit ledger is disabled. Configure LEDGER_* environment variables.",
+            error: "Issuer audit ledger is disabled. Configure LEDGER_* environment variables.",
           });
           return;
         }

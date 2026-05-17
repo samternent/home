@@ -4,18 +4,9 @@ import {
   validateLedger,
   type LedgerContainer,
 } from "@ternent/concord-protocol";
-import {
-  replayIdentity,
-  type IdentityState,
-} from "@ternent/concord-plugin-identity";
-import {
-  replayPermissions,
-  type PermissionState,
-} from "@ternent/concord-plugin-permissions";
-import {
-  replayEncryption,
-  type EncryptionState,
-} from "@ternent/concord-plugin-encryption";
+import { replayIdentity, type IdentityState } from "@ternent/concord-plugin-identity";
+import { replayPermissions, type PermissionState } from "@ternent/concord-plugin-permissions";
+import { replayEncryption, type EncryptionState } from "@ternent/concord-plugin-encryption";
 import { explainCannotGrant, explainCannotDecrypt } from "./explain";
 
 export type InspectorConfig = {
@@ -33,10 +24,7 @@ export type InspectorState = {
   encryption: EncryptionState;
 };
 
-export function replayInspector(
-  ledger: LedgerContainer,
-  config?: InspectorConfig
-): InspectorState {
+export function replayInspector(ledger: LedgerContainer, config?: InspectorConfig): InspectorState {
   const protocol = validateLedger(ledger);
   const commitChain = getCommitChain(ledger);
   const entryKinds: Record<string, number> = {};

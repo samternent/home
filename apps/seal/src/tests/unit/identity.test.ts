@@ -69,7 +69,7 @@ describe("identity session", () => {
     const importer = useIdentityImport();
     const imported = await importer.importMnemonic(
       "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
-      "TREZOR"
+      "TREZOR",
     );
 
     expect(imported.material.kind).toBe("seed");
@@ -95,8 +95,8 @@ describe("identity session", () => {
           publicKeyPem: "legacy",
           privateKeyPem: "legacy",
           fingerprint: created.keyId,
-        })
-      )
+        }),
+      ),
     ).rejects.toThrow(/Legacy PEM identities/);
     expect(session.identity.value).toBeNull();
   });

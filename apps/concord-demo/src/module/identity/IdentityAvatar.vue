@@ -50,10 +50,6 @@ const sizeVariant = computed(() => {
 </script>
 <template>
   <div :class="`p-0 m-0 ${sizeVariant.classes}`" :key="identity">
-    <Glyphy
-      v-if="identity"
-      :identity="identity.replace(/\s/g, '')"
-      :variant="variant"
-    />
+    <Glyphy v-if="identity" :identity="identity.replace(/\s/g, '')" :variant="variant" />
   </div>
 </template>

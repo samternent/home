@@ -37,16 +37,11 @@ const isCollapsed = computed(() => !props.active);
   <article
     class="group relative cursor-pointer overflow-hidden rounded-sm border border-[var(--ui-border)] bg-[color-mix(in srgb, var(--ui-surface) 85%, var(--ui-bg))] transition-all duration-300"
     :class="
-      active
-        ? 'shadow'
-        : 'opacity-85 hover:opacity-100 hover:border-[var(--ui-secondary)]/70'
+      active ? 'shadow' : 'opacity-85 hover:opacity-100 hover:border-[var(--ui-secondary)]/70'
     "
     @click="emit('activate', item.entryId)"
   >
-    <div
-      class="transition-all duration-300"
-      :class="active ? 'p-4 md:p-5' : 'p-3'"
-    >
+    <div class="transition-all duration-300" :class="active ? 'p-4 md:p-5' : 'p-3'">
       <div class="flex items-start justify-between gap-3">
         <div class="flex items-start gap-3 flex-1 min-w-0">
           <span
@@ -96,10 +91,7 @@ const isCollapsed = computed(() => !props.active);
             </span>
           </button>
           <div class="flex flex-col gap-1 min-w-0">
-            <span
-              v-if="item.data.keyMissing"
-              class="text-sm blur-sm cursor-not-allowed opacity-50"
-            >
+            <span v-if="item.data.keyMissing" class="text-sm blur-sm cursor-not-allowed opacity-50">
               Insufficient permission
             </span>
             <span
@@ -148,9 +140,7 @@ const isCollapsed = computed(() => !props.active);
       <div
         class="flex flex-wrap items-center gap-2 text-xs text-[var(--ui-fg-muted)] transition-all duration-300"
         :class="
-          isCollapsed
-            ? 'max-h-0 opacity-0 mt-0 overflow-hidden'
-            : 'max-h-12 opacity-100 mt-3'
+          isCollapsed ? 'max-h-0 opacity-0 mt-0 overflow-hidden' : 'max-h-12 opacity-100 mt-3'
         "
       >
         <span

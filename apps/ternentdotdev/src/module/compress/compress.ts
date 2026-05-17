@@ -29,17 +29,13 @@ export async function responseToBuffer(response: Response) {
 }
 
 export async function compressStream(stream: ReadableStream) {
-  const compressedReadableStream = stream.pipeThrough(
-    new CompressionStream("gzip")
-  );
+  const compressedReadableStream = stream.pipeThrough(new CompressionStream("gzip"));
 
   return new Response(compressedReadableStream);
 }
 
 export async function decompressStream(stream: ReadableStream) {
-  const compressedReadableStream = stream.pipeThrough(
-    new DecompressionStream("gzip")
-  );
+  const compressedReadableStream = stream.pipeThrough(new DecompressionStream("gzip"));
 
   return new Response(compressedReadableStream);
 }

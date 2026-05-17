@@ -65,46 +65,39 @@ const DEFAULT_QR_PIXEL_SIZE = 8;
 
 const ECC_CODEWORDS_PER_BLOCK: number[][] = [
   [
-    -1, 7, 10, 15, 20, 26, 18, 20, 24, 30, 18, 20, 24, 26, 30, 22, 24, 28, 30,
-    28, 28, 28, 28, 30, 30, 26, 28, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
-    30, 30, 30, 30,
+    -1, 7, 10, 15, 20, 26, 18, 20, 24, 30, 18, 20, 24, 26, 30, 22, 24, 28, 30, 28, 28, 28, 28, 30,
+    30, 26, 28, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
   ],
   [
-    -1, 10, 16, 26, 18, 24, 16, 18, 22, 22, 26, 30, 22, 22, 24, 24, 28, 28,
-    26, 26, 26, 26, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28,
-    28, 28, 28, 28, 28,
+    -1, 10, 16, 26, 18, 24, 16, 18, 22, 22, 26, 30, 22, 22, 24, 24, 28, 28, 26, 26, 26, 26, 28, 28,
+    28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28,
   ],
   [
-    -1, 13, 22, 18, 26, 18, 24, 18, 22, 20, 24, 28, 26, 24, 20, 30, 24, 28,
-    28, 26, 30, 28, 30, 30, 30, 30, 28, 30, 30, 30, 30, 30, 30, 30, 30, 30,
-    30, 30, 30, 30, 30,
+    -1, 13, 22, 18, 26, 18, 24, 18, 22, 20, 24, 28, 26, 24, 20, 30, 24, 28, 28, 26, 30, 28, 30, 30,
+    30, 30, 28, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
   ],
   [
-    -1, 17, 28, 22, 16, 22, 28, 26, 26, 24, 28, 24, 28, 22, 24, 24, 30, 28,
-    28, 26, 28, 30, 24, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
-    30, 30, 30, 30, 30,
+    -1, 17, 28, 22, 16, 22, 28, 26, 26, 24, 28, 24, 28, 22, 24, 24, 30, 28, 28, 26, 28, 30, 24, 30,
+    30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
   ],
 ];
 
 const NUM_ERROR_CORRECTION_BLOCKS: number[][] = [
   [
-    -1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 4, 4, 4, 4, 4, 6, 6, 6, 6, 7, 8, 8, 9, 9,
-    10, 12, 12, 12, 13, 14, 15, 16, 17, 18, 19, 19, 20, 21, 22, 24, 25,
+    -1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 4, 4, 4, 4, 4, 6, 6, 6, 6, 7, 8, 8, 9, 9, 10, 12, 12, 12, 13, 14,
+    15, 16, 17, 18, 19, 19, 20, 21, 22, 24, 25,
   ],
   [
-    -1, 1, 1, 1, 2, 2, 4, 4, 4, 5, 5, 5, 8, 9, 9, 10, 10, 11, 13, 14, 16, 17,
-    17, 18, 20, 21, 23, 25, 26, 28, 29, 31, 33, 35, 37, 38, 40, 43, 45, 47,
-    49,
+    -1, 1, 1, 1, 2, 2, 4, 4, 4, 5, 5, 5, 8, 9, 9, 10, 10, 11, 13, 14, 16, 17, 17, 18, 20, 21, 23,
+    25, 26, 28, 29, 31, 33, 35, 37, 38, 40, 43, 45, 47, 49,
   ],
   [
-    -1, 1, 1, 2, 2, 4, 4, 6, 6, 8, 8, 8, 10, 12, 16, 12, 17, 16, 18, 21, 20,
-    23, 23, 25, 27, 29, 34, 34, 35, 38, 40, 43, 45, 48, 51, 53, 56, 59, 62,
-    65, 68,
+    -1, 1, 1, 2, 2, 4, 4, 6, 6, 8, 8, 8, 10, 12, 16, 12, 17, 16, 18, 21, 20, 23, 23, 25, 27, 29, 34,
+    34, 35, 38, 40, 43, 45, 48, 51, 53, 56, 59, 62, 65, 68,
   ],
   [
-    -1, 1, 1, 2, 4, 4, 4, 5, 6, 8, 8, 11, 11, 16, 16, 18, 16, 19, 21, 25, 25,
-    25, 34, 30, 32, 35, 37, 40, 42, 45, 48, 51, 54, 57, 60, 63, 66, 70, 74,
-    77, 81,
+    -1, 1, 1, 2, 4, 4, 4, 5, 6, 8, 8, 11, 11, 16, 16, 18, 16, 19, 21, 25, 25, 25, 34, 30, 32, 35,
+    37, 40, 42, 45, 48, 51, 54, 57, 60, 63, 66, 70, 74, 77, 81,
   ],
 ];
 
@@ -272,11 +265,7 @@ class QrCode {
   private drawAlignmentPattern(x: number, y: number): void {
     for (let dy = -2; dy <= 2; dy++) {
       for (let dx = -2; dx <= 2; dx++) {
-        this.setFunctionModule(
-          x + dx,
-          y + dy,
-          Math.max(Math.abs(dx), Math.abs(dy)) !== 1,
-        );
+        this.setFunctionModule(x + dx, y + dy, Math.max(Math.abs(dx), Math.abs(dy)) !== 1);
       }
     }
   }
@@ -304,10 +293,7 @@ class QrCode {
     const rsDiv = reedSolomonComputeDivisor(blockEccLen);
 
     for (let i = 0, k = 0; i < numBlocks; i++) {
-      const dat = data.slice(
-        k,
-        k + shortBlockLen - blockEccLen + (i < numShortBlocks ? 0 : 1),
-      );
+      const dat = data.slice(k, k + shortBlockLen - blockEccLen + (i < numShortBlocks ? 0 : 1));
       k += dat.length;
 
       const ecc = reedSolomonComputeRemainder(dat, rsDiv);
@@ -383,10 +369,10 @@ class QrCode {
             invert = ((x * y) % 2) + ((x * y) % 3) === 0;
             break;
           case 6:
-            invert = ((((x * y) % 2) + ((x * y) % 3)) % 2) === 0;
+            invert = (((x * y) % 2) + ((x * y) % 3)) % 2 === 0;
             break;
           case 7:
-            invert = ((((x + y) % 2) + ((x * y) % 3)) % 2) === 0;
+            invert = (((x + y) % 2) + ((x * y) % 3)) % 2 === 0;
             break;
           default:
             throw new Error("Unreachable");
@@ -473,7 +459,7 @@ class QrCode {
     }
 
     const total = this.size * this.size;
-    const k = Math.ceil(Math.abs((dark * 20) - (total * 10)) / total) - 1;
+    const k = Math.ceil(Math.abs(dark * 20 - total * 10) / total) - 1;
     result += k * PENALTY_N4;
 
     return result;
@@ -486,9 +472,7 @@ class QrCode {
 
     const numAlign = Math.floor(this.version / 7) + 2;
     const step =
-      this.version === 32
-        ? 26
-        : Math.ceil((this.version * 4 + 4) / (numAlign * 2 - 2)) * 2;
+      this.version === 32 ? 26 : Math.ceil((this.version * 4 + 4) / (numAlign * 2 - 2)) * 2;
 
     const result = [6];
     for (let pos = this.size - 7; result.length < numAlign; pos -= step) {
@@ -541,7 +525,11 @@ class QrSegment {
   public readonly numChars: number;
   private readonly bitData: number[];
 
-  constructor(mode: readonly [number, number, number, number], numChars: number, bitData: number[]) {
+  constructor(
+    mode: readonly [number, number, number, number],
+    numChars: number,
+    bitData: number[],
+  ) {
     if (numChars < 0) {
       throw new RangeError("Invalid argument");
     }
@@ -560,7 +548,7 @@ const MODE_ALPHANUMERIC = [2, 9, 11, 13] as const;
 const MODE_BYTE = [4, 8, 16, 16] as const;
 
 function appendBits(val: number, len: number, bb: number[]): void {
-  if (len < 0 || len > 31 || (val >>> len) !== 0) {
+  if (len < 0 || len > 31 || val >>> len !== 0) {
     throw new RangeError("Value out of range");
   }
   for (let i = len - 1; i >= 0; i--) {
@@ -590,7 +578,7 @@ function makeNumeric(digits: string): QrSegment {
   }
 
   const bb: number[] = [];
-  for (let i = 0; i < digits.length;) {
+  for (let i = 0; i < digits.length; ) {
     const n = Math.min(digits.length - i, 3);
     appendBits(Number.parseInt(digits.slice(i, i + n), 10), n * 3 + 1, bb);
     i += n;
@@ -635,7 +623,7 @@ function getTotalBits(segs: QrSegment[], version: number): number {
   let result = 0;
   for (const seg of segs) {
     const ccbits = numCharCountBits(seg.mode, version);
-    if (seg.numChars >= (1 << ccbits)) {
+    if (seg.numChars >= 1 << ccbits) {
       return Number.POSITIVE_INFINITY;
     }
     result += 4 + ccbits + seg.getData().length;
@@ -662,10 +650,10 @@ function getNumRawDataModules(ver: number): number {
     throw new RangeError("Version number out of range");
   }
 
-  let result = ((16 * ver + 128) * ver) + 64;
+  let result = (16 * ver + 128) * ver + 64;
   if (ver >= 2) {
     const numAlign = Math.floor(ver / 7) + 2;
-    result -= ((25 * numAlign - 10) * numAlign) - 55;
+    result -= (25 * numAlign - 10) * numAlign - 55;
     if (ver >= 7) {
       result -= 36;
     }
@@ -720,7 +708,7 @@ function reedSolomonComputeRemainder(data: number[], divisor: number[]): number[
 }
 
 function reedSolomonMultiply(x: number, y: number): number {
-  if ((x >>> 8) !== 0 || (y >>> 8) !== 0) {
+  if (x >>> 8 !== 0 || y >>> 8 !== 0) {
     throw new RangeError("Byte out of range");
   }
 
@@ -783,7 +771,7 @@ function encodeSegments(
   appendBits(0, Math.min(4, dataCapacityBits - bb.length), bb);
   appendBits(0, (8 - (bb.length % 8)) % 8, bb);
 
-  for (let padByte = 236; bb.length < dataCapacityBits; padByte ^= (236 ^ 17)) {
+  for (let padByte = 236; bb.length < dataCapacityBits; padByte ^= 236 ^ 17) {
     appendBits(padByte, 8, bb);
   }
 

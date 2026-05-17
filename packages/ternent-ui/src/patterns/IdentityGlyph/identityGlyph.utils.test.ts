@@ -58,9 +58,7 @@ function hexToRgb(value: string): { r: number; g: number; b: number } {
 
 function channelToLinear(value: number): number {
   const normalized = value / 255;
-  return normalized <= 0.03928
-    ? normalized / 12.92
-    : Math.pow((normalized + 0.055) / 1.055, 2.4);
+  return normalized <= 0.03928 ? normalized / 12.92 : Math.pow((normalized + 0.055) / 1.055, 2.4);
 }
 
 function contrastRatio(a: string, b: string): number {
@@ -80,7 +78,9 @@ function contrastRatio(a: string, b: string): number {
 }
 
 describe("IdentityGlyph utils", () => {
-  const publicKeyBytes = new Uint8Array(Array.from({ length: 32 }, (_, index) => (index * 7 + 19) % 256));
+  const publicKeyBytes = new Uint8Array(
+    Array.from({ length: 32 }, (_, index) => (index * 7 + 19) % 256),
+  );
   const publicKey = encodeBase64Url(publicKeyBytes);
   const didKey = toDidKeyFromPublicKey(publicKey);
 
@@ -149,9 +149,7 @@ describe("IdentityGlyph utils", () => {
 
   it("uses four palette roles with strong contrast against background", () => {
     const model = createIdentityGlyphModel(publicKey);
-    const [background, primary, secondary, accent] = getIdentityGlyphPaletteValues(
-      model.palette,
-    );
+    const [background, primary, secondary, accent] = getIdentityGlyphPaletteValues(model.palette);
 
     expect(background).toMatch(/^#[0-9a-f]{6}$/i);
     expect(primary).toMatch(/^#[0-9a-f]{6}$/i);

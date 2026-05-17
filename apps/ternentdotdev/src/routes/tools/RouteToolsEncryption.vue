@@ -85,10 +85,7 @@ async function performEncryption() {
     isLoading.value = true;
     error.value = "";
 
-    const secret =
-      encryptionMethod.value === "passphrase"
-        ? passphrase.value
-        : publicKey.value;
+    const secret = encryptionMethod.value === "passphrase" ? passphrase.value : publicKey.value;
     const encrypted = await encrypt(secret, inputText.value);
 
     result.value = encrypted;
@@ -168,9 +165,7 @@ const tabs = [
 </script>
 
 <template>
-  <div
-    class="flex w-full h-full flex-1 bg-gradient-to-br from-base-100 to-base-200"
-  >
+  <div class="flex w-full h-full flex-1 bg-gradient-to-br from-base-100 to-base-200">
     <SResizablePanels
       identifier="encryption-tool"
       :min-content-width="400"
@@ -181,9 +176,7 @@ const tabs = [
       <template #default>
         <div class="flex flex-col h-full">
           <!-- Header -->
-          <div
-            class="p-6 bg-gradient-to-r from-primary/10 to-accent/10 border-b border-base-300"
-          >
+          <div class="p-6 bg-gradient-to-r from-primary/10 to-accent/10 border-b border-base-300">
             <div class="max-w-2xl">
               <h1
                 class="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent"
@@ -191,14 +184,11 @@ const tabs = [
                 🔐 Age Encryption
               </h1>
               <p class="text-base-content/70 mt-2">
-                Secure, modern encryption using the age format with X25519 and
-                ChaCha20-Poly1305
+                Secure, modern encryption using the age format with X25519 and ChaCha20-Poly1305
               </p>
               <div class="flex gap-2 mt-4">
                 <div class="badge badge-primary badge-sm">🚀 Async WASM</div>
-                <div class="badge badge-accent badge-sm">
-                  🛡️ Local Processing
-                </div>
+                <div class="badge badge-accent badge-sm">🛡️ Local Processing</div>
                 <div class="badge badge-secondary badge-sm">🔑 X25519</div>
               </div>
             </div>
@@ -213,8 +203,7 @@ const tabs = [
                 @click="activeTab = tab.id"
                 class="btn btn-ghost"
                 :class="{
-                  'btn-active bg-primary/20 border-primary/30':
-                    activeTab === tab.id,
+                  'btn-active bg-primary/20 border-primary/30': activeTab === tab.id,
                   'hover:bg-base-200': activeTab !== tab.id,
                 }"
               >
@@ -222,9 +211,7 @@ const tabs = [
                 <span>{{ tab.label.split(" ")[1] }}</span>
               </button>
               <div class="ml-auto">
-                <button class="btn btn-outline btn-sm" @click="clearAll">
-                  ✨ Clear All
-                </button>
+                <button class="btn btn-outline btn-sm" @click="clearAll">✨ Clear All</button>
               </div>
             </div>
           </div>
@@ -241,9 +228,7 @@ const tabs = [
                 <!-- Encryption Method -->
                 <SCard variant="bordered" size="small">
                   <div class="p-4">
-                    <label
-                      class="text-sm font-medium text-base-content/80 mb-3 block"
-                    >
+                    <label class="text-sm font-medium text-base-content/80 mb-3 block">
                       Choose Encryption Method
                     </label>
                     <div class="flex gap-4">
@@ -257,9 +242,7 @@ const tabs = [
                           v-model="encryptionMethod"
                         />
                         <div class="flex flex-col">
-                          <span class="label-text font-medium"
-                            >🔑 Passphrase</span
-                          >
+                          <span class="label-text font-medium">🔑 Passphrase</span>
                           <span class="text-xs text-base-content/60"
                             >Simple password-based encryption</span
                           >
@@ -275,9 +258,7 @@ const tabs = [
                           v-model="encryptionMethod"
                         />
                         <div class="flex flex-col">
-                          <span class="label-text font-medium"
-                            >🗝️ Public Key</span
-                          >
+                          <span class="label-text font-medium">🗝️ Public Key</span>
                           <span class="text-xs text-base-content/60"
                             >Advanced key-based encryption</span
                           >
@@ -291,9 +272,7 @@ const tabs = [
                 <SCard variant="bordered" size="small">
                   <div class="p-4">
                     <div v-if="encryptionMethod === 'passphrase'">
-                      <label
-                        class="text-sm font-medium text-base-content/80 mb-2 block"
-                      >
+                      <label class="text-sm font-medium text-base-content/80 mb-2 block">
                         Enter Passphrase
                       </label>
                       <input
@@ -305,9 +284,7 @@ const tabs = [
                     </div>
                     <div v-else>
                       <div class="flex items-center justify-between mb-2">
-                        <label class="text-sm font-medium text-base-content/80">
-                          Public Key
-                        </label>
+                        <label class="text-sm font-medium text-base-content/80"> Public Key </label>
                         <div
                           v-if="publicKey && publicKey.startsWith('age1')"
                           class="badge badge-success badge-sm"
@@ -327,9 +304,7 @@ const tabs = [
                 <!-- Message Input -->
                 <SCard variant="bordered" size="small">
                   <div class="p-4">
-                    <label
-                      class="text-sm font-medium text-base-content/80 mb-2 block"
-                    >
+                    <label class="text-sm font-medium text-base-content/80 mb-2 block">
                       Message to Encrypt
                     </label>
                     <textarea
@@ -371,10 +346,7 @@ const tabs = [
                         Secret (Passphrase or Private Key)
                       </label>
                       <div
-                        v-if="
-                          decryptSecret &&
-                          decryptSecret.startsWith('AGE-SECRET-KEY-')
-                        "
+                        v-if="decryptSecret && decryptSecret.startsWith('AGE-SECRET-KEY-')"
                         class="badge badge-success badge-sm"
                       >
                         ✓ Private Key
@@ -390,9 +362,7 @@ const tabs = [
 
                 <SCard variant="bordered" size="small">
                   <div class="p-4">
-                    <label
-                      class="text-sm font-medium text-base-content/80 mb-2 block"
-                    >
+                    <label class="text-sm font-medium text-base-content/80 mb-2 block">
                       Encrypted Data
                     </label>
                     <textarea
@@ -422,14 +392,12 @@ const tabs = [
             <!-- Key Generation Tab -->
             <div v-if="activeTab === 'keygen'" class="space-y-6 max-w-2xl">
               <div class="text-center space-y-4">
-                <h3
-                  class="text-lg font-semibold flex items-center justify-center gap-2"
-                >
+                <h3 class="text-lg font-semibold flex items-center justify-center gap-2">
                   🗝️ <span>Generate Key Pair</span>
                 </h3>
                 <p class="text-base-content/70">
-                  Generate a new X25519 key pair for age encryption. Your
-                  private key should be kept secure!
+                  Generate a new X25519 key pair for age encryption. Your private key should be kept
+                  secure!
                 </p>
 
                 <SButton
@@ -450,10 +418,7 @@ const tabs = [
                         <label class="text-sm font-medium text-base-content/80">
                           🔑 Private Key (Keep Secret!)
                         </label>
-                        <button
-                          class="btn btn-outline btn-xs"
-                          @click="copyToClipboard(privateKey)"
-                        >
+                        <button class="btn btn-outline btn-xs" @click="copyToClipboard(privateKey)">
                           📋 Copy
                         </button>
                       </div>
@@ -471,10 +436,7 @@ const tabs = [
                         <label class="text-sm font-medium text-base-content/80">
                           🔓 Public Key (Safe to Share)
                         </label>
-                        <button
-                          class="btn btn-outline btn-xs"
-                          @click="copyToClipboard(publicKey)"
-                        >
+                        <button class="btn btn-outline btn-xs" @click="copyToClipboard(publicKey)">
                           📋 Copy
                         </button>
                       </div>
@@ -487,18 +449,10 @@ const tabs = [
                   </SCard>
 
                   <div class="flex gap-2 justify-center">
-                    <SButton
-                      @click="useGeneratedKey"
-                      variant="primary"
-                      size="small"
-                    >
+                    <SButton @click="useGeneratedKey" variant="primary" size="small">
                       🔒 Use for Encryption
                     </SButton>
-                    <SButton
-                      @click="useGeneratedKeyForDecrypt"
-                      variant="secondary"
-                      size="small"
-                    >
+                    <SButton @click="useGeneratedKeyForDecrypt" variant="secondary" size="small">
                       🔓 Use for Decryption
                     </SButton>
                   </div>
@@ -517,10 +471,7 @@ const tabs = [
                         d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.98-.833-2.75 0L3.982 16.5c-.77.833.192 2.5 1.732 2.5z"
                       />
                     </svg>
-                    <span
-                      >Store your private key securely! It cannot be recovered
-                      if lost.</span
-                    >
+                    <span>Store your private key securely! It cannot be recovered if lost.</span>
                   </div>
                 </div>
               </div>
@@ -533,21 +484,13 @@ const tabs = [
       <template #sidebar>
         <div class="flex flex-col h-full bg-base-50">
           <!-- Results Header -->
-          <div
-            class="p-6 bg-gradient-to-r from-accent/10 to-secondary/10 border-b border-base-300"
-          >
+          <div class="p-6 bg-gradient-to-r from-accent/10 to-secondary/10 border-b border-base-300">
             <div class="flex items-center justify-between">
               <div>
                 <h2 class="text-xl font-semibold">📋 Results</h2>
-                <p class="text-sm text-base-content/70">
-                  Output and status information
-                </p>
+                <p class="text-sm text-base-content/70">Output and status information</p>
               </div>
-              <button
-                v-if="result"
-                class="btn btn-outline btn-sm"
-                @click="copyToClipboard(result)"
-              >
+              <button v-if="result" class="btn btn-outline btn-sm" @click="copyToClipboard(result)">
                 📋 Copy Result
               </button>
             </div>
@@ -607,18 +550,12 @@ const tabs = [
                   <span class="font-medium">Processing...</span>
                 </div>
                 <div class="alert alert-info">
-                  <span
-                    >Your request is being processed securely in your
-                    browser.</span
-                  >
+                  <span>Your request is being processed securely in your browser.</span>
                 </div>
               </div>
 
               <!-- Empty State -->
-              <div
-                v-if="!result && !error && !isLoading"
-                class="text-center py-12"
-              >
+              <div v-if="!result && !error && !isLoading" class="text-center py-12">
                 <div class="text-6xl mb-4">🔐</div>
                 <h3 class="text-lg font-semibold mb-2">Ready to Encrypt</h3>
                 <p class="text-base-content/70">
@@ -632,10 +569,7 @@ const tabs = [
                   <div class="p-3">
                     <div class="flex items-center gap-2 text-sm">
                       <span class="text-primary">🛡️</span>
-                      <span
-                        ><strong>Privacy:</strong> All processing happens
-                        locally</span
-                      >
+                      <span><strong>Privacy:</strong> All processing happens locally</span>
                     </div>
                   </div>
                 </SCard>
@@ -643,10 +577,7 @@ const tabs = [
                   <div class="p-3">
                     <div class="flex items-center gap-2 text-sm">
                       <span class="text-accent">⚡</span>
-                      <span
-                        ><strong>Performance:</strong> Powered by Rust
-                        WebAssembly</span
-                      >
+                      <span><strong>Performance:</strong> Powered by Rust WebAssembly</span>
                     </div>
                   </div>
                 </SCard>
@@ -654,10 +585,7 @@ const tabs = [
                   <div class="p-3">
                     <div class="flex items-center gap-2 text-sm">
                       <span class="text-secondary">🔒</span>
-                      <span
-                        ><strong>Security:</strong> Modern age encryption
-                        format</span
-                      >
+                      <span><strong>Security:</strong> Modern age encryption format</span>
                     </div>
                   </div>
                 </SCard>

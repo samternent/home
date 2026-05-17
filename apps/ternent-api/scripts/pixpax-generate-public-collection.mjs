@@ -98,8 +98,8 @@ function drawPattern(seriesIndex, slotIndex) {
     }
   }
 
-  out[(6 + (seriesIndex % 3)) + 16 * 7] = 1;
-  out[(9 - (seriesIndex % 3)) + 16 * 7] = 1;
+  out[6 + (seriesIndex % 3) + 16 * 7] = 1;
+  out[9 - (seriesIndex % 3) + 16 * 7] = 1;
   for (let x = 6; x <= 9; x += 1) out[x + 16 * 10] = accent;
 
   return out;
@@ -163,22 +163,9 @@ async function main() {
     palette: {
       id: "premier-league-2026-default",
       colors: [
-        0x00000000,
-        0xff111111,
-        0xffffffff,
-        0xffef4444,
-        0xff22c55e,
-        0xff3b82f6,
-        0xfff59e0b,
-        0xffa855f7,
-        0xff06b6d4,
-        0xfff97316,
-        0xff84cc16,
-        0xffec4899,
-        0xff8b5cf6,
-        0xfff5d0fe,
-        0xffbae6fd,
-        0xfffde68a,
+        0x00000000, 0xff111111, 0xffffffff, 0xffef4444, 0xff22c55e, 0xff3b82f6, 0xfff59e0b,
+        0xffa855f7, 0xff06b6d4, 0xfff97316, 0xff84cc16, 0xffec4899, 0xff8b5cf6, 0xfff5d0fe,
+        0xffbae6fd, 0xfffde68a,
       ],
     },
   };
@@ -195,7 +182,7 @@ async function main() {
   await writeJson(join(outDir, "index.json"), index);
 
   console.log(
-    `[pixpax:generate] wrote ${cards.length} cards across ${series.length} series to ${outDir}`
+    `[pixpax:generate] wrote ${cards.length} cards across ${series.length} series to ${outDir}`,
   );
 }
 

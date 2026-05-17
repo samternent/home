@@ -1,8 +1,5 @@
 import type { SerializedIdentity } from "@ternent/identity";
-import {
-  enforceSolidConcordAccess,
-  enforceSolidPrivateResourceWrite,
-} from "./access.js";
+import { enforceSolidConcordAccess, enforceSolidPrivateResourceWrite } from "./access.js";
 import { createSolidIdentityCache } from "./cache.js";
 import {
   bootstrapSolidConcordProfile,
@@ -49,9 +46,7 @@ export function createSolidMnemonicStorage(
     contentType: options.contentType,
     coerce(value) {
       if (!isSolidMnemonicSecret(value)) {
-        throw new Error(
-          "Solid mnemonic payload must be a ternent-solid-mnemonic secret object.",
-        );
+        throw new Error("Solid mnemonic payload must be a ternent-solid-mnemonic secret object.");
       }
       return value;
     },
@@ -70,9 +65,7 @@ export function createSolidWalletStorage(
     contentType: options.contentType,
     coerce(value) {
       if (!isSolidWalletBackup(value)) {
-        throw new Error(
-          "Solid wallet payload must be a ternent-solid-wallet backup object.",
-        );
+        throw new Error("Solid wallet payload must be a ternent-solid-wallet backup object.");
       }
       return value;
     },
@@ -154,15 +147,11 @@ export async function resolveSolidIdentity(
     return input.identity;
   }
 
-  const unlocker = input.unlocker
-    ? resolveSolidIdentityUnlocker(input.unlocker)
-    : undefined;
+  const unlocker = input.unlocker ? resolveSolidIdentityUnlocker(input.unlocker) : undefined;
 
   if (input.encryptedIdentity) {
     if (!unlocker) {
-      throw new Error(
-        "unlocker is required when restoring from an encrypted Solid identity blob.",
-      );
+      throw new Error("unlocker is required when restoring from an encrypted Solid identity blob.");
     }
     const identity = await restoreSolidIdentityFromEncryptedBlob({
       blob: input.encryptedIdentity,
@@ -212,9 +201,7 @@ export async function resolveSolidIdentity(
 
   if (input.encryptedIdentityUrl) {
     if (!unlocker) {
-      throw new Error(
-        "unlocker is required when restoring from encryptedIdentityUrl.",
-      );
+      throw new Error("unlocker is required when restoring from encryptedIdentityUrl.");
     }
     const encryptedStorage = createSolidEncryptedIdentityStorage(
       session,
@@ -239,18 +226,11 @@ export async function resolveSolidIdentity(
 
   if (input.identityUrl) {
     if (!unlocker) {
-      throw new Error(
-        "unlocker is required when restoring from identityUrl.",
-      );
+      throw new Error("unlocker is required when restoring from identityUrl.");
     }
-    const encryptedStorage = createSolidEncryptedIdentityStorage(
-      session,
-      input.identityUrl,
-      {
-        contentType:
-          input.identityContentType ?? input.encryptedIdentityContentType,
-      },
-    );
+    const encryptedStorage = createSolidEncryptedIdentityStorage(session, input.identityUrl, {
+      contentType: input.identityContentType ?? input.encryptedIdentityContentType,
+    });
     const blob = await encryptedStorage.load();
     if (blob) {
       const identity = await restoreSolidIdentityFromEncryptedBlob({
@@ -286,8 +266,7 @@ export async function provisionSolidIdentity(
       ? await discoverSolidConcordResources(input.session, input.profile)
       : null;
   const defaultPaths =
-    profileEnabled &&
-    (shouldBootstrapProfile || !input.identityUrl || !input.walletUrl)
+    profileEnabled && (shouldBootstrapProfile || !input.identityUrl || !input.walletUrl)
       ? await createSolidConcordPaths(input.session, input.profile)
       : null;
   const shouldPersistWalletBackup =
@@ -297,9 +276,9 @@ export async function provisionSolidIdentity(
     discoveredResources?.identityUrl ??
     (shouldBootstrapProfile ? defaultPaths?.identityUrl : undefined);
   const walletUrl = shouldPersistWalletBackup
-    ? input.walletUrl ??
+    ? (input.walletUrl ??
       discoveredResources?.walletUrl ??
-      (shouldBootstrapProfile ? defaultPaths?.walletUrl : undefined)
+      (shouldBootstrapProfile ? defaultPaths?.walletUrl : undefined))
     : undefined;
   const { identity, mnemonic } = await createSolidMnemonicIdentity({
     words: input.words,
@@ -327,8 +306,7 @@ export async function provisionSolidIdentity(
 
   if (identityUrl) {
     await enforceSolidPrivateResourceWrite(identityUrl, {
-      privateRootUrl:
-        defaultPaths?.privateRootUrl ?? discoveredResources?.privateRootUrl ?? null,
+      privateRootUrl: defaultPaths?.privateRootUrl ?? discoveredResources?.privateRootUrl ?? null,
     });
     await createSolidEncryptedIdentityStorage(input.session, identityUrl, {
       contentType: input.identityContentType,
@@ -345,8 +323,7 @@ export async function provisionSolidIdentity(
       createdAt: input.createdAt,
     });
     await enforceSolidPrivateResourceWrite(walletUrl, {
-      privateRootUrl:
-        defaultPaths?.privateRootUrl ?? discoveredResources?.privateRootUrl ?? null,
+      privateRootUrl: defaultPaths?.privateRootUrl ?? discoveredResources?.privateRootUrl ?? null,
     });
     await createSolidWalletStorage(input.session, walletUrl, {
       contentType: input.walletContentType,
@@ -366,13 +343,10 @@ export async function provisionSolidIdentity(
           identity,
           createdAt: input.createdAt,
         })
-      : discoveredResources ?? undefined;
+      : (discoveredResources ?? undefined);
   const accessReport =
     resources && profileEnabled
-      ? await enforceSolidConcordAccess(
-          resources,
-          input.profile?.accessValidation ?? "strict",
-        )
+      ? await enforceSolidConcordAccess(resources, input.profile?.accessValidation ?? "strict")
       : undefined;
 
   return {

@@ -56,9 +56,7 @@ function decodeGrid(data: string, size: number) {
 }
 
 const palette = computed(() => {
-  const match = props.palettes.find(
-    (entry) => entry.id === props.creature.paletteId
-  );
+  const match = props.palettes.find((entry) => entry.id === props.creature.paletteId);
   return (
     match || {
       id: "fallback",
@@ -68,9 +66,7 @@ const palette = computed(() => {
 });
 
 const gridSize = computed(() => props.creature.attributes.gridSize || 8);
-const grid = computed(() =>
-  decodeGrid(props.creature.attributes.grid, gridSize.value)
-);
+const grid = computed(() => decodeGrid(props.creature.attributes.grid, gridSize.value));
 const bgIndex = computed(() => props.creature.attributes.bg ?? 0);
 
 const spriteBounds = 164;
@@ -99,11 +95,7 @@ function rgbToHex(rgb: number[]) {
 function mixColor(a: string, b: string, amount: number) {
   const [ar, ag, ab] = hexToRgb(a);
   const [br, bg, bb] = hexToRgb(b);
-  return rgbToHex([
-    ar + (br - ar) * amount,
-    ag + (bg - ag) * amount,
-    ab + (bb - ab) * amount,
-  ]);
+  return rgbToHex([ar + (br - ar) * amount, ag + (bg - ag) * amount, ab + (bb - ab) * amount]);
 }
 
 const fillColors = computed(() => {
@@ -120,17 +112,11 @@ const fillColors = computed(() => {
 });
 
 const finishSeed = computed(() =>
-  props.packId ? `${props.packId}:${props.creature.id}` : props.creature.id
+  props.packId ? `${props.packId}:${props.creature.id}` : props.creature.id,
 );
-const finishAngle = computed(() =>
-  Math.floor(hashToRange(finishSeed.value, 10, 70))
-);
-const shimmerHue = computed(() =>
-  Math.floor(hashToRange(`${finishSeed.value}:hue`, 180, 320))
-);
-const sparklePositions = computed(() =>
-  buildSparklePositions(`${finishSeed.value}:sparkle`, 5)
-);
+const finishAngle = computed(() => Math.floor(hashToRange(finishSeed.value, 10, 70)));
+const shimmerHue = computed(() => Math.floor(hashToRange(`${finishSeed.value}:hue`, 180, 320)));
+const sparklePositions = computed(() => buildSparklePositions(`${finishSeed.value}:sparkle`, 5));
 
 const showFinish = computed(() => props.finish && props.finish !== "base");
 const finishKind = computed(() => props.finish || "base");
@@ -140,12 +126,8 @@ const maskId = computed(() => `pixel-mask-${props.creature.id}`);
 const finishMaskId = computed(() => `pixel-finish-mask-${props.creature.id}`);
 const shadowId = computed(() => `pixel-shadow-${props.creature.id}`);
 
-const outlineStroke = computed(() =>
-  props.missing ? "#64748b" : "transparent"
-);
-const backgroundFill = computed(() =>
-  props.missing ? fillColors.value[0] : "transparent"
-);
+const outlineStroke = computed(() => (props.missing ? "#64748b" : "transparent"));
+const backgroundFill = computed(() => (props.missing ? fillColors.value[0] : "transparent"));
 const pixelFill = (cell: number) =>
   cell === bgIndex.value && !props.missing
     ? "transparent"
@@ -161,23 +143,9 @@ const pixelFill = (cell: number) =>
         <stop offset="100%" :stop-color="`hsla(${shimmerHue + 60},90%,60%,1)`" />
       </linearGradient>
       <filter :id="shadowId" x="-20%" y="-20%" width="140%" height="140%">
-        <feMorphology
-          in="SourceAlpha"
-          operator="dilate"
-          radius="1"
-          result="dilated"
-        />
-        <feFlood
-          :flood-color="outlineStroke"
-          flood-opacity="0.9"
-          result="flood"
-        />
-        <feComposite
-          in="flood"
-          in2="dilated"
-          operator="in"
-          result="outline"
-        />
+        <feMorphology in="SourceAlpha" operator="dilate" radius="1" result="dilated" />
+        <feFlood :flood-color="outlineStroke" flood-opacity="0.9" result="flood" />
+        <feComposite in="flood" in2="dilated" operator="in" result="outline" />
         <feDropShadow
           dx="0"
           dy="5"

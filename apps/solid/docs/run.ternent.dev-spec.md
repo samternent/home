@@ -85,20 +85,9 @@ This follows the Concord rule:
 These are the minimum shared shapes the runtime should converge on. Layer-specific modules may extend them, but they must not invent incompatible parallel versions.
 
 ```ts
-type ResourceType =
-  | "ledger"
-  | "file"
-  | "attachment"
-  | "schema"
-  | "plugin";
+type ResourceType = "ledger" | "file" | "attachment" | "schema" | "plugin";
 
-type Capability =
-  | "open"
-  | "edit"
-  | "compare"
-  | "verify"
-  | "replay"
-  | "inspect";
+type Capability = "open" | "edit" | "compare" | "verify" | "replay" | "inspect";
 
 type TrustPolicy = {
   allowUnverified: false;

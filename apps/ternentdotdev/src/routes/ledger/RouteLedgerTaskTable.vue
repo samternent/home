@@ -62,12 +62,17 @@ function saveTask() {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="task in tasks" :key="task.id" class="hover:bg-base-200/40 cursor-pointer" @click="openEditDrawer(task)">
-            <td>{{ task.data.title || 'Untitled Task' }}</td>
+          <tr
+            v-for="task in tasks"
+            :key="task.id"
+            class="hover:bg-base-200/40 cursor-pointer"
+            @click="openEditDrawer(task)"
+          >
+            <td>{{ task.data.title || "Untitled Task" }}</td>
             <td>{{ task.data.description }}</td>
             <td>
               <span :class="task.completed ? 'badge badge-success' : 'badge badge-outline'">
-                {{ task.completed ? 'Completed' : 'Open' }}
+                {{ task.completed ? "Completed" : "Open" }}
               </span>
             </td>
             <td>{{ task.data.priority }}</td>
@@ -79,7 +84,9 @@ function saveTask() {
     </div>
     <SDrawerRight v-model="isDrawerOpen" :container="contentContainer">
       <div class="p-6 w-80 max-w-full">
-        <h3 class="text-lg font-bold mb-4">{{ drawerMode === 'add' ? 'Add Task' : 'Edit Task' }}</h3>
+        <h3 class="text-lg font-bold mb-4">
+          {{ drawerMode === "add" ? "Add Task" : "Edit Task" }}
+        </h3>
         <form @submit.prevent="saveTask" class="flex flex-col gap-4">
           <SInput v-model="form.title" label="Title" required />
           <SInput v-model="form.description" label="Description" />
@@ -93,7 +100,9 @@ function saveTask() {
           </select>
           <div class="flex gap-2 mt-4">
             <SButton type="submit" size="sm" variant="primary">Save</SButton>
-            <SButton type="button" size="sm" variant="ghost" @click="isDrawerOpen = false">Cancel</SButton>
+            <SButton type="button" size="sm" variant="ghost" @click="isDrawerOpen = false"
+              >Cancel</SButton
+            >
           </div>
         </form>
       </div>

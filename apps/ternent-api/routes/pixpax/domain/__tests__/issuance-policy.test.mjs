@@ -56,7 +56,7 @@ test("resolveIssuancePolicy rejects mixed dev-untracked and override requests", 
       error instanceof IssuancePolicyError &&
       error.statusCode === 400 &&
       /dev-untracked issuance cannot be combined with override flags/.test(
-        error.payload?.error || ""
-      )
+        error.payload?.error || "",
+      ),
   );
 });

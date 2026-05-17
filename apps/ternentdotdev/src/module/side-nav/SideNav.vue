@@ -1,9 +1,5 @@
 <script setup>
-import {
-  useLocalStorage,
-  breakpointsTailwind,
-  useBreakpoints,
-} from "@vueuse/core";
+import { useLocalStorage, breakpointsTailwind, useBreakpoints } from "@vueuse/core";
 import { computed, watch } from "vue";
 import { useRoute } from "vue-router";
 import { Logo } from "ternent-ui/patterns";
@@ -100,17 +96,9 @@ const bottomItems = computed(() => [
   >
     <!-- Clean Header -->
     <div class="p-3 border-b border-base-300/20">
-      <RouterLink
-        to="/"
-        class="flex items-center gap-2 group flex-1 p-4 overflow-hidden"
-      >
-        <Logo
-          class="h-6 w-6 transition-transform duration-200 group-hover:-rotate-6"
-        />
-        <div
-          v-show="!collapsedSideBar"
-          class="transition-all duration-300 overflow-hidden ml-2"
-        >
+      <RouterLink to="/" class="flex items-center gap-2 group flex-1 p-4 overflow-hidden">
+        <Logo class="h-6 w-6 transition-transform duration-200 group-hover:-rotate-6" />
+        <div v-show="!collapsedSideBar" class="transition-all duration-300 overflow-hidden ml-2">
           <span
             class="text-sm font-medium text-base-content/70 group-hover:text-primary transition-colors duration-200"
           >
@@ -128,12 +116,7 @@ const bottomItems = computed(() => [
           @click="openSideBar = false"
           class="btn btn-sm btn-circle btn-ghost hover:bg-base-300"
         >
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
@@ -155,20 +138,16 @@ const bottomItems = computed(() => [
             :to="item.to"
             class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 hover:bg-base-300/50"
             :class="{
-              'bg-primary/10 text-primary font-medium': $route.path.startsWith(
+              'bg-primary/10 text-primary font-medium': $route.path.startsWith(item.to),
+              'text-base-content/80 hover:text-base-content font-thin': !$route.path.startsWith(
                 item.to,
               ),
-              'text-base-content/80 hover:text-base-content font-thin':
-                !$route.path.startsWith(item.to),
               'justify-center': collapsedSideBar,
             }"
             active-class="bg-primary/10 text-primary font-medium"
           >
             <svg
-              :class="[
-                'size-6',
-                { 'text-secondary': $route.path.startsWith(item.to) },
-              ]"
+              :class="['size-6', { 'text-secondary': $route.path.startsWith(item.to) }]"
               viewBox="0 0 24 24"
             >
               <path
@@ -203,8 +182,7 @@ const bottomItems = computed(() => [
             class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 hover:bg-base-300/50"
             :class="{
               'bg-base-300 font-bold': $route.path.startsWith(item.to),
-              'text-base-content/80 hover:text-base-content':
-                !$route.path.startsWith(item.to),
+              'text-base-content/80 hover:text-base-content': !$route.path.startsWith(item.to),
               'justify-center': collapsedSideBar,
             }"
           >

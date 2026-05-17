@@ -3,13 +3,14 @@ import {
   createCollectionContentStoreFromEnv,
 } from "./content-store.mjs";
 import { PACK_MODELS } from "../models/pack-models.mjs";
-import { canonicalStringify, deriveEntryId, getEntrySigningPayload } from "@ternent/concord-protocol";
+import {
+  canonicalStringify,
+  deriveEntryId,
+  getEntrySigningPayload,
+} from "@ternent/concord-protocol";
 import { createHash, randomBytes, webcrypto } from "node:crypto";
 import { gunzipSync } from "node:zlib";
-import {
-  ensureIssuerAuditLedger,
-  loadIssuerKeys,
-} from "../../stickerbook/index.mjs";
+import { ensureIssuerAuditLedger, loadIssuerKeys } from "../../stickerbook/index.mjs";
 import { parseSegmentJsonl } from "../../stickerbook/issuer-audit-ledger.mjs";
 import {
   validateCardPayload,
@@ -17,10 +18,7 @@ import {
   validateCollectionSettingsPayload,
   validateIndexPayload,
 } from "./validation.mjs";
-import {
-  computeMerkleRootFromItemHashes,
-  hashAlbumCard,
-} from "./curated-hashing.mjs";
+import { computeMerkleRootFromItemHashes, hashAlbumCard } from "./curated-hashing.mjs";
 import { createPixpaxEvent, PIXPAX_EVENT_TYPES } from "../domain/events.mjs";
 import { createCryptoRngSource, createDelegateRngSource } from "../domain/rng-source.mjs";
 import { IssuancePolicyError, resolveIssuancePolicy } from "../domain/issuance-policy.mjs";
@@ -48,7 +46,9 @@ function hashCanonical(value) {
 }
 
 function createNonceHex(length = 16) {
-  return randomBytes(Math.ceil(length / 2)).toString("hex").slice(0, length);
+  return randomBytes(Math.ceil(length / 2))
+    .toString("hex")
+    .slice(0, length);
 }
 
 function createCompactCodeId(bytes = 12) {
@@ -66,9 +66,7 @@ function resolveAdminToken() {
 }
 
 function missingContentConfigError(error) {
-  return String(error?.message || "").includes(
-    "Content store configuration is incomplete"
-  );
+  return String(error?.message || "").includes("Content store configuration is incomplete");
 }
 
 function unsupportedListObjectsError(error) {
@@ -105,7 +103,9 @@ function hashIssuedToUserKey(userKey) {
 }
 
 function decodeHex32(value, label) {
-  const normalized = String(value || "").trim().toLowerCase();
+  const normalized = String(value || "")
+    .trim()
+    .toLowerCase();
   if (!/^[a-f0-9]{64}$/.test(normalized)) {
     throw new Error(`${label} must be a 32-byte hex string.`);
   }
@@ -114,11 +114,11 @@ function decodeHex32(value, label) {
 
 function toIsoWeek(isoDate = new Date()) {
   const date = new Date(
-    Date.UTC(isoDate.getUTCFullYear(), isoDate.getUTCMonth(), isoDate.getUTCDate())
+    Date.UTC(isoDate.getUTCFullYear(), isoDate.getUTCMonth(), isoDate.getUTCDate()),
   );
   date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay() || 7));
   const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
-  const weekNumber = Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+  const weekNumber = Math.ceil(((date - yearStart) / 86400000 + 1) / 7);
   return `${date.getUTCFullYear()}-W${String(weekNumber).padStart(2, "0")}`;
 }
 
@@ -127,7 +127,9 @@ function resolveEventCollectionScope(event) {
   const collectionId = String(payload?.collectionId || "").trim();
   const version = String(payload?.version || payload?.collectionVersion || "").trim();
   if (!collectionId || !version) {
-    throw new Error("PixPax event payload must include collectionId and version/collectionVersion.");
+    throw new Error(
+      "PixPax event payload must include collectionId and version/collectionVersion.",
+    );
   }
   return { collectionId, version };
 }
@@ -163,10 +165,7 @@ const PIXPAX_ADMIN_PERMISSIONS = Object.freeze([
 ]);
 
 function normalizeCollectionSettings(input) {
-  const source =
-    input && typeof input === "object" && !Array.isArray(input)
-      ? input
-      : {};
+  const source = input && typeof input === "object" && !Array.isArray(input) ? input : {};
   const normalized = { ...source };
 
   const visibility = String(source.visibility || "")
@@ -186,15 +185,15 @@ function normalizeCollectionSettings(input) {
   const format = String(source.format || "")
     .trim()
     .toLowerCase();
-  normalized.format = COLLECTION_FORMAT_VALUES.has(format)
-    ? format
-    : DEFAULT_COLLECTION_FORMAT;
+  normalized.format = COLLECTION_FORMAT_VALUES.has(format) ? format : DEFAULT_COLLECTION_FORMAT;
 
   return normalized;
 }
 
 function parseVersionLabel(version) {
-  const normalized = String(version || "").trim().toLowerCase();
+  const normalized = String(version || "")
+    .trim()
+    .toLowerCase();
   const match = normalized.match(/^v(\d+)$/);
   if (!match) return null;
   const number = Number(match[1]);
@@ -218,9 +217,7 @@ function compareCollectionVersionsDesc(a, b) {
 
 function resolveIssuerDisplayFromCollection(collection) {
   const issuer =
-    collection?.issuer &&
-    typeof collection.issuer === "object" &&
-    !Array.isArray(collection.issuer)
+    collection?.issuer && typeof collection.issuer === "object" && !Array.isArray(collection.issuer)
       ? collection.issuer
       : {};
   const issuerName = String(issuer.name || "").trim() || "PixPax";
@@ -256,7 +253,9 @@ function resolveTokenExpLeewaySeconds() {
 }
 
 function isCodeRecordRevoked(record) {
-  const status = String(record?.status || "").trim().toLowerCase();
+  const status = String(record?.status || "")
+    .trim()
+    .toLowerCase();
   const revokedAt = String(record?.revokedAt || "").trim();
   return status === "revoked" || Boolean(revokedAt);
 }
@@ -278,13 +277,13 @@ async function signPayload(privateKeyPem, payload) {
     privatePemToDer(privateKeyPem),
     { name: "ECDSA", namedCurve: "P-256" },
     false,
-    ["sign"]
+    ["sign"],
   );
 
   const signature = await subtle.sign(
     { name: "ECDSA", hash: "SHA-256" },
     key,
-    new TextEncoder().encode(payload)
+    new TextEncoder().encode(payload),
   );
 
   return Buffer.from(signature).toString("base64");
@@ -354,7 +353,9 @@ function parseMintWave(value) {
 }
 
 function normalizeMintKind(value) {
-  const kind = String(value || "pack").trim().toLowerCase();
+  const kind = String(value || "pack")
+    .trim()
+    .toLowerCase();
   if (kind !== "pack" && kind !== "fixed-card") {
     throw new Error("kind must be 'pack' or 'fixed-card'.");
   }
@@ -443,7 +444,7 @@ function buildPackAnalyticsRow(params) {
     packId: String(payload?.packId || "").trim(),
     collectionId: String(payload?.collectionId || fallbackCollectionId || "").trim(),
     collectionVersion: String(
-      payload?.collectionVersion || payload?.version || fallbackVersion || ""
+      payload?.collectionVersion || payload?.version || fallbackVersion || "",
     ).trim(),
     dropId: String(payload?.dropId || "").trim(),
     issuedAt: String(payload?.issuedAt || fallbackIssuedAt || "").trim(),
@@ -546,8 +547,8 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
   const rngSource = options.rngSource
     ? options.rngSource
     : options.pickRandomIndex
-    ? createDelegateRngSource(options.pickRandomIndex)
-    : createCryptoRngSource();
+      ? createDelegateRngSource(options.pickRandomIndex)
+      : createCryptoRngSource();
   const now = options.now || (() => new Date());
   const appendEventOverride = options.appendEvent || null;
   const allowDevUntrackedPacks =
@@ -562,7 +563,9 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
         issuerKeyId: issuerKeys.issuerKeyId,
       });
       if (ledger.options?.disabled) {
-        throw new Error("Issuer audit ledger is disabled. Configure LEDGER_* environment variables.");
+        throw new Error(
+          "Issuer audit ledger is disabled. Configure LEDGER_* environment variables.",
+        );
       }
       return ledger.appendIssuedEntry(entryId, entry);
     });
@@ -583,7 +586,8 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
       ledgerReadContextPromise = (async () => {
         const store = await getStore();
         const ledgerPrefix = normalizePathPrefix(process.env.LEDGER_PREFIX, "pixpax/ledger");
-        const ledgerBucket = String(process.env.LEDGER_BUCKET || "").trim() || String(store.bucket || "");
+        const ledgerBucket =
+          String(process.env.LEDGER_BUCKET || "").trim() || String(store.bucket || "");
 
         if (ledgerBucket === String(store.bucket || "")) {
           return {
@@ -598,8 +602,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
         const accessKeyId = String(process.env.LEDGER_ACCESS_KEY_ID || "").trim();
         const secretAccessKey = String(process.env.LEDGER_SECRET_ACCESS_KEY || "").trim();
         const forcePathStyle =
-          String(process.env.LEDGER_S3_FORCE_PATH_STYLE || "true").toLowerCase() !==
-          "false";
+          String(process.env.LEDGER_S3_FORCE_PATH_STYLE || "true").toLowerCase() !== "false";
 
         if (!endpoint || !ledgerBucket || !region || !accessKeyId || !secretAccessKey) {
           return null;
@@ -739,11 +742,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
   }
 
   async function resolveCollectionState(store, collectionId, requestedVersion = "") {
-    const resolvedVersion = await resolveCollectionVersion(
-      store,
-      collectionId,
-      requestedVersion
-    );
+    const resolvedVersion = await resolveCollectionVersion(store, collectionId, requestedVersion);
     const [collection, settings] = await Promise.all([
       store.getCollection(collectionId, resolvedVersion),
       getCollectionSettingsWithDefaults(store, collectionId),
@@ -780,16 +779,10 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
   }
 
   async function issueCodeTokenRecord(params) {
-    const {
-      store,
-      collectionId,
-      version,
-      body,
-      issuedAtIso,
-      signer,
-    } = params;
+    const { store, collectionId, version, body, issuedAtIso, signer } = params;
     const issuedAt = String(issuedAtIso || "").trim();
-    const exp = Math.floor(Date.parse(issuedAt) / 1000) + clampRedeemTokenTtlSeconds(body?.expiresInSeconds);
+    const exp =
+      Math.floor(Date.parse(issuedAt) / 1000) + clampRedeemTokenTtlSeconds(body?.expiresInSeconds);
     const kind = normalizeMintKind(body?.kind);
     const dropId = String(body?.dropId || `week-${toIsoWeek(new Date(issuedAt))}`).trim();
     const wave = parseMintWave(body?.wave);
@@ -896,7 +889,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
         dropId: policy.dropId,
         count: policy.count ?? 1,
       },
-      issuedAt
+      issuedAt,
     );
 
     return {
@@ -994,7 +987,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
             name: String(req.body?.name || ""),
             gridSize: Number(req.body?.gridSize || 0),
           },
-          now().toISOString()
+          now().toISOString(),
         );
       } catch (error) {
         try {
@@ -1261,7 +1254,9 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
       }
       if (
         String(error?.message || "").includes("cardId is required when kind='fixed-card'.") ||
-        String(error?.message || "").includes("count must be absent or 1 when kind='fixed-card'.") ||
+        String(error?.message || "").includes(
+          "count must be absent or 1 when kind='fixed-card'.",
+        ) ||
         String(error?.message || "").includes("count must be an integer between 1 and 50.") ||
         String(error?.message || "").includes("cardId must exist in this collection/version index.")
       ) {
@@ -1326,7 +1321,9 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
       if (
         String(error?.message || "").includes("kind must be") ||
         String(error?.message || "").includes("cardId is required when kind='fixed-card'.") ||
-        String(error?.message || "").includes("count must be absent or 1 when kind='fixed-card'.") ||
+        String(error?.message || "").includes(
+          "count must be absent or 1 when kind='fixed-card'.",
+        ) ||
         String(error?.message || "").includes("count must be an integer between 1 and 50.") ||
         String(error?.message || "").includes("cardId must exist in this collection/version index.")
       ) {
@@ -1412,9 +1409,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
         return;
       }
       const seriesIds = Array.isArray(req.body?.series)
-        ? req.body.series
-            .map((entry) => String(entry?.seriesId || "").trim())
-            .filter(Boolean)
+        ? req.body.series.map((entry) => String(entry?.seriesId || "").trim()).filter(Boolean)
         : [];
       try {
         await emitDomainEvent(
@@ -1425,7 +1420,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
             seriesIds,
             cardCount: Array.isArray(req.body?.cards) ? req.body.cards.length : 0,
           },
-          now().toISOString()
+          now().toISOString(),
         );
       } catch (error) {
         try {
@@ -1494,7 +1489,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
         const declaredSeriesIds = new Set(
           (Array.isArray(index?.series) ? index.series : [])
             .map((entry) => String(entry?.seriesId || "").trim())
-            .filter(Boolean)
+            .filter(Boolean),
         );
         if (!declaredSeriesIds.has(normalizedSeriesId)) {
           res.status(404).send({ error: "Unknown series for collection/version." });
@@ -1518,7 +1513,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
             seriesId: normalizedSeriesId,
             ...(reason ? { reason } : {}),
           },
-          occurredAt
+          occurredAt,
         );
         res.status(201).send({
           ok: true,
@@ -1543,7 +1538,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
         console.error("[pixpax/collections] retire series failed:", error);
         res.status(500).send({ error: "Failed to retire series." });
       }
-    }
+    },
   );
 
   router.get("/v1/pixpax/collections/:collectionId/:version/bundle", async (req, res) => {
@@ -1601,78 +1596,75 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
     }
   });
 
-  router.put(
-    "/v1/pixpax/collections/:collectionId/:version/cards/:cardId",
-    async (req, res) => {
-      if (!(await requireAdminToken(req, res))) return;
+  router.put("/v1/pixpax/collections/:collectionId/:version/cards/:cardId", async (req, res) => {
+    if (!(await requireAdminToken(req, res))) return;
 
-      const { collectionId, version, cardId } = req.params || {};
+    const { collectionId, version, cardId } = req.params || {};
 
+    try {
+      const store = await getStore();
+      let collection;
       try {
-        const store = await getStore();
-        let collection;
-        try {
-          collection = await store.getCollection(collectionId, version);
-        } catch (error) {
-          if (String(error?.message || "").startsWith("NoSuchKey:")) {
-            res.status(404).send({
-              error: "collection.json must be uploaded first for this version.",
-            });
-            return;
-          }
-          throw error;
-        }
-
-        const validation = validateCardPayload(req.body, cardId, collection?.gridSize);
-        if (!validation.ok) {
-          res.status(400).send({ error: "Invalid card payload.", details: validation.errors });
-          return;
-        }
-        const result = await store.putCardIfAbsent(collectionId, version, cardId, req.body);
-        if (!result.created) {
-          res.status(409).send({ error: "card already exists for this version/cardId." });
-          return;
-        }
-        try {
-          await emitDomainEvent(
-            PIXPAX_EVENT_TYPES.CARD_ADDED,
-            {
-              collectionId: String(collectionId),
-              version: String(version),
-              cardId: String(cardId),
-              seriesId: req.body?.seriesId ? String(req.body.seriesId) : null,
-            },
-            now().toISOString()
-          );
-        } catch (error) {
-          try {
-            await store.deleteCard(collectionId, version, cardId);
-          } catch (rollbackError) {
-            console.error("[pixpax/collections] card rollback failed:", rollbackError);
-          }
-          throw error;
-        }
-
-        res.status(201).send({
-          ok: true,
-          collectionId,
-          version,
-          cardId,
-          key: result.key,
-        });
+        collection = await store.getCollection(collectionId, version);
       } catch (error) {
-        if (missingContentConfigError(error)) {
-          res.status(503).send({
-            error:
-              "Content store configuration is incomplete. Use LEDGER_* connection vars and LEDGER_CONTENT_PREFIX.",
+        if (String(error?.message || "").startsWith("NoSuchKey:")) {
+          res.status(404).send({
+            error: "collection.json must be uploaded first for this version.",
           });
           return;
         }
-        console.error("[pixpax/collections] put card failed:", error);
-        res.status(500).send({ error: "Failed to store card JSON." });
+        throw error;
       }
+
+      const validation = validateCardPayload(req.body, cardId, collection?.gridSize);
+      if (!validation.ok) {
+        res.status(400).send({ error: "Invalid card payload.", details: validation.errors });
+        return;
+      }
+      const result = await store.putCardIfAbsent(collectionId, version, cardId, req.body);
+      if (!result.created) {
+        res.status(409).send({ error: "card already exists for this version/cardId." });
+        return;
+      }
+      try {
+        await emitDomainEvent(
+          PIXPAX_EVENT_TYPES.CARD_ADDED,
+          {
+            collectionId: String(collectionId),
+            version: String(version),
+            cardId: String(cardId),
+            seriesId: req.body?.seriesId ? String(req.body.seriesId) : null,
+          },
+          now().toISOString(),
+        );
+      } catch (error) {
+        try {
+          await store.deleteCard(collectionId, version, cardId);
+        } catch (rollbackError) {
+          console.error("[pixpax/collections] card rollback failed:", rollbackError);
+        }
+        throw error;
+      }
+
+      res.status(201).send({
+        ok: true,
+        collectionId,
+        version,
+        cardId,
+        key: result.key,
+      });
+    } catch (error) {
+      if (missingContentConfigError(error)) {
+        res.status(503).send({
+          error:
+            "Content store configuration is incomplete. Use LEDGER_* connection vars and LEDGER_CONTENT_PREFIX.",
+        });
+        return;
+      }
+      console.error("[pixpax/collections] put card failed:", error);
+      res.status(500).send({ error: "Failed to store card JSON." });
     }
-  );
+  });
 
   router.get("/v1/pixpax/collections/:collectionId/:version/cards/:cardId", async (req, res) => {
     const { collectionId, version, cardId } = req.params || {};
@@ -1705,7 +1697,9 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
     const rawLimit = String(req.query?.limit || "").trim();
     const limit = rawLimit ? parsePositiveInt(rawLimit, 2000, 50000) : null;
     const includeCardIds =
-      String(req.query?.includeCardIds || "true").trim().toLowerCase() !== "false";
+      String(req.query?.includeCardIds || "true")
+        .trim()
+        .toLowerCase() !== "false";
 
     try {
       const cacheKey = hashCanonical({
@@ -1784,7 +1778,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
             source: "collection-events",
             eventId: entry.event?.eventId,
             includeCardIds,
-          })
+          }),
         );
 
       const ledgerContext = await getLedgerReadContext();
@@ -1850,7 +1844,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
             ledgerSegmentsInvalid += 1;
             return [];
           }
-        }
+        },
       );
 
       const segmentPackRows = segmentPackRowsNested.flat();
@@ -1858,7 +1852,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
       const packRows = dedupePackRows(
         [...eventPackRows, ...segmentPackRows]
           .filter((row) => row.packId && row.collectionId && row.collectionVersion)
-          .filter((row) => (dropIdFilter ? row.dropId === dropIdFilter : true))
+          .filter((row) => (dropIdFilter ? row.dropId === dropIdFilter : true)),
       );
 
       packRows.sort((a, b) => {
@@ -1869,7 +1863,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
 
       const insights = summarizePackAnalytics(
         packRows,
-        loadedEvents.filter(Boolean).length + ledgerEventsScanned
+        loadedEvents.filter(Boolean).length + ledgerEventsScanned,
       );
       const packs = Number.isFinite(limit) ? packRows.slice(0, limit) : packRows;
 
@@ -1951,7 +1945,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
         console.error("[pixpax/collections] verify pack failed:", error);
         res.status(500).send({ error: "Failed to verify pack." });
       }
-    }
+    },
   );
 
   router.post("/v1/pixpax/packs/verify-bulk", async (req, res) => {
@@ -1988,9 +1982,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
       const results = await mapWithConcurrency(rawPacks, 12, async (row, index) => {
         const packId = String(row?.packId || "").trim();
         const collectionId = String(row?.collectionId || "").trim();
-        const collectionVersion = String(
-          row?.collectionVersion || row?.version || ""
-        ).trim();
+        const collectionVersion = String(row?.collectionVersion || row?.version || "").trim();
         const segmentKey = String(row?.segmentKey || "").trim();
 
         const base = {
@@ -2053,8 +2045,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
               ok: true,
               method: "pack-verify",
               reason: "ledger-disabled",
-              summary:
-                "Pack verified (content+structure). Receipt verifier ledger is disabled.",
+              summary: "Pack verified (content+structure). Receipt verifier ledger is disabled.",
               packVerify,
             };
           }
@@ -2100,11 +2091,9 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
 
       const okCount = results.filter((entry) => entry.ok).length;
       const receiptProofCount = results.filter(
-        (entry) => entry.method === "receipt-proof" && entry.ok
+        (entry) => entry.method === "receipt-proof" && entry.ok,
       ).length;
-      const untrackedCount = results.filter(
-        (entry) => entry.reason === "dev-untracked"
-      ).length;
+      const untrackedCount = results.filter((entry) => entry.reason === "dev-untracked").length;
 
       res.status(200).send({
         ok: true,
@@ -2201,9 +2190,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
 
   router.post("/v1/pixpax/redeem", async (req, res) => {
     const body =
-      req.body && typeof req.body === "object" && !Array.isArray(req.body)
-        ? req.body
-        : null;
+      req.body && typeof req.body === "object" && !Array.isArray(req.body) ? req.body : null;
     if (!body) {
       res.status(400).send({ error: "redeem payload must be a JSON object." });
       return;
@@ -2262,10 +2249,10 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
           reason === "legacy-token-unsupported"
             ? 422
             : reason === "token-expired"
-            ? 410
-            : reason === "issuer-resolution-failed" || reason === "signature-verify-error"
-            ? 500
-            : 422;
+              ? 410
+              : reason === "issuer-resolution-failed" || reason === "signature-verify-error"
+                ? 500
+                : 422;
         const expiredAtIso =
           reason === "token-expired" && Number.isFinite(Number(verification.exp))
             ? new Date(Number(verification.exp) * 1000).toISOString()
@@ -2280,11 +2267,10 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
             reason === "legacy-token-unsupported"
               ? "Legacy token format is no longer supported. Remint a new code token."
               : reason === "token-expired"
-              ? "This redeem code has expired. Ask for a new code."
-              : "Token verification failed.",
+                ? "This redeem code has expired. Ask for a new code."
+                : "Token verification failed.",
           reason,
-          code:
-            reason === "legacy-token-unsupported" ? "legacy_token_unsupported" : undefined,
+          code: reason === "legacy-token-unsupported" ? "legacy_token_unsupported" : undefined,
           expiresAt: expiredAtIso,
           nowAt: nowAtIso,
           details: verification.error || null,
@@ -2360,7 +2346,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
         const proofOk = await verifyP256Sha256Signature(
           collectorPubKey,
           tokenHashBytes,
-          collectorSig
+          collectorSig,
         );
         if (!proofOk) {
           res.status(422).send({
@@ -2378,7 +2364,11 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
           res.status(400).send({ error: "fixed-card token is missing cardId." });
           return;
         }
-        if (codeRecord?.count !== undefined && codeRecord?.count !== null && Number(codeRecord.count) !== 1) {
+        if (
+          codeRecord?.count !== undefined &&
+          codeRecord?.count !== null &&
+          Number(codeRecord.count) !== 1
+        ) {
           res.status(400).send({ error: "fixed-card token count must be absent or 1." });
           return;
         }
@@ -2407,7 +2397,9 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
       if (kind === "fixed-card") {
         const cardId = String(codeRecord?.cardId || "").trim();
         if (!allCardIds.includes(cardId) || !index?.cardMap?.[cardId]) {
-          res.status(422).send({ error: "fixed-card token cardId is not part of this collection version." });
+          res
+            .status(422)
+            .send({ error: "fixed-card token cardId is not part of this collection version." });
           return;
         }
         selectedCardIds = [cardId];
@@ -2423,7 +2415,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
         const retiredSeriesIds = new Set(
           (Array.isArray(snapshot?.retiredSeriesIds) ? snapshot.retiredSeriesIds : [])
             .map((seriesId) => String(seriesId || "").trim())
-            .filter(Boolean)
+            .filter(Boolean),
         );
         const cardPool = allCardIds.filter((cardId) => {
           if (!retiredSeriesIds.size) return true;
@@ -2434,9 +2426,8 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
           res.status(422).send({ error: "All series are retired for this collection version." });
           return;
         }
-        selectedCardIds = new Array(count)
-          .fill(null)
-          .map((_, slotIndex) =>
+        selectedCardIds = new Array(count).fill(null).map(
+          (_, slotIndex) =>
             cardPool[
               rngSource.nextInt(cardPool.length, {
                 collectionId,
@@ -2445,8 +2436,8 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
                 slotIndex,
                 count,
               })
-            ]
-          );
+            ],
+        );
       }
 
       const cards = await mapWithConcurrency(selectedCardIds, 8, async (cardId) => {
@@ -2465,7 +2456,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
           collectionVersion: version,
           cardId: card.cardId,
           renderPayload: card.renderPayload || {},
-        })
+        }),
       );
       const packRoot = computeMerkleRootFromItemHashes(itemHashes);
       const packId = createNonceHex(24);
@@ -2519,7 +2510,10 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
         author: issuerKeys.author,
         payload,
       };
-      const signature = await signPayload(issuerKeys.privateKeyPem, getEntrySigningPayload(entryCore));
+      const signature = await signPayload(
+        issuerKeys.privateKeyPem,
+        getEntrySigningPayload(entryCore),
+      );
       const entry = { ...entryCore, signature };
 
       let appendResult = null;
@@ -2563,7 +2557,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
           issuanceMode: "redeem-token",
           untracked: false,
         },
-        issuedAt
+        issuedAt,
       );
       await emitDomainEvent(
         PIXPAX_EVENT_TYPES.GIFTCODE_REDEEMED,
@@ -2575,7 +2569,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
           issuedTo,
           dropId,
         },
-        issuedAt
+        issuedAt,
       );
 
       res.status(200).send({
@@ -2645,7 +2639,9 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
     const { collectionId, version } = req.params || {};
     const rawUserKey = req.body?.userKey;
     const normalizedUserKey = canonicalizeUserKey(rawUserKey);
-    const requestedIssuanceMode = String(req.body?.issuanceMode || "").trim().toLowerCase();
+    const requestedIssuanceMode = String(req.body?.issuanceMode || "")
+      .trim()
+      .toLowerCase();
     const wantsDevUntrackedPack = requestedIssuanceMode === "dev-untracked";
     const wantsOverride = req.body?.override === true;
     const issuedAt = now().toISOString();
@@ -2698,7 +2694,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
       const retiredSeriesIds = new Set(
         (Array.isArray(snapshot?.retiredSeriesIds) ? snapshot.retiredSeriesIds : [])
           .map((seriesId) => String(seriesId || "").trim())
-          .filter(Boolean)
+          .filter(Boolean),
       );
       const cardPool = allCardIds.filter((cardId) => {
         if (!retiredSeriesIds.size) return true;
@@ -2711,9 +2707,8 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
       }
 
       // With replacement, matching stickerbook behavior.
-      const selectedCardIds = new Array(count)
-        .fill(null)
-        .map((_, slotIndex) =>
+      const selectedCardIds = new Array(count).fill(null).map(
+        (_, slotIndex) =>
           cardPool[
             rngSource.nextInt(cardPool.length, {
               collectionId,
@@ -2722,8 +2717,8 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
               slotIndex,
               count,
             })
-          ]
-        );
+          ],
+      );
 
       const cards = await mapWithConcurrency(selectedCardIds, 8, async (cardId) => {
         const card = await store.getCard(collectionId, version, cardId);
@@ -2742,7 +2737,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
           collectionVersion: version,
           cardId: card.cardId,
           renderPayload: card.renderPayload || {},
-        })
+        }),
       );
       const packRoot = computeMerkleRootFromItemHashes(itemHashes);
       const packId = createNonceHex(24);
@@ -2786,7 +2781,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
         };
         const signature = await signPayload(
           issuerKeys.privateKeyPem,
-          getEntrySigningPayload(entryCore)
+          getEntrySigningPayload(entryCore),
         );
         entry = { ...entryCore, signature };
       } else {
@@ -2820,7 +2815,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
           issuanceMode: issuancePolicy.mode,
           untracked: issuancePolicy.untracked,
         },
-        issuedAt
+        issuedAt,
       );
 
       if (!issuancePolicy.untracked && entry && issuerKeys) {
@@ -2855,8 +2850,7 @@ export default function pixpaxCollectionRoutes(router, options = {}) {
         dropId,
         cardsCount: cards.length,
         responsePayload,
-        emitEvent: async (type, payloadValue) =>
-          emitDomainEvent(type, payloadValue, issuedAt),
+        emitEvent: async (type, payloadValue) => emitDomainEvent(type, payloadValue, issuedAt),
       });
       if (afterIssue?.reusedResponse) {
         res.status(200).send(afterIssue.reusedResponse);

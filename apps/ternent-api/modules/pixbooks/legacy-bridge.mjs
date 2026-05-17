@@ -9,7 +9,7 @@ export function applyLegacyDeprecationHeaders(res) {
   res.setHeader("Sunset", "Wed, 30 Sep 2026 00:00:00 GMT");
   res.setHeader(
     "Link",
-    '</docs/pixpax-migration/pixbook-commands>; rel="deprecation"; type="text/markdown"'
+    '</docs/pixpax-migration/pixbook-commands>; rel="deprecation"; type="text/markdown"',
   );
 }
 
@@ -21,19 +21,11 @@ function buildCtx(req, userId) {
   };
 }
 
-export async function getLegacyPixbookSnapshot({
-  req,
-  userId,
-  accountId,
-  bookId,
-}) {
-  const data = await getPixbookServices().queryService.getSnapshot(
-    buildCtx(req, userId),
-    {
-      accountId: trim(accountId),
-      bookId: trim(bookId),
-    }
-  );
+export async function getLegacyPixbookSnapshot({ req, userId, accountId, bookId }) {
+  const data = await getPixbookServices().queryService.getSnapshot(buildCtx(req, userId), {
+    accountId: trim(accountId),
+    bookId: trim(bookId),
+  });
   return data?.snapshot || null;
 }
 
@@ -49,8 +41,7 @@ export async function saveLegacyPixbookSnapshot({
   signingIdentityId,
 }) {
   const idempotencyKey =
-    trim(req?.headers?.["idempotency-key"]) ||
-    `legacy:${trim(req?.requestId)}:${trim(bookId)}`;
+    trim(req?.headers?.["idempotency-key"]) || `legacy:${trim(req?.requestId)}:${trim(bookId)}`;
   const input = {
     accountId: trim(accountId),
     bookId: trim(bookId),
@@ -60,9 +51,7 @@ export async function saveLegacyPixbookSnapshot({
       payload,
       ledgerHead: trim(ledgerHead) || null,
       expectedVersion:
-        expectedVersion === null || expectedVersion === undefined
-          ? null
-          : Number(expectedVersion),
+        expectedVersion === null || expectedVersion === undefined ? null : Number(expectedVersion),
       expectedLedgerHead:
         expectedLedgerHead === null || expectedLedgerHead === undefined
           ? null
@@ -71,7 +60,7 @@ export async function saveLegacyPixbookSnapshot({
   };
   const command = await getPixbookServices().commandService.savePixbook(
     buildCtx(req, userId),
-    input
+    input,
   );
   const snapshot = await getLegacyPixbookSnapshot({
     req,

@@ -5,9 +5,7 @@ import HeroProofArtifactCard from "@/modules/proof/components/HeroProofArtifactC
 import LivePublishedProofJson from "@/modules/proof/components/LivePublishedProofJson.vue";
 import PublishedSiteProofPreview from "@/modules/proof/components/PublishedSiteProofPreview.vue";
 
-const publishedSiteBaseUrl = import.meta.env.DEV
-  ? "/_seal"
-  : `https://${appConfig.defaultHost}`;
+const publishedSiteBaseUrl = import.meta.env.DEV ? "/_seal" : `https://${appConfig.defaultHost}`;
 </script>
 
 <template>
@@ -21,11 +19,7 @@ const publishedSiteBaseUrl = import.meta.env.DEV
     </template>
 
     <template #footer-meta>
-      <PublishedSiteProofPreview
-        mode="badge"
-        :base-url="publishedSiteBaseUrl"
-        with-popover
-      />
+      <PublishedSiteProofPreview mode="badge" :base-url="publishedSiteBaseUrl" with-popover />
     </template>
   </LandingPage>
 </template>

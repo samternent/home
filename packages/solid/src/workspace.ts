@@ -52,12 +52,7 @@ function getStatusCode(error: unknown): number {
   }
 
   const response = isRecord(error.response) ? error.response : null;
-  return Number(
-    error.statusCode ??
-      error.status ??
-      response?.status ??
-      NaN,
-  );
+  return Number(error.statusCode ?? error.status ?? response?.status ?? NaN);
 }
 
 function isMissingError(error: unknown): boolean {
@@ -126,8 +121,7 @@ function isLikelyLedgerName(url: string, contentType: string | null): boolean {
   }
 
   return (
-    name.includes("ledger") &&
-    (name.endsWith(".json") || contentType?.includes("json") === true)
+    name.includes("ledger") && (name.endsWith(".json") || contentType?.includes("json") === true)
   );
 }
 
@@ -135,13 +129,13 @@ function isTextLike(contentType: string | null, name: string): boolean {
   const lowerName = name.toLowerCase();
   return Boolean(
     contentType?.startsWith("text/") ||
-      contentType?.includes("json") ||
-      contentType?.includes("xml") ||
-      contentType?.includes("yaml") ||
-      contentType?.includes("turtle") ||
-      lowerName.endsWith(".md") ||
-      lowerName.endsWith(".ttl") ||
-      lowerName.endsWith(".txt"),
+    contentType?.includes("json") ||
+    contentType?.includes("xml") ||
+    contentType?.includes("yaml") ||
+    contentType?.includes("turtle") ||
+    lowerName.endsWith(".md") ||
+    lowerName.endsWith(".ttl") ||
+    lowerName.endsWith(".txt"),
   );
 }
 
@@ -151,10 +145,7 @@ function isImageLike(contentType: string | null): boolean {
 
 const LDP_CONTAINS = "http://www.w3.org/ns/ldp#contains";
 
-function readHeader(
-  headers: Headers,
-  keys: string[],
-): string | null {
+function readHeader(headers: Headers, keys: string[]): string | null {
   for (const key of keys) {
     const value = headers.get(key);
     if (value) {
@@ -211,7 +202,9 @@ async function head(fetchImpl: typeof fetch, url: string): Promise<Headers | nul
     if (response.status === 404) {
       return null;
     }
-    throw new Error(`Failed to inspect Solid resource ${url}: ${response.status} ${response.statusText}`);
+    throw new Error(
+      `Failed to inspect Solid resource ${url}: ${response.status} ${response.statusText}`,
+    );
   }
 
   return response.headers;
@@ -241,7 +234,9 @@ async function parseLedgerSummary(text: string): Promise<SolidWorkspaceLedgerSum
   }
 }
 
-export async function createEmptyConcordLedger(identity: SerializedIdentity): Promise<LedgerContainer> {
+export async function createEmptyConcordLedger(
+  identity: SerializedIdentity,
+): Promise<LedgerContainer> {
   const app = await createConcordApp({
     identity,
     plugins: [],
@@ -389,13 +384,19 @@ export async function createSolidWorkspace(
       visibility = "private";
     } else if (scope === "public") {
       visibility = "public";
-      warnings.push("Visibility is inferred from the workspace scope because direct access inspection was unavailable.");
+      warnings.push(
+        "Visibility is inferred from the workspace scope because direct access inspection was unavailable.",
+      );
     } else if (scope === "shared") {
       visibility = "shared";
-      warnings.push("Visibility is inferred from the workspace scope because direct access inspection was unavailable.");
+      warnings.push(
+        "Visibility is inferred from the workspace scope because direct access inspection was unavailable.",
+      );
     } else {
       visibility = "private";
-      warnings.push("Visibility is inferred from the workspace scope because direct access inspection was unavailable.");
+      warnings.push(
+        "Visibility is inferred from the workspace scope because direct access inspection was unavailable.",
+      );
     }
 
     return {
@@ -487,10 +488,7 @@ export async function createSolidWorkspace(
     };
   }
 
-  async function applyDefaultAccess(
-    url: string,
-    options: SolidWorkspaceWriteOptions = {},
-  ) {
+  async function applyDefaultAccess(url: string, options: SolidWorkspaceWriteOptions = {}) {
     const scope = toWorkspaceScope(url, paths);
     const publicRead = options.publicRead ?? scope === "public";
     const agents = options.agents ?? [];
@@ -505,7 +503,10 @@ export async function createSolidWorkspace(
     name: string,
     options: SolidWorkspaceWriteOptions = {},
   ) {
-    const folderUrl = new URL(sanitizeName(name, true), normalizeContainerUrl(parentUrl)).toString();
+    const folderUrl = new URL(
+      sanitizeName(name, true),
+      normalizeContainerUrl(parentUrl),
+    ).toString();
     await ensureContainer(folderUrl);
     await applyDefaultAccess(folderUrl, options);
     const entry = await stat(folderUrl);
@@ -524,7 +525,9 @@ export async function createSolidWorkspace(
     const fileUrl = new URL(sanitizeName(name, false), normalizeContainerUrl(parentUrl)).toString();
     const contentType =
       options.contentType ??
-      (typeof Blob !== "undefined" && data instanceof Blob ? data.type || "application/octet-stream" : "application/octet-stream");
+      (typeof Blob !== "undefined" && data instanceof Blob
+        ? data.type || "application/octet-stream"
+        : "application/octet-stream");
     const body =
       typeof data === "string"
         ? data
@@ -541,7 +544,9 @@ export async function createSolidWorkspace(
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to save Solid file ${fileUrl}: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `Failed to save Solid file ${fileUrl}: ${response.status} ${response.statusText}`,
+      );
     }
 
     await applyDefaultAccess(fileUrl, {
@@ -598,14 +603,9 @@ export async function createSolidWorkspace(
     const file = await getFile(source.url, {
       fetch: fetchImpl,
     });
-    await uploadFile(
-      parentUrl,
-      nextName ?? source.name,
-      file,
-      {
-        contentType: file.type,
-      },
-    );
+    await uploadFile(parentUrl, nextName ?? source.name, file, {
+      contentType: file.type,
+    });
     return destinationUrl;
   }
 
@@ -632,11 +632,7 @@ export async function createSolidWorkspace(
     });
   }
 
-  async function rename(
-    url: string,
-    nextName: string,
-    options: SolidWorkspaceWriteOptions = {},
-  ) {
+  async function rename(url: string, nextName: string, options: SolidWorkspaceWriteOptions = {}) {
     const entry = await stat(url);
     if (!entry?.parentUrl) {
       throw new Error("Solid resource cannot be renamed because it has no parent container.");

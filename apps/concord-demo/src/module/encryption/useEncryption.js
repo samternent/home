@@ -12,8 +12,7 @@ function Encryption() {
 
   async function init() {
     if (!publicKey.value || !privateKey.value) {
-      const [_privateEncryption, _publicEncryption] =
-        await generateEncryptionKeys();
+      const [_privateEncryption, _publicEncryption] = await generateEncryptionKeys();
       publicKey.value = _publicEncryption;
       privateKey.value = _privateEncryption;
     }

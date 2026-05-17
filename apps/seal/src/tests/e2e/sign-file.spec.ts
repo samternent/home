@@ -3,7 +3,9 @@ import { test, expect } from "@playwright/test";
 test("sign file and verify proof only", async ({ page }) => {
   await page.goto("/app/identity");
   await page.getByRole("button", { name: "Generate signer" }).click();
-  await expect(page.getByText("Identity created. Export it now and store it securely.")).toBeVisible();
+  await expect(
+    page.getByText("Identity created. Export it now and store it securely."),
+  ).toBeVisible();
 
   await page.getByRole("link", { name: "Sign" }).click();
   await page.getByRole("tab", { name: "File" }).click();
@@ -32,7 +34,9 @@ test("sign file and verify proof only", async ({ page }) => {
     .click();
   await page.getByRole("button", { name: "Verify proof" }).click();
 
-  await expect(page.getByText("Proof JSON parsed successfully and the signature is valid.")).toBeVisible();
+  await expect(
+    page.getByText("Proof JSON parsed successfully and the signature is valid."),
+  ).toBeVisible();
   await expect(page.getByText("Content match skipped (proof-only mode).")).toBeVisible();
 });
 

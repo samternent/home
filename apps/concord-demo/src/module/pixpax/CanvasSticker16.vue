@@ -44,10 +44,7 @@ function draw() {
 
   const explicitScale = Number(props.scale);
   const hasExplicitScale = Number.isFinite(explicitScale) && explicitScale > 0;
-  const dpr =
-    typeof window !== "undefined"
-      ? Math.max(1, window.devicePixelRatio || 1)
-      : 1;
+  const dpr = typeof window !== "undefined" ? Math.max(1, window.devicePixelRatio || 1) : 1;
 
   if (hasExplicitScale) {
     const scale = Math.max(1, Math.floor(explicitScale));
@@ -138,13 +135,7 @@ watch(() => measuredCssSizeRef.value, draw);
 </script>
 
 <template>
-  <canvas
-    ref="canvasRef"
-    :class="props.class"
-    class="pixel-canvas"
-    width="128"
-    height="128"
-  />
+  <canvas ref="canvasRef" :class="props.class" class="pixel-canvas" width="128" height="128" />
 </template>
 
 <style scoped>

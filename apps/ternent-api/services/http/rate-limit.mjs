@@ -59,10 +59,7 @@ export function createCommandRateLimit() {
     limit: asInt(process.env.RATE_LIMIT_COMMAND_MAX, 120),
     keyResolver(req) {
       const accountId = String(
-        req?.headers?.["x-account-id"] ||
-          req?.query?.accountId ||
-          req?.body?.accountId ||
-          ""
+        req?.headers?.["x-account-id"] || req?.query?.accountId || req?.body?.accountId || "",
       ).trim();
       const scope = accountId || clientIp(req);
       return `cmd:${scope}`;

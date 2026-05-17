@@ -21,7 +21,7 @@ if (NativeWorker) {
 
     override postMessage(
       message: unknown,
-      transferOrOptions?: StructuredSerializeOptions | Transferable[]
+      transferOrOptions?: StructuredSerializeOptions | Transferable[],
     ): void {
       workerMessages += 1;
       super.postMessage(message, transferOrOptions);
@@ -70,7 +70,7 @@ async function main(): Promise<void> {
         workerMessages,
       },
       null,
-      2
+      2,
     );
   } catch (error) {
     const details =

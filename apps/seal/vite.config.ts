@@ -9,9 +9,7 @@ const appThemeData = `${appConfig.themeName}-${appConfig.defaultThemeMode}`;
 const themeStorageKey = `${appConfig.appId}/theme-mode`;
 const themeBootstrapScript = `(function(){var storageKey=${JSON.stringify(
   themeStorageKey,
-)};var defaultMode=${JSON.stringify(
-  appConfig.defaultThemeMode,
-)};var themePrefix=${JSON.stringify(
+)};var defaultMode=${JSON.stringify(appConfig.defaultThemeMode)};var themePrefix=${JSON.stringify(
   appConfig.themeName,
 )};var root=document.documentElement;var mode=defaultMode;root.dataset.themePrefix=themePrefix;root.dataset.themeStorageKey=storageKey;try{var stored=window.localStorage.getItem(storageKey);if(stored==="dark"||stored==="light"){mode=stored;}else if(typeof window.matchMedia==="function"){mode=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}}catch{if(typeof window.matchMedia==="function"){mode=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}}root.setAttribute("data-theme",themePrefix+"-"+mode);}());`;
 
@@ -133,10 +131,7 @@ export default defineConfig({
     include: ["src/tests/unit/**/*.test.ts"],
     exclude: ["src/tests/e2e/**"],
     alias: {
-      "@ternent/identity": resolve(
-        __dirname,
-        "../../packages/identity-v2/src/index.ts",
-      ),
+      "@ternent/identity": resolve(__dirname, "../../packages/identity-v2/src/index.ts"),
     },
     coverage: {
       provider: "v8",

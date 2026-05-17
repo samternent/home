@@ -1,10 +1,4 @@
-export const landingPageToneValues = [
-  "primary",
-  "secondary",
-  "accent",
-  "success",
-  "info",
-] as const;
+export const landingPageToneValues = ["primary", "secondary", "accent", "success", "info"] as const;
 
 export const landingPageValueToneValues = [
   "neutral",

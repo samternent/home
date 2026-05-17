@@ -72,38 +72,32 @@ export const pixpaxChildren = [
       {
         path: "home",
         name: "pixpax-settings-home",
-        component: () =>
-          import("./settings/RoutePixPaxSettingsHome.vue"),
+        component: () => import("./settings/RoutePixPaxSettingsHome.vue"),
       },
       {
         path: "identity-devices",
         name: "pixpax-settings-identity-devices",
-        component: () =>
-          import("./settings/RoutePixPaxSettingsIdentityDevices.vue"),
+        component: () => import("./settings/RoutePixPaxSettingsIdentityDevices.vue"),
       },
       {
         path: "pixbooks",
         name: "pixpax-settings-pixbooks",
-        component: () =>
-          import("./settings/RoutePixPaxSettingsPixbooks.vue"),
+        component: () => import("./settings/RoutePixPaxSettingsPixbooks.vue"),
       },
       {
         path: "sync-backup",
         name: "pixpax-settings-sync-backup",
-        component: () =>
-          import("./settings/RoutePixPaxSettingsSyncBackup.vue"),
+        component: () => import("./settings/RoutePixPaxSettingsSyncBackup.vue"),
       },
       {
         path: "import-export",
         name: "pixpax-settings-import-export",
-        component: () =>
-          import("./settings/RoutePixPaxSettingsImportExport.vue"),
+        component: () => import("./settings/RoutePixPaxSettingsImportExport.vue"),
       },
       {
         path: "danger",
         name: "pixpax-settings-danger",
-        component: () =>
-          import("./settings/RoutePixPaxSettingsDanger.vue"),
+        component: () => import("./settings/RoutePixPaxSettingsDanger.vue"),
       },
     ],
   },

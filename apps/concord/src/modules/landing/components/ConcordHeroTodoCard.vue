@@ -1,26 +1,15 @@
 <script setup lang="ts">
 import { computed, onMounted } from "vue";
-import {
-  Badge,
-  Button,
-  Card,
-  Checkbox,
-  Input,
-} from "ternent-ui/primitives";
+import { Badge, Button, Card, Checkbox, Input } from "ternent-ui/primitives";
 import { useConcordLandingDemo } from "@/modules/landing/useConcordLandingDemo";
 
 const demo = useConcordLandingDemo();
 
 const canAdd = computed(
-  () =>
-    demo.state.ready &&
-    !demo.state.isMutating &&
-    demo.state.pendingTitle.trim().length > 0,
+  () => demo.state.ready && !demo.state.isMutating && demo.state.pendingTitle.trim().length > 0,
 );
 
-const completedCount = computed(
-  () => demo.state.todos.filter((todo) => todo.completed).length,
-);
+const completedCount = computed(() => demo.state.todos.filter((todo) => todo.completed).length);
 
 onMounted(() => {
   void demo.ensureStarted();
@@ -58,10 +47,7 @@ function onToggle(id: string, checked: boolean | "indeterminate") {
         </p>
       </div>
 
-      <Badge
-        :tone="demo.state.ready ? 'success' : 'neutral'"
-        variant="soft"
-      >
+      <Badge :tone="demo.state.ready ? 'success' : 'neutral'" variant="soft">
         {{ demo.state.ready ? "ready" : "loading" }}
       </Badge>
     </div>
@@ -78,12 +64,7 @@ function onToggle(id: string, checked: boolean | "indeterminate") {
           :disabled="demo.state.isMutating"
           @keydown.enter.prevent="submitTodo"
         />
-        <Button
-          size="sm"
-          :disabled="!canAdd"
-          :loading="demo.state.isMutating"
-          @click="submitTodo"
-        >
+        <Button size="sm" :disabled="!canAdd" :loading="demo.state.isMutating" @click="submitTodo">
           Stage item
         </Button>
       </div>
@@ -121,9 +102,7 @@ function onToggle(id: string, checked: boolean | "indeterminate") {
             <span
               class="text-sm"
               :class="
-                todo.completed
-                  ? 'text-[var(--ui-fg-muted)] line-through'
-                  : 'text-[var(--ui-fg)]'
+                todo.completed ? 'text-[var(--ui-fg-muted)] line-through' : 'text-[var(--ui-fg)]'
               "
             >
               {{ todo.title }}
@@ -149,10 +128,7 @@ function onToggle(id: string, checked: boolean | "indeterminate") {
         <span>signed commit history</span>
       </div>
 
-      <p
-        v-if="demo.state.error"
-        class="m-0 text-sm leading-6 text-[var(--ui-critical)]"
-      >
+      <p v-if="demo.state.error" class="m-0 text-sm leading-6 text-[var(--ui-critical)]">
         {{ demo.state.error }}
       </p>
     </div>

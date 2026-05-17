@@ -44,9 +44,7 @@ const controlShellRouteNames = new Set([
   "pixpax-control-entry",
   "pixpax-control-login",
 ]);
-const isControlRoute = computed(() =>
-  controlShellRouteNames.has(String(route.name || "")),
-);
+const isControlRoute = computed(() => controlShellRouteNames.has(String(route.name || "")));
 </script>
 <template>
   <ClientOnly>

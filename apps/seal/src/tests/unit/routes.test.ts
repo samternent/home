@@ -44,9 +44,17 @@ describe("routes", () => {
   });
 
   it("redirects settings identity routes to the app identity workspace", () => {
-    expect(routes.find((route) => route.path === "/settings/identity")?.redirect).toEqual({ name: "app-identity" });
-    expect(routes.find((route) => route.path === "/settings/identity/create")?.redirect).toEqual({ name: "app-identity" });
-    expect(routes.find((route) => route.path === "/settings/identity/import")?.redirect).toEqual({ name: "app-identity" });
-    expect(routes.find((route) => route.path === "/settings/identity/export")?.redirect).toEqual({ name: "app-identity" });
+    expect(routes.find((route) => route.path === "/settings/identity")?.redirect).toEqual({
+      name: "app-identity",
+    });
+    expect(routes.find((route) => route.path === "/settings/identity/create")?.redirect).toEqual({
+      name: "app-identity",
+    });
+    expect(routes.find((route) => route.path === "/settings/identity/import")?.redirect).toEqual({
+      name: "app-identity",
+    });
+    expect(routes.find((route) => route.path === "/settings/identity/export")?.redirect).toEqual({
+      name: "app-identity",
+    });
   });
 });

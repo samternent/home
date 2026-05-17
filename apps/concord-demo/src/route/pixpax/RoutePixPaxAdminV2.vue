@@ -15,10 +15,7 @@ import {
   type PixPaxV2MetaResponse,
 } from "../../module/pixpax/api/client";
 import { usePixpaxAuth } from "../../module/pixpax/auth/usePixpaxAuth";
-import type {
-  PackPalette16,
-  StickerArt16,
-} from "../../module/pixpax/sticker-types";
+import type { PackPalette16, StickerArt16 } from "../../module/pixpax/sticker-types";
 
 type CollectionRef = {
   collectionId: string;
@@ -34,14 +31,10 @@ type CollectionCardOption = {
 };
 
 function toIsoWeek(date = new Date()) {
-  const utc = new Date(
-    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()),
-  );
+  const utc = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
   utc.setUTCDate(utc.getUTCDate() + 4 - (utc.getUTCDay() || 7));
   const yearStart = new Date(Date.UTC(utc.getUTCFullYear(), 0, 1));
-  const weekNumber = Math.ceil(
-    ((utc.getTime() - yearStart.getTime()) / 86400000 + 1) / 7,
-  );
+  const weekNumber = Math.ceil(((utc.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
   return `${utc.getUTCFullYear()}-W${String(weekNumber).padStart(2, "0")}`;
 }
 
@@ -57,9 +50,8 @@ function extractError(error: unknown, fallback: string) {
 const DEFAULT_PALETTE: PackPalette16 = {
   id: "pixpax-default",
   colors: [
-    0x00000000, 0xff1f2937, 0xfff9fafb, 0xff9ca3af, 0xff111827, 0xff2563eb,
-    0xff16a34a, 0xfff59e0b, 0xffef4444, 0xff8b5cf6, 0xff06b6d4, 0xfffff0c2,
-    0xff4b5563, 0xffe5e7eb, 0xfff97316, 0xff22c55e,
+    0x00000000, 0xff1f2937, 0xfff9fafb, 0xff9ca3af, 0xff111827, 0xff2563eb, 0xff16a34a, 0xfff59e0b,
+    0xffef4444, 0xff8b5cf6, 0xff06b6d4, 0xfffff0c2, 0xff4b5563, 0xffe5e7eb, 0xfff97316, 0xff22c55e,
   ],
 };
 
@@ -177,11 +169,7 @@ function ensureSelectedRef() {
     selectedRef.value = "";
     return;
   }
-  if (
-    refs.value.some(
-      (entry) => `${entry.collectionId}::${entry.version}` === selectedRef.value,
-    )
-  ) {
+  if (refs.value.some((entry) => `${entry.collectionId}::${entry.version}` === selectedRef.value)) {
     return;
   }
   selectedRef.value = `${refs.value[0].collectionId}::${refs.value[0].version}`;
@@ -368,7 +356,9 @@ function pickPackCardIds(quantity: number) {
 }
 
 function getCollectionCardById(cardId: string) {
-  return collectionCards.value.find((entry) => entry.cardId === String(cardId || "").trim()) || null;
+  return (
+    collectionCards.value.find((entry) => entry.cardId === String(cardId || "").trim()) || null
+  );
 }
 
 function createCodeCardLabel(cardIds: string[]) {
@@ -603,8 +593,13 @@ onMounted(async () => {
           </p>
         </div>
         <div class="text-xs text-[var(--ui-fg-muted)]">
-          <p>Seal issuer configured: <strong>{{ meta?.issuer?.sealIdentityConfigured ? "yes" : "no" }}</strong></p>
-          <p>API version: <strong>{{ meta?.version || "unknown" }}</strong></p>
+          <p>
+            Seal issuer configured:
+            <strong>{{ meta?.issuer?.sealIdentityConfigured ? "yes" : "no" }}</strong>
+          </p>
+          <p>
+            API version: <strong>{{ meta?.version || "unknown" }}</strong>
+          </p>
         </div>
       </div>
 
@@ -637,11 +632,7 @@ onMounted(async () => {
           <span>Designated card id</span>
           <select v-model="fixedCardId">
             <option v-if="!collectionCards.length" value="">No cards loaded</option>
-            <option
-              v-for="card in collectionCards"
-              :key="card.cardId"
-              :value="card.cardId"
-            >
+            <option v-for="card in collectionCards" :key="card.cardId" :value="card.cardId">
               {{ card.label }} ({{ card.cardId }})
             </option>
           </select>
@@ -649,13 +640,21 @@ onMounted(async () => {
       </div>
 
       <div class="mt-6 flex flex-wrap gap-2">
-        <Button class="!px-5 !py-2 !bg-[var(--ui-accent)]" :disabled="loading" @click="issueQuickPack">
+        <Button
+          class="!px-5 !py-2 !bg-[var(--ui-accent)]"
+          :disabled="loading"
+          @click="issueQuickPack"
+        >
           Issue 1 random pack code
         </Button>
         <Button class="!px-5 !py-2" :disabled="loading" @click="issueQuickFixedCard">
           Issue 1 designated sticker code
         </Button>
-        <Button class="!px-4 !py-2" :disabled="loading || !latestArtifact" @click="verifyLatestArtifact">
+        <Button
+          class="!px-4 !py-2"
+          :disabled="loading || !latestArtifact"
+          @click="verifyLatestArtifact"
+        >
           Verify latest artifact
         </Button>
       </div>
@@ -705,9 +704,7 @@ onMounted(async () => {
       </p>
 
       <div class="mt-4 flex flex-wrap gap-2">
-        <Button class="!px-4 !py-2" @click="addSheetLine('pack')">
-          + Add pack line
-        </Button>
+        <Button class="!px-4 !py-2" @click="addSheetLine('pack')"> + Add pack line </Button>
         <Button class="!px-4 !py-2" @click="addSheetLine('fixed-card')">
           + Add designated-card line
         </Button>
@@ -748,7 +745,11 @@ onMounted(async () => {
           </label>
 
           <div class="flex items-end">
-            <Button class="!px-3 !py-2" :disabled="sheetLines.length <= 1" @click="removeSheetLine(line.id)">
+            <Button
+              class="!px-3 !py-2"
+              :disabled="sheetLines.length <= 1"
+              @click="removeSheetLine(line.id)"
+            >
               Remove
             </Button>
           </div>
@@ -759,19 +760,19 @@ onMounted(async () => {
         <Button class="!px-4 !py-2" :disabled="generatingSheet" @click="generateSheetPreview">
           {{ generatingSheet ? "Generating…" : "Generate code sheet preview" }}
         </Button>
-        <Button
-          v-if="generatedSheet.length"
-          class="!px-4 !py-2"
-          @click="window.print()"
-        >
+        <Button v-if="generatedSheet.length" class="!px-4 !py-2" @click="window.print()">
           Open print dialog
         </Button>
       </div>
 
-      <div v-if="generatedSheet.length" class="mt-4 rounded-xl border border-[var(--ui-border)] p-4">
+      <div
+        v-if="generatedSheet.length"
+        class="mt-4 rounded-xl border border-[var(--ui-border)] p-4"
+      >
         <h3 class="text-sm font-semibold">Sheet Preview</h3>
         <p class="mt-1 text-xs text-[var(--ui-fg-muted)]">
-          {{ activeRef.collectionId }} / {{ activeRef.version }} · {{ generatedSheet.length }} code(s)
+          {{ activeRef.collectionId }} / {{ activeRef.version }} ·
+          {{ generatedSheet.length }} code(s)
         </p>
         <div class="sheet-preview-grid mt-3">
           <PixPaxRedeemCodeCard
@@ -834,19 +835,25 @@ onMounted(async () => {
 
       <article class="rounded-xl border border-[var(--ui-border)] bg-[var(--ui-bg)] p-4">
         <h2 class="text-sm font-semibold">Verification</h2>
-        <pre class="mt-3 overflow-auto rounded bg-black/5 p-3 text-xs">{{ JSON.stringify(latestVerification, null, 2) }}</pre>
+        <pre class="mt-3 overflow-auto rounded bg-black/5 p-3 text-xs">{{
+          JSON.stringify(latestVerification, null, 2)
+        }}</pre>
       </article>
     </section>
 
     <section class="mt-6 grid gap-6 lg:grid-cols-2">
       <article class="rounded-xl border border-[var(--ui-border)] bg-[var(--ui-bg)] p-4">
         <h2 class="text-sm font-semibold">Preview</h2>
-        <pre class="mt-3 overflow-auto rounded bg-black/5 p-3 text-xs">{{ JSON.stringify(latestPreview, null, 2) }}</pre>
+        <pre class="mt-3 overflow-auto rounded bg-black/5 p-3 text-xs">{{
+          JSON.stringify(latestPreview, null, 2)
+        }}</pre>
       </article>
 
       <article class="rounded-xl border border-[var(--ui-border)] bg-[var(--ui-bg)] p-4">
         <h2 class="text-sm font-semibold">Latest Artifact</h2>
-        <pre class="mt-3 overflow-auto rounded bg-black/5 p-3 text-xs">{{ JSON.stringify(latestArtifact, null, 2) }}</pre>
+        <pre class="mt-3 overflow-auto rounded bg-black/5 p-3 text-xs">{{
+          JSON.stringify(latestArtifact, null, 2)
+        }}</pre>
       </article>
     </section>
   </div>

@@ -3,10 +3,7 @@ import type {
   LedgerPersistenceSnapshot,
   LedgerStorageAdapter,
 } from "@ternent/ledger";
-import type {
-  CreateSolidStorageOptions,
-  SolidSessionLike,
-} from "./types.js";
+import type { CreateSolidStorageOptions, SolidSessionLike } from "./types.js";
 import { createSolidJsonResource } from "./resource.js";
 
 function isRecord(value: unknown): value is Record<string, unknown> {

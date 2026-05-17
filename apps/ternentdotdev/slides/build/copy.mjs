@@ -11,13 +11,13 @@ for (const file of files) {
     {
       recursive: true,
     },
-    (err) => {}
+    (err) => {},
   );
 
   await cp(
     `./slides/dist/${file}/index.html`,
     `../../.vercel/output/static/slides/${file}.html`,
     {},
-    (err) => {}
+    (err) => {},
   );
 }

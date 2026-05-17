@@ -18,16 +18,13 @@ const open = defineModel<boolean>("open", { default: false });
 const props = defineProps(popoverProps);
 const slots = useSlots();
 
-const hasHeader = computed(
-  () => Boolean(props.title || props.description || slots.header || props.showClose),
+const hasHeader = computed(() =>
+  Boolean(props.title || props.description || slots.header || props.showClose),
 );
 </script>
 
 <template>
-  <ArkPopover.Root
-    v-model:open="open"
-    :positioning="{ placement: props.placement }"
-  >
+  <ArkPopover.Root v-model:open="open" :positioning="{ placement: props.placement }">
     <ArkPopover.Trigger v-if="$slots.trigger" as-child>
       <slot name="trigger" />
     </ArkPopover.Trigger>
@@ -43,10 +40,7 @@ const hasHeader = computed(
               <ArkPopover.Title v-if="props.title" :class="popoverTitleClass">
                 {{ props.title }}
               </ArkPopover.Title>
-              <ArkPopover.Description
-                v-if="props.description"
-                :class="popoverDescriptionClass"
-              >
+              <ArkPopover.Description v-if="props.description" :class="popoverDescriptionClass">
                 {{ props.description }}
               </ArkPopover.Description>
             </div>

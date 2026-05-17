@@ -47,12 +47,7 @@ const classes = computed(() =>
 );
 
 const forwardedAttrs = computed(() => {
-  const {
-    class: _class,
-    disabled: _disabled,
-    type: _type,
-    ...rest
-  } = attrs;
+  const { class: _class, disabled: _disabled, type: _type, ...rest } = attrs;
 
   return rest;
 });
@@ -62,12 +57,8 @@ const componentAttrs = computed(() => ({
   type: isButtonElement.value ? props.type : undefined,
   disabled: isButtonElement.value ? isInactive.value : undefined,
   "aria-busy": props.loading ? "true" : undefined,
-  "aria-disabled":
-    !isButtonElement.value && isInactive.value ? "true" : undefined,
-  tabindex:
-    !isButtonElement.value && isInactive.value
-      ? -1
-      : attrs.tabindex,
+  "aria-disabled": !isButtonElement.value && isInactive.value ? "true" : undefined,
+  tabindex: !isButtonElement.value && isInactive.value ? -1 : attrs.tabindex,
   "data-loading": props.loading ? "true" : "false",
   "data-disabled": isInactive.value ? "true" : "false",
 }));
@@ -84,12 +75,7 @@ function handleClick(event: MouseEvent) {
 </script>
 
 <template>
-  <component
-    :is="props.as"
-    :class="classes"
-    v-bind="componentAttrs"
-    @click="handleClick"
-  >
+  <component :is="props.as" :class="classes" v-bind="componentAttrs" @click="handleClick">
     <span v-if="props.loading" :class="buttonSpinnerClass" aria-hidden="true" />
     <span v-else-if="$slots.leading" :class="buttonAdornmentClass">
       <slot name="leading" />

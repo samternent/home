@@ -5,21 +5,15 @@ import { useIdentity } from "../identity/useIdentity";
 import { useEncryption } from "../encryption/useEncryption";
 import { useSolid } from "../solid/useSolid";
 import { encrypt, decrypt } from "ternent-encrypt";
-import {
-  formatEncryptionFile,
-  stripEncryptionFile,
-  generateId,
-} from "ternent-utils";
+import { formatEncryptionFile, stripEncryptionFile, generateId } from "ternent-utils";
 
 const useUserProfilesSymbol = Symbol("useUserProfiles");
 
 function UserProfiles() {
   const { ledger, addItem, getCollection } = useLedger();
   const { publicKeyPEM, privateKeyPEM } = useIdentity();
-  const { publicKey: encryptionPublicKey, privateKey: encryptionPrivateKey } =
-    useEncryption();
-  const { hasSolidSession, saveLedgerToSolid, loadLedgerFromSolid } =
-    useSolid();
+  const { publicKey: encryptionPublicKey, privateKey: encryptionPrivateKey } = useEncryption();
+  const { hasSolidSession, saveLedgerToSolid, loadLedgerFromSolid } = useSolid();
 
   // Local profile cache
   const profileCache = useLocalStorage("concords/user-profiles/cache", {});
@@ -37,7 +31,7 @@ function UserProfiles() {
     () => {
       loadProfilesFromLedger();
     },
-    { immediate: true }
+    { immediate: true },
   );
 
   // Current user's complete profile
@@ -73,8 +67,7 @@ function UserProfiles() {
   // Decrypt profiles that were encrypted for us
   async function decryptSharedProfiles() {
     const encryptedProfiles = profiles.value.filter(
-      (profile) =>
-        profile.encrypted && profile.sharedWith?.includes(publicKeyPEM.value)
+      (profile) => profile.encrypted && profile.sharedWith?.includes(publicKeyPEM.value),
     );
 
     for (const profile of encryptedProfiles) {
@@ -82,14 +75,12 @@ function UserProfiles() {
         if (profile.encryptedData) {
           const decryptedData = await decrypt(
             encryptionPrivateKey.value,
-            formatEncryptionFile(profile.encryptedData)
+            formatEncryptionFile(profile.encryptedData),
           );
           const profileData = JSON.parse(decryptedData);
 
           // Update the profile with decrypted data
-          const index = profiles.value.findIndex(
-            (p) => p.recordId === profile.recordId
-          );
+          const index = profiles.value.findIndex((p) => p.recordId === profile.recordId);
           if (index !== -1) {
             profiles.value[index] = {
               ...profile,
@@ -150,7 +141,7 @@ function UserProfiles() {
       // Encrypt the private profile for ourselves
       const encryptedPrivateData = await encrypt(
         encryptionPublicKey.value,
-        JSON.stringify(privateProfile)
+        JSON.stringify(privateProfile),
       );
 
       const encryptedProfileRecord = {
@@ -176,18 +167,12 @@ function UserProfiles() {
   }
 
   // Share profile with another user
-  async function shareProfileWith(
-    targetUserIdentity,
-    profileData = null,
-    accessLevel = "basic"
-  ) {
+  async function shareProfileWith(targetUserIdentity, profileData = null, accessLevel = "basic") {
     try {
       isLoading.value = true;
 
       // Get the target user's encryption key
-      const targetUser = profiles.value.find(
-        (p) => p.identity === targetUserIdentity
-      );
+      const targetUser = profiles.value.find((p) => p.identity === targetUserIdentity);
       if (!targetUser || !targetUser.encryption) {
         throw new Error("Target user not found or missing encryption key");
       }
@@ -224,10 +209,7 @@ function UserProfiles() {
       }
 
       // Encrypt the data for the target user
-      const encryptedData = await encrypt(
-        targetUser.encryption,
-        JSON.stringify(dataToShare)
-      );
+      const encryptedData = await encrypt(targetUser.encryption, JSON.stringify(dataToShare));
 
       // Create shared profile record
       const sharedProfileRecord = {
@@ -260,17 +242,14 @@ function UserProfiles() {
   // Get all profiles shared with me
   function getSharedWithMe() {
     return profiles.value.filter(
-      (p) =>
-        p.sharedWith?.includes(publicKeyPEM.value) &&
-        p.identity !== publicKeyPEM.value
+      (p) => p.sharedWith?.includes(publicKeyPEM.value) && p.identity !== publicKeyPEM.value,
     );
   }
 
   // Get all profiles I've shared
   function getSharedByMe() {
     return profiles.value.filter(
-      (p) =>
-        p.sharedBy === publicKeyPEM.value && p.identity === publicKeyPEM.value
+      (p) => p.sharedBy === publicKeyPEM.value && p.identity === publicKeyPEM.value,
     );
   }
 
@@ -287,9 +266,7 @@ function UserProfiles() {
 
     // WARNING: Only include private keys for secure offline backup!
     if (includePrivateKeys) {
-      console.warn(
-        "🔒 SECURITY: Exporting private keys - ensure secure storage!"
-      );
+      console.warn("🔒 SECURITY: Exporting private keys - ensure secure storage!");
       exportData.privateKeys = {
         identity: privateKeyPEM.value,
         encryption: encryptionPrivateKey.value,
@@ -335,7 +312,7 @@ function UserProfiles() {
 
       await saveLedgerToSolid(
         JSON.stringify(profileBackup),
-        `profile-${publicKeyPEM.value.slice(0, 8)}.json`
+        `profile-${publicKeyPEM.value.slice(0, 8)}.json`,
       );
 
       return { success: true };
@@ -379,7 +356,7 @@ function UserProfiles() {
         initialize();
       }
     },
-    { immediate: true }
+    { immediate: true },
   );
 
   return {

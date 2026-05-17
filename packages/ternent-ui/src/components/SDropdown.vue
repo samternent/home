@@ -14,7 +14,7 @@ const props = defineProps({
   offset: {
     type: String,
     default: "top-12",
-  }
+  },
 });
 
 const dropdownRef = shallowRef();
@@ -22,12 +22,12 @@ const showMenu = shallowRef(false);
 
 const positionClasses = computed(() => {
   const positions = {
-    'bottom-right': 'right-0 top-12',
-    'bottom-left': 'left-0 top-12',
-    'top-right': 'right-0 bottom-12',
-    'top-left': 'left-0 bottom-12',
+    "bottom-right": "right-0 top-12",
+    "bottom-left": "left-0 top-12",
+    "top-right": "right-0 bottom-12",
+    "top-left": "left-0 bottom-12",
   };
-  return positions[props.position] || positions['bottom-right'];
+  return positions[props.position] || positions["bottom-right"];
 });
 
 onClickOutside(dropdownRef, () => {
@@ -61,7 +61,7 @@ function closeMenu() {
           'shadow-xl border border-base-300 rounded-2xl backdrop-blur-md',
           'ring-1 ring-base-content/5',
           positionClasses,
-          props.width
+          props.width,
         ]"
       >
         <!-- Content with relative positioning -->

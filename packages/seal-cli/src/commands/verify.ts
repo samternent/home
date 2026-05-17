@@ -5,11 +5,7 @@ import {
   type SealArtifactV1,
   type VerifySealArtifactResult,
 } from "../artifact";
-import {
-  parseSealProofJson,
-  verifySealProofAgainstBytes,
-  type SealProofV1,
-} from "../proof";
+import { parseSealProofJson, verifySealProofAgainstBytes, type SealProofV1 } from "../proof";
 
 export type VerifyArtifactResult = {
   valid: boolean;
@@ -41,9 +37,7 @@ export async function verifyProofArtifact(params: {
   };
 }
 
-export async function verifyArtifactProof(params: {
-  artifactPath: string;
-}): Promise<{
+export async function verifyArtifactProof(params: { artifactPath: string }): Promise<{
   artifact: SealArtifactV1;
   result: VerifySealArtifactResult;
 }> {

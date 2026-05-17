@@ -53,18 +53,10 @@ function hasLedgerShape(value) {
     return true;
   }
   if (payload.format === "concord-ledger") return true;
-  if (
-    payload.commits &&
-    typeof payload.commits === "object" &&
-    !Array.isArray(payload.commits)
-  ) {
+  if (payload.commits && typeof payload.commits === "object" && !Array.isArray(payload.commits)) {
     return true;
   }
-  if (
-    payload.entries &&
-    typeof payload.entries === "object" &&
-    !Array.isArray(payload.entries)
-  ) {
+  if (payload.entries && typeof payload.entries === "object" && !Array.isArray(payload.entries)) {
     return true;
   }
   return false;
@@ -119,14 +111,15 @@ export function parseSaveCommand(req) {
   }
 
   assertObject(req?.body, "COMMAND_BODY_INVALID", "command body must be a JSON object.");
-  if (req.body?.payload == null || typeof req.body?.payload !== "object" || Array.isArray(req.body?.payload)) {
+  if (
+    req.body?.payload == null ||
+    typeof req.body?.payload !== "object" ||
+    Array.isArray(req.body?.payload)
+  ) {
     throw badRequest("PAYLOAD_REQUIRED", "payload object is required.");
   }
   if (!hasLedgerShape(req.body.payload)) {
-    throw badRequest(
-      "PAYLOAD_LEDGER_REQUIRED",
-      "payload must include a pixbook ledger snapshot."
-    );
+    throw badRequest("PAYLOAD_LEDGER_REQUIRED", "payload must include a pixbook ledger snapshot.");
   }
   const signingIdentityId = trim(req?.headers?.["x-signing-identity-id"]);
   return {

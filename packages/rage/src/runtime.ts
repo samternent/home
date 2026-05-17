@@ -39,11 +39,7 @@ export async function loadRageRuntime(): Promise<void> {
       if (error instanceof RageInitError) {
         throw error;
       }
-      throw new RageInitError(
-        "RAGE_INIT_FAILED",
-        "Failed to initialize Rage WASM.",
-        error
-      );
+      throw new RageInitError("RAGE_INIT_FAILED", "Failed to initialize Rage WASM.", error);
     }
 
     runtimeMode = "direct";
@@ -56,11 +52,7 @@ export async function loadRageRuntime(): Promise<void> {
       if (fallbackError instanceof RageInitError) {
         throw fallbackError;
       }
-      throw new RageInitError(
-        "RAGE_INIT_FAILED",
-        "Failed to initialize Rage WASM.",
-        fallbackError
-      );
+      throw new RageInitError("RAGE_INIT_FAILED", "Failed to initialize Rage WASM.", fallbackError);
     }
   }
 }
@@ -69,7 +61,7 @@ export function getRageRuntime(): RageRuntime {
   if (!runtime) {
     throw new RageInitError(
       "RAGE_INIT_FAILED",
-      "Rage WASM is not initialized. Call initRage() before using @ternent/rage."
+      "Rage WASM is not initialized. Call initRage() before using @ternent/rage.",
     );
   }
 

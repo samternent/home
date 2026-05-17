@@ -1,13 +1,7 @@
 import { utf8Decoder, utf8Encoder } from "./constants.js";
 import { invalidUtf8Error } from "./errors.js";
-import {
-  decryptWithIdentity,
-  encryptForIdentities,
-} from "./recipients.js";
-import {
-  decryptWithPassphrase,
-  encryptWithPassphrase,
-} from "./passphrase.js";
+import { decryptWithIdentity, encryptForIdentities } from "./recipients.js";
+import { decryptWithPassphrase, encryptWithPassphrase } from "./passphrase.js";
 import type {
   DecryptTextWithIdentityInput,
   DecryptTextWithPassphraseInput,
@@ -28,7 +22,7 @@ function normalizeCiphertext(data: string | Uint8Array): Uint8Array {
 }
 
 export async function encryptTextForIdentities(
-  input: EncryptTextForIdentitiesInput
+  input: EncryptTextForIdentitiesInput,
 ): Promise<string> {
   const ciphertext = await encryptForIdentities({
     identities: input.identities,
@@ -40,7 +34,7 @@ export async function encryptTextForIdentities(
 }
 
 export async function decryptTextWithIdentity(
-  input: DecryptTextWithIdentityInput
+  input: DecryptTextWithIdentityInput,
 ): Promise<string> {
   const plaintext = await decryptWithIdentity({
     identity: input.identity,
@@ -51,7 +45,7 @@ export async function decryptTextWithIdentity(
 }
 
 export async function encryptTextWithPassphrase(
-  input: EncryptTextWithPassphraseInput
+  input: EncryptTextWithPassphraseInput,
 ): Promise<string> {
   const ciphertext = await encryptWithPassphrase({
     passphrase: input.passphrase,
@@ -63,7 +57,7 @@ export async function encryptTextWithPassphrase(
 }
 
 export async function decryptTextWithPassphrase(
-  input: DecryptTextWithPassphraseInput
+  input: DecryptTextWithPassphraseInput,
 ): Promise<string> {
   const plaintext = await decryptWithPassphrase({
     passphrase: input.passphrase,

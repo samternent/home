@@ -124,7 +124,12 @@ export default defineConfig({
     createWebManifestPlugin(pwaManifest),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "icons/icon-192.png", "icons/icon-512.png", "icons/maskable-512.png"],
+      includeAssets: [
+        "favicon.ico",
+        "icons/icon-192.png",
+        "icons/icon-512.png",
+        "icons/maskable-512.png",
+      ],
       manifest: pwaManifest,
       workbox: {
         cleanupOutdatedCaches: true,
@@ -144,7 +149,8 @@ export default defineConfig({
             },
           },
           {
-            urlPattern: ({ request }) => request.destination === "image" || request.destination === "font",
+            urlPattern: ({ request }) =>
+              request.destination === "image" || request.destination === "font",
             handler: "CacheFirst",
             options: {
               cacheName: "app-media",

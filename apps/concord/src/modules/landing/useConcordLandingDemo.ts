@@ -1,9 +1,5 @@
 import { reactive } from "vue";
-import {
-  createConcordApp,
-  type ConcordApp,
-  type ConcordReplayPlugin,
-} from "@ternent/concord";
+import { createConcordApp, type ConcordApp, type ConcordReplayPlugin } from "@ternent/concord";
 import type {
   LedgerArmourContract,
   LedgerContainer,
@@ -127,8 +123,7 @@ const tamperActions: TamperAction[] = [
   {
     id: "corrupt-commit-proof",
     label: "Corrupt commit proof",
-    description:
-      "Modify commit signature material without changing the subject.",
+    description: "Modify commit signature material without changing the subject.",
   },
 ];
 
@@ -139,15 +134,11 @@ function createDemoClock(startIso: string) {
 }
 
 function bytesToHex(bytes: Uint8Array) {
-  return Array.from(bytes, (value) => value.toString(16).padStart(2, "0")).join(
-    "",
-  );
+  return Array.from(bytes, (value) => value.toString(16).padStart(2, "0")).join("");
 }
 
 function hexToBytes(value: string) {
-  const normalized = value.startsWith("age-demo:")
-    ? value.slice("age-demo:".length)
-    : value;
+  const normalized = value.startsWith("age-demo:") ? value.slice("age-demo:".length) : value;
   const bytes = new Uint8Array(normalized.length / 2);
 
   for (let index = 0; index < normalized.length; index += 2) {
@@ -184,9 +175,7 @@ const demoArmour: LedgerArmourContract = {
     };
   },
   async decrypt(input) {
-    return JSON.parse(
-      textDecoder.decode(hexToBytes(input.payload.data)),
-    ) as unknown;
+    return JSON.parse(textDecoder.decode(hexToBytes(input.payload.data))) as unknown;
   },
 };
 
@@ -200,10 +189,7 @@ function createTodoPlugin(): ConcordReplayPlugin<TodoPluginState> {
       };
     },
     commands: {
-      "todo.create-item": async (
-        _ctx,
-        inputValue: unknown,
-      ) => {
+      "todo.create-item": async (_ctx, inputValue: unknown) => {
         const input = inputValue as { id: string; title: string };
         return {
           kind: "todo.item.created",
@@ -234,10 +220,7 @@ function createTodoPlugin(): ConcordReplayPlugin<TodoPluginState> {
       },
     },
     applyEntry(entry, ctx) {
-      if (
-        entry.kind === "todo.item.created" &&
-        entry.payload.type === "plain"
-      ) {
+      if (entry.kind === "todo.item.created" && entry.payload.type === "plain") {
         const payload = entry.payload.data as {
           id: string;
           title: string;
@@ -256,18 +239,13 @@ function createTodoPlugin(): ConcordReplayPlugin<TodoPluginState> {
                 completedAt: null,
               },
             },
-            order: state.order.includes(payload.id)
-              ? state.order
-              : [...state.order, payload.id],
+            order: state.order.includes(payload.id) ? state.order : [...state.order, payload.id],
           };
         });
         return;
       }
 
-      if (
-        entry.kind === "todo.item.completed" &&
-        entry.payload.type === "plain"
-      ) {
+      if (entry.kind === "todo.item.completed" && entry.payload.type === "plain") {
         const payload = entry.payload.data as {
           id: string;
           completedAt: string;
@@ -305,10 +283,7 @@ function createAuditPlugin(): ConcordReplayPlugin<AuditPluginState> {
       };
     },
     commands: {
-      "audit.write-private-note": async (
-        _ctx,
-        inputValue: unknown,
-      ) => {
+      "audit.write-private-note": async (_ctx, inputValue: unknown) => {
         const input = inputValue as { text: string; recipients: string[] };
         return {
           kind: "audit.private-note.recorded",
@@ -340,23 +315,17 @@ function createAuditPlugin(): ConcordReplayPlugin<AuditPluginState> {
 }
 
 function findCommitWithMultipleEntries(container: LedgerContainer) {
-  return Object.values(container.commits).find(
-    (commit) => commit.entryIds.length > 1,
-  );
+  return Object.values(container.commits).find((commit) => commit.entryIds.length > 1);
 }
 
 function findCommitWithParent(container: LedgerContainer) {
   return Object.values(container.commits).find(
-    (commit) =>
-      typeof commit.parentCommitId === "string" &&
-      commit.parentCommitId.length > 0,
+    (commit) => typeof commit.parentCommitId === "string" && commit.parentCommitId.length > 0,
   );
 }
 
 function findEncryptedEntry(container: LedgerContainer) {
-  return Object.values(container.entries).find(
-    (entry) => entry.payload.type === "encrypted",
-  );
+  return Object.values(container.entries).find((entry) => entry.payload.type === "encrypted");
 }
 
 function applyTamperScenario(
@@ -376,9 +345,7 @@ function applyTamperScenario(
     const targetEntryId =
       findCommitWithMultipleEntries(nextArtifact)?.entryIds[0] ??
       Object.keys(nextArtifact.entries)[0];
-    const targetEntry = targetEntryId
-      ? nextArtifact.entries[targetEntryId]
-      : null;
+    const targetEntry = targetEntryId ? nextArtifact.entries[targetEntryId] : null;
     if (!targetEntry || targetEntry.payload.type !== "plain") {
       return {
         artifact: nextArtifact,
@@ -468,9 +435,7 @@ function applyTamperScenario(
     };
   }
 
-  const targetCommit =
-    findCommitWithParent(nextArtifact) ??
-    Object.values(nextArtifact.commits)[0];
+  const targetCommit = findCommitWithParent(nextArtifact) ?? Object.values(nextArtifact.commits)[0];
   if (!targetCommit) {
     return {
       artifact: nextArtifact,
@@ -493,9 +458,7 @@ function applyTamperScenario(
   };
 }
 
-async function verifyArtifact(
-  artifact: LedgerContainer,
-): Promise<LedgerVerificationResult> {
+async function verifyArtifact(artifact: LedgerContainer): Promise<LedgerVerificationResult> {
   const ledger = await createLedger<LedgerReplayEntry[]>({
     identity: {
       signer: { identity: demoIdentity } as LedgerIdentityContext["signer"],
@@ -539,10 +502,7 @@ async function refreshArtifactAndVerification() {
   if (!app) return;
 
   const baseLedgerArtifact = await app.exportLedger();
-  const mutation = applyTamperScenario(
-    baseLedgerArtifact,
-    state.selectedTamper,
-  );
+  const mutation = applyTamperScenario(baseLedgerArtifact, state.selectedTamper);
   const verification = await verifyArtifact(mutation.artifact);
 
   state.baseLedgerArtifact = baseLedgerArtifact;

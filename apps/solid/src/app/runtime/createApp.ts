@@ -1,10 +1,5 @@
 import { createConcordApp } from "@ternent/concord";
-import type {
-  AppProjectionPlugin,
-  AppRuntime,
-  AppSelector,
-  CreateAppInput,
-} from "./types";
+import type { AppProjectionPlugin, AppRuntime, AppSelector, CreateAppInput } from "./types";
 
 type SelectorRegistry = Map<string, Map<string, AppSelector>>;
 

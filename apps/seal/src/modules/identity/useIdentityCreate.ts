@@ -27,8 +27,7 @@ export function useIdentityCreate() {
       setIdentity(storedIdentity);
       return storedIdentity;
     } catch (caught) {
-      const message =
-        caught instanceof Error ? caught.message : "Failed to create identity";
+      const message = caught instanceof Error ? caught.message : "Failed to create identity";
       error.value = message;
       throw new Error(message);
     } finally {
@@ -59,9 +58,7 @@ export function useIdentityCreate() {
       return storedIdentity;
     } catch (caught) {
       const message =
-        caught instanceof Error
-          ? caught.message
-          : "Failed to create identity from mnemonic";
+        caught instanceof Error ? caught.message : "Failed to create identity from mnemonic";
       error.value = message;
       throw new Error(message);
     } finally {

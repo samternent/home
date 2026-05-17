@@ -154,7 +154,7 @@ function main() {
   });
 
   replaceTemplateTokens(targetDir, {
-    "__APP_ID__": manifest.app.appId,
+    __APP_ID__: manifest.app.appId,
   });
   normalizeScaffoldedAppFiles(targetDir, repoRoot);
 

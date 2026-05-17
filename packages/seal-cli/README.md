@@ -59,8 +59,7 @@ import {
 const identity = await createSealIdentity();
 const identityJson = exportIdentityJson(identity);
 
-const { identity: mnemonicIdentity, mnemonic } =
-  await createSealMnemonicIdentity({ words: 24 });
+const { identity: mnemonicIdentity, mnemonic } = await createSealMnemonicIdentity({ words: 24 });
 ```
 
 Create and verify recipient-targeted artifacts:

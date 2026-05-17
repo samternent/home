@@ -78,13 +78,13 @@ const contentStyle = computed(() => {
           </p>
         </div>
 
-        <p class="m-0 mt-8 rounded-full bg-black/6 px-8 py-3 font-mono text-[32px] uppercase tracking-[0.08em]">
+        <p
+          class="m-0 mt-8 rounded-full bg-black/6 px-8 py-3 font-mono text-[32px] uppercase tracking-[0.08em]"
+        >
           {{ formatRedeemCode(model.shortCode) }}
         </p>
 
-        <p class="m-0 mt-8 text-[26px] text-black/72">
-          Scan to open in PixPax
-        </p>
+        <p class="m-0 mt-8 text-[26px] text-black/72">Scan to open in PixPax</p>
         <p class="m-0 mt-4 break-all text-[20px] leading-[1.45] text-black/65">
           {{ model.openUrl || "Open link unavailable" }}
         </p>

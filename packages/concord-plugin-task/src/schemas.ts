@@ -1,17 +1,8 @@
 import { z } from "zod";
 
-export const taskStatusSchema = z.enum([
-  "backlog",
-  "active",
-  "blocked",
-  "done",
-]);
+export const taskStatusSchema = z.enum(["backlog", "active", "blocked", "done"]);
 
-export const taskPrioritySchema = z.enum([
-  "low",
-  "normal",
-  "high",
-]);
+export const taskPrioritySchema = z.enum(["low", "normal", "high"]);
 
 export const taskCreateInputSchema = z.object({
   taskId: z.string().min(1, "taskId is required"),

@@ -1,7 +1,5 @@
 declare module "@ternent/seal-cli" {
-  export function createSealHash(
-    bytes: Uint8Array | ArrayBuffer
-  ): Promise<`sha256:${string}`>;
+  export function createSealHash(bytes: Uint8Array | ArrayBuffer): Promise<`sha256:${string}`>;
 
   export function createSealProof(input: {
     createdAt?: string;
@@ -15,7 +13,7 @@ declare module "@ternent/seal-cli" {
 
   export function verifySealProofAgainstBytes(
     proof: unknown,
-    bytes: Uint8Array | ArrayBuffer
+    bytes: Uint8Array | ArrayBuffer,
   ): Promise<{
     valid: boolean;
     hashMatch: boolean;

@@ -1,7 +1,4 @@
-import type {
-  RadioGroupOrientation,
-  RadioGroupSize,
-} from "./RadioGroup.types";
+import type { RadioGroupOrientation, RadioGroupSize } from "./RadioGroup.types";
 
 export const radioGroupRootClass = "flex w-full";
 

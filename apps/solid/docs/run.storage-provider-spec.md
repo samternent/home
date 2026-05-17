@@ -125,11 +125,7 @@ type RunStorageCapability =
   | "delete"
   | "provider-auth";
 
-type RunStorageProviderStatus =
-  | "idle"
-  | "connecting"
-  | "ready"
-  | "error";
+type RunStorageProviderStatus = "idle" | "connecting" | "ready" | "error";
 
 type RunStorageProviderManifest = {
   id: RunStorageProviderId;
@@ -179,17 +175,9 @@ type RunStorageProvider = {
   browse?(mountId: string, url: string): Promise<RunBrowseResult>;
   stat?(mountId: string, url: string): Promise<RunBrowseEntry | null>;
 
-  createFolder?(
-    mountId: string,
-    parentUrl: string,
-    name: string,
-  ): Promise<RunBrowseEntry>;
+  createFolder?(mountId: string, parentUrl: string, name: string): Promise<RunBrowseEntry>;
 
-  createLedger?(
-    mountId: string,
-    parentUrl: string,
-    name: string,
-  ): Promise<RunBrowseEntry>;
+  createLedger?(mountId: string, parentUrl: string, name: string): Promise<RunBrowseEntry>;
 };
 ```
 
@@ -315,10 +303,7 @@ type RunCommandDescriptor = {
 
 type RunCommand = {
   descriptor: RunCommandDescriptor;
-  execute(
-    args: string[],
-    ctx: RunCommandContext,
-  ): Promise<RunTerminalLanguageResult>;
+  execute(args: string[], ctx: RunCommandContext): Promise<RunTerminalLanguageResult>;
 };
 
 type RunCommandProvider = {

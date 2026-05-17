@@ -58,10 +58,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": resolve(__dirname, "./src"),
-      "@ternent/seal-cli/proof": resolve(
-        __dirname,
-        "../../../packages/seal-cli/src/proof.ts",
-      ),
+      "@ternent/seal-cli/proof": resolve(__dirname, "../../../packages/seal-cli/src/proof.ts"),
     },
   },
   plugins: [
@@ -70,7 +67,12 @@ export default defineConfig({
     createIndexHtmlTransformPlugin(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "icons/icon-192.png", "icons/icon-512.png", "icons/maskable-512.png"],
+      includeAssets: [
+        "favicon.ico",
+        "icons/icon-192.png",
+        "icons/icon-512.png",
+        "icons/maskable-512.png",
+      ],
       manifest: pwaManifest,
       workbox: {
         cleanupOutdatedCaches: true,
@@ -90,7 +92,8 @@ export default defineConfig({
             },
           },
           {
-            urlPattern: ({ request }) => request.destination === "image" || request.destination === "font",
+            urlPattern: ({ request }) =>
+              request.destination === "image" || request.destination === "font",
             handler: "CacheFirst",
             options: {
               cacheName: "app-media",

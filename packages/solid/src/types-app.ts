@@ -18,9 +18,7 @@ import type {
   LedgerInstance,
   LedgerReplayEntry,
 } from "@ternent/ledger";
-import type {
-  ResolveSolidIdentityInput,
-} from "./types-identity.js";
+import type { ResolveSolidIdentityInput } from "./types-identity.js";
 import type {
   SolidConcordAccessReport,
   SolidConcordResources,

@@ -24,7 +24,8 @@ async function onImportFile(event: Event) {
   <div class="flex flex-col gap-4">
     <h1 class="text-lg font-semibold">Import / Export</h1>
     <p class="text-xs text-[var(--ui-fg-muted)]">
-      Export before destructive changes. Private exports contain signing and encryption secrets. Importing private pixbooks adds a separate local identity.
+      Export before destructive changes. Private exports contain signing and encryption secrets.
+      Importing private pixbooks adds a separate local identity.
     </p>
 
     <section class="rounded-lg border border-[var(--ui-border)] p-3 flex flex-col gap-2">
@@ -44,7 +45,9 @@ async function onImportFile(event: Event) {
       >
         Export public pixbook
       </button>
-      <label class="rounded-md border border-[var(--ui-border)] px-3 py-2 text-xs hover:bg-[var(--ui-fg)]/5 cursor-pointer">
+      <label
+        class="rounded-md border border-[var(--ui-border)] px-3 py-2 text-xs hover:bg-[var(--ui-fg)]/5 cursor-pointer"
+      >
         {{ importBusy ? "Importing..." : "Import pixbook" }}
         <input
           type="file"
@@ -56,7 +59,11 @@ async function onImportFile(event: Event) {
       </label>
     </section>
 
-    <p v-if="context.uploadStatus.value" class="text-xs text-green-600">{{ context.uploadStatus.value }}</p>
-    <p v-if="context.uploadError.value" class="text-xs text-red-600">{{ context.uploadError.value }}</p>
+    <p v-if="context.uploadStatus.value" class="text-xs text-green-600">
+      {{ context.uploadStatus.value }}
+    </p>
+    <p v-if="context.uploadError.value" class="text-xs text-red-600">
+      {{ context.uploadError.value }}
+    </p>
   </div>
 </template>

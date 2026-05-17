@@ -51,10 +51,7 @@ const accountNod = computed(() => {
 });
 
 const persistedIdentities = computed(() => {
-  const localIdentityByBinding = new Map<
-    string,
-    { id: string; publicKeyPEM: string }
-  >();
+  const localIdentityByBinding = new Map<string, { id: string; publicKeyPEM: string }>();
   for (const identity of context.identities.value) {
     const key = identityBindingKey(identity.profileId, identity.publicKeyPEM);
     if (!key) continue;
@@ -115,7 +112,7 @@ const activeIdentity = computed(() => {
 });
 
 const activeBookId = computed(() =>
-  trim(cloudSync.selectedCloudBookId.value || cloudSync.cloudBookId.value)
+  trim(cloudSync.selectedCloudBookId.value || cloudSync.cloudBookId.value),
 );
 
 const filteredBooks = computed(() => {
@@ -178,7 +175,7 @@ function menuItems() {
   const root = menuRef.value;
   if (!root) return [] as HTMLElement[];
   return Array.from(
-    root.querySelectorAll<HTMLElement>("[data-menu-focusable='true']:not([disabled])")
+    root.querySelectorAll<HTMLElement>("[data-menu-focusable='true']:not([disabled])"),
   );
 }
 
@@ -194,7 +191,7 @@ function focusNextMenuItem(direction: 1 | -1) {
   const active = document.activeElement as HTMLElement | null;
   const currentIndex = Math.max(
     0,
-    items.findIndex((entry) => entry === active)
+    items.findIndex((entry) => entry === active),
   );
   const nextIndex = (currentIndex + direction + items.length) % items.length;
   items[nextIndex].focus();
@@ -202,8 +199,7 @@ function focusNextMenuItem(direction: 1 | -1) {
 
 function onMenuKeydown(event: KeyboardEvent) {
   const target = event.target as HTMLElement | null;
-  const isTextInput =
-    target?.tagName === "INPUT" || target?.tagName === "TEXTAREA";
+  const isTextInput = target?.tagName === "INPUT" || target?.tagName === "TEXTAREA";
 
   if (event.key === "Escape") {
     event.preventDefault();
@@ -231,9 +227,7 @@ function onMenuKeydown(event: KeyboardEvent) {
     const currentIndex = items.findIndex((entry) => entry === active);
     const direction: 1 | -1 = event.shiftKey ? -1 : 1;
     const nextIndex =
-      currentIndex === -1
-        ? 0
-        : (currentIndex + direction + items.length) % items.length;
+      currentIndex === -1 ? 0 : (currentIndex + direction + items.length) % items.length;
     event.preventDefault();
     items[nextIndex].focus();
   }
@@ -301,7 +295,9 @@ async function handleSelectIdentity(identityId: string) {
     const switched = await switchContext.switchIdentity(localIdentityId);
     if (!switched.ok) {
       switchError.value =
-        trim(switched.error) || trim(switchContext.switchError.value) || "Couldn’t switch identity. Try again.";
+        trim(switched.error) ||
+        trim(switchContext.switchError.value) ||
+        "Couldn’t switch identity. Try again.";
       return;
     }
 
@@ -353,7 +349,6 @@ async function handleDangerConfirm() {
   if (!canOpenDangerZone()) return;
   await goTo("pixpax-settings-danger");
 }
-
 </script>
 
 <template>
@@ -376,11 +371,7 @@ async function handleDangerConfirm() {
         class="w-3 h-3 ml-1 transition-transform"
         :class="{ 'rotate-180': menuOpen }"
       >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-        />
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
       </svg>
       <div class="rounded-full overflow-hidden border border-[var(--ui-border)]">
         <IdentityAvatar :identity="context.publicKeyPEM.value" size="sm" />
@@ -408,7 +399,9 @@ async function handleDangerConfirm() {
                 <IdentityAvatar :identity="context.publicKeyPEM.value" size="sm" />
                 <div class="min-w-0">
                   <p class="text-xs font-semibold truncate">
-                    {{ context.currentIdentityLabel.value || activeIdentity?.handle || "@identity" }}
+                    {{
+                      context.currentIdentityLabel.value || activeIdentity?.handle || "@identity"
+                    }}
                   </p>
                   <p class="text-[11px] text-[var(--ui-fg-muted)]">Identity</p>
                 </div>
@@ -424,14 +417,22 @@ async function handleDangerConfirm() {
                 Switch
               </button>
             </div>
-            <p v-if="isAuthenticated" class="mt-2 text-[11px] text-[var(--ui-fg-muted)] truncate" :title="accountNod">
+            <p
+              v-if="isAuthenticated"
+              class="mt-2 text-[11px] text-[var(--ui-fg-muted)] truncate"
+              :title="accountNod"
+            >
               Signed in as {{ accountNod }}
             </p>
           </section>
 
           <template v-if="isAuthenticated">
             <section class="rounded-md border border-[var(--ui-border)] p-2">
-              <p class="px-2 pb-1 text-[10px] uppercase tracking-[0.18em] text-[var(--ui-fg-muted)]">Pixbooks</p>
+              <p
+                class="px-2 pb-1 text-[10px] uppercase tracking-[0.18em] text-[var(--ui-fg-muted)]"
+              >
+                Pixbooks
+              </p>
               <div class="max-h-36 overflow-auto flex flex-col gap-1">
                 <button
                   v-for="book in filteredBooks"
@@ -498,7 +499,9 @@ async function handleDangerConfirm() {
 
           <template v-else>
             <section class="rounded-md border border-[var(--ui-border)] p-3 flex flex-col gap-2">
-              <label class="text-[10px] uppercase tracking-[0.18em] text-[var(--ui-fg-muted)]">Account email</label>
+              <label class="text-[10px] uppercase tracking-[0.18em] text-[var(--ui-fg-muted)]"
+                >Account email</label
+              >
               <input
                 v-model="cloudSync.authEmail.value"
                 type="email"
@@ -549,7 +552,10 @@ async function handleDangerConfirm() {
             </section>
           </template>
 
-          <p v-if="switchError" class="rounded-md border border-red-300 bg-red-50 px-2 py-1 text-xs text-red-700">
+          <p
+            v-if="switchError"
+            class="rounded-md border border-red-300 bg-red-50 px-2 py-1 text-xs text-red-700"
+          >
             {{ switchError }}
           </p>
           <p class="text-[11px] text-[var(--ui-fg-muted)] px-1">{{ statusLine }}</p>
@@ -601,7 +607,9 @@ async function handleDangerConfirm() {
                 </div>
                 <div class="shrink-0 flex items-center gap-1">
                   <span
-                    v-if="entry.id === cloudSync.selectedCloudProfileId.value && !switchingIdentityId"
+                    v-if="
+                      entry.id === cloudSync.selectedCloudProfileId.value && !switchingIdentityId
+                    "
                     class="text-[10px] text-[var(--ui-fg-muted)]"
                   >
                     Active
@@ -637,7 +645,10 @@ async function handleDangerConfirm() {
             Create new identity...
           </button>
 
-          <p v-if="switchError" class="rounded-md border border-red-300 bg-red-50 px-2 py-1 text-xs text-red-700">
+          <p
+            v-if="switchError"
+            class="rounded-md border border-red-300 bg-red-50 px-2 py-1 text-xs text-red-700"
+          >
             {{ switchError }}
           </p>
         </div>
@@ -656,7 +667,9 @@ async function handleDangerConfirm() {
           </button>
 
           <section class="rounded-md border border-[var(--ui-border)] p-2">
-            <p class="px-2 pb-1 text-[10px] uppercase tracking-[0.18em] text-[var(--ui-fg-muted)]">Account</p>
+            <p class="px-2 pb-1 text-[10px] uppercase tracking-[0.18em] text-[var(--ui-fg-muted)]">
+              Account
+            </p>
             <button
               type="button"
               class="w-full text-left px-2 py-2 rounded-md hover:bg-[var(--ui-fg)]/5"
@@ -665,12 +678,16 @@ async function handleDangerConfirm() {
               @click="goTo('pixpax-settings-identity-devices')"
             >
               <p class="text-xs font-semibold">Account &amp; session</p>
-              <p class="text-[11px] text-[var(--ui-fg-muted)]">Passkeys, devices, active sessions</p>
+              <p class="text-[11px] text-[var(--ui-fg-muted)]">
+                Passkeys, devices, active sessions
+              </p>
             </button>
           </section>
 
           <section class="rounded-md border border-[var(--ui-border)] p-2">
-            <p class="px-2 pb-1 text-[10px] uppercase tracking-[0.18em] text-[var(--ui-fg-muted)]">Identity</p>
+            <p class="px-2 pb-1 text-[10px] uppercase tracking-[0.18em] text-[var(--ui-fg-muted)]">
+              Identity
+            </p>
             <button
               type="button"
               class="w-full text-left px-2 py-2 rounded-md hover:bg-[var(--ui-fg)]/5"
@@ -684,7 +701,9 @@ async function handleDangerConfirm() {
           </section>
 
           <section class="rounded-md border border-[var(--ui-border)] p-2">
-            <p class="px-2 pb-1 text-[10px] uppercase tracking-[0.18em] text-[var(--ui-fg-muted)]">Data &amp; verification</p>
+            <p class="px-2 pb-1 text-[10px] uppercase tracking-[0.18em] text-[var(--ui-fg-muted)]">
+              Data &amp; verification
+            </p>
             <button
               type="button"
               class="w-full text-left px-2 py-2 rounded-md hover:bg-[var(--ui-fg)]/5"
@@ -693,7 +712,9 @@ async function handleDangerConfirm() {
               @click="goTo('pixpax-settings-import-export')"
             >
               <p class="text-xs font-semibold">Import / export</p>
-              <p class="text-[11px] text-[var(--ui-fg-muted)]">Move your pixbooks between devices</p>
+              <p class="text-[11px] text-[var(--ui-fg-muted)]">
+                Move your pixbooks between devices
+              </p>
             </button>
             <button
               type="button"
@@ -762,7 +783,9 @@ async function handleDangerConfirm() {
       role="dialog"
       aria-modal="true"
     >
-      <div class="w-full max-w-md rounded-lg border border-[var(--ui-border)] bg-[var(--ui-surface)] p-4 shadow-lg">
+      <div
+        class="w-full max-w-md rounded-lg border border-[var(--ui-border)] bg-[var(--ui-surface)] p-4 shadow-lg"
+      >
         <h3 class="text-sm font-semibold">Danger zone confirmation</h3>
         <p class="mt-2 text-xs text-[var(--ui-fg-muted)]">
           This opens destructive account reset controls.
@@ -771,7 +794,8 @@ async function handleDangerConfirm() {
           It will affect your account identity data. It will not sign you out.
         </p>
         <p class="text-xs text-[var(--ui-fg-muted)]">
-          Scope: account <code>{{ accountNod }}</code>.
+          Scope: account <code>{{ accountNod }}</code
+          >.
         </p>
         <label class="mt-3 block text-[10px] uppercase tracking-[0.18em] text-[var(--ui-fg-muted)]">
           Type RESET to continue

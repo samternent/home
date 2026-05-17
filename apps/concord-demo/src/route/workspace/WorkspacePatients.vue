@@ -1,12 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref, shallowRef, watch } from "vue";
 import { generateId, stripIdentityKey } from "ternent-utils";
-import {
-  SBadge,
-  SDialog,
-  SListButton,
-  SSegmentedControl,
-} from "ternent-ui/components";
+import { SBadge, SDialog, SListButton, SSegmentedControl } from "ternent-ui/components";
 import { Button } from "ternent-ui/primitives";
 
 import { useLedger } from "../../module/ledger/useLedger";
@@ -125,7 +120,7 @@ function formatDate(
   options: Intl.DateTimeFormatOptions = {
     dateStyle: "medium",
     timeStyle: "short",
-  }
+  },
 ) {
   return new Intl.DateTimeFormat(undefined, options).format(new Date(iso));
 }
@@ -141,7 +136,7 @@ const charts = computed<PatientChartEntry[]>(
       .map((entry) => ({
         entryId: entry.entryId,
         data: entry.data as PatientChart,
-      })) as PatientChartEntry[]
+      })) as PatientChartEntry[],
 );
 
 const patients = computed<PatientEntry[]>(
@@ -151,12 +146,12 @@ const patients = computed<PatientEntry[]>(
       .map((entry) => ({
         entryId: entry.entryId,
         data: entry.data as Patient,
-      })) as PatientEntry[]
+      })) as PatientEntry[],
 );
 
 const notesByChartId = computed(() => {
   const entries = Object.values(
-    bridge.collections.byKind.value?.["patient-notes"] || {}
+    bridge.collections.byKind.value?.["patient-notes"] || {},
   ) as NoteEntry[];
   const map = new Map<string, NoteEntry[]>();
   for (const entry of entries) {
@@ -182,7 +177,7 @@ const notesByChartId = computed(() => {
 
 const medsByChartId = computed(() => {
   const entries = Object.values(
-    bridge.collections.byKind.value?.["patient-meds"] || {}
+    bridge.collections.byKind.value?.["patient-meds"] || {},
   ) as MedicationEntry[];
   const map = new Map<string, MedicationEntry[]>();
   for (const entry of entries) {
@@ -193,12 +188,8 @@ const medsByChartId = computed(() => {
   }
   for (const [chartId, list] of map.entries()) {
     list.sort((a, b) => {
-      const aDate = a.data.startDate
-        ? new Date(a.data.startDate).getTime()
-        : a.data.createdAt || 0;
-      const bDate = b.data.startDate
-        ? new Date(b.data.startDate).getTime()
-        : b.data.createdAt || 0;
+      const aDate = a.data.startDate ? new Date(a.data.startDate).getTime() : a.data.createdAt || 0;
+      const bDate = b.data.startDate ? new Date(b.data.startDate).getTime() : b.data.createdAt || 0;
       return bDate - aDate;
     });
     map.set(chartId, list);
@@ -209,14 +200,12 @@ const medsByChartId = computed(() => {
 const permissionGrants = computed<PermissionGrantEntry[]>(
   () =>
     Object.values(
-      bridge.collections.byKind.value?.["permission-grants"] || {}
-    ) as PermissionGrantEntry[]
+      bridge.collections.byKind.value?.["permission-grants"] || {},
+    ) as PermissionGrantEntry[],
 );
 
 const usersByIdentity = computed(() => {
-  const entries = Object.values(
-    bridge.collections.byKind.value?.users || {}
-  ) as {
+  const entries = Object.values(bridge.collections.byKind.value?.users || {}) as {
     data: {
       publicIdentityKey?: string;
       publicEncryptionKey?: string;
@@ -239,12 +228,10 @@ const usersByIdentity = computed(() => {
 });
 
 const myIdentity = computed(() =>
-  publicKeyPEM?.value ? stripIdentityKey(publicKeyPEM.value) : ""
+  publicKeyPEM?.value ? stripIdentityKey(publicKeyPEM.value) : "",
 );
 
-const canAddItem = computed(
-  () => bridge.flags.value.hasLedger && bridge.flags.value.authed
-);
+const canAddItem = computed(() => bridge.flags.value.hasLedger && bridge.flags.value.authed);
 
 const activePatientId = shallowRef<string | null>(null);
 const activeChartId = shallowRef<string | null>(null);
@@ -302,22 +289,17 @@ const filteredPatients = computed(() => {
 });
 
 const activePatient = computed(
-  () =>
-    patients.value.find((item) => item.data.id === activePatientId.value) ??
-    null
+  () => patients.value.find((item) => item.data.id === activePatientId.value) ?? null,
 );
 
 const activePatientPermissionId = computed(
-  () =>
-    activePatient.value?.data.permissionId ??
-    activePatient.value?.data.permission ??
-    null
+  () => activePatient.value?.data.permissionId ?? activePatient.value?.data.permission ?? null,
 );
 
 const permissionMembers = computed(() => {
   if (!activePatientPermissionId.value) return [];
   return permissionGrants.value.filter(
-    (grant) => grant.data.permissionId === activePatientPermissionId.value
+    (grant) => grant.data.permissionId === activePatientPermissionId.value,
   );
 });
 
@@ -329,10 +311,7 @@ const patientCharts = computed(() => {
 });
 
 const activeChart = computed(
-  () =>
-    patientCharts.value.find(
-      (chart) => chart.data.id === activeChartId.value
-    ) ?? null
+  () => patientCharts.value.find((chart) => chart.data.id === activeChartId.value) ?? null,
 );
 
 const activeNotes = computed(() => {
@@ -353,15 +332,14 @@ watch(
       return;
     }
     const isActiveStillVisible = nextPatients.some(
-      (item) => item.data.id === activePatientId.value
+      (item) => item.data.id === activePatientId.value,
     );
     if (!isActiveStillVisible) {
       activePatientId.value =
-        nextPatients.find((item) => !item.data.archived)?.data.id ??
-        nextPatients[0].data.id;
+        nextPatients.find((item) => !item.data.archived)?.data.id ?? nextPatients[0].data.id;
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 watch(
@@ -371,14 +349,12 @@ watch(
       activeChartId.value = null;
       return;
     }
-    const isActiveStillVisible = nextCharts.some(
-      (item) => item.data.id === activeChartId.value
-    );
+    const isActiveStillVisible = nextCharts.some((item) => item.data.id === activeChartId.value);
     if (!isActiveStillVisible) {
       activeChartId.value = nextCharts[0].data.id;
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 watch(isEditPatientDialogOpen, (nextValue) => {
@@ -463,7 +439,7 @@ function addPatientMember() {
   if (!newPatientMember.value) return;
   const next = newPatientMember.value;
   const exists = newPatientMembers.value.some(
-    (member) => member?.publicIdentityKey === next?.publicIdentityKey
+    (member) => member?.publicIdentityKey === next?.publicIdentityKey,
   );
   if (!exists) newPatientMembers.value = [...newPatientMembers.value, next];
   newPatientMember.value = null;
@@ -475,7 +451,7 @@ async function addUserToPatient(permissionId: string) {
   await addUserPermission(
     permissionId,
     selectedUser.publicIdentityKey,
-    selectedUser.publicEncryptionKey
+    selectedUser.publicEncryptionKey,
   );
   selectedUsersByPermission[permissionId] = null;
 }
@@ -491,12 +467,11 @@ async function createPatient() {
     permissionId = permission.id;
     if (newPatientMembers.value.length) {
       for (const member of newPatientMembers.value) {
-        if (!member?.publicIdentityKey || !member?.publicEncryptionKey)
-          continue;
+        if (!member?.publicIdentityKey || !member?.publicEncryptionKey) continue;
         await addUserPermission(
           permission.id,
           member.publicIdentityKey,
-          member.publicEncryptionKey
+          member.publicEncryptionKey,
         );
       }
     }
@@ -508,18 +483,14 @@ async function createPatient() {
       displayName,
       authorId: myIdentity.value,
       ...(newPatientDob.value ? { dob: newPatientDob.value } : {}),
-      ...(newPatientNhsNumber.value
-        ? { nhsNumber: newPatientNhsNumber.value }
-        : {}),
-      ...(parseTags(newPatientTags.value)
-        ? { tags: parseTags(newPatientTags.value) }
-        : {}),
+      ...(newPatientNhsNumber.value ? { nhsNumber: newPatientNhsNumber.value } : {}),
+      ...(parseTags(newPatientTags.value) ? { tags: parseTags(newPatientTags.value) } : {}),
       ...(newPatientArchived.value ? { archived: true } : {}),
       createdAt: Date.now(),
       updatedAt: Date.now(),
     }),
     "patients",
-    permissionId
+    permissionId,
   );
   activePatientId.value = patientId;
   isAddPatientDialogOpen.value = false;
@@ -542,7 +513,7 @@ async function addChart() {
       updatedAt: Date.now(),
     },
     "patient-charts",
-    permissionId
+    permissionId,
   );
   activeChartId.value = chartId;
   isAddChartDialogOpen.value = false;
@@ -552,17 +523,13 @@ async function rotatePatientKey() {
   if (!activePatient.value || !activePatientPermissionId.value) return;
   const permission = await createPermission(
     `${activePatient.value.data.displayName} (rotated)`,
-    "patients"
+    "patients",
   );
   if (!permission?.id) return;
   for (const member of permissionMembers.value) {
     const user = usersByIdentity.value.get(member.data.identity);
     if (!user?.publicIdentityKey || !user?.publicEncryptionKey) continue;
-    await addUserPermission(
-      permission.id,
-      user.publicIdentityKey,
-      user.publicEncryptionKey
-    );
+    await addUserPermission(permission.id, user.publicIdentityKey, user.publicEncryptionKey);
   }
   await addItem(
     {
@@ -571,7 +538,7 @@ async function rotatePatientKey() {
       updatedAt: Date.now(),
     },
     "patients",
-    permission.id
+    permission.id,
   );
 }
 
@@ -585,17 +552,13 @@ async function updatePatient() {
       ...current,
       displayName,
       ...(newPatientDob.value ? { dob: newPatientDob.value } : {}),
-      ...(newPatientNhsNumber.value
-        ? { nhsNumber: newPatientNhsNumber.value }
-        : {}),
-      ...(parseTags(newPatientTags.value)
-        ? { tags: parseTags(newPatientTags.value) }
-        : {}),
+      ...(newPatientNhsNumber.value ? { nhsNumber: newPatientNhsNumber.value } : {}),
+      ...(parseTags(newPatientTags.value) ? { tags: parseTags(newPatientTags.value) } : {}),
       archived: newPatientArchived.value || false,
       updatedAt: Date.now(),
     }),
     "patients",
-    current.permissionId ?? current.permission ?? null
+    current.permissionId ?? current.permission ?? null,
   );
   isEditPatientDialogOpen.value = false;
 }
@@ -620,18 +583,14 @@ async function addNote() {
       chartId: activeChart.value.data.id,
       patientDisplayName: activePatient.value.data.displayName,
       authorId: myIdentity.value,
-      ...(newNoteTitle.value.trim()
-        ? { title: newNoteTitle.value.trim() }
-        : {}),
+      ...(newNoteTitle.value.trim() ? { title: newNoteTitle.value.trim() } : {}),
       body,
-      ...(newNoteEncounterDate.value
-        ? { encounterDate: newNoteEncounterDate.value }
-        : {}),
+      ...(newNoteEncounterDate.value ? { encounterDate: newNoteEncounterDate.value } : {}),
       createdAt: Date.now(),
       updatedAt: Date.now(),
     }),
     "patient-notes",
-    permissionId
+    permissionId,
   );
   isAddNoteDialogOpen.value = false;
 }
@@ -658,16 +617,14 @@ async function addMedication() {
       name,
       authorId: myIdentity.value,
       ...(newMedDose.value.trim() ? { dose: newMedDose.value.trim() } : {}),
-      ...(newMedInstructions.value.trim()
-        ? { instructions: newMedInstructions.value.trim() }
-        : {}),
+      ...(newMedInstructions.value.trim() ? { instructions: newMedInstructions.value.trim() } : {}),
       ...(newMedStartDate.value ? { startDate: newMedStartDate.value } : {}),
       ...(newMedEndDate.value ? { endDate: newMedEndDate.value } : {}),
       createdAt: Date.now(),
       updatedAt: Date.now(),
     }),
     "patient-meds",
-    permissionId
+    permissionId,
   );
   isAddMedDialogOpen.value = false;
 }
@@ -709,17 +666,11 @@ async function addMedication() {
               size="xs"
             />
             <span class="truncate">
-              {{
-                patient.data.keyMissing
-                  ? "Insufficient permission"
-                  : patient.data.displayName
-              }}
+              {{ patient.data.keyMissing ? "Insufficient permission" : patient.data.displayName }}
             </span>
           </div>
         </SListButton>
-        <div v-if="!filteredPatients.length" class="text-xs opacity-60">
-          No patients yet.
-        </div>
+        <div v-if="!filteredPatients.length" class="text-xs opacity-60">No patients yet.</div>
       </div>
     </aside>
 
@@ -751,9 +702,7 @@ async function addMedication() {
             size="sm"
             variant="secondary"
             class="!rounded-full"
-            :disabled="
-              !canAddItem || !activePatient || activePatient.data?.keyMissing
-            "
+            :disabled="!canAddItem || !activePatient || activePatient.data?.keyMissing"
             @click="openAddChartDialog"
           >
             Add chart
@@ -820,11 +769,7 @@ async function addMedication() {
           class="shrink-0"
           @click="activePatientId = patient.data.id"
         >
-          {{
-            patient.data.keyMissing
-              ? "Insufficient permission"
-              : patient.data.displayName
-          }}
+          {{ patient.data.keyMissing ? "Insufficient permission" : patient.data.displayName }}
         </SListButton>
       </div>
 
@@ -865,11 +810,7 @@ async function addMedication() {
                 >
                   <span
                     class="flex items-center justify-center size-7 rounded-full border border-[var(--ui-border)] text-[var(--ui-fg-muted)]"
-                    :class="
-                      chart.data.keyMissing
-                        ? 'text-[var(--ui-critical)] opacity-70'
-                        : ''
-                    "
+                    :class="chart.data.keyMissing ? 'text-[var(--ui-critical)] opacity-70' : ''"
                     aria-label="Chart"
                   >
                     <svg
@@ -890,23 +831,12 @@ async function addMedication() {
 
                   <div class="flex-1 min-w-0">
                     <p class="truncate">
-                      {{
-                        chart.data.keyMissing
-                          ? "Insufficient permission"
-                          : chart.data.title
-                      }}
+                      {{ chart.data.keyMissing ? "Insufficient permission" : chart.data.title }}
                     </p>
                   </div>
 
-                  <div
-                    class="ml-auto flex items-center gap-2 text-xs text-[var(--ui-fg-muted)]"
-                  >
-                    <SBadge
-                      v-if="chart.data?.createdAt"
-                      size="xs"
-                      tone="neutral"
-                      variant="outline"
-                    >
+                  <div class="ml-auto flex items-center gap-2 text-xs text-[var(--ui-fg-muted)]">
+                    <SBadge v-if="chart.data?.createdAt" size="xs" tone="neutral" variant="outline">
                       {{
                         formatDate(chart.data.createdAt, {
                           dateStyle: "medium",
@@ -931,9 +861,7 @@ async function addMedication() {
           >
             <div class="flex items-start justify-between gap-3">
               <div class="min-w-0">
-                <p class="text-xs uppercase tracking-[0.16em] opacity-60">
-                  Record detail
-                </p>
+                <p class="text-xs uppercase tracking-[0.16em] opacity-60">Record detail</p>
                 <h3 class="text-base font-semibold truncate">
                   {{ activeChart?.data?.title || "Select a chart to view" }}
                 </h3>
@@ -1029,9 +957,7 @@ async function addMedication() {
                   </SBadge>
                 </div>
                 <div class="flex flex-col gap-1 text-xs">
-                  <span class="uppercase tracking-[0.14em] opacity-60">
-                    DOB
-                  </span>
+                  <span class="uppercase tracking-[0.14em] opacity-60"> DOB </span>
                   <span>
                     {{
                       activePatient?.data?.dob
@@ -1043,17 +969,11 @@ async function addMedication() {
                   </span>
                 </div>
                 <div class="flex flex-col gap-1 text-xs">
-                  <span class="uppercase tracking-[0.14em] opacity-60">
-                    NHS number
-                  </span>
-                  <span>{{
-                    activePatient?.data?.nhsNumber || "Not recorded"
-                  }}</span>
+                  <span class="uppercase tracking-[0.14em] opacity-60"> NHS number </span>
+                  <span>{{ activePatient?.data?.nhsNumber || "Not recorded" }}</span>
                 </div>
                 <div class="flex flex-col gap-1 text-xs">
-                  <span class="uppercase tracking-[0.14em] opacity-60"
-                    >Tags</span
-                  >
+                  <span class="uppercase tracking-[0.14em] opacity-60">Tags</span>
                   <span>
                     {{
                       activePatient?.data?.tags?.length
@@ -1083,9 +1003,7 @@ async function addMedication() {
               <template v-else>
                 <div class="flex items-center justify-between">
                   <div>
-                    <p class="text-xs uppercase tracking-[0.16em] opacity-60">
-                      Notes
-                    </p>
+                    <p class="text-xs uppercase tracking-[0.16em] opacity-60">Notes</p>
                     <p class="text-xs text-[var(--ui-fg-muted)]">
                       {{ activeNotes.length }} entries
                     </p>
@@ -1108,34 +1026,34 @@ async function addMedication() {
                 </div>
 
                 <div v-if="activeNotes.length" class="flex flex-col gap-2">
-                <div
-                  v-for="note in activeNotes"
-                  :key="note.entryId"
-                  class="border border-[var(--ui-border)] p-3 text-xs"
-                >
-                  <div class="flex items-center justify-between gap-2">
-                    <div class="flex items-center gap-2">
-                      <IdentityAvatar
-                        v-if="note.data.authorId"
-                        :identity="
-                          usersByIdentity.get(note.data.authorId)?.publicIdentityKey ||
-                          note.data.authorId
-                        "
-                        size="xs"
-                      />
-                      <p class="font-semibold truncate">
+                  <div
+                    v-for="note in activeNotes"
+                    :key="note.entryId"
+                    class="border border-[var(--ui-border)] p-3 text-xs"
+                  >
+                    <div class="flex items-center justify-between gap-2">
+                      <div class="flex items-center gap-2">
+                        <IdentityAvatar
+                          v-if="note.data.authorId"
+                          :identity="
+                            usersByIdentity.get(note.data.authorId)?.publicIdentityKey ||
+                            note.data.authorId
+                          "
+                          size="xs"
+                        />
+                        <p class="font-semibold truncate">
+                          {{
+                            note.data.keyMissing
+                              ? "Insufficient permission"
+                              : note.data.title || "Clinical note"
+                          }}
+                        </p>
+                      </div>
+                      <span class="text-[var(--ui-fg-muted)]">
                         {{
-                          note.data.keyMissing
-                            ? "Insufficient permission"
-                            : note.data.title || "Clinical note"
-                        }}
-                      </p>
-                    </div>
-                    <span class="text-[var(--ui-fg-muted)]">
-                      {{
-                        note.data.encounterDate
-                          ? formatDate(note.data.encounterDate, {
-                              dateStyle: "medium",
+                          note.data.encounterDate
+                            ? formatDate(note.data.encounterDate, {
+                                dateStyle: "medium",
                               })
                             : formatDate(note.data.createdAt, {
                                 dateStyle: "medium",
@@ -1144,9 +1062,7 @@ async function addMedication() {
                       </span>
                     </div>
                     <p class="mt-2 text-[var(--ui-fg-muted)]">
-                      {{
-                        note.data.keyMissing ? "Encrypted note" : note.data.body
-                      }}
+                      {{ note.data.keyMissing ? "Encrypted note" : note.data.body }}
                     </p>
                   </div>
                 </div>
@@ -1159,12 +1075,8 @@ async function addMedication() {
 
                 <div class="flex items-center justify-between mt-2">
                   <div>
-                    <p class="text-xs uppercase tracking-[0.16em] opacity-60">
-                      Medications
-                    </p>
-                    <p class="text-xs text-[var(--ui-fg-muted)]">
-                      {{ activeMeds.length }} entries
-                    </p>
+                    <p class="text-xs uppercase tracking-[0.16em] opacity-60">Medications</p>
+                    <p class="text-xs text-[var(--ui-fg-muted)]">{{ activeMeds.length }} entries</p>
                   </div>
                   <Button
                     type="button"
@@ -1184,34 +1096,30 @@ async function addMedication() {
                 </div>
 
                 <div v-if="activeMeds.length" class="flex flex-col gap-2">
-                <div
-                  v-for="med in activeMeds"
-                  :key="med.entryId"
-                  class="border border-[var(--ui-border)] p-3 text-xs"
-                >
-                  <div class="flex items-center justify-between gap-2">
-                    <div class="flex items-center gap-2">
-                      <IdentityAvatar
-                        v-if="med.data.authorId"
-                        :identity="
-                          usersByIdentity.get(med.data.authorId)?.publicIdentityKey ||
-                          med.data.authorId
-                        "
-                        size="xs"
-                      />
-                      <p class="font-semibold truncate">
+                  <div
+                    v-for="med in activeMeds"
+                    :key="med.entryId"
+                    class="border border-[var(--ui-border)] p-3 text-xs"
+                  >
+                    <div class="flex items-center justify-between gap-2">
+                      <div class="flex items-center gap-2">
+                        <IdentityAvatar
+                          v-if="med.data.authorId"
+                          :identity="
+                            usersByIdentity.get(med.data.authorId)?.publicIdentityKey ||
+                            med.data.authorId
+                          "
+                          size="xs"
+                        />
+                        <p class="font-semibold truncate">
+                          {{ med.data.keyMissing ? "Insufficient permission" : med.data.name }}
+                        </p>
+                      </div>
+                      <span class="text-[var(--ui-fg-muted)]">
                         {{
-                          med.data.keyMissing
-                            ? "Insufficient permission"
-                            : med.data.name
-                        }}
-                      </p>
-                    </div>
-                    <span class="text-[var(--ui-fg-muted)]">
-                      {{
-                        med.data.startDate
-                          ? formatDate(med.data.startDate, {
-                              dateStyle: "medium",
+                          med.data.startDate
+                            ? formatDate(med.data.startDate, {
+                                dateStyle: "medium",
                               })
                             : formatDate(med.data.createdAt, {
                                 dateStyle: "medium",
@@ -1219,16 +1127,12 @@ async function addMedication() {
                         }}
                       </span>
                     </div>
-                    <div
-                      class="mt-2 flex flex-col gap-1 text-[var(--ui-fg-muted)]"
-                    >
+                    <div class="mt-2 flex flex-col gap-1 text-[var(--ui-fg-muted)]">
                       <template v-if="med.data.keyMissing">
                         <span>Encrypted medication details</span>
                       </template>
                       <template v-else>
-                        <span v-if="med.data.dose"
-                          >Dose: {{ med.data.dose }}</span
-                        >
+                        <span v-if="med.data.dose">Dose: {{ med.data.dose }}</span>
                         <span v-if="med.data.instructions">
                           {{ med.data.instructions }}
                         </span>
@@ -1267,34 +1171,22 @@ async function addMedication() {
           stroke="currentColor"
           class="size-4"
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M12 4.5v15m7.5-7.5h-15"
-          />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
       </template>
       <div class="flex flex-col gap-3">
-        <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-          Chart title
-        </label>
+        <label class="text-xs uppercase tracking-[0.16em] opacity-60"> Chart title </label>
         <input
           v-model="newChartTitle"
           type="text"
           class="border border-[var(--ui-border)] px-3 py-2"
           placeholder="e.g. Respiratory clinic"
         />
-        <Button type="button" size="sm" variant="primary" @click="addChart">
-          Add chart
-        </Button>
+        <Button type="button" size="sm" variant="primary" @click="addChart"> Add chart </Button>
       </div>
     </SDialog>
 
-    <SDialog
-      v-model:open="isAddPatientDialogOpen"
-      size="lg"
-      title="Add patient"
-    >
+    <SDialog v-model:open="isAddPatientDialogOpen" size="lg" title="Add patient">
       <template #icon>
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -1304,48 +1196,30 @@ async function addMedication() {
           stroke="currentColor"
           class="size-4"
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M12 4.5v15m7.5-7.5h-15"
-          />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
       </template>
       <div class="flex flex-col gap-3">
-        <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-          Display name
-        </label>
+        <label class="text-xs uppercase tracking-[0.16em] opacity-60"> Display name </label>
         <input
           v-model="newPatientName"
           type="text"
           class="border border-[var(--ui-border)] px-3 py-2"
           placeholder="e.g. Taylor Jones"
         />
-        <div class="text-xs uppercase tracking-[0.16em] opacity-60">
-          Visibility
-        </div>
+        <div class="text-xs uppercase tracking-[0.16em] opacity-60">Visibility</div>
         <SSegmentedControl
           v-model="patientVisibility"
           :items="patientVisibilityOptions"
           size="xs"
         />
         <div v-if="patientVisibility === 'private'" class="flex flex-col gap-2">
-          <div class="text-xs uppercase tracking-[0.16em] opacity-60">
-            Add members
-          </div>
+          <div class="text-xs uppercase tracking-[0.16em] opacity-60">Add members</div>
           <UserPicker v-model="newPatientMember" />
-          <Button
-            type="button"
-            size="xs"
-            variant="secondary"
-            @click="addPatientMember"
-          >
+          <Button type="button" size="xs" variant="secondary" @click="addPatientMember">
             Add member
           </Button>
-          <div
-            v-if="newPatientMembers.length"
-            class="flex flex-wrap items-center gap-2 text-xs"
-          >
+          <div v-if="newPatientMembers.length" class="flex flex-wrap items-center gap-2 text-xs">
             <div
               v-for="member in newPatientMembers"
               :key="member?.publicIdentityKey"
@@ -1366,8 +1240,7 @@ async function addMedication() {
                 class="text-[11px] uppercase tracking-[0.12em]"
                 @click="
                   newPatientMembers = newPatientMembers.filter(
-                    (entry) =>
-                      entry?.publicIdentityKey !== member?.publicIdentityKey
+                    (entry) => entry?.publicIdentityKey !== member?.publicIdentityKey,
                   )
                 "
               >
@@ -1376,26 +1249,20 @@ async function addMedication() {
             </div>
           </div>
         </div>
-        <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-          DOB
-        </label>
+        <label class="text-xs uppercase tracking-[0.16em] opacity-60"> DOB </label>
         <input
           v-model="newPatientDob"
           type="date"
           class="border border-[var(--ui-border)] px-3 py-2"
         />
-        <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-          NHS number (demo)
-        </label>
+        <label class="text-xs uppercase tracking-[0.16em] opacity-60"> NHS number (demo) </label>
         <input
           v-model="newPatientNhsNumber"
           type="text"
           class="border border-[var(--ui-border)] px-3 py-2"
           placeholder="e.g. 987 654 3210"
         />
-        <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-          Tags
-        </label>
+        <label class="text-xs uppercase tracking-[0.16em] opacity-60"> Tags </label>
         <input
           v-model="newPatientTags"
           type="text"
@@ -1406,12 +1273,7 @@ async function addMedication() {
           <input v-model="newPatientArchived" type="checkbox" />
           Mark as archived
         </label>
-        <Button
-          type="button"
-          size="sm"
-          variant="primary"
-          @click="createPatient"
-        >
+        <Button type="button" size="sm" variant="primary" @click="createPatient">
           Create patient
         </Button>
       </div>
@@ -1437,41 +1299,29 @@ async function addMedication() {
             stroke-linejoin="round"
             d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z"
           />
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M19.5 7.125 16.862 4.487"
-          />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 7.125 16.862 4.487" />
         </svg>
       </template>
       <div class="flex flex-col gap-3">
-        <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-          Display name
-        </label>
+        <label class="text-xs uppercase tracking-[0.16em] opacity-60"> Display name </label>
         <input
           v-model="newPatientName"
           type="text"
           class="border border-[var(--ui-border)] px-3 py-2"
         />
-        <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-          DOB
-        </label>
+        <label class="text-xs uppercase tracking-[0.16em] opacity-60"> DOB </label>
         <input
           v-model="newPatientDob"
           type="date"
           class="border border-[var(--ui-border)] px-3 py-2"
         />
-        <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-          NHS number (demo)
-        </label>
+        <label class="text-xs uppercase tracking-[0.16em] opacity-60"> NHS number (demo) </label>
         <input
           v-model="newPatientNhsNumber"
           type="text"
           class="border border-[var(--ui-border)] px-3 py-2"
         />
-        <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-          Tags
-        </label>
+        <label class="text-xs uppercase tracking-[0.16em] opacity-60"> Tags </label>
         <input
           v-model="newPatientTags"
           type="text"
@@ -1481,22 +1331,13 @@ async function addMedication() {
           <input v-model="newPatientArchived" type="checkbox" />
           Mark as archived
         </label>
-        <Button
-          type="button"
-          size="sm"
-          variant="primary"
-          @click="updatePatient"
-        >
+        <Button type="button" size="sm" variant="primary" @click="updatePatient">
           Save changes
         </Button>
       </div>
     </SDialog>
 
-    <SDialog
-      v-model:open="isAddNoteDialogOpen"
-      size="lg"
-      title="Add clinical note"
-    >
+    <SDialog v-model:open="isAddNoteDialogOpen" size="lg" title="Add clinical note">
       <template #icon>
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -1506,43 +1347,31 @@ async function addMedication() {
           stroke="currentColor"
           class="size-4"
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M12 4.5v15m7.5-7.5h-15"
-          />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
       </template>
       <div class="flex flex-col gap-3">
-        <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-          Title
-        </label>
+        <label class="text-xs uppercase tracking-[0.16em] opacity-60"> Title </label>
         <input
           v-model="newNoteTitle"
           type="text"
           class="border border-[var(--ui-border)] px-3 py-2"
           placeholder="e.g. Follow-up"
         />
-        <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-          Encounter date
-        </label>
+        <label class="text-xs uppercase tracking-[0.16em] opacity-60"> Encounter date </label>
         <input
           v-model="newNoteEncounterDate"
           type="date"
           class="border border-[var(--ui-border)] px-3 py-2"
         />
-        <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-          Note
-        </label>
+        <label class="text-xs uppercase tracking-[0.16em] opacity-60"> Note </label>
         <textarea
           v-model="newNoteBody"
           rows="4"
           class="border border-[var(--ui-border)] px-3 py-2"
           placeholder="Clinical context and summary"
         />
-        <Button type="button" size="sm" variant="primary" @click="addNote">
-          Save note
-        </Button>
+        <Button type="button" size="sm" variant="primary" @click="addNote"> Save note </Button>
       </div>
     </SDialog>
 
@@ -1556,63 +1385,44 @@ async function addMedication() {
           stroke="currentColor"
           class="size-4"
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M12 4.5v15m7.5-7.5h-15"
-          />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
       </template>
       <div class="flex flex-col gap-3">
-        <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-          Medication name
-        </label>
+        <label class="text-xs uppercase tracking-[0.16em] opacity-60"> Medication name </label>
         <input
           v-model="newMedName"
           type="text"
           class="border border-[var(--ui-border)] px-3 py-2"
           placeholder="e.g. Atorvastatin"
         />
-        <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-          Dose
-        </label>
+        <label class="text-xs uppercase tracking-[0.16em] opacity-60"> Dose </label>
         <input
           v-model="newMedDose"
           type="text"
           class="border border-[var(--ui-border)] px-3 py-2"
           placeholder="e.g. 10mg"
         />
-        <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-          Instructions
-        </label>
+        <label class="text-xs uppercase tracking-[0.16em] opacity-60"> Instructions </label>
         <textarea
           v-model="newMedInstructions"
           rows="3"
           class="border border-[var(--ui-border)] px-3 py-2"
           placeholder="e.g. Take once daily with food"
         />
-        <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-          Start date
-        </label>
+        <label class="text-xs uppercase tracking-[0.16em] opacity-60"> Start date </label>
         <input
           v-model="newMedStartDate"
           type="date"
           class="border border-[var(--ui-border)] px-3 py-2"
         />
-        <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-          End date
-        </label>
+        <label class="text-xs uppercase tracking-[0.16em] opacity-60"> End date </label>
         <input
           v-model="newMedEndDate"
           type="date"
           class="border border-[var(--ui-border)] px-3 py-2"
         />
-        <Button
-          type="button"
-          size="sm"
-          variant="primary"
-          @click="addMedication"
-        >
+        <Button type="button" size="sm" variant="primary" @click="addMedication">
           Save medication
         </Button>
       </div>
@@ -1640,13 +1450,9 @@ async function addMedication() {
         </svg>
       </template>
       <div class="flex flex-col gap-3">
-        <div class="text-xs uppercase tracking-[0.16em] opacity-60">
-          Add member
-        </div>
+        <div class="text-xs uppercase tracking-[0.16em] opacity-60">Add member</div>
         <div class="flex flex-col gap-2">
-          <UserPicker
-            v-model="selectedUsersByPermission[activePatientPermissionId]"
-          />
+          <UserPicker v-model="selectedUsersByPermission[activePatientPermissionId]" />
           <Button
             type="button"
             size="xs"
@@ -1656,13 +1462,8 @@ async function addMedication() {
             Add member
           </Button>
         </div>
-        <div class="text-xs uppercase tracking-[0.16em] opacity-60">
-          Members
-        </div>
-        <div
-          v-if="permissionMembers.length"
-          class="flex flex-wrap items-center gap-2 text-xs"
-        >
+        <div class="text-xs uppercase tracking-[0.16em] opacity-60">Members</div>
+        <div v-if="permissionMembers.length" class="flex flex-wrap items-center gap-2 text-xs">
           <div
             v-for="member in permissionMembers"
             :key="member.data.identity"
@@ -1670,16 +1471,12 @@ async function addMedication() {
           >
             <IdentityAvatar
               :identity="
-                usersByIdentity.get(member.data.identity)?.publicIdentityKey ||
-                member.data.identity
+                usersByIdentity.get(member.data.identity)?.publicIdentityKey || member.data.identity
               "
               size="xs"
             />
             <span class="max-w-[12rem] truncate">
-              {{
-                usersByIdentity.get(member.data.identity)?.name ||
-                member.data.identity
-              }}
+              {{ usersByIdentity.get(member.data.identity)?.name || member.data.identity }}
             </span>
           </div>
         </div>

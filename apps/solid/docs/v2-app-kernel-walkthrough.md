@@ -109,8 +109,10 @@ Example: new command `permission.rename`.
 1. Extend command union in `src/core/permissions/types.ts`.
 2. Implement handling in `src/core/permissions/usePermissionsCore.ts`.
 3. If it belongs in app-level command execution:
+
 - ensure `AppCommand` includes it (via core union import)
 - ensure dispatch in `src/app/api/useAppApi.ts` reaches core handler
+
 4. If replay needs extra projection behavior, update replay logic in `useAppApi.ts`.
 5. Add v2 contract tests under `src/tests/v2`.
 

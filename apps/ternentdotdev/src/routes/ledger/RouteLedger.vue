@@ -17,7 +17,7 @@ const { hasSolidSession } = useSolid();
 const showOnboarding = shallowRef(false);
 const hasSeenOnboarding = useLocalStorage("resistance-onboarding-seen", false);
 const isFirstVisit = computed(
-  () => !hasSeenOnboarding.value && (!ledger.value || ledger.value.length === 0)
+  () => !hasSeenOnboarding.value && (!ledger.value || ledger.value.length === 0),
 );
 
 const contentArea = shallowRef();
@@ -70,13 +70,8 @@ const navTabs = computed(() => {
 });
 </script>
 <template>
-  <div
-    ref="contentArea"
-    class="flex flex-col flex-1 relative max-w-full overflow-hidden"
-  >
-    <nav
-      class="text-body-sm flex items-center justify-between pt-micro px-micro"
-    >
+  <div ref="contentArea" class="flex flex-col flex-1 relative max-w-full overflow-hidden">
+    <nav class="text-body-sm flex items-center justify-between pt-micro px-micro">
       <div class="flex items-center gap-micro">
         <!-- Revolutionary Badge -->
         <div
@@ -87,13 +82,7 @@ const navTabs = computed(() => {
           <span>System Administration</span>
         </div>
 
-        <STabs
-          :items="navTabs"
-          :path="$route.path"
-          :exact="true"
-          size="micro"
-          type="stripe"
-        />
+        <STabs :items="navTabs" :path="$route.path" :exact="true" size="micro" type="stripe" />
       </div>
 
       <div class="flex items-center gap-micro">
@@ -147,10 +136,7 @@ const navTabs = computed(() => {
     </nav>
 
     <div class="flex-1 flex w-full overflow-hidden relative">
-      <div
-        v-if="$route.path === '/t/ledger/demo'"
-        class="flex flex-col w-full h-full p-4 gap-6"
-      >
+      <div v-if="$route.path === '/t/ledger/demo'" class="flex flex-col w-full h-full p-4 gap-6">
         <!-- todo -->
       </div>
       <div class="flex flex-1" v-else>

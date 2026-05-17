@@ -16,9 +16,7 @@ const onImport = async () => {
 <template>
   <SCard class="space-y-4 p-5">
     <h3 class="m-0 text-lg">Import identity</h3>
-    <p class="text-sm text-fg-muted">
-      Paste a serialized identity export payload.
-    </p>
+    <p class="text-sm text-fg-muted">Paste a serialized identity export payload.</p>
 
     <textarea
       v-model="payload"

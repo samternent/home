@@ -3,6 +3,7 @@ import { computed, shallowRef } from "vue";
 import { breakpointsTailwind, useBreakpoints } from "@vueuse/core";
 import { Badge, Input } from "ternent-ui/primitives";
 import { useAppApi } from "@/app/api";
+import { EntityDetailsView } from "@/runtime/entities";
 import SideNav from "./SideNav.vue";
 import Console from "./Console.vue";
 import IdentityOnboardingDialog from "./IdentityOnboardingDialog.vue";
@@ -38,13 +39,8 @@ const statusDotColor = computed(() => `var(--ui-${statusTone.value})`);
 const integrityDotColor = computed(() => `var(--ui-${integrityTone.value})`);
 </script>
 <template>
-  <div
-    class="flex h-screen max-h-screen w-screen max-w-screen flex-col overflow-hidden"
-  >
-    <div
-      ref="contentArea"
-      class="relative z-10 flex h-full flex-1 overflow-hidden"
-    >
+  <div class="flex h-screen max-h-screen w-screen max-w-screen flex-col overflow-hidden">
+    <div ref="contentArea" class="relative z-10 flex h-full flex-1 overflow-hidden">
       <SideNav />
 
       <slot name="drawer" />
@@ -52,25 +48,16 @@ const integrityDotColor = computed(() => `var(--ui-${integrityTone.value})`);
         <header
           class="sticky top-0 z-20 w-full border-b border-[var(--ui-border)] bg-[var(--ui-bg)] backdrop-blur-[12px]"
         >
-          <div
-            class="mx-auto flex w-full items-center justify-between px-4 py-2"
-          >
+          <div class="mx-auto flex w-full items-center justify-between px-4 py-2">
             <div :class="['w-64', { 'pl-12': smallerThanMd }]"></div>
 
             <nav class="flex items-center justify-between gap-2">
-              <Input
-                placeholder="Search..."
-                size="sm"
-                class="w-56"
-                aria-label="Search"
-              />
+              <Input placeholder="Search..." size="sm" class="w-56" aria-label="Search" />
             </nav>
           </div>
         </header>
 
-        <div
-          class="flex h-full w-full flex-1 overflow-auto bg-[var(--ui-surface)]"
-        >
+        <div class="flex h-full w-full flex-1 overflow-auto bg-[var(--ui-surface)]">
           <div class="relative flex-1">
             <slot />
           </div>
@@ -92,9 +79,7 @@ const integrityDotColor = computed(() => `var(--ui-${integrityTone.value})`);
                   class="inline-block h-2 w-2 rounded-full"
                   :style="{ backgroundColor: statusDotColor }"
                 ></span>
-                <span data-test="console-status-runtime">{{
-                  appApi.status.value
-                }}</span>
+                <span data-test="console-status-runtime">{{ appApi.status.value }}</span>
               </div>
 
               <div
@@ -105,22 +90,13 @@ const integrityDotColor = computed(() => `var(--ui-${integrityTone.value})`);
                   :style="{ backgroundColor: integrityDotColor }"
                 ></span>
                 <span data-test="console-status-integrity">
-                  {{
-                    integrityValid ? "Integrity verified" : "Integrity issue"
-                  }}
+                  {{ integrityValid ? "Integrity verified" : "Integrity issue" }}
                 </span>
               </div>
 
-              <Badge
-                :tone="stagedTone"
-                variant="soft"
-                size="xs"
-                data-test="console-status-staged"
-              >
+              <Badge :tone="stagedTone" variant="soft" size="xs" data-test="console-status-staged">
                 {{
-                  stagedCount > 0
-                    ? `${stagedCount} staged · needs attention`
-                    : "No staged entries"
+                  stagedCount > 0 ? `${stagedCount} staged · needs attention` : "No staged entries"
                 }}
               </Badge>
             </div>
@@ -130,5 +106,6 @@ const integrityDotColor = computed(() => `var(--ui-${integrityTone.value})`);
       </div>
     </div>
     <IdentityOnboardingDialog />
+    <EntityDetailsView />
   </div>
 </template>

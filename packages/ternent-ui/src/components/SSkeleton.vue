@@ -61,8 +61,8 @@ const customStyles = computed(() => {
 
 <template>
   <div class="space-y-2">
-    <div 
-      v-for="line in lines" 
+    <div
+      v-for="line in lines"
       :key="line"
       :class="[
         'bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200 dark:from-slate-700 dark:via-slate-600 dark:to-slate-700 bg-[length:200%_100%]',
@@ -72,7 +72,7 @@ const customStyles = computed(() => {
         {
           'animate-pulse': animated,
           'bg-animate': animated,
-        }
+        },
       ]"
       :style="customStyles"
       v-bind="$attrs"

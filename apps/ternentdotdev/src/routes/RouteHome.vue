@@ -24,9 +24,7 @@ useBreadcrumbs({ name: "Home", path: "/" });
     </main>
 
     <!-- Premium footer -->
-    <footer
-      class="relative z-30 bg-base-100/90 backdrop-blur-xl border-t border-base-300/50"
-    >
+    <footer class="relative z-30 bg-base-100/90 backdrop-blur-xl border-t border-base-300/50">
       <div class="w-full px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-8">
           <!-- Logo -->

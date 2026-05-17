@@ -27,7 +27,7 @@ app.use(
     theme: vueform,
     locales: { en },
     locale: "en",
-  })
+  }),
 );
 
 registerSW();

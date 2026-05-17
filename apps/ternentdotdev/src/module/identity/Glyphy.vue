@@ -16,7 +16,7 @@ const props = defineProps({
 const attrs = useAttrs();
 const { grid, colors, isReady } = useGlyph(
   computed(() => props.identity),
-  computed(() => props.variant)
+  computed(() => props.variant),
 );
 
 const glyphVNode = computed(() => {
@@ -36,7 +36,7 @@ const glyphVNode = computed(() => {
             width: 1,
             height: 1,
             fill: `rgb(${color.join(",")})`,
-          })
+          }),
         );
       }
     }
@@ -57,7 +57,7 @@ const glyphVNode = computed(() => {
       "shape-rendering": "crispEdges",
       ...svgAttrs,
     },
-    rects
+    rects,
   );
 });
 </script>

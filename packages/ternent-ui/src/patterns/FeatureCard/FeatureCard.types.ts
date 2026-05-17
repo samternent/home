@@ -1,10 +1,4 @@
-export const featureCardToneValues = [
-  "primary",
-  "secondary",
-  "accent",
-  "success",
-  "info",
-] as const;
+export const featureCardToneValues = ["primary", "secondary", "accent", "success", "info"] as const;
 
 export const featureCardSizeValues = ["md", "sm"] as const;
 export const featureCardSurfaceValues = ["elevated", "panel", "subtle"] as const;

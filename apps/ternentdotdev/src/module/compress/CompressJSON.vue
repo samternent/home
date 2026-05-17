@@ -32,9 +32,7 @@ const textInput = shallowRef("");
 watch(textInput, async (_textInput) => {
   if (!_textInput) return;
   const stream = new Blob([_textInput], { type: "application/gzip" }).stream();
-  const compressedReadableStream = stream.pipeThrough(
-    new CompressionStream("gzip")
-  );
+  const compressedReadableStream = stream.pipeThrough(new CompressionStream("gzip"));
   const compressedFile = await new Response(compressedReadableStream).blob();
 
   emit("update:modelValue", compressedFile);
@@ -70,10 +68,7 @@ const sizeInMb = computed(() => sizeInKb.value / 1024);
     </VTabs> -->
 
     <div class="flex flex-1 justify-between flex-col">
-      <div
-        class="flex flex-1 justify-center items-center"
-        v-if="activeCompressView === 'url'"
-      >
+      <div class="flex flex-1 justify-center items-center" v-if="activeCompressView === 'url'">
         <input
           v-model="files"
           color="primary"
@@ -94,10 +89,7 @@ const sizeInMb = computed(() => sizeInKb.value / 1024);
           >get</VBtn
         >
       </div>
-      <div
-        class="flex flex-1 justify-center items-center"
-        v-if="activeCompressView === 'json'"
-      >
+      <div class="flex flex-1 justify-center items-center" v-if="activeCompressView === 'json'">
         <v-file-input
           v-model="files"
           color="primary"
@@ -108,10 +100,7 @@ const sizeInMb = computed(() => sizeInKb.value / 1024);
           clearable
         />
       </div>
-      <div
-        class="flex flex-1 justify-center items-center"
-        v-if="activeCompressView === 'file'"
-      >
+      <div class="flex flex-1 justify-center items-center" v-if="activeCompressView === 'file'">
         <v-file-input
           v-model="files"
           color="primary"
@@ -122,10 +111,7 @@ const sizeInMb = computed(() => sizeInKb.value / 1024);
           clearable
         />
       </div>
-      <div
-        class="flex flex-1 justify-center items-center"
-        v-if="activeCompressView === 'text'"
-      >
+      <div class="flex flex-1 justify-center items-center" v-if="activeCompressView === 'text'">
         <v-textarea
           clearable
           clear-icon="mdi-close-circle"
@@ -133,18 +119,12 @@ const sizeInMb = computed(() => sizeInKb.value / 1024);
           v-model="textInput"
         ></v-textarea>
       </div>
-      <div
-        class="text-6xl font-bold text-zinc-500 justify-center items-center flex"
-      >
+      <div class="text-6xl font-bold text-zinc-500 justify-center items-center flex">
         {{
           sizeInKb > 1
             ? sizeInMb > 1
-              ? `${(
-                  Math.round((sizeInMb + Number.EPSILON) * 100) / 100
-                ).toFixed(1)}MB`
-              : `${(
-                  Math.round((sizeInKb + Number.EPSILON) * 100) / 100
-                ).toFixed(1)}KB`
+              ? `${(Math.round((sizeInMb + Number.EPSILON) * 100) / 100).toFixed(1)}MB`
+              : `${(Math.round((sizeInKb + Number.EPSILON) * 100) / 100).toFixed(1)}KB`
             : `${size}B`
         }}
       </div>

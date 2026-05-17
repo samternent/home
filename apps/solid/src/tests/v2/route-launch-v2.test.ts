@@ -44,8 +44,8 @@ describe("RouteLaunch", () => {
       },
     });
 
-    const rendered = await waitFor(
-      () => wrapper.find('[data-test="launch-v2-app-tasks"]').exists(),
+    const rendered = await waitFor(() =>
+      wrapper.find('[data-test="launch-v2-app-tasks"]').exists(),
     );
     expect(rendered).toBe(true);
 

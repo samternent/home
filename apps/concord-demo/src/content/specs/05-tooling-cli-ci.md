@@ -21,7 +21,6 @@ The CLI name is non-normative. Example uses “concord”.
 ### Core
 
 - concord verify
-
   - Validates core protocol structure, hashes, and replay order
   - Exits non-zero on failure
 

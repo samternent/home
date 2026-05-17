@@ -13,11 +13,7 @@ import {
 } from "ternent-ui/primitives";
 import { FormField, PreviewPanel, SectionIntro } from "ternent-ui/patterns";
 import { useIdentitySession } from "@/modules/identity";
-import {
-  createSealHash,
-  createSealProof,
-  type SealProofV1,
-} from "@/modules/proof";
+import { createSealHash, createSealProof, type SealProofV1 } from "@/modules/proof";
 
 type SignMode = "text" | "file";
 
@@ -157,7 +153,11 @@ const onSign = async () => {
       description="Hash bytes, sign them locally, and export a self-contained proof artifact."
     />
 
-    <Card variant="elevated" padding="md" class="space-y-6 border-[color-mix(in_srgb,var(--ui-border)_84%,transparent)]">
+    <Card
+      variant="elevated"
+      padding="md"
+      class="space-y-6 border-[color-mix(in_srgb,var(--ui-border)_84%,transparent)]"
+    >
       <div
         v-if="!hasIdentity"
         class="rounded-[var(--ui-radius-md)] border border-[var(--ui-warning)] bg-[color-mix(in_srgb,var(--ui-warning-muted)_72%,transparent)] px-4 py-4"
@@ -175,104 +175,112 @@ const onSign = async () => {
         </div>
       </div>
 
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
-              Signing workbench
-            </p>
-            <p class="mt-2 text-sm text-[var(--ui-fg-muted)]">
-              Choose the source material, confirm the current payload, then sign and export the proof artifact.
-            </p>
-          </div>
-          <Badge
-            :tone="hasIdentity ? 'neutral' : 'warning'"
-            variant="outline"
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <p
+            class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]"
           >
-            {{ mode === "text" ? "Text payload" : "File payload" }}
-          </Badge>
-        </div>
-
-        <Tabs v-model="mode" :items="signModeTabs" variant="pill">
-          <template #panel-text>
-            <div class="space-y-5">
-              <p class="m-0 text-sm text-[var(--ui-fg-muted)]">
-                Hash and sign pasted text content as UTF-8 bytes.
-              </p>
-
-              <FormField label="Content name" description="Optional label used when downloading the proof JSON.">
-                <template #default="{ id, describedBy }">
-                  <Input
-                    :id="id"
-                    v-model="textContentName"
-                    :aria-describedby="describedBy"
-                    placeholder="Optional content name"
-                  />
-                </template>
-              </FormField>
-
-              <FormField label="Text content" description="Paste the exact text you want to hash and sign.">
-                <template #default="{ id, describedBy }">
-                  <Textarea
-                    :id="id"
-                    v-model="textContent"
-                    :aria-describedby="describedBy"
-                    rows="10"
-                    placeholder="Enter text to sign"
-                  />
-                </template>
-              </FormField>
-            </div>
-          </template>
-
-          <template #panel-file>
-            <div class="space-y-5">
-              <p class="m-0 text-sm text-[var(--ui-fg-muted)]">
-                Hash and sign one local file as raw bytes.
-              </p>
-
-              <FormField label="File input" description="Select one local file to hash and sign.">
-                <template #default>
-                  <FileInput
-                    v-model="selectedFileModel"
-                    v-model:filename="selectedFileName"
-                    variant="dropzone"
-                    placeholder="Drop one file to sign, or click to choose"
-                  />
-                </template>
-              </FormField>
-
-              <div
-                v-if="selectedFile"
-                class="rounded-[var(--ui-radius-md)] border border-[var(--ui-border)] bg-[var(--ui-tonal-tertiary)] px-4 py-3 text-sm text-[var(--ui-fg-muted)]"
-              >
-                Selected file:
-                <span class="ml-1 font-medium text-[var(--ui-fg)]">{{ selectedFile.name }}</span>
-                <span class="ml-1">({{ selectedFile.size }} bytes)</span>
-              </div>
-            </div>
-          </template>
-        </Tabs>
-
-        <div class="space-y-3 border-t border-[color-mix(in_srgb,var(--ui-border)_80%,transparent)] pt-5">
-          <div class="flex flex-wrap items-center gap-3">
-            <Button
-              variant="primary"
-              :disabled="!canSign"
-              :loading="isSigning"
-              :title="disabledReason || undefined"
-              @click="onSign"
-            >
-              {{ isSigning ? "Signing..." : "Sign payload" }}
-            </Button>
-            <Badge tone="neutral" variant="outline">
-              {{ mode === "text" ? "UTF-8 bytes" : "Raw bytes" }}
-            </Badge>
-          </div>
-          <p class="m-0 min-h-5 text-xs text-[var(--ui-fg-muted)]" aria-live="polite">
-            {{ disabledReason }}
+            Signing workbench
+          </p>
+          <p class="mt-2 text-sm text-[var(--ui-fg-muted)]">
+            Choose the source material, confirm the current payload, then sign and export the proof
+            artifact.
           </p>
         </div>
-      </Card>
+        <Badge :tone="hasIdentity ? 'neutral' : 'warning'" variant="outline">
+          {{ mode === "text" ? "Text payload" : "File payload" }}
+        </Badge>
+      </div>
+
+      <Tabs v-model="mode" :items="signModeTabs" variant="pill">
+        <template #panel-text>
+          <div class="space-y-5">
+            <p class="m-0 text-sm text-[var(--ui-fg-muted)]">
+              Hash and sign pasted text content as UTF-8 bytes.
+            </p>
+
+            <FormField
+              label="Content name"
+              description="Optional label used when downloading the proof JSON."
+            >
+              <template #default="{ id, describedBy }">
+                <Input
+                  :id="id"
+                  v-model="textContentName"
+                  :aria-describedby="describedBy"
+                  placeholder="Optional content name"
+                />
+              </template>
+            </FormField>
+
+            <FormField
+              label="Text content"
+              description="Paste the exact text you want to hash and sign."
+            >
+              <template #default="{ id, describedBy }">
+                <Textarea
+                  :id="id"
+                  v-model="textContent"
+                  :aria-describedby="describedBy"
+                  rows="10"
+                  placeholder="Enter text to sign"
+                />
+              </template>
+            </FormField>
+          </div>
+        </template>
+
+        <template #panel-file>
+          <div class="space-y-5">
+            <p class="m-0 text-sm text-[var(--ui-fg-muted)]">
+              Hash and sign one local file as raw bytes.
+            </p>
+
+            <FormField label="File input" description="Select one local file to hash and sign.">
+              <template #default>
+                <FileInput
+                  v-model="selectedFileModel"
+                  v-model:filename="selectedFileName"
+                  variant="dropzone"
+                  placeholder="Drop one file to sign, or click to choose"
+                />
+              </template>
+            </FormField>
+
+            <div
+              v-if="selectedFile"
+              class="rounded-[var(--ui-radius-md)] border border-[var(--ui-border)] bg-[var(--ui-tonal-tertiary)] px-4 py-3 text-sm text-[var(--ui-fg-muted)]"
+            >
+              Selected file:
+              <span class="ml-1 font-medium text-[var(--ui-fg)]">{{ selectedFile.name }}</span>
+              <span class="ml-1">({{ selectedFile.size }} bytes)</span>
+            </div>
+          </div>
+        </template>
+      </Tabs>
+
+      <div
+        class="space-y-3 border-t border-[color-mix(in_srgb,var(--ui-border)_80%,transparent)] pt-5"
+      >
+        <div class="flex flex-wrap items-center gap-3">
+          <Button
+            variant="primary"
+            :disabled="!canSign"
+            :loading="isSigning"
+            :title="disabledReason || undefined"
+            @click="onSign"
+          >
+            {{ isSigning ? "Signing..." : "Sign payload" }}
+          </Button>
+          <Badge tone="neutral" variant="outline">
+            {{ mode === "text" ? "UTF-8 bytes" : "Raw bytes" }}
+          </Badge>
+        </div>
+        <p class="m-0 min-h-5 text-xs text-[var(--ui-fg-muted)]" aria-live="polite">
+          {{ disabledReason }}
+        </p>
+      </div>
+    </Card>
 
     <div v-if="signedProof" class="space-y-5">
       <PreviewPanel
@@ -286,7 +294,9 @@ const onSign = async () => {
       <Card variant="subtle" padding="md" class="space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
+            <p
+              class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]"
+            >
               Export
             </p>
             <p class="mt-2 text-sm text-[var(--ui-fg-muted)]">
@@ -298,15 +308,14 @@ const onSign = async () => {
 
         <Accordion
           :value="showProofJson ? 'raw-proof' : undefined"
-          @update:value="(value) => { showProofJson = value === 'raw-proof'; }"
+          @update:value="
+            (value) => {
+              showProofJson = value === 'raw-proof';
+            }
+          "
         >
           <AccordionItem value="raw-proof" title="Inspect raw proof JSON">
-            <Textarea
-              :model-value="proofJson"
-              readonly
-              rows="12"
-              class="proof-shell-copy"
-            />
+            <Textarea :model-value="proofJson" readonly rows="12" class="proof-shell-copy" />
           </AccordionItem>
         </Accordion>
       </Card>

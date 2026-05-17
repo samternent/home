@@ -28,10 +28,7 @@ const dragPosition = useLocalStorage("routes/RouteLedger/dragPosition", 600);
 const isDragging = shallowRef(false);
 
 const isBottomPanelExpanded = useLocalStorage("isBottomPanelExpanded", false);
-const bottomPanelHeight = useLocalStorage(
-  "bottomPanelHeight",
-  width.value < 500 ? 620 : 320
-);
+const bottomPanelHeight = useLocalStorage("bottomPanelHeight", width.value < 500 ? 620 : 320);
 
 watch(dragPosition, (value) => {
   if (value > 200) {
@@ -62,8 +59,7 @@ watch(dragPosition, (value) => {
     <div
       class="flex justify-between px-2 h-8 border-y relative z-30 py-1 border-[var(--ui-border)]"
       :class="{
-        'text-[var(--ui-on-critical)] bg-[var(--ui-critical)]':
-          tone === 'danger',
+        'text-[var(--ui-on-critical)] bg-[var(--ui-critical)]': tone === 'danger',
         'bg-[var(--ui-surface)]': tone === 'default',
       }"
     >

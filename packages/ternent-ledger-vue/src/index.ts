@@ -6,9 +6,7 @@ const ledgerBridgeSymbol = Symbol("ledger-bridge");
 type LedgerRuntime<P> = {
   api: {
     getState: () => Readonly<LedgerState<P>>;
-    subscribe: (
-      listener: (state: Readonly<LedgerState<P>>) => void
-    ) => () => void;
+    subscribe: (listener: (state: Readonly<LedgerState<P>>) => void) => () => void;
   };
 };
 
@@ -27,10 +25,7 @@ type LedgerBridge<P> = {
     byKind: ReturnType<typeof shallowRef<Record<string, Record<string, any>>>>;
     idsByKind: ReturnType<typeof shallowRef<Record<string, string[]>>>;
     useArray: (kind: string) => ReturnType<typeof computed<any[]>>;
-    useById: (
-      kind: string,
-      id: string
-    ) => ReturnType<typeof computed<any | null>>;
+    useById: (kind: string, id: string) => ReturnType<typeof computed<any | null>>;
     snapshot: (kind: string) => any[];
     get: (kind: string, id: string) => any | null;
   };
@@ -55,8 +50,7 @@ function snapshotState<P>(runtime: LedgerRuntime<P>): LedgerState<P> {
 }
 
 function getRecordId(record: any): string | null {
-  const payloadId =
-    record?.payload?.id ?? record?.data?.id ?? record?.entryId ?? record?.id;
+  const payloadId = record?.payload?.id ?? record?.data?.id ?? record?.entryId ?? record?.id;
   return typeof payloadId === "string" ? payloadId : null;
 }
 
@@ -80,7 +74,7 @@ function listCollections(loki?: LokiAccess): string[] {
 
 export function createLedgerBridge<P>(
   runtime: LedgerRuntime<P>,
-  options?: { loki?: LokiAccess }
+  options?: { loki?: LokiAccess },
 ): LedgerBridge<P> {
   const rev = ref(0);
   const state = shallowRef<LedgerState<P>>(snapshotState(runtime));
@@ -140,8 +134,7 @@ export function createLedgerBridge<P>(
     return {
       authed: !!snapshot.signingKey && !!snapshot.publicKey,
       hasLedger: !!snapshot.ledger,
-      canWrite:
-        !!snapshot.ledger && !!snapshot.signingKey && !!snapshot.publicKey,
+      canWrite: !!snapshot.ledger && !!snapshot.signingKey && !!snapshot.publicKey,
       hasPending: pending.length > 0,
       pendingCount: pending.length,
     };
@@ -155,10 +148,8 @@ export function createLedgerBridge<P>(
     collections: {
       byKind,
       idsByKind,
-      useArray: (kind: string) =>
-        computed(() => arraysByKind.value[kind] ?? []),
-      useById: (kind: string, id: string) =>
-        computed(() => byKind.value[kind]?.[id] ?? null),
+      useArray: (kind: string) => computed(() => arraysByKind.value[kind] ?? []),
+      useById: (kind: string, id: string) => computed(() => byKind.value[kind]?.[id] ?? null),
       snapshot: (kind: string) => arraysByKind.value[kind] ?? [],
       get: (kind: string, id: string) => byKind.value[kind]?.[id] ?? null,
     },

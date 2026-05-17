@@ -3,15 +3,12 @@
   "version": "0.1.2",
   "description": "Core PixPax v2 domain rules, canonical types, and deterministic derivation",
   "license": "ISC",
-  "type": "module",
   "files": [
     "dist",
     "README.md",
     "SPEC.md"
   ],
-  "publishConfig": {
-    "access": "public"
-  },
+  "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -21,6 +18,9 @@
       "import": "./dist/index.js",
       "default": "./dist/index.js"
     }
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "build": "vite build",

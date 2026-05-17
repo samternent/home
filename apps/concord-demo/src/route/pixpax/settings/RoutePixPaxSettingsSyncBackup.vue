@@ -66,32 +66,25 @@ const receiptRows = computed<PackReceiptRow[]>(() => {
   return (receivedPacks.value as any[])
     .map((entry) => {
       const payload = (entry?.data || {}) as Record<string, unknown>;
-      const issuerIssuePayload = (payload.issuerIssuePayload || {}) as Record<
-        string,
-        unknown
-      >;
+      const issuerIssuePayload = (payload.issuerIssuePayload || {}) as Record<string, unknown>;
       const receiptRef = (payload.receiptRef || {}) as Record<string, unknown>;
       const packId = String(payload.packId || issuerIssuePayload.packId || "").trim();
       const segmentKey = String(receiptRef.segmentKey || "").trim();
       const verifyUrl = segmentKey
         ? buildPixPaxApiUrl(
             `/v1/pixpax/receipt/${encodeURIComponent(
-              packId
-            )}?segmentKey=${encodeURIComponent(segmentKey)}`
+              packId,
+            )}?segmentKey=${encodeURIComponent(segmentKey)}`,
           )
         : "";
       const collectionId = String(issuerIssuePayload.collectionId || "").trim();
-      const collectionVersion = String(
-        issuerIssuePayload.collectionVersion || ""
-      ).trim();
+      const collectionVersion = String(issuerIssuePayload.collectionVersion || "").trim();
       const packVerifyUrl =
         packId && collectionId && collectionVersion
           ? buildPixPaxApiUrl(
-              `/v1/pixpax/collections/${encodeURIComponent(
-                collectionId
-              )}/${encodeURIComponent(
-                collectionVersion
-              )}/packs/${encodeURIComponent(packId)}/verify`
+              `/v1/pixpax/collections/${encodeURIComponent(collectionId)}/${encodeURIComponent(
+                collectionVersion,
+              )}/packs/${encodeURIComponent(packId)}/verify`,
             )
           : "";
       return {
@@ -106,13 +99,9 @@ const receiptRows = computed<PackReceiptRow[]>(() => {
         issuedTo: String(issuerIssuePayload.issuedTo || "").trim(),
         packRoot: String(issuerIssuePayload.packRoot || "").trim(),
         itemHashes: Array.isArray(issuerIssuePayload.itemHashes)
-          ? (issuerIssuePayload.itemHashes as unknown[]).map((value) =>
-              String(value || "").trim()
-            )
+          ? (issuerIssuePayload.itemHashes as unknown[]).map((value) => String(value || "").trim())
           : [],
-        contentsCommitment: String(
-          issuerIssuePayload.contentsCommitment || ""
-        ).trim(),
+        contentsCommitment: String(issuerIssuePayload.contentsCommitment || "").trim(),
         issuanceMode: String(issuerIssuePayload.issuanceMode || "").trim(),
         untracked: issuerIssuePayload.untracked === true,
         issuerKeyId: String(payload.issuerKeyId || issuerIssuePayload.issuerKeyId || "").trim(),
@@ -159,20 +148,14 @@ function isVerifying(entryId: string) {
   return !!verifyingByEntry.value[entryId];
 }
 
-function isUntrackedResult(
-  row: PackReceiptRow,
-  result: ReceiptVerificationResult | null
-) {
+function isUntrackedResult(row: PackReceiptRow, result: ReceiptVerificationResult | null) {
   if (row.untracked) return true;
   if (row.issuanceMode === "dev-untracked") return true;
   if (result?.response?.reason === "dev-untracked") return true;
   return result?.response?.checks?.signature === "skipped-untracked";
 }
 
-function verificationSummary(
-  row: PackReceiptRow,
-  result: ReceiptVerificationResult | null
-) {
+function verificationSummary(row: PackReceiptRow, result: ReceiptVerificationResult | null) {
   if (!result) return "";
   const responseSummary = String(result.response?.summary || "").trim();
   if (responseSummary) return responseSummary;
@@ -232,11 +215,7 @@ async function verifyReceipt(row: PackReceiptRow) {
           response: parsed,
           error: response.ok
             ? undefined
-            : String(
-                parsed?.reason ||
-                  parsed?.error ||
-                  "Pack verification failed."
-              ),
+            : String(parsed?.reason || parsed?.error || "Pack verification failed."),
         },
       };
     } catch (error: unknown) {
@@ -248,9 +227,7 @@ async function verifyReceipt(row: PackReceiptRow) {
           httpStatus: 0,
           fetchedAt: new Date().toISOString(),
           response: null,
-          error: String(
-            (error as Error)?.message || "Pack verification request failed."
-          ),
+          error: String((error as Error)?.message || "Pack verification request failed."),
         },
       };
     } finally {
@@ -284,7 +261,9 @@ async function verifyReceipt(row: PackReceiptRow) {
         httpStatus: response.status,
         fetchedAt: new Date().toISOString(),
         response: parsed,
-        error: response.ok ? undefined : String(parsed?.reason || parsed?.error || "Verification failed."),
+        error: response.ok
+          ? undefined
+          : String(parsed?.reason || parsed?.error || "Verification failed."),
       },
     };
   } catch (error: unknown) {
@@ -334,9 +313,7 @@ async function verifyAllReceipts() {
     }
 
     if (!response.ok || !parsed?.ok || !Array.isArray(parsed?.results)) {
-      throw new Error(
-        String(parsed?.error || parsed?.message || "Bulk verification failed.")
-      );
+      throw new Error(String(parsed?.error || parsed?.message || "Bulk verification failed."));
     }
 
     const nextResults: Record<string, ReceiptVerificationResult> = {
@@ -369,9 +346,9 @@ const receiptRowsVerificationKey = computed(() =>
   receiptRows.value
     .map(
       (row) =>
-        `${row.entryId}:${row.packId}:${row.collectionId}:${row.collectionVersion}:${row.segmentKey}`
+        `${row.entryId}:${row.packId}:${row.collectionId}:${row.collectionVersion}:${row.segmentKey}`,
     )
-    .join("|")
+    .join("|"),
 );
 
 watch(
@@ -389,7 +366,7 @@ watch(
       void verifyAllReceipts();
     }, 250);
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 function downloadVerificationBundle() {
@@ -456,9 +433,14 @@ function downloadVerificationBundle() {
         </button>
       </div>
 
-      <p v-if="cloudSync.cloudSnapshotVersion.value !== null" class="text-xs text-[var(--ui-fg-muted)]">
+      <p
+        v-if="cloudSync.cloudSnapshotVersion.value !== null"
+        class="text-xs text-[var(--ui-fg-muted)]"
+      >
         Latest persisted revision v{{ cloudSync.cloudSnapshotVersion.value }}
-        <span v-if="cloudSync.cloudSnapshotAt.value">({{ new Date(cloudSync.cloudSnapshotAt.value).toLocaleString() }})</span>
+        <span v-if="cloudSync.cloudSnapshotAt.value"
+          >({{ new Date(cloudSync.cloudSnapshotAt.value).toLocaleString() }})</span
+        >
       </p>
       <p v-if="cloudSync.cloudLibraryError.value" class="text-xs text-amber-600">
         {{ cloudSync.cloudLibraryError.value }}
@@ -504,11 +486,7 @@ function downloadVerificationBundle() {
       </p>
 
       <Accordian v-else>
-        <AccordianItem
-          v-for="row in receiptRows"
-          :key="row.entryId"
-          :value="row.entryId"
-        >
+        <AccordianItem v-for="row in receiptRows" :key="row.entryId" :value="row.entryId">
           <template #title>
             <div class="flex-1 flex items-center gap-2 min-w-0">
               <span class="text-sm font-semibold">Pack {{ shortValue(row.packId, 20) }}</span>
@@ -524,7 +502,10 @@ function downloadVerificationBundle() {
                 untracked
               </span>
               <span
-                v-else-if="verificationFor(row.entryId)?.ok && verificationFor(row.entryId)?.method === 'receipt-proof'"
+                v-else-if="
+                  verificationFor(row.entryId)?.ok &&
+                  verificationFor(row.entryId)?.method === 'receipt-proof'
+                "
                 class="text-[10px] uppercase tracking-wide rounded-full border border-green-600/40 px-2 py-0.5 text-green-600"
               >
                 verified
@@ -547,19 +528,58 @@ function downloadVerificationBundle() {
 
           <div class="p-2 bg-[var(--ui-surface)] rounded-md flex flex-col gap-3">
             <div class="grid gap-2 md:grid-cols-2 text-xs">
-              <p><span class="text-[var(--ui-fg-muted)]">Pack ID:</span> <code>{{ row.packId || "n/a" }}</code></p>
-              <p><span class="text-[var(--ui-fg-muted)]">Drop:</span> <code>{{ row.dropId || "n/a" }}</code></p>
-              <p><span class="text-[var(--ui-fg-muted)]">Ledger entry:</span> <code>{{ row.entryId || "n/a" }}</code></p>
-              <p><span class="text-[var(--ui-fg-muted)]">Commit:</span> <code>{{ row.commitId || "n/a" }}</code></p>
-              <p><span class="text-[var(--ui-fg-muted)]">Ledger author:</span> <code>{{ row.author || "n/a" }}</code></p>
-              <p><span class="text-[var(--ui-fg-muted)]">Receipt segment key:</span> <code>{{ row.segmentKey || "n/a" }}</code></p>
-              <p><span class="text-[var(--ui-fg-muted)]">Receipt segment hash:</span> <code>{{ row.segmentHash || "n/a" }}</code></p>
-              <p><span class="text-[var(--ui-fg-muted)]">Issuer key ID:</span> <code>{{ row.issuerKeyId || "n/a" }}</code></p>
-              <p><span class="text-[var(--ui-fg-muted)]">Issued to:</span> <code>{{ row.issuedTo || "n/a" }}</code></p>
-              <p><span class="text-[var(--ui-fg-muted)]">Pack root:</span> <code>{{ row.packRoot || "n/a" }}</code></p>
-              <p><span class="text-[var(--ui-fg-muted)]">Contents commitment:</span> <code>{{ row.contentsCommitment || "n/a" }}</code></p>
-              <p><span class="text-[var(--ui-fg-muted)]">Issuance mode:</span> <code>{{ row.issuanceMode || (row.untracked ? "dev-untracked" : "tracked") }}</code></p>
-              <p><span class="text-[var(--ui-fg-muted)]">Item hash count:</span> <code>{{ row.itemHashes.length }}</code></p>
+              <p>
+                <span class="text-[var(--ui-fg-muted)]">Pack ID:</span>
+                <code>{{ row.packId || "n/a" }}</code>
+              </p>
+              <p>
+                <span class="text-[var(--ui-fg-muted)]">Drop:</span>
+                <code>{{ row.dropId || "n/a" }}</code>
+              </p>
+              <p>
+                <span class="text-[var(--ui-fg-muted)]">Ledger entry:</span>
+                <code>{{ row.entryId || "n/a" }}</code>
+              </p>
+              <p>
+                <span class="text-[var(--ui-fg-muted)]">Commit:</span>
+                <code>{{ row.commitId || "n/a" }}</code>
+              </p>
+              <p>
+                <span class="text-[var(--ui-fg-muted)]">Ledger author:</span>
+                <code>{{ row.author || "n/a" }}</code>
+              </p>
+              <p>
+                <span class="text-[var(--ui-fg-muted)]">Receipt segment key:</span>
+                <code>{{ row.segmentKey || "n/a" }}</code>
+              </p>
+              <p>
+                <span class="text-[var(--ui-fg-muted)]">Receipt segment hash:</span>
+                <code>{{ row.segmentHash || "n/a" }}</code>
+              </p>
+              <p>
+                <span class="text-[var(--ui-fg-muted)]">Issuer key ID:</span>
+                <code>{{ row.issuerKeyId || "n/a" }}</code>
+              </p>
+              <p>
+                <span class="text-[var(--ui-fg-muted)]">Issued to:</span>
+                <code>{{ row.issuedTo || "n/a" }}</code>
+              </p>
+              <p>
+                <span class="text-[var(--ui-fg-muted)]">Pack root:</span>
+                <code>{{ row.packRoot || "n/a" }}</code>
+              </p>
+              <p>
+                <span class="text-[var(--ui-fg-muted)]">Contents commitment:</span>
+                <code>{{ row.contentsCommitment || "n/a" }}</code>
+              </p>
+              <p>
+                <span class="text-[var(--ui-fg-muted)]">Issuance mode:</span>
+                <code>{{ row.issuanceMode || (row.untracked ? "dev-untracked" : "tracked") }}</code>
+              </p>
+              <p>
+                <span class="text-[var(--ui-fg-muted)]">Item hash count:</span>
+                <code>{{ row.itemHashes.length }}</code>
+              </p>
             </div>
 
             <div class="flex flex-wrap items-center gap-2">
@@ -582,17 +602,20 @@ function downloadVerificationBundle() {
               </a>
             </div>
 
-            <div v-if="verificationFor(row.entryId)" class="text-xs rounded-md border border-[var(--ui-border)] p-2">
-              <p
-                :class="
-                  verificationFor(row.entryId)?.ok ? 'text-green-600' : 'text-red-600'
-                "
-              >
+            <div
+              v-if="verificationFor(row.entryId)"
+              class="text-xs rounded-md border border-[var(--ui-border)] p-2"
+            >
+              <p :class="verificationFor(row.entryId)?.ok ? 'text-green-600' : 'text-red-600'">
                 {{ verificationSummary(row, verificationFor(row.entryId)) }}
               </p>
               <p class="text-[var(--ui-fg-muted)]">
-                {{ verificationFor(row.entryId)?.method === "pack-verify" ? "Pack verify" : "Receipt proof" }} ·
-                HTTP {{ verificationFor(row.entryId)?.httpStatus || 0 }} · Checked
+                {{
+                  verificationFor(row.entryId)?.method === "pack-verify"
+                    ? "Pack verify"
+                    : "Receipt proof"
+                }}
+                · HTTP {{ verificationFor(row.entryId)?.httpStatus || 0 }} · Checked
                 {{ formatDate(verificationFor(row.entryId)?.fetchedAt || "") }}
               </p>
               <p
@@ -600,12 +623,16 @@ function downloadVerificationBundle() {
                 class="text-[var(--ui-fg-muted)]"
               >
                 Checkpoint head:
-                <code>{{ verificationFor(row.entryId)?.response?.checkpoint?.headSegmentKey }}</code>
+                <code>{{
+                  verificationFor(row.entryId)?.response?.checkpoint?.headSegmentKey
+                }}</code>
               </p>
             </div>
 
             <details class="rounded-md border border-[var(--ui-border)] p-2">
-              <summary class="cursor-pointer text-xs font-semibold">Issuer payload + signature</summary>
+              <summary class="cursor-pointer text-xs font-semibold">
+                Issuer payload + signature
+              </summary>
               <pre class="mt-2 text-[11px] overflow-auto">{{
                 JSON.stringify(
                   {
@@ -618,7 +645,7 @@ function downloadVerificationBundle() {
                     },
                   },
                   null,
-                  2
+                  2,
                 )
               }}</pre>
             </details>

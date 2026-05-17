@@ -5,10 +5,7 @@ import Card from "../../primitives/Card/Card.vue";
 import Separator from "../../primitives/Separator/Separator.vue";
 import PreviewPanel from "../PreviewPanel/PreviewPanel.vue";
 import VerificationBadge from "./VerificationBadge.vue";
-import type {
-  VerificationContext,
-  VerificationStatus,
-} from "./verification.types";
+import type { VerificationContext, VerificationStatus } from "./verification.types";
 import {
   copyToClipboard,
   getVerificationContextSubtext,
@@ -66,17 +63,12 @@ function copyLabel(field: string) {
 }
 
 const cardPadding = computed(() => (props.variant === "full" ? "md" : "sm"));
-const headlineText = computed(
-  () => props.headline ?? getVerificationHeadline(props.status),
-);
+const headlineText = computed(() => props.headline ?? getVerificationHeadline(props.status));
 const subtextText = computed(
-  () =>
-    props.subtext ?? getVerificationContextSubtext(props.status, props.context),
+  () => props.subtext ?? getVerificationContextSubtext(props.status, props.context),
 );
 const subjectClass = computed(() =>
-  props.variant === "full"
-    ? "text-2xl leading-tight md:text-[2.15rem]"
-    : "text-xl leading-tight",
+  props.variant === "full" ? "text-2xl leading-tight md:text-[2.15rem]" : "text-xl leading-tight",
 );
 const hashPreview = computed(() =>
   props.variant === "full"
@@ -102,15 +94,10 @@ const metadataItems = computed(() => {
     <div class="space-y-3">
       <div class="flex flex-wrap items-start justify-between gap-3">
         <div class="space-y-1">
-          <h3
-            class="m-0 text-xl font-medium tracking-[-0.03em] text-[var(--ui-fg)]"
-          >
+          <h3 class="m-0 text-xl font-medium tracking-[-0.03em] text-[var(--ui-fg)]">
             {{ headlineText }}
           </h3>
-          <p
-            v-if="subtextText"
-            class="m-0 text-sm leading-6 text-[var(--ui-fg-muted)]"
-          >
+          <p v-if="subtextText" class="m-0 text-sm leading-6 text-[var(--ui-fg-muted)]">
             {{ subtextText }}
           </p>
         </div>
@@ -126,17 +113,10 @@ const metadataItems = computed(() => {
     <Separator />
 
     <section class="space-y-3">
-      <p
-        class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]"
-      >
+      <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
         Subject
       </p>
-      <p
-        :class="[
-          'm-0 font-medium tracking-[-0.03em] text-[var(--ui-fg)]',
-          subjectClass,
-        ]"
-      >
+      <p :class="['m-0 font-medium tracking-[-0.03em] text-[var(--ui-fg)]', subjectClass]">
         {{ props.subject }}
       </p>
 
@@ -222,9 +202,7 @@ const metadataItems = computed(() => {
 
     <Separator />
 
-    <section
-      class="flex flex-wrap items-center gap-2 text-xs text-[var(--ui-fg-muted)]"
-    >
+    <section class="flex flex-wrap items-center gap-2 text-xs text-[var(--ui-fg-muted)]">
       <span
         v-for="item in metadataItems"
         :key="item"
@@ -269,9 +247,7 @@ const metadataItems = computed(() => {
         class="min-w-0 max-w-full overflow-hidden border-t border-[var(--ui-border)] p-4 pt-4"
       >
         <div class="min-w-0 max-w-full overflow-hidden">
-          <pre
-            class="ui-preview-panel__code"
-          ><code>{{ props.rawProof }}</code></pre>
+          <pre class="ui-preview-panel__code"><code>{{ props.rawProof }}</code></pre>
         </div>
       </div>
     </section>

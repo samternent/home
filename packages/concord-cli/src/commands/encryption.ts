@@ -52,7 +52,7 @@ function cliError(code: string, message: string): Error {
 
 export function buildStates(
   ledger: LedgerContainer,
-  rootAdmins?: string[]
+  rootAdmins?: string[],
 ): {
   identityState: IdentityState;
   permissionsState: PermissionState;
@@ -70,12 +70,9 @@ export function createRotateEntry(
   ledger: LedgerContainer,
   scope: string,
   author: string,
-  rootAdmins?: string[]
+  rootAdmins?: string[],
 ): RotateResult {
-  const { identityState, permissionsState, encryptionState } = buildStates(
-    ledger,
-    rootAdmins
-  );
+  const { identityState, permissionsState, encryptionState } = buildStates(ledger, rootAdmins);
   const caps = getEffectiveCaps(permissionsState, author, scope);
   if (!caps.has("admin")) {
     throw cliError("UNAUTHORIZED_ROTATE", "enc.epoch.rotate requires admin capability");
@@ -86,11 +83,7 @@ export function createRotateEntry(
   const warnings: string[] = [];
   const wraps = Object.keys(identityState.principals).reduce(
     (acc, principalId) => {
-      const principalCaps = getEffectiveCaps(
-        permissionsState,
-        principalId,
-        scope
-      );
+      const principalCaps = getEffectiveCaps(permissionsState, principalId, scope);
       if (!principalCaps.has("read")) {
         return acc;
       }
@@ -113,7 +106,7 @@ export function createRotateEntry(
       principalId: string;
       epoch: number;
       wrap: { to: string[]; ct: string };
-    }>
+    }>,
   );
 
   const entry: Entry = {
@@ -138,7 +131,7 @@ export function createWrapEntry(
   principalId: string,
   author: string,
   rootAdmins?: string[],
-  overrideRecipients?: string[]
+  overrideRecipients?: string[],
 ): WrapResult {
   const { identityState, permissionsState } = buildStates(ledger, rootAdmins);
   const caps = getEffectiveCaps(permissionsState, author, scope);
@@ -182,12 +175,9 @@ export function checkDecryptable(
   principalId: string,
   rootAdmins?: string[],
   nowIso?: string,
-  mode: DecryptMode = "combined"
+  mode: DecryptMode = "combined",
 ): DecryptCheck[] {
-  const { encryptionState, identityState, permissionsState } = buildStates(
-    ledger,
-    rootAdmins
-  );
+  const { encryptionState, identityState, permissionsState } = buildStates(ledger, rootAdmins);
   const entries = getReplayEntries(ledger);
   const entryIds = getReplayEntryIds(ledger);
   const checks: DecryptCheck[] = [];
@@ -201,13 +191,7 @@ export function checkDecryptable(
     const scope = parsed.data.scope;
     const epoch = parsed.data.epoch;
     const crypto = evaluateCrypto(encryptionState, principalId, scope, epoch);
-    const policy = evaluatePolicy(
-      identityState,
-      permissionsState,
-      principalId,
-      scope,
-      nowIso
-    );
+    const policy = evaluatePolicy(identityState, permissionsState, principalId, scope, nowIso);
     const selected = selectMode(mode, crypto, policy);
     checks.push({
       type: "entry",
@@ -236,13 +220,7 @@ export function checkDecryptable(
     }
     for (const [scope, epoch] of scopeEpochs.entries()) {
       const crypto = evaluateCrypto(encryptionState, principalId, scope, epoch);
-      const policy = evaluatePolicy(
-        identityState,
-        permissionsState,
-        principalId,
-        scope,
-        nowIso
-      );
+      const policy = evaluatePolicy(identityState, permissionsState, principalId, scope, nowIso);
       const selected = selectMode(mode, crypto, policy);
       checks.push({
         type: "scope",
@@ -265,7 +243,7 @@ function evaluateCrypto(
   encryptionState: EncryptionState,
   principalId: string,
   scope: string,
-  epoch: number
+  epoch: number,
 ): Diagnostic {
   const reasons: string[] = [];
   const scopeState = encryptionState.scopes[scope];
@@ -289,7 +267,7 @@ function evaluatePolicy(
   permissionsState: PermissionState,
   principalId: string,
   scope: string,
-  nowIso?: string
+  nowIso?: string,
 ): Diagnostic {
   const reasons: string[] = [];
   const identity = identityState.principals[principalId];
@@ -305,11 +283,7 @@ function evaluatePolicy(
   return { ok: reasons.length === 0, reasons };
 }
 
-function selectMode(
-  mode: DecryptMode,
-  crypto: Diagnostic,
-  policy: Diagnostic
-): Diagnostic {
+function selectMode(mode: DecryptMode, crypto: Diagnostic, policy: Diagnostic): Diagnostic {
   if (mode === "crypto") {
     return crypto;
   }

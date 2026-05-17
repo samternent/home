@@ -39,7 +39,6 @@ function saveTask() {
   }
   isDrawerOpen.value = false;
 }
-
 </script>
 
 <template>
@@ -52,28 +51,53 @@ function saveTask() {
       No tasks yet. Add your first task!
     </div>
     <ul v-else class="flex flex-col gap-2">
-      <li v-for="task in tasks" :key="task.id" class="bg-white dark:bg-base-200 rounded-lg shadow-sm border border-base-200 hover:shadow-md transition group cursor-pointer px-5 py-4 flex flex-col gap-1" @click="openEditDrawer(task)">
+      <li
+        v-for="task in tasks"
+        :key="task.id"
+        class="bg-white dark:bg-base-200 rounded-lg shadow-sm border border-base-200 hover:shadow-md transition group cursor-pointer px-5 py-4 flex flex-col gap-1"
+        @click="openEditDrawer(task)"
+      >
         <div class="flex items-center gap-3">
-          <input type="checkbox" :checked="task.completed" class="checkbox checkbox-sm" @click.stop />
-          <span class="font-medium text-base-content text-base group-hover:text-primary transition">{{ task.data.title || 'Untitled Task' }}</span>
+          <input
+            type="checkbox"
+            :checked="task.completed"
+            class="checkbox checkbox-sm"
+            @click.stop
+          />
+          <span
+            class="font-medium text-base-content text-base group-hover:text-primary transition"
+            >{{ task.data.title || "Untitled Task" }}</span
+          >
           <span v-if="task.completed" class="badge badge-success ml-2">Completed</span>
         </div>
         <div class="flex flex-wrap items-center gap-3 mt-1 text-xs text-base-content/60">
-          <span v-if="task.data.assignee" class="badge badge-info">👤 {{ task.data.assignee }}</span>
-          <span v-if="task.data.dueDate" class="badge badge-ghost">⏰ Due: {{ task.data.dueDate }}</span>
-          <span v-if="task.data.priority" :class="{
-            'badge badge-outline': task.data.priority === 'Normal',
-            'badge badge-warning': task.data.priority === 'High',
-            'badge badge-error': task.data.priority === 'Critical',
-            'badge badge-success': task.data.priority === 'Low',
-          }">⚡ {{ task.data.priority }}</span>
-          <span v-if="task.data.description" class="truncate max-w-xs">{{ task.data.description }}</span>
+          <span v-if="task.data.assignee" class="badge badge-info"
+            >👤 {{ task.data.assignee }}</span
+          >
+          <span v-if="task.data.dueDate" class="badge badge-ghost"
+            >⏰ Due: {{ task.data.dueDate }}</span
+          >
+          <span
+            v-if="task.data.priority"
+            :class="{
+              'badge badge-outline': task.data.priority === 'Normal',
+              'badge badge-warning': task.data.priority === 'High',
+              'badge badge-error': task.data.priority === 'Critical',
+              'badge badge-success': task.data.priority === 'Low',
+            }"
+            >⚡ {{ task.data.priority }}</span
+          >
+          <span v-if="task.data.description" class="truncate max-w-xs">{{
+            task.data.description
+          }}</span>
         </div>
       </li>
     </ul>
     <SDrawerRight v-model="isDrawerOpen" :container="contentContainer">
       <div class="p-6 w-80 max-w-full">
-        <h3 class="text-lg font-bold mb-4">{{ drawerMode === 'add' ? 'Add Task' : 'Edit Task' }}</h3>
+        <h3 class="text-lg font-bold mb-4">
+          {{ drawerMode === "add" ? "Add Task" : "Edit Task" }}
+        </h3>
         <form @submit.prevent="saveTask" class="flex flex-col gap-4">
           <SInput v-model="form.title" label="Title" required />
           <SInput v-model="form.description" label="Description" />
@@ -87,7 +111,9 @@ function saveTask() {
           </select>
           <div class="flex gap-2 mt-4">
             <SButton type="submit" size="sm" variant="primary">Save</SButton>
-            <SButton type="button" size="sm" variant="ghost" @click="isDrawerOpen = false">Cancel</SButton>
+            <SButton type="button" size="sm" variant="ghost" @click="isDrawerOpen = false"
+              >Cancel</SButton
+            >
           </div>
         </form>
       </div>

@@ -16,9 +16,7 @@ const onImport = async () => {
 <template>
   <SCard class="space-y-4 p-5">
     <h3 class="m-0 text-lg">Import identity</h3>
-    <p class="text-sm text-fg-muted">
-      Paste either JSON export payload or PEM private key text.
-    </p>
+    <p class="text-sm text-fg-muted">Paste either JSON export payload or PEM private key text.</p>
 
     <textarea
       v-model="payload"

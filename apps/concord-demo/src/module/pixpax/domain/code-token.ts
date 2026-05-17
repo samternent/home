@@ -25,7 +25,9 @@ function decodeUtf8(value: Uint8Array) {
 }
 
 function base64UrlDecodeToBytes(input: string) {
-  const normalized = String(input || "").replace(/-/g, "+").replace(/_/g, "/");
+  const normalized = String(input || "")
+    .replace(/-/g, "+")
+    .replace(/_/g, "/");
   const pad = normalized.length % 4 === 0 ? "" : "=".repeat(4 - (normalized.length % 4));
   const binary = atob(`${normalized}${pad}`);
   const out = new Uint8Array(binary.length);
@@ -56,7 +58,9 @@ function normalizePem(pem: string) {
 }
 
 function hexToBytes(value: string) {
-  const normalized = String(value || "").trim().toLowerCase();
+  const normalized = String(value || "")
+    .trim()
+    .toLowerCase();
   if (!/^[a-f0-9]{64}$/.test(normalized)) {
     throw new Error("tokenHash must be a 32-byte hex string");
   }
@@ -108,20 +112,24 @@ function publicPemToDer(publicKeyPem: string) {
   return out;
 }
 
-async function verifyRaw64Signature(publicKeyPem: string, payloadBytes: Uint8Array, signatureRaw64: Uint8Array) {
+async function verifyRaw64Signature(
+  publicKeyPem: string,
+  payloadBytes: Uint8Array,
+  signatureRaw64: Uint8Array,
+) {
   if (signatureRaw64.length !== 64) return false;
   const key = await crypto.subtle.importKey(
     "spki",
     publicPemToDer(publicKeyPem),
     { name: "ECDSA", namedCurve: "P-256" },
     false,
-    ["verify"]
+    ["verify"],
   );
   return crypto.subtle.verify(
     { name: "ECDSA", hash: "SHA-256" },
     key,
     signatureRaw64,
-    payloadBytes
+    payloadBytes,
   );
 }
 
@@ -228,7 +236,7 @@ export async function signCollectorProofFromTokenHash(input: {
   const signature = await crypto.subtle.sign(
     { name: "ECDSA", hash: "SHA-256" },
     input.privateKey,
-    messageBytes
+    messageBytes,
   );
   const signatureBytes = new Uint8Array(signature);
   const raw64 = signatureBytes.length === 64 ? signatureBytes : derToRaw64(signatureBytes);

@@ -3,15 +3,12 @@
   "version": "0.1.0",
   "description": "Solid session integrations for Concord identity, storage, and lifecycle management",
   "license": "ISC",
-  "type": "module",
-  "sideEffects": false,
   "files": [
     "dist",
     "README.md"
   ],
-  "publishConfig": {
-    "access": "public"
-  },
+  "type": "module",
+  "sideEffects": false,
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -21,6 +18,9 @@
       "import": "./dist/index.js",
       "default": "./dist/index.js"
     }
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "build": "vite build",

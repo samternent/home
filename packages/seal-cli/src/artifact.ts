@@ -72,10 +72,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
-function hasOnlyKeys(
-  value: Record<string, unknown>,
-  allowed: string[]
-): boolean {
+function hasOnlyKeys(value: Record<string, unknown>, allowed: string[]): boolean {
   return Object.keys(value).every((key) => allowed.includes(key));
 }
 
@@ -83,14 +80,12 @@ function isSealHash(value: unknown): value is SealHash {
   return typeof value === "string" && /^sha256:[0-9a-f]{64}$/.test(value);
 }
 
-function normalizeBytes(
-  value: Uint8Array | ArrayBuffer
-): Uint8Array {
+function normalizeBytes(value: Uint8Array | ArrayBuffer): Uint8Array {
   return value instanceof Uint8Array ? value : new Uint8Array(value);
 }
 
 export function getSealArtifactUnsignedFields(
-  artifact: SealArtifactV1 | SealArtifactUnsignedV1
+  artifact: SealArtifactV1 | SealArtifactUnsignedV1,
 ): SealArtifactUnsignedV1 {
   return {
     version: artifact.version,
@@ -100,9 +95,7 @@ export function getSealArtifactUnsignedFields(
   };
 }
 
-function getUnsignedArtifactBytes(
-  artifact: SealArtifactV1 | SealArtifactUnsignedV1
-): Uint8Array {
+function getUnsignedArtifactBytes(artifact: SealArtifactV1 | SealArtifactUnsignedV1): Uint8Array {
   return utf8Encoder.encode(canonicalStringify(getSealArtifactUnsignedFields(artifact)));
 }
 
@@ -224,22 +217,12 @@ export function validateSealArtifactShape(value: unknown): {
   ) {
     errors.push("Artifact manifest contains unsupported fields.");
   }
-  if (
-    !hasOnlyKeys(value.payload, [
-      "type",
-      "scheme",
-      "mode",
-      "encoding",
-      "data",
-    ])
-  ) {
+  if (!hasOnlyKeys(value.payload, ["type", "scheme", "mode", "encoding", "data"])) {
     errors.push("Artifact payload contains unsupported fields.");
   }
 
   if (value.manifest.version !== SEAL_ARTIFACT_MANIFEST_VERSION) {
-    errors.push(
-      `Artifact manifest version must be ${SEAL_ARTIFACT_MANIFEST_VERSION}.`
-    );
+    errors.push(`Artifact manifest version must be ${SEAL_ARTIFACT_MANIFEST_VERSION}.`);
   }
   if (value.manifest.payloadType !== "encrypted") {
     errors.push("Artifact manifest payloadType must be encrypted.");
@@ -321,7 +304,7 @@ export function parseSealArtifactJson(raw: string): {
 }
 
 export async function verifySealArtifact(
-  artifact: SealArtifactV1
+  artifact: SealArtifactV1,
 ): Promise<VerifySealArtifactResult> {
   const validation = validateSealArtifactShape(artifact);
   if (!validation.ok || !validation.artifact) {
@@ -373,9 +356,7 @@ export async function decryptSealArtifactPayload(input: {
 }): Promise<Uint8Array> {
   const verification = await verifySealArtifact(input.artifact);
   if (!verification.valid) {
-    throw new Error(
-      verification.errors.join(" ") || "Artifact verification failed."
-    );
+    throw new Error(verification.errors.join(" ") || "Artifact verification failed.");
   }
 
   if (
@@ -384,9 +365,7 @@ export async function decryptSealArtifactPayload(input: {
     input.artifact.payload.mode !== "recipients" ||
     input.artifact.payload.encoding !== "armor"
   ) {
-    throw unsupportedEncryptionModeError(
-      "Seal only supports age recipient-mode armored payloads."
-    );
+    throw unsupportedEncryptionModeError("Seal only supports age recipient-mode armored payloads.");
   }
 
   try {

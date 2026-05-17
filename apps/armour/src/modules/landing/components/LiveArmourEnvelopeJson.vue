@@ -5,8 +5,7 @@ const envelopeJson = `${JSON.stringify(
     kind: "armour-envelope",
     mode: "recipients",
     encoding: "armor",
-    ciphertext:
-      "-----BEGIN AGE ENCRYPTED FILE-----\n...\n-----END AGE ENCRYPTED FILE-----\n",
+    ciphertext: "-----BEGIN AGE ENCRYPTED FILE-----\n...\n-----END AGE ENCRYPTED FILE-----\n",
     recipients: ["age1x7k5m0example9a2n4d4ptf9g5x2v3s7m6p8u4wq"],
     metadata: {
       purpose: "document-share",
@@ -31,9 +30,7 @@ const envelopeJson = `${JSON.stringify(
         armour-envelope.json
       </span>
       <div class="flex items-center gap-3 text-right">
-        <span
-          class="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-fg)]"
-        >
+        <span class="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-[var(--ui-fg)]">
           optional container
         </span>
       </div>
@@ -47,8 +44,7 @@ const envelopeJson = `${JSON.stringify(
       The envelope stays explicit and versioned.
     </p>
     <p class="m-0 text-sm leading-7 text-[var(--ui-fg-muted)]">
-      It carries armored ciphertext without changing age semantics or implying
-      authenticity.
+      It carries armored ciphertext without changing age semantics or implying authenticity.
     </p>
   </div>
 </template>

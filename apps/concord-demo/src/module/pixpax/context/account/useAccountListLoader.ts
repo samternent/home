@@ -30,23 +30,14 @@ type CreateAccountListLoaderOptions = {
 export function createAccountListLoader(options: CreateAccountListLoaderOptions) {
   const cloudProfiles = shallowRef<AccountManagedUser[]>([]);
   const cloudBooks = shallowRef<AccountBook[]>([]);
-  const selectedCloudProfileId = useLocalStorage(
-    "pixpax/pixbook/cloudSelectedProfileId",
-    ""
-  );
-  const selectedCloudBookId = useLocalStorage(
-    "pixpax/pixbook/cloudSelectedBookId",
-    ""
-  );
+  const selectedCloudProfileId = useLocalStorage("pixpax/pixbook/cloudSelectedProfileId", "");
+  const selectedCloudBookId = useLocalStorage("pixpax/pixbook/cloudSelectedBookId", "");
   const cloudLibraryLoading = shallowRef(false);
   const cloudLibraryError = shallowRef("");
 
   const selectedCloudProfile = computed(() => {
     if (!selectedCloudProfileId.value) return null;
-    return (
-      cloudProfiles.value.find((entry) => entry.id === selectedCloudProfileId.value) ||
-      null
-    );
+    return cloudProfiles.value.find((entry) => entry.id === selectedCloudProfileId.value) || null;
   });
 
   const filteredCloudBooks = computed(() => {
@@ -96,7 +87,7 @@ export function createAccountListLoader(options: CreateAccountListLoaderOptions)
       });
     }
     return [...grouped.values()].sort((a, b) =>
-      String(a.displayName || a.id).localeCompare(String(b.displayName || b.id))
+      String(a.displayName || a.id).localeCompare(String(b.displayName || b.id)),
     );
   }
 
@@ -124,44 +115,37 @@ export function createAccountListLoader(options: CreateAccountListLoaderOptions)
 
       if (selectedCloudProfileId.value) {
         const stillPresent = cloudProfiles.value.some(
-          (entry) => entry.id === selectedCloudProfileId.value
+          (entry) => entry.id === selectedCloudProfileId.value,
         );
         if (!stillPresent) selectedCloudProfileId.value = "";
       }
 
       if (!selectedCloudProfileId.value && options.cloudBookId.value) {
-        const activeBook = cloudBooks.value.find(
-          (entry) => entry.id === options.cloudBookId.value
-        );
+        const activeBook = cloudBooks.value.find((entry) => entry.id === options.cloudBookId.value);
         if (activeBook) selectedCloudProfileId.value = activeBook.managedUserId;
       }
 
       if (selectedCloudBookId.value) {
         const stillPresent = cloudBooks.value.some(
-          (entry) => entry.id === selectedCloudBookId.value
+          (entry) => entry.id === selectedCloudBookId.value,
         );
         if (!stillPresent) selectedCloudBookId.value = "";
       }
 
       if (!selectedCloudBookId.value && options.cloudBookId.value) {
         const activeBookPresent = cloudBooks.value.some(
-          (entry) => entry.id === options.cloudBookId.value
+          (entry) => entry.id === options.cloudBookId.value,
         );
         if (activeBookPresent) {
           selectedCloudBookId.value = options.cloudBookId.value;
         }
       }
-
     } catch (error: unknown) {
-      if (
-        error instanceof PixPaxApiError &&
-        (error.status === 401 || error.status === 403)
-      ) {
-        cloudLibraryError.value =
-          "Account pixbook persistence is not available for this session.";
+      if (error instanceof PixPaxApiError && (error.status === 401 || error.status === 403)) {
+        cloudLibraryError.value = "Account pixbook persistence is not available for this session.";
       } else {
         cloudLibraryError.value = String(
-          (error as Error)?.message || "Failed to load persisted pixbooks."
+          (error as Error)?.message || "Failed to load persisted pixbooks.",
         );
       }
     } finally {

@@ -32,9 +32,7 @@ const {
 
 <template>
   <AppBootstrap :read-only="pixbookReadOnly">
-    <div
-      class="dark flex flex-col flex-1 font-mono bg-[image:var(--bg-pixpax)]"
-    >
+    <div class="dark flex flex-col flex-1 font-mono bg-[image:var(--bg-pixpax)]">
       <header
         class="sticky top-0 z-30 w-full backdrop-blur-[12px] border-b border-[var(--ui-border)]"
       >
@@ -58,9 +56,7 @@ const {
           <IdentityAvatar :identity="viewingIdentityKey" size="sm" />
           <div class="flex flex-col text-left">
             <span class="text-[var(--ui-fg-muted)]">Viewing</span>
-            <span class="text-[var(--ui-fg)] font-semibold"
-              >{{ viewingLabel }}'s pixbook</span
-            >
+            <span class="text-[var(--ui-fg)] font-semibold">{{ viewingLabel }}'s pixbook</span>
           </div>
         </div>
         <button
@@ -77,9 +73,7 @@ const {
       <footer
         class="flex justify-end items-center py-8 border-t-[1px] border-[var(--ui-border)] w-full"
       >
-        <div
-          class="max-w-[980px] mx-auto w-full flex flex-col items-center gap-6"
-        >
+        <div class="max-w-[980px] mx-auto w-full flex flex-col items-center gap-6">
           <a
             href="https://concord.ternent.dev"
             class="flex flex-col items-center justify-center gap-1 opacity-80 hover:opacity-100 text-xs font-mono font-thin -translate-y-1 hover:-translate-y-0.5 group-hover:translate-x-1.5 transition-all duration-300"
@@ -92,9 +86,7 @@ const {
               class="text-xs font-mono font-thin -translate-y-1 group-hover:translate-y-0.5 group-hover:translate-x-1.5 transition-all duration-300"
               >POWERED BY CONCORD</span
             >
-            <Logo
-              class="size-8 group-hover:-rotate-6 transition-all duration-300"
-            />
+            <Logo class="size-8 group-hover:-rotate-6 transition-all duration-300" />
           </a>
           <div class="flex items-center gap-3">
             <RouterLink

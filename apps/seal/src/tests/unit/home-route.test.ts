@@ -26,24 +26,19 @@ function createWrapper() {
             '<div data-testid="live-published-proof-json">proof.jsonProof verified"subject":{"path":"dist-manifest.json"}</div>',
         },
         PublishedSiteProofPreview: {
-          template: "<div data-testid=\"published-site-proof-preview\" />",
+          template: '<div data-testid="published-site-proof-preview" />',
         },
         RouterLink: {
           props: ["to"],
-          template: "<a :href=\"to\"><slot /></a>",
+          template: '<a :href="to"><slot /></a>',
         },
       },
     },
   });
 }
 
-async function clickTab(
-  wrapper: ReturnType<typeof createWrapper>,
-  label: string,
-) {
-  const tab = wrapper
-    .findAll('[role="tab"]')
-    .find((candidate) => candidate.text() === label);
+async function clickTab(wrapper: ReturnType<typeof createWrapper>, label: string) {
+  const tab = wrapper.findAll('[role="tab"]').find((candidate) => candidate.text() === label);
 
   expect(tab, `expected tab "${label}" to exist`).toBeTruthy();
   await tab!.trigger("click");
@@ -84,9 +79,7 @@ describe("RouteHome landing page", () => {
     expect(wrapper.find('a[href="#proof-json"]').exists()).toBe(false);
     expect(wrapper.find('a[href="#static-build"]').exists()).toBe(false);
     expect(
-      wrapper
-        .findAll('a[href="https://github.com/marketplace/actions/seal-action"]')
-        .length,
+      wrapper.findAll('a[href="https://github.com/marketplace/actions/seal-action"]').length,
     ).toBeGreaterThan(0);
     expect(text).toContain("proof.json");
     expect(text).toContain("seal-proof");
@@ -94,9 +87,9 @@ describe("RouteHome landing page", () => {
     expect(text).toContain("JavaScript");
     expect(text).toContain("seal-cli");
     expect(text).toContain("GitHub Action");
-    expect(text).toContain('createSealProof,');
-    expect(text).toContain('verifySealProofAgainstBytes');
-    expect(text).toContain('@ternent/seal-cli/proof');
+    expect(text).toContain("createSealProof,");
+    expect(text).toContain("verifySealProofAgainstBytes");
+    expect(text).toContain("@ternent/seal-cli/proof");
     expect(wrapper.find('[data-testid="hero-proof-artifact-card"]').exists()).toBe(true);
     expect(wrapper.find('[data-testid="published-site-proof-preview"]').exists()).toBe(true);
     expect(wrapper.findAll('[data-testid="published-site-proof-preview"]')).toHaveLength(1);

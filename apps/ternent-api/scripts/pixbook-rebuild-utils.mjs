@@ -33,7 +33,7 @@ async function verifySignature({ publicKeyPem, signatureB64, payload }) {
     pemToDer(publicKeyPem),
     { name: "ECDSA", namedCurve: "P-256" },
     false,
-    ["verify"]
+    ["verify"],
   );
   const data = new TextEncoder().encode(payload);
   const signature = Buffer.from(String(signatureB64 || ""), "base64");
@@ -62,7 +62,7 @@ async function loadSigningIdentities() {
     SELECT id, public_key_pem
     FROM signing_identities
     WHERE status = 'active'
-    `
+    `,
   );
   const map = new Map();
   for (const row of rows.rows || []) {
@@ -75,7 +75,7 @@ export async function rebuildPixbookReceiptHeads({ persistOffset = true } = {}) 
   const receiptStore = createSpacesReceiptStore();
   if (!receiptStore.ready) {
     throw new Error(
-      "Pixbook receipt storage is not configured. Set LEDGER_* and PIXBOOK_RECEIPTS_PREFIX."
+      "Pixbook receipt storage is not configured. Set LEDGER_* and PIXBOOK_RECEIPTS_PREFIX.",
     );
   }
 
@@ -85,7 +85,7 @@ export async function rebuildPixbookReceiptHeads({ persistOffset = true } = {}) 
     SELECT account_id, book_id, event_id, stream_version, prev_hash, hash, spaces_key, signing_identity_id
     FROM pixbook_receipt_index
     ORDER BY account_id ASC, book_id ASC, stream_version ASC
-    `
+    `,
   );
 
   const byStream = new Map();
@@ -119,13 +119,11 @@ export async function rebuildPixbookReceiptHeads({ persistOffset = true } = {}) 
     for (const row of rows) {
       if (row.streamVersion !== expectedVersion + 1) {
         throw new Error(
-          `Stream version gap in ${streamKey}. Expected ${expectedVersion + 1}, got ${row.streamVersion}.`
+          `Stream version gap in ${streamKey}. Expected ${expectedVersion + 1}, got ${row.streamVersion}.`,
         );
       }
       if (trim(row.prevHash) !== trim(expectedPrevHash)) {
-        throw new Error(
-          `prevHash mismatch in ${streamKey} at streamVersion ${row.streamVersion}.`
-        );
+        throw new Error(`prevHash mismatch in ${streamKey} at streamVersion ${row.streamVersion}.`);
       }
 
       const raw = await receiptStore.getReceiptByKey(row.spacesKey);
@@ -134,16 +132,12 @@ export async function rebuildPixbookReceiptHeads({ persistOffset = true } = {}) 
       const canonical = canonicalStringify(core);
       const computedHash = sha256Hex(canonical);
       if (computedHash !== row.hash || computedHash !== trim(receipt.hash)) {
-        throw new Error(
-          `Hash mismatch in ${streamKey} at streamVersion ${row.streamVersion}.`
-        );
+        throw new Error(`Hash mismatch in ${streamKey} at streamVersion ${row.streamVersion}.`);
       }
 
       const signingIdentityPem = signingIdentities.get(row.signingIdentityId);
       if (!signingIdentityPem) {
-        throw new Error(
-          `Missing signing identity ${row.signingIdentityId} for ${streamKey}.`
-        );
+        throw new Error(`Missing signing identity ${row.signingIdentityId} for ${streamKey}.`);
       }
       const signatureOk = await verifySignature({
         publicKeyPem: signingIdentityPem,
@@ -152,7 +146,7 @@ export async function rebuildPixbookReceiptHeads({ persistOffset = true } = {}) 
       });
       if (!signatureOk) {
         throw new Error(
-          `Signature verification failed in ${streamKey} at streamVersion ${row.streamVersion}.`
+          `Signature verification failed in ${streamKey} at streamVersion ${row.streamVersion}.`,
         );
       }
 
@@ -188,7 +182,7 @@ export async function rebuildPixbookReceiptHeads({ persistOffset = true } = {}) 
             rebuiltStreams: rebuilt.length,
             rebuiltAt: new Date().toISOString(),
           }),
-        ]
+        ],
       );
     });
   }
@@ -209,7 +203,7 @@ export async function computeHeadDrift() {
         AND book_id = $2
       LIMIT 1
       `,
-      [stream.accountId, stream.bookId]
+      [stream.accountId, stream.bookId],
     );
     const row = head.rows?.[0] || null;
     const persistedHash = trim(row?.last_hash);

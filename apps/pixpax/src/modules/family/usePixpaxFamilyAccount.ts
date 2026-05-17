@@ -37,7 +37,10 @@ async function loadPlatformAuthClient() {
   return await authClientPromise;
 }
 
-function assertAuthSuccess<T extends { data: unknown; error: unknown }>(result: T, fallback: string) {
+function assertAuthSuccess<T extends { data: unknown; error: unknown }>(
+  result: T,
+  fallback: string,
+) {
   if (!result || !("error" in result) || !("data" in result)) {
     throw new Error(fallback);
   }
@@ -115,7 +118,9 @@ async function refreshSession(options: { force?: boolean } = {}) {
 }
 
 async function requestLoginOtp(email: string) {
-  const normalizedEmail = String(email || "").trim().toLowerCase();
+  const normalizedEmail = String(email || "")
+    .trim()
+    .toLowerCase();
   if (!normalizedEmail) {
     throw new Error("Email is required.");
   }
@@ -130,7 +135,9 @@ async function requestLoginOtp(email: string) {
 async function loginWithOtp(input: { email: string; otp: string }) {
   const platformAuthClient = await loadPlatformAuthClient();
   const result = await platformAuthClient.signIn.emailOtp({
-    email: String(input.email || "").trim().toLowerCase(),
+    email: String(input.email || "")
+      .trim()
+      .toLowerCase(),
     otp: String(input.otp || "").trim(),
   });
   assertAuthSuccess(result, "Unable to verify code.");

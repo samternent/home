@@ -20,7 +20,7 @@ describe("@ternent/armour", () => {
       armour.encryptWithPassphrase({
         passphrase: "correct horse battery staple",
         data: new TextEncoder().encode("hello"),
-      })
+      }),
     ).rejects.toMatchObject({
       name: "ArmourInitError",
       code: "ARMOUR_INIT_FAILED",
@@ -52,7 +52,7 @@ describe("@ternent/armour", () => {
     const armour = await loadSourceModule();
 
     await expect(
-      armour.recipientFromIdentity('{"format":"ternent-identity","version":"nope"}')
+      armour.recipientFromIdentity('{"format":"ternent-identity","version":"nope"}'),
     ).rejects.toMatchObject({
       name: "ArmourIdentityError",
       code: "ARMOUR_INVALID_IDENTITY",
@@ -122,7 +122,7 @@ describe("@ternent/armour", () => {
       armour.encryptForRecipients({
         recipients: [],
         data: new TextEncoder().encode("hello"),
-      })
+      }),
     ).rejects.toMatchObject({
       name: "ArmourValidationError",
       code: "ARMOUR_EMPTY_RECIPIENTS",
@@ -148,7 +148,7 @@ describe("@ternent/armour", () => {
       armour.decryptWithPassphrase({
         passphrase: "wrong",
         data: ciphertext,
-      })
+      }),
     ).rejects.toMatchObject({
       name: "ArmourDecryptionError",
       code: "ARMOUR_DECRYPT_FAILED",
@@ -163,7 +163,7 @@ describe("@ternent/armour", () => {
       armour.encryptWithPassphrase({
         passphrase: "",
         data: new TextEncoder().encode("hello"),
-      })
+      }),
     ).rejects.toMatchObject({
       name: "ArmourValidationError",
       code: "ARMOUR_EMPTY_PASSPHRASE",
@@ -228,8 +228,9 @@ describe("@ternent/armour", () => {
       resolve(packageDir, "src/text.ts"),
       resolve(packageDir, "src/files.ts"),
     ];
-    const source = (await Promise.all(sourceFiles.map((file) => readFile(file, "utf8"))))
-      .join("\n");
+    const source = (await Promise.all(sourceFiles.map((file) => readFile(file, "utf8")))).join(
+      "\n",
+    );
     const armour = await loadSourceModule();
     const identity = await createIdentity();
 
@@ -244,7 +245,7 @@ describe("@ternent/armour", () => {
       armour.encryptForIdentities({
         identities: [identity],
         data: new TextEncoder().encode("async"),
-      })
+      }),
     ).resolves.toBeInstanceOf(Uint8Array);
   });
 

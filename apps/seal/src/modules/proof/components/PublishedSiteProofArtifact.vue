@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
-import {
-  verifyPublishedArtifacts,
-  type PublishedArtifactsVerification,
-} from "../deployed";
+import { verifyPublishedArtifacts, type PublishedArtifactsVerification } from "../deployed";
 
 const props = withDefaults(
   defineProps<{
@@ -33,8 +30,7 @@ async function loadProofArtifact() {
   try {
     result.value = await verifyPublishedArtifacts(fetch, props.baseUrl);
   } catch (caught) {
-    errorMessage.value =
-      caught instanceof Error ? caught.message : String(caught);
+    errorMessage.value = caught instanceof Error ? caught.message : String(caught);
     result.value = null;
   } finally {
     isLoading.value = false;

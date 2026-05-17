@@ -178,8 +178,7 @@ export async function createDesignatedPackIssuance(input: {
     proofScheme: "seal",
     issuanceKind: "designated",
     derivationVersion: PIXPAX_PACK_DERIVATION_VERSION,
-    claimUniqueness:
-      input.claimUniqueness || "designated-code-first-claim",
+    claimUniqueness: input.claimUniqueness || "designated-code-first-claim",
     packId,
     issuedAt: trim(input.issuedAt),
     claimant: null,
@@ -204,8 +203,6 @@ export async function createIssuanceProofSubjectPath(
   )}/${trim(issuance.dropId)}/${trim(issuance.packId)}.json`;
 }
 
-export async function createIssuancePayloadHash(
-  issuance: PixpaxPackIssuance,
-) {
+export async function createIssuancePayloadHash(issuance: PixpaxPackIssuance) {
   return await hashCanonicalValue(issuance);
 }

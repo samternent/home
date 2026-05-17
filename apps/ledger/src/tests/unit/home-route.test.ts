@@ -10,7 +10,7 @@ function createWrapper() {
       stubs: {
         RouterLink: {
           props: ["to"],
-          template: "<a :href=\"to\"><slot /></a>",
+          template: '<a :href="to"><slot /></a>',
         },
         PublishedSiteProofBadge: {
           template: "<span>Published site proof</span>",
@@ -20,13 +20,8 @@ function createWrapper() {
   });
 }
 
-async function clickTab(
-  wrapper: ReturnType<typeof createWrapper>,
-  label: string,
-) {
-  const tab = wrapper
-    .findAll('[role="tab"]')
-    .find((candidate) => candidate.text() === label);
+async function clickTab(wrapper: ReturnType<typeof createWrapper>, label: string) {
+  const tab = wrapper.findAll('[role="tab"]').find((candidate) => candidate.text() === label);
 
   expect(tab, `expected tab "${label}" to exist`).toBeTruthy();
   await tab!.trigger("click");
@@ -55,7 +50,8 @@ describe("RouteHome landing page", () => {
     expect(text).toContain(tabs[1]?.label ?? "");
     expect(text).toContain(tabs[2]?.label ?? "");
     expect(text).toContain(
-      landingPageConfig.hero.preview.rows[0]?.value ?? `${appConfig.themeName}-${appConfig.defaultThemeMode}`,
+      landingPageConfig.hero.preview.rows[0]?.value ??
+        `${appConfig.themeName}-${appConfig.defaultThemeMode}`,
     );
 
     await clickTab(wrapper, tabs[1]?.label ?? "");

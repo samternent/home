@@ -152,16 +152,11 @@ function addField() {
 }
 
 function removeField(fieldId) {
-  currentSchema.value.fields = currentSchema.value.fields.filter(
-    (f) => f.id !== fieldId
-  );
+  currentSchema.value.fields = currentSchema.value.fields.filter((f) => f.id !== fieldId);
 }
 
 function addSchema() {
-  if (
-    currentSchema.value.name.trim() &&
-    currentSchema.value.fields.length > 0
-  ) {
+  if (currentSchema.value.name.trim() && currentSchema.value.fields.length > 0) {
     schemas.value.push({
       ...currentSchema.value,
       id: generateId(),
@@ -220,9 +215,7 @@ async function createNewApp() {
     <div class="mb-8">
       <div class="flex items-center justify-between mb-4">
         <h1 class="text-3xl font-bold">Create New App</h1>
-        <div class="text-sm text-base-content/60">
-          Step {{ currentStep }} of {{ totalSteps }}
-        </div>
+        <div class="text-sm text-base-content/60">Step {{ currentStep }} of {{ totalSteps }}</div>
       </div>
 
       <!-- Progress Bar -->
@@ -249,10 +242,7 @@ async function createNewApp() {
             class="w-full"
             :class="{ 'input-error': !appForm.name.trim() && currentStep > 1 }"
           />
-          <div
-            v-if="!appForm.name.trim() && currentStep > 1"
-            class="text-error text-xs mt-1"
-          >
+          <div v-if="!appForm.name.trim() && currentStep > 1" class="text-error text-xs mt-1">
             App name is required
           </div>
         </div>
@@ -299,24 +289,15 @@ async function createNewApp() {
                 {{ icon }}
               </button>
             </div>
-            <div class="text-xs text-base-content/60 mt-1">
-              Selected: {{ appForm.icon }}
-            </div>
+            <div class="text-xs text-base-content/60 mt-1">Selected: {{ appForm.icon }}</div>
           </div>
 
           <div>
             <label class="label">
               <span class="label-text font-medium">Category</span>
             </label>
-            <select
-              v-model="appForm.category"
-              class="select select-bordered w-full"
-            >
-              <option
-                v-for="category in categories"
-                :key="category.value"
-                :value="category.value"
-              >
+            <select v-model="appForm.category" class="select select-bordered w-full">
+              <option v-for="category in categories" :key="category.value" :value="category.value">
                 {{ category.label }}
               </option>
             </select>
@@ -326,15 +307,8 @@ async function createNewApp() {
             <label class="label">
               <span class="label-text font-medium">Color Theme</span>
             </label>
-            <select
-              v-model="appForm.color"
-              class="select select-bordered w-full"
-            >
-              <option
-                v-for="color in colors"
-                :key="color.value"
-                :value="color.value"
-              >
+            <select v-model="appForm.color" class="select select-bordered w-full">
+              <option v-for="color in colors" :key="color.value" :value="color.value">
                 {{ color.label }}
               </option>
             </select>
@@ -348,15 +322,13 @@ async function createNewApp() {
       <SCard class="space-y-4">
         <h2 class="text-xl font-semibold">Data Structure (Optional)</h2>
         <p class="text-base-content/60">
-          Define what data your app will store, or skip this step and add data
-          types later
+          Define what data your app will store, or skip this step and add data types later
         </p>
 
         <!-- Validation Message -->
         <div v-if="schemas.length === 0" class="alert alert-info">
           <span class="text-sm"
-            >You can create your app without data types and add them later in
-            the design page.</span
+            >You can create your app without data types and add them later in the design page.</span
           >
         </div>
 
@@ -378,35 +350,17 @@ async function createNewApp() {
 
             <!-- Add Field Form -->
             <div class="flex gap-2 items-end">
-              <SInput
-                v-model="newField.name"
-                placeholder="Field name"
-                class="flex-1"
-                size="sm"
-              />
-              <select
-                v-model="newField.type"
-                class="select select-bordered select-sm w-32"
-              >
-                <option
-                  v-for="type in fieldTypes"
-                  :key="type.value"
-                  :value="type.value"
-                >
+              <SInput v-model="newField.name" placeholder="Field name" class="flex-1" size="sm" />
+              <select v-model="newField.type" class="select select-bordered select-sm w-32">
+                <option v-for="type in fieldTypes" :key="type.value" :value="type.value">
                   {{ type.label }}
                 </option>
               </select>
               <label class="flex items-center gap-1 text-sm">
-                <input
-                  type="checkbox"
-                  v-model="newField.required"
-                  class="checkbox checkbox-sm"
-                />
+                <input type="checkbox" v-model="newField.required" class="checkbox checkbox-sm" />
                 Required
               </label>
-              <SButton @click="addField" size="sm" class="btn-primary"
-                >Add</SButton
-              >
+              <SButton @click="addField" size="sm" class="btn-primary">Add</SButton>
             </div>
 
             <!-- Current Fields -->
@@ -418,28 +372,17 @@ async function createNewApp() {
               >
                 <div class="flex items-center gap-2">
                   <span class="font-medium">{{ field.name }}</span>
-                  <span class="text-xs text-base-content/60"
-                    >({{ field.type }})</span
-                  >
-                  <span v-if="field.required" class="text-xs text-error"
-                    >Required</span
-                  >
+                  <span class="text-xs text-base-content/60">({{ field.type }})</span>
+                  <span v-if="field.required" class="text-xs text-error">Required</span>
                 </div>
-                <button
-                  @click="removeField(field.id)"
-                  class="btn btn-xs btn-error"
-                >
-                  Remove
-                </button>
+                <button @click="removeField(field.id)" class="btn btn-xs btn-error">Remove</button>
               </div>
             </div>
           </div>
 
           <SButton
             @click="addSchema"
-            :disabled="
-              !currentSchema.name.trim() || currentSchema.fields.length === 0
-            "
+            :disabled="!currentSchema.name.trim() || currentSchema.fields.length === 0"
             class="btn-secondary"
           >
             Add Data Type
@@ -451,19 +394,10 @@ async function createNewApp() {
       <SCard v-if="schemas.length > 0" class="space-y-4">
         <h3 class="font-semibold">Added Data Types</h3>
         <div class="space-y-3">
-          <div
-            v-for="schema in schemas"
-            :key="schema.id"
-            class="p-4 bg-base-200 rounded-lg"
-          >
+          <div v-for="schema in schemas" :key="schema.id" class="p-4 bg-base-200 rounded-lg">
             <div class="flex items-center justify-between mb-2">
               <h4 class="font-medium">{{ schema.name }}</h4>
-              <button
-                @click="removeSchema(schema.id)"
-                class="btn btn-xs btn-error"
-              >
-                Remove
-              </button>
+              <button @click="removeSchema(schema.id)" class="btn btn-xs btn-error">Remove</button>
             </div>
             <div class="text-sm text-base-content/60">
               {{ schema.fields.length }} fields:
@@ -506,19 +440,14 @@ async function createNewApp() {
     <!-- Success Step -->
     <SCard v-if="createSuccess" class="space-y-6 text-center">
       <div class="text-6xl">🎉</div>
-      <h2 class="text-2xl font-semibold text-success">
-        App Created Successfully!
-      </h2>
+      <h2 class="text-2xl font-semibold text-success">App Created Successfully!</h2>
       <p class="text-base-content/60">
         Your app "{{ appForm.name }}" has been created and configured.
       </p>
       <div class="space-y-3">
         <p class="text-sm">Redirecting to the design interface...</p>
         <div class="flex gap-4 justify-center">
-          <SButton
-            @click="router.push('/t/builder/design')"
-            class="btn-primary"
-          >
+          <SButton @click="router.push('/t/builder/design')" class="btn-primary">
             <span class="mr-2">🎨</span>
             Go to Design
           </SButton>
@@ -532,9 +461,7 @@ async function createNewApp() {
 
     <!-- Navigation -->
     <div v-if="!createSuccess" class="flex justify-between mt-8">
-      <SButton v-if="currentStep > 1" @click="prevStep" class="btn-outline">
-        Previous
-      </SButton>
+      <SButton v-if="currentStep > 1" @click="prevStep" class="btn-outline"> Previous </SButton>
       <div></div>
 
       <SButton

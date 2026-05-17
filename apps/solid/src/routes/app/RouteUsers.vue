@@ -41,9 +41,7 @@ const stagedCount = computed(() => appApi.getState().stagedCount);
 const profilesByKey = computed(
   () => new Map(profiles.value.map((profile) => [profile.identityKey, profile])),
 );
-const usersByKey = computed(
-  () => new Map(users.value.map((user) => [user.identityKey, user])),
-);
+const usersByKey = computed(() => new Map(users.value.map((user) => [user.identityKey, user])));
 
 function resolveUserDisplayName(identityKey: string, label: string | null): string {
   const profile = profilesByKey.value.get(identityKey);
@@ -70,9 +68,7 @@ const groupCountByIdentity = computed(() => {
       const projected = usersByKey.value.get(member.memberId);
       const canonicalMemberId =
         projected?.identityKey ??
-        (member.memberId === activeIdentityId.value
-          ? activeIdentityKey.value
-          : member.memberId);
+        (member.memberId === activeIdentityId.value ? activeIdentityKey.value : member.memberId);
       memberKeys.add(canonicalMemberId);
     });
 
@@ -117,9 +113,7 @@ const editProfile = computed(() => {
 });
 
 const canEditSelectedProfile = computed(
-  () =>
-    Boolean(editUser.value) &&
-    editUser.value?.identityKey === activeIdentityKey.value,
+  () => Boolean(editUser.value) && editUser.value?.identityKey === activeIdentityKey.value,
 );
 
 watch(
@@ -267,7 +261,9 @@ onMounted(async () => {
     </p>
 
     <div class="grid min-h-0 gap-5 xl:grid-cols-[minmax(0,1fr)_300px]">
-      <section class="space-y-4 rounded-[var(--ui-radius-lg)] border border-[var(--ui-border)] bg-[var(--ui-surface)] p-4">
+      <section
+        class="space-y-4 rounded-[var(--ui-radius-lg)] border border-[var(--ui-border)] bg-[var(--ui-surface)] p-4"
+      >
         <header class="space-y-3">
           <div class="flex flex-wrap items-end justify-between gap-3">
             <div class="space-y-1">
@@ -280,11 +276,10 @@ onMounted(async () => {
             </div>
             <div class="flex items-center gap-2">
               <Badge tone="primary" variant="soft" size="sm">
-                {{ collaborators.length }} {{ collaborators.length === 1 ? "collaborator" : "collaborators" }}
+                {{ collaborators.length }}
+                {{ collaborators.length === 1 ? "collaborator" : "collaborators" }}
               </Badge>
-              <Badge tone="secondary" variant="soft" size="sm">
-                {{ stagedCount }} staged
-              </Badge>
+              <Badge tone="secondary" variant="soft" size="sm"> {{ stagedCount }} staged </Badge>
             </div>
           </div>
           <p class="m-0 max-w-3xl text-sm text-[var(--ui-fg-muted)]">
@@ -362,7 +357,9 @@ onMounted(async () => {
         </div>
 
         <div v-else data-test="users-list">
-          <ul class="m-0 list-none divide-y divide-[var(--ui-border)] rounded-[var(--ui-radius-md)] border border-[var(--ui-border)] bg-[var(--ui-tonal-tertiary)]/35 p-0">
+          <ul
+            class="m-0 list-none divide-y divide-[var(--ui-border)] rounded-[var(--ui-radius-md)] border border-[var(--ui-border)] bg-[var(--ui-tonal-tertiary)]/35 p-0"
+          >
             <li
               v-for="user in collaborators"
               :key="user.identityKey"
@@ -379,17 +376,10 @@ onMounted(async () => {
                   <p class="m-0 truncate text-sm font-medium text-[var(--ui-fg)]">
                     {{ user.displayName }}
                   </p>
-                  <Badge
-                    v-if="user.isActive"
-                    tone="secondary"
-                    variant="soft"
-                    size="xs"
-                  >
+                  <Badge v-if="user.isActive" tone="secondary" variant="soft" size="xs">
                     You
                   </Badge>
-                  <Badge tone="success" variant="soft" size="xs">
-                    Verified identity
-                  </Badge>
+                  <Badge tone="success" variant="soft" size="xs"> Verified identity </Badge>
                 </div>
                 <p class="m-0 truncate text-xs text-[var(--ui-fg-muted)]">
                   {{ user.relationshipLabel }} · Added by {{ user.addedByLabel }} ·
@@ -414,7 +404,9 @@ onMounted(async () => {
         </div>
       </section>
 
-      <aside class="space-y-3 rounded-[var(--ui-radius-lg)] border border-[var(--ui-border)] bg-[var(--ui-surface)] p-3">
+      <aside
+        class="space-y-3 rounded-[var(--ui-radius-lg)] border border-[var(--ui-border)] bg-[var(--ui-surface)] p-3"
+      >
         <p class="m-0 text-xs uppercase tracking-[0.12em] text-[var(--ui-fg-muted)]">
           Trust context
         </p>
@@ -521,9 +513,7 @@ onMounted(async () => {
           </p>
 
           <div class="flex items-center justify-between gap-2">
-            <Button type="button" variant="tertiary" @click="editModalOpen = false">
-              Close
-            </Button>
+            <Button type="button" variant="tertiary" @click="editModalOpen = false"> Close </Button>
             <Button
               type="submit"
               variant="secondary"

@@ -8,10 +8,10 @@ Rust/WebAssembly implementation providing high-performance cryptographic operati
 
 ## Features
 
-- ✅ **WebAssembly Performance**:  Rust-based cryptographic operations
-- ✅ **Cross-platform**:  Works in browsers and Node.js
-- ✅ **Memory Safe**:  Rust's memory safety guarantees
-- ✅ **High Performance**:  Optimized cryptographic algorithms
+- ✅ **WebAssembly Performance**: Rust-based cryptographic operations
+- ✅ **Cross-platform**: Works in browsers and Node.js
+- ✅ **Memory Safe**: Rust's memory safety guarantees
+- ✅ **High Performance**: Optimized cryptographic algorithms
 
 ## Installation
 
@@ -22,7 +22,7 @@ npm install @your-org/ragejs
 ## Quick Start
 
 ```typescript
-import {  } from '@your-org/ragejs';
+import {} from "@your-org/ragejs";
 
 // Example usage
 // TODO: Add specific examples for ragejs
@@ -31,8 +31,6 @@ import {  } from '@your-org/ragejs';
 ## API Reference
 
 ### Functions
-
-
 
 ## Usage Examples
 
@@ -46,7 +44,6 @@ import {  } from '@your-org/ragejs';
 
 See `package.json` for current dependencies.
 
-
 ## Building from Source
 
 ```bash
@@ -59,7 +56,6 @@ curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 # Build the package
 wasm-pack build --target bundler
 ```
-
 
 ## Contributing
 

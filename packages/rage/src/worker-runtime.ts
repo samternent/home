@@ -55,7 +55,7 @@ class WorkerRageRuntime implements RageRuntime {
   async encryptWithRecipients(
     recipients: string[],
     data: Uint8Array,
-    armor: boolean
+    armor: boolean,
   ): Promise<unknown> {
     await this.ensureReady();
     return this.request({
@@ -66,10 +66,7 @@ class WorkerRageRuntime implements RageRuntime {
     });
   }
 
-  async decryptWithIdentity(
-    identity: string,
-    data: Uint8Array
-  ): Promise<unknown> {
+  async decryptWithIdentity(identity: string, data: Uint8Array): Promise<unknown> {
     await this.ensureReady();
     return this.request({
       type: "decryptWithIdentity",
@@ -81,7 +78,7 @@ class WorkerRageRuntime implements RageRuntime {
   async encryptWithPassphrase(
     passphrase: string,
     data: Uint8Array,
-    armor: boolean
+    armor: boolean,
   ): Promise<unknown> {
     await this.ensureReady();
     return this.request({
@@ -92,10 +89,7 @@ class WorkerRageRuntime implements RageRuntime {
     });
   }
 
-  async decryptWithPassphrase(
-    passphrase: string,
-    data: Uint8Array
-  ): Promise<unknown> {
+  async decryptWithPassphrase(passphrase: string, data: Uint8Array): Promise<unknown> {
     await this.ensureReady();
     return this.request({
       type: "decryptWithPassphrase",
@@ -112,9 +106,7 @@ class WorkerRageRuntime implements RageRuntime {
     await this.init();
   }
 
-  private request<T>(
-    request: RageWorkerRequestPayload
-  ): Promise<T> {
+  private request<T>(request: RageWorkerRequestPayload): Promise<T> {
     const id = this.nextRequestId;
     this.nextRequestId += 1;
 
@@ -151,9 +143,7 @@ class WorkerRageRuntime implements RageRuntime {
     return this.worker;
   }
 
-  private readonly handleMessage = (
-    event: MessageEvent<RageWorkerResponse>
-  ): void => {
+  private readonly handleMessage = (event: MessageEvent<RageWorkerResponse>): void => {
     const pending = this.pending.get(event.data.id);
     if (!pending) {
       return;
@@ -173,17 +163,12 @@ class WorkerRageRuntime implements RageRuntime {
       typeof event.message === "string" && event.message.length > 0
         ? event.message
         : "Rage worker failed.";
-    this.handleFatalError(
-      new RageInitError("RAGE_INIT_FAILED", message, event)
-    );
+    this.handleFatalError(new RageInitError("RAGE_INIT_FAILED", message, event));
   };
 
   private readonly handleMessageError = (): void => {
     this.handleFatalError(
-      new RageInitError(
-        "RAGE_INIT_FAILED",
-        "Rage worker failed to exchange messages."
-      )
+      new RageInitError("RAGE_INIT_FAILED", "Rage worker failed to exchange messages."),
     );
   };
 

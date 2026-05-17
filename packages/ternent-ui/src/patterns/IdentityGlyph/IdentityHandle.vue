@@ -23,18 +23,14 @@ const props = withDefaults(
 const resolvedIdentity = computed(() => resolveIdentityGlyphInput(props.identity));
 const glyphSize = computed(() => (props.size === "md" ? 40 : 32));
 const displayLabel = computed(() => props.label ?? "Identity");
-const displayIdentity = computed(
-  () => props.identityText ?? resolvedIdentity.value.shortIdentity,
-);
+const displayIdentity = computed(() => props.identityText ?? resolvedIdentity.value.shortIdentity);
 const labelClass = computed(() =>
   props.size === "md"
     ? "text-sm font-medium text-[var(--ui-fg)]"
     : "text-sm font-medium text-[var(--ui-fg)]",
 );
 const metaClass = computed(() =>
-  props.size === "md"
-    ? "text-xs text-[var(--ui-fg-muted)]"
-    : "text-xs text-[var(--ui-fg-muted)]",
+  props.size === "md" ? "text-xs text-[var(--ui-fg-muted)]" : "text-xs text-[var(--ui-fg-muted)]",
 );
 </script>
 

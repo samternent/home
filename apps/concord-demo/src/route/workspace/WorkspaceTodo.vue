@@ -1,12 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref, shallowRef, watch } from "vue";
 import { generateId, stripIdentityKey } from "ternent-utils";
-import {
-  SBadge,
-  SDialog,
-  SListButton,
-  SSegmentedControl,
-} from "ternent-ui/components";
+import { SBadge, SDialog, SListButton, SSegmentedControl } from "ternent-ui/components";
 import { Button } from "ternent-ui/primitives";
 
 import { useLedger } from "../../module/ledger/useLedger";
@@ -78,7 +73,7 @@ function formatDate(
   options: Intl.DateTimeFormatOptions = {
     dateStyle: "medium",
     timeStyle: "short",
-  }
+  },
 ) {
   return new Intl.DateTimeFormat(undefined, options).format(new Date(iso));
 }
@@ -101,21 +96,21 @@ const items = computed(() =>
           ...(assignee ? { assignedTo: assignee?.data } : {}),
         },
       };
-    })
+    }),
 );
 
 const permissions = computed<PermissionGroupEntry[]>(
   () =>
-    Object.values(
-      bridge.collections.byKind.value?.["permission-groups"] || {}
-    ).filter((entry) => entry.data.scope === "tasks") as PermissionGroupEntry[]
+    Object.values(bridge.collections.byKind.value?.["permission-groups"] || {}).filter(
+      (entry) => entry.data.scope === "tasks",
+    ) as PermissionGroupEntry[],
 );
 
 const publicTasklists = computed<TasklistEntry[]>(
   () =>
     Object.values(bridge.collections.byKind.value?.tasklists || {}).sort(
-      (a, b) => (a.data.createdAt ?? 0) - (b.data.createdAt ?? 0)
-    ) as TasklistEntry[]
+      (a, b) => (a.data.createdAt ?? 0) - (b.data.createdAt ?? 0),
+    ) as TasklistEntry[],
 );
 
 const listOptions = computed(() => [
@@ -149,14 +144,14 @@ const boardColumns = computed<BoardColumnEntry[]>(() =>
     .map((entry) => ({
       entryId: entry.entryId,
       data: entry.data as BoardColumn,
-    }))
+    })),
 );
 
 const boardColumnOptions = computed(() =>
   boardColumns.value.map((entry) => ({
     id: entry.data.id,
     title: entry.data.title,
-  }))
+  })),
 );
 
 const boardColumnLabelById = computed(() => {
@@ -167,9 +162,7 @@ const boardColumnLabelById = computed(() => {
   return map;
 });
 
-const canAddItem = computed(
-  () => bridge.flags.value.hasLedger && bridge.flags.value.authed
-);
+const canAddItem = computed(() => bridge.flags.value.hasLedger && bridge.flags.value.authed);
 
 const activeEntryId = shallowRef<string | null>(null);
 const selectedListId = shallowRef<string>("all");
@@ -193,9 +186,7 @@ const selectedUsersByPermission = reactive<Record<string, any>>({});
 
 const tasklistGroups = computed(() => {
   const permissionGroups = permissions.value.map((group) => {
-    const count = items.value.filter(
-      (item) => item.data.permissionId === group.data.id
-    ).length;
+    const count = items.value.filter((item) => item.data.permissionId === group.data.id).length;
     return {
       id: group.data.id,
       label: group.data.title,
@@ -204,9 +195,7 @@ const tasklistGroups = computed(() => {
   });
 
   const publicLists = publicTasklists.value.map((list) => {
-    const count = items.value.filter(
-      (item) => item.data.tasklistId === list.data.id
-    ).length;
+    const count = items.value.filter((item) => item.data.tasklistId === list.data.id).length;
     return {
       id: list.data.id,
       label: list.data.title,
@@ -235,39 +224,26 @@ const tasklistGroups = computed(() => {
 });
 
 const selectedListLabel = computed(() => {
-  const baseMatch = tasklistGroups.value.base.find(
-    (list) => list.id === selectedListId.value
-  );
+  const baseMatch = tasklistGroups.value.base.find((list) => list.id === selectedListId.value);
   if (baseMatch) return baseMatch.label;
-  const groupMatch = tasklistGroups.value.groups.find(
-    (list) => list.id === selectedListId.value
-  );
+  const groupMatch = tasklistGroups.value.groups.find((list) => list.id === selectedListId.value);
   if (groupMatch) return groupMatch.label;
-  const publicMatch = tasklistGroups.value.public.find(
-    (list) => list.id === selectedListId.value
-  );
+  const publicMatch = tasklistGroups.value.public.find((list) => list.id === selectedListId.value);
   return publicMatch?.label ?? "Tasks";
 });
 
 const selectedPermission = computed(
-  () =>
-    tasklistGroups.value.groups.find(
-      (list) => list.id === selectedListId.value
-    ) ?? null
+  () => tasklistGroups.value.groups.find((list) => list.id === selectedListId.value) ?? null,
 );
 
 const selectedPublicList = computed(
-  () =>
-    tasklistGroups.value.public.find(
-      (list) => list.id === selectedListId.value
-    ) ?? null
+  () => tasklistGroups.value.public.find((list) => list.id === selectedListId.value) ?? null,
 );
 
 const selectedListValue = computed(() => {
   if (selectedListId.value === "public") return "base:public";
   if (selectedListId.value === "all") return "base:public";
-  if (selectedPublicList.value)
-    return `public-list:${selectedPublicList.value.id}`;
+  if (selectedPublicList.value) return `public-list:${selectedPublicList.value.id}`;
   return `permission:${selectedListId.value}`;
 });
 
@@ -282,8 +258,7 @@ const editingListValue = computed(() => {
   if (!editingItem.value) return "base:public";
   if (editingItem.value.data.permissionId)
     return `permission:${editingItem.value.data.permissionId}`;
-  if (editingItem.value.data.tasklistId)
-    return `public-list:${editingItem.value.data.tasklistId}`;
+  if (editingItem.value.data.tasklistId) return `public-list:${editingItem.value.data.tasklistId}`;
   return "base:public";
 });
 
@@ -301,16 +276,16 @@ const listLabelById = computed(() => {
 const permissionMembers = computed(() => {
   const selected = selectedPermission.value;
   if (!selected) return [];
-  const grants = Object.values(
-    bridge.collections.byKind.value?.["permission-grants"] || {}
-  ) as { data: { permissionId: string; identity: string } }[];
+  const grants = Object.values(bridge.collections.byKind.value?.["permission-grants"] || {}) as {
+    data: { permissionId: string; identity: string };
+  }[];
   return grants.filter((grant) => grant.data.permissionId === selected.id);
 });
 
 const usersByIdentity = computed(() => {
-  const entries = Object.values(
-    bridge.collections.byKind.value?.users || {}
-  ) as { data: { publicIdentityKey?: string; name?: string } }[];
+  const entries = Object.values(bridge.collections.byKind.value?.users || {}) as {
+    data: { publicIdentityKey?: string; name?: string };
+  }[];
   const map = new Map<string, { publicIdentityKey?: string; name?: string }>();
   for (const entry of entries) {
     if (!entry?.data?.publicIdentityKey) continue;
@@ -324,14 +299,10 @@ const filteredItems = computed(() => {
     selectedListId.value === "all"
       ? items.value
       : selectedListId.value === "public"
-      ? items.value.filter((item) => !item.data.permissionId)
-      : selectedPublicList.value
-      ? items.value.filter(
-          (item) => item.data.tasklistId === selectedListId.value
-        )
-      : items.value.filter(
-          (item) => item.data.permissionId === selectedListId.value
-        );
+        ? items.value.filter((item) => !item.data.permissionId)
+        : selectedPublicList.value
+          ? items.value.filter((item) => item.data.tasklistId === selectedListId.value)
+          : items.value.filter((item) => item.data.permissionId === selectedListId.value);
 
   if (selectedStatus.value === "active") {
     return listFiltered.filter((item) => !item.data.completed);
@@ -349,16 +320,13 @@ watch(
       activeEntryId.value = null;
       return;
     }
-    const isActiveStillVisible = nextItems.some(
-      (item) => item.entryId === activeEntryId.value
-    );
+    const isActiveStillVisible = nextItems.some((item) => item.entryId === activeEntryId.value);
     if (!isActiveStillVisible) {
       activeEntryId.value =
-        nextItems.find((item) => !item.data.completed)?.entryId ??
-        nextItems[0].entryId;
+        nextItems.find((item) => !item.data.completed)?.entryId ?? nextItems[0].entryId;
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 watch(isListDialogOpen, (nextValue) => {
@@ -387,16 +355,14 @@ async function addTodoItem(payload: {
       id,
       title: payload.title,
       ...(payload.assigneeId ? { assignedTo: payload.assigneeId } : {}),
-      ...(payload.boardColumnId
-        ? { boardColumnId: payload.boardColumnId }
-        : {}),
+      ...(payload.boardColumnId ? { boardColumnId: payload.boardColumnId } : {}),
       ...(payload.tasklistId ? { tasklistId: payload.tasklistId } : {}),
       createdAt: Date.now(),
       updatedAt: Date.now(),
       completed: false,
     },
     "todos",
-    payload.permissionId ?? null
+    payload.permissionId ?? null,
   );
 }
 
@@ -409,7 +375,7 @@ async function completeItem(item: LedgerItem) {
       updatedAt: Date.now(),
     },
     "todos",
-    item.permissionId ?? item.permission ?? null
+    item.permissionId ?? item.permission ?? null,
   );
 }
 
@@ -444,7 +410,7 @@ function addNewListMember() {
   }
   const next = newListMember.value;
   const exists = newListMembers.value.some(
-    (member) => member?.publicIdentityKey === next?.publicIdentityKey
+    (member) => member?.publicIdentityKey === next?.publicIdentityKey,
   );
   if (!exists) newListMembers.value = [...newListMembers.value, next];
   if (newListMembers.value.length) isPublicList.value = false;
@@ -463,7 +429,7 @@ async function addTasklist() {
         createdAt: Date.now(),
         updatedAt: Date.now(),
       },
-      "tasklists"
+      "tasklists",
     );
     closeListDialog();
     return;
@@ -472,11 +438,7 @@ async function addTasklist() {
   if (permission?.id && newListMembers.value.length) {
     for (const member of newListMembers.value) {
       if (!member?.publicIdentityKey || !member?.publicEncryptionKey) continue;
-      await addUserPermission(
-        permission.id,
-        member.publicIdentityKey,
-        member.publicEncryptionKey
-      );
+      await addUserPermission(permission.id, member.publicIdentityKey, member.publicEncryptionKey);
     }
   }
   closeListDialog();
@@ -488,7 +450,7 @@ async function addUserToList(permissionId: string) {
   await addUserPermission(
     permissionId,
     selectedUser.publicIdentityKey,
-    selectedUser.publicEncryptionKey
+    selectedUser.publicEncryptionKey,
   );
   selectedUsersByPermission[permissionId] = null;
 }
@@ -522,7 +484,7 @@ async function updateTodoItem(payload: {
       updatedAt: Date.now(),
     },
     "todos",
-    payload.permissionId ?? current.permissionId ?? current.permission ?? null
+    payload.permissionId ?? current.permissionId ?? current.permission ?? null,
   );
 }
 </script>
@@ -601,9 +563,7 @@ async function updateTodoItem(payload: {
       >
         <div class="flex items-center gap-3">
           <h2 class="text-sm font-thin">{{ selectedListLabel }}</h2>
-          <span class="text-xs text-[var(--ui-fg-muted)]">
-            {{ filteredItems.length }} tasks
-          </span>
+          <span class="text-xs text-[var(--ui-fg-muted)]"> {{ filteredItems.length }} tasks </span>
         </div>
         <div class="flex items-center gap-2 text-xs">
           <SSegmentedControl
@@ -631,11 +591,7 @@ async function updateTodoItem(payload: {
                 stroke="currentColor"
                 class="size-4"
               >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M12 4.5v15m7.5-7.5h-15"
-                />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
               </svg>
             </span>
             Add task
@@ -787,17 +743,11 @@ async function updateTodoItem(payload: {
                         : 'text-[var(--ui-fg)]'
                     "
                   >
-                    {{
-                      item.data.keyMissing
-                        ? "Insufficient permission"
-                        : item.data.title
-                    }}
+                    {{ item.data.keyMissing ? "Insufficient permission" : item.data.title }}
                   </p>
                 </div>
 
-                <div
-                  class="ml-auto flex items-center gap-2 text-xs text-[var(--ui-fg-muted)]"
-                >
+                <div class="ml-auto flex items-center gap-2 text-xs text-[var(--ui-fg-muted)]">
                   <Button
                     v-if="!item.data.keyMissing"
                     type="button"
@@ -855,26 +805,11 @@ async function updateTodoItem(payload: {
                     </svg>
                     Private
                   </SBadge>
-                  <SBadge
-                    v-if="item.data.boardColumnId"
-                    size="xs"
-                    tone="neutral"
-                    variant="outline"
-                  >
-                    {{
-                      boardColumnLabelById.get(item.data.boardColumnId ?? "") ||
-                      "Board"
-                    }}
+                  <SBadge v-if="item.data.boardColumnId" size="xs" tone="neutral" variant="outline">
+                    {{ boardColumnLabelById.get(item.data.boardColumnId ?? "") || "Board" }}
                   </SBadge>
-                  <SBadge
-                    v-if="item.data?.createdAt"
-                    size="xs"
-                    tone="neutral"
-                    variant="outline"
-                  >
-                    {{
-                      formatDate(item.data.createdAt, { dateStyle: "medium" })
-                    }}
+                  <SBadge v-if="item.data?.createdAt" size="xs" tone="neutral" variant="outline">
+                    {{ formatDate(item.data.createdAt, { dateStyle: "medium" }) }}
                   </SBadge>
                 </div>
               </div>
@@ -891,12 +826,7 @@ async function updateTodoItem(payload: {
       </div>
     </section>
 
-    <SDialog
-      v-model:open="isAddDialogOpen"
-      size="lg"
-      title="Add task"
-      body-class="p-0"
-    >
+    <SDialog v-model:open="isAddDialogOpen" size="lg" title="Add task" body-class="p-0">
       <template #icon>
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -906,11 +836,7 @@ async function updateTodoItem(payload: {
           stroke="currentColor"
           class="size-4"
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M12 4.5v15m7.5-7.5h-15"
-          />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
       </template>
       <TodoQuickAdd
@@ -946,11 +872,7 @@ async function updateTodoItem(payload: {
             stroke-linejoin="round"
             d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z"
           />
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M19.5 7.125 16.862 4.487"
-          />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 7.125 16.862 4.487" />
         </svg>
       </template>
       <TodoQuickAdd
@@ -959,9 +881,8 @@ async function updateTodoItem(payload: {
         :initial-assignee="editingItem.data.assignedTo ?? null"
         :fixed-list-value="editingListValue"
         :list-label="
-          listLabelById.get(
-            editingItem.data.permissionId ?? editingItem.data.tasklistId ?? ''
-          ) || 'Public'
+          listLabelById.get(editingItem.data.permissionId ?? editingItem.data.tasklistId ?? '') ||
+          'Public'
         "
         :list-options="listOptions"
         :board-columns="boardColumnOptions"
@@ -983,43 +904,28 @@ async function updateTodoItem(payload: {
           stroke="currentColor"
           class="size-4"
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M12 4.5v15m7.5-7.5h-15"
-          />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
       </template>
       <div class="flex flex-col gap-3">
-        <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-          List name
-        </label>
+        <label class="text-xs uppercase tracking-[0.16em] opacity-60"> List name </label>
         <input
           v-model="newListTitle"
           type="text"
           class="border border-[var(--ui-border)] px-3 py-2"
           placeholder="e.g. Product launch"
         />
-        <div class="text-xs uppercase tracking-[0.16em] opacity-60">
-          Add members
-        </div>
+        <div class="text-xs uppercase tracking-[0.16em] opacity-60">Add members</div>
         <div class="flex flex-col gap-2">
           <UserPicker v-model="newListMember" />
-          <Button
-            type="button"
-            size="xs"
-            variant="secondary"
-            @click="addNewListMember"
-          >
+          <Button type="button" size="xs" variant="secondary" @click="addNewListMember">
             Add member
           </Button>
           <div
             v-if="isPublicList"
             class="flex items-center gap-2 border border-[var(--ui-border)] px-2 py-1 text-xs"
           >
-            <span class="uppercase tracking-[0.12em] opacity-70">
-              Public list
-            </span>
+            <span class="uppercase tracking-[0.12em] opacity-70"> Public list </span>
             <Button
               type="button"
               size="xs"
@@ -1030,10 +936,7 @@ async function updateTodoItem(payload: {
               Remove
             </Button>
           </div>
-          <div
-            v-if="newListMembers.length"
-            class="flex flex-wrap items-center gap-2 text-xs"
-          >
+          <div v-if="newListMembers.length" class="flex flex-wrap items-center gap-2 text-xs">
             <div
               v-for="member in newListMembers"
               :key="member?.publicIdentityKey"
@@ -1054,8 +957,7 @@ async function updateTodoItem(payload: {
                 class="text-[11px] uppercase tracking-[0.12em]"
                 @click="
                   newListMembers = newListMembers.filter(
-                    (entry) =>
-                      entry?.publicIdentityKey !== member?.publicIdentityKey
+                    (entry) => entry?.publicIdentityKey !== member?.publicIdentityKey,
                   )
                 "
               >
@@ -1092,13 +994,9 @@ async function updateTodoItem(payload: {
         </svg>
       </template>
       <div class="flex flex-col gap-3">
-        <div class="text-xs uppercase tracking-[0.16em] opacity-60">
-          Add member
-        </div>
+        <div class="text-xs uppercase tracking-[0.16em] opacity-60">Add member</div>
         <div class="flex flex-col gap-2">
-          <UserPicker
-            v-model="selectedUsersByPermission[selectedPermission.id]"
-          />
+          <UserPicker v-model="selectedUsersByPermission[selectedPermission.id]" />
           <Button
             type="button"
             size="xs"
@@ -1108,13 +1006,8 @@ async function updateTodoItem(payload: {
             Add to list
           </Button>
         </div>
-        <div class="text-xs uppercase tracking-[0.16em] opacity-60">
-          Members
-        </div>
-        <div
-          v-if="permissionMembers.length"
-          class="flex flex-wrap items-center gap-2 text-xs"
-        >
+        <div class="text-xs uppercase tracking-[0.16em] opacity-60">Members</div>
+        <div v-if="permissionMembers.length" class="flex flex-wrap items-center gap-2 text-xs">
           <div
             v-for="member in permissionMembers"
             :key="member.data.identity"
@@ -1122,16 +1015,12 @@ async function updateTodoItem(payload: {
           >
             <IdentityAvatar
               :identity="
-                usersByIdentity.get(member.data.identity)?.publicIdentityKey ||
-                member.data.identity
+                usersByIdentity.get(member.data.identity)?.publicIdentityKey || member.data.identity
               "
               size="xs"
             />
             <span class="max-w-[12rem] truncate">
-              {{
-                usersByIdentity.get(member.data.identity)?.name ||
-                member.data.identity
-              }}
+              {{ usersByIdentity.get(member.data.identity)?.name || member.data.identity }}
             </span>
           </div>
         </div>

@@ -22,13 +22,10 @@ const state = replayEncryption(ledger, undefined, {
 });
 
 const wraps = findWrapsForPrincipal(state, "did:alice", "projects:alpha", 2);
-const diagnostics = explainWhyCannotDecrypt(
-  state,
-  "did:alice",
-  "projects:alpha",
-  2,
-  { permissionsState, identityState }
-);
+const diagnostics = explainWhyCannotDecrypt(state, "did:alice", "projects:alpha", 2, {
+  permissionsState,
+  identityState,
+});
 ```
 
 ## API

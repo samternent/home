@@ -184,9 +184,7 @@ export function usePixpaxAuth() {
     source: computed(() => source.value),
     permissions: computed(() => permissions.value),
     error: computed(() => error.value),
-    isAuthenticated: computed(
-      () => status.value === "authenticated" && source.value !== "guest"
-    ),
+    isAuthenticated: computed(() => status.value === "authenticated" && source.value !== "guest"),
     hasPermission,
     validateToken,
     ensurePermission,

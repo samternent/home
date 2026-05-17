@@ -32,16 +32,15 @@ export function validateCollectionPayload(payload) {
       if (!issuerName) {
         errors.push("collection.issuer.name must be a non-empty string when issuer is provided.");
       }
-      if (
-        payload.issuer.avatarUrl !== undefined &&
-        typeof payload.issuer.avatarUrl !== "string"
-      ) {
+      if (payload.issuer.avatarUrl !== undefined && typeof payload.issuer.avatarUrl !== "string") {
         errors.push("collection.issuer.avatarUrl must be a string when provided.");
       }
     }
   }
   if (payload.format !== undefined) {
-    const normalizedFormat = String(payload.format || "").trim().toLowerCase();
+    const normalizedFormat = String(payload.format || "")
+      .trim()
+      .toLowerCase();
     if (!COLLECTION_FORMAT_VALUES.has(normalizedFormat)) {
       errors.push("collection.format must be pixpax-v2 when provided.");
     }
@@ -57,21 +56,27 @@ export function validateCollectionSettingsPayload(payload) {
   }
 
   if (payload.visibility !== undefined) {
-    const normalizedVisibility = String(payload.visibility || "").trim().toLowerCase();
+    const normalizedVisibility = String(payload.visibility || "")
+      .trim()
+      .toLowerCase();
     if (!COLLECTION_VISIBILITY_VALUES.has(normalizedVisibility)) {
       errors.push("settings.visibility must be one of: public, unlisted.");
     }
   }
 
   if (payload.issuanceMode !== undefined) {
-    const normalizedIssuanceMode = String(payload.issuanceMode || "").trim().toLowerCase();
+    const normalizedIssuanceMode = String(payload.issuanceMode || "")
+      .trim()
+      .toLowerCase();
     if (!COLLECTION_ISSUANCE_MODE_VALUES.has(normalizedIssuanceMode)) {
       errors.push("settings.issuanceMode must be one of: scheduled, codes-only.");
     }
   }
 
   if (payload.format !== undefined) {
-    const normalizedFormat = String(payload.format || "").trim().toLowerCase();
+    const normalizedFormat = String(payload.format || "")
+      .trim()
+      .toLowerCase();
     if (!COLLECTION_FORMAT_VALUES.has(normalizedFormat)) {
       errors.push("settings.format must be pixpax-v2 when provided.");
     }
@@ -132,7 +137,9 @@ export function validateIndexPayload(payload) {
     if (!mappingSeriesId) {
       errors.push(`index.cardMap['${cardId}'].seriesId is required.`);
     } else if (!seriesIds.has(mappingSeriesId)) {
-      errors.push(`index.cardMap['${cardId}'].seriesId '${mappingSeriesId}' is not in index.series.`);
+      errors.push(
+        `index.cardMap['${cardId}'].seriesId '${mappingSeriesId}' is not in index.series.`,
+      );
     }
     if (!isNonNegativeInt(mapping.slotIndex)) {
       errors.push(`index.cardMap['${cardId}'].slotIndex must be a non-negative integer.`);
@@ -144,7 +151,9 @@ export function validateIndexPayload(payload) {
 
   for (const mappedCardId of Object.keys(cardMap)) {
     if (!uniqueCards.has(mappedCardId)) {
-      errors.push(`index.cardMap contains extra cardId '${mappedCardId}' not present in index.cards.`);
+      errors.push(
+        `index.cardMap contains extra cardId '${mappedCardId}' not present in index.cards.`,
+      );
     }
   }
 
@@ -183,7 +192,7 @@ export function validateCardPayload(payload, expectedCardId, expectedGridSize) {
     renderPayload.gridSize !== expectedGridSize
   ) {
     errors.push(
-      `card.renderPayload.gridSize (${renderPayload.gridSize}) must match collection.gridSize (${expectedGridSize}).`
+      `card.renderPayload.gridSize (${renderPayload.gridSize}) must match collection.gridSize (${expectedGridSize}).`,
     );
   }
 

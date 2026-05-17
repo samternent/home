@@ -23,9 +23,7 @@ const rows = [
 
     <div class="relative p-6 lg:p-7">
       <div class="flex flex-wrap items-center justify-between gap-4">
-        <h3
-          class="m-0 text-[1.8rem] font-medium tracking-[-0.04em] text-[var(--ui-fg)]"
-        >
+        <h3 class="m-0 text-[1.8rem] font-medium tracking-[-0.04em] text-[var(--ui-fg)]">
           armour-envelope.json
         </h3>
         <span
@@ -48,17 +46,15 @@ const rows = [
           >
             {{ row.label }}
           </span>
-          <span
-            class="min-w-0 truncate font-mono text-[0.88rem] text-[var(--ui-fg)]"
-          >
+          <span class="min-w-0 truncate font-mono text-[0.88rem] text-[var(--ui-fg)]">
             {{ row.value }}
           </span>
         </div>
       </div>
 
       <p class="mt-5 mb-0 text-sm leading-7 text-[var(--ui-fg-muted)]">
-        Optional JSON around armored ciphertext. The underlying encryption remains
-        delegated to rage.
+        Optional JSON around armored ciphertext. The underlying encryption remains delegated to
+        rage.
       </p>
       <a
         href="https://github.com/samternent/home/tree/main/packages/armour"

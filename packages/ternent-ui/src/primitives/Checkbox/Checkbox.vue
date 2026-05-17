@@ -67,13 +67,7 @@ function handleCheckedChange(value: CheckboxCheckedValue) {
           >
             <path d="M3.5 8h9" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
           </svg>
-          <svg
-            v-else
-            viewBox="0 0 16 16"
-            fill="none"
-            class="size-full"
-            aria-hidden="true"
-          >
+          <svg v-else viewBox="0 0 16 16" fill="none" class="size-full" aria-hidden="true">
             <path
               d="M3.5 8.5 6.5 11.5 12.5 4.5"
               stroke="currentColor"

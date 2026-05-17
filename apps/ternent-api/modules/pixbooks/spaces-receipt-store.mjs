@@ -30,17 +30,16 @@ export function createPixbookReceiptStoreConfigFromEnv() {
     process.env.PIXBOOK_LEDGER_BUCKET ||
       process.env.LEDGER_CONTENT_BUCKET ||
       process.env.LEDGER_BUCKET ||
-      ""
+      "",
   ).trim();
   const prefix = normalizePrefix(
-    process.env.PIXBOOK_RECEIPTS_PREFIX || process.env.PIXBOOK_LEDGER_PREFIX || "pixpax/pixbooks"
+    process.env.PIXBOOK_RECEIPTS_PREFIX || process.env.PIXBOOK_LEDGER_PREFIX || "pixpax/pixbooks",
   );
   const region = String(process.env.LEDGER_REGION || "lon1").trim();
   const accessKeyId = String(process.env.LEDGER_ACCESS_KEY_ID || "").trim();
   const secretAccessKey = String(process.env.LEDGER_SECRET_ACCESS_KEY || "").trim();
   const forcePathStyle =
-    String(process.env.LEDGER_S3_FORCE_PATH_STYLE || "true").toLowerCase() !==
-    "false";
+    String(process.env.LEDGER_S3_FORCE_PATH_STYLE || "true").toLowerCase() !== "false";
 
   return {
     endpoint,
@@ -57,9 +56,7 @@ export function createPixbookReceiptStoreConfigFromEnv() {
 let gatewayPromise = null;
 
 async function createGateway(config) {
-  const { S3Client, GetObjectCommand, PutObjectCommand } = await import(
-    "@aws-sdk/client-s3"
-  );
+  const { S3Client, GetObjectCommand, PutObjectCommand } = await import("@aws-sdk/client-s3");
 
   const client = new S3Client({
     endpoint: config.endpoint,
@@ -92,9 +89,7 @@ async function createGateway(config) {
   return {
     async getObject({ bucket, key }) {
       try {
-        const response = await client.send(
-          new GetObjectCommand({ Bucket: bucket, Key: key })
-        );
+        const response = await client.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
         return bodyToBuffer(response.Body);
       } catch (error) {
         if (isNoSuchKeyError(error)) {
@@ -111,7 +106,7 @@ async function createGateway(config) {
           Body: body,
           ContentType: contentType,
           CacheControl: cacheControl,
-        })
+        }),
       );
     },
   };
@@ -152,7 +147,7 @@ export function createSpacesReceiptStore() {
     async putReceipt({ accountId, bookId, eventId, body }) {
       if (!config.ready) {
         throw new Error(
-          "Pixbook receipt storage is not configured. Set LEDGER_* and PIXBOOK_RECEIPTS_PREFIX."
+          "Pixbook receipt storage is not configured. Set LEDGER_* and PIXBOOK_RECEIPTS_PREFIX.",
         );
       }
       const gateway = await getGateway(config);
@@ -175,7 +170,7 @@ export function createSpacesReceiptStore() {
     async getReceiptByKey(key) {
       if (!config.ready) {
         throw new Error(
-          "Pixbook receipt storage is not configured. Set LEDGER_* and PIXBOOK_RECEIPTS_PREFIX."
+          "Pixbook receipt storage is not configured. Set LEDGER_* and PIXBOOK_RECEIPTS_PREFIX.",
         );
       }
       const gateway = await getGateway(config);

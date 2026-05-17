@@ -42,29 +42,24 @@ watch(
       shouldShowSearchResults.value = value;
     }, 200);
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 function formatContentResult(content) {
   const doc = new DOMParser().parseFromString(content, "text/html");
   const strippedText = doc.body.textContent || "";
 
-  const position = strippedText
-    .toLowerCase()
-    .indexOf(searchTerm.value.toLowerCase());
+  const position = strippedText.toLowerCase().indexOf(searchTerm.value.toLowerCase());
 
   return strippedText
     .substr(position)
-    .replace(
-      new RegExp(searchTerm.value, "i"),
-      `<mark>${searchTerm.value}</mark>`
-    );
+    .replace(new RegExp(searchTerm.value, "i"), `<mark>${searchTerm.value}</mark>`);
 }
 
 function generateHtml(result) {
   return result.data.name.replace(
     new RegExp(searchTerm.value, "i"),
-    `<mark>${searchTerm.value}</mark>`
+    `<mark>${searchTerm.value}</mark>`,
   );
 }
 </script>
@@ -100,10 +95,7 @@ function generateHtml(result) {
       v-if="searchResults.length && shouldShowSearchResults"
       class="absolute top-full flex z-50 mt-2 right-10 left-0"
     >
-      <ul
-        tabindex="0"
-        class="p-2 bg-base-200 rounded-box flex-1 shadow-lg border border-base-100"
-      >
+      <ul tabindex="0" class="p-2 bg-base-200 rounded-box flex-1 shadow-lg border border-base-100">
         <li
           v-for="result in searchResults"
           :key="`${result.id}_${result.content}`"

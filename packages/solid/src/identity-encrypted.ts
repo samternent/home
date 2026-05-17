@@ -4,15 +4,8 @@ import {
   validateIdentity,
   type SerializedIdentity,
 } from "@ternent/identity";
-import {
-  decryptTextWithPassphrase,
-  encryptTextWithPassphrase,
-  initArmour,
-} from "@ternent/armour";
-import type {
-  SolidEncryptedIdentityBlob,
-  SolidIdentityUnlocker,
-} from "./types.js";
+import { decryptTextWithPassphrase, encryptTextWithPassphrase, initArmour } from "@ternent/armour";
+import type { SolidEncryptedIdentityBlob, SolidIdentityUnlocker } from "./types.js";
 import {
   assertPassphrase,
   isRecord,

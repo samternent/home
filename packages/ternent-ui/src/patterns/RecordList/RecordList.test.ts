@@ -30,7 +30,10 @@ describe("RecordList", () => {
   });
 
   it("declares item-action slot and empty-state affordance", () => {
-    const source = readFileSync(resolve(process.cwd(), "src/patterns/RecordList/RecordList.vue"), "utf8");
+    const source = readFileSync(
+      resolve(process.cwd(), "src/patterns/RecordList/RecordList.vue"),
+      "utf8",
+    );
 
     expect(source).toContain('<slot name="item-leading" :item="item" />');
     expect(source).toContain('<slot name="item-action" :item="item">');

@@ -2,11 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createIdentity } from "@ternent/identity";
 import type { LedgerContainer, LedgerStorageAdapter } from "@ternent/ledger";
 import { createConcordApp } from "@ternent/concord";
-import {
-  supportsTaskProjection,
-  taskPlugin,
-  type TaskProjection,
-} from "../src/index";
+import { supportsTaskProjection, taskPlugin, type TaskProjection } from "../src/index";
 
 function createMemoryStorage(): LedgerStorageAdapter & {
   snapshot: { container: LedgerContainer | null; staged: unknown[] } | null;

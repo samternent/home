@@ -2,9 +2,6 @@
   "name": "@concord/inspector",
   "version": "0.1.2",
   "description": "Concord inspector foundation",
-  "publishConfig": {
-    "access": "public"
-  },
   "main": "dist/concord-inspector.umd.js",
   "module": "dist/concord-inspector.es.js",
   "typings": "dist/index.d.ts",
@@ -15,16 +12,19 @@
       "require": "./dist/concord-inspector.umd.js"
     }
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "vite build",
     "dev": "vite build --watch"
   },
   "dependencies": {
+    "@swc/helpers": "^0.4.36",
+    "@ternent/concord-plugin-encryption": "workspace:*",
     "@ternent/concord-plugin-identity": "workspace:*",
     "@ternent/concord-plugin-permissions": "workspace:*",
-    "@ternent/concord-plugin-encryption": "workspace:*",
     "@ternent/concord-protocol": "workspace:*",
-    "@swc/helpers": "^0.4.36",
     "regenerator-runtime": "^0.13.11"
   },
   "devDependencies": {

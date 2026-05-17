@@ -1,8 +1,4 @@
-import type {
-  LedgerContainer,
-  LedgerEntryRecord,
-  LedgerStorageAdapter,
-} from "@ternent/ledger";
+import type { LedgerContainer, LedgerEntryRecord, LedgerStorageAdapter } from "@ternent/ledger";
 
 export type LocalStorageLike = {
   getItem(key: string): string | null;
@@ -95,9 +91,7 @@ export function createConcordLocalStorageAdapter(options?: {
           return null;
         }
 
-        const staged = Array.isArray(parsed.staged)
-          ? parsed.staged.filter(isEntryRecord)
-          : [];
+        const staged = Array.isArray(parsed.staged) ? parsed.staged.filter(isEntryRecord) : [];
 
         return {
           container: parsed.container,

@@ -30,16 +30,14 @@ const PACK_REQUEST_ID =
   });
 
 const OUTPUT_DIR =
-  process.env.OUTPUT_DIR ||
-  join(ROOT, "apps/ternent-api/persisted/stickerbook/packs");
+  process.env.OUTPUT_DIR || join(ROOT, "apps/ternent-api/persisted/stickerbook/packs");
 const OUTPUT_PATH =
-  process.env.OUTPUT_PATH ||
-  join(OUTPUT_DIR, `pack-${SERIES_ID}-${PACK_REQUEST_ID}.json`);
+  process.env.OUTPUT_PATH || join(OUTPUT_DIR, `pack-${SERIES_ID}-${PACK_REQUEST_ID}.json`);
 
 const cataloguePath = join(
   ROOT,
   "apps/ternent-api/persisted/stickerbook/series",
-  `series-${SERIES_ID}.catalogue.json`
+  `series-${SERIES_ID}.catalogue.json`,
 );
 
 const catalogue = JSON.parse(readFileSync(cataloguePath, "utf8"));

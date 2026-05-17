@@ -35,23 +35,19 @@ watch(
     notes.value = [...(getCollection("notes")?.data || [])];
     permissions.value = [...(getCollection("permissions")?.data || [])];
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 // Get my permissions for sharing notes
 const myPermissions = computed(() => {
-  return permissions.value.filter(
-    (permission) => permission.data.identity === publicKeyPEM.value
-  );
+  return permissions.value.filter((permission) => permission.data.identity === publicKeyPEM.value);
 });
 
 // Get notes by category
 const notesByTag = computed(() => {
   const grouped = {};
   notes.value.forEach((note) => {
-    const tags = note.data?.tags
-      ? note.data.tags.split(",").map((t) => t.trim())
-      : ["Untagged"];
+    const tags = note.data?.tags ? note.data.tags.split(",").map((t) => t.trim()) : ["Untagged"];
     tags.forEach((tag) => {
       if (!grouped[tag]) grouped[tag] = [];
       grouped[tag].push(note);
@@ -76,9 +72,7 @@ async function handleCreateNote() {
   // Add to ledger with optional permission for encryption
   // If private is checked but no permission selected (or none available), store unencrypted with a warning
   const permission =
-    newNote.value.isPrivate && newNote.value.permission
-      ? newNote.value.permission
-      : null;
+    newNote.value.isPrivate && newNote.value.permission ? newNote.value.permission : null;
 
   await addItem(noteData, "notes", permission);
 
@@ -119,44 +113,30 @@ function getPreview(content) {
     <div class="flex justify-between items-center mb-6">
       <div>
         <h1 class="text-2xl font-bold">📝 Notes</h1>
-        <p class="text-base-content/70">
-          Create and manage encrypted notes and documents
-        </p>
+        <p class="text-base-content/70">Create and manage encrypted notes and documents</p>
       </div>
-      <SButton @click="isCreateDrawerOpen = true" type="primary">
-        + New Note
-      </SButton>
+      <SButton @click="isCreateDrawerOpen = true" type="primary"> + New Note </SButton>
     </div>
 
     <!-- Notes Overview -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-      <div
-        class="stat bg-base-100 rounded-lg shadow-sm border border-base-300 p-4"
-      >
+      <div class="stat bg-base-100 rounded-lg shadow-sm border border-base-300 p-4">
         <div class="stat-title">Total Notes</div>
         <div class="stat-value text-primary">{{ notes.length }}</div>
       </div>
-      <div
-        class="stat bg-base-100 rounded-lg shadow-sm border border-base-300 p-4"
-      >
+      <div class="stat bg-base-100 rounded-lg shadow-sm border border-base-300 p-4">
         <div class="stat-title">Categories</div>
         <div class="stat-value text-secondary">
           {{ Object.keys(notesByTag).length }}
         </div>
       </div>
-      <div
-        class="stat bg-base-100 rounded-lg shadow-sm border border-base-300 p-4"
-      >
+      <div class="stat bg-base-100 rounded-lg shadow-sm border border-base-300 p-4">
         <div class="stat-title">Total Words</div>
         <div class="stat-value text-accent">
-          {{
-            notes.reduce((sum, note) => sum + (note.data?.wordCount || 0), 0)
-          }}
+          {{ notes.reduce((sum, note) => sum + (note.data?.wordCount || 0), 0) }}
         </div>
       </div>
-      <div
-        class="stat bg-base-100 rounded-lg shadow-sm border border-base-300 p-4"
-      >
+      <div class="stat bg-base-100 rounded-lg shadow-sm border border-base-300 p-4">
         <div class="stat-title">This Week</div>
         <div class="stat-value text-info">
           {{
@@ -171,10 +151,7 @@ function getPreview(content) {
     </div>
 
     <!-- Notes by Category -->
-    <div
-      v-if="notes.length === 0"
-      class="text-center py-12 text-base-content/50"
-    >
+    <div v-if="notes.length === 0" class="text-center py-12 text-base-content/50">
       <div class="text-6xl mb-4">📝</div>
       <h3 class="text-lg font-semibold mb-2">No notes yet</h3>
       <p class="text-base-content/70">Create your first note to get started</p>
@@ -184,9 +161,7 @@ function getPreview(content) {
       <div v-for="(categoryNotes, category) in notesByTag" :key="category">
         <h2 class="text-lg font-semibold mb-4 flex items-center gap-2">
           <span class="badge badge-outline">{{ category }}</span>
-          <span class="text-sm text-base-content/50"
-            >({{ categoryNotes.length }})</span
-          >
+          <span class="text-sm text-base-content/50">({{ categoryNotes.length }})</span>
         </h2>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -201,29 +176,17 @@ function getPreview(content) {
                 <h3 class="font-semibold truncate flex-1">
                   {{ note.data?.title || "Untitled" }}
                 </h3>
-                <span
-                  v-if="note.encrypted"
-                  class="badge badge-warning badge-sm ml-2"
-                  >🔒</span
-                >
+                <span v-if="note.encrypted" class="badge badge-warning badge-sm ml-2">🔒</span>
               </div>
 
               <p class="text-sm text-base-content/70 mb-3">
-                {{
-                  note.encrypted
-                    ? "Content is encrypted"
-                    : getPreview(note.data?.content)
-                }}
+                {{ note.encrypted ? "Content is encrypted" : getPreview(note.data?.content) }}
               </p>
 
-              <div
-                class="flex justify-between items-center text-xs text-base-content/50"
-              >
+              <div class="flex justify-between items-center text-xs text-base-content/50">
                 <span>{{ formatDate(note.data?.created) }}</span>
                 <div class="flex items-center gap-2">
-                  <span v-if="note.data?.wordCount"
-                    >{{ note.data.wordCount }} words</span
-                  >
+                  <span v-if="note.data?.wordCount">{{ note.data.wordCount }} words</span>
                   <IdentityAvatar :identity="note.data?.author" size="xs" />
                 </div>
               </div>
@@ -278,11 +241,7 @@ function getPreview(content) {
           <div class="form-control">
             <label class="label cursor-pointer">
               <span class="label-text">Private (encrypted)</span>
-              <input
-                v-model="newNote.isPrivate"
-                type="checkbox"
-                class="checkbox"
-              />
+              <input v-model="newNote.isPrivate" type="checkbox" class="checkbox" />
             </label>
           </div>
 
@@ -290,15 +249,10 @@ function getPreview(content) {
             <label class="label">
               <span class="label-text">Permission</span>
             </label>
-            <select
-              v-model="newNote.permission"
-              class="select select-bordered w-full"
-            >
+            <select v-model="newNote.permission" class="select select-bordered w-full">
               <option value="">
                 {{
-                  myPermissions.length === 0
-                    ? "No permissions available"
-                    : "Select permission..."
+                  myPermissions.length === 0 ? "No permissions available" : "Select permission..."
                 }}
               </option>
               <option
@@ -353,9 +307,7 @@ function getPreview(content) {
             >
               📝 Create Note
             </SButton>
-            <SButton @click="isCreateDrawerOpen = false" type="ghost">
-              Cancel
-            </SButton>
+            <SButton @click="isCreateDrawerOpen = false" type="ghost"> Cancel </SButton>
           </div>
         </div>
       </div>
@@ -371,26 +323,16 @@ function getPreview(content) {
                 <h3 class="font-semibold text-lg">
                   {{ selectedNote.data?.title || "Untitled" }}
                 </h3>
-                <span v-if="selectedNote.encrypted" class="badge badge-warning"
-                  >🔒 Encrypted</span
-                >
+                <span v-if="selectedNote.encrypted" class="badge badge-warning">🔒 Encrypted</span>
               </div>
 
-              <div
-                class="flex items-center gap-3 text-sm text-base-content/70 mb-4"
-              >
-                <IdentityAvatar
-                  :identity="selectedNote.data?.author"
-                  size="sm"
-                />
+              <div class="flex items-center gap-3 text-sm text-base-content/70 mb-4">
+                <IdentityAvatar :identity="selectedNote.data?.author" size="sm" />
                 <span>{{ formatDate(selectedNote.data?.created) }}</span>
                 <span v-if="selectedNote.data?.wordCount"
                   >{{ selectedNote.data.wordCount }} words</span
                 >
-                <span
-                  v-if="selectedNote.data?.tags"
-                  class="badge badge-outline badge-sm"
-                >
+                <span v-if="selectedNote.data?.tags" class="badge badge-outline badge-sm">
                   {{ selectedNote.data.tags }}
                 </span>
               </div>
@@ -399,15 +341,10 @@ function getPreview(content) {
 
           <div class="card bg-base-100">
             <div class="card-body p-4">
-              <div
-                v-if="selectedNote.encrypted"
-                class="text-center py-8 text-base-content/50"
-              >
+              <div v-if="selectedNote.encrypted" class="text-center py-8 text-base-content/50">
                 <div class="text-4xl mb-2">🔒</div>
                 <p>This note is encrypted</p>
-                <p class="text-sm">
-                  You need the proper permission to decrypt it
-                </p>
+                <p class="text-sm">You need the proper permission to decrypt it</p>
               </div>
               <div v-else class="prose max-w-none">
                 <p class="whitespace-pre-wrap">
@@ -420,13 +357,7 @@ function getPreview(content) {
 
         <div class="border-t border-base-300 p-4 bg-base-100">
           <div class="flex gap-2">
-            <SButton
-              @click="isViewDrawerOpen = false"
-              type="ghost"
-              class="flex-1"
-            >
-              Close
-            </SButton>
+            <SButton @click="isViewDrawerOpen = false" type="ghost" class="flex-1"> Close </SButton>
           </div>
         </div>
       </div>

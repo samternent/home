@@ -19,15 +19,15 @@ Enforcement rollout:
 - `pnpm --filter solid check:ui-contract:strict` (future hard-fail mode)
 - hard-fail switch condition: zero violations on `main` and zero violations in three consecutive UI-touching PRs
 
-| File | Status | Notes |
-| --- | --- | --- |
-| `src/App.vue` | `migrated` | Router-only shell entry |
-| `src/modules/appShell/AppShell.vue` | `migrated` | Uses primitives + app shell modules |
-| `src/modules/appShell/Console.vue` | `migrated` | Uses `PanelChrome` pattern |
+| File                                                | Status     | Notes                                                         |
+| --------------------------------------------------- | ---------- | ------------------------------------------------------------- |
+| `src/App.vue`                                       | `migrated` | Router-only shell entry                                       |
+| `src/modules/appShell/AppShell.vue`                 | `migrated` | Uses primitives + app shell modules                           |
+| `src/modules/appShell/Console.vue`                  | `migrated` | Uses `PanelChrome` pattern                                    |
 | `src/modules/appShell/IdentityOnboardingDialog.vue` | `migrated` | Primitive-driven; hidden native inputs retained intentionally |
-| `src/modules/appShell/SideNav.vue` | `migrated` | Uses `SidebarNav` pattern + primitives |
-| `src/modules/appShell/ThemeModeToggle.vue` | `migrated` | New primitive-only mode toggle |
-| `src/routes/app/RouteApp.vue` | `migrated` | Route composition only |
-| `src/routes/app/RouteHome.vue` | `migrated` | Uses `KeyValueList` pattern + primitives |
-| `src/routes/app/RouteLaunch.vue` | `migrated` | Token-only static route surface |
-| `src/routes/app/RoutePermissions.vue` | `migrated` | Uses `KeyValueList`/`FormField` patterns + primitives |
+| `src/modules/appShell/SideNav.vue`                  | `migrated` | Uses `SidebarNav` pattern + primitives                        |
+| `src/modules/appShell/ThemeModeToggle.vue`          | `migrated` | New primitive-only mode toggle                                |
+| `src/routes/app/RouteApp.vue`                       | `migrated` | Route composition only                                        |
+| `src/routes/app/RouteHome.vue`                      | `migrated` | Uses `KeyValueList` pattern + primitives                      |
+| `src/routes/app/RouteLaunch.vue`                    | `migrated` | Token-only static route surface                               |
+| `src/routes/app/RoutePermissions.vue`               | `migrated` | Uses `KeyValueList`/`FormField` patterns + primitives         |

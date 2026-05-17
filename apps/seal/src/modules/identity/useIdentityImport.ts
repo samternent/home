@@ -24,11 +24,11 @@ export function useIdentityImport() {
       }
       if (
         trimmed.includes("BEGIN PRIVATE KEY") ||
-        trimmed.includes("\"privateKeyPem\"") ||
-        trimmed.includes("\"publicKeyPem\"")
+        trimmed.includes('"privateKeyPem"') ||
+        trimmed.includes('"publicKeyPem"')
       ) {
         throw new Error(
-          "Legacy PEM identities are not supported in Seal v2. Import a ternent-identity v2 JSON export."
+          "Legacy PEM identities are not supported in Seal v2. Import a ternent-identity v2 JSON export.",
         );
       }
 
@@ -41,8 +41,7 @@ export function useIdentityImport() {
       setIdentity(identity);
       return identity;
     } catch (caught) {
-      const message =
-        caught instanceof Error ? caught.message : "Failed to import identity";
+      const message = caught instanceof Error ? caught.message : "Failed to import identity";
       error.value = message;
       throw new Error(message);
     } finally {
@@ -50,10 +49,7 @@ export function useIdentityImport() {
     }
   };
 
-  const importMnemonic = async (
-    mnemonic: string,
-    passphrase?: string
-  ): Promise<StoredIdentity> => {
+  const importMnemonic = async (mnemonic: string, passphrase?: string): Promise<StoredIdentity> => {
     isImporting.value = true;
     error.value = null;
 
@@ -63,9 +59,7 @@ export function useIdentityImport() {
         throw new Error("Seed phrase import payload is empty");
       }
       if (!validateMnemonic(trimmed)) {
-        throw new Error(
-          "Seed phrase must be a valid 12- or 24-word English BIP-39 phrase."
-        );
+        throw new Error("Seed phrase must be a valid 12- or 24-word English BIP-39 phrase.");
       }
 
       const parsed = await createIdentityFromMnemonic({
@@ -80,10 +74,7 @@ export function useIdentityImport() {
       setIdentity(identity);
       return identity;
     } catch (caught) {
-      const message =
-        caught instanceof Error
-          ? caught.message
-          : "Failed to import seed phrase";
+      const message = caught instanceof Error ? caught.message : "Failed to import seed phrase";
       error.value = message;
       throw new Error(message);
     } finally {

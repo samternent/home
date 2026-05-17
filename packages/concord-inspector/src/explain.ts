@@ -1,7 +1,4 @@
-import {
-  getEffectiveCaps,
-  type PermissionState,
-} from "@ternent/concord-plugin-permissions";
+import { getEffectiveCaps, type PermissionState } from "@ternent/concord-plugin-permissions";
 import {
   explainWhyCannotDecrypt,
   type EncryptionState,
@@ -17,7 +14,7 @@ export type ExplainResult = {
 export function explainCannotGrant(
   permissions: PermissionState,
   principalId: string,
-  scope: string
+  scope: string,
 ): ExplainResult {
   const caps = Array.from(getEffectiveCaps(permissions, principalId, scope));
   if (caps.includes("admin") || caps.includes("grant")) {
@@ -35,13 +32,7 @@ export function explainCannotDecrypt(
   principalId: string,
   scope: string,
   epoch: number,
-  context?: ResolutionContext
+  context?: ResolutionContext,
 ) {
-  return explainWhyCannotDecrypt(
-    encryption,
-    principalId,
-    scope,
-    epoch,
-    context
-  );
+  return explainWhyCannotDecrypt(encryption, principalId, scope, epoch, context);
 }

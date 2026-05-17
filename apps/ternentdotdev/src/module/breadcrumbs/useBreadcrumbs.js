@@ -11,7 +11,7 @@ function Breadcrumbs() {
       `${breadcrumbs.value
         .map(({ name }) => name)
         .reverse()
-        .join(" | ")} | ternent.dev`
+        .join(" | ")} | ternent.dev`,
   );
 
   useTitle(title);

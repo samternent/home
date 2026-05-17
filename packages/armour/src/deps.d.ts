@@ -12,17 +12,11 @@ declare module "@ternent/identity" {
     };
   };
 
-  export function parseIdentity(
-    input: string | SerializedIdentity
-  ): SerializedIdentity;
+  export function parseIdentity(input: string | SerializedIdentity): SerializedIdentity;
 
-  export function deriveAgeRecipient(
-    input: string | SerializedIdentity
-  ): Promise<string>;
+  export function deriveAgeRecipient(input: string | SerializedIdentity): Promise<string>;
 
-  export function deriveAgeSecretKey(
-    input: string | SerializedIdentity
-  ): Promise<string>;
+  export function deriveAgeSecretKey(input: string | SerializedIdentity): Promise<string>;
 }
 
 declare module "@ternent/rage" {

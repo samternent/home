@@ -2,7 +2,12 @@
 import { computed, normalizeClass, useAttrs } from "vue";
 import { twMerge } from "tailwind-merge";
 import { cardProps } from "./Card.props";
-import { cardBaseClass, cardInteractiveClass, cardPaddingClasses, cardVariantClasses } from "./Card.variants";
+import {
+  cardBaseClass,
+  cardInteractiveClass,
+  cardPaddingClasses,
+  cardVariantClasses,
+} from "./Card.variants";
 
 defineOptions({ inheritAttrs: false });
 

@@ -36,24 +36,18 @@ export function createPixbookLedgerConfigFromEnv() {
     process.env.PIXBOOK_LEDGER_BUCKET ||
       process.env.LEDGER_CONTENT_BUCKET ||
       process.env.LEDGER_BUCKET ||
-      ""
+      "",
   ).trim();
   const prefix = normalizePrefix(
-    process.env.PIXBOOK_LEDGER_PREFIX || DEFAULT_PIXBOOK_LEDGER_PREFIX
+    process.env.PIXBOOK_LEDGER_PREFIX || DEFAULT_PIXBOOK_LEDGER_PREFIX,
   );
   const region = String(process.env.LEDGER_REGION || "lon1").trim();
   const accessKeyId = String(process.env.LEDGER_ACCESS_KEY_ID || "").trim();
   const secretAccessKey = String(process.env.LEDGER_SECRET_ACCESS_KEY || "").trim();
   const forcePathStyle =
-    String(process.env.LEDGER_S3_FORCE_PATH_STYLE || "true").toLowerCase() !==
-    "false";
+    String(process.env.LEDGER_S3_FORCE_PATH_STYLE || "true").toLowerCase() !== "false";
 
-  const ready =
-    !!endpoint &&
-    !!bucket &&
-    !!region &&
-    !!accessKeyId &&
-    !!secretAccessKey;
+  const ready = !!endpoint && !!bucket && !!region && !!accessKeyId && !!secretAccessKey;
 
   return {
     ready,
@@ -68,9 +62,7 @@ export function createPixbookLedgerConfigFromEnv() {
 }
 
 async function createGateway(config) {
-  const { S3Client, GetObjectCommand, PutObjectCommand } = await import(
-    "@aws-sdk/client-s3"
-  );
+  const { S3Client, GetObjectCommand, PutObjectCommand } = await import("@aws-sdk/client-s3");
 
   const client = new S3Client({
     endpoint: config.endpoint,
@@ -103,9 +95,7 @@ async function createGateway(config) {
   return {
     async getObject({ bucket, key }) {
       try {
-        const response = await client.send(
-          new GetObjectCommand({ Bucket: bucket, Key: key })
-        );
+        const response = await client.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
         return bodyToBuffer(response.Body);
       } catch (error) {
         if (isNoSuchKeyError(error)) {
@@ -123,7 +113,7 @@ async function createGateway(config) {
           Body: body,
           ContentType: contentType,
           CacheControl: cacheControl,
-        })
+        }),
       );
     },
   };
@@ -223,7 +213,7 @@ export async function writePixbookLedgerState({
   const { config, gateway } = await getGatewayContext();
   if (!gateway) {
     throw new Error(
-      "Pixbook ledger storage is not configured. Set LEDGER_* (and optional PIXBOOK_LEDGER_*) environment variables."
+      "Pixbook ledger storage is not configured. Set LEDGER_* (and optional PIXBOOK_LEDGER_*) environment variables.",
     );
   }
 

@@ -61,9 +61,7 @@ function run(command, args, options = {}) {
   }
 
   if (result.status !== 0) {
-    throw new Error(
-      `${command} ${args.join(" ")} failed with exit code ${result.status}`,
-    );
+    throw new Error(`${command} ${args.join(" ")} failed with exit code ${result.status}`);
   }
 
   return result;
@@ -98,12 +96,7 @@ function readLinkedProject(appDir) {
 }
 
 function ensureDeployWorkflowExists(appId) {
-  const workflowPath = path.join(
-    repoRoot,
-    ".github",
-    "workflows",
-    `deploy-${appId}.yml`,
-  );
+  const workflowPath = path.join(repoRoot, ".github", "workflows", `deploy-${appId}.yml`);
 
   if (!fs.existsSync(workflowPath)) {
     throw new Error(

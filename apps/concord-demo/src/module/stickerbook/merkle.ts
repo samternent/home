@@ -4,9 +4,7 @@ import type { StickerEntry } from "./generator";
 export type MerkleProof = { position: "left" | "right"; hash: string }[];
 
 export async function computeMerkleRoot(entries: StickerEntry[]) {
-  const leafHashes = await Promise.all(
-    entries.map((entry) => hashCanonical(entry))
-  );
+  const leafHashes = await Promise.all(entries.map((entry) => hashCanonical(entry)));
   if (!leafHashes.length) return hashCanonical([]);
   let level = leafHashes.slice();
   while (level.length > 1) {
@@ -21,13 +19,8 @@ export async function computeMerkleRoot(entries: StickerEntry[]) {
   return level[0];
 }
 
-export async function generateProof(
-  entries: StickerEntry[],
-  index: number
-): Promise<MerkleProof> {
-  const leafHashes = await Promise.all(
-    entries.map((entry) => hashCanonical(entry))
-  );
+export async function generateProof(entries: StickerEntry[], index: number): Promise<MerkleProof> {
+  const leafHashes = await Promise.all(entries.map((entry) => hashCanonical(entry)));
   if (index < 0 || index >= leafHashes.length) return [];
   let idx = index;
   let level = leafHashes.slice();
@@ -55,11 +48,7 @@ export async function generateProof(
   return proof;
 }
 
-export async function verifyProof(
-  entry: StickerEntry,
-  proof: MerkleProof,
-  packRoot: string
-) {
+export async function verifyProof(entry: StickerEntry, proof: MerkleProof, packRoot: string) {
   let current = await hashCanonical(entry);
   for (const step of proof || []) {
     if (step.position === "left") {

@@ -1,8 +1,4 @@
-import type {
-  CommitMetadata,
-  Entry,
-  LedgerContainer,
-} from "@ternent/concord-protocol";
+import type { CommitMetadata, Entry, LedgerContainer } from "@ternent/concord-protocol";
 import {
   createLedger,
   deriveCommitId,
@@ -55,9 +51,7 @@ export type EntryTransform = (
   entry: EntryWithId,
 ) => Promise<EntryWithId | null> | (EntryWithId | null);
 
-export type BatchTransform = (
-  entries: EntryWithId[],
-) => Promise<EntryWithId[]> | EntryWithId[];
+export type BatchTransform = (entries: EntryWithId[]) => Promise<EntryWithId[]> | EntryWithId[];
 
 export type StorageAdapter<P> = {
   name: string;
@@ -188,10 +182,7 @@ async function commitPending(
   };
 }
 
-function buildOrderedEntries(
-  ledger: LedgerContainer,
-  pending: PendingEntry[],
-): EntryWithId[] {
+function buildOrderedEntries(ledger: LedgerContainer, pending: PendingEntry[]): EntryWithId[] {
   const chain = getCommitChain(ledger);
   const ordered: EntryWithId[] = [];
 
@@ -216,11 +207,8 @@ export function createLedgerRuntime<P>(config: RuntimeConfig<P>) {
   const plugins = sortPlugins(config.plugins ?? []);
   const now = config.now ?? (() => new Date().toISOString());
 
-  const storageAdapters = plugins
-    .map((p) => p.storage)
-    .filter(Boolean) as StorageAdapter<P>[];
-  const autoPersist =
-    config.autoPersist ?? storageAdapters.some((s) => !!s.save);
+  const storageAdapters = plugins.map((p) => p.storage).filter(Boolean) as StorageAdapter<P>[];
+  const autoPersist = config.autoPersist ?? storageAdapters.some((s) => !!s.save);
 
   const state: LedgerState<P> = {
     ledger: null,
@@ -257,9 +245,7 @@ export function createLedgerRuntime<P>(config: RuntimeConfig<P>) {
     }
   }
 
-  async function applyEntryTransforms(
-    entry: EntryWithId,
-  ): Promise<EntryWithId | null> {
+  async function applyEntryTransforms(entry: EntryWithId): Promise<EntryWithId | null> {
     let current: EntryWithId | null = entry;
     for (const p of plugins) {
       if (!current) break;
@@ -268,13 +254,10 @@ export function createLedgerRuntime<P>(config: RuntimeConfig<P>) {
     return current;
   }
 
-  async function applyReplayBatchTransforms(
-    entries: EntryWithId[],
-  ): Promise<EntryWithId[]> {
+  async function applyReplayBatchTransforms(entries: EntryWithId[]): Promise<EntryWithId[]> {
     let current = entries;
     for (const p of plugins) {
-      if (p.transformReplayBatch)
-        current = await p.transformReplayBatch(current);
+      if (p.transformReplayBatch) current = await p.transformReplayBatch(current);
     }
     return current;
   }
@@ -340,9 +323,7 @@ export function createLedgerRuntime<P>(config: RuntimeConfig<P>) {
       }
     }
 
-    const author = state.publicKey
-      ? await config.resolveAuthor(state.publicKey)
-      : "";
+    const author = state.publicKey ? await config.resolveAuthor(state.publicKey) : "";
 
     const genesisDrafts = config.createGenesisEntries
       ? await config.createGenesisEntries({
@@ -370,11 +351,7 @@ export function createLedgerRuntime<P>(config: RuntimeConfig<P>) {
       genesisEntries.push({ ...entryCore, signature });
     }
 
-    const ledger = await createLedger(
-      { created_at: now(), ...metadata },
-      now(),
-      genesisEntries,
-    );
+    const ledger = await createLedger({ created_at: now(), ...metadata }, now(), genesisEntries);
     state.ledger = ledger;
     state.pending = [];
     await emit({ type: "LOAD", ledger, pending: [] });
@@ -439,10 +416,7 @@ export function createLedgerRuntime<P>(config: RuntimeConfig<P>) {
       payload: opts.payload ?? null,
     };
 
-    const signature = await config.sign(
-      state.signingKey,
-      getEntrySigningPayload(entryCore),
-    );
+    const signature = await config.sign(state.signingKey, getEntrySigningPayload(entryCore));
 
     const entry: Entry = { ...entryCore, signature };
     const staged = await stageEntry(state.ledger, state.pending, entry);
@@ -483,12 +457,7 @@ export function createLedgerRuntime<P>(config: RuntimeConfig<P>) {
   async function commit(message: string, metadata: CommitMetadata) {
     if (!state.ledger) throw new Error("Ledger not loaded");
 
-    const ledger = await commitPending(
-      state.ledger,
-      state.pending,
-      metadata,
-      now(),
-    );
+    const ledger = await commitPending(state.ledger, state.pending, metadata, now());
     state.ledger = ledger;
     state.pending = [];
 
@@ -506,9 +475,7 @@ export function createLedgerRuntime<P>(config: RuntimeConfig<P>) {
     const ordered = buildOrderedEntries(state.ledger, state.pending);
 
     const start = from ? ordered.findIndex((e) => e.entryId === from) : 0;
-    const endIndex = to
-      ? ordered.findIndex((e) => e.entryId === to)
-      : ordered.length - 1;
+    const endIndex = to ? ordered.findIndex((e) => e.entryId === to) : ordered.length - 1;
 
     if (start < 0) throw new Error(`from entry not found: ${from}`);
     if (to && endIndex < 0) throw new Error(`to entry not found: ${to}`);

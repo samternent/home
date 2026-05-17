@@ -58,16 +58,11 @@ export function resolveDefaultRuntimeSurface(
   return resolveRuntimeSurface(app, app.defaultSurfaceId);
 }
 
-export function isRuntimeAppRegistryValid(
-  app: RuntimeAppDefinition,
-): boolean {
+export function isRuntimeAppRegistryValid(app: RuntimeAppDefinition): boolean {
   return resolveDefaultRuntimeSurface(app) !== null;
 }
 
-export function isSupportedRuntimeSurface(
-  app: RuntimeAppDefinition,
-  surfaceId?: string,
-): boolean {
+export function isSupportedRuntimeSurface(app: RuntimeAppDefinition, surfaceId?: string): boolean {
   if (!surfaceId) {
     return true;
   }

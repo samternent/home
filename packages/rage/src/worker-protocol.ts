@@ -78,9 +78,7 @@ export type RageWorkerResponse =
       error: SerializedRageError;
     };
 
-export function getTransferList(
-  message: RageWorkerRequest | RageWorkerResponse
-): Transferable[] {
+export function getTransferList(message: RageWorkerRequest | RageWorkerResponse): Transferable[] {
   if ("data" in message && message.data instanceof Uint8Array) {
     return [message.data.buffer];
   }

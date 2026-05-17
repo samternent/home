@@ -11,7 +11,10 @@ describe("SplitView", () => {
   });
 
   it("declares rail and detail slots", () => {
-    const source = readFileSync(resolve(process.cwd(), "src/patterns/SplitView/SplitView.vue"), "utf8");
+    const source = readFileSync(
+      resolve(process.cwd(), "src/patterns/SplitView/SplitView.vue"),
+      "utf8",
+    );
 
     expect(source).toContain('<slot name="rail" />');
     expect(source).toContain("<slot />");

@@ -1,8 +1,4 @@
-import {
-  parseIdentity,
-  validateIdentity,
-  type SerializedIdentity,
-} from "@ternent/identity";
+import { parseIdentity, validateIdentity, type SerializedIdentity } from "@ternent/identity";
 import {
   createSolidEncryptedIdentityBlob,
   getSolidWebId,
@@ -19,9 +15,7 @@ import type {
 
 const DEFAULT_CACHE_NAMESPACE = "@ternent/solid/cache/v2";
 
-function resolveStorage(
-  storage?: SolidIdentityCacheStorageLike,
-): SolidIdentityCacheStorageLike {
+function resolveStorage(storage?: SolidIdentityCacheStorageLike): SolidIdentityCacheStorageLike {
   if (storage) {
     return storage;
   }
@@ -30,9 +24,7 @@ function resolveStorage(
     return localStorage;
   }
 
-  throw new Error(
-    "Solid identity cache requires a storage adapter or browser localStorage.",
-  );
+  throw new Error("Solid identity cache requires a storage adapter or browser localStorage.");
 }
 
 function resolveCacheKey(input: CreateSolidIdentityCacheOptions): string {
@@ -49,9 +41,7 @@ function resolveCacheKey(input: CreateSolidIdentityCacheOptions): string {
       : "";
 
   if (!webId) {
-    throw new Error(
-      "Solid identity cache requires either a key, webId, or session with a WebID.",
-    );
+    throw new Error("Solid identity cache requires either a key, webId, or session with a WebID.");
   }
 
   return `${namespace}:${webId}`;

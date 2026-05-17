@@ -16,7 +16,7 @@ const props = defineProps({
   width: {
     type: String,
     default: "450px",
-  }
+  },
 });
 
 const isOpen = defineModel({
@@ -27,9 +27,7 @@ const isOpen = defineModel({
 const dragPosition = shallowRef();
 const isDragging = shallowRef(false);
 
-const { width: containerWidth, left: containerLeft } = useElementBounding(
-  props.container
-);
+const { width: containerWidth, left: containerLeft } = useElementBounding(props.container);
 
 const drawerWidth = computed(() => {
   if (dragPosition.value) {
@@ -74,15 +72,17 @@ const drawerWidth = computed(() => {
       :style="{ width: drawerWidth, minWidth: '400px', maxWidth: '90vw' }"
     >
       <!-- Enhanced header with gradient and better typography -->
-      <div class="flex items-center justify-between p-6 border-b border-base-200/60 bg-gradient-to-r from-base-100 to-base-50">
+      <div
+        class="flex items-center justify-between p-6 border-b border-base-200/60 bg-gradient-to-r from-base-100 to-base-50"
+      >
         <div>
           <h2 class="text-xl font-semibold text-base-content">{{ title }}</h2>
           <div class="w-12 h-1 bg-primary rounded-full mt-1"></div>
         </div>
 
-        <SButton 
-          type="ghost" 
-          size="sm" 
+        <SButton
+          type="ghost"
+          size="sm"
           icon
           @click="isOpen = false"
           class="hover:bg-base-200 hover:rotate-90 transition-all duration-200"
@@ -95,11 +95,7 @@ const drawerWidth = computed(() => {
             stroke="currentColor"
             class="w-5 h-5"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M6 18 18 6M6 6l12 12"
-            />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
           </svg>
         </SButton>
       </div>
@@ -117,13 +113,17 @@ const drawerWidth = computed(() => {
       <div class="flex-1 overflow-auto">
         <div class="relative">
           <!-- Subtle top fade -->
-          <div class="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-base-100 to-transparent pointer-events-none z-10"></div>
-          
+          <div
+            class="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-base-100 to-transparent pointer-events-none z-10"
+          ></div>
+
           <!-- Slot content -->
           <slot />
-          
+
           <!-- Subtle bottom fade -->
-          <div class="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-base-100 to-transparent pointer-events-none z-10"></div>
+          <div
+            class="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-base-100 to-transparent pointer-events-none z-10"
+          ></div>
         </div>
       </div>
     </div>

@@ -13,9 +13,7 @@ const profileHandle = shallowRef(context.currentIdentityUsername.value || "");
 const recoveryPassphraseInput = shallowRef("");
 const backupBusyIdentityId = shallowRef("");
 const recoverBusyManagedUserId = shallowRef("");
-const candidateIdentity = computed(
-  () => context.candidateIdentities.value[0] || null
-);
+const candidateIdentity = computed(() => context.candidateIdentities.value[0] || null);
 const localIdentityBindingKeys = computed(() => {
   const keys = new Set<string>();
   for (const identity of context.identities.value) {
@@ -44,10 +42,7 @@ function getIdentityName(entry: { metadata?: Record<string, unknown> } | null) {
   return username ? `@${username}` : "Identity";
 }
 
-function accountIdentityLabel(entry: {
-  displayName?: string;
-  profileId?: string | null;
-}) {
+function accountIdentityLabel(entry: { displayName?: string; profileId?: string | null }) {
   const displayName = String(entry.displayName || "").trim();
   if (displayName) return displayName.startsWith("@") ? displayName : `@${displayName}`;
   const profileId = String(entry.profileId || "").trim();
@@ -68,7 +63,7 @@ watch(
   () => context.currentIdentityId.value,
   () => {
     profileHandle.value = context.currentIdentityUsername.value || "";
-  }
+  },
 );
 
 async function createCandidate() {
@@ -77,16 +72,14 @@ async function createCandidate() {
 
 async function confirmCandidate() {
   if (!candidateIdentity.value) return;
-  const createdIdentity = await context.confirmIdentityCandidate(
-    candidateIdentity.value.id
-  );
+  const createdIdentity = await context.confirmIdentityCandidate(candidateIdentity.value.id);
   if (!cloudSync.account.isAuthenticated.value) return;
 
   const saved = await cloudSync.saveLocalIdentityToCloud(createdIdentity.id);
   if (!saved) {
     context.setError(
       cloudSync.identityDirectorySyncError.value ||
-        "Identity was created locally but could not be saved to your account."
+        "Identity was created locally but could not be saved to your account.",
     );
     return;
   }
@@ -98,10 +91,7 @@ function discardCandidate() {
   context.discardIdentityCandidate(candidateIdentity.value.id);
 }
 
-function setIdentityUsername(
-  identityId: string,
-  metadata: Record<string, unknown> | undefined
-) {
+function setIdentityUsername(identityId: string, metadata: Record<string, unknown> | undefined) {
   const currentUsername = String(metadata?.username || "").trim();
   const next = window.prompt("Identity username", currentUsername);
   if (next === null) return;
@@ -128,7 +118,7 @@ async function removeIdentity(identityId: string) {
   const confirmed = window.confirm(
     cloudIdentity
       ? "Remove this identity from this device only? It will remain saved in your account."
-      : "Remove this identity from this device?"
+      : "Remove this identity from this device?",
   );
   if (!confirmed) return;
   try {
@@ -136,10 +126,12 @@ async function removeIdentity(identityId: string) {
     context.setStatus(
       cloudIdentity
         ? "Identity removed from this device. It remains saved in your account."
-        : "Identity removed from this device."
+        : "Identity removed from this device.",
     );
   } catch (error: unknown) {
-    context.setError(String((error as Error)?.message || "Unable to remove identity from this device."));
+    context.setError(
+      String((error as Error)?.message || "Unable to remove identity from this device."),
+    );
   }
 }
 
@@ -150,9 +142,7 @@ async function saveIdentity(identityId: string) {
   }
   const ok = await cloudSync.saveLocalIdentityToCloud(identityId);
   if (!ok) {
-    context.setError(
-      cloudSync.identityDirectorySyncError.value || "Unable to save identity."
-    );
+    context.setError(cloudSync.identityDirectorySyncError.value || "Unable to save identity.");
     return;
   }
   context.setStatus("Identity saved to account.");
@@ -166,7 +156,7 @@ async function backupIdentityToAccount(identityId: string) {
     const ok = await cloudSync.backupLocalIdentityToAccount(targetId);
     if (!ok) {
       context.setError(
-        cloudSync.identityDirectorySyncError.value || "Unable to back up identity keys."
+        cloudSync.identityDirectorySyncError.value || "Unable to back up identity keys.",
       );
       return;
     }
@@ -196,7 +186,7 @@ async function recoverIdentityToDevice(managedUserId: string) {
     const ok = await cloudSync.importAccountIdentityToDevice(targetId);
     if (!ok) {
       context.setError(
-        cloudSync.cloudSyncError.value || "Unable to recover identity to this device."
+        cloudSync.cloudSyncError.value || "Unable to recover identity to this device.",
       );
       return;
     }
@@ -212,15 +202,13 @@ async function removeAccountIdentity(managedUserId: string) {
     return;
   }
   const confirmed = window.confirm(
-    "Remove this identity from your account? Any account pixbooks attached to it will also be removed."
+    "Remove this identity from your account? Any account pixbooks attached to it will also be removed.",
   );
   if (!confirmed) return;
 
   const ok = await cloudSync.removeCloudIdentity(managedUserId);
   if (!ok) {
-    context.setError(
-      cloudSync.cloudSyncError.value || "Unable to remove identity from account."
-    );
+    context.setError(cloudSync.cloudSyncError.value || "Unable to remove identity from account.");
     return;
   }
   context.setStatus("Identity removed from account.");
@@ -239,7 +227,8 @@ function saveHandle() {
   <div class="flex flex-col gap-4">
     <h1 class="text-lg font-semibold">Identity & Devices</h1>
     <p class="text-xs text-[var(--ui-fg-muted)]">
-      Account -> Identities -> Pixbook (per collection). Changing identity changes ownership context.
+      Account -> Identities -> Pixbook (per collection). Changing identity changes ownership
+      context.
     </p>
 
     <section class="rounded-lg border border-[var(--ui-border)] p-3 flex flex-col gap-3">
@@ -247,7 +236,11 @@ function saveHandle() {
         <IdentityAvatar :identity="context.publicKeyPEM.value" size="sm" />
         <div>
           <p class="text-sm font-semibold">
-            {{ context.currentIdentityUsername.value ? `@${context.currentIdentityUsername.value}` : "Identity" }}
+            {{
+              context.currentIdentityUsername.value
+                ? `@${context.currentIdentityUsername.value}`
+                : "Identity"
+            }}
           </p>
         </div>
       </div>
@@ -271,7 +264,12 @@ function saveHandle() {
     <section class="rounded-lg border border-[var(--ui-border)] p-3 flex flex-col gap-3">
       <h2 class="text-sm font-semibold">Account Session</h2>
       <p v-if="cloudSync.account.isAuthenticated.value" class="text-xs text-green-600">
-        Signed in as {{ cloudSync.account.user.value?.email || cloudSync.account.user.value?.name || cloudSync.account.user.value?.id }}
+        Signed in as
+        {{
+          cloudSync.account.user.value?.email ||
+          cloudSync.account.user.value?.name ||
+          cloudSync.account.user.value?.id
+        }}
       </p>
       <template v-if="!cloudSync.account.isAuthenticated.value">
         <input
@@ -341,7 +339,8 @@ function saveHandle() {
     <section class="rounded-lg border border-[var(--ui-border)] p-3 flex flex-col gap-2">
       <h2 class="text-sm font-semibold">Recovery Passphrase</h2>
       <p class="text-xs text-[var(--ui-fg-muted)]">
-        Identity backups are encrypted client-side. Use the same passphrase on each device to recover identities.
+        Identity backups are encrypted client-side. Use the same passphrase on each device to
+        recover identities.
       </p>
       <div class="grid gap-2 md:grid-cols-[1fr_auto_auto]">
         <input
@@ -366,18 +365,27 @@ function saveHandle() {
           Clear
         </button>
       </div>
-      <p class="text-xs" :class="cloudSync.recoveryPassphraseUnlocked.value ? 'text-green-600' : 'text-amber-600'">
-        {{ cloudSync.recoveryPassphraseUnlocked.value ? "Passphrase unlocked for this session." : "Passphrase locked. Auto-backup is paused." }}
+      <p
+        class="text-xs"
+        :class="cloudSync.recoveryPassphraseUnlocked.value ? 'text-green-600' : 'text-amber-600'"
+      >
+        {{
+          cloudSync.recoveryPassphraseUnlocked.value
+            ? "Passphrase unlocked for this session."
+            : "Passphrase locked. Auto-backup is paused."
+        }}
       </p>
     </section>
 
     <section class="rounded-lg border border-[var(--ui-border)] p-3 flex flex-col gap-2">
       <h2 class="text-sm font-semibold">Create New Identity</h2>
       <p class="text-xs text-amber-600">
-        Create new identity (new avatar, new ownership). A new identity will not own packs issued to your current identity.
+        Create new identity (new avatar, new ownership). A new identity will not own packs issued to
+        your current identity.
       </p>
       <p class="text-xs text-[var(--ui-fg-muted)]">
-        Preview avatars by refreshing. Creating saves a new identity and does not switch to it automatically.
+        Preview avatars by refreshing. Creating saves a new identity and does not switch to it
+        automatically.
       </p>
       <div
         v-if="!candidateIdentity"
@@ -430,15 +438,23 @@ function saveHandle() {
       <button
         type="button"
         class="w-fit rounded-md border border-[var(--ui-border)] px-2 py-1 text-xs hover:bg-[var(--ui-fg)]/5 disabled:opacity-50"
-        :disabled="!cloudSync.account.isAuthenticated.value || cloudSync.identityDirectorySyncing.value"
+        :disabled="
+          !cloudSync.account.isAuthenticated.value || cloudSync.identityDirectorySyncing.value
+        "
         @click="cloudSync.syncLocalIdentitiesToCloud()"
       >
-        {{ cloudSync.identityDirectorySyncing.value ? "Saving..." : "Save all local identities to account" }}
+        {{
+          cloudSync.identityDirectorySyncing.value
+            ? "Saving..."
+            : "Save all local identities to account"
+        }}
       </button>
       <button
         type="button"
         class="w-fit rounded-md border border-[var(--ui-border)] px-2 py-1 text-xs hover:bg-[var(--ui-fg)]/5 disabled:opacity-50"
-        :disabled="!cloudSync.account.isAuthenticated.value || !cloudSync.recoveryPassphraseUnlocked.value"
+        :disabled="
+          !cloudSync.account.isAuthenticated.value || !cloudSync.recoveryPassphraseUnlocked.value
+        "
         @click="cloudSync.backupAllLocalIdentitiesToAccount()"
       >
         Backup all identity keys
@@ -452,7 +468,11 @@ function saveHandle() {
           <IdentityAvatar :identity="entry.publicKeyPEM" size="sm" />
           <p class="text-xs font-semibold">
             {{ getIdentityName(entry) }}
-            <span v-if="entry.id === context.currentIdentityId.value" class="text-[11px] text-[var(--ui-fg-muted)]">(current)</span>
+            <span
+              v-if="entry.id === context.currentIdentityId.value"
+              class="text-[11px] text-[var(--ui-fg-muted)]"
+              >(current)</span
+            >
           </p>
         </div>
         <div class="flex gap-2">
@@ -474,7 +494,9 @@ function saveHandle() {
           <button
             type="button"
             class="rounded-md border border-[var(--ui-border)] px-2 py-1 text-xs hover:bg-[var(--ui-fg)]/5 disabled:opacity-50"
-            :disabled="!cloudSync.account.isAuthenticated.value || cloudSync.identityDirectorySyncing.value"
+            :disabled="
+              !cloudSync.account.isAuthenticated.value || cloudSync.identityDirectorySyncing.value
+            "
             @click="saveIdentity(entry.id)"
           >
             Save to account
@@ -482,7 +504,11 @@ function saveHandle() {
           <button
             type="button"
             class="rounded-md border border-[var(--ui-border)] px-2 py-1 text-xs hover:bg-[var(--ui-fg)]/5 disabled:opacity-50"
-            :disabled="!cloudSync.account.isAuthenticated.value || !cloudSync.recoveryPassphraseUnlocked.value || backupBusyIdentityId === entry.id"
+            :disabled="
+              !cloudSync.account.isAuthenticated.value ||
+              !cloudSync.recoveryPassphraseUnlocked.value ||
+              backupBusyIdentityId === entry.id
+            "
             @click="backupIdentityToAccount(entry.id)"
           >
             {{ backupBusyIdentityId === entry.id ? "Backing up..." : "Backup now" }}
@@ -502,18 +528,13 @@ function saveHandle() {
     <section class="rounded-lg border border-[var(--ui-border)] p-3 flex flex-col gap-2">
       <h2 class="text-sm font-semibold">Saved Account Identities</h2>
       <p class="text-xs text-[var(--ui-fg-muted)]">
-        These are identities already saved to your account. Private keys are only stored as encrypted recovery backups.
+        These are identities already saved to your account. Private keys are only stored as
+        encrypted recovery backups.
       </p>
-      <p
-        v-if="!cloudSync.account.isAuthenticated.value"
-        class="text-xs text-amber-600"
-      >
+      <p v-if="!cloudSync.account.isAuthenticated.value" class="text-xs text-amber-600">
         Sign in to view saved account identities.
       </p>
-      <p
-        v-else-if="!accountSavedIdentities.length"
-        class="text-xs text-[var(--ui-fg-muted)]"
-      >
+      <p v-else-if="!accountSavedIdentities.length" class="text-xs text-[var(--ui-fg-muted)]">
         No saved account identities found.
       </p>
       <div
@@ -528,7 +549,11 @@ function saveHandle() {
               {{ accountIdentityLabel(entry) }}
             </p>
             <p class="text-[11px] text-[var(--ui-fg-muted)]">
-              {{ isIdentityOnThisDevice(entry) ? "Available on this device" : "Recover this identity locally to use it here." }}
+              {{
+                isIdentityOnThisDevice(entry)
+                  ? "Available on this device"
+                  : "Recover this identity locally to use it here."
+              }}
             </p>
           </div>
         </div>
@@ -537,7 +562,9 @@ function saveHandle() {
             v-if="!isIdentityOnThisDevice(entry)"
             type="button"
             class="rounded-md border border-[var(--ui-border)] px-2 py-1 text-xs hover:bg-[var(--ui-fg)]/5 disabled:opacity-50"
-            :disabled="!cloudSync.recoveryPassphraseUnlocked.value || recoverBusyManagedUserId === entry.id"
+            :disabled="
+              !cloudSync.recoveryPassphraseUnlocked.value || recoverBusyManagedUserId === entry.id
+            "
             @click="recoverIdentityToDevice(entry.id)"
           >
             {{ recoverBusyManagedUserId === entry.id ? "Recovering..." : "Recover to this device" }}
@@ -554,13 +581,17 @@ function saveHandle() {
       </div>
     </section>
 
-    <p v-if="context.errorMessage.value" class="text-xs text-red-600">{{ context.errorMessage.value }}</p>
+    <p v-if="context.errorMessage.value" class="text-xs text-red-600">
+      {{ context.errorMessage.value }}
+    </p>
     <p v-if="cloudSync.identityDirectorySyncError.value" class="text-xs text-red-600">
       {{ cloudSync.identityDirectorySyncError.value }}
     </p>
     <p v-if="cloudSync.identityDirectorySyncStatus.value" class="text-xs text-green-600">
       {{ cloudSync.identityDirectorySyncStatus.value }}
     </p>
-    <p v-if="context.statusMessage.value" class="text-xs text-green-600">{{ context.statusMessage.value }}</p>
+    <p v-if="context.statusMessage.value" class="text-xs text-green-600">
+      {{ context.statusMessage.value }}
+    </p>
   </div>
 </template>

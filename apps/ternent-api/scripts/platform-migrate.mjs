@@ -29,9 +29,7 @@ async function ensureMigrationsTable() {
 
 async function readMigrations() {
   const files = await readdir(migrationsDir);
-  return files
-    .filter((name) => name.endsWith(".sql"))
-    .sort((a, b) => a.localeCompare(b));
+  return files.filter((name) => name.endsWith(".sql")).sort((a, b) => a.localeCompare(b));
 }
 
 async function applyMigration(name) {
@@ -42,24 +40,24 @@ async function applyMigration(name) {
   await dbTx(async (client) => {
     const existing = await client.query(
       "SELECT id, checksum FROM platform_schema_migrations WHERE id = $1",
-      [name]
+      [name],
     );
 
     if (existing.rowCount > 0) {
       const current = String(existing.rows[0].checksum || "");
       if (current !== checksum) {
         throw new Error(
-          `Migration checksum mismatch for ${name}. Expected ${current}, got ${checksum}.`
+          `Migration checksum mismatch for ${name}. Expected ${current}, got ${checksum}.`,
         );
       }
       return;
     }
 
     await client.query(sql);
-    await client.query(
-      "INSERT INTO platform_schema_migrations (id, checksum) VALUES ($1, $2)",
-      [name, checksum]
-    );
+    await client.query("INSERT INTO platform_schema_migrations (id, checksum) VALUES ($1, $2)", [
+      name,
+      checksum,
+    ]);
 
     console.log(`[platform-migrate] applied ${name}`);
   });
@@ -70,7 +68,7 @@ async function main() {
   if (!pool) {
     const status = await getPlatformDbStatus();
     throw new Error(
-      `Database pool is unavailable. ${status?.reason || "Ensure DATABASE_URL and pg dependency are configured."}`
+      `Database pool is unavailable. ${status?.reason || "Ensure DATABASE_URL and pg dependency are configured."}`,
     );
   }
 

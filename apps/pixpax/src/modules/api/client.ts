@@ -448,7 +448,9 @@ export async function createSwapRecipientQr(value: string) {
   return payload.qrSvg;
 }
 
-export async function createSwapOfferRecord(offerArtifact: PixpaxSignedArtifact<PixpaxTransferOffer>) {
+export async function createSwapOfferRecord(
+  offerArtifact: PixpaxSignedArtifact<PixpaxTransferOffer>,
+) {
   const payload = await requestJson<{
     ok: true;
     created: boolean;
@@ -490,13 +492,16 @@ export async function acceptSwapOfferRecord(input: {
   const payload = await requestJson<{
     ok: true;
     offer: PixpaxSwapOfferRecord;
-  }>(`/v1/pixpax/v2/swaps/offers/${encodeURIComponent(String(input.transferId || "").trim())}/accept`, {
-    method: "POST",
-    body: JSON.stringify({
-      offerArtifact: input.offerArtifact,
-      acceptanceArtifact: input.acceptanceArtifact,
-    }),
-  });
+  }>(
+    `/v1/pixpax/v2/swaps/offers/${encodeURIComponent(String(input.transferId || "").trim())}/accept`,
+    {
+      method: "POST",
+      body: JSON.stringify({
+        offerArtifact: input.offerArtifact,
+        acceptanceArtifact: input.acceptanceArtifact,
+      }),
+    },
+  );
   return payload.offer;
 }
 
@@ -507,24 +512,26 @@ export async function completeSwapOfferRecord(input: {
   const payload = await requestJson<{
     ok: true;
     offer: PixpaxSwapOfferRecord;
-  }>(`/v1/pixpax/v2/swaps/offers/${encodeURIComponent(String(input.transferId || "").trim())}/complete`, {
-    method: "POST",
-    body: JSON.stringify({
-      offerArtifact: input.offerArtifact,
-    }),
-  });
+  }>(
+    `/v1/pixpax/v2/swaps/offers/${encodeURIComponent(String(input.transferId || "").trim())}/complete`,
+    {
+      method: "POST",
+      body: JSON.stringify({
+        offerArtifact: input.offerArtifact,
+      }),
+    },
+  );
   return payload.offer;
 }
 
-export async function fetchPublicCollectionBundle(
-  collectionId: string,
-  version = "",
-) {
+export async function fetchPublicCollectionBundle(collectionId: string, version = "") {
   const query = version ? `?version=${encodeURIComponent(version)}` : "";
   const path = `/v1/pixpax/v2/collections/${encodeURIComponent(collectionId)}/bundle${query}`;
-  const payload = await requestJson<{
-    ok: true;
-  } & PixpaxPublicCollectionBundle>(path);
+  const payload = await requestJson<
+    {
+      ok: true;
+    } & PixpaxPublicCollectionBundle
+  >(path);
   return payload;
 }
 
@@ -539,22 +546,14 @@ export async function fetchAdminCollectionBundle(collectionId: string, version: 
   );
 }
 
-export async function redeemDesignatedCode(input: {
-  code: string;
-  claimantPublicKey: string;
-}) {
-  return requestJson<PixpaxDesignatedRedeemResponse>(
-    "/v1/pixpax/v2/designated/redeem",
-    {
-      method: "POST",
-      body: JSON.stringify(input),
-    },
-  );
+export async function redeemDesignatedCode(input: { code: string; claimantPublicKey: string }) {
+  return requestJson<PixpaxDesignatedRedeemResponse>("/v1/pixpax/v2/designated/redeem", {
+    method: "POST",
+    body: JSON.stringify(input),
+  });
 }
 
-export async function verifyIssuedArtifact(
-  artifact: PixpaxSignedArtifact<PixpaxPackIssuance>,
-) {
+export async function verifyIssuedArtifact(artifact: PixpaxSignedArtifact<PixpaxPackIssuance>) {
   const payload = await requestJson<{
     ok: true;
     verification: PixpaxDesignatedRedeemResponse["verification"];
@@ -836,7 +835,8 @@ export async function listPixpaxV2DesignatedCodes(
 ) {
   const query = new URLSearchParams();
   if (input.collectionId) query.set("collectionId", String(input.collectionId || "").trim());
-  if (input.collectionVersion) query.set("collectionVersion", String(input.collectionVersion || "").trim());
+  if (input.collectionVersion)
+    query.set("collectionVersion", String(input.collectionVersion || "").trim());
   if (input.dropId) query.set("dropId", String(input.dropId || "").trim());
   if (input.status) query.set("status", String(input.status || "").trim());
   if (Number.isFinite(Number(input.limit))) query.set("limit", String(Number(input.limit)));

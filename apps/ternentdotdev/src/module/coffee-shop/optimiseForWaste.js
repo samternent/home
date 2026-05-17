@@ -7,8 +7,7 @@ const getGroup = (table, packets, activeSolution) => {
   while (currentAmount > 0 && packetIndex >= 0) {
     if (
       packetIndex === 0 ||
-      table[packetIndex][currentAmount] !==
-        table[packetIndex - 1][currentAmount]
+      table[packetIndex][currentAmount] !== table[packetIndex - 1][currentAmount]
     ) {
       const packetSize = packets[packetIndex];
       group.push(packetSize);
@@ -39,10 +38,7 @@ const compute = (amount, packets, tableTemplate) => {
       if (packetSize > i) {
         table[j - 1][i] = table[j - 2]?.[i] ?? Infinity; // Carry forward the value
       } else {
-        table[j - 1][i] = Math.min(
-          table[j - 2]?.[i] ?? Infinity,
-          1 + table[j - 1][i - packetSize]
-        );
+        table[j - 1][i] = Math.min(table[j - 2]?.[i] ?? Infinity, 1 + table[j - 1][i - packetSize]);
       }
     }
   }

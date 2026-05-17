@@ -1,5 +1,8 @@
 type BufferLike = {
-  from: (value: Uint8Array | string, encoding?: string) => {
+  from: (
+    value: Uint8Array | string,
+    encoding?: string,
+  ) => {
     toString: (encoding: string) => string;
   };
 };
@@ -39,9 +42,7 @@ export function removeLines(str: string): string {
  * @returns TODO - Add return type description
  */
 export function stripIdentityKey(key: string) {
-  return key
-    .replace("-----BEGIN PUBLIC KEY-----\n", "")
-    .replace("\n-----END PUBLIC KEY-----", "");
+  return key.replace("-----BEGIN PUBLIC KEY-----\n", "").replace("\n-----END PUBLIC KEY-----", "");
 }
 
 /**
@@ -109,14 +110,10 @@ export function arrayBufferToBase64(arrayBuffer: ArrayBuffer): string {
 export function base64ToArrayBuffer(b64: string): ArrayBuffer {
   const bufferCtor = getBufferCtor();
   if (bufferCtor) {
-    const bytes = Uint8Array.from(
-      bufferCtor.from(b64, "base64").toString("binary"),
-      (char) => char.charCodeAt(0)
+    const bytes = Uint8Array.from(bufferCtor.from(b64, "base64").toString("binary"), (char) =>
+      char.charCodeAt(0),
     );
-    return bytes.buffer.slice(
-      bytes.byteOffset,
-      bytes.byteOffset + bytes.byteLength
-    );
+    return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
   }
   const byteString = atob(b64);
   const byteArray = new Uint8Array(byteString.length);
@@ -170,9 +167,7 @@ export function decode(data: Uint8Array): string {
  * @param TODO - Add parameters
  * @returns TODO - Add return type description
  */
-export function getHashBuffer(
-  data: string | object | number
-): Promise<ArrayBuffer> {
+export function getHashBuffer(data: string | object | number): Promise<ArrayBuffer> {
   return crypto.subtle.digest("SHA-256", encode(data));
 }
 
@@ -196,7 +191,7 @@ export function getHashHex(hash: Array<number>): string {
 
 function canonicalize(
   value: unknown,
-  seen: WeakSet<object>
+  seen: WeakSet<object>,
 ): string | number | boolean | null | Array<unknown> | Record<string, unknown> {
   if (value === undefined) {
     throw new TypeError("Cannot hash undefined");
@@ -246,17 +241,13 @@ export function canonicalStringify(data: string | object | number): string {
   return JSON.stringify(canonicalize(data, new WeakSet()));
 }
 
-export async function hashData(
-  data: string | object | number
-): Promise<string> {
+export async function hashData(data: string | object | number): Promise<string> {
   const hash_buffer = await getHashBuffer(canonicalStringify(data));
   const hash_array = getHashArray(hash_buffer);
   return getHashHex(hash_array);
 }
 
-export async function hashBytes(
-  input: Uint8Array | ArrayBuffer
-): Promise<string> {
+export async function hashBytes(input: Uint8Array | ArrayBuffer): Promise<string> {
   const bytes = input instanceof Uint8Array ? input : new Uint8Array(input);
   const hashBuffer = await crypto.subtle.digest("SHA-256", bytes);
   return getHashHex(getHashArray(hashBuffer));
@@ -268,11 +259,7 @@ export async function hashBytes(
  * @param TODO - Add parameters
  * @returns TODO - Add return type description
  */
-export function generateColorStops(
-  primaryColor: string,
-  secondaryColor: string,
-  steps: number
-) {
+export function generateColorStops(primaryColor: string, secondaryColor: string, steps: number) {
   const colors = [];
   for (let i = 0; i <= steps; i++) {
     const ratio = i / steps;
@@ -294,8 +281,5 @@ function lerpColor(color1: string, color2: string, ratio: number) {
   const g = Math.round(g1 + (g2 - g1) * ratio);
   const b = Math.round(b1 + (b2 - b1) * ratio);
 
-  return `#${((1 << 24) | (r << 16) | (g << 8) | b)
-    .toString(16)
-    .slice(1)
-    .toUpperCase()}`;
+  return `#${((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1).toUpperCase()}`;
 }

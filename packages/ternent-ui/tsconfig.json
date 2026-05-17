@@ -2,5 +2,5 @@
   "compilerOptions": {
     "moduleResolution": "bundler",
     "module": "preserve"
-  },
+  }
 }

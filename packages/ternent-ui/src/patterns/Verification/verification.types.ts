@@ -6,4 +6,3 @@ export type VerificationContext = {
   location?: VerificationLocation;
 };
 export type VerificationVariant = "full" | "compact" | "embed";
-

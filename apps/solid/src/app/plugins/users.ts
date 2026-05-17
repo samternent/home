@@ -77,7 +77,10 @@ function cloneUserRecord(record: UserRecord): UserRecord {
 function cloneUsersState(state: UsersState): UsersState {
   return {
     byKey: Object.fromEntries(
-      Object.entries(state.byKey).map(([identityKey, record]) => [identityKey, cloneUserRecord(record)]),
+      Object.entries(state.byKey).map(([identityKey, record]) => [
+        identityKey,
+        cloneUserRecord(record),
+      ]),
     ),
     order: [...state.order],
   };

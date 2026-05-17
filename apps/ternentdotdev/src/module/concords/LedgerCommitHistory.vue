@@ -12,9 +12,7 @@ import { SButton } from "ternent-ui/components";
 const { ledger, api } = useLedger();
 
 const blocks = computedAsync(async () => {
-  const blocks = await Promise.all(
-    [...(ledger.value?.chain || [])].reverse().map(verifyBlock)
-  );
+  const blocks = await Promise.all([...(ledger.value?.chain || [])].reverse().map(verifyBlock));
 
   return blocks;
 });
@@ -50,14 +48,12 @@ async function verifyRecord(record) {
       identity: identity,
       collection: collection,
     },
-    key
+    key,
   );
 }
 
 async function verifyBlock(block) {
-  const verified = await Promise.all(
-    block.records.map((record) => verifyRecord(record))
-  );
+  const verified = await Promise.all(block.records.map((record) => verifyRecord(record)));
 
   expandedMap.value = {
     ...expandedMap.value,
@@ -83,9 +79,7 @@ async function verifyBlock(block) {
       <div class="flex justify-between items-center px-2 py-1">
         <p class="flex">
           <IdentityAvatar :identity="block.identity" size="xs" class="mr-2" />
-          <strong class="text-sm text-blue-500 mr-2">{{
-            block.hash.slice(0, 6)
-          }}</strong>
+          <strong class="text-sm text-blue-500 mr-2">{{ block.hash.slice(0, 6) }}</strong>
           <span class="text-sm"
             >{{ i < blocks.length - 1 ? block.message : "Ledger created" }}
           </span>
@@ -148,10 +142,7 @@ async function verifyBlock(block) {
         </div>
       </div>
       <Transition>
-        <div
-          v-if="expandedMap[block.hash]"
-          class="w-full bg-base-200 border border-base-300 my-2"
-        >
+        <div v-if="expandedMap[block.hash]" class="w-full bg-base-200 border border-base-300 my-2">
           <LedgerRecords :records="block.records" />
         </div>
       </Transition>

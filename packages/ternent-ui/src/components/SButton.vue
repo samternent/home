@@ -81,7 +81,7 @@ const baseClasses = computed(() =>
     "whitespace-nowrap align-middle self-center h-auto",
     "transition-colors duration-200 focus-visible:outline-none",
     "disabled:opacity-60 disabled:cursor-not-allowed",
-  ].join(" ")
+  ].join(" "),
 );
 
 const buttonClasses = computed(() => {
@@ -92,9 +92,7 @@ const buttonClasses = computed(() => {
   return cls.join(" ");
 });
 
-const tag = computed(() =>
-  props.to ? "RouterLink" : props.href ? "a" : "button"
-);
+const tag = computed(() => (props.to ? "RouterLink" : props.href ? "a" : "button"));
 
 const componentProps = computed(() => {
   const base = {
@@ -132,25 +130,9 @@ const onClick = (e) => {
   <component :is="tag" v-bind="componentProps" @click="onClick">
     <!-- loading overlay -->
     <span v-if="loading" class="absolute inset-0 grid place-items-center">
-      <svg
-        class="animate-spin h-4 w-4"
-        viewBox="0 0 24 24"
-        fill="none"
-        aria-hidden="true"
-      >
-        <circle
-          class="opacity-25"
-          cx="12"
-          cy="12"
-          r="10"
-          stroke="currentColor"
-          stroke-width="4"
-        />
-        <path
-          class="opacity-75"
-          fill="currentColor"
-          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-        />
+      <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
       </svg>
       <span class="sr-only">Loading</span>
     </span>

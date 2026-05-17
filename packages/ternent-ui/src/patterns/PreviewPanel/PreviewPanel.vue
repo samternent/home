@@ -45,15 +45,9 @@ const props = withDefaults(
 const hasFooter = computed(() => Boolean(props.footerLabel || props.footerText));
 const toneClass = (tone?: PreviewPanelTone) =>
   tone ? `ui-preview-panel__value--${tone}` : undefined;
-const rootClass = computed(() => [
-  "ui-preview-panel",
-  `ui-preview-panel--${props.emphasis}`,
-]);
-const badgeVariant = computed(() =>
-  props.badgeMode === "quiet" ? "outline" : "soft",
-);
-const badgeTone = (tone?: PreviewPanelTone) =>
-  tone === "info" ? "primary" : tone;
+const rootClass = computed(() => ["ui-preview-panel", `ui-preview-panel--${props.emphasis}`]);
+const badgeVariant = computed(() => (props.badgeMode === "quiet" ? "outline" : "soft"));
+const badgeTone = (tone?: PreviewPanelTone) => (tone === "info" ? "primary" : tone);
 </script>
 
 <template>
@@ -130,8 +124,16 @@ const badgeTone = (tone?: PreviewPanelTone) =>
   inset: 0;
   content: "";
   background:
-    linear-gradient(180deg, color-mix(in srgb, var(--ui-tonal-tertiary) 78%, transparent), transparent 28%),
-    radial-gradient(circle at top right, color-mix(in srgb, var(--ui-primary-muted) 38%, transparent), transparent 38%);
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--ui-tonal-tertiary) 78%, transparent),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at top right,
+      color-mix(in srgb, var(--ui-primary-muted) 38%, transparent),
+      transparent 38%
+    );
   opacity: 0.42;
   pointer-events: none;
 }
@@ -151,7 +153,11 @@ const badgeTone = (tone?: PreviewPanelTone) =>
   border-radius: inherit;
   background-image:
     linear-gradient(color-mix(in srgb, var(--ui-border) 72%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in srgb, var(--ui-border) 72%, transparent) 1px, transparent 1px);
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--ui-border) 72%, transparent) 1px,
+      transparent 1px
+    );
   background-position: center;
   background-size: 2.25rem 2.25rem;
   mask-image: radial-gradient(circle at center, black, transparent 78%);

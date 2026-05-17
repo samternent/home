@@ -58,9 +58,7 @@ function shortId(id: string, n = 8): string {
   return (id || "").slice(0, n);
 }
 
-async function deriveProfileId(params: {
-  identityPublicKeyPem: string;
-}): Promise<string> {
+async function deriveProfileId(params: { identityPublicKeyPem: string }): Promise<string> {
   // Deterministic, non-secret, protocol-aligned: sha256(canonical({...}))
   // We wrap the string so future changes (e.g. using DER bytes) can version cleanly.
   return hashData({
@@ -76,7 +74,7 @@ function Profile() {
 
   if (!identity || !encryption) {
     throw new Error(
-      "useProfile requires provideIdentity() and provideEncryption() to be called first."
+      "useProfile requires provideIdentity() and provideEncryption() to be called first.",
     );
   }
 
@@ -113,7 +111,7 @@ function Profile() {
       if (profileId.value) return;
       await ensureProfileId();
     },
-    { immediate: true }
+    { immediate: true },
   );
 
   function setProfileMeta(partial: ProfileMeta) {
@@ -153,9 +151,7 @@ function Profile() {
       },
       encryption: {
         type: "age",
-        recipients: encryption.publicKey.value
-          ? [encryption.publicKey.value]
-          : [],
+        recipients: encryption.publicKey.value ? [encryption.publicKey.value] : [],
       },
       metadata: meta.value || {},
     };
@@ -254,7 +250,6 @@ export function provideProfile() {
 
 export function useProfile(): UseProfile {
   const profile = inject<UseProfile>(useProfileSymbol);
-  if (!profile)
-    throw new Error("useProfile() called without provideProfile().");
+  if (!profile) throw new Error("useProfile() called without provideProfile().");
   return profile;
 }

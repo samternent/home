@@ -8,17 +8,8 @@ import {
   type ShallowRef,
 } from "vue";
 
-import {
-  createLedgerRuntime,
-  lokiPlugin,
-  indexedDbPlugin,
-  type EntryWithId,
-} from "ternent-ledger";
-import {
-  createLedgerBridge,
-  provideLedgerBridge,
-  useLedgerBridge,
-} from "ternent-ledger-vue";
+import { createLedgerRuntime, lokiPlugin, indexedDbPlugin, type EntryWithId } from "ternent-ledger";
+import { createLedgerBridge, provideLedgerBridge, useLedgerBridge } from "ternent-ledger-vue";
 
 import {
   stripIdentityKey,
@@ -27,11 +18,7 @@ import {
   generateId,
 } from "ternent-utils";
 
-import {
-  encrypt,
-  decrypt,
-  generate as generateEncryptionKeys,
-} from "ternent-encrypt";
+import { encrypt, decrypt, generate as generateEncryptionKeys } from "ternent-encrypt";
 
 import { sign, exportPublicKeyAsPem } from "ternent-identity";
 
@@ -70,14 +57,13 @@ function isPayloadObject(payload: unknown): payload is PayloadObject {
 }
 
 function getEncryptedPayload(payload: PayloadObject): string | null {
-  if (payload.enc === "age" && typeof payload.ct === "string")
-    return payload.ct;
+  if (payload.enc === "age" && typeof payload.ct === "string") return payload.ct;
   if (typeof payload.encrypted === "string") return payload.encrypted;
   return null;
 }
 
 function hasPermissionLink(
-  payload: PayloadObject
+  payload: PayloadObject,
 ): payload is PayloadObject & { permission: string; permissionId?: string } {
   return typeof payload.permission === "string";
 }
@@ -90,24 +76,15 @@ type ProvideLedgerContext = {
   bridge: ReturnType<typeof createLedgerBridge>;
   collections: ReturnType<typeof createLedgerBridge>["collections"];
   compressedBlob: ShallowRef<Blob | undefined>;
-  createPermission: (
-    title: string,
-    scope: string
-  ) => Promise<PermissionGroupRecord | void>;
+  createPermission: (title: string, scope: string) => Promise<PermissionGroupRecord | void>;
   addUserPermission: (
     permissionId: string,
     identity: string,
-    encryptionKey: string
+    encryptionKey: string,
   ) => Promise<any>;
   getPermissionGroups: () => PermissionGroupRecord[];
-  getPermissionGrantsByPermissionId: (
-    permissionId: string
-  ) => PermissionGrantRecord[];
-  addItem: (
-    data: Record<string, any>,
-    collection?: string,
-    permissionId?: string
-  ) => Promise<void>;
+  getPermissionGrantsByPermissionId: (permissionId: string) => PermissionGrantRecord[];
+  addItem: (data: Record<string, any>, collection?: string, permissionId?: string) => Promise<void>;
   getCollection: (name: string) => any;
   getCollections: () => Record<string, any>;
 };
@@ -116,13 +93,10 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
   const compressedBlob = shallowRef<Blob>();
 
   const { publicKeyPEM: publicKeyIdentityPEM } = useIdentity();
-  const { privateKey: privateKeyEncryption, publicKey: publicKeyEncryption } =
-    useEncryption();
+  const { privateKey: privateKeyEncryption, publicKey: publicKeyEncryption } = useEncryption();
 
   // Plugins
-  async function decryptEntryIfPossible(
-    entry: EntryWithId
-  ): Promise<EntryWithId | null> {
+  async function decryptEntryIfPossible(entry: EntryWithId): Promise<EntryWithId | null> {
     if (!isPayloadObject(entry.payload)) return entry;
 
     const payload = entry.payload;
@@ -138,7 +112,7 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
 
         const clear = await decrypt(
           privateKeyEncryption.value,
-          formatEncryptionFile(encryptedPayload)
+          formatEncryptionFile(encryptedPayload),
         );
         return { ...entry, payload: { ...payload, ...JSON.parse(clear) } };
       }
@@ -167,12 +141,9 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
 
         const sharedKey = await decrypt(
           privateKeyEncryption.value,
-          formatEncryptionFile(permSecret)
+          formatEncryptionFile(permSecret),
         );
-        const clear = await decrypt(
-          sharedKey,
-          formatEncryptionFile(encryptedPayload)
-        );
+        const clear = await decrypt(sharedKey, formatEncryptionFile(encryptedPayload));
         return { ...entry, payload: { ...payload, ...JSON.parse(clear) } };
       }
 
@@ -182,7 +153,7 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
 
       const clear = await decrypt(
         privateKeyEncryption.value,
-        formatEncryptionFile(encryptedPayload)
+        formatEncryptionFile(encryptedPayload),
       );
       return { ...entry, payload: { ...payload, ...JSON.parse(clear) } };
     } catch {
@@ -193,12 +164,7 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
   const loki = lokiPlugin({
     name: "ledger",
     transformEntry: decryptEntryIfPossible,
-    bootstrapKinds: [
-      "permissions",
-      "permission-grants",
-      "board-columns",
-      "tasklists",
-    ],
+    bootstrapKinds: ["permissions", "permission-grants", "board-columns", "tasklists"],
   });
 
   const idb = indexedDbPlugin({
@@ -220,8 +186,7 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
       idb, // storage first
       loki.plugin, // then in-memory DB
     ],
-    resolveAuthor: async (publicKey) =>
-      stripIdentityKey(await exportPublicKeyAsPem(publicKey)),
+    resolveAuthor: async (publicKey) => stripIdentityKey(await exportPublicKeyAsPem(publicKey)),
     sign: async (signingKey, payload) => {
       return sign(signingKey, payload);
     },
@@ -250,14 +215,10 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
         type: "application/json",
       }).stream();
 
-      const compressedReadableStream = stream.pipeThrough(
-        new CompressionStream("gzip")
-      );
-      compressedBlob.value = await new Response(
-        compressedReadableStream
-      ).blob();
+      const compressedReadableStream = stream.pipeThrough(new CompressionStream("gzip"));
+      compressedBlob.value = await new Response(compressedReadableStream).blob();
     },
-    { immediate: true }
+    { immediate: true },
   );
 
   async function ensureAuthed() {
@@ -265,9 +226,7 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
 
     // If your app manages keys elsewhere, call api.auth(...) from outside.
     // We keep this guard so helpers throw a sensible error.
-    throw new Error(
-      "Ledger not authed. Call api.auth(signKey, verifyKey) before writing."
-    );
+    throw new Error("Ledger not authed. Call api.auth(signKey, verifyKey) before writing.");
   }
 
   async function createPermission(title: string, scope: string) {
@@ -330,11 +289,7 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
     return permissionGroup;
   }
 
-  async function addUserPermission(
-    permissionId: string,
-    identity: string,
-    encryptionKey: string
-  ) {
+  async function addUserPermission(permissionId: string, identity: string, encryptionKey: string) {
     await ensureAuthed();
     await ensureEncryptionReady();
 
@@ -342,9 +297,7 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
 
     const permissionGroup = loki
       .getCollection("permission-groups")
-      ?.findOne({ "payload.id": permissionId })?.payload as
-      | PermissionGroupRecord
-      | undefined;
+      ?.findOne({ "payload.id": permissionId })?.payload as PermissionGroupRecord | undefined;
 
     if (!permissionGroup) {
       console.log("No permission group");
@@ -371,7 +324,7 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
     try {
       permissionKey = await decrypt(
         privateKeyEncryption.value,
-        formatEncryptionFile(myGrant.secret)
+        formatEncryptionFile(myGrant.secret),
       );
     } catch (error) {
       throw new Error("Failed to decrypt permission grant secret.");
@@ -403,11 +356,7 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
     });
   }
 
-  async function addItem(
-    data: Record<string, any>,
-    collection = "items",
-    permissionId?: string
-  ) {
+  async function addItem(data: Record<string, any>, collection = "items", permissionId?: string) {
     await ensureAuthed();
     const recordId = data?.id || generateId();
     const {
@@ -422,9 +371,7 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
       permissionId ??
       (typeof dataPermissionId === "string" ? dataPermissionId : null) ??
       (typeof dataPermission === "string" ? dataPermission : null);
-    const forceEncrypt = Boolean(
-      permissionHint || encrypted || enc || ct || dataPermissionId
-    );
+    const forceEncrypt = Boolean(permissionHint || encrypted || enc || ct || dataPermissionId);
 
     // Optional: permission-based encryption
     if (!permissionHint && !forceEncrypt) {
@@ -465,10 +412,7 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
             });
 
       const permissionRecord =
-        permissionGroup?.payload ||
-        userPermission?.payload ||
-        legacyPermission?.payload ||
-        null;
+        permissionGroup?.payload || userPermission?.payload || legacyPermission?.payload || null;
 
       const pub =
         permissionRecord?.public ||
@@ -477,7 +421,7 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
 
       if (!pub) {
         throw new Error(
-          "Encrypted item update requires a permission record or a user encryption key."
+          "Encrypted item update requires a permission record or a user encryption key.",
         );
       }
 
@@ -496,7 +440,7 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
             (typeof dataPermissionId === "string" ? dataPermissionId : null),
           id: recordId,
           encrypted: stripEncryptionFile(
-            await encrypt(pub, JSON.stringify({ ...payloadData, id: recordId }))
+            await encrypt(pub, JSON.stringify({ ...payloadData, id: recordId })),
           ),
         },
         squashKinds: [collection],
@@ -519,8 +463,7 @@ export function provideLedger({ ledger: _ledger }: { ledger?: any } = {}) {
     addUserPermission,
     addItem,
     getPermissionGroups: () =>
-      (loki.getCollection("permission-groups")?.find() ??
-        []) as PermissionGroupRecord[],
+      (loki.getCollection("permission-groups")?.find() ?? []) as PermissionGroupRecord[],
     getPermissionGrantsByPermissionId: (permissionId: string) =>
       (loki.getCollection("permission-grants")?.find({
         "payload.permissionId": permissionId,

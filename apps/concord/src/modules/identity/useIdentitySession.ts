@@ -20,9 +20,7 @@ export const identityStorageKey = `${appConfig.appId}/identity`;
 
 const state = useLocalStorage<StoredIdentity | null>(identityStorageKey, null);
 
-function normalizeStoredIdentity(
-  value: StoredIdentity | null,
-): StoredIdentity | null {
+function normalizeStoredIdentity(value: StoredIdentity | null): StoredIdentity | null {
   if (!value || typeof value !== "object") return null;
   if (typeof value.id !== "string" || typeof value.fingerprint !== "string") {
     return null;

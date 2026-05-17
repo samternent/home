@@ -20,10 +20,7 @@ interface CanonicalArray extends Array<CanonicalValue> {}
 
 type CanonicalValue = CanonicalPrimitive | CanonicalObject | CanonicalArray;
 
-function canonicalize(
-  value: unknown,
-  seen: WeakSet<object>
-): CanonicalValue {
+function canonicalize(value: unknown, seen: WeakSet<object>): CanonicalValue {
   if (value === undefined) {
     throw new TypeError("Cannot canonicalize undefined");
   }
@@ -60,10 +57,7 @@ function canonicalize(
     const entries = Object.keys(value as Record<string, unknown>).sort();
     const result: Record<string, CanonicalValue> = {};
     for (const key of entries) {
-      result[key] = canonicalize(
-        (value as Record<string, unknown>)[key],
-        seen
-      );
+      result[key] = canonicalize((value as Record<string, unknown>)[key], seen);
     }
     seen.delete(value as object);
     return result;

@@ -56,9 +56,7 @@ Every shared service should follow the same shape:
 ```ts
 type RunServiceStatus = "idle" | "ready" | "loading" | "error";
 
-type RunServiceResult<T> =
-  | { ok: true; value: T }
-  | { ok: false; error: string };
+type RunServiceResult<T> = { ok: true; value: T } | { ok: false; error: string };
 
 type RunWorkspaceService<TState, TActions> = {
   status: ComputedRef<RunServiceStatus>;

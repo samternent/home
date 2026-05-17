@@ -1,9 +1,5 @@
 import type { PropType } from "vue";
-import type {
-  RadioGroupOption,
-  RadioGroupOrientation,
-  RadioGroupSize,
-} from "./RadioGroup.types";
+import type { RadioGroupOption, RadioGroupOrientation, RadioGroupSize } from "./RadioGroup.types";
 
 export const radioGroupProps = {
   modelValue: {

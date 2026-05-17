@@ -56,9 +56,7 @@ const auditRecords = computed(() => {
             displayData = {
               title: data.title || data.name || "Untitled Note",
               category: data.category || data.tags?.[0] || "General",
-              content: data.content
-                ? `${data.content.slice(0, 50)}...`
-                : undefined,
+              content: data.content ? `${data.content.slice(0, 50)}...` : undefined,
             };
             break;
 
@@ -66,8 +64,8 @@ const auditRecords = computed(() => {
             actionType = data.completed
               ? "Task Completed"
               : data.id
-              ? "Task Updated"
-              : "Task Created";
+                ? "Task Updated"
+                : "Task Created";
             icon = data.completed ? "✅" : "📋";
             displayData = {
               title: data.title || data.name || "Untitled Task",
@@ -201,12 +199,10 @@ const filteredRecords = computed(() => {
     records = records.filter(
       (r) =>
         (r.actionType && r.actionType.toLowerCase().includes(q)) ||
-        (r.displayData.title &&
-          r.displayData.title.toLowerCase().includes(q)) ||
+        (r.displayData.title && r.displayData.title.toLowerCase().includes(q)) ||
         (r.displayData.name && r.displayData.name.toLowerCase().includes(q)) ||
-        (r.displayData.content &&
-          r.displayData.content.toLowerCase().includes(q)) ||
-        (r.displayData.raw && r.displayData.raw.toLowerCase().includes(q))
+        (r.displayData.content && r.displayData.content.toLowerCase().includes(q)) ||
+        (r.displayData.raw && r.displayData.raw.toLowerCase().includes(q)),
     );
   }
   return records;
@@ -239,9 +235,7 @@ function formatDate(timestamp) {
 <template>
   <div class="flex flex-col flex-1 w-full h-full bg-base-100">
     <!-- Header -->
-    <div
-      class="px-6 py-4 border-b border-base-200 sticky top-0 z-10 bg-base-100"
-    >
+    <div class="px-6 py-4 border-b border-base-200 sticky top-0 z-10 bg-base-100">
       <div class="flex">
         <div class="flex-1">
           <h3 class="text-lg font-semibold flex items-center gap-2">
@@ -249,13 +243,10 @@ function formatDate(timestamp) {
             Audit Trail
           </h3>
           <p class="text-sm text-base-content/60 mt-1">
-            {{ filteredRecords.length }} of {{ auditRecords.length }} committed
-            transactions
+            {{ filteredRecords.length }} of {{ auditRecords.length }} committed transactions
           </p>
         </div>
-        <div
-          class="flex flex-col gap-2 md:flex-row md:items-center md:gap-4 md:w-auto"
-        >
+        <div class="flex flex-col gap-2 md:flex-row md:items-center md:gap-4 md:w-auto">
           <input
             v-model="searchQuery"
             type="text"
@@ -278,16 +269,11 @@ function formatDate(timestamp) {
     </div>
 
     <!-- Empty State -->
-    <div
-      v-if="filteredRecords.length === 0"
-      class="flex-1 flex items-center justify-center"
-    >
+    <div v-if="filteredRecords.length === 0" class="flex-1 flex items-center justify-center">
       <div class="text-center text-base-content/50">
         <div class="text-6xl mb-6">📋</div>
         <div class="text-xl font-medium mb-2">No audit records found</div>
-        <div class="text-sm max-w-md">
-          Try adjusting your search or filters.
-        </div>
+        <div class="text-sm max-w-md">Try adjusting your search or filters.</div>
       </div>
     </div>
 
@@ -310,21 +296,14 @@ function formatDate(timestamp) {
             <!-- Content -->
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-3 mb-2">
-                <span class="font-medium text-base-content">{{
-                  record.actionType
-                }}</span>
-                <span
-                  class="text-xs text-base-content/50 bg-base-200 px-2 py-1 rounded-full"
-                >
+                <span class="font-medium text-base-content">{{ record.actionType }}</span>
+                <span class="text-xs text-base-content/50 bg-base-200 px-2 py-1 rounded-full">
                   {{ record.timeAgo }}
                 </span>
               </div>
 
               <!-- Data Summary -->
-              <div
-                v-if="record.displayData.title || record.displayData.name"
-                class="mb-3"
-              >
+              <div v-if="record.displayData.title || record.displayData.name" class="mb-3">
                 <div
                   v-if="record.displayData.title"
                   class="text-sm font-medium text-base-content/90"
@@ -337,38 +316,25 @@ function formatDate(timestamp) {
                 >
                   {{ record.displayData.name }}
                 </div>
-                <div
-                  v-if="record.displayData.content"
-                  class="text-xs text-base-content/60 mt-1"
-                >
+                <div v-if="record.displayData.content" class="text-xs text-base-content/60 mt-1">
                   {{ record.displayData.content }}
                 </div>
 
                 <!-- Secondary info -->
-                <div
-                  class="flex flex-wrap gap-3 mt-2 text-xs text-base-content/60"
-                >
+                <div class="flex flex-wrap gap-3 mt-2 text-xs text-base-content/60">
                   <span v-if="record.displayData.category">
                     📁 {{ record.displayData.category }}
                   </span>
                   <span v-if="record.displayData.priority">
                     ⚡ {{ record.displayData.priority }}
                   </span>
-                  <span v-if="record.displayData.status">
-                    🔄 {{ record.displayData.status }}
-                  </span>
-                  <span v-if="record.displayData.role">
-                    👥 {{ record.displayData.role }}
-                  </span>
-                  <span v-if="record.displayData.email">
-                    📧 {{ record.displayData.email }}
-                  </span>
+                  <span v-if="record.displayData.status"> 🔄 {{ record.displayData.status }} </span>
+                  <span v-if="record.displayData.role"> 👥 {{ record.displayData.role }} </span>
+                  <span v-if="record.displayData.email"> 📧 {{ record.displayData.email }} </span>
                   <span v-if="record.displayData.resource">
                     🔒 {{ record.displayData.resource }}
                   </span>
-                  <span v-if="record.displayData.user">
-                    👤 {{ record.displayData.user }}
-                  </span>
+                  <span v-if="record.displayData.user"> 👤 {{ record.displayData.user }} </span>
                   <span v-if="record.displayData.collection">
                     📦 {{ record.displayData.collection }}
                   </span>
@@ -378,9 +344,7 @@ function formatDate(timestamp) {
               <!-- Raw data fallback -->
               <div v-else-if="record.displayData.raw" class="mb-3">
                 <details class="text-xs">
-                  <summary
-                    class="cursor-pointer text-base-content/60 hover:text-base-content/80"
-                  >
+                  <summary class="cursor-pointer text-base-content/60 hover:text-base-content/80">
                     {{ record.displayData.error ? "❌ " : "🔍 " }}View raw data
                   </summary>
                   <pre

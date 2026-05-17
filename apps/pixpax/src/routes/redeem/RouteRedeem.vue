@@ -62,7 +62,9 @@ function readQueryCode() {
   const redeem = route.query.redeem;
   const queryCode = route.query.code;
   return normalizeRedeemCode(
-    Array.isArray(redeem) ? redeem[0] : redeem || (Array.isArray(queryCode) ? queryCode[0] : queryCode),
+    Array.isArray(redeem)
+      ? redeem[0]
+      : redeem || (Array.isArray(queryCode) ? queryCode[0] : queryCode),
   );
 }
 
@@ -188,7 +190,10 @@ onMounted(async () => {
   <PageSurface>
     <div class="mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
       <div class="mb-12 flex flex-col items-center gap-5 text-center">
-        <RouterLink to="/app/pixbook" class="inline-flex items-center justify-center text-inherit no-underline">
+        <RouterLink
+          to="/app/pixbook"
+          class="inline-flex items-center justify-center text-inherit no-underline"
+        >
           <PixpaxLogoText class="h-6 w-auto sm:h-7" />
         </RouterLink>
         <p class="m-0 text-xs uppercase tracking-[0.26em] text-[var(--ui-fg-muted)]">
@@ -197,12 +202,7 @@ onMounted(async () => {
       </div>
 
       <div class="mx-auto max-w-2xl">
-        <Card
-          v-if="stage === 'idle'"
-          variant="showcase"
-          padding="sm"
-          class="space-y-5 text-center"
-        >
+        <Card v-if="stage === 'idle'" variant="showcase" padding="sm" class="space-y-5 text-center">
           <h1 class="m-0 font-mono text-[clamp(2rem,6vw,3.5rem)] uppercase tracking-[-0.08em]">
             Bring a code here
           </h1>
@@ -269,15 +269,11 @@ onMounted(async () => {
             {{ claimedBundle?.collection?.name || redeemResult.artifact.payload.collectionId }}
           </h1>
           <p class="m-0 text-sm text-[var(--ui-fg-muted)]">
-            {{ redeemResult.artifact.payload.cards.length }} stickers are waiting. Claim them into this Pixbook first, then open the pack.
+            {{ redeemResult.artifact.payload.cards.length }} stickers are waiting. Claim them into
+            this Pixbook first, then open the pack.
           </p>
           <div class="flex justify-center">
-            <Button
-              size="hero"
-              variant="accent"
-              class="!font-mono"
-              @click="claimPack"
-            >
+            <Button size="hero" variant="accent" class="!font-mono" @click="claimPack">
               {{ claimButtonLabel }}
             </Button>
           </div>
@@ -316,12 +312,7 @@ onMounted(async () => {
             {{ openedCardIds.length }} stickers are inside.
           </p>
           <div class="flex justify-center">
-            <Button
-              size="hero"
-              variant="accent"
-              class="!font-mono"
-              @click="openPack"
-            >
+            <Button size="hero" variant="accent" class="!font-mono" @click="openPack">
               Open pack
             </Button>
           </div>

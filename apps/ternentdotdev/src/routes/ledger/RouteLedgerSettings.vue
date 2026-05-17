@@ -11,10 +11,7 @@ useBreadcrumbs({
   name: "Settings",
 });
 
-const activeTab = useLocalStorage(
-  "ternentdotdev/LedgerSettings/activeTab",
-  "import"
-);
+const activeTab = useLocalStorage("ternentdotdev/LedgerSettings/activeTab", "import");
 
 const settingsTabs = [
   {
@@ -50,9 +47,7 @@ function switchTab(tabPath) {
             <span class="text-3xl">⚙️</span>
             Ledger Settings
           </h1>
-          <p class="text-base-content/60 mt-1">
-            Manage imports, exports, and synchronization
-          </p>
+          <p class="text-base-content/60 mt-1">Manage imports, exports, and synchronization</p>
         </div>
         <div v-if="hasSolidSession" class="badge badge-success">
           <svg
@@ -94,10 +89,7 @@ function switchTab(tabPath) {
     <!-- Tab Content -->
     <div class="flex-1 overflow-auto">
       <!-- Sync Tab -->
-      <div
-        v-if="currentTab === 'sync'"
-        class="flex flex-col h-full bg-base-100"
-      >
+      <div v-if="currentTab === 'sync'" class="flex flex-col h-full bg-base-100">
         <div class="px-6 py-8 text-center">
           <div v-if="hasSolidSession" class="max-w-md mx-auto">
             <div class="text-6xl mb-6">🌐</div>
@@ -108,12 +100,10 @@ function switchTab(tabPath) {
             </div>
             <div class="space-y-3">
               <div class="text-sm text-base-content/60">
-                Your ledger can now sync with your Solid pod. Use the Import and
-                Export tabs to manage synchronization.
+                Your ledger can now sync with your Solid pod. Use the Import and Export tabs to
+                manage synchronization.
               </div>
-              <button @click="logout" class="btn btn-outline btn-sm">
-                Disconnect Pod
-              </button>
+              <button @click="logout" class="btn btn-outline btn-sm">Disconnect Pod</button>
             </div>
           </div>
 
@@ -121,12 +111,10 @@ function switchTab(tabPath) {
             <div class="text-6xl mb-6">🔗</div>
             <h3 class="text-xl font-semibold mb-4">Connect Your Solid Pod</h3>
             <div class="text-sm text-base-content/60 mb-6">
-              Connect to your personal Solid pod to enable secure, decentralized
-              synchronization of your ledger data.
+              Connect to your personal Solid pod to enable secure, decentralized synchronization of
+              your ledger data.
             </div>
-            <router-link to="/solid" class="btn btn-primary">
-              Connect Solid Pod
-            </router-link>
+            <router-link to="/solid" class="btn btn-primary"> Connect Solid Pod </router-link>
           </div>
         </div>
       </div>

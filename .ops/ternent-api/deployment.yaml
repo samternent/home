@@ -299,4 +299,3 @@ spec:
                   name: ternent-api-auth
                   key: cors-allow-origins
                   optional: true
-  

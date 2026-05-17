@@ -43,12 +43,10 @@ const SOLID_INSTANCE_CONTAINER = "http://www.w3.org/ns/solid/terms#instanceConta
 
 export const SOLID_CONCORD_MNEMONIC_CLASS = "urn:ternent:solid:concord:MnemonicSecret";
 export const SOLID_CONCORD_WALLET_CLASS = "urn:ternent:solid:concord:WalletBackup";
-export const SOLID_CONCORD_IDENTITY_CLASS =
-  "urn:ternent:solid:concord:EncryptedIdentity";
+export const SOLID_CONCORD_IDENTITY_CLASS = "urn:ternent:solid:concord:EncryptedIdentity";
 export const SOLID_CONCORD_LEDGER_CLASS = "urn:ternent:solid:concord:Ledger";
 export const SOLID_CONCORD_PEOPLE_CLASS = "urn:ternent:solid:concord:PeopleRegistry";
-export const SOLID_CONCORD_VERIFICATION_CLASS =
-  "urn:ternent:solid:concord:SealVerification";
+export const SOLID_CONCORD_VERIFICATION_CLASS = "urn:ternent:solid:concord:SealVerification";
 
 function normalizeUrl(value: string): string {
   return new URL(value).toString();
@@ -61,7 +59,9 @@ function stripHash(value: string): string {
 }
 
 function normalizeAppPath(value?: string): string {
-  const normalized = String(value || "concord").trim().replace(/^\/+|\/+$/g, "");
+  const normalized = String(value || "concord")
+    .trim()
+    .replace(/^\/+|\/+$/g, "");
   return normalized ? `${normalized}/` : "concord/";
 }
 
@@ -98,11 +98,7 @@ function getStatusCode(error: unknown): number {
   const cause = isRecord(error.cause) ? error.cause : null;
 
   return Number(
-    error.statusCode ??
-      error.status ??
-      error.code ??
-      response?.status ??
-      cause?.status,
+    error.statusCode ?? error.status ?? error.code ?? response?.status ?? cause?.status,
   );
 }
 
@@ -142,10 +138,7 @@ function ensurePreferencesThing(
   return thing;
 }
 
-async function loadOptionalDataset(
-  url: string,
-  fetchImpl: typeof fetch,
-) {
+async function loadOptionalDataset(url: string, fetchImpl: typeof fetch) {
   try {
     return await getSolidDataset(url, {
       fetch: fetchImpl,
@@ -192,21 +185,14 @@ async function saveDataset(
   }
 }
 
-async function ensurePreferencesDocument(
-  url: string,
-  fetchImpl: typeof fetch,
-) {
+async function ensurePreferencesDocument(url: string, fetchImpl: typeof fetch) {
   const existing = await loadOptionalDataset(url, fetchImpl);
   const dataset = existing ?? createSolidDataset();
   const thing = ensurePreferencesThing(dataset, url);
   await saveDataset(url, setThing(dataset, thing), fetchImpl);
 }
 
-async function ensureTypeIndexDocument(
-  url: string,
-  listed: boolean,
-  fetchImpl: typeof fetch,
-) {
+async function ensureTypeIndexDocument(url: string, listed: boolean, fetchImpl: typeof fetch) {
   const existing = await loadOptionalDataset(url, fetchImpl);
   const dataset = existing ?? createSolidDataset();
   const thing = ensureTypeIndexThing(dataset, url, listed);
@@ -248,7 +234,8 @@ async function upsertTypeRegistration(input: {
   instanceUrl: string;
   listed: boolean;
 }) {
-  const dataset = (await loadOptionalDataset(input.indexUrl, input.fetchImpl)) ?? createSolidDataset();
+  const dataset =
+    (await loadOptionalDataset(input.indexUrl, input.fetchImpl)) ?? createSolidDataset();
   const rootThing = ensureTypeIndexThing(dataset, input.indexUrl, input.listed);
   const registrationUrl = getRegistrationUrl(input.indexUrl, input.registrationId);
   let registration = getThing(dataset, registrationUrl) ?? createThing({ url: registrationUrl });
@@ -335,13 +322,10 @@ export async function createSolidConcordPaths(
   });
   const profileThing = ensureProfileThing(profileDataset, webId);
   const podRoot =
-    String(options.podRoot || "").trim() ||
-    String(getUrl(profileThing, PIM_STORAGE) || "").trim();
+    String(options.podRoot || "").trim() || String(getUrl(profileThing, PIM_STORAGE) || "").trim();
 
   if (!podRoot) {
-    throw new Error(
-      `Solid profile ${webId} does not advertise a pod root via pim:storage.`,
-    );
+    throw new Error(`Solid profile ${webId} does not advertise a pod root via pim:storage.`);
   }
 
   const normalizedPodRoot = normalizeUrl(podRoot);
@@ -375,24 +359,20 @@ export async function createSolidConcordPaths(
       options.preferencesUrl ?? new URL("preferences.ttl", settingsRootUrl).toString(),
     ),
     publicTypeIndexUrl: normalizeUrl(
-      options.publicTypeIndexUrl ??
-        new URL("publicTypeIndex.ttl", settingsRootUrl).toString(),
+      options.publicTypeIndexUrl ?? new URL("publicTypeIndex.ttl", settingsRootUrl).toString(),
     ),
     privateTypeIndexUrl: normalizeUrl(
-      options.privateTypeIndexUrl ??
-        new URL("privateTypeIndex.ttl", settingsRootUrl).toString(),
+      options.privateTypeIndexUrl ?? new URL("privateTypeIndex.ttl", settingsRootUrl).toString(),
     ),
     identityUrl: normalizeUrl(
-      options.identityUrl ??
-        new URL("identity.enc.json", systemPrivateRootUrl).toString(),
+      options.identityUrl ?? new URL("identity.enc.json", systemPrivateRootUrl).toString(),
     ),
     mnemonicUrl: new URL("mnemonic.json", systemPrivateRootUrl).toString(),
     walletUrl: new URL("wallet.json", systemPrivateRootUrl).toString(),
     ledgerUrl: new URL("ledger.json", systemPrivateRootUrl).toString(),
     peopleUrl: new URL("people.json", systemPrivateRootUrl).toString(),
     verificationUrl: normalizeUrl(
-      options.verificationUrl ??
-        new URL("seal-identity.json", publicRootUrl).toString(),
+      options.verificationUrl ?? new URL("seal-identity.json", publicRootUrl).toString(),
     ),
   };
 }
@@ -410,9 +390,7 @@ export async function discoverSolidConcordResources(
   const profileThing = ensureProfileThing(profileDataset, webId);
   const preferencesUrl = getUrl(profileThing, PIM_PREFERENCES_FILE) ?? null;
   const preferencesDataset =
-    preferencesUrl === null
-      ? null
-      : await loadOptionalDataset(preferencesUrl, session.fetch);
+    preferencesUrl === null ? null : await loadOptionalDataset(preferencesUrl, session.fetch);
   const preferencesThing =
     preferencesUrl !== null && preferencesDataset !== null
       ? getThing(preferencesDataset, preferencesUrl)
@@ -446,13 +424,15 @@ export async function discoverSolidConcordResources(
     workspacePublicRootUrl: defaults?.workspacePublicRootUrl ?? null,
     privateRootUrl: defaults?.privateRootUrl ?? null,
     publicRootUrl: defaults?.publicRootUrl ?? null,
-    preferencesUrl: preferencesUrl ? normalizeUrl(preferencesUrl) : defaults?.preferencesUrl ?? null,
+    preferencesUrl: preferencesUrl
+      ? normalizeUrl(preferencesUrl)
+      : (defaults?.preferencesUrl ?? null),
     publicTypeIndexUrl: publicTypeIndexUrl
       ? normalizeUrl(publicTypeIndexUrl)
-      : defaults?.publicTypeIndexUrl ?? null,
+      : (defaults?.publicTypeIndexUrl ?? null),
     privateTypeIndexUrl: privateTypeIndexUrl
       ? normalizeUrl(privateTypeIndexUrl)
-      : defaults?.privateTypeIndexUrl ?? null,
+      : (defaults?.privateTypeIndexUrl ?? null),
     identityUrl:
       getRegisteredInstanceUrl(privateIndex, SOLID_CONCORD_IDENTITY_CLASS) ??
       defaults?.identityUrl ??
@@ -499,10 +479,7 @@ export async function bootstrapSolidConcordProfile(
   const desiredPreferencesUrl = normalizeUrl(
     input.preferencesUrl ?? existingPreferencesUrl ?? paths.preferencesUrl,
   );
-  const existingPreferencesDataset = await loadOptionalDataset(
-    desiredPreferencesUrl,
-    fetchImpl,
-  );
+  const existingPreferencesDataset = await loadOptionalDataset(desiredPreferencesUrl, fetchImpl);
   let preferencesThing =
     existingPreferencesDataset && getThing(existingPreferencesDataset, desiredPreferencesUrl);
   const existingPrivateTypeIndexUrl =
@@ -511,9 +488,7 @@ export async function bootstrapSolidConcordProfile(
     input.publicTypeIndexUrl ?? existingPublicTypeIndexUrl ?? paths.publicTypeIndexUrl,
   );
   const desiredPrivateTypeIndexUrl = normalizeUrl(
-    input.privateTypeIndexUrl ??
-      existingPrivateTypeIndexUrl ??
-      paths.privateTypeIndexUrl,
+    input.privateTypeIndexUrl ?? existingPrivateTypeIndexUrl ?? paths.privateTypeIndexUrl,
   );
 
   if (getUrl(profileThing, PIM_PREFERENCES_FILE) !== desiredPreferencesUrl) {
@@ -550,11 +525,7 @@ export async function bootstrapSolidConcordProfile(
     preferencesThing = createThing({ url: desiredPreferencesUrl });
   }
   preferencesThing = setUrl(preferencesThing, RDF_TYPE, PIM_CONFIGURATION_FILE);
-  preferencesThing = setUrl(
-    preferencesThing,
-    SOLID_PRIVATE_TYPE_INDEX,
-    desiredPrivateTypeIndexUrl,
-  );
+  preferencesThing = setUrl(preferencesThing, SOLID_PRIVATE_TYPE_INDEX, desiredPrivateTypeIndexUrl);
   const preferencesDataset = setThing(
     existingPreferencesDataset ?? createSolidDataset(),
     preferencesThing,
@@ -563,16 +534,11 @@ export async function bootstrapSolidConcordProfile(
   await ensureTypeIndexDocument(desiredPublicTypeIndexUrl, true, fetchImpl);
   await ensureTypeIndexDocument(desiredPrivateTypeIndexUrl, false, fetchImpl);
 
-  const identityUrl =
-    input.identityUrl === undefined ? paths.identityUrl : input.identityUrl;
-  const mnemonicUrl =
-    input.mnemonicUrl === undefined ? paths.mnemonicUrl : input.mnemonicUrl;
-  const walletUrl =
-    input.walletUrl === undefined ? paths.walletUrl : input.walletUrl;
-  const ledgerUrl =
-    input.ledgerUrl === undefined ? paths.ledgerUrl : input.ledgerUrl;
-  const peopleUrl =
-    input.peopleUrl === undefined ? paths.peopleUrl : input.peopleUrl;
+  const identityUrl = input.identityUrl === undefined ? paths.identityUrl : input.identityUrl;
+  const mnemonicUrl = input.mnemonicUrl === undefined ? paths.mnemonicUrl : input.mnemonicUrl;
+  const walletUrl = input.walletUrl === undefined ? paths.walletUrl : input.walletUrl;
+  const ledgerUrl = input.ledgerUrl === undefined ? paths.ledgerUrl : input.ledgerUrl;
+  const peopleUrl = input.peopleUrl === undefined ? paths.peopleUrl : input.peopleUrl;
 
   if (identityUrl) {
     await upsertTypeRegistration({

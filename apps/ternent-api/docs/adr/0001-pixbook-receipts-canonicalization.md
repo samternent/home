@@ -1,13 +1,16 @@
 # ADR 0001: Pixbook Receipts Canonicalization and Write Ordering
 
 ## Status
+
 Accepted - 2026-02-24
 
 ## Context
+
 Pixbook writes must be append-only, idempotent, and replayable while preserving
 legacy API compatibility.
 
 ## Decision
+
 1. OpenAPI is the contract for all new pixbook command/query endpoints.
 2. Legacy `/v1/account/pixbook*` endpoints keep existing body shapes and call the
    new pixbook services internally.
@@ -25,6 +28,7 @@ legacy API compatibility.
    this flow.
 
 ## Consequences
+
 1. Spaces remains canonical truth for receipt payloads.
 2. Postgres provides SaaS-fast reads and ordering guarantees without listing
    object storage.

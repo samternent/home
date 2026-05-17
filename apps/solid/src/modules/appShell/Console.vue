@@ -18,10 +18,7 @@ const appApi = useAppApi();
 
 const isDragging = useLocalStorage("isBottomPanelDragging", false);
 const isBottomPanelExpanded = useLocalStorage("isBottomPanelExpanded", false);
-const bottomPanelHeight = useLocalStorage(
-  "bottomPanelHeight",
-  width.value < 500 ? 620 : 320,
-);
+const bottomPanelHeight = useLocalStorage("bottomPanelHeight", width.value < 500 ? 620 : 320);
 
 const activeTab = useLocalStorage("consoleActiveTab", "changes");
 const commitMessage = useLocalStorage("consoleCommitMessage", "");

@@ -44,7 +44,7 @@ const variantClasses = computed(() => ({
 const statusClasses = computed(() => ({
   online: "bg-green-500",
   offline: "bg-slate-400",
-  away: "bg-yellow-500", 
+  away: "bg-yellow-500",
   busy: "bg-red-500",
 }));
 
@@ -59,46 +59,46 @@ const statusSizes = computed(() => ({
 // Generate a consistent color based on the name
 const avatarColor = computed(() => {
   const colors = [
-    'bg-gradient-to-br from-indigo-500 to-purple-600',
-    'bg-gradient-to-br from-blue-500 to-indigo-600',
-    'bg-gradient-to-br from-green-500 to-emerald-600',
-    'bg-gradient-to-br from-yellow-500 to-orange-600',
-    'bg-gradient-to-br from-red-500 to-pink-600',
-    'bg-gradient-to-br from-purple-500 to-violet-600',
-    'bg-gradient-to-br from-cyan-500 to-blue-600',
-    'bg-gradient-to-br from-emerald-500 to-green-600',
+    "bg-gradient-to-br from-indigo-500 to-purple-600",
+    "bg-gradient-to-br from-blue-500 to-indigo-600",
+    "bg-gradient-to-br from-green-500 to-emerald-600",
+    "bg-gradient-to-br from-yellow-500 to-orange-600",
+    "bg-gradient-to-br from-red-500 to-pink-600",
+    "bg-gradient-to-br from-purple-500 to-violet-600",
+    "bg-gradient-to-br from-cyan-500 to-blue-600",
+    "bg-gradient-to-br from-emerald-500 to-green-600",
   ];
-  
+
   const charCode = props.name.charCodeAt(0) || 0;
   return colors[charCode % colors.length];
 });
 </script>
 <template>
   <div class="relative inline-flex items-center justify-center">
-    <div 
+    <div
       :class="[
         sizeClasses[size],
         variantClasses[variant],
         url ? 'bg-slate-200 dark:bg-slate-700' : avatarColor,
-        'text-white font-semibold flex items-center justify-center shadow-lg ring-2 ring-white dark:ring-slate-900 transition-all duration-200 hover:scale-105'
+        'text-white font-semibold flex items-center justify-center shadow-lg ring-2 ring-white dark:ring-slate-900 transition-all duration-200 hover:scale-105',
       ]"
     >
-      <img 
-        v-if="url" 
-        :src="url" 
+      <img
+        v-if="url"
+        :src="url"
         :alt="name"
         :class="[variantClasses[variant], 'w-full h-full object-cover']"
       />
       <span v-else class="select-none font-medium">{{ name[0]?.toUpperCase() }}</span>
     </div>
-    
+
     <!-- Status indicator -->
-    <div 
+    <div
       v-if="status"
       :class="[
         statusSizes[size],
         statusClasses[status],
-        'absolute -bottom-0.5 -right-0.5 rounded-full border-2 border-white dark:border-slate-900'
+        'absolute -bottom-0.5 -right-0.5 rounded-full border-2 border-white dark:border-slate-900',
       ]"
     />
   </div>

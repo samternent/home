@@ -21,7 +21,7 @@ const clean = DOMPurify.sanitize("<b>hello there</b>");
 
 async function loadMarkdown() {
   const changelogs = await fetch(
-    `https://raw.githubusercontent.com/samternent/home/main/${props.type}/${props.name}/README.md`
+    `https://raw.githubusercontent.com/samternent/home/main/${props.type}/${props.name}/README.md`,
   );
   changelogMarkdown.value = await changelogs.text();
 }
@@ -30,7 +30,7 @@ const changelogMarkdown = shallowRef();
 const changelog = computed(() =>
   changelogMarkdown.value
     ? DOMPurify.sanitize(marked.parse(changelogMarkdown.value))
-    : "loading..."
+    : "loading...",
 );
 useBreadcrumbs({
   path: `/readme/${props.type}/${props.name}`,

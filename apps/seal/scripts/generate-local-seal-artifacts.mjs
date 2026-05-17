@@ -17,9 +17,7 @@ function run(command, args, options = {}) {
   });
 
   if (result.status !== 0) {
-    throw new Error(
-      `${command} ${args.join(" ")} failed with exit code ${result.status ?? 1}.`
-    );
+    throw new Error(`${command} ${args.join(" ")} failed with exit code ${result.status ?? 1}.`);
   }
 
   return result;
@@ -43,9 +41,7 @@ async function resolveSigningEnv() {
 const signing = await resolveSigningEnv();
 
 if (signing.generated) {
-  process.stdout.write(
-    "No SEAL_IDENTITY found. Generating an ephemeral local dev signer.\n"
-  );
+  process.stdout.write("No SEAL_IDENTITY found. Generating an ephemeral local dev signer.\n");
 }
 
 run("pnpm", ["--filter", "@ternent/seal-cli", "build"]);
@@ -70,28 +66,19 @@ run(
     manifestPath,
     "--quiet",
   ],
-  { env: sealEnv }
+  { env: sealEnv },
 );
 
 run(
   "node",
-  [
-    "packages/seal-cli/bin/seal",
-    "sign",
-    "--input",
-    manifestPath,
-    "--out",
-    proofPath,
-    "--quiet",
-  ],
-  { env: sealEnv }
+  ["packages/seal-cli/bin/seal", "sign", "--input", manifestPath, "--out", proofPath, "--quiet"],
+  { env: sealEnv },
 );
 
-const publicKeyResult = run(
-  "node",
-  ["packages/seal-cli/bin/seal", "public-key", "--json"],
-  { env: sealEnv, capture: true }
-);
+const publicKeyResult = run("node", ["packages/seal-cli/bin/seal", "public-key", "--json"], {
+  env: sealEnv,
+  capture: true,
+});
 
 await writeFile(publicKeyPath, publicKeyResult.stdout, "utf8");
 

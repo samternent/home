@@ -24,9 +24,7 @@ const railWidthClass = computed(() => getSplitViewRailWidthClass(props.railWidth
     <aside
       :class="[
         'min-h-0 pb-4 md:pb-0 md:pr-4',
-        props.divider
-          ? 'border-b border-[var(--ui-border)] md:border-b-0 md:border-r'
-          : '',
+        props.divider ? 'border-b border-[var(--ui-border)] md:border-b-0 md:border-r' : '',
         railWidthClass,
       ]"
       :aria-label="props.railAriaLabel"

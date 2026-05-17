@@ -129,7 +129,7 @@ const stageOneVerificationStatus = computed(() =>
     ? "verified"
     : stageOne.value.status === "invalid"
       ? "failed"
-      : "unknown"
+      : "unknown",
 );
 
 const publishedVerificationStatus = computed(() =>
@@ -137,7 +137,7 @@ const publishedVerificationStatus = computed(() =>
     ? "verified"
     : published.value.status === "invalid"
       ? "failed"
-      : "unknown"
+      : "unknown",
 );
 
 const parsedProofSize = computed(() => {
@@ -211,7 +211,10 @@ const onVerify = async () => {
         status: "invalid",
         errors: parsed.errors,
       };
-      stageTwo.value = { status: "skipped", message: "Content validation skipped because proof is invalid." };
+      stageTwo.value = {
+        status: "skipped",
+        message: "Content validation skipped because proof is invalid.",
+      };
       return;
     }
 
@@ -222,7 +225,10 @@ const onVerify = async () => {
         status: "invalid",
         errors: signatureCheck.errors,
       };
-      stageTwo.value = { status: "skipped", message: "Content validation skipped because signature is invalid." };
+      stageTwo.value = {
+        status: "skipped",
+        message: "Content validation skipped because signature is invalid.",
+      };
       return;
     }
 
@@ -241,7 +247,10 @@ const onVerify = async () => {
       status: "invalid",
       errors: [message],
     };
-    stageTwo.value = { status: "skipped", message: "Content validation skipped because proof could not be processed." };
+    stageTwo.value = {
+      status: "skipped",
+      message: "Content validation skipped because proof could not be processed.",
+    };
   } finally {
     isVerifying.value = false;
   }
@@ -281,20 +290,30 @@ const onVerifyPublished = async () => {
       description="Paste or upload a proof JSON payload, compare it with original bytes when needed, or verify the published site artifacts directly."
     />
 
-    <Card variant="elevated" padding="md" class="space-y-6 border-[color-mix(in_srgb,var(--ui-border)_84%,transparent)]">
+    <Card
+      variant="elevated"
+      padding="md"
+      class="space-y-6 border-[color-mix(in_srgb,var(--ui-border)_84%,transparent)]"
+    >
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
+          <p
+            class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]"
+          >
             Verification input
           </p>
           <p class="mt-2 text-sm text-[var(--ui-fg-muted)]">
-            Provide a proof payload, choose the verification depth, and inspect the staged result surfaces below.
+            Provide a proof payload, choose the verification depth, and inspect the staged result
+            surfaces below.
           </p>
         </div>
         <Badge tone="neutral" variant="outline">Verifier</Badge>
       </div>
 
-      <FormField label="Proof file" description="JSON, plain text, or downloaded proof payloads are accepted.">
+      <FormField
+        label="Proof file"
+        description="JSON, plain text, or downloaded proof payloads are accepted."
+      >
         <template #default>
           <FileInput
             v-model="proofFileModel"
@@ -308,7 +327,11 @@ const onVerifyPublished = async () => {
 
       <Accordion
         :value="showRawProofJson ? 'raw-proof' : undefined"
-        @update:value="(value) => { showRawProofJson = value === 'raw-proof'; }"
+        @update:value="
+          (value) => {
+            showRawProofJson = value === 'raw-proof';
+          }
+        "
       >
         <AccordionItem value="raw-proof" title="Inspect raw proof JSON">
           <Textarea
@@ -321,7 +344,10 @@ const onVerifyPublished = async () => {
       </Accordion>
 
       <div class="space-y-5">
-        <FormField label="Verification mode" description="Choose whether to verify the proof alone or compare it with original content.">
+        <FormField
+          label="Verification mode"
+          description="Choose whether to verify the proof alone or compare it with original content."
+        >
           <template #default>
             <RadioGroup
               v-model="verificationMode"
@@ -331,10 +357,22 @@ const onVerifyPublished = async () => {
           </template>
         </FormField>
 
-        <Card v-if="verificationMode === 'proof-and-content'" variant="subtle" padding="md" class="space-y-5">
-          <FormField label="Content mode" description="Choose how to provide the original content for comparison.">
+        <Card
+          v-if="verificationMode === 'proof-and-content'"
+          variant="subtle"
+          padding="md"
+          class="space-y-5"
+        >
+          <FormField
+            label="Content mode"
+            description="Choose how to provide the original content for comparison."
+          >
             <template #default>
-              <RadioGroup v-model="contentMode" :options="contentModeOptions" aria-label="Content mode" />
+              <RadioGroup
+                v-model="contentMode"
+                :options="contentModeOptions"
+                aria-label="Content mode"
+              />
             </template>
           </FormField>
 
@@ -371,30 +409,54 @@ const onVerifyPublished = async () => {
         </Card>
       </div>
 
-      <div class="space-y-3 border-t border-[color-mix(in_srgb,var(--ui-border)_80%,transparent)] pt-5">
+      <div
+        class="space-y-3 border-t border-[color-mix(in_srgb,var(--ui-border)_80%,transparent)] pt-5"
+      >
         <div class="flex flex-wrap items-center gap-3">
           <Button variant="primary" :loading="isVerifying" @click="onVerify">
             {{ isVerifying ? "Verifying..." : "Verify proof" }}
           </Button>
           <Badge tone="neutral" variant="outline">
-            {{ verificationMode === "proof-only" ? "Structure + signature" : "Structure + signature + content" }}
+            {{
+              verificationMode === "proof-only"
+                ? "Structure + signature"
+                : "Structure + signature + content"
+            }}
           </Badge>
         </div>
       </div>
     </Card>
 
-    <Card variant="elevated" padding="md" class="space-y-5 border-[color-mix(in_srgb,var(--ui-border)_84%,transparent)]">
+    <Card
+      variant="elevated"
+      padding="md"
+      class="space-y-5 border-[color-mix(in_srgb,var(--ui-border)_84%,transparent)]"
+    >
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div class="space-y-2">
-          <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
+          <p
+            class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]"
+          >
             Overall verification
           </p>
           <h3 class="m-0 text-2xl font-medium tracking-[-0.03em]">
-            {{ stageOne.status === "valid" ? "Proof verified" : stageOne.status === "invalid" ? "Proof verification failed" : "Stage 1 — Proof validation" }}
+            {{
+              stageOne.status === "valid"
+                ? "Proof verified"
+                : stageOne.status === "invalid"
+                  ? "Proof verification failed"
+                  : "Stage 1 — Proof validation"
+            }}
           </h3>
         </div>
         <Badge :tone="stageOneStatusTone" variant="solid">
-          {{ stageOne.status === "idle" ? "Not run" : stageOne.status === "valid" ? "Proof valid" : "Proof invalid" }}
+          {{
+            stageOne.status === "idle"
+              ? "Not run"
+              : stageOne.status === "valid"
+                ? "Proof valid"
+                : "Proof invalid"
+          }}
         </Badge>
       </div>
 
@@ -426,7 +488,9 @@ const onVerifyPublished = async () => {
     <Card variant="subtle" padding="md" class="space-y-4">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div class="space-y-1">
-          <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
+          <p
+            class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]"
+          >
             Content match
           </p>
           <h3 class="m-0 text-lg font-medium">Optional content validation</h3>
@@ -453,21 +517,36 @@ const onVerifyPublished = async () => {
       />
     </Card>
 
-    <Card variant="elevated" padding="md" class="space-y-5 border-[color-mix(in_srgb,var(--ui-border)_84%,transparent)]">
+    <Card
+      variant="elevated"
+      padding="md"
+      class="space-y-5 border-[color-mix(in_srgb,var(--ui-border)_84%,transparent)]"
+    >
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div class="space-y-2">
-          <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
+          <p
+            class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]"
+          >
             Published artifacts
           </p>
           <h3 class="m-0 text-xl font-medium tracking-[-0.02em]">Verify deployed site proof</h3>
         </div>
         <Badge :tone="publishedStatusTone" variant="solid">
-          {{ published.status === "idle" ? "Not run" : published.status === "loading" ? "Loading" : published.status === "valid" ? "Verified" : "Invalid" }}
+          {{
+            published.status === "idle"
+              ? "Not run"
+              : published.status === "loading"
+                ? "Loading"
+                : published.status === "valid"
+                  ? "Verified"
+                  : "Invalid"
+          }}
         </Badge>
       </div>
 
       <p class="m-0 text-sm text-[var(--ui-fg-muted)]">
-        Fetch `/dist-manifest.json`, `/proof.json`, and optional `/public-key.json` from the current site origin and validate them locally.
+        Fetch `/dist-manifest.json`, `/proof.json`, and optional `/public-key.json` from the current
+        site origin and validate them locally.
       </p>
 
       <div class="flex flex-wrap items-center gap-3">

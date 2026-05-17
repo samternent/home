@@ -32,9 +32,7 @@ const assetPack = computed(() => {
       :style="{
         backgroundImage: `url('${_scene.image}')`,
         transform: `translate3d(${
-          _scene.fixedX
-            ? 0
-            : cameraX / ((assetPack.length - i) * layerMultiplier || 1)
+          _scene.fixedX ? 0 : cameraX / ((assetPack.length - i) * layerMultiplier || 1)
         }px, ${_scene.fixedY ? 0 : cameraY / 5}px, 0)`,
         width: `${width}px`,
         zIndex: 1,

@@ -39,9 +39,7 @@ describe("RouteUsers", () => {
       "identity.json",
       { type: "application/json" },
     );
-    const fileInput = wrapper.get(
-      '[data-test="user-create-identity-file"] input[type="file"]',
-    );
+    const fileInput = wrapper.get('[data-test="user-create-identity-file"] input[type="file"]');
     const inputElement = fileInput.element as HTMLInputElement;
     const files = [identityFile];
     Object.defineProperty(inputElement, "files", {
@@ -51,17 +49,13 @@ describe("RouteUsers", () => {
     await fileInput.trigger("change");
     await wrapper.get('[data-test="user-create-form"]').trigger("submit");
 
-    const userVisible = await waitFor(
-      () => wrapper.findAll('[data-test^="user-row-"]').length > 0,
-    );
+    const userVisible = await waitFor(() => wrapper.findAll('[data-test^="user-row-"]').length > 0);
     expect(userVisible).toBe(true);
     expect(wrapper.findAll('[data-test^="user-row-glyph-"]').length).toBeGreaterThan(0);
 
-    await wrapper
-      .get(`[data-test="user-edit-open-${identity.identityKey}"]`)
-      .trigger("click");
-    const editModalVisible = await waitFor(
-      () => wrapper.find('[data-test="user-edit-modal"]').exists(),
+    await wrapper.get(`[data-test="user-edit-open-${identity.identityKey}"]`).trigger("click");
+    const editModalVisible = await waitFor(() =>
+      wrapper.find('[data-test="user-edit-modal"]').exists(),
     );
     expect(editModalVisible).toBe(true);
     expect(wrapper.find('[data-test="user-detail-glyph"]').exists()).toBe(true);
@@ -69,8 +63,8 @@ describe("RouteUsers", () => {
     await wrapper.get('[data-test="profile-display-name"]').setValue("Sam");
     await wrapper.get('[data-test="profile-upsert-form"]').trigger("submit");
 
-    const staged = await waitFor(
-      () => wrapper.find('[data-test="profile-upsert-success"]').exists(),
+    const staged = await waitFor(() =>
+      wrapper.find('[data-test="profile-upsert-success"]').exists(),
     );
     expect(staged).toBe(true);
   });
@@ -90,17 +84,14 @@ describe("RouteUsers", () => {
 
     await waitFor(() => wrapper.findAll('[data-test^="user-row-"]').length > 0);
 
-    await wrapper
-      .get(`[data-test="user-edit-open-${memberIdentityKey}"]`)
-      .trigger("click");
+    await wrapper.get(`[data-test="user-edit-open-${memberIdentityKey}"]`).trigger("click");
 
-    const disabledVisible = await waitFor(
-      () => wrapper.find('[data-test="profile-edit-disabled"]').exists(),
+    const disabledVisible = await waitFor(() =>
+      wrapper.find('[data-test="profile-edit-disabled"]').exists(),
     );
     expect(disabledVisible).toBe(true);
     expect(
-      (wrapper.get('[data-test="profile-upsert-submit"]').element as HTMLButtonElement)
-        .disabled,
+      (wrapper.get('[data-test="profile-upsert-submit"]').element as HTMLButtonElement).disabled,
     ).toBe(true);
   });
 });

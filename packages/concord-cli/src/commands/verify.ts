@@ -1,7 +1,4 @@
-import {
-  validateLedger,
-  type LedgerContainer,
-} from "@ternent/concord-protocol";
+import { validateLedger, type LedgerContainer } from "@ternent/concord-protocol";
 import { replayIdentity } from "@ternent/concord-plugin-identity";
 import { replayPermissions } from "@ternent/concord-plugin-permissions";
 import { replayEncryption } from "@ternent/concord-plugin-encryption";
@@ -21,7 +18,7 @@ export function verifyProtocol(ledger: LedgerContainer): VerifyResult {
 
 export function verifySemantic(
   ledger: LedgerContainer,
-  config?: { rootAdmins?: string[] }
+  config?: { rootAdmins?: string[] },
 ): VerifyResult {
   try {
     replayIdentity(ledger);

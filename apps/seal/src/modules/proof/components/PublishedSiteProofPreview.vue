@@ -8,10 +8,7 @@ import {
   type VerificationStatus,
   type VerificationVariant,
 } from "ternent-ui/patterns";
-import {
-  verifyPublishedArtifacts,
-  type PublishedArtifactsVerification,
-} from "../deployed";
+import { verifyPublishedArtifacts, type PublishedArtifactsVerification } from "../deployed";
 
 type PublishedSiteProofPreviewMode = "details" | "summary" | "badge";
 
@@ -81,9 +78,7 @@ const verificationStatus = computed<VerificationStatus>(() => {
 
 const subject = computed(() => {
   if (result.value?.proof?.subject.path) return result.value.proof.subject.path;
-  return isLoading.value
-    ? "Loading published proof"
-    : "Published proof unavailable";
+  return isLoading.value ? "Loading published proof" : "Published proof unavailable";
 });
 
 const hash = computed(() => {
@@ -107,8 +102,7 @@ const timestamp = computed(() => {
 });
 
 const version = computed(() => {
-  if (result.value?.proof?.version)
-    return `seal/v${result.value.proof.version}`;
+  if (result.value?.proof?.version) return `seal/v${result.value.proof.version}`;
   return "seal/v1";
 });
 
@@ -128,8 +122,8 @@ const surfaceContext = computed(() => ({
     props.mode === "badge"
       ? ("footer" as const)
       : props.variant === "compact"
-      ? ("app" as const)
-      : ("hero" as const),
+        ? ("app" as const)
+        : ("hero" as const),
 }));
 </script>
 

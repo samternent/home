@@ -111,9 +111,7 @@ function requireFlag(flags: ParsedArgs["flags"], key: string): string {
   return value;
 }
 
-function parseMnemonicWordCount(
-  flags: ParsedArgs["flags"]
-): 12 | 24 | undefined {
+function parseMnemonicWordCount(flags: ParsedArgs["flags"]): 12 | 24 | undefined {
   const words = getFlag(flags, "words");
   if (!words) {
     return undefined;
@@ -130,12 +128,7 @@ async function writeOutputFile(filePath: string, content: string): Promise<void>
   await writeFile(resolvedPath, content, "utf8");
 }
 
-function outputResult(
-  writer: OutputWriter,
-  json: boolean,
-  quiet: boolean,
-  value: unknown
-): void {
+function outputResult(writer: OutputWriter, json: boolean, quiet: boolean, value: unknown): void {
   if (quiet) {
     return;
   }
@@ -153,17 +146,11 @@ function outputResult(
   writer.stdout(`${JSON.stringify(value, null, 2)}\n`);
 }
 
-function outputError(
-  writer: OutputWriter,
-  json: boolean,
-  error: unknown
-): number {
+function outputError(writer: OutputWriter, json: boolean, error: unknown): number {
   const exitCode = getExitCode(error);
   const message = error instanceof Error ? error.message : String(error);
   if (json) {
-    writer.stderr(
-      `${JSON.stringify({ error: message, exitCode }, null, 2)}\n`
-    );
+    writer.stderr(`${JSON.stringify({ error: message, exitCode }, null, 2)}\n`);
   } else {
     writer.stderr(`${message}\n`);
   }
@@ -175,7 +162,7 @@ export async function runCli(
   params: {
     env?: ProcessEnvLike;
     writer?: OutputWriter;
-  } = {}
+  } = {},
 ): Promise<number> {
   const parsed = parseArgs(argv);
   const env = params.env ?? process.env;
@@ -217,7 +204,7 @@ export async function runCli(
                   mnemonicFile: mnemonicOutPath || null,
                 }
               : artifact.identity
-            : outPath
+            : outPath,
         );
       } else {
         outputResult(
@@ -230,7 +217,7 @@ export async function runCli(
                 mnemonic: artifact.mnemonic,
                 mnemonicFile: mnemonicOutPath || null,
               }
-            : artifact.identity
+            : artifact.identity,
         );
       }
       return EXIT_SUCCESS;
@@ -300,7 +287,7 @@ export async function runCli(
                 `keyId=${result.keyId}`,
                 `algorithm=${result.algorithm}`,
                 `subjectHash=${result.subjectHash}`,
-              ].join("\n")
+              ].join("\n"),
         );
 
         if (!result.hashMatch) {
@@ -328,7 +315,7 @@ export async function runCli(
               `keyId=${result.keyId}`,
               `algorithm=${result.algorithm}`,
               `subjectHash=${result.subjectHash}`,
-            ].join("\n")
+            ].join("\n"),
       );
 
       if (!result.hashMatch) {
@@ -355,15 +342,11 @@ export async function runCli(
         "       seal verify --proof <proof.json> --input <path> [--json] [--quiet]\n" +
         "       seal verify --artifact <artifact.json> [--json] [--quiet]\n" +
         "       seal public-key [--json] [--quiet]",
-      EXIT_FAILURE
+      EXIT_FAILURE,
     );
   } catch (error) {
     if (error instanceof Error && error.message.includes("Proof")) {
-      return outputError(
-        writer,
-        json,
-        new SealCliError(error.message, EXIT_INVALID_PROOF)
-      );
+      return outputError(writer, json, new SealCliError(error.message, EXIT_INVALID_PROOF));
     }
     if (
       error instanceof Error &&
@@ -371,11 +354,7 @@ export async function runCli(
         error.message.includes("SEAL_IDENTITY") ||
         error.message.includes("identity"))
     ) {
-      return outputError(
-        writer,
-        json,
-        new SealCliError(error.message, EXIT_KEY_CONFIG)
-      );
+      return outputError(writer, json, new SealCliError(error.message, EXIT_KEY_CONFIG));
     }
     return outputError(writer, json, error);
   }

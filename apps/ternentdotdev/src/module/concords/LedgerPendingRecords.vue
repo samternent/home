@@ -10,17 +10,13 @@ const records = computed(() => {
 });
 </script>
 <template>
-  <div
-    class="flex flex-col flex-1 overflow-y-scroll mx-4 bg-base-100 border-x border-base-300"
-  >
+  <div class="flex flex-col flex-1 overflow-y-scroll mx-4 bg-base-100 border-x border-base-300">
     <LedgerRecords
       v-if="records.length"
       :records="records"
       :canRemove="true"
       @removeRecord="api.removePendingRecord"
     />
-    <div v-else class="flex flex-1 items-center justify-center">
-      No pending records
-    </div>
+    <div v-else class="flex flex-1 items-center justify-center">No pending records</div>
   </div>
 </template>

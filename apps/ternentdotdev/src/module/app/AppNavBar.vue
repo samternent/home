@@ -85,11 +85,7 @@ const userMenuItems = [
     <template #start>
       <div class="flex items-center">
         <!-- Breadcrumbs with enhanced styling -->
-        <SBreadcrumbs
-          :breadcrumbs="breadcrumbs"
-          size="micro"
-          class="stripe-breadcrumbs"
-        />
+        <SBreadcrumbs :breadcrumbs="breadcrumbs" size="micro" class="stripe-breadcrumbs" />
       </div>
     </template>
 
@@ -97,16 +93,8 @@ const userMenuItems = [
     <template #end>
       <div class="relative" ref="userMenuRef">
         <!-- Compact user avatar button -->
-        <button
-          @click="toggleUserMenu"
-          class="user-avatar"
-          :class="{ active: userMenuOpen }"
-        >
-          <IdentityAvatar
-            :identity="publicKeyPEM"
-            size="xs"
-            class="avatar-identity"
-          />
+        <button @click="toggleUserMenu" class="user-avatar" :class="{ active: userMenuOpen }">
+          <IdentityAvatar :identity="publicKeyPEM" size="xs" class="avatar-identity" />
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -116,11 +104,7 @@ const userMenuItems = [
             class="w-3 h-3 ml-1 transition-transform"
             :class="{ 'rotate-180': userMenuOpen }"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-            />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
           </svg>
         </button>
 
@@ -128,11 +112,7 @@ const userMenuItems = [
         <div v-if="userMenuOpen" class="user-dropdown">
           <!-- Header with identity info -->
           <div class="dropdown-header">
-            <IdentityAvatar
-              :identity="publicKeyPEM"
-              size="md"
-              class="header-avatar"
-            />
+            <IdentityAvatar :identity="publicKeyPEM" size="md" class="header-avatar" />
             <div class="header-info">
               <div class="header-title">Your Identity</div>
               <div class="header-subtitle">Cryptographic Profile</div>
@@ -148,22 +128,14 @@ const userMenuItems = [
               class="dropdown-item"
               @click="userMenuOpen = false"
             >
-              <div
-                class="item-icon-wrapper"
-                :class="`bg-gradient-to-br ${item.gradient}`"
-              >
+              <div class="item-icon-wrapper" :class="`bg-gradient-to-br ${item.gradient}`">
                 <span class="item-emoji">{{ item.icon }}</span>
               </div>
               <div class="item-content">
                 <div class="item-label">{{ item.label }}</div>
                 <div class="item-description">{{ item.description }}</div>
               </div>
-              <svg
-                class="item-arrow"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg class="item-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"

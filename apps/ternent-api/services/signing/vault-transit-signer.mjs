@@ -25,17 +25,11 @@ function parseVaultSignature(value) {
   const raw = trim(value);
   const parts = raw.split(":");
   if (parts.length < 3) {
-    throw serviceUnavailable(
-      "VAULT_SIGN_FAILED",
-      "Vault signature format is invalid."
-    );
+    throw serviceUnavailable("VAULT_SIGN_FAILED", "Vault signature format is invalid.");
   }
   const signature = trim(parts[parts.length - 1]);
   if (!signature) {
-    throw serviceUnavailable(
-      "VAULT_SIGN_FAILED",
-      "Vault signature payload is missing."
-    );
+    throw serviceUnavailable("VAULT_SIGN_FAILED", "Vault signature payload is missing.");
   }
   return signature;
 }
@@ -60,7 +54,7 @@ export function createVaultTransitSigner() {
       if (!normalizedKeyName || !/^[a-f0-9]{64}$/.test(normalizedDigestHex)) {
         throw badRequest(
           "SIGN_INPUT_INVALID",
-          "signDigest requires keyName and a 64-char SHA-256 digest hex."
+          "signDigest requires keyName and a 64-char SHA-256 digest hex.",
         );
       }
 

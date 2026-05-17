@@ -34,7 +34,7 @@ onMounted(async () => {
         encryption: publicKeyEncryption.value,
         id: generateId(),
       },
-      0
+      0,
     );
   }
 });

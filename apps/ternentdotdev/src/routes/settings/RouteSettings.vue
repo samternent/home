@@ -21,20 +21,13 @@ useBreadcrumbs({
       <div class="card bg-base-100 shadow-lg border border-base-300">
         <div class="card-body">
           <h2 class="card-title text-2xl mb-4">🎨 Theme Settings</h2>
-          <p class="text-base-content/70 mb-6">
-            Choose your preferred theme for the application
-          </p>
+          <p class="text-base-content/70 mb-6">Choose your preferred theme for the application</p>
 
           <div class="form-control">
             <label class="label">
               <span class="label-text font-medium">Current Theme</span>
             </label>
-            <SThemeToggle
-              v-model="theme"
-              show-dropdown
-              size="lg"
-              class="w-full"
-            />
+            <SThemeToggle v-model="theme" show-dropdown size="lg" class="w-full" />
           </div>
         </div>
       </div>

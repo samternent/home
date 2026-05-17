@@ -1,16 +1,6 @@
-import type {
-  TaskId,
-  TaskProjection,
-  TaskRecord,
-  TaskStatus,
-} from "./types";
+import type { TaskId, TaskProjection, TaskRecord, TaskStatus } from "./types";
 
-export const TASK_STATUSES: TaskStatus[] = [
-  "backlog",
-  "active",
-  "blocked",
-  "done",
-];
+export const TASK_STATUSES: TaskStatus[] = ["backlog", "active", "blocked", "done"];
 
 export function createEmptyTaskProjection(): TaskProjection {
   return {

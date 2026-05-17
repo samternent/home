@@ -23,11 +23,7 @@ function extractSnapshotPayload(receipt) {
   return sanitizePixbookSnapshotPayload(candidate);
 }
 
-export function createPixbookQueryService({
-  pixbookRepo,
-  receiptRepo,
-  receiptStore,
-}) {
+export function createPixbookQueryService({ pixbookRepo, receiptRepo, receiptStore }) {
   return {
     async listPixbooks(ctx, { accountId }) {
       const data = await pixbookRepo.listBooksForAccount(ctx.userId, accountId);

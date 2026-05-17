@@ -84,7 +84,6 @@ const supported = computed(() => {
   return isSupportedRuntimeSurface(app.value, surfaceId.value);
 });
 
-
 const surfaceComponent = computed(() => {
   if (!surface.value?.component) return null;
 
@@ -95,22 +94,19 @@ const surfaceComponent = computed(() => {
 <template>
   <section class="flex h-full min-h-0 w-full flex-col" data-test="runtime-app-v0">
     <template v-if="app && supported">
-        <Tabs
-          v-model="activeSurfaceTab"
-          :items="surfaceTabs"
-          size="md"
-          variant="underline"
-          class="mt-1"
-        />
+      <Tabs
+        v-model="activeSurfaceTab"
+        :items="surfaceTabs"
+        size="md"
+        variant="underline"
+        class="mt-1"
+      />
       <component :is="surfaceComponent" />
     </template>
 
-
     <template v-else>
       <div class="mx-auto w-full max-w-3xl p-6">
-        <p class="m-0 text-xs uppercase tracking-[0.12em] text-[var(--ui-fg-muted)]">
-          Runtime v0
-        </p>
+        <p class="m-0 text-xs uppercase tracking-[0.12em] text-[var(--ui-fg-muted)]">Runtime v0</p>
         <h1
           class="m-0 mt-2 text-2xl font-semibold text-[var(--ui-fg)]"
           data-test="runtime-app-unsupported-title"

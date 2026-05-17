@@ -16,11 +16,11 @@ self.addEventListener("activate", function (e) {
       caches.keys().then(function (cacheNames) {
         return Promise.all(
           cacheNames.map(function (_cacheName) {
-              return caches.delete(_cacheName);
-          })
+            return caches.delete(_cacheName);
+          }),
         );
       }),
-    ])
+    ]),
   );
 });
 // When there's an incoming fetch request, try and respond with a precached resource, otherwise fall back to the network
@@ -42,7 +42,6 @@ self.addEventListener("push", function (event) {
   // Other formats are supported (ArrayBuffer, Blob, JSON), check out the documentation
   // on https://developer.mozilla.org/en-US/docs/Web/API/PushMessageData.
   // const payload = event.data ? event.data.text() : "no payload";
-
   // Keep the service worker alive until the notification is created.
   // event.waitUntil(
   //   self.registration.showNotification("FootballSocial", {

@@ -129,37 +129,23 @@ function getInputType(fieldType) {
         </div>
 
         <div class="flex gap-2">
-          <RouterLink
-            :to="`/builder/app/${props.appId}`"
-            class="btn btn-outline btn-sm"
-          >
+          <RouterLink :to="`/builder/app/${props.appId}`" class="btn btn-outline btn-sm">
             🔧 Edit App
           </RouterLink>
-          <SButton variant="ghost" @click="router.back()" size="sm">
-            Close
-          </SButton>
+          <SButton variant="ghost" @click="router.back()" size="sm"> Close </SButton>
         </div>
       </div>
     </div>
 
     <div class="flex max-w-6xl mx-auto">
       <!-- Sidebar Navigation -->
-      <div
-        class="w-64 bg-base-200/50 border-r border-base-300 min-h-screen p-4"
-      >
-        <h3
-          class="font-bold text-sm text-base-content/60 uppercase tracking-wide mb-3"
-        >
-          Views
-        </h3>
+      <div class="w-64 bg-base-200/50 border-r border-base-300 min-h-screen p-4">
+        <h3 class="font-bold text-sm text-base-content/60 uppercase tracking-wide mb-3">Views</h3>
 
         <div v-if="views.length === 0" class="text-center py-8">
           <div class="text-2xl mb-2">👁️</div>
           <p class="text-sm text-base-content/60">No views available</p>
-          <RouterLink
-            :to="`/builder/app/${props.appId}`"
-            class="btn btn-outline btn-xs mt-2"
-          >
+          <RouterLink :to="`/builder/app/${props.appId}`" class="btn btn-outline btn-xs mt-2">
             Create Views
           </RouterLink>
         </div>
@@ -186,17 +172,13 @@ function getInputType(fieldType) {
         <div v-if="!activeView" class="text-center py-12">
           <div class="text-4xl mb-4">📱</div>
           <h2 class="text-xl font-bold mb-2">Select a View</h2>
-          <p class="text-base-content/60">
-            Choose a view from the sidebar to get started
-          </p>
+          <p class="text-base-content/60">Choose a view from the sidebar to get started</p>
         </div>
 
         <div v-else-if="!activeSchema" class="text-center py-12">
           <div class="text-4xl mb-4">❌</div>
           <h2 class="text-xl font-bold mb-2">Schema Not Found</h2>
-          <p class="text-base-content/60">
-            The data model for this view is missing
-          </p>
+          <p class="text-base-content/60">The data model for this view is missing</p>
         </div>
 
         <div v-else>
@@ -204,9 +186,7 @@ function getInputType(fieldType) {
           <div class="flex items-center justify-between mb-6">
             <div>
               <h2 class="text-2xl font-bold">{{ activeView.name }}</h2>
-              <p class="text-base-content/60">
-                {{ activeSchema.name }} {{ activeView.type }}
-              </p>
+              <p class="text-base-content/60">{{ activeSchema.name }} {{ activeView.type }}</p>
             </div>
             <SButton @click="openAddForm" class="btn-primary">
               Add {{ activeSchema.name }}
@@ -215,18 +195,11 @@ function getInputType(fieldType) {
 
           <!-- List View -->
           <div v-if="activeView.type === 'list'">
-            <div
-              v-if="viewData.length === 0"
-              class="text-center py-12 bg-base-200/30 rounded-lg"
-            >
+            <div v-if="viewData.length === 0" class="text-center py-12 bg-base-200/30 rounded-lg">
               <div class="text-3xl mb-3">📄</div>
               <h3 class="font-medium mb-2">No {{ activeSchema.name }} yet</h3>
-              <p class="text-sm text-base-content/60 mb-4">
-                Add your first item to get started
-              </p>
-              <SButton @click="openAddForm" size="sm"
-                >Add {{ activeSchema.name }}</SButton
-              >
+              <p class="text-sm text-base-content/60 mb-4">Add your first item to get started</p>
+              <SButton @click="openAddForm" size="sm">Add {{ activeSchema.name }}</SButton>
             </div>
 
             <div v-else class="space-y-3">
@@ -242,9 +215,7 @@ function getInputType(fieldType) {
                     class="flex justify-between"
                   >
                     <span class="font-medium text-sm">{{ field.name }}:</span>
-                    <span class="text-sm">{{
-                      renderField(field, item.data[field.name])
-                    }}</span>
+                    <span class="text-sm">{{ renderField(field, item.data[field.name]) }}</span>
                   </div>
                   <div class="text-xs text-base-content/50 mt-2">
                     Created:
@@ -265,9 +236,7 @@ function getInputType(fieldType) {
             <div class="space-y-4">
               <div class="flex items-center justify-between">
                 <h3 class="text-lg font-bold">Add {{ activeSchema?.name }}</h3>
-                <SButton size="sm" variant="ghost" @click="showForm = false"
-                  >×</SButton
-                >
+                <SButton size="sm" variant="ghost" @click="showForm = false">×</SButton>
               </div>
 
               <form @submit.prevent="submitForm" class="space-y-4">
@@ -281,9 +250,7 @@ function getInputType(fieldType) {
 
                   <!-- Text/Email/Number/Date inputs -->
                   <SInput
-                    v-if="
-                      ['text', 'email', 'number', 'date'].includes(field.type)
-                    "
+                    v-if="['text', 'email', 'number', 'date'].includes(field.type)"
                     v-model="formData[field.name]"
                     :type="getInputType(field.type)"
                     :required="field.required"
@@ -320,11 +287,7 @@ function getInputType(fieldType) {
                 </div>
 
                 <div class="flex gap-2 pt-4">
-                  <SButton
-                    type="button"
-                    variant="ghost"
-                    @click="showForm = false"
-                  >
+                  <SButton type="button" variant="ghost" @click="showForm = false">
                     Cancel
                   </SButton>
                   <SButton type="submit" class="btn-primary"> Save </SButton>
@@ -342,9 +305,7 @@ function getInputType(fieldType) {
       <div class="text-4xl mb-4">❌</div>
       <h2 class="text-xl font-bold mb-2">App Not Found</h2>
       <p class="text-base-content/60">The requested app could not be found.</p>
-      <RouterLink to="/t/builder" class="btn btn-outline mt-4">
-        Back to Builder
-      </RouterLink>
+      <RouterLink to="/t/builder" class="btn btn-outline mt-4"> Back to Builder </RouterLink>
     </div>
   </div>
 </template>

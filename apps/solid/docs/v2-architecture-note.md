@@ -25,8 +25,10 @@ Host entrypoints:
 ## State Rules
 
 - replay ordering is fixed:
+
 1. committed entries (canonical ledger order)
 2. staged entries (in insertion order)
+
 - replay runs after `command`, `commit`, and `discard`
 - published state is atomically replaced (never in-place mutated)
 

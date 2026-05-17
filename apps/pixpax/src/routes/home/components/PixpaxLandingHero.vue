@@ -21,21 +21,13 @@ defineProps<{
       <div class="pixpax-hero__content">
         <h1 class="pixpax-hero__headline">{{ headline }}</h1>
         <p class="pixpax-hero__supporting">{{ supporting }}</p>
-        <Button
-          as="RouterLink"
-          to="/app/pixbook"
-          size="lg"
-        >
+        <Button as="RouterLink" to="/app/pixbook" size="lg">
           {{ ctaLabel }}
         </Button>
       </div>
 
       <div class="pixpax-hero__cards">
-        <PixpaxLandingCardFan
-          :bundle="bundle"
-          :cards="cards"
-          mode="fan"
-        />
+        <PixpaxLandingCardFan :bundle="bundle" :cards="cards" mode="fan" />
       </div>
     </div>
   </section>

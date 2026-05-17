@@ -43,10 +43,7 @@ function formatValue(value: KeyValueListValue): string {
             </slot>
           </dd>
         </div>
-        <Separator
-          v-if="index < normalizedItems.length - 1"
-          orientation="horizontal"
-        />
+        <Separator v-if="index < normalizedItems.length - 1" orientation="horizontal" />
       </template>
     </dl>
   </Card>

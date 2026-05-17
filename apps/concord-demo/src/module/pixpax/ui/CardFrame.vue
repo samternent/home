@@ -34,9 +34,7 @@ function hashToRange(input: string, min: number, max: number): number {
 }
 
 const isCompact = computed(() => props.compact ?? false);
-const showLabels = computed(
-  () => !!(props.label || props.sublabel || props.status),
-);
+const showLabels = computed(() => !!(props.label || props.sublabel || props.status));
 const frameSeed = computed(
   () => props.seed || props.label || props.sublabel || props.tone || "card",
 );
@@ -48,25 +46,13 @@ const animated = computed(() => props.animated !== false);
 const showBackdrop = computed(() => props.backdrop !== false);
 
 const showAccentDots = computed(
-  () =>
-    animated.value &&
-    !props.missing &&
-    tone.value === "mythic" &&
-    props.accentDots !== false,
+  () => animated.value && !props.missing && tone.value === "mythic" && props.accentDots !== false,
 );
 const showAccentGlow = computed(
-  () =>
-    animated.value &&
-    !props.missing &&
-    tone.value === "mythic" &&
-    props.accentGlow !== false,
+  () => animated.value && !props.missing && tone.value === "mythic" && props.accentGlow !== false,
 );
 const showAccentBorder = computed(
-  () =>
-    animated.value &&
-    !props.missing &&
-    tone.value === "mythic" &&
-    props.accentBorder !== false,
+  () => animated.value && !props.missing && tone.value === "mythic" && props.accentBorder !== false,
 );
 const mythicBorderDelay = computed(() => {
   const seconds = hashToRange(`${frameSeed.value}:border`, -6, 0);
@@ -104,11 +90,7 @@ const backdropFill = computed(() => {
         { 'shimmer-border mythic-border': showAccentBorder },
         missing ? 'opacity-100 blur-[2px] grayscale' : '',
       ]"
-      :style="
-        showAccentBorder
-          ? { '--mythic-border-delay': mythicBorderDelay }
-          : undefined
-      "
+      :style="showAccentBorder ? { '--mythic-border-delay': mythicBorderDelay } : undefined"
     >
       <svg
         class="absolute inset-0 h-full w-full"
@@ -118,10 +100,7 @@ const backdropFill = computed(() => {
       >
         <defs>
           <radialGradient :id="`mythic-${frameId}`" cx="30%" cy="25%" r="90%">
-            <stop
-              offset="0%"
-              stop-color="color-mix(in srgb, var(--ui-accent) 50%, var(--ui-bg))"
-            >
+            <stop offset="0%" stop-color="color-mix(in srgb, var(--ui-accent) 50%, var(--ui-bg))">
               <animate
                 v-if="showAccentGlow"
                 attributeName="stop-color"
@@ -130,10 +109,7 @@ const backdropFill = computed(() => {
                 repeatCount="indefinite"
               />
             </stop>
-            <stop
-              offset="40%"
-              stop-color="color-mix(in srgb, var(--ui-primary) 45%, var(--ui-bg))"
-            >
+            <stop offset="40%" stop-color="color-mix(in srgb, var(--ui-primary) 45%, var(--ui-bg))">
               <animate
                 v-if="showAccentGlow"
                 attributeName="stop-color"
@@ -154,10 +130,7 @@ const backdropFill = computed(() => {
                 repeatCount="indefinite"
               />
             </stop>
-            <stop
-              offset="100%"
-              stop-color="color-mix(in srgb, var(--ui-accent) 45%, var(--ui-bg))"
-            >
+            <stop offset="100%" stop-color="color-mix(in srgb, var(--ui-accent) 45%, var(--ui-bg))">
               <animate
                 v-if="showAccentGlow"
                 attributeName="stop-color"
@@ -203,29 +176,15 @@ const backdropFill = computed(() => {
               repeatCount="indefinite"
             />
           </radialGradient>
-          <filter
-            :id="`frame-glow-${frameId}`"
-            x="-30%"
-            y="-30%"
-            width="160%"
-            height="160%"
-          >
+          <filter :id="`frame-glow-${frameId}`" x="-30%" y="-30%" width="160%" height="160%">
             <feGaussianBlur stdDeviation="8" result="blur" />
-            <feColorMatrix
-              type="matrix"
-              values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.7 0"
-            />
+            <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.7 0" />
             <feMerge>
               <feMergeNode in="blur" />
               <feMergeNode in="SourceGraphic" />
             </feMerge>
           </filter>
-          <pattern
-            :id="`dots-${frameId}`"
-            patternUnits="userSpaceOnUse"
-            width="24"
-            height="24"
-          >
+          <pattern :id="`dots-${frameId}`" patternUnits="userSpaceOnUse" width="24" height="24">
             <circle cx="4" cy="6" r="1.6" fill="rgba(255,255,255,0.7)" />
             <circle cx="16" cy="14" r="1.2" fill="rgba(255,255,255,0.5)" />
             <circle cx="20" cy="6" r="1" fill="rgba(255,255,255,0.4)" />
@@ -237,13 +196,7 @@ const backdropFill = computed(() => {
               repeatCount="indefinite"
             />
           </pattern>
-          <linearGradient
-            :id="`shimmer-${frameId}`"
-            x1="0"
-            y1="0"
-            x2="1"
-            y2="1"
-          >
+          <linearGradient :id="`shimmer-${frameId}`" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stop-color="rgba(255,255,255,0)" />
             <stop offset="35%" stop-color="rgba(255,255,255,0.0)" />
             <stop offset="46%" stop-color="rgba(255,255,255,0.18)" />

@@ -62,11 +62,9 @@ export async function ensureLocalIdentity(): Promise<StoredIdentity> {
 
   if (!ensurePromise) {
     const creator = useIdentityCreate();
-    ensurePromise = creator
-      .create()
-      .finally(() => {
-        ensurePromise = null;
-      });
+    ensurePromise = creator.create().finally(() => {
+      ensurePromise = null;
+    });
   }
 
   return ensurePromise;

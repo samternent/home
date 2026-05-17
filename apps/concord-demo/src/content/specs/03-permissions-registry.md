@@ -203,7 +203,6 @@ This requires single-pass replay that maintains current state and validates each
 Two modes are allowed:
 
 - Deterministic mode (default for consensus checks):
-
   - Ignore expires unless nowIso is explicitly provided by the caller
   - This makes replay purely ledger-derived
 

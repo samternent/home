@@ -12,7 +12,9 @@ test("generate identity, sign text, verify proof and mismatch", async ({ page })
 
   await page.getByRole("link", { name: "Settings", exact: true }).click();
   await page.getByRole("button", { name: "Generate signer" }).click();
-  await expect(page.getByText("Identity created. Export it now and store it securely.")).toBeVisible();
+  await expect(
+    page.getByText("Identity created. Export it now and store it securely."),
+  ).toBeVisible();
 
   await page.getByRole("link", { name: "Sign" }).click();
   await page.getByPlaceholder("Enter text to sign").fill("seal text");
@@ -36,7 +38,9 @@ test("generate identity, sign text, verify proof and mismatch", async ({ page })
   await page.getByPlaceholder("Paste original text").fill("seal text");
   await page.getByRole("button", { name: "Verify proof" }).click();
 
-  await expect(page.getByText("Proof JSON parsed successfully and the signature is valid.")).toBeVisible();
+  await expect(
+    page.getByText("Proof JSON parsed successfully and the signature is valid."),
+  ).toBeVisible();
   await expect(page.getByText("Content hash matches proof subject.")).toBeVisible();
 
   await page.getByPlaceholder("Paste original text").fill("different text");
@@ -44,24 +48,32 @@ test("generate identity, sign text, verify proof and mismatch", async ({ page })
   await expect(page.getByText("Content hash does not match proof subject.")).toBeVisible();
 });
 
-test("export, clear, and import identity through the consolidated app identity flow", async ({ page }) => {
+test("export, clear, and import identity through the consolidated app identity flow", async ({
+  page,
+}) => {
   await page.goto("/app/identity");
   await expect(page.getByRole("button", { name: "Download export file" })).toHaveCount(0);
 
   await page.getByRole("button", { name: "Generate signer" }).click();
-  await expect(page.getByText("Identity created. Export it now and store it securely.")).toBeVisible();
+  await expect(
+    page.getByText("Identity created. Export it now and store it securely."),
+  ).toBeVisible();
 
   await page.getByRole("button", { name: "Reveal export payload" }).click();
   const exportedPayload = await page.locator("textarea[readonly]").inputValue();
   await expect(page.getByRole("button", { name: "Download export file" })).toBeVisible();
 
   await page.getByRole("button", { name: "Clear signer" }).click();
-  await expect(page.getByText("Identity cleared from memory and remembered storage.")).toBeVisible();
+  await expect(
+    page.getByText("Identity cleared from memory and remembered storage."),
+  ).toBeVisible();
   await expect(page.getByText("No signer loaded").first()).toBeVisible();
 
   await page.getByRole("button", { name: "Import signer" }).click();
   await page
-    .getByPlaceholder('{"format":"ternent-identity","version":"2","algorithm":"Ed25519","material":{"kind":"seed","seed":"..."},...}')
+    .getByPlaceholder(
+      '{"format":"ternent-identity","version":"2","algorithm":"Ed25519","material":{"kind":"seed","seed":"..."},...}',
+    )
     .fill(exportedPayload);
   await page.getByRole("button", { name: "Import signer", exact: true }).click();
 

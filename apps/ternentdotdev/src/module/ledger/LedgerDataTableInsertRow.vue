@@ -72,7 +72,7 @@ watch(
       items.value = [...(getCollection(props.table)?.data || [])];
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 watchEffect(() => {
@@ -126,9 +126,7 @@ function updateItem(e, name, item) {
 }
 
 const allowPermission = computed(
-  () =>
-    !["users", "permissions"].includes(props.table) &&
-    !Object.keys(props.item).length
+  () => !["users", "permissions"].includes(props.table) && !Object.keys(props.item).length,
 );
 
 async function addListItem() {
@@ -152,8 +150,9 @@ function getItems(type, name) {
 }
 
 function getValue(type, name, id) {
-  return getCollection(type.split(":types")[0])?.findOne({ "data.id": id })
-    ?.data[name.split(":")[1]];
+  return getCollection(type.split(":types")[0])?.findOne({ "data.id": id })?.data[
+    name.split(":")[1]
+  ];
 }
 </script>
 
@@ -220,10 +219,7 @@ function getValue(type, name, id) {
     </td>
 
     <td colspan="3" class="p-2">
-      <div
-        v-if="!Object.keys(item).length"
-        class="flex justify-end items-center"
-      >
+      <div v-if="!Object.keys(item).length" class="flex justify-end items-center">
         <SButton
           class="w-full max-w-32"
           variant="tonal"
@@ -235,13 +231,7 @@ function getValue(type, name, id) {
         </SButton>
       </div>
       <div v-else class="flex justify-end items-center">
-        <SButton
-          icon
-          size="x-small"
-          variant="tonal"
-          @click="addListItem"
-          color="success"
-        >
+        <SButton icon size="x-small" variant="tonal" @click="addListItem" color="success">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -250,11 +240,7 @@ function getValue(type, name, id) {
             stroke="currentColor"
             class="w-5 h-5"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M4.5 12.75l6 6 9-13.5"
-            />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
           </svg>
         </SButton>
         <SButton icon variant="plain" @click="$emit('close')" color="error"
@@ -266,11 +252,7 @@ function getValue(type, name, id) {
             stroke="currentColor"
             class="w-6 h-6"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M6 18L18 6M6 6l12 12"
-            />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </SButton>
       </div>

@@ -4,11 +4,7 @@ type TaskLedgerLike = {
   entries?: Record<string, { kind: string }> | null;
 };
 
-const TASK_ENTRY_KINDS = new Set([
-  "task.item.created",
-  "task.item.edited",
-  "task.item.status-set",
-]);
+const TASK_ENTRY_KINDS = new Set(["task.item.created", "task.item.edited", "task.item.status-set"]);
 
 export function supportsTaskProjection(
   container: TaskLedgerLike | null | undefined,

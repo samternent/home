@@ -13,12 +13,7 @@ export default defineConfig({
       formats: ["es"],
     },
     rollupOptions: {
-      external: [
-        "node:fs",
-        "node:path",
-        "node:process",
-        "node:url",
-      ],
+      external: ["node:fs", "node:path", "node:process", "node:url"],
       output: {
         banner: "#!/usr/bin/env node",
       },

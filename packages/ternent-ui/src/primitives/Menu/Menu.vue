@@ -23,7 +23,12 @@ function handleSelect(item: MenuItem) {
 </script>
 
 <template>
-  <ArkMenu.Root v-model:open="open" :positioning="{ placement: props.placement }" lazy-mount unmount-on-exit>
+  <ArkMenu.Root
+    v-model:open="open"
+    :positioning="{ placement: props.placement }"
+    lazy-mount
+    unmount-on-exit
+  >
     <ArkMenu.Trigger v-if="$slots.trigger" as-child>
       <slot name="trigger" />
     </ArkMenu.Trigger>
@@ -33,10 +38,7 @@ function handleSelect(item: MenuItem) {
           <ArkMenu.ArrowTip />
         </ArkMenu.Arrow>
         <template v-for="(item, index) in props.items" :key="item.value ?? `separator-${index}`">
-          <ArkMenu.Separator
-            v-if="item.type === 'separator'"
-            :class="menuSeparatorClass"
-          />
+          <ArkMenu.Separator v-if="item.type === 'separator'" :class="menuSeparatorClass" />
           <ArkMenu.Item
             v-else
             :value="item.value ?? item.label ?? `item-${index}`"

@@ -18,7 +18,7 @@ async function assertInitialized(): Promise<void> {
   if (!initialized) {
     throw new RageInitError(
       "RAGE_INIT_FAILED",
-      "Rage WASM is not initialized. Call initRage() before using @ternent/rage."
+      "Rage WASM is not initialized. Call initRage() before using @ternent/rage.",
     );
   }
 }
@@ -53,7 +53,7 @@ async function handleRequest(request: RageWorkerRequest): Promise<void> {
           value: await getWasmBindings().encryptWithRecipients(
             request.recipients,
             request.data,
-            request.armor
+            request.armor,
           ),
         };
         break;
@@ -62,10 +62,7 @@ async function handleRequest(request: RageWorkerRequest): Promise<void> {
         response = {
           id: request.id,
           ok: true,
-          value: await getWasmBindings().decryptWithIdentity(
-            request.identity,
-            request.data
-          ),
+          value: await getWasmBindings().decryptWithIdentity(request.identity, request.data),
         };
         break;
       case "encryptWithPassphrase":
@@ -76,7 +73,7 @@ async function handleRequest(request: RageWorkerRequest): Promise<void> {
           value: await getWasmBindings().encryptWithPassphrase(
             request.passphrase,
             request.data,
-            request.armor
+            request.armor,
           ),
         };
         break;
@@ -85,10 +82,7 @@ async function handleRequest(request: RageWorkerRequest): Promise<void> {
         response = {
           id: request.id,
           ok: true,
-          value: await getWasmBindings().decryptWithPassphrase(
-            request.passphrase,
-            request.data
-          ),
+          value: await getWasmBindings().decryptWithPassphrase(request.passphrase, request.data),
         };
         break;
     }

@@ -41,10 +41,7 @@ function initialProfilesState(): ProfilesState {
   };
 }
 
-function normalizeOptionalText(
-  value: unknown,
-  label: string,
-): string | null | undefined {
+function normalizeOptionalText(value: unknown, label: string): string | null | undefined {
   if (value === undefined) {
     return undefined;
   }
@@ -69,9 +66,7 @@ async function parseProfileUpsertInput(inputValue: unknown): Promise<ProfileUpse
   const input = inputValue as Record<string, unknown>;
 
   const identityKey = await validateIdentityKey(String(input.identityKey ?? ""));
-  const actorIdentityKey = await validateIdentityKey(
-    String(input.actorIdentityKey ?? ""),
-  );
+  const actorIdentityKey = await validateIdentityKey(String(input.actorIdentityKey ?? ""));
 
   if (actorIdentityKey !== identityKey) {
     throw new Error("Profile updates are self-service only.");
@@ -87,9 +82,7 @@ async function parseProfileUpsertInput(inputValue: unknown): Promise<ProfileUpse
 }
 
 function removeUndefinedFields<T extends Record<string, unknown>>(input: T): T {
-  return Object.fromEntries(
-    Object.entries(input).filter(([, value]) => value !== undefined),
-  ) as T;
+  return Object.fromEntries(Object.entries(input).filter(([, value]) => value !== undefined)) as T;
 }
 
 function getEntryPayload(entry: LedgerReplayEntry): unknown {
@@ -113,16 +106,16 @@ function cloneProfileRecord(record: ProfileRecord): ProfileRecord {
 function cloneProfilesState(state: ProfilesState): ProfilesState {
   return {
     byKey: Object.fromEntries(
-      Object.entries(state.byKey).map(([identityKey, record]) => [identityKey, cloneProfileRecord(record)]),
+      Object.entries(state.byKey).map(([identityKey, record]) => [
+        identityKey,
+        cloneProfileRecord(record),
+      ]),
     ),
     order: [...state.order],
   };
 }
 
-function applyProfileUpsert(
-  state: ProfilesState,
-  payloadValue: unknown,
-): ProfilesState {
+function applyProfileUpsert(state: ProfilesState, payloadValue: unknown): ProfilesState {
   if (!payloadValue || typeof payloadValue !== "object") {
     return state;
   }
@@ -130,27 +123,20 @@ function applyProfileUpsert(
   const payload = payloadValue as ProfileUpsertPayload;
   const existing = state.byKey[payload.identityKey];
 
-  const baseRecord: ProfileRecord =
-    existing ?? {
-      identityKey: payload.identityKey,
-      displayName: null,
-      bio: null,
-      avatarUrl: null,
-      updatedAt: payload.updatedAt,
-      updatedBy: payload.updatedBy,
-    };
+  const baseRecord: ProfileRecord = existing ?? {
+    identityKey: payload.identityKey,
+    displayName: null,
+    bio: null,
+    avatarUrl: null,
+    updatedAt: payload.updatedAt,
+    updatedBy: payload.updatedBy,
+  };
 
   const nextRecord: ProfileRecord = {
     ...baseRecord,
-    displayName:
-      payload.displayName === undefined
-        ? baseRecord.displayName
-        : payload.displayName,
+    displayName: payload.displayName === undefined ? baseRecord.displayName : payload.displayName,
     bio: payload.bio === undefined ? baseRecord.bio : payload.bio,
-    avatarUrl:
-      payload.avatarUrl === undefined
-        ? baseRecord.avatarUrl
-        : payload.avatarUrl,
+    avatarUrl: payload.avatarUrl === undefined ? baseRecord.avatarUrl : payload.avatarUrl,
     updatedAt: payload.updatedAt,
     updatedBy: payload.updatedBy,
   };

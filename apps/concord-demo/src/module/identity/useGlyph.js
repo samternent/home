@@ -35,10 +35,7 @@ async function expandBytes(seed, needed) {
   let total = 0;
   let counter = 0;
   while (total < needed) {
-    const block = await hashBytes(
-      "SHA-512",
-      concatBytes(seed, toUint32Bytes(counter))
-    );
+    const block = await hashBytes("SHA-512", concatBytes(seed, toUint32Bytes(counter)));
     chunks.push(block);
     total += block.length;
     counter += 1;
@@ -81,11 +78,7 @@ function hslToRgb(h, s, l) {
   }
 
   const m = light - c / 2;
-  return [
-    Math.round((r + m) * 255),
-    Math.round((g + m) * 255),
-    Math.round((b + m) * 255),
-  ];
+  return [Math.round((r + m) * 255), Math.round((g + m) * 255), Math.round((b + m) * 255)];
 }
 
 function paletteFromBytes(bytes) {
@@ -232,25 +225,20 @@ function scoreGrid(grid, backgroundIndex) {
   const centerNorm = nonBgCount ? centerScore / nonBgCount : 0;
   const speckleRatio = nonBgCount ? speckleCount / nonBgCount : 1;
   const avgQuadrant = nonBgCount / 4 || 1;
-  const maxDiff = Math.max(
-    ...quadrantCounts.map((count) => Math.abs(count - avgQuadrant))
-  );
+  const maxDiff = Math.max(...quadrantCounts.map((count) => Math.abs(count - avgQuadrant)));
   const balanceScore = clamp(1 - maxDiff / avgQuadrant, 0, 1);
 
-  return (
-    occupancyScore * 2 + centerNorm * 1.5 + (1 - speckleRatio) + balanceScore
-  );
+  return occupancyScore * 2 + centerNorm * 1.5 + (1 - speckleRatio) + balanceScore;
 }
 
 function buildCandidate({ seedBytes, backgroundIndex, activeIndices, offset }) {
   const styleId = seedBytes[(offset + 2) % seedBytes.length] % 5;
   const symmetry = pickSymmetry(seedBytes[(offset + 1) % seedBytes.length]);
-  const baseThreshold =
-    0.25 + (seedBytes[(offset + 3) % seedBytes.length] / 255) * 0.2;
+  const baseThreshold = 0.25 + (seedBytes[(offset + 3) % seedBytes.length] / 255) * 0.2;
   const threshold = clamp(baseThreshold, 0.25, 0.45);
 
   const baseGrid = Array.from({ length: GRID_SIZE }, () =>
-    new Array(GRID_SIZE).fill(backgroundIndex)
+    new Array(GRID_SIZE).fill(backgroundIndex),
   );
 
   const chooseIndex = (value, x, y) => {
@@ -270,18 +258,12 @@ function buildCandidate({ seedBytes, backgroundIndex, activeIndices, offset }) {
     }
 
     if (t < threshold) return backgroundIndex;
-    const bucket = Math.floor(
-      ((t - threshold) / (1 - threshold)) * activeIndices.length
-    );
+    const bucket = Math.floor(((t - threshold) / (1 - threshold)) * activeIndices.length);
     return activeIndices[Math.min(activeIndices.length - 1, bucket)];
   };
 
-  const fillWidth =
-    symmetry === "horizontal" || symmetry === "quadrant"
-      ? HALF_GRID
-      : GRID_SIZE;
-  const fillHeight =
-    symmetry === "vertical" || symmetry === "quadrant" ? HALF_GRID : GRID_SIZE;
+  const fillWidth = symmetry === "horizontal" || symmetry === "quadrant" ? HALF_GRID : GRID_SIZE;
+  const fillHeight = symmetry === "vertical" || symmetry === "quadrant" ? HALF_GRID : GRID_SIZE;
 
   let cursor = offset + 8;
   for (let y = 0; y < fillHeight; y += 1) {
@@ -316,16 +298,10 @@ export default function useGlyph(identity) {
       if (!normalizedIdentity) return;
 
       try {
-        const baseSeed = await hashBytes(
-          "SHA-256",
-          toBytes(normalizedIdentity)
-        );
+        const baseSeed = await hashBytes("SHA-256", toBytes(normalizedIdentity));
         if (nextId !== requestId) return;
 
-        const paletteSeed = await hashBytes(
-          "SHA-256",
-          concatBytes(baseSeed, toBytes("palette"))
-        );
+        const paletteSeed = await hashBytes("SHA-256", concatBytes(baseSeed, toBytes("palette")));
         if (nextId !== requestId) return;
 
         colors.value = paletteFromBytes(paletteSeed);
@@ -335,16 +311,11 @@ export default function useGlyph(identity) {
         const patternBytes = await expandBytes(patternSeed, needed);
         if (nextId !== requestId) return;
 
-        const activeSeed = await hashBytes(
-          "SHA-256",
-          concatBytes(baseSeed, toBytes("active"))
-        );
+        const activeSeed = await hashBytes("SHA-256", concatBytes(baseSeed, toBytes("active")));
         if (nextId !== requestId) return;
 
         const bgIndex = paletteSeed[0] % 8;
-        const remaining = Array.from({ length: 8 }, (_, i) => i).filter(
-          (i) => i !== bgIndex
-        );
+        const remaining = Array.from({ length: 8 }, (_, i) => i).filter((i) => i !== bgIndex);
         const activeIndices = pickActiveIndices(remaining, 4, activeSeed);
 
         let bestGrid = null;
@@ -369,7 +340,7 @@ export default function useGlyph(identity) {
         colors.value = [];
       }
     },
-    { immediate: true }
+    { immediate: true },
   );
 
   return {

@@ -15,8 +15,6 @@ describe("theme mode", () => {
     theme.toggleTheme();
 
     expect(theme.mode.value).toBe("light");
-    expect(document.documentElement.getAttribute("data-theme")).toBe(
-      `${appThemePrefix}-light`,
-    );
+    expect(document.documentElement.getAttribute("data-theme")).toBe(`${appThemePrefix}-light`);
   });
 });

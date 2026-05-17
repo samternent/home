@@ -3,10 +3,7 @@ import { describe, expect, test } from "vitest";
 import { validateLedgerEncryptionKeyIds } from "../index";
 
 function loadFixtureLedger() {
-  const fixturePath = new URL(
-    "./fixtures/epoch-ledger.valid.json",
-    import.meta.url
-  );
+  const fixturePath = new URL("./fixtures/epoch-ledger.valid.json", import.meta.url);
   const raw = fs.readFileSync(fixturePath, "utf8");
   return JSON.parse(raw);
 }
@@ -63,8 +60,6 @@ describe("encryptionKeyId validation", () => {
     ledger.entries["entry-perm-2"].payload.encryptionKeyId = "unknown";
     const result = validateLedgerEncryptionKeyIds(ledger);
     expect(result.ok).toBe(false);
-    expect(
-      result.errors.some((err) => err.code === "EPOCH_UNKNOWN_ENCRYPTION_KEY")
-    ).toBe(true);
+    expect(result.errors.some((err) => err.code === "EPOCH_UNKNOWN_ENCRYPTION_KEY")).toBe(true);
   });
 });

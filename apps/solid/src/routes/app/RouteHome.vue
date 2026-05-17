@@ -18,7 +18,8 @@ onMounted(async () => {
 <template>
   <section class="p-4" data-test="home-v2-placeholder">
     <p class="m-0 text-sm text-[var(--ui-fg-muted)]" data-test="home-v2-placeholder-text">
-      Home placeholder. Runtime health, integrity, and staging indicators now live in the console status bar.
+      Home placeholder. Runtime health, integrity, and staging indicators now live in the console
+      status bar.
     </p>
     <p
       v-if="loadError || appApi.lastError.value"

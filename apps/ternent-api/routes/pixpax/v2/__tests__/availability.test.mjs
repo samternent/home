@@ -39,9 +39,7 @@ test("isV2CollectionAvailable treats an empty allowlist as no public v2 books", 
 });
 
 test("resolveAvailableCollectionVersion pins a single allowed version when no version is requested", () => {
-  const available = [
-    { collectionId: "prod-book", version: "v2" },
-  ];
+  const available = [{ collectionId: "prod-book", version: "v2" }];
 
   assert.equal(resolveAvailableCollectionVersion(available, "prod-book", ""), "v2");
   assert.equal(resolveAvailableCollectionVersion(available, "prod-book", "v3"), "v3");

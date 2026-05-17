@@ -20,28 +20,20 @@ export function provideAppBuilder() {
   function updateFromLedger() {
     // Get all ledger apps
     const appsCollection = getCollection("ledger_apps");
-    appsData.value = [
-      ...(appsCollection?.data?.map((item) => item.data) || []),
-    ];
+    appsData.value = [...(appsCollection?.data?.map((item) => item.data) || [])];
 
     // Get app schemas - use spread to create new array reference
     const schemaCollection = getCollection("app_schemas");
-    schemasData.value = [
-      ...(schemaCollection?.data?.map((item) => item.data) || []),
-    ];
+    schemasData.value = [...(schemaCollection?.data?.map((item) => item.data) || [])];
 
     // Get app views - use spread to create new array reference
     const viewCollection = getCollection("app_views");
-    viewsData.value = [
-      ...(viewCollection?.data?.map((item) => item.data) || []),
-    ];
+    viewsData.value = [...(viewCollection?.data?.map((item) => item.data) || [])];
 
     // Update schema data for all registered schemas
     for (const [schemaId, dataRef] of schemaDataRefs) {
       const dataCollection = getCollection(`schema_${schemaId}`);
-      dataRef.value = [
-        ...(dataCollection?.data?.map((item) => item.data) || []),
-      ];
+      dataRef.value = [...(dataCollection?.data?.map((item) => item.data) || [])];
     }
   }
 
@@ -109,18 +101,14 @@ export function provideAppBuilder() {
   // Remove an app and its associated data
   async function removeApp(appId) {
     const appsCollection = getCollection("ledger_apps");
-    const appItem = appsCollection?.data?.find(
-      (item) => item.data.id === appId
-    );
+    const appItem = appsCollection?.data?.find((item) => item.data.id === appId);
 
     if (appItem) {
       // Remove app
       await removeItem(appItem.id, "ledger_apps");
 
       // Remove associated schemas
-      const appSchemas = schemas.value.filter(
-        (schema) => schema.appId === appId
-      );
+      const appSchemas = schemas.value.filter((schema) => schema.appId === appId);
       for (const schema of appSchemas) {
         await removeSchema(schema.id);
       }
@@ -150,9 +138,7 @@ export function provideAppBuilder() {
 
   // Update an existing schema
   async function updateSchema(appId, schemaId, updates) {
-    const schema = schemas.value.find(
-      (s) => s.id === schemaId && s.appId === appId
-    );
+    const schema = schemas.value.find((s) => s.id === schemaId && s.appId === appId);
     if (!schema) return null;
 
     const updatedSchema = {
@@ -169,7 +155,7 @@ export function provideAppBuilder() {
   async function removeSchema(appId, schemaId) {
     const schemaCollection = getCollection("app_schemas");
     const schemaItem = schemaCollection?.data?.find(
-      (item) => item.data.id === schemaId && item.data.appId === appId
+      (item) => item.data.id === schemaId && item.data.appId === appId,
     );
 
     if (schemaItem) {
@@ -221,7 +207,7 @@ export function provideAppBuilder() {
   async function removeView(appId, viewId) {
     const viewCollection = getCollection("app_views");
     const viewItem = viewCollection?.data?.find(
-      (item) => item.data.id === viewId && item.data.appId === appId
+      (item) => item.data.id === viewId && item.data.appId === appId,
     );
 
     if (viewItem) {
@@ -244,9 +230,7 @@ export function provideAppBuilder() {
   // Update schema data
   async function updateSchemaData(schemaId, itemId, updates) {
     const dataCollection = getCollection(`schema_${schemaId}`);
-    const dataItem = dataCollection?.data?.find(
-      (item) => item.data.id === itemId
-    );
+    const dataItem = dataCollection?.data?.find((item) => item.data.id === itemId);
 
     if (dataItem) {
       const updatedData = {
@@ -264,9 +248,7 @@ export function provideAppBuilder() {
   // Remove schema data
   async function removeSchemaData(schemaId, itemId) {
     const dataCollection = getCollection(`schema_${schemaId}`);
-    const dataItem = dataCollection?.data?.find(
-      (item) => item.data.id === itemId
-    );
+    const dataItem = dataCollection?.data?.find((item) => item.data.id === itemId);
 
     if (dataItem) {
       await removeItem(dataItem.id, `schema_${schemaId}`);
@@ -322,11 +304,7 @@ export function provideAppBuilder() {
     for (const schema of template.schemas) {
       const newSchemaId = schemaIdMap[schema.id];
       const updatedFields = schema.fields.map((field) => {
-        if (
-          field.type === "link" &&
-          field.linkedSchema &&
-          schemaIdMap[field.linkedSchema]
-        ) {
+        if (field.type === "link" && field.linkedSchema && schemaIdMap[field.linkedSchema]) {
           return { ...field, linkedSchema: schemaIdMap[field.linkedSchema] };
         }
         return field;
@@ -353,8 +331,7 @@ export function provideAppBuilder() {
           // For linked fields, we'll update them in a second pass
           const cleanedData = { ...itemData };
           const schema = template.schemas.find((s) => s.id === schemaId);
-          const linkFields =
-            schema?.fields?.filter((f) => f.type === "link") || [];
+          const linkFields = schema?.fields?.filter((f) => f.type === "link") || [];
 
           // Temporarily remove linked field values
           for (const linkField of linkFields) {
@@ -376,8 +353,7 @@ export function provideAppBuilder() {
         if (!newSchemaId) continue;
 
         const schema = template.schemas.find((s) => s.id === schemaId);
-        const linkFields =
-          schema?.fields?.filter((f) => f.type === "link") || [];
+        const linkFields = schema?.fields?.filter((f) => f.type === "link") || [];
 
         if (linkFields.length > 0) {
           const existingData = getSchemaData(newAppId, newSchemaId);
@@ -395,12 +371,8 @@ export function provideAppBuilder() {
               const originalLinkedId = originalItem[linkField.name];
               const linkedSchemaId = linkField.linkedSchema;
 
-              if (
-                originalLinkedId &&
-                dataIdMap[linkedSchemaId]?.[originalLinkedId]
-              ) {
-                updates[linkField.name] =
-                  dataIdMap[linkedSchemaId][originalLinkedId];
+              if (originalLinkedId && dataIdMap[linkedSchemaId]?.[originalLinkedId]) {
+                updates[linkField.name] = dataIdMap[linkedSchemaId][originalLinkedId];
                 hasUpdates = true;
               }
             }
@@ -518,9 +490,7 @@ export function provideAppBuilder() {
 export function useAppBuilder() {
   const appBuilder = inject(useAppBuilderSymbol);
   if (!appBuilder) {
-    throw new Error(
-      "useAppBuilder must be used within a component that provides the app builder"
-    );
+    throw new Error("useAppBuilder must be used within a component that provides the app builder");
   }
   return appBuilder;
 }

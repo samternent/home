@@ -34,7 +34,8 @@ const tabs = [
           </p>
           <h1 class="m-0 text-xl font-semibold tracking-tight">Family controls</h1>
           <p class="m-0 text-sm text-[var(--ui-fg-muted)]">
-            Keep this device simple for kids. Family backup, child switching, and safe exports live here.
+            Keep this device simple for kids. Family backup, child switching, and safe exports live
+            here.
           </p>
         </div>
 

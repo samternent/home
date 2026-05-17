@@ -6,9 +6,7 @@ const STORAGE_KEY = `${appConfig.appId}/theme-mode`;
 
 function getInitialMode(): ThemeMode {
   if (typeof window !== "undefined" && typeof window.matchMedia === "function") {
-    return window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light";
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
   }
 
   return appConfig.defaultThemeMode;

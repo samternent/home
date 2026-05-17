@@ -107,8 +107,7 @@ async function validateToken(options: { force?: boolean; preferToken?: boolean }
     !force &&
     statusState.value === "authenticated" &&
     (sourceState.value === "platform-session" ||
-      (sourceState.value === "bearer-token" &&
-        lastValidatedTokenState.value === normalizedToken))
+      (sourceState.value === "bearer-token" && lastValidatedTokenState.value === normalizedToken))
   ) {
     return true;
   }

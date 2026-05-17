@@ -28,7 +28,7 @@ function downloadLedger() {
 function downloadJsonLedger() {
   download(
     `${ledgerFileName.value}.ledger.json`,
-    new Blob([JSON.stringify(ledger.value)], { type: "application/json" })
+    new Blob([JSON.stringify(ledger.value)], { type: "application/json" }),
   );
 }
 
@@ -45,25 +45,15 @@ async function downloadEncryptedLedger() {
   await nextTick();
 
   try {
-    const encrypted = await encrypt(
-      encryptionKey.value,
-      JSON.stringify(ledger.value)
-    );
+    const encrypted = await encrypt(encryptionKey.value, JSON.stringify(ledger.value));
 
     const stream = new Blob([encrypted], {
       type: "application/gzip",
     }).stream();
-    const compressedReadableStream = stream.pipeThrough(
-      new CompressionStream("gzip")
-    );
-    const encryptedCompressionBlob = await new Response(
-      compressedReadableStream
-    ).blob();
+    const compressedReadableStream = stream.pipeThrough(new CompressionStream("gzip"));
+    const encryptedCompressionBlob = await new Response(compressedReadableStream).blob();
 
-    download(
-      `${ledgerFileName.value}.ledger.json.age.gz`,
-      encryptedCompressionBlob
-    );
+    download(`${ledgerFileName.value}.ledger.json.age.gz`, encryptedCompressionBlob);
   } catch (e) {
     console.error(e);
   } finally {
@@ -73,16 +63,12 @@ async function downloadEncryptedLedger() {
 </script>
 <template>
   <div class="flex flex-col flex-1 overflow-y-scroll">
-    <div
-      class="flex-1 mx-4 border-x border-base-300 flex flex-col bg-base-100 p-4 justify-between"
-    >
+    <div class="flex-1 mx-4 border-x border-base-300 flex flex-col bg-base-100 p-4 justify-between">
       <p class="p-2 text-sm italic">{{ ledgerFileName }}.ledger.json</p>
 
       <div class="flex gap-2 text-xs my-6 w-full">
         <div class="flex flex-col flex-1 gap-2">
-          <label
-            >Encrypt with <a href="https://github.com/str4d/rage">age</a></label
-          >
+          <label>Encrypt with <a href="https://github.com/str4d/rage">age</a></label>
           <input
             v-model="encryptionKey"
             class="input input-sm w-full input-bordered"
@@ -129,16 +115,10 @@ async function downloadEncryptedLedger() {
         </div>
       </div>
       <div class="flex justify-end gap-2">
-        <SButton
-          type="primary"
-          class="btn-outline btn-sm max-w-64"
-          @click="downloadLedger"
+        <SButton type="primary" class="btn-outline btn-sm max-w-64" @click="downloadLedger"
           >Download .gz</SButton
         >
-        <SButton
-          type="primary"
-          class="btn-outline btn-sm max-w-64"
-          @click="downloadJsonLedger"
+        <SButton type="primary" class="btn-outline btn-sm max-w-64" @click="downloadJsonLedger"
           >Download .json</SButton
         >
       </div>

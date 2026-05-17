@@ -5,9 +5,7 @@ import ConcordHeroTodoCard from "@/modules/landing/components/ConcordHeroTodoCar
 import LiveConcordLedgerArtifact from "@/modules/landing/components/LiveConcordLedgerArtifact.vue";
 import PublishedSiteProofBadge from "@/modules/site-proof/components/PublishedSiteProofBadge.vue";
 
-const publishedSiteBaseUrl = import.meta.env.DEV
-  ? ""
-  : `https://${appConfig.defaultHost}`;
+const publishedSiteBaseUrl = import.meta.env.DEV ? "" : `https://${appConfig.defaultHost}`;
 </script>
 
 <template>
@@ -21,10 +19,7 @@ const publishedSiteBaseUrl = import.meta.env.DEV
     </template>
 
     <template #footer-meta>
-      <PublishedSiteProofBadge
-        :base-url="publishedSiteBaseUrl"
-        with-popover
-      />
+      <PublishedSiteProofBadge :base-url="publishedSiteBaseUrl" with-popover />
     </template>
   </LandingPage>
 </template>

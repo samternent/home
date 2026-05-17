@@ -6,11 +6,7 @@ import {
   validateIdentity,
   type SerializedIdentity,
 } from "@ternent/identity";
-import {
-  decryptTextWithPassphrase,
-  encryptTextWithPassphrase,
-  initArmour,
-} from "@ternent/armour";
+import { decryptTextWithPassphrase, encryptTextWithPassphrase, initArmour } from "@ternent/armour";
 import type {
   CreateSolidIdentityFromMnemonicOptions,
   CreateSolidMnemonicIdentityOptions,
@@ -70,14 +66,10 @@ export function isSolidMnemonicSecret(value: unknown): value is SolidMnemonicSec
   );
 }
 
-function parseSolidMnemonicSecret(
-  input: SolidMnemonicSecret | string,
-): SolidMnemonicSecret {
+function parseSolidMnemonicSecret(input: SolidMnemonicSecret | string): SolidMnemonicSecret {
   const parsed = typeof input === "string" ? JSON.parse(input) : input;
   if (!isSolidMnemonicSecret(parsed)) {
-    throw new Error(
-      "Solid mnemonic secret must be a ternent-solid-mnemonic v1 object.",
-    );
+    throw new Error("Solid mnemonic secret must be a ternent-solid-mnemonic v1 object.");
   }
   return {
     format: parsed.format,
@@ -91,10 +83,7 @@ function parseSolidMnemonicSecret(
   };
 }
 
-export function serializeSolidMnemonicSecret(
-  secret: SolidMnemonicSecret,
-  pretty = true,
-): string {
+export function serializeSolidMnemonicSecret(secret: SolidMnemonicSecret, pretty = true): string {
   return `${JSON.stringify(parseSolidMnemonicSecret(secret), null, pretty ? 2 : 0)}\n`;
 }
 
@@ -187,10 +176,7 @@ function parseSolidWalletBackup(input: SolidWalletBackup | string): SolidWalletB
   };
 }
 
-export function serializeSolidWalletBackup(
-  backup: SolidWalletBackup,
-  pretty = true,
-): string {
+export function serializeSolidWalletBackup(backup: SolidWalletBackup, pretty = true): string {
   return `${JSON.stringify(parseSolidWalletBackup(backup), null, pretty ? 2 : 0)}\n`;
 }
 
@@ -230,9 +216,7 @@ export async function restoreSolidIdentityFromBackup(
     backup.webId !== null &&
     backup.webId !== input.expectedWebId
   ) {
-    throw new Error(
-      `Solid wallet backup belongs to ${backup.webId}, not ${input.expectedWebId}.`,
-    );
+    throw new Error(`Solid wallet backup belongs to ${backup.webId}, not ${input.expectedWebId}.`);
   }
 
   await initArmour();

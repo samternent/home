@@ -28,15 +28,8 @@ async function createMurder() {
 </script>
 <template>
   <div class="flex flex-col p-2 gap-4 max-w-4xl w-full mx-auto">
-    <h1 class="text-4xl font-thin text-center py-6">
-      There's been a murder...
-    </h1>
-    <input
-      v-model="theme"
-      type="text"
-      class="input input-bordered"
-      placeholder="90s grunge"
-    />
+    <h1 class="text-4xl font-thin text-center py-6">There's been a murder...</h1>
+    <input v-model="theme" type="text" class="input input-bordered" placeholder="90s grunge" />
     <input
       v-model="players"
       type="number"

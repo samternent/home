@@ -23,7 +23,7 @@ async function addItemType() {
       name: _name,
       type: type.value,
     },
-    `${tableName.value.toLowerCase()}:types`
+    `${tableName.value.toLowerCase()}:types`,
   );
 
   name.value = "";
@@ -38,7 +38,7 @@ async function addItemTypePermission() {
       name: "permission",
       type: permission.value,
     },
-    `${tableName.value.toLowerCase()}:types`
+    `${tableName.value.toLowerCase()}:types`,
   );
 
   name.value = "";
@@ -53,9 +53,7 @@ watchEffect(() => {
   }
 
   if (type.value.includes(":type")) {
-    linkedTypes.value = getCollection(type.value)?.data.map(
-      ({ data }) => data.name
-    );
+    linkedTypes.value = getCollection(type.value)?.data.map(({ data }) => data.name);
   } else {
     linkedTypes.value = null;
   }
@@ -66,11 +64,9 @@ watch(
   () => {
     itemTypes.value = getCollection(`${tableName.value}:types`)?.data;
     collections.value = getCollections();
-    linkedTypes.value = getCollection(type.value)?.data.map(
-      ({ data }) => data.name
-    );
+    linkedTypes.value = getCollection(type.value)?.data.map(({ data }) => data.name);
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const linkedCollections = computed(() => {
@@ -81,8 +77,7 @@ const linkedCollections = computed(() => {
 
 const contentWidth = shallowRef(600);
 const isContentSmall = computed(
-  () =>
-    (contentWidth.value < 600 || smallerThanMd.value) && windowWidth.value > 0
+  () => (contentWidth.value < 600 || smallerThanMd.value) && windowWidth.value > 0,
 );
 </script>
 <template></template>

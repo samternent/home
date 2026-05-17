@@ -2,6 +2,14 @@
   "name": "ternent-encrypt",
   "version": "0.1.2",
   "description": "Encryption library using AGE with async web worker support",
+  "keywords": [
+    "age",
+    "encryption",
+    "wasm",
+    "worker"
+  ],
+  "license": "MIT",
+  "author": "Sam Ternent <hello@ternent.dev>",
   "main": "dist/encrypt.umd.js",
   "module": "dist/encrypt.es.js",
   "typings": "dist/index.d.ts",
@@ -10,28 +18,20 @@
     "build": "pnpm --filter ternent-rage-wasm build && vite build",
     "preview": "vite preview"
   },
+  "dependencies": {
+    "@swc/helpers": "^0.4.36",
+    "regenerator-runtime": "^0.13.11",
+    "ternent-ragejs": "workspace:*"
+  },
+  "devDependencies": {
+    "vite": "^2.9.18",
+    "vite-plugin-dts": "^1.7.3"
+  },
+  "browserslist": "last 2 versions",
   "context": "browser",
   "targets": {
     "default": {
       "context": "browser"
     }
-  },
-  "keywords": [
-    "encryption",
-    "age",
-    "wasm",
-    "worker"
-  ],
-  "author": "Sam Ternent <hello@ternent.dev>",
-  "license": "MIT",
-  "browserslist": "last 2 versions",
-  "dependencies": {
-    "ternent-ragejs": "workspace:*",
-    "@swc/helpers": "^0.4.36",
-    "regenerator-runtime": "^0.13.11"
-  },
-  "devDependencies": {
-    "vite": "^2.9.18",
-    "vite-plugin-dts": "^1.7.3"
   }
 }

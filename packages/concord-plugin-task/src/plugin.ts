@@ -1,13 +1,6 @@
 import type { ConcordReplayPlugin } from "@ternent/concord";
-import {
-  taskCreateInputSchema,
-  taskEditInputSchema,
-  taskSetStatusInputSchema,
-} from "./schemas";
-import {
-  createEmptyTaskProjection,
-  normalizeTaskProjection,
-} from "./state";
+import { taskCreateInputSchema, taskEditInputSchema, taskSetStatusInputSchema } from "./schemas";
+import { createEmptyTaskProjection, normalizeTaskProjection } from "./state";
 import type {
   TaskCreateInput,
   TaskEditInput,
@@ -77,10 +70,7 @@ function normalizeTaskSetStatusInput(input: unknown): TaskSetStatusInput {
   return taskSetStatusInputSchema.parse(input);
 }
 
-function upsertTask(
-  state: TaskProjection,
-  nextTask: TaskRecord,
-): TaskProjection {
+function upsertTask(state: TaskProjection, nextTask: TaskRecord): TaskProjection {
   const exists = Boolean(state.tasksById[nextTask.taskId]);
   return normalizeTaskProjection(
     {

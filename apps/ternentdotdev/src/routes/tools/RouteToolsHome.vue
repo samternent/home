@@ -36,9 +36,7 @@ const tools = [
 </script>
 
 <template>
-  <div
-    class="min-h-screen bg-gradient-to-br from-base-100 via-base-200 to-base-300 p-6"
-  >
+  <div class="min-h-screen bg-gradient-to-br from-base-100 via-base-200 to-base-300 p-6">
     <div class="max-w-6xl mx-auto">
       <!-- Header -->
       <div class="text-center mb-12">
@@ -47,8 +45,8 @@ const tools = [
           <span class="text-primary">Tools</span>
         </h1>
         <p class="text-lg text-base-content/70 max-w-2xl mx-auto">
-          Browser-based tools for compression, encryption, and decentralized
-          systems. No installation required, privacy-focused.
+          Browser-based tools for compression, encryption, and decentralized systems. No
+          installation required, privacy-focused.
         </p>
       </div>
 
@@ -92,9 +90,7 @@ const tools = [
 
             <!-- Features -->
             <div class="space-y-2 mb-6">
-              <h4 class="text-sm font-medium text-base-content/80">
-                Key Features:
-              </h4>
+              <h4 class="text-sm font-medium text-base-content/80">Key Features:</h4>
               <ul class="space-y-1">
                 <li
                   v-for="feature in tool.features"
@@ -121,9 +117,7 @@ const tools = [
       <!-- Additional Info -->
       <div class="bg-base-100 rounded-2xl p-8 border border-base-300 shadow-lg">
         <div class="text-center">
-          <h2 class="text-2xl font-bold mb-4 text-base-content">
-            Why These Tools?
-          </h2>
+          <h2 class="text-2xl font-bold mb-4 text-base-content">Why These Tools?</h2>
           <div class="grid md:grid-cols-3 gap-8 mt-8">
             <div class="text-center">
               <div
@@ -133,8 +127,7 @@ const tools = [
               </div>
               <h3 class="font-semibold mb-2">Privacy First</h3>
               <p class="text-sm text-base-content/70">
-                All processing happens in your browser. No data leaves your
-                device.
+                All processing happens in your browser. No data leaves your device.
               </p>
             </div>
             <div class="text-center">

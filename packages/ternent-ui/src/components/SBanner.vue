@@ -33,7 +33,8 @@ const typeClasses = computed(() => ({
 const iconPaths = computed(() => ({
   info: "M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
   success: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z",
-  warning: "M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L5.268 16.5c-.77.833.192 2.5 1.732 2.5z",
+  warning:
+    "M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L5.268 16.5c-.77.833.192 2.5 1.732 2.5z",
   error: "M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
 }));
 
@@ -45,7 +46,7 @@ const buttonColorClasses = computed(() => ({
 }));
 </script>
 <template>
-  <div 
+  <div
     class="flex items-center justify-between p-4 rounded-2xl border backdrop-blur-sm transition-all duration-300"
     :class="typeClasses[type]"
   >
@@ -58,18 +59,14 @@ const buttonColorClasses = computed(() => ({
         stroke="currentColor"
         class="w-5 h-5 flex-shrink-0"
       >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          :d="iconPaths[type]"
-        />
+        <path stroke-linecap="round" stroke-linejoin="round" :d="iconPaths[type]" />
       </svg>
       <span class="text-sm font-medium">{{ message }}</span>
     </div>
-    
+
     <div class="flex items-center gap-2">
-      <button 
-        class="px-3 py-1.5 text-sm font-medium border rounded-xl transition-all duration-200 hover:scale-105" 
+      <button
+        class="px-3 py-1.5 text-sm font-medium border rounded-xl transition-all duration-200 hover:scale-105"
         :class="buttonColorClasses[type]"
         @click="$emit('click')"
       >
@@ -89,8 +86,8 @@ const buttonColorClasses = computed(() => ({
           />
         </svg>
       </button>
-      
-      <button 
+
+      <button
         v-if="dismissible"
         @click="$emit('dismiss')"
         class="p-1.5 rounded-xl hover:bg-current/10 transition-colors duration-200"

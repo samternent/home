@@ -1,11 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import Card from "../../primitives/Card/Card.vue";
-import type {
-  FeatureCardSize,
-  FeatureCardSurface,
-  FeatureCardTone,
-} from "./FeatureCard.types";
+import type { FeatureCardSize, FeatureCardSurface, FeatureCardTone } from "./FeatureCard.types";
 
 const props = withDefaults(
   defineProps<{
@@ -28,10 +24,7 @@ const rootClass = computed(() => [
   `ui-feature-card--${props.size}`,
   `ui-feature-card--${props.surface}`,
 ]);
-const iconClass = computed(() => [
-  "ui-feature-card__icon",
-  `ui-feature-card__icon--${props.tone}`,
-]);
+const iconClass = computed(() => ["ui-feature-card__icon", `ui-feature-card__icon--${props.tone}`]);
 const cardVariant = computed(() => {
   if (props.surface === "panel") {
     return "panel";
@@ -46,11 +39,7 @@ const cardVariant = computed(() => {
 </script>
 
 <template>
-  <Card
-    :padding="props.size === 'sm' ? 'sm' : 'md'"
-    :variant="cardVariant"
-    :class="rootClass"
-  >
+  <Card :padding="props.size === 'sm' ? 'sm' : 'md'" :variant="cardVariant" :class="rootClass">
     <div v-if="$slots.icon" :class="iconClass" aria-hidden="true">
       <slot name="icon" />
     </div>

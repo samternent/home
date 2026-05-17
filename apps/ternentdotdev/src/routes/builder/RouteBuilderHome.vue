@@ -22,7 +22,7 @@ const recentApps = computed(() =>
       const dateB = new Date(b.updatedAt || b.createdAt || 0);
       return dateB - dateA;
     })
-    .slice(0, 3)
+    .slice(0, 3),
 );
 
 function createNewApp() {
@@ -57,12 +57,7 @@ function viewAllApps() {
           <span class="mr-2">📋</span>
           Use Template
         </Button>
-        <Button
-          v-if="hasApps"
-          variant="tertiary"
-          size="sm"
-          @click="viewAllApps"
-        >
+        <Button v-if="hasApps" variant="tertiary" size="sm" @click="viewAllApps">
           <span class="mr-2">📱</span>
           View All Apps ({{ apps.length }})
         </Button>
@@ -73,9 +68,7 @@ function viewAllApps() {
     <div v-if="hasApps" class="mb-12">
       <div class="flex items-center justify-between mb-6">
         <h2 class="text-2xl font-bold">Recent Apps</h2>
-        <SButton @click="viewAllApps" class="btn-outline btn-sm">
-          View All
-        </SButton>
+        <SButton @click="viewAllApps" class="btn-outline btn-sm"> View All </SButton>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -88,9 +81,7 @@ function viewAllApps() {
           <div class="flex items-start justify-between mb-4">
             <div class="text-3xl">{{ app.icon }}</div>
             <div class="text-xs text-base-content/50">
-              {{
-                new Date(app.updatedAt || app.createdAt).toLocaleDateString()
-              }}
+              {{ new Date(app.updatedAt || app.createdAt).toLocaleDateString() }}
             </div>
           </div>
 
@@ -99,9 +90,7 @@ function viewAllApps() {
 
           <div class="flex items-center gap-2">
             <span class="badge badge-sm badge-outline">{{ app.category }}</span>
-            <span class="badge badge-sm" :class="`badge-${app.color}`">{{
-              app.type
-            }}</span>
+            <span class="badge badge-sm" :class="`badge-${app.color}`">{{ app.type }}</span>
           </div>
         </SCard>
       </div>
@@ -148,9 +137,7 @@ function viewAllApps() {
     <div v-if="!hasApps" class="text-center py-12">
       <div class="text-6xl mb-4">📱</div>
       <h2 class="text-2xl font-bold mb-2">No Apps Yet</h2>
-      <p class="text-base-content/60 mb-8">
-        Create your first custom application to get started
-      </p>
+      <p class="text-base-content/60 mb-8">Create your first custom application to get started</p>
       <SButton @click="createNewApp" class="">
         <span class="mr-2">✨</span>
         Create Your First App
@@ -163,9 +150,7 @@ function viewAllApps() {
 
     <!-- Features Section -->
     <div class="mb-12">
-      <h2 class="text-2xl font-bold mb-6 text-center">
-        Why Use Our App Builder?
-      </h2>
+      <h2 class="text-2xl font-bold mb-6 text-center">Why Use Our App Builder?</h2>
 
       <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div class="text-center space-y-4">
@@ -178,23 +163,17 @@ function viewAllApps() {
         <div class="text-center space-y-4">
           <div class="text-3xl">🌐</div>
           <h3 class="font-semibold">Decentralized</h3>
-          <p class="text-sm text-base-content/60">
-            No servers, no cloud dependencies
-          </p>
+          <p class="text-sm text-base-content/60">No servers, no cloud dependencies</p>
         </div>
         <div class="text-center space-y-4">
           <div class="text-3xl">📦</div>
           <h3 class="font-semibold">Multiple Apps</h3>
-          <p class="text-sm text-base-content/60">
-            Create unlimited custom applications
-          </p>
+          <p class="text-sm text-base-content/60">Create unlimited custom applications</p>
         </div>
         <div class="text-center space-y-4">
           <div class="text-3xl">🚀</div>
           <h3 class="font-semibold">Portable</h3>
-          <p class="text-sm text-base-content/60">
-            Export and share your entire app configuration
-          </p>
+          <p class="text-sm text-base-content/60">Export and share your entire app configuration</p>
         </div>
       </div>
     </div>

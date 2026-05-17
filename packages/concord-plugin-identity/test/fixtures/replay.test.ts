@@ -38,12 +38,8 @@ describe("identity registry replay", () => {
     expect(principal?.displayName).toBe("Alice Updated");
     expect(principal?.updatedAt).toBe("2024-05-03T01:00:00.000Z");
     expect(principal?.updatedBy).toBe("did:alice");
-    expect(resolveAgeRecipients(state, "did:alice")).toEqual([
-      "age1alice-rotated",
-    ]);
-    expect(resolveCurrentAgeRecipient(state, "did:alice")).toBe(
-      "age1alice-rotated"
-    );
+    expect(resolveAgeRecipients(state, "did:alice")).toEqual(["age1alice-rotated"]);
+    expect(resolveCurrentAgeRecipient(state, "did:alice")).toBe("age1alice-rotated");
 
     const earlierState = replayIdentity(ledger, "commit-1");
     const earlier = getPrincipal(earlierState, "did:alice");
@@ -69,9 +65,7 @@ describe("identity registry replay", () => {
       throw new Error("Expected replayIdentity to throw");
     } catch (error) {
       expect(error).toBeInstanceOf(IdentityRegistryError);
-      expect((error as IdentityRegistryError).code).toBe(
-        "INVALID_IDENTITY_UPSERT"
-      );
+      expect((error as IdentityRegistryError).code).toBe("INVALID_IDENTITY_UPSERT");
     }
   });
 
@@ -82,9 +76,7 @@ describe("identity registry replay", () => {
       throw new Error("Expected replayIdentity to throw");
     } catch (error) {
       expect(error).toBeInstanceOf(IdentityRegistryError);
-      expect((error as IdentityRegistryError).code).toBe(
-        "INVALID_IDENTITY_UPSERT"
-      );
+      expect((error as IdentityRegistryError).code).toBe("INVALID_IDENTITY_UPSERT");
     }
   });
 
@@ -95,9 +87,7 @@ describe("identity registry replay", () => {
       throw new Error("Expected replayIdentity to throw");
     } catch (error) {
       expect(error).toBeInstanceOf(IdentityRegistryError);
-      expect((error as IdentityRegistryError).code).toBe(
-        "INVALID_IDENTITY_UPSERT"
-      );
+      expect((error as IdentityRegistryError).code).toBe("INVALID_IDENTITY_UPSERT");
     }
   });
 
@@ -108,9 +98,7 @@ describe("identity registry replay", () => {
       throw new Error("Expected replayIdentity to throw");
     } catch (error) {
       expect(error).toBeInstanceOf(IdentityRegistryError);
-      expect((error as IdentityRegistryError).code).toBe(
-        "INVALID_IDENTITY_UPSERT"
-      );
+      expect((error as IdentityRegistryError).code).toBe("INVALID_IDENTITY_UPSERT");
     }
   });
 

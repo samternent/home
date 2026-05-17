@@ -7,89 +7,49 @@
       "id": "arcade",
       "name": "Arcade",
       "variant": "base",
-      "colors": [
-        "#0b1020",
-        "#4cc9f0",
-        "#4361ee",
-        "#f72585"
-      ]
+      "colors": ["#0b1020", "#4cc9f0", "#4361ee", "#f72585"]
     },
     {
       "id": "melon",
       "name": "Melon",
       "variant": "base",
-      "colors": [
-        "#fff3d1",
-        "#f97316",
-        "#ea580c",
-        "#fcd34d"
-      ]
+      "colors": ["#fff3d1", "#f97316", "#ea580c", "#fcd34d"]
     },
     {
       "id": "forest",
       "name": "Forest",
       "variant": "base",
-      "colors": [
-        "#0f172a",
-        "#22c55e",
-        "#15803d",
-        "#a7f3d0"
-      ]
+      "colors": ["#0f172a", "#22c55e", "#15803d", "#a7f3d0"]
     },
     {
       "id": "mono",
       "name": "Mono",
       "variant": "base",
-      "colors": [
-        "#111827",
-        "#e5e7eb",
-        "#9ca3af",
-        "#f9fafb"
-      ]
+      "colors": ["#111827", "#e5e7eb", "#9ca3af", "#f9fafb"]
     },
     {
       "id": "soda",
       "name": "Soda",
       "variant": "base",
-      "colors": [
-        "#e0f2fe",
-        "#0ea5e9",
-        "#0284c7",
-        "#bae6fd"
-      ]
+      "colors": ["#e0f2fe", "#0ea5e9", "#0284c7", "#bae6fd"]
     },
     {
       "id": "tang",
       "name": "Tang",
       "variant": "base",
-      "colors": [
-        "#fff7ed",
-        "#fb7185",
-        "#e11d48",
-        "#fed7aa"
-      ]
+      "colors": ["#fff7ed", "#fb7185", "#e11d48", "#fed7aa"]
     },
     {
       "id": "mythic-aurora",
       "name": "Mythic Aurora",
       "variant": "mythic",
-      "colors": [
-        "transparent",
-        "#ffd166",
-        "#ef476f",
-        "#ffe29a"
-      ]
+      "colors": ["transparent", "#ffd166", "#ef476f", "#ffe29a"]
     },
     {
       "id": "mythic-cosmic",
       "name": "Mythic Cosmic",
       "variant": "mythic",
-      "colors": [
-        "#0b0b1a",
-        "#7dd3fc",
-        "#a855f7",
-        "#f472b6"
-      ]
+      "colors": ["#0b0b1a", "#7dd3fc", "#a855f7", "#f472b6"]
     }
   ],
   "bodies": [

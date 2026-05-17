@@ -7,7 +7,7 @@ import { deriveCommitId as deriveProtocolCommitId } from "@ternent/concord-proto
 import {
   createLedger,
   type LedgerPersistenceSnapshot,
-  type LedgerStorageAdapter
+  type LedgerStorageAdapter,
 } from "../src/index.ts";
 
 const testDir = dirname(fileURLToPath(import.meta.url));
@@ -32,7 +32,7 @@ function createMemoryStorage(): LedgerStorageAdapter & {
     },
     async clear() {
       this.snapshot = null;
-    }
+    },
   };
 }
 
@@ -45,24 +45,24 @@ describe("@ternent/ledger", () => {
       createLedger({
         identity: {
           signer: { identity },
-          authorResolver: () => "did:alice"
+          authorResolver: () => "did:alice",
         },
         initialProjection: createProjection(),
         projector: (projection, entry) => ({
-          ids: [...projection.ids, String((entry.payload as { data: { id: string } }).data.id)]
+          ids: [...projection.ids, String((entry.payload as { data: { id: string } }).data.id)],
         }),
         now: createClock([
           "2026-03-18T10:00:00.000Z",
           "2026-03-18T10:00:01.000Z",
-          "2026-03-18T10:00:02.000Z"
-        ])
+          "2026-03-18T10:00:02.000Z",
+        ]),
       });
 
     const ledgerA = await makeLedger();
     await ledgerA.create();
     await ledgerA.append({
       kind: "todo.item.created",
-      payload: { id: "todo-1" }
+      payload: { id: "todo-1" },
     });
     const committedA = await ledgerA.commit();
     expect(await ledgerA.replay()).toEqual({ ids: ["todo-1"] });
@@ -72,7 +72,7 @@ describe("@ternent/ledger", () => {
     await ledgerB.create();
     await ledgerB.append({
       kind: "todo.item.created",
-      payload: { id: "todo-1" }
+      payload: { id: "todo-1" },
     });
     await ledgerB.commit();
     expect(await ledgerB.replay()).toEqual({ ids: ["todo-1"] });
@@ -85,8 +85,8 @@ describe("@ternent/ledger", () => {
         timestamp: committedA.commit.committedAt,
         metadata: committedA.commit.metadata,
         entries: committedA.commit.entryIds,
-        signature: null
-      })
+        signature: null,
+      }),
     ).toBe(committedA.commit.commitId);
     expect(exportedB).toEqual(exportedA);
   });
@@ -96,28 +96,31 @@ describe("@ternent/ledger", () => {
     const ledger = await createLedger({
       identity: {
         signer: { identity },
-        authorResolver: () => "did:stage"
+        authorResolver: () => "did:stage",
       },
       initialProjection: [] as string[],
-      projector: (projection, entry) => [...projection, String((entry.payload as { data: { id: string } }).data.id)],
+      projector: (projection, entry) => [
+        ...projection,
+        String((entry.payload as { data: { id: string } }).data.id),
+      ],
       now: createClock([
         "2026-03-18T10:03:00.000Z",
         "2026-03-18T10:03:01.000Z",
         "2026-03-18T10:03:02.000Z",
         "2026-03-18T10:03:03.000Z",
-        "2026-03-18T10:03:04.000Z"
-      ])
+        "2026-03-18T10:03:04.000Z",
+      ]),
     });
 
     await ledger.create();
     await ledger.append({
       kind: "todo.item.created",
-      payload: { id: "committed-1" }
+      payload: { id: "committed-1" },
     });
     await ledger.commit();
     await ledger.append({
       kind: "todo.item.created",
-      payload: { id: "staged-2" }
+      payload: { id: "staged-2" },
     });
 
     const exported = await ledger.export();
@@ -132,19 +135,19 @@ describe("@ternent/ledger", () => {
     const ledger = await createLedger({
       identity: {
         signer: { identity },
-        authorResolver: () => "did:local"
+        authorResolver: () => "did:local",
       },
       initialProjection: [] as string[],
       projector: (projection, entry) => [
         ...projection,
-        String((entry.payload as { data: { id: string } }).data.id)
+        String((entry.payload as { data: { id: string } }).data.id),
       ],
       storage,
       now: createClock([
         "2026-03-18T10:04:00.000Z",
         "2026-03-18T10:04:01.000Z",
-        "2026-03-18T10:04:02.000Z"
-      ])
+        "2026-03-18T10:04:02.000Z",
+      ]),
     });
 
     await ledger.create();
@@ -152,13 +155,13 @@ describe("@ternent/ledger", () => {
 
     await ledger.append({
       kind: "todo.item.created",
-      payload: { id: "local-only" }
+      payload: { id: "local-only" },
     });
 
     expect(ledger.getState().staged).toHaveLength(1);
     expect(storage.snapshot?.staged).toHaveLength(1);
     expect(storage.snapshot?.staged[0]).toMatchObject({
-      kind: "todo.item.created"
+      kind: "todo.item.created",
     });
     expect(storage.snapshot?.container?.entries).toEqual({});
   });
@@ -170,43 +173,43 @@ describe("@ternent/ledger", () => {
     const first = await createLedger({
       identity: {
         signer: { identity },
-        authorResolver: () => "did:local"
+        authorResolver: () => "did:local",
       },
       initialProjection: [] as string[],
       projector: (projection, entry) => [
         ...projection,
-        String((entry.payload as { data: { id: string } }).data.id)
+        String((entry.payload as { data: { id: string } }).data.id),
       ],
       storage,
       now: createClock([
         "2026-03-18T10:04:00.000Z",
         "2026-03-18T10:04:01.000Z",
-        "2026-03-18T10:04:02.000Z"
-      ])
+        "2026-03-18T10:04:02.000Z",
+      ]),
     });
 
     await first.create();
     await first.append({
       kind: "todo.item.created",
-      payload: { id: "staged-only" }
+      payload: { id: "staged-only" },
     });
 
     const restored = await createLedger({
       identity: {
         signer: { identity },
-        authorResolver: () => "did:local"
+        authorResolver: () => "did:local",
       },
       initialProjection: [] as string[],
       projector: (projection, entry) => [
         ...projection,
-        String((entry.payload as { data: { id: string } }).data.id)
+        String((entry.payload as { data: { id: string } }).data.id),
       ],
       storage,
       now: createClock([
         "2026-03-18T10:04:03.000Z",
         "2026-03-18T10:04:04.000Z",
-        "2026-03-18T10:04:05.000Z"
-      ])
+        "2026-03-18T10:04:05.000Z",
+      ]),
     });
 
     expect(await restored.loadFromStorage()).toBe(true);
@@ -224,20 +227,20 @@ describe("@ternent/ledger", () => {
         identity: {
           signer: { identity },
           authorResolver: () => "did:bob",
-          decryptor: withDecryptor ? { identity } : undefined
+          decryptor: withDecryptor ? { identity } : undefined,
         },
         initialProjection: [] as string[],
         projector: (projection, entry) => [
           ...projection,
           entry.payload.type === "decrypted"
             ? String((entry.payload as { data: { text: string } }).data.text)
-            : entry.payload.type
+            : entry.payload.type,
         ],
         now: createClock([
           "2026-03-18T10:05:00.000Z",
           "2026-03-18T10:05:01.000Z",
-          "2026-03-18T10:05:02.000Z"
-        ])
+          "2026-03-18T10:05:02.000Z",
+        ]),
       });
 
     const encryptedLedger = await makeLedger(false);
@@ -248,8 +251,8 @@ describe("@ternent/ledger", () => {
       protection: {
         type: "recipients",
         recipients: [recipient],
-        encoding: "armor"
-      }
+        encoding: "armor",
+      },
     });
     await encryptedLedger.commit();
 
@@ -269,15 +272,15 @@ describe("@ternent/ledger", () => {
       identity: {
         signer: { identity: alice },
         authorResolver: () => "did:alice",
-        decryptor: { identity: alice }
+        decryptor: { identity: alice },
       },
       initialProjection: [] as string[],
       projector: (projection, entry) => [...projection, entry.payload.type],
       now: createClock([
         "2026-03-18T10:06:00.000Z",
         "2026-03-18T10:06:01.000Z",
-        "2026-03-18T10:06:02.000Z"
-      ])
+        "2026-03-18T10:06:02.000Z",
+      ]),
     });
 
     await writer.create();
@@ -287,8 +290,8 @@ describe("@ternent/ledger", () => {
       protection: {
         type: "recipients",
         recipients: [recipient],
-        encoding: "armor"
-      }
+        encoding: "armor",
+      },
     });
     await writer.commit();
 
@@ -296,15 +299,15 @@ describe("@ternent/ledger", () => {
       identity: {
         signer: { identity: bob },
         authorResolver: () => "did:bob",
-        decryptor: { identity: bob }
+        decryptor: { identity: bob },
       },
       initialProjection: [] as string[],
       projector: (projection, entry) => [...projection, entry.payload.type],
       now: createClock([
         "2026-03-18T10:06:30.000Z",
         "2026-03-18T10:06:31.000Z",
-        "2026-03-18T10:06:32.000Z"
-      ])
+        "2026-03-18T10:06:32.000Z",
+      ]),
     });
 
     await reader.import(await writer.export());
@@ -320,15 +323,15 @@ describe("@ternent/ledger", () => {
         identity: {
           signer: { identity },
           authorResolver: () => "did:carol",
-          decryptor: { identity }
+          decryptor: { identity },
         },
         initialProjection: [] as string[],
         projector: (projection, entry) => [...projection, entry.entryId],
         now: createClock([
           "2026-03-18T10:10:00.000Z",
           "2026-03-18T10:10:01.000Z",
-          "2026-03-18T10:10:02.000Z"
-        ])
+          "2026-03-18T10:10:02.000Z",
+        ]),
       });
 
     const ledgerA = await makeLedger();
@@ -343,8 +346,8 @@ describe("@ternent/ledger", () => {
       protection: {
         type: "recipients",
         recipients: [recipient],
-        encoding: "armor"
-      }
+        encoding: "armor",
+      },
     });
     const entryB = await ledgerB.append({
       kind: "secret.created",
@@ -352,8 +355,8 @@ describe("@ternent/ledger", () => {
       protection: {
         type: "recipients",
         recipients: [recipient],
-        encoding: "armor"
-      }
+        encoding: "armor",
+      },
     });
 
     expect(entryA.entry.payload.type).toBe("encrypted");
@@ -374,24 +377,24 @@ describe("@ternent/ledger", () => {
     const ledger = await createLedger({
       identity: {
         signer: { identity },
-        authorResolver: () => "did:dana"
+        authorResolver: () => "did:dana",
       },
       initialProjection: [] as string[],
       projector: (projection, entry) => [...projection, entry.entryId],
       replayPolicy: {
-        verify: false
+        verify: false,
       },
       now: createClock([
         "2026-03-18T10:15:00.000Z",
         "2026-03-18T10:15:01.000Z",
-        "2026-03-18T10:15:02.000Z"
-      ])
+        "2026-03-18T10:15:02.000Z",
+      ]),
     });
 
     await ledger.create();
     const appended = await ledger.append({
       kind: "todo.item.created",
-      payload: { id: "todo-2" }
+      payload: { id: "todo-2" },
     });
     const committed = await ledger.commit();
     const container = await ledger.export();
@@ -399,26 +402,26 @@ describe("@ternent/ledger", () => {
     const tampered = structuredClone(container);
     tampered.commits[committed.commit.commitId] = {
       ...tampered.commits[committed.commit.commitId],
-      parentCommitId: "missing-parent"
+      parentCommitId: "missing-parent",
     };
     tampered.entries[appended.entry.entryId] = {
       ...tampered.entries[appended.entry.entryId],
       payload: {
         type: "plain",
-        data: { id: "tampered" }
-      }
+        data: { id: "tampered" },
+      },
     };
 
     const loaded = await createLedger({
       identity: {
         signer: { identity },
-        authorResolver: () => "did:dana"
+        authorResolver: () => "did:dana",
       },
       initialProjection: [] as string[],
       projector: (projection, entry) => [...projection, entry.entryId],
       replayPolicy: {
-        verify: false
-      }
+        verify: false,
+      },
     });
     await loaded.load(tampered);
 
@@ -437,48 +440,48 @@ describe("@ternent/ledger", () => {
     const ledger = await createLedger({
       identity: {
         signer: { identity },
-        authorResolver: () => "did:order"
+        authorResolver: () => "did:order",
       },
       initialProjection: [] as string[],
       projector: (projection, entry) => [...projection, entry.entryId],
       replayPolicy: {
-        verify: false
+        verify: false,
       },
       now: createClock([
         "2026-03-18T10:16:00.000Z",
         "2026-03-18T10:16:01.000Z",
         "2026-03-18T10:16:02.000Z",
-        "2026-03-18T10:16:03.000Z"
-      ])
+        "2026-03-18T10:16:03.000Z",
+      ]),
     });
 
     await ledger.create();
     await ledger.append({
       kind: "todo.item.created",
-      payload: { id: "todo-ordered-1" }
+      payload: { id: "todo-ordered-1" },
     });
     await ledger.append({
       kind: "todo.item.created",
-      payload: { id: "todo-ordered-2" }
+      payload: { id: "todo-ordered-2" },
     });
     const committed = await ledger.commit();
 
     const tampered = structuredClone(await ledger.export());
     tampered.commits[committed.commit.commitId] = {
       ...tampered.commits[committed.commit.commitId],
-      entryIds: [...tampered.commits[committed.commit.commitId].entryIds].reverse()
+      entryIds: [...tampered.commits[committed.commit.commitId].entryIds].reverse(),
     };
 
     const loaded = await createLedger({
       identity: {
         signer: { identity },
-        authorResolver: () => "did:order"
+        authorResolver: () => "did:order",
       },
       initialProjection: [] as string[],
       projector: (projection, entry) => [...projection, entry.entryId],
       replayPolicy: {
-        verify: false
-      }
+        verify: false,
+      },
     });
 
     await loaded.load(tampered);
@@ -495,31 +498,31 @@ describe("@ternent/ledger", () => {
     const ledger = await createLedger({
       identity: {
         signer: { identity },
-        authorResolver: () => "did:entry-id"
+        authorResolver: () => "did:entry-id",
       },
       initialProjection: [] as string[],
       projector: (projection, entry) => [...projection, entry.entryId],
       replayPolicy: {
-        verify: false
+        verify: false,
       },
       now: createClock([
         "2026-03-18T10:17:00.000Z",
         "2026-03-18T10:17:01.000Z",
-        "2026-03-18T10:17:02.000Z"
-      ])
+        "2026-03-18T10:17:02.000Z",
+      ]),
     });
 
     await ledger.create();
     const appended = await ledger.append({
       kind: "todo.item.created",
-      payload: { id: "todo-entry-id" }
+      payload: { id: "todo-entry-id" },
     });
     await ledger.commit();
 
     const tampered = structuredClone(await ledger.export());
     const tamperedEntry = {
       ...tampered.entries[appended.entry.entryId],
-      entryId: "entry_tampered"
+      entryId: "entry_tampered",
     };
     delete tampered.entries[appended.entry.entryId];
     tampered.entries.entry_tampered = tamperedEntry;
@@ -527,13 +530,13 @@ describe("@ternent/ledger", () => {
     const loaded = await createLedger({
       identity: {
         signer: { identity },
-        authorResolver: () => "did:entry-id"
+        authorResolver: () => "did:entry-id",
       },
       initialProjection: [] as string[],
       projector: (projection, entry) => [...projection, entry.entryId],
       replayPolicy: {
-        verify: false
-      }
+        verify: false,
+      },
     });
 
     await loaded.load(tampered);
@@ -553,18 +556,18 @@ describe("@ternent/ledger", () => {
       identity: {
         signer: { identity },
         authorResolver: () => "did:payload-hash",
-        decryptor: { identity }
+        decryptor: { identity },
       },
       initialProjection: [] as string[],
       projector: (projection, entry) => [...projection, entry.entryId],
       replayPolicy: {
-        verify: false
+        verify: false,
       },
       now: createClock([
         "2026-03-18T10:17:30.000Z",
         "2026-03-18T10:17:31.000Z",
-        "2026-03-18T10:17:32.000Z"
-      ])
+        "2026-03-18T10:17:32.000Z",
+      ]),
     });
 
     await ledger.create();
@@ -574,8 +577,8 @@ describe("@ternent/ledger", () => {
       protection: {
         type: "recipients",
         recipients: [recipient],
-        encoding: "armor"
-      }
+        encoding: "armor",
+      },
     });
     await ledger.commit();
 
@@ -591,21 +594,21 @@ describe("@ternent/ledger", () => {
           data: string;
           payloadHash: string;
         }),
-        payloadHash: "sha256:tampered"
-      }
+        payloadHash: "sha256:tampered",
+      },
     };
 
     const loaded = await createLedger({
       identity: {
         signer: { identity },
         authorResolver: () => "did:payload-hash",
-        decryptor: { identity }
+        decryptor: { identity },
       },
       initialProjection: [] as string[],
       projector: (projection, entry) => [...projection, entry.entryId],
       replayPolicy: {
-        verify: false
-      }
+        verify: false,
+      },
     });
 
     await loaded.load(tampered);
@@ -622,24 +625,24 @@ describe("@ternent/ledger", () => {
     const ledger = await createLedger({
       identity: {
         signer: { identity },
-        authorResolver: () => "did:proofs"
+        authorResolver: () => "did:proofs",
       },
       initialProjection: [] as string[],
       projector: (projection, entry) => [...projection, entry.entryId],
       replayPolicy: {
-        verify: false
+        verify: false,
       },
       now: createClock([
         "2026-03-18T10:18:00.000Z",
         "2026-03-18T10:18:01.000Z",
-        "2026-03-18T10:18:02.000Z"
-      ])
+        "2026-03-18T10:18:02.000Z",
+      ]),
     });
 
     await ledger.create();
     await ledger.append({
       kind: "todo.item.created",
-      payload: { id: "todo-proof" }
+      payload: { id: "todo-proof" },
     });
     const committed = await ledger.commit();
 
@@ -648,20 +651,20 @@ describe("@ternent/ledger", () => {
       ...tampered.commits[committed.commit.commitId],
       seal: {
         ...tampered.commits[committed.commit.commitId].seal,
-        signature: "tampered-signature"
-      }
+        signature: "tampered-signature",
+      },
     };
 
     const loaded = await createLedger({
       identity: {
         signer: { identity },
-        authorResolver: () => "did:proofs"
+        authorResolver: () => "did:proofs",
       },
       initialProjection: [] as string[],
       projector: (projection, entry) => [...projection, entry.entryId],
       replayPolicy: {
-        verify: false
-      }
+        verify: false,
+      },
     });
 
     await loaded.load(tampered);
@@ -679,40 +682,40 @@ describe("@ternent/ledger", () => {
     const ledger = await createLedger({
       identity: {
         signer: { identity },
-        authorResolver: () => "did:cascade"
+        authorResolver: () => "did:cascade",
       },
       initialProjection: [] as string[],
       projector: (projection, entry) => [...projection, entry.entryId],
       replayPolicy: {
-        verify: false
+        verify: false,
       },
       now: createClock([
         "2026-03-18T10:19:00.000Z",
         "2026-03-18T10:19:01.000Z",
         "2026-03-18T10:19:02.000Z",
         "2026-03-18T10:19:03.000Z",
-        "2026-03-18T10:19:04.000Z"
-      ])
+        "2026-03-18T10:19:04.000Z",
+      ]),
     });
 
     await ledger.create();
     const first = await ledger.append({
       kind: "todo.item.created",
-      payload: { id: "todo-cascade-1" }
+      payload: { id: "todo-cascade-1" },
     });
     await ledger.commit({
       metadata: {
-        message: "first"
-      }
+        message: "first",
+      },
     });
     await ledger.append({
       kind: "todo.item.created",
-      payload: { id: "todo-cascade-2" }
+      payload: { id: "todo-cascade-2" },
     });
     await ledger.commit({
       metadata: {
-        message: "second"
-      }
+        message: "second",
+      },
     });
 
     const tampered = structuredClone(await ledger.export());
@@ -720,20 +723,20 @@ describe("@ternent/ledger", () => {
       ...tampered.entries[first.entry.entryId],
       payload: {
         type: "plain",
-        data: { id: "tampered-cascade" }
-      }
+        data: { id: "tampered-cascade" },
+      },
     };
 
     const loaded = await createLedger({
       identity: {
         signer: { identity },
-        authorResolver: () => "did:cascade"
+        authorResolver: () => "did:cascade",
       },
       initialProjection: [] as string[],
       projector: (projection, entry) => [...projection, entry.entryId],
       replayPolicy: {
-        verify: false
-      }
+        verify: false,
+      },
     });
 
     await loaded.load(tampered);
@@ -741,9 +744,7 @@ describe("@ternent/ledger", () => {
 
     expect(verification.valid).toBe(false);
     expect(verification.committedHistoryValid).toBe(false);
-    await expect(loaded.replay({ verify: true })).rejects.toThrow(
-      "Ledger verification failed."
-    );
+    await expect(loaded.replay({ verify: true })).rejects.toThrow("Ledger verification failed.");
   });
 
   it("round trips persistence without storing projection", async () => {
@@ -753,24 +754,24 @@ describe("@ternent/ledger", () => {
     const ledger = await createLedger({
       identity: {
         signer: { identity },
-        authorResolver: () => "did:erin"
+        authorResolver: () => "did:erin",
       },
       initialProjection: { ids: [] as string[] },
       projector: (projection, entry) => ({
-        ids: [...projection.ids, entry.entryId]
+        ids: [...projection.ids, entry.entryId],
       }),
       storage,
       now: createClock([
         "2026-03-18T10:20:00.000Z",
         "2026-03-18T10:20:01.000Z",
-        "2026-03-18T10:20:02.000Z"
-      ])
+        "2026-03-18T10:20:02.000Z",
+      ]),
     });
 
     await ledger.create();
     const staged = await ledger.append({
       kind: "todo.item.created",
-      payload: { id: "persisted" }
+      payload: { id: "persisted" },
     });
     await ledger.commit();
 
@@ -781,13 +782,13 @@ describe("@ternent/ledger", () => {
     const restored = await createLedger({
       identity: {
         signer: { identity },
-        authorResolver: () => "did:erin"
+        authorResolver: () => "did:erin",
       },
       initialProjection: { ids: [] as string[] },
       projector: (projection, entry) => ({
-        ids: [...projection.ids, entry.entryId]
+        ids: [...projection.ids, entry.entryId],
       }),
-      storage
+      storage,
     });
 
     expect(await restored.loadFromStorage()).toBe(true);
@@ -804,20 +805,20 @@ describe("@ternent/ledger", () => {
       identity: {
         signer: { identity },
         authorResolver: () => "did:built",
-        decryptor: { identity }
+        decryptor: { identity },
       },
       initialProjection: [] as string[],
       projector: (projection, entry) => [
         ...projection,
         entry.payload.type === "decrypted"
           ? String((entry.payload as { data: { text: string } }).data.text)
-          : entry.payload.type
+          : entry.payload.type,
       ],
       now: createClock([
         "2026-03-18T10:21:00.000Z",
         "2026-03-18T10:21:01.000Z",
-        "2026-03-18T10:21:02.000Z"
-      ])
+        "2026-03-18T10:21:02.000Z",
+      ]),
     });
 
     await ledger.create();
@@ -827,8 +828,8 @@ describe("@ternent/ledger", () => {
       protection: {
         type: "recipients",
         recipients: [recipient],
-        encoding: "armor"
-      }
+        encoding: "armor",
+      },
     });
     await ledger.commit();
 

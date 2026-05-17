@@ -49,7 +49,7 @@ export function decodeIdx4ToIndices(sticker: StickerArt16): Uint8Array {
   const packed = base64ToBytes(sticker.px);
   invariant(
     packed.length === PACKED_SIZE,
-    `StickerArt16.px decoded length must be ${PACKED_SIZE} bytes.`
+    `StickerArt16.px decoded length must be ${PACKED_SIZE} bytes.`,
   );
 
   const out = new Uint8Array(PIXEL_COUNT);
@@ -86,7 +86,9 @@ export function argbToRgbaTuple(c: number): [r: number, g: number, b: number, a:
 }
 
 function toHex2(n: number): string {
-  return Math.max(0, Math.min(255, Math.trunc(n))).toString(16).padStart(2, "0");
+  return Math.max(0, Math.min(255, Math.trunc(n)))
+    .toString(16)
+    .padStart(2, "0");
 }
 
 export function argbToCss(c: number): string {

@@ -25,7 +25,7 @@ async function main() {
   const args = parseArgs(process.argv.slice(2));
   if (!args.packId || !args.segmentKey) {
     console.error(
-      "Usage: pnpm --filter ternent-api pixpax:verify -- --packId <id> --segmentKey <key>"
+      "Usage: pnpm --filter ternent-api pixpax:verify -- --packId <id> --segmentKey <key>",
     );
     process.exit(1);
   }
@@ -37,7 +37,7 @@ async function main() {
 
   if (!config.ready) {
     console.error(
-      "Missing LEDGER_* config. Required: LEDGER_S3_ENDPOINT, LEDGER_BUCKET, LEDGER_REGION, LEDGER_ACCESS_KEY_ID, LEDGER_SECRET_ACCESS_KEY"
+      "Missing LEDGER_* config. Required: LEDGER_S3_ENDPOINT, LEDGER_BUCKET, LEDGER_REGION, LEDGER_ACCESS_KEY_ID, LEDGER_SECRET_ACCESS_KEY",
     );
     process.exit(1);
   }
@@ -75,12 +75,14 @@ async function main() {
         chainDepthFromHead: result.chainDepthFromHead,
       },
       null,
-      2
-    )
+      2,
+    ),
   );
 }
 
 main().catch((error) => {
-  console.error(JSON.stringify({ ok: false, reason: "internal-error", error: error?.message }, null, 2));
+  console.error(
+    JSON.stringify({ ok: false, reason: "internal-error", error: error?.message }, null, 2),
+  );
   process.exit(3);
 });

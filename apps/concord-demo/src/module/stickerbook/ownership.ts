@@ -66,8 +66,7 @@ export function resolveOwnership(params: {
     }
 
     const defaultOwner =
-      normalizeKey(params.defaultOwnerByStickerId.get(stickerId) || "") ||
-      currentKey;
+      normalizeKey(params.defaultOwnerByStickerId.get(stickerId) || "") || currentKey;
     let owner = defaultOwner;
     let lastTransfer: TransferEntry | null = null;
 
@@ -96,10 +95,7 @@ export function resolveOwnership(params: {
     if (conflict) {
       status = "conflicted";
     } else if (owner && owner === currentKey) {
-      status =
-        lastTransfer && lastTransfer.author !== currentKey
-          ? "received"
-          : "owned";
+      status = lastTransfer && lastTransfer.author !== currentKey ? "received" : "owned";
     } else if (
       owner &&
       owner !== currentKey &&

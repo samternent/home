@@ -9,7 +9,7 @@ function createWrapper() {
       stubs: {
         RouterLink: {
           props: ["to"],
-          template: "<a :href=\"to\"><slot /></a>",
+          template: '<a :href="to"><slot /></a>',
         },
         PublishedSiteProofBadge: {
           template: "<span>Published site proof</span>",
@@ -19,13 +19,8 @@ function createWrapper() {
   });
 }
 
-async function clickTab(
-  wrapper: ReturnType<typeof createWrapper>,
-  label: string,
-) {
-  const tab = wrapper
-    .findAll('[role="tab"]')
-    .find((candidate) => candidate.text() === label);
+async function clickTab(wrapper: ReturnType<typeof createWrapper>, label: string) {
+  const tab = wrapper.findAll('[role="tab"]').find((candidate) => candidate.text() === label);
 
   expect(tab, `expected tab "${label}" to exist`).toBeTruthy();
   await tab!.trigger("click");

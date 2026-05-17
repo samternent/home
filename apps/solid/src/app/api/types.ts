@@ -59,7 +59,9 @@ export type AppProfilesApi = {
 
 export type AppPermissionsApi = {
   create(input: Omit<PermissionCreateInput, "actor">): Promise<ConcordCommandResult>;
+  createGroup(input: Omit<PermissionCreateInput, "actor">): Promise<ConcordCommandResult>;
   grant(input: Omit<PermissionGrantInput, "actor">): Promise<ConcordCommandResult>;
+  issueGrant(input: Omit<PermissionGrantInput, "actor">): Promise<ConcordCommandResult>;
   grantFromUser(input: {
     permissionId: string;
     identityKey: string;
@@ -104,10 +106,7 @@ export type AppApi = {
       totpAccountName?: string;
       createdAt?: string;
     }): Promise<AppIdentity>;
-    unlockWithPassword(input: {
-      password: string;
-      totpCode?: string;
-    }): Promise<AppIdentity>;
+    unlockWithPassword(input: { password: string; totpCode?: string }): Promise<AppIdentity>;
     getStoredIdentitySummary(): StoredIdentitySummary | null;
   };
   users: AppUsersApi;

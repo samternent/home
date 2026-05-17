@@ -82,9 +82,7 @@ const rows = computed(() => [
 
     <div class="relative p-6 lg:p-7">
       <div class="flex flex-wrap items-center justify-between gap-4">
-        <h3
-          class="m-0 text-[1.8rem] font-medium tracking-[-0.04em] text-[var(--ui-fg)]"
-        >
+        <h3 class="m-0 text-[1.8rem] font-medium tracking-[-0.04em] text-[var(--ui-fg)]">
           proof.json
         </h3>
         <span
@@ -108,9 +106,7 @@ const rows = computed(() => [
           >
             {{ row.label }}
           </span>
-          <span
-            class="min-w-0 truncate font-mono text-[0.88rem] text-[var(--ui-fg)]"
-          >
+          <span class="min-w-0 truncate font-mono text-[0.88rem] text-[var(--ui-fg)]">
             {{ row.value }}
           </span>
         </div>

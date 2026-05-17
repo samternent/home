@@ -96,7 +96,7 @@ describe("proof", () => {
           publicKey: proof.signer.publicKey,
           keyId: proof.signer.keyId,
         }),
-        { status: 200 }
+        { status: 200 },
       );
     });
 
@@ -137,7 +137,7 @@ describe("proof", () => {
           publicKey: proof.signer.publicKey,
           keyId: "wrong-key-id",
         }),
-        { status: 200 }
+        { status: 200 },
       );
     });
 
@@ -169,7 +169,7 @@ describe("proof", () => {
             ...proof,
             signature: "invalid-signature",
           }),
-          { status: 200 }
+          { status: 200 },
         );
       }
       if (url.endsWith("/dist-manifest.json")) {
@@ -183,7 +183,7 @@ describe("proof", () => {
           publicKey: proof.signer.publicKey,
           keyId: proof.signer.keyId,
         }),
-        { status: 200 }
+        { status: 200 },
       );
     });
 

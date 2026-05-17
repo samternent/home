@@ -22,11 +22,7 @@ export async function initRage(): Promise<void> {
     if (error instanceof RageInitError) {
       throw error;
     }
-    throw new RageInitError(
-      "RAGE_INIT_FAILED",
-      "Failed to initialize Rage WASM.",
-      error
-    );
+    throw new RageInitError("RAGE_INIT_FAILED", "Failed to initialize Rage WASM.", error);
   }
 }
 
@@ -34,7 +30,7 @@ export function assertRageInitialized(): void {
   if (!initialized) {
     throw new RageInitError(
       "RAGE_INIT_FAILED",
-      "Rage WASM is not initialized. Call initRage() before using @ternent/rage."
+      "Rage WASM is not initialized. Call initRage() before using @ternent/rage.",
     );
   }
 }

@@ -1,9 +1,5 @@
 <script setup lang="ts">
-import {
-  useLocalStorage,
-  breakpointsTailwind,
-  useBreakpoints,
-} from "@vueuse/core";
+import { useLocalStorage, breakpointsTailwind, useBreakpoints } from "@vueuse/core";
 import { computed, shallowRef, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useAppApi, type AppLedgerContainer } from "@/app/api";
@@ -12,6 +8,7 @@ import { IdentityHandle, SidebarNav } from "ternent-ui/patterns";
 import type { SidebarNavSection } from "ternent-ui/patterns";
 import { buildSidebarNavigationSections } from "./navigation";
 import ThemeModeToggle from "./ThemeModeToggle.vue";
+import Logo from "./Logo.vue";
 
 const breakpoints = useBreakpoints(breakpointsTailwind);
 const route = useRoute();
@@ -28,9 +25,7 @@ watch(route, () => {
 });
 
 const appVersion = shallowRef(
-  typeof document !== "undefined"
-    ? document.querySelector("html")?.dataset.appVersion
-    : undefined,
+  typeof document !== "undefined" ? document.querySelector("html")?.dataset.appVersion : undefined,
 );
 
 const navigationSections = computed<SidebarNavSection[]>(() =>
@@ -41,16 +36,12 @@ const activeIdentityLabel = computed(
   () => appApi.identity.activeIdentity.value?.label ?? "Identity locked",
 );
 const activeIdentityId = computed(
-  () =>
-    appApi.identity.activeIdentity.value?.identityId ?? "no-active-identity",
+  () => appApi.identity.activeIdentity.value?.identityId ?? "no-active-identity",
 );
 const activeIdentityKey = computed(
-  () =>
-    appApi.identity.activeIdentity.value?.identityKey ?? "invalid-identity",
+  () => appApi.identity.activeIdentity.value?.identityKey ?? "invalid-identity",
 );
-const activeIdentityShortId = computed(() =>
-  activeIdentityId.value.slice(0, 12),
-);
+const activeIdentityShortId = computed(() => activeIdentityId.value.slice(0, 12));
 const identityTone = computed<"success" | "warning" | "critical">(() => {
   if (appApi.status.value === "ready" && appApi.identity.activeIdentity.value) {
     return "success";
@@ -205,14 +196,14 @@ async function relaunchOnboarding(): Promise<void> {
       'absolute z-30 h-full w-64': smallerThanMd && openSideBar,
     }"
   >
-    <SidebarNav
-      title="Concord. OS"
-      :sections="navigationSections"
-      @select="handleNavSelect"
-    >
+    <SidebarNav title="Concord" :sections="navigationSections" @select="handleNavSelect">
       <template #header>
         <div class="flex w-full items-center justify-between gap-2">
-          <RouterLink to="/" class="m-1.5"> Concord </RouterLink>
+          <div class="flex items-center justify-start gap-2 w-full ">
+            <RouterLink to="/" class="m-1.5 group hover:grayscale-0 transition duration-300">
+              <Logo class="size-6 group-hover:-rotate-6 transition-all duration-300" />
+            </RouterLink>
+          </div>
           <Button
             v-if="smallerThanMd"
             variant="plain-secondary"
@@ -352,12 +343,7 @@ async function relaunchOnboarding(): Promise<void> {
           </Button>
 
           <div class="flex items-center gap-2">
-            <Button
-              class="flex-1"
-              variant="secondary"
-              size="sm"
-              @click="relaunchOnboarding"
-            >
+            <Button class="flex-1" variant="secondary" size="sm" @click="relaunchOnboarding">
               Lock
             </Button>
             <ThemeModeToggle />

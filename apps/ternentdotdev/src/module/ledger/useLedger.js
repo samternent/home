@@ -7,11 +7,7 @@ import {
   generateId,
 } from "ternent-utils";
 
-import {
-  encrypt,
-  decrypt,
-  generate as generateEncryptionKeys,
-} from "ternent-encrypt";
+import { encrypt, decrypt, generate as generateEncryptionKeys } from "ternent-encrypt";
 import { useEncryption } from "../encryption/useEncryption";
 import { useIdentity } from "../identity/useIdentity";
 
@@ -21,8 +17,7 @@ export function provideLedger() {
   const ledger = shallowRef();
 
   const { publicKeyPEM: publicKeyIdentityPEM } = useIdentity();
-  const { privateKey: privateKeyEncryption, publicKey: publicKeyEncryption } =
-    useEncryption();
+  const { privateKey: privateKeyEncryption, publicKey: publicKeyEncryption } = useEncryption();
 
   const {
     getCollection,
@@ -32,7 +27,7 @@ export function provideLedger() {
   } = useLokiPlugin(
     "ledger",
     stripIdentityKey(publicKeyIdentityPEM.value),
-    privateKeyEncryption.value
+    privateKeyEncryption.value,
   );
 
   const ledgerApi = createLedger(
@@ -52,7 +47,7 @@ export function provideLedger() {
         },
       ],
     },
-    0
+    0,
   );
 
   const compressedBlob = shallowRef();
@@ -65,14 +60,10 @@ export function provideLedger() {
       const stream = new Blob([JSON.stringify(ledger.value)], {
         type: "application/gzip",
       }).stream();
-      const compressedReadableStream = stream.pipeThrough(
-        new CompressionStream("gzip")
-      );
-      compressedBlob.value = await new Response(
-        compressedReadableStream
-      ).blob();
+      const compressedReadableStream = stream.pipeThrough(new CompressionStream("gzip"));
+      compressedBlob.value = await new Response(compressedReadableStream).blob();
     },
-    { immediate: true }
+    { immediate: true },
   );
 
   async function createPermission(title) {
@@ -82,12 +73,10 @@ export function provideLedger() {
         identity: stripIdentityKey(publicKeyIdentityPEM.value),
         title,
         public: encryptionPublic,
-        secret: stripEncryptionFile(
-          await encrypt(publicKeyEncryption.value, encryptionSecret)
-        ),
+        secret: stripEncryptionFile(await encrypt(publicKeyEncryption.value, encryptionSecret)),
         id: generateId(),
       },
-      "permissions"
+      "permissions",
     );
   }
 
@@ -106,7 +95,7 @@ export function provideLedger() {
 
     const permissionKey = await decrypt(
       privateKeyEncryption.value,
-      formatEncryptionFile(permission.secret)
+      formatEncryptionFile(permission.secret),
     );
 
     // encrypt permission for users key
@@ -115,12 +104,10 @@ export function provideLedger() {
         identity,
         title,
         public: permission.public,
-        secret: stripEncryptionFile(
-          await encrypt(encryptionKey, permissionKey)
-        ),
+        secret: stripEncryptionFile(await encrypt(encryptionKey, permissionKey)),
         id: generateId(),
       },
-      "permissions"
+      "permissions",
     );
   }
 
@@ -137,10 +124,7 @@ export function provideLedger() {
       });
 
     if (!permission) {
-      await ledgerApi.add(
-        { ...data, id: data?.id || generateId() },
-        collection
-      );
+      await ledgerApi.add({ ...data, id: data?.id || generateId() }, collection);
     } else {
       await ledgerApi.add(
         {
@@ -148,11 +132,11 @@ export function provideLedger() {
           encrypted: stripEncryptionFile(
             await encrypt(
               permission.data.public || permission.data.encryption,
-              JSON.stringify({ ...data, id: generateId() })
-            )
+              JSON.stringify({ ...data, id: generateId() }),
+            ),
           ),
         },
-        collection
+        collection,
       );
     }
 

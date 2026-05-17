@@ -1,8 +1,4 @@
-import {
-  getCommitChain,
-  getReplayEntries,
-  type LedgerContainer,
-} from "@ternent/concord-protocol";
+import { getCommitChain, getReplayEntries, type LedgerContainer } from "@ternent/concord-protocol";
 
 export type InspectSummary = {
   commitCount: number;

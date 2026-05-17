@@ -7,12 +7,8 @@ import {
   exportPackBatchImages,
   type PackBatchExportFailure,
 } from "@/modules/admin/print/exportPackBatchImages";
-import {
-  createPackPrintBatchId,
-} from "@/modules/admin/print/print-config";
-import {
-  mapGeneratedPackToPrintModel,
-} from "@/modules/admin/print/mapGeneratedPackToPrintModel";
+import { createPackPrintBatchId } from "@/modules/admin/print/print-config";
+import { mapGeneratedPackToPrintModel } from "@/modules/admin/print/mapGeneratedPackToPrintModel";
 import {
   PixpaxApiError,
   fetchAdminCollectionBundle,
@@ -66,9 +62,7 @@ type GeneratedSheetItem = {
 };
 
 function toIsoWeek(date = new Date()) {
-  const utc = new Date(
-    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()),
-  );
+  const utc = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
   utc.setUTCDate(utc.getUTCDate() + 4 - (utc.getUTCDay() || 7));
   const yearStart = new Date(Date.UTC(utc.getUTCFullYear(), 0, 1));
   const weekNumber = Math.ceil(((utc.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
@@ -91,10 +85,11 @@ function normalizeCollectionCard(input: PixpaxPublicCollectionCard): CollectionC
   if (!cardId) {
     return null;
   }
-  const label =
-    String(input?.label || input?.title || input?.name || cardId).trim() || cardId;
+  const label = String(input?.label || input?.title || input?.name || cardId).trim() || cardId;
   const seriesId = String(input?.seriesId || "").trim();
-  const slotValue = Number((input as PixpaxPublicCollectionCard & { slotIndex?: unknown }).slotIndex);
+  const slotValue = Number(
+    (input as PixpaxPublicCollectionCard & { slotIndex?: unknown }).slotIndex,
+  );
   return {
     cardId,
     label,
@@ -164,7 +159,11 @@ const latestCodeCardItem = computed(() => {
       : null;
   const cards = Array.isArray(artifactPayload?.cards) ? artifactPayload.cards : [];
   return {
-    label: cards.length === 1 ? getCollectionCardById(String((cards[0] as { cardId?: unknown })?.cardId || ""))?.label || "Sticker" : `Pack (${cards.length} cards)`,
+    label:
+      cards.length === 1
+        ? getCollectionCardById(String((cards[0] as { cardId?: unknown })?.cardId || ""))?.label ||
+          "Sticker"
+        : `Pack (${cards.length} cards)`,
     codeId: latestCodeId.value,
     redeemUrl: latestRedeemUrl.value,
     qrSvg: latestQrSvg.value,
@@ -221,7 +220,9 @@ function resetOutputs() {
 }
 
 function getCollectionCardById(cardId: string) {
-  return collectionCards.value.find((entry) => entry.cardId === String(cardId || "").trim()) || null;
+  return (
+    collectionCards.value.find((entry) => entry.cardId === String(cardId || "").trim()) || null
+  );
 }
 
 function shuffleCardIds(cardIds: string[]) {
@@ -480,7 +481,9 @@ async function verifyLatestArtifact() {
   loading.value = true;
   error.value = "";
   try {
-    latestVerification.value = await verifyIssuedArtifact(latestArtifact.value as never) as Record<string, unknown>;
+    latestVerification.value = (await verifyIssuedArtifact(
+      latestArtifact.value as never,
+    )) as Record<string, unknown>;
     status.value = "Latest artifact verified.";
   } catch (nextError) {
     error.value = extractError(nextError, "Unable to verify artifact.");
@@ -690,17 +693,12 @@ onMounted(async () => {
         PixPax control
       </h1>
       <p class="m-0 max-w-3xl text-sm text-[var(--ui-fg-muted)]">
-        Pre-issue signed packs now, then hand out QR cards or links manually. Claim happens later
-        in the player app and never signs a new pack.
+        Pre-issue signed packs now, then hand out QR cards or links manually. Claim happens later in
+        the player app and never signs a new pack.
       </p>
     </div>
 
-    <Card
-      v-if="!hasAdminPermission"
-      variant="showcase"
-      padding="sm"
-      class="space-y-4"
-    >
+    <Card v-if="!hasAdminPermission" variant="showcase" padding="sm" class="space-y-4">
       <div class="flex items-center justify-between gap-3">
         <div>
           <p class="m-0 text-[11px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
@@ -737,14 +735,21 @@ onMounted(async () => {
             <h2 class="m-0 text-2xl font-semibold">Redeem card workshop</h2>
           </div>
           <div class="text-right text-xs text-[var(--ui-fg-muted)]">
-            <p class="m-0">Auth: <strong>{{ auth.source.value }}</strong></p>
-            <p class="m-0">Seal issuer: <strong>{{ meta?.issuer?.sealIdentityConfigured ? "ready" : "missing" }}</strong></p>
+            <p class="m-0">
+              Auth: <strong>{{ auth.source.value }}</strong>
+            </p>
+            <p class="m-0">
+              Seal issuer:
+              <strong>{{ meta?.issuer?.sealIdentityConfigured ? "ready" : "missing" }}</strong>
+            </p>
           </div>
         </div>
 
         <div class="grid gap-4 lg:grid-cols-2">
           <label class="grid gap-2">
-            <span class="text-[11px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]">Collection / version</span>
+            <span class="text-[11px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]"
+              >Collection / version</span
+            >
             <select
               v-model="selectedRef"
               class="rounded-[1.15rem] border border-[var(--ui-border)] bg-[rgba(18,17,23,0.42)] px-4 py-3 text-sm text-[var(--ui-fg)]"
@@ -761,7 +766,9 @@ onMounted(async () => {
           </label>
 
           <label class="grid gap-2">
-            <span class="text-[11px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]">Drop id</span>
+            <span class="text-[11px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]"
+              >Drop id</span
+            >
             <input
               v-model="dropId"
               type="text"
@@ -770,7 +777,9 @@ onMounted(async () => {
           </label>
 
           <label class="grid gap-2">
-            <span class="text-[11px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]">Pack card count</span>
+            <span class="text-[11px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]"
+              >Pack card count</span
+            >
             <input
               v-model.number="count"
               type="number"
@@ -781,17 +790,15 @@ onMounted(async () => {
           </label>
 
           <label class="grid gap-2">
-            <span class="text-[11px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]">Designated card id</span>
+            <span class="text-[11px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]"
+              >Designated card id</span
+            >
             <select
               v-model="fixedCardId"
               class="rounded-[1.15rem] border border-[var(--ui-border)] bg-[rgba(18,17,23,0.42)] px-4 py-3 text-sm text-[var(--ui-fg)]"
             >
               <option v-if="!collectionCards.length" value="">No cards loaded</option>
-              <option
-                v-for="card in collectionCards"
-                :key="card.cardId"
-                :value="card.cardId"
-              >
+              <option v-for="card in collectionCards" :key="card.cardId" :value="card.cardId">
                 {{ card.label }} ({{ card.cardId }})
               </option>
             </select>
@@ -802,10 +809,20 @@ onMounted(async () => {
           <Button size="lg" variant="secondary" :disabled="loading" @click="issueQuickPack">
             Issue 1 random pack code
           </Button>
-          <Button size="lg" variant="plain-secondary" :disabled="loading" @click="issueQuickFixedCard">
+          <Button
+            size="lg"
+            variant="plain-secondary"
+            :disabled="loading"
+            @click="issueQuickFixedCard"
+          >
             Issue 1 designated sticker code
           </Button>
-          <Button size="lg" variant="plain-secondary" :disabled="loading || !latestArtifact" @click="verifyLatestArtifact">
+          <Button
+            size="lg"
+            variant="plain-secondary"
+            :disabled="loading || !latestArtifact"
+            @click="verifyLatestArtifact"
+          >
             Verify latest artifact
           </Button>
         </div>
@@ -813,7 +830,10 @@ onMounted(async () => {
         <p v-if="status" class="m-0 text-sm text-emerald-500">{{ status }}</p>
         <p v-if="error" class="m-0 text-sm text-[var(--ui-danger)]">{{ error }}</p>
 
-        <div v-if="latestCodeCardItem" class="grid gap-4 lg:grid-cols-[22rem_minmax(0,1fr)] lg:items-start">
+        <div
+          v-if="latestCodeCardItem"
+          class="grid gap-4 lg:grid-cols-[22rem_minmax(0,1fr)] lg:items-start"
+        >
           <AdminRedeemCodeCard :item="latestCodeCardItem" />
 
           <div class="space-y-4">
@@ -821,7 +841,11 @@ onMounted(async () => {
               <Button size="sm" variant="secondary" @click="copyText(latestCodeId, 'code')">
                 {{ copied === "code" ? "Copied code" : "Copy redeem code" }}
               </Button>
-              <Button size="sm" variant="plain-secondary" @click="copyText(latestRedeemUrl, 'link')">
+              <Button
+                size="sm"
+                variant="plain-secondary"
+                @click="copyText(latestRedeemUrl, 'link')"
+              >
                 {{ copied === "link" ? "Copied link" : "Copy redeem link" }}
               </Button>
               <a
@@ -836,7 +860,9 @@ onMounted(async () => {
             </div>
 
             <label class="grid gap-2">
-              <span class="text-[11px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]">Redeem code</span>
+              <span class="text-[11px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]"
+                >Redeem code</span
+              >
               <input
                 readonly
                 :value="formatRedeemCode(latestCodeId)"
@@ -845,7 +871,9 @@ onMounted(async () => {
             </label>
 
             <label class="grid gap-2">
-              <span class="text-[11px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]">Redeem link</span>
+              <span class="text-[11px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]"
+                >Redeem link</span
+              >
               <input
                 readonly
                 :value="latestRedeemUrl"
@@ -863,7 +891,8 @@ onMounted(async () => {
           </p>
           <h2 class="m-0 text-xl font-semibold">Mixed printable batches</h2>
           <p class="m-0 text-sm text-[var(--ui-fg-muted)]">
-            Generate a live batch like 4 pack codes and 2 fixed-card codes, then print the full sheet.
+            Generate a live batch like 4 pack codes and 2 fixed-card codes, then print the full
+            sheet.
           </p>
         </div>
 
@@ -883,7 +912,9 @@ onMounted(async () => {
             class="grid gap-3 rounded-[1.15rem] border border-[var(--ui-border)] p-3 md:grid-cols-[repeat(4,minmax(0,1fr))_auto]"
           >
             <label class="grid gap-2">
-              <span class="text-[11px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]">Kind</span>
+              <span class="text-[11px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]"
+                >Kind</span
+              >
               <select
                 v-model="line.kind"
                 class="rounded-[1.15rem] border border-[var(--ui-border)] bg-[rgba(18,17,23,0.42)] px-4 py-3 text-sm text-[var(--ui-fg)]"
@@ -893,7 +924,9 @@ onMounted(async () => {
               </select>
             </label>
             <label class="grid gap-2">
-              <span class="text-[11px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]">Quantity</span>
+              <span class="text-[11px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]"
+                >Quantity</span
+              >
               <input
                 v-model.number="line.quantity"
                 type="number"
@@ -903,7 +936,9 @@ onMounted(async () => {
               />
             </label>
             <label v-if="line.kind === 'pack'" class="grid gap-2">
-              <span class="text-[11px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]">Pack card count</span>
+              <span class="text-[11px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]"
+                >Pack card count</span
+              >
               <input
                 v-model.number="line.count"
                 type="number"
@@ -913,7 +948,9 @@ onMounted(async () => {
               />
             </label>
             <label v-else class="grid gap-2">
-              <span class="text-[11px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]">Card id</span>
+              <span class="text-[11px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]"
+                >Card id</span
+              >
               <select
                 v-model="line.cardId"
                 class="rounded-[1.15rem] border border-[var(--ui-border)] bg-[rgba(18,17,23,0.42)] px-4 py-3 text-sm text-[var(--ui-fg)]"
@@ -930,7 +967,12 @@ onMounted(async () => {
             </label>
 
             <div class="flex items-end">
-              <Button size="sm" variant="plain-secondary" :disabled="sheetLines.length <= 1" @click="removeSheetLine(line.id)">
+              <Button
+                size="sm"
+                variant="plain-secondary"
+                :disabled="sheetLines.length <= 1"
+                @click="removeSheetLine(line.id)"
+              >
                 Remove
               </Button>
             </div>
@@ -938,7 +980,12 @@ onMounted(async () => {
         </div>
 
         <div class="flex flex-wrap gap-2">
-          <Button size="sm" variant="secondary" :disabled="generatingSheet" @click="generateSheetPreview">
+          <Button
+            size="sm"
+            variant="secondary"
+            :disabled="generatingSheet"
+            @click="generateSheetPreview"
+          >
             {{ generatingSheet ? "Generating…" : "Generate code sheet preview" }}
           </Button>
           <Button
@@ -952,19 +999,28 @@ onMounted(async () => {
           </Button>
         </div>
 
-        <div v-if="generatedPrintModels.length" class="space-y-4 rounded-[1.15rem] border border-[var(--ui-border)] p-4">
+        <div
+          v-if="generatedPrintModels.length"
+          class="space-y-4 rounded-[1.15rem] border border-[var(--ui-border)] p-4"
+        >
           <div class="flex flex-wrap items-start justify-between gap-3">
             <div>
-            <h3 class="m-0 text-lg font-semibold">Sheet preview</h3>
-            <p class="m-0 text-xs text-[var(--ui-fg-muted)]">
-                {{ activeRef.collectionId }} / {{ activeRef.version }} · {{ generatedSheet.length }} code(s) · Batch {{ generatedSheetBatchId }}
-            </p>
+              <h3 class="m-0 text-lg font-semibold">Sheet preview</h3>
+              <p class="m-0 text-xs text-[var(--ui-fg-muted)]">
+                {{ activeRef.collectionId }} / {{ activeRef.version }} ·
+                {{ generatedSheet.length }} code(s) · Batch {{ generatedSheetBatchId }}
+              </p>
             </div>
             <p
               v-if="exportingSheet && exportProgress.total"
               class="m-0 text-xs text-[var(--ui-fg-muted)]"
             >
-              Exporting {{ exportProgress.completed + 1 > exportProgress.total ? exportProgress.total : exportProgress.completed + 1 }}/{{ exportProgress.total }}
+              Exporting
+              {{
+                exportProgress.completed + 1 > exportProgress.total
+                  ? exportProgress.total
+                  : exportProgress.completed + 1
+              }}/{{ exportProgress.total }}
             </p>
           </div>
 
@@ -973,7 +1029,9 @@ onMounted(async () => {
             class="grid gap-5 xl:grid-cols-[minmax(0,24rem)_minmax(0,1fr)] xl:items-start"
           >
             <div class="space-y-4">
-              <div class="rounded-[1.15rem] border border-[var(--ui-border)] bg-[rgba(255,255,255,0.02)] p-3">
+              <div
+                class="rounded-[1.15rem] border border-[var(--ui-border)] bg-[rgba(255,255,255,0.02)] p-3"
+              >
                 <PackPrintCard :model="selectedGeneratedPrintModel" preview />
               </div>
 
@@ -1006,13 +1064,18 @@ onMounted(async () => {
                 >
                   <strong class="font-mono text-sm">{{ formatRedeemCode(model.shortCode) }}</strong>
                   <span class="text-xs text-[var(--ui-fg-muted)]">{{ model.packName }}</span>
-                  <span class="text-[11px] uppercase tracking-[0.18em] text-[var(--ui-fg-muted)]">{{ model.subtitle }}</span>
+                  <span class="text-[11px] uppercase tracking-[0.18em] text-[var(--ui-fg-muted)]">{{
+                    model.subtitle
+                  }}</span>
                 </button>
               </div>
             </div>
           </div>
 
-          <div v-if="exportFailures.length" class="space-y-2 rounded-[1rem] border border-[var(--ui-danger)]/30 bg-[var(--ui-danger-muted)]/30 p-3">
+          <div
+            v-if="exportFailures.length"
+            class="space-y-2 rounded-[1rem] border border-[var(--ui-danger)]/30 bg-[var(--ui-danger-muted)]/30 p-3"
+          >
             <h4 class="m-0 text-sm font-semibold">Export issues</h4>
             <ul class="m-0 list-disc space-y-1 pl-5 text-xs text-[var(--ui-fg-muted)]">
               <li v-for="failure in exportFailures" :key="failure.id">
@@ -1031,16 +1094,24 @@ onMounted(async () => {
             </p>
             <h2 class="m-0 text-xl font-semibold">Recent designated codes</h2>
             <p class="m-0 text-sm text-[var(--ui-fg-muted)]">
-              Track which codes are unused, claimed, or revoked. Redeem links always point to the player app.
+              Track which codes are unused, claimed, or revoked. Redeem links always point to the
+              player app.
             </p>
           </div>
-          <Button size="sm" variant="plain-secondary" :disabled="loadingIssuedCodes" @click="loadIssuedCodes">
+          <Button
+            size="sm"
+            variant="plain-secondary"
+            :disabled="loadingIssuedCodes"
+            @click="loadIssuedCodes"
+          >
             {{ loadingIssuedCodes ? "Refreshing…" : "Refresh codes" }}
           </Button>
         </div>
 
         <label class="grid gap-2 md:max-w-xl">
-          <span class="text-[11px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]">Revoke reason</span>
+          <span class="text-[11px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]"
+            >Revoke reason</span
+          >
           <input
             v-model="revokeReason"
             type="text"
@@ -1049,42 +1120,67 @@ onMounted(async () => {
           />
         </label>
 
-        <div v-if="issuedCodes.length" class="grid gap-3 xl:grid-cols-[minmax(0,1.1fr)_minmax(18rem,0.9fr)]">
+        <div
+          v-if="issuedCodes.length"
+          class="grid gap-3 xl:grid-cols-[minmax(0,1.1fr)_minmax(18rem,0.9fr)]"
+        >
           <div class="grid gap-3">
             <button
               v-for="entry in issuedCodes"
               :key="entry.codeId"
               type="button"
               class="grid gap-2 rounded-[1.2rem] border p-4 text-left transition"
-              :class="selectedIssuedCodeId === entry.codeId ? 'border-[var(--ui-accent)] bg-[rgba(255,255,255,0.05)]' : 'border-[var(--ui-border)] bg-[rgba(255,255,255,0.02)]'"
+              :class="
+                selectedIssuedCodeId === entry.codeId
+                  ? 'border-[var(--ui-accent)] bg-[rgba(255,255,255,0.05)]'
+                  : 'border-[var(--ui-border)] bg-[rgba(255,255,255,0.02)]'
+              "
               @click="selectedIssuedCodeId = entry.codeId"
             >
               <div class="flex flex-wrap items-center justify-between gap-2">
                 <div class="flex flex-wrap items-center gap-2">
                   <strong class="font-mono text-sm">{{ formatRedeemCode(entry.codeId) }}</strong>
                   <Badge
-                    :tone="entry.status === 'claimed' ? 'success' : entry.status === 'revoked' ? 'warning' : 'accent'"
+                    :tone="
+                      entry.status === 'claimed'
+                        ? 'success'
+                        : entry.status === 'revoked'
+                          ? 'warning'
+                          : 'accent'
+                    "
                     variant="soft"
                   >
                     {{ entry.status }}
                   </Badge>
                 </div>
-                <span class="text-xs text-[var(--ui-fg-muted)]">{{ entry.issuedAt ? new Date(entry.issuedAt).toLocaleString() : "" }}</span>
+                <span class="text-xs text-[var(--ui-fg-muted)]">{{
+                  entry.issuedAt ? new Date(entry.issuedAt).toLocaleString() : ""
+                }}</span>
               </div>
               <p class="m-0 text-xs text-[var(--ui-fg-muted)]">
-                {{ entry.collectionId }} / {{ entry.collectionVersion }}<span v-if="entry.dropId"> · {{ entry.dropId }}</span>
+                {{ entry.collectionId }} / {{ entry.collectionVersion
+                }}<span v-if="entry.dropId"> · {{ entry.dropId }}</span>
               </p>
             </button>
           </div>
 
-          <div v-if="selectedIssuedCode" class="space-y-4 rounded-[1.2rem] border border-[var(--ui-border)] bg-[rgba(255,255,255,0.03)] p-4">
+          <div
+            v-if="selectedIssuedCode"
+            class="space-y-4 rounded-[1.2rem] border border-[var(--ui-border)] bg-[rgba(255,255,255,0.03)] p-4"
+          >
             <div class="space-y-1">
-              <p class="m-0 text-[11px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]">Selected redeem code</p>
-              <h3 class="m-0 text-lg font-semibold">{{ formatRedeemCode(selectedIssuedCode.codeId) }}</h3>
+              <p class="m-0 text-[11px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]">
+                Selected redeem code
+              </p>
+              <h3 class="m-0 text-lg font-semibold">
+                {{ formatRedeemCode(selectedIssuedCode.codeId) }}
+              </h3>
             </div>
 
             <label class="grid gap-2">
-              <span class="text-[11px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]">Redeem link</span>
+              <span class="text-[11px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]"
+                >Redeem link</span
+              >
               <input
                 readonly
                 :value="selectedIssuedCode.redeemUrl || ''"
@@ -1093,19 +1189,36 @@ onMounted(async () => {
             </label>
 
             <div class="flex flex-wrap gap-2">
-              <Button size="sm" variant="secondary" @click="copyText(selectedIssuedCode.codeId, 'code')">
+              <Button
+                size="sm"
+                variant="secondary"
+                @click="copyText(selectedIssuedCode.codeId, 'code')"
+              >
                 Copy redeem code
               </Button>
-              <Button size="sm" variant="plain-secondary" @click="copyText(selectedIssuedCode.redeemUrl || '', 'link')">
+              <Button
+                size="sm"
+                variant="plain-secondary"
+                @click="copyText(selectedIssuedCode.redeemUrl || '', 'link')"
+              >
                 Copy redeem link
               </Button>
               <Button
                 size="sm"
                 variant="plain-secondary"
-                :disabled="revokeBusyCodeId === selectedIssuedCode.codeId || selectedIssuedCode.status === 'revoked'"
+                :disabled="
+                  revokeBusyCodeId === selectedIssuedCode.codeId ||
+                  selectedIssuedCode.status === 'revoked'
+                "
                 @click="revokeIssuedCode(selectedIssuedCode.codeId)"
               >
-                {{ revokeBusyCodeId === selectedIssuedCode.codeId ? "Revoking…" : selectedIssuedCode.status === "revoked" ? "Already revoked" : "Revoke code" }}
+                {{
+                  revokeBusyCodeId === selectedIssuedCode.codeId
+                    ? "Revoking…"
+                    : selectedIssuedCode.status === "revoked"
+                      ? "Already revoked"
+                      : "Revoke code"
+                }}
               </Button>
             </div>
 
@@ -1113,7 +1226,10 @@ onMounted(async () => {
               Claimed {{ new Date(selectedIssuedCode.claimedAt).toLocaleString() }}
             </p>
             <p v-if="selectedIssuedCode.revokedAt" class="m-0 text-sm text-[var(--ui-fg-muted)]">
-              Revoked {{ new Date(selectedIssuedCode.revokedAt).toLocaleString() }}<span v-if="selectedIssuedCode.revokedReason"> · {{ selectedIssuedCode.revokedReason }}</span>
+              Revoked {{ new Date(selectedIssuedCode.revokedAt).toLocaleString()
+              }}<span v-if="selectedIssuedCode.revokedReason">
+                · {{ selectedIssuedCode.revokedReason }}</span
+              >
             </p>
           </div>
         </div>
@@ -1134,7 +1250,9 @@ onMounted(async () => {
         <Card variant="subtle" padding="sm" class="space-y-3">
           <h2 class="m-0 text-sm font-semibold">Deterministic issue</h2>
           <label class="grid gap-2">
-            <span class="text-[11px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]">Claimant public key</span>
+            <span class="text-[11px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]"
+              >Claimant public key</span
+            >
             <textarea
               v-model="claimantPublicKey"
               rows="3"
@@ -1146,7 +1264,12 @@ onMounted(async () => {
             <Button size="sm" variant="secondary" :disabled="loading" @click="previewDeterministic">
               Preview deterministic
             </Button>
-            <Button size="sm" variant="plain-secondary" :disabled="loading" @click="issueDeterministic">
+            <Button
+              size="sm"
+              variant="plain-secondary"
+              :disabled="loading"
+              @click="issueDeterministic"
+            >
               Issue deterministic
             </Button>
           </div>
@@ -1154,19 +1277,28 @@ onMounted(async () => {
 
         <Card variant="subtle" padding="sm" class="space-y-3">
           <h2 class="m-0 text-sm font-semibold">Verification</h2>
-          <pre class="overflow-auto rounded-[1rem] bg-[rgba(12,12,18,0.48)] p-3 text-xs text-[var(--ui-fg-muted)]">{{ JSON.stringify(latestVerification, null, 2) }}</pre>
+          <pre
+            class="overflow-auto rounded-[1rem] bg-[rgba(12,12,18,0.48)] p-3 text-xs text-[var(--ui-fg-muted)]"
+            >{{ JSON.stringify(latestVerification, null, 2) }}</pre
+          >
         </Card>
       </div>
 
       <div class="grid gap-6 lg:grid-cols-2">
         <Card variant="subtle" padding="sm">
           <h2 class="m-0 text-sm font-semibold">Preview</h2>
-          <pre class="mt-3 overflow-auto rounded-[1rem] bg-[rgba(12,12,18,0.48)] p-3 text-xs text-[var(--ui-fg-muted)]">{{ JSON.stringify(latestPreview, null, 2) }}</pre>
+          <pre
+            class="mt-3 overflow-auto rounded-[1rem] bg-[rgba(12,12,18,0.48)] p-3 text-xs text-[var(--ui-fg-muted)]"
+            >{{ JSON.stringify(latestPreview, null, 2) }}</pre
+          >
         </Card>
 
         <Card variant="subtle" padding="sm">
           <h2 class="m-0 text-sm font-semibold">Latest artifact</h2>
-          <pre class="mt-3 overflow-auto rounded-[1rem] bg-[rgba(12,12,18,0.48)] p-3 text-xs text-[var(--ui-fg-muted)]">{{ JSON.stringify(latestArtifact, null, 2) }}</pre>
+          <pre
+            class="mt-3 overflow-auto rounded-[1rem] bg-[rgba(12,12,18,0.48)] p-3 text-xs text-[var(--ui-fg-muted)]"
+            >{{ JSON.stringify(latestArtifact, null, 2) }}</pre
+          >
         </Card>
       </div>
     </template>

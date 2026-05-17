@@ -12,15 +12,13 @@ async function resetAccountIdentityData() {
   }
 
   const confirmation = window.prompt(
-    "Type RESET to remove all identities and pixbooks from this account."
+    "Type RESET to remove all identities and pixbooks from this account.",
   );
   if (confirmation !== "RESET") return;
 
   const ok = await cloudSync.resetAccountIdentityData();
   if (!ok) {
-    context.setError(
-      cloudSync.cloudSyncError.value || "Failed to reset account identity data."
-    );
+    context.setError(cloudSync.cloudSyncError.value || "Failed to reset account identity data.");
     return;
   }
 
@@ -37,7 +35,10 @@ async function resetAccountIdentityData() {
 
     <section class="rounded-lg border border-red-500/40 p-3 flex flex-col gap-2">
       <p class="text-xs text-[var(--ui-fg-muted)]">
-        Use <RouterLink :to="{ name: 'pixpax-settings-identity-devices' }" class="underline">Identity & Devices</RouterLink>
+        Use
+        <RouterLink :to="{ name: 'pixpax-settings-identity-devices' }" class="underline"
+          >Identity & Devices</RouterLink
+        >
         to remove identities from your account.
       </p>
       <p v-if="!cloudSync.account.isAuthenticated.value" class="text-xs text-amber-600">
@@ -56,7 +57,11 @@ async function resetAccountIdentityData() {
       </p>
     </section>
 
-    <p v-if="context.errorMessage.value" class="text-xs text-red-600">{{ context.errorMessage.value }}</p>
-    <p v-if="context.statusMessage.value" class="text-xs text-green-600">{{ context.statusMessage.value }}</p>
+    <p v-if="context.errorMessage.value" class="text-xs text-red-600">
+      {{ context.errorMessage.value }}
+    </p>
+    <p v-if="context.statusMessage.value" class="text-xs text-green-600">
+      {{ context.statusMessage.value }}
+    </p>
   </div>
 </template>

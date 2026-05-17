@@ -4,13 +4,7 @@ import { Badge, Button, Card, TreeView } from "ternent-ui/primitives";
 import type { TreeNode } from "ternent-ui/primitives";
 import { useConcordLandingDemo } from "@/modules/landing/useConcordLandingDemo";
 
-type JsonValue =
-  | string
-  | number
-  | boolean
-  | null
-  | JsonValue[]
-  | { [key: string]: JsonValue };
+type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
 
 const props = defineProps<{
   section: {
@@ -78,8 +72,12 @@ const diagnosisLine = computed(() => {
   const invalidEntries = demo.state.verification.invalidEntryIds.length;
 
   return [
-    invalidCommits > 0 ? `${invalidCommits} commit boundary${invalidCommits === 1 ? "" : "ies"} flagged` : null,
-    invalidEntries > 0 ? `${invalidEntries} entry record${invalidEntries === 1 ? "" : "s"} flagged` : null,
+    invalidCommits > 0
+      ? `${invalidCommits} commit boundary${invalidCommits === 1 ? "" : "ies"} flagged`
+      : null,
+    invalidEntries > 0
+      ? `${invalidEntries} entry record${invalidEntries === 1 ? "" : "s"} flagged`
+      : null,
     "Concord diagnoses precisely, but fails globally.",
   ]
     .filter(Boolean)
@@ -105,9 +103,7 @@ const treeKey = computed(() =>
     : `artifact-${demo.state.selectedTamper}-${demo.state.highlightedPaths.join("|")}`,
 );
 
-const expandedDepth = computed(() =>
-  demo.state.selectedTamper === "none" ? 0 : 6,
-);
+const expandedDepth = computed(() => (demo.state.selectedTamper === "none" ? 0 : 6));
 
 onMounted(() => {
   void demo.ensureStarted();
@@ -133,8 +129,7 @@ function isHighlighted(path: string, highlightedPaths: string[]) {
 
 function isWithinHighlightedNode(path: string, highlightedPaths: string[]) {
   return highlightedPaths.some(
-    (highlightedPath) =>
-      highlightedPath.startsWith(`${path}/`) || highlightedPath === path,
+    (highlightedPath) => highlightedPath.startsWith(`${path}/`) || highlightedPath === path,
   );
 }
 
@@ -144,9 +139,7 @@ function buildTreeNode(
   path: string,
   highlightedPaths: string[],
 ): TreeNode {
-  const tone = isWithinHighlightedNode(path, highlightedPaths)
-    ? "critical"
-    : "default";
+  const tone = isWithinHighlightedNode(path, highlightedPaths) ? "critical" : "default";
   const badge = isHighlighted(path, highlightedPaths) ? "tampered" : undefined;
 
   if (Array.isArray(value)) {
@@ -171,12 +164,7 @@ function buildTreeNode(
       tone,
       badge,
       children: entries.map(([key, child]) =>
-        buildTreeNode(
-          key,
-          child as JsonValue,
-          `${path}/${key}`,
-          highlightedPaths,
-        ),
+        buildTreeNode(key, child as JsonValue, `${path}/${key}`, highlightedPaths),
       ),
     };
   }
@@ -277,10 +265,7 @@ function resetTamper() {
           :default-expanded-depth="expandedDepth"
           text-size="sm"
         />
-        <p
-          v-else
-          class="m-0 text-sm leading-7 text-[var(--ui-fg-muted)]"
-        >
+        <p v-else class="m-0 text-sm leading-7 text-[var(--ui-fg-muted)]">
           Loading exported ledger artifact...
         </p>
       </div>
@@ -294,10 +279,7 @@ function resetTamper() {
           >
             Validation
           </p>
-          <Badge
-            :tone="demo.state.verification?.valid ? 'success' : 'critical'"
-            variant="soft"
-          >
+          <Badge :tone="demo.state.verification?.valid ? 'success' : 'critical'" variant="soft">
             {{ demo.state.verification?.valid ? "valid" : "invalid" }}
           </Badge>
         </div>
@@ -309,13 +291,7 @@ function resetTamper() {
             class="flex items-center justify-between gap-4 border-b border-[color-mix(in_srgb,var(--ui-border)_70%,transparent)] pb-3 text-sm last:border-b-0 last:pb-0"
           >
             <span class="text-[var(--ui-fg)]">{{ check.label }}</span>
-            <span
-              :class="
-                check.valid
-                  ? 'text-[var(--ui-success)]'
-                  : 'text-[var(--ui-critical)]'
-              "
-            >
+            <span :class="check.valid ? 'text-[var(--ui-success)]' : 'text-[var(--ui-critical)]'">
               {{ check.valid ? "ok" : "fail" }}
             </span>
           </div>

@@ -18,9 +18,7 @@ function createTask() {
 }
 </script>
 <template>
-  <div
-    class="min-w-80 w-80 border border-base-300 flex flex-col justify-between"
-  >
+  <div class="min-w-80 w-80 border border-base-300 flex flex-col justify-between">
     <h3 class="mx-auto font-bold text-2xl p-2">{{ title }}</h3>
     <div class="flex-1 flex flex-col gap-1 px-2 overflow-auto">
       <slot />

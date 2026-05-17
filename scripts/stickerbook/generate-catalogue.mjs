@@ -4,10 +4,7 @@ import { createHmac } from "crypto";
 
 const OUTPUT_PATH =
   process.env.OUTPUT_PATH ||
-  join(
-    process.cwd(),
-    "apps/ternent-api/persisted/stickerbook/series/series-S1.catalogue.json"
-  );
+  join(process.cwd(), "apps/ternent-api/persisted/stickerbook/series/series-S1.catalogue.json");
 
 const SERIES_ID = "S1";
 const SERIES_SEED = "stickerbook-series-S1";
@@ -63,20 +60,7 @@ const eyeTypes = ["dot", "oval", "star", "spark", "sleepy"];
 const patternTypes = ["spots", "stripes", "blush", "gradient", "none"];
 const accentTypes = ["horns", "fin", "leaf", "tuft", "tail"];
 
-const syllables = [
-  "la",
-  "zu",
-  "ra",
-  "mi",
-  "ko",
-  "ta",
-  "lo",
-  "shi",
-  "va",
-  "no",
-  "pi",
-  "ki",
-];
+const syllables = ["la", "zu", "ra", "mi", "ko", "ta", "lo", "shi", "va", "no", "pi", "ki"];
 
 function createHmacRng(seed) {
   let counter = 0;
@@ -85,11 +69,7 @@ function createHmacRng(seed) {
     hmac.update(`${seed}:${counter}`);
     const digest = hmac.digest();
     counter += 1;
-    const int =
-      (digest[0] << 24) |
-      (digest[1] << 16) |
-      (digest[2] << 8) |
-      digest[3];
+    const int = (digest[0] << 24) | (digest[1] << 16) | (digest[2] << 8) | digest[3];
     return (int >>> 0) / 0xffffffff;
   };
 }
@@ -103,9 +83,7 @@ function luminance(hex) {
     .replace("#", "")
     .match(/.{2}/g)
     .map((v) => parseInt(v, 16) / 255);
-  const [r, g, b] = rgb.map((c) =>
-    c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)
-  );
+  const [r, g, b] = rgb.map((c) => (c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)));
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
@@ -253,5 +231,5 @@ mkdirSync(dirname(OUTPUT_PATH), { recursive: true });
 writeFileSync(OUTPUT_PATH, JSON.stringify(catalogue, null, 2));
 
 console.log(
-  `Generated ${creatures.length} creatures to ${OUTPUT_PATH} from ${CANDIDATE_COUNT} candidates.`
+  `Generated ${creatures.length} creatures to ${OUTPUT_PATH} from ${CANDIDATE_COUNT} candidates.`,
 );

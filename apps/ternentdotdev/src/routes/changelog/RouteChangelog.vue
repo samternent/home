@@ -22,7 +22,7 @@ const changelogMarkdown = shallowRef();
 
 async function loadMarkdown() {
   const changelogs = await fetch(
-    `https://raw.githubusercontent.com/samternent/home/main/${props.type}/${props.name}/CHANGELOG.md`
+    `https://raw.githubusercontent.com/samternent/home/main/${props.type}/${props.name}/CHANGELOG.md`,
   );
   changelogMarkdown.value = await changelogs.text();
 }
@@ -30,7 +30,7 @@ async function loadMarkdown() {
 const changelog = computed(() =>
   changelogMarkdown.value
     ? DOMPurify.sanitize(marked.parse(changelogMarkdown.value))
-    : "loading..."
+    : "loading...",
 );
 useBreadcrumbs({
   path: `/changelog/${props.type}/${props.name}`,

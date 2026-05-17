@@ -2,10 +2,7 @@ import { flushPromises, mount } from "@vue/test-utils";
 import { beforeEach, describe, expect, it } from "vitest";
 import { createIdentity } from "@ternent/identity";
 import RouteHome from "@/routes/app/RouteHome.vue";
-import {
-  configureAppApiSingletonForTests,
-  resetAppApiSingletonForTests,
-} from "@/app/api";
+import { configureAppApiSingletonForTests, resetAppApiSingletonForTests } from "@/app/api";
 
 async function waitFor(check: () => boolean): Promise<boolean> {
   for (let attempt = 0; attempt < 400; attempt += 1) {
@@ -28,14 +25,12 @@ describe("RouteHome", () => {
 
   it("renders placeholder copy and no route-level status blocks", async () => {
     const wrapper = mount(RouteHome);
-    const placeholderVisible = await waitFor(
-      () => wrapper.get('[data-test="home-v2-placeholder-text"]').text().includes("Home placeholder"),
+    const placeholderVisible = await waitFor(() =>
+      wrapper.get('[data-test="home-v2-placeholder-text"]').text().includes("Home placeholder"),
     );
     expect(placeholderVisible).toBe(true);
 
-    expect(wrapper.get('[data-test="home-v2-placeholder"]').text()).toContain(
-      "console status bar",
-    );
+    expect(wrapper.get('[data-test="home-v2-placeholder"]').text()).toContain("console status bar");
     expect(wrapper.find('[data-test="home-v2-error"]').exists()).toBe(false);
   });
 });

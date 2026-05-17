@@ -6,22 +6,16 @@ import { useBreadcrumbs } from "@/module/breadcrumbs/useBreadcrumbs";
     <h2>Apps</h2>
     <ul>
       <li>
-        <RouterLink to="/changelog/apps/ternentdotdev"
-          >ternentdotdev</RouterLink
-        >
+        <RouterLink to="/changelog/apps/ternentdotdev">ternentdotdev</RouterLink>
       </li>
       <li>
         <RouterLink to="/changelog/apps/ternent-api">ternent-api</RouterLink>
       </li>
       <li>
-        <RouterLink to="/changelog/apps/footballsocial"
-          >footabllsocial</RouterLink
-        >
+        <RouterLink to="/changelog/apps/footballsocial">footabllsocial</RouterLink>
       </li>
       <li>
-        <RouterLink to="/changelog/apps/footballsocial-api"
-          >footabllsocial-api</RouterLink
-        >
+        <RouterLink to="/changelog/apps/footballsocial-api">footabllsocial-api</RouterLink>
       </li>
       <li>
         <RouterLink to="/changelog/apps/concords">concords</RouterLink>
@@ -42,9 +36,7 @@ import { useBreadcrumbs } from "@/module/breadcrumbs/useBreadcrumbs";
         <RouterLink to="/changelog/packages/ledger">ledger</RouterLink>
       </li>
       <li>
-        <RouterLink to="/changelog/packages/concord-protocol"
-          >concord-protocol</RouterLink
-        >
+        <RouterLink to="/changelog/packages/concord-protocol">concord-protocol</RouterLink>
       </li>
       <li>
         <RouterLink to="/changelog/packages/ragejs">ragejs</RouterLink>

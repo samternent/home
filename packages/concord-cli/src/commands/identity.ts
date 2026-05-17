@@ -12,10 +12,7 @@ export type IdentityUpsertParams = {
   ageRecipients?: string[];
 };
 
-export function createIdentityUpsertEntry(
-  params: IdentityUpsertParams,
-  timestamp: string
-): Entry {
+export function createIdentityUpsertEntry(params: IdentityUpsertParams, timestamp: string): Entry {
   const payload = identityUpsertPayloadSchema.parse({
     principalId: params.principalId,
     displayName: params.displayName,
@@ -36,7 +33,7 @@ export function listIdentities(ledger: LedgerContainer): IdentityState {
 
 export function getIdentity(
   ledger: LedgerContainer,
-  principalId: string
+  principalId: string,
 ): IdentityRecord | undefined {
   const state = replayIdentity(ledger);
   return state.principals[principalId];

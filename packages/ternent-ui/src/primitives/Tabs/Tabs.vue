@@ -25,7 +25,12 @@ const model = computed({
 </script>
 
 <template>
-  <ArkTabs.Root v-model="model" :lazy-mount="props.lazyMount" unmount-on-exit :class="tabsRootClass">
+  <ArkTabs.Root
+    v-model="model"
+    :lazy-mount="props.lazyMount"
+    unmount-on-exit
+    :class="tabsRootClass"
+  >
     <ArkTabs.List :class="[tabsListBaseClass, tabsListVariantClasses[props.variant]]">
       <ArkTabs.Trigger
         v-for="item in props.items"

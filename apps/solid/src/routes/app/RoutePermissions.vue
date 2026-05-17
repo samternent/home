@@ -21,12 +21,8 @@ const permissions = computed(() => appApi.permissions.all());
 const users = computed(() => appApi.users.all());
 const profiles = computed(() => appApi.profiles.all());
 const stagedCount = computed(() => appApi.getState().stagedCount);
-const activeIdentityId = computed(
-  () => appApi.identity.activeIdentity.value?.identityId ?? "",
-);
-const activeIdentityKey = computed(
-  () => appApi.identity.activeIdentity.value?.identityKey ?? "",
-);
+const activeIdentityId = computed(() => appApi.identity.activeIdentity.value?.identityId ?? "");
+const activeIdentityKey = computed(() => appApi.identity.activeIdentity.value?.identityKey ?? "");
 const activeIdentityLabel = computed(
   () => appApi.identity.activeIdentity.value?.label ?? "Identity locked",
 );
@@ -48,7 +44,10 @@ function slugify(value: string): string {
 function basePermissionPathKey(permissionId: string, index: number): string {
   const parts = permissionId.split(":");
   const slug = slugify(parts[1] ?? `p${index + 1}`).slice(0, 14) || `p${index + 1}`;
-  const fingerprint = (parts[3] ?? "").replace(/[^a-z0-9]/gi, "").slice(0, 4).toLowerCase();
+  const fingerprint = (parts[3] ?? "")
+    .replace(/[^a-z0-9]/gi, "")
+    .slice(0, 4)
+    .toLowerCase();
   return fingerprint ? `${slug}-${fingerprint}` : slug;
 }
 
@@ -71,7 +70,7 @@ const permissionRouteState = computed(() => {
     navItems.push({
       id: key,
       title: permission.title,
-      meta: `${permission.members.length} member${permission.members.length === 1 ? "" : "s"}`,
+      meta: `${permission.members.length} member${permission.members.length === 1 ? "" : "s"} · ${permission.viewerHasKey ? "key ready" : "no key"}`,
       active: key === selectedPermissionKey.value,
       dataTest: `permission-title-${permission.id}`,
     });
@@ -98,6 +97,8 @@ const selectedPermission = computed(() => {
 
   return appApi.permissions.byId(selectedPermissionId.value);
 });
+const selectedPermissionHasKey = computed(() => Boolean(selectedPermission.value?.viewerHasKey));
+const selectedPermissionGrantCount = computed(() => selectedPermission.value?.grantCount ?? 0);
 const selectedPermissionMetaId = computed(() => {
   const id = selectedPermission.value?.id ?? "";
   if (!id) {
@@ -107,11 +108,9 @@ const selectedPermissionMetaId = computed(() => {
   return `grp:${fingerprint}`;
 });
 
-const usersById = computed(() =>
-  new Map(users.value.map((user) => [user.identityKey, user])),
-);
-const profilesById = computed(() =>
-  new Map(profiles.value.map((profile) => [profile.identityKey, profile])),
+const usersById = computed(() => new Map(users.value.map((user) => [user.identityKey, user])));
+const profilesById = computed(
+  () => new Map(profiles.value.map((profile) => [profile.identityKey, profile])),
 );
 
 const selectedMemberIds = computed(
@@ -134,14 +133,10 @@ const members = computed(() => {
 
   return permission.members.map((member) => {
     const projected = usersById.value.get(member.memberId);
-    const profile = projected
-      ? profilesById.value.get(projected.identityKey)
-      : undefined;
+    const profile = projected ? profilesById.value.get(projected.identityKey) : undefined;
     const canonicalMemberId =
       projected?.identityKey ??
-      (member.memberId === activeIdentityId.value
-        ? activeIdentityKey.value
-        : member.memberId);
+      (member.memberId === activeIdentityId.value ? activeIdentityKey.value : member.memberId);
     const resolvedLabel =
       profile?.displayName ??
       projected?.label ??
@@ -162,9 +157,7 @@ const assignableUsers = computed(() =>
   users.value.filter((user) => !selectedMemberIds.value.has(user.identityKey)),
 );
 
-const permissionNavItems = computed<RecordListItem[]>(
-  () => permissionRouteState.value.navItems,
-);
+const permissionNavItems = computed<RecordListItem[]>(() => permissionRouteState.value.navItems);
 
 const assignableUserItems = computed<RecordListItem[]>(() =>
   assignableUsers.value.map((user) => ({
@@ -180,9 +173,7 @@ const assignableUserItems = computed<RecordListItem[]>(() =>
 
 const trimmedCreateTitle = computed(() => createTitle.value.trim());
 const canCreatePermission = computed(() => trimmedCreateTitle.value.length > 0);
-const showCreateForm = computed(
-  () => createOpen.value || permissions.value.length === 0,
-);
+const showCreateForm = computed(() => createOpen.value || permissions.value.length === 0);
 const canCollapseCreateForm = computed(() => permissions.value.length > 0);
 
 function clearCreateForm() {
@@ -193,7 +184,7 @@ async function createPermission() {
   createError.value = null;
 
   try {
-    await appApi.permissions.create({
+    await appApi.permissions.createGroup({
       title: trimmedCreateTitle.value,
     });
     clearCreateForm();
@@ -309,7 +300,9 @@ onMounted(async () => {
 
     <SplitView rail-width="md" rail-aria-label="Permissions navigation" :divider="false">
       <template #rail>
-        <div class="flex h-full min-h-0 flex-col gap-3 rounded-[var(--ui-radius-lg)] border border-[var(--ui-border)] bg-[var(--ui-surface)] p-3">
+        <div
+          class="flex h-full min-h-0 flex-col gap-3 rounded-[var(--ui-radius-lg)] border border-[var(--ui-border)] bg-[var(--ui-surface)] p-3"
+        >
           <div class="space-y-2">
             <div class="flex items-center justify-between gap-2">
               <p class="m-0 text-xs uppercase tracking-[0.12em] text-[var(--ui-fg-muted)]">
@@ -366,7 +359,10 @@ onMounted(async () => {
             </form>
           </div>
 
-          <div class="min-h-0 flex-1 rounded-[var(--ui-radius-md)] bg-[var(--ui-tonal-tertiary)]/45 px-1 py-1" data-test="permissions-list">
+          <div
+            class="min-h-0 flex-1 rounded-[var(--ui-radius-md)] bg-[var(--ui-tonal-tertiary)]/45 px-1 py-1"
+            data-test="permissions-list"
+          >
             <RecordList
               title="Groups"
               surface="plain"
@@ -445,17 +441,38 @@ onMounted(async () => {
                     <Badge tone="secondary" variant="soft" size="sm">
                       {{ stagedCount }} staged
                     </Badge>
+                    <Badge
+                      :tone="selectedPermissionHasKey ? 'success' : 'critical'"
+                      variant="soft"
+                      size="sm"
+                      :data-test="`permission-key-state-${selectedPermission.id}`"
+                    >
+                      {{ selectedPermissionHasKey ? "key ready" : "no key" }}
+                    </Badge>
+                    <Badge tone="neutral" variant="soft" size="sm">
+                      {{ selectedPermissionGrantCount }} grants
+                    </Badge>
                   </div>
                 </div>
                 <p class="m-0 max-w-3xl text-sm text-[var(--ui-fg-muted)]">
                   This group controls collaborator access for this workspace. Changes are queued in
                   the commit tray, then committed into signed ledger history.
                 </p>
+                <p
+                  v-if="!selectedPermissionHasKey"
+                  class="m-0 text-sm text-[var(--ui-critical)]"
+                  :data-test="`permission-no-key-${selectedPermission.id}`"
+                >
+                  This device does not currently hold the group key, so new grants cannot be issued
+                  from here.
+                </p>
               </header>
             </Card>
 
             <div class="grid min-h-0 gap-5 xl:grid-cols-[minmax(0,1fr)_300px]">
-              <section class="min-h-0 space-y-3 rounded-[var(--ui-radius-lg)] border border-[var(--ui-border)] bg-[var(--ui-surface)] p-3">
+              <section
+                class="min-h-0 space-y-3 rounded-[var(--ui-radius-lg)] border border-[var(--ui-border)] bg-[var(--ui-surface)] p-3"
+              >
                 <div class="space-y-1">
                   <p class="m-0 text-xs uppercase tracking-[0.12em] text-[var(--ui-fg-muted)]">
                     Collaborators
@@ -470,7 +487,9 @@ onMounted(async () => {
                   class="min-h-0"
                   :data-test="`permission-members-${selectedPermission.id}`"
                 >
-                  <ul class="m-0 list-none divide-y divide-[var(--ui-border)] rounded-[var(--ui-radius-md)] border border-[var(--ui-border)] bg-[var(--ui-tonal-tertiary)]/35 p-0">
+                  <ul
+                    class="m-0 list-none divide-y divide-[var(--ui-border)] rounded-[var(--ui-radius-md)] border border-[var(--ui-border)] bg-[var(--ui-tonal-tertiary)]/35 p-0"
+                  >
                     <li
                       v-for="member in members"
                       :key="member.memberId"
@@ -519,7 +538,9 @@ onMounted(async () => {
                 </Card>
               </section>
 
-              <section class="space-y-3 rounded-[var(--ui-radius-lg)] border border-[var(--ui-border)] bg-[var(--ui-surface)] p-3">
+              <section
+                class="space-y-3 rounded-[var(--ui-radius-lg)] border border-[var(--ui-border)] bg-[var(--ui-surface)] p-3"
+              >
                 <div class="space-y-1">
                   <p class="m-0 text-xs uppercase tracking-[0.12em] text-[var(--ui-fg-muted)]">
                     Available people
@@ -534,10 +555,12 @@ onMounted(async () => {
                   class="space-y-2 rounded-[var(--ui-radius-md)] bg-[var(--ui-tonal-tertiary)] p-3 text-sm text-[var(--ui-fg-muted)]"
                   data-test="permissions-users-empty"
                 >
-                  <p class="m-0">No workspace users yet. Add people first, then grant access here.</p>
+                  <p class="m-0">
+                    No workspace users yet. Add people first, then grant access here.
+                  </p>
                   <Button
                     as="RouterLink"
-                    to="/users"
+                    to="/s/users"
                     variant="plain-secondary"
                     size="sm"
                     data-test="permissions-users-empty-cta"
@@ -580,6 +603,7 @@ onMounted(async () => {
                         variant="tertiary"
                         size="xs"
                         :data-test="`permission-grant-submit-${selectedPermission.id}-${item.id}`"
+                        :disabled="!selectedPermissionHasKey"
                         @click="grantProjectedUser(item.id)"
                       >
                         Add collaborator

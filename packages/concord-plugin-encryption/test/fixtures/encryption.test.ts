@@ -23,9 +23,7 @@ describe("encryption registry replay", () => {
       throw new Error("Expected replayEncryption to throw");
     } catch (error) {
       expect(error).toBeInstanceOf(EncryptionRegistryError);
-      expect((error as EncryptionRegistryError).code).toBe(
-        "INVALID_EPOCH_TRANSITION"
-      );
+      expect((error as EncryptionRegistryError).code).toBe("INVALID_EPOCH_TRANSITION");
     }
   });
 
@@ -38,9 +36,7 @@ describe("encryption registry replay", () => {
       throw new Error("Expected replayEncryption to throw");
     } catch (error) {
       expect(error).toBeInstanceOf(EncryptionRegistryError);
-      expect((error as EncryptionRegistryError).code).toBe(
-        "INVALID_EPOCH_TRANSITION"
-      );
+      expect((error as EncryptionRegistryError).code).toBe("INVALID_EPOCH_TRANSITION");
     }
   });
 
@@ -50,12 +46,7 @@ describe("encryption registry replay", () => {
       permissionsConfig: { rootAdmins: ["did:root"] },
     });
 
-    const wraps = findWrapsForPrincipal(
-      state,
-      "did:alice",
-      "projects:alpha",
-      2
-    );
+    const wraps = findWrapsForPrincipal(state, "did:alice", "projects:alpha", 2);
     expect(wraps.length).toBe(2);
     expect(wraps[0].wrap.ct).toBe("wrap-ct");
     expect(wraps[1].wrap.ct).toBe("wrap-ct-2");
@@ -70,18 +61,8 @@ describe("encryption registry replay", () => {
       permissionsConfig: { rootAdmins: ["did:root"] },
     });
 
-    const wrapsEpoch2 = findWrapsForPrincipal(
-      state,
-      "did:alice",
-      "projects:alpha",
-      2
-    );
-    const wrapsEpoch3 = findWrapsForPrincipal(
-      state,
-      "did:alice",
-      "projects:alpha",
-      3
-    );
+    const wrapsEpoch2 = findWrapsForPrincipal(state, "did:alice", "projects:alpha", 2);
+    const wrapsEpoch3 = findWrapsForPrincipal(state, "did:alice", "projects:alpha", 3);
 
     expect(wrapsEpoch2.length).toBe(1);
     expect(wrapsEpoch3.length).toBe(0);

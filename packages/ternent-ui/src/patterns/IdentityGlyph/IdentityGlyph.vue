@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import type { IdentityGlyphAlgorithm, IdentityGlyphInput, IdentityGlyphSize } from "./identityGlyph.types";
+import type {
+  IdentityGlyphAlgorithm,
+  IdentityGlyphInput,
+  IdentityGlyphSize,
+} from "./identityGlyph.types";
 import {
   createIdentityGlyphModel,
   getIdentityGlyphPaletteValues,

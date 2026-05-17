@@ -120,10 +120,7 @@ export function generateTotpSecret(length = 20): string {
   return base32Encode(bytes);
 }
 
-export function createOtpAuthUri(input: {
-  secretBase32: string;
-  policy: TotpPolicy;
-}): string {
+export function createOtpAuthUri(input: { secretBase32: string; policy: TotpPolicy }): string {
   const issuer = encodeURIComponent(input.policy.issuer);
   const account = encodeURIComponent(input.policy.accountName);
   const secret = normalizeBase32(input.secretBase32);

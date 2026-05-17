@@ -19,8 +19,8 @@ const open = defineModel<boolean>("open", { default: false });
 const props = defineProps(dialogProps);
 const slots = useSlots();
 
-const hasHeader = computed(
-  () => Boolean(props.title || props.description || slots.header || props.showClose),
+const hasHeader = computed(() =>
+  Boolean(props.title || props.description || slots.header || props.showClose),
 );
 </script>
 
@@ -37,19 +37,16 @@ const hasHeader = computed(
     </ArkDialog.Trigger>
     <ArkDialog.Backdrop :class="dialogBackdropClass" />
     <ArkDialog.Positioner :class="dialogPositionerClass">
-    <ArkDialog.Content
-      :class="[dialogContentBaseClass, dialogContentSizeClasses[props.size], props.contentClass]"
-    >
+      <ArkDialog.Content
+        :class="[dialogContentBaseClass, dialogContentSizeClasses[props.size], props.contentClass]"
+      >
         <div v-if="hasHeader" :class="dialogHeaderClass">
           <slot name="header">
             <div class="min-w-0 flex-1">
               <ArkDialog.Title v-if="props.title" :class="dialogTitleClass">
                 {{ props.title }}
               </ArkDialog.Title>
-              <ArkDialog.Description
-                v-if="props.description"
-                :class="dialogDescriptionClass"
-              >
+              <ArkDialog.Description v-if="props.description" :class="dialogDescriptionClass">
                 {{ props.description }}
               </ArkDialog.Description>
             </div>

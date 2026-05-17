@@ -2,7 +2,7 @@ import { b64encode } from "ternent-utils";
 
 export async function signBytes(
   signingKey: CryptoKey,
-  data: Uint8Array | ArrayBuffer
+  data: Uint8Array | ArrayBuffer,
 ): Promise<string> {
   const bytes = data instanceof Uint8Array ? data : new Uint8Array(data);
   const signatureBuffer = await crypto.subtle.sign(
@@ -13,7 +13,7 @@ export async function signBytes(
       },
     },
     signingKey,
-    bytes
+    bytes,
   );
 
   return b64encode(signatureBuffer);

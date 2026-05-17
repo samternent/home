@@ -28,8 +28,7 @@ const {
   setRememberInBrowser,
   clearIdentity,
 } = useIdentitySession();
-const { create, createFromMnemonic, generateMnemonicPhrase, isCreating } =
-  useIdentityCreate();
+const { create, createFromMnemonic, generateMnemonicPhrase, isCreating } = useIdentityCreate();
 const { importIdentity, importMnemonic, isImporting } = useIdentityImport();
 const { exportedPayload, downloadExport } = useIdentityExport();
 
@@ -72,7 +71,10 @@ const identityRows = computed(() => {
   if (!identity.value) {
     return [
       { label: "Status", value: "No identity loaded", valueTone: "neutral" as const },
-      { label: "Storage", value: rememberInBrowser.value ? "Browser storage enabled" : "Memory only" },
+      {
+        label: "Storage",
+        value: rememberInBrowser.value ? "Browser storage enabled" : "Memory only",
+      },
       ...(legacyIdentityRejected.value
         ? [{ label: "Legacy", value: "Legacy PEM identity was rejected" }]
         : []),
@@ -87,7 +89,10 @@ const identityRows = computed(() => {
     },
     { label: "Identity ID", value: identity.value.id },
     { label: "Created", value: new Date(identity.value.createdAt).toLocaleString() },
-    { label: "Storage", value: rememberInBrowser.value ? "Browser storage enabled" : "Memory only" },
+    {
+      label: "Storage",
+      value: rememberInBrowser.value ? "Browser storage enabled" : "Memory only",
+    },
     ...(legacyIdentityRejected.value
       ? [{ label: "Legacy", value: "Legacy PEM identity was rejected" }]
       : []),
@@ -135,13 +140,9 @@ const onPrepareMnemonic = () => {
   try {
     generatedMnemonic.value = generateMnemonicPhrase(mnemonicWordCount.value);
     mnemonicBackedUp.value = false;
-    notice.value =
-      "Seed phrase generated. Store it securely before creating the identity.";
+    notice.value = "Seed phrase generated. Store it securely before creating the identity.";
   } catch (caught) {
-    error.value =
-      caught instanceof Error
-        ? caught.message
-        : "Failed to generate seed phrase.";
+    error.value = caught instanceof Error ? caught.message : "Failed to generate seed phrase.";
   }
 };
 
@@ -154,9 +155,7 @@ const onCreateFromMnemonic = async () => {
       throw new Error("Generate a seed phrase before creating an identity.");
     }
     if (!mnemonicBackedUp.value) {
-      throw new Error(
-        "Confirm that you have stored the seed phrase before continuing."
-      );
+      throw new Error("Confirm that you have stored the seed phrase before continuing.");
     }
 
     await createFromMnemonic({
@@ -173,9 +172,7 @@ const onCreateFromMnemonic = async () => {
       : "Identity created from seed phrase. Recovery requires the stored phrase.";
   } catch (caught) {
     error.value =
-      caught instanceof Error
-        ? caught.message
-        : "Failed to create identity from seed phrase.";
+      caught instanceof Error ? caught.message : "Failed to create identity from seed phrase.";
   }
 };
 
@@ -211,10 +208,7 @@ const onImportMnemonic = async () => {
     showFullKeyId.value = false;
     notice.value = "Seed phrase imported successfully.";
   } catch (caught) {
-    error.value =
-      caught instanceof Error
-        ? caught.message
-        : "Failed to import seed phrase.";
+    error.value = caught instanceof Error ? caught.message : "Failed to import seed phrase.";
   }
 };
 
@@ -258,10 +252,16 @@ const onClear = () => {
 
     <div class="grid gap-6 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
       <div class="space-y-6">
-        <Card variant="elevated" padding="md" class="space-y-5 border-[color-mix(in_srgb,var(--ui-border)_84%,transparent)]">
+        <Card
+          variant="elevated"
+          padding="md"
+          class="space-y-5 border-[color-mix(in_srgb,var(--ui-border)_84%,transparent)]"
+        >
           <div class="flex flex-wrap items-start justify-between gap-3">
             <div class="space-y-2">
-              <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
+              <p
+                class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]"
+              >
                 Signer summary
               </p>
               <h3 class="m-0 text-xl font-medium tracking-[-0.02em] text-[var(--ui-fg)]">
@@ -273,12 +273,18 @@ const onClear = () => {
             </Badge>
           </div>
 
-          <div class="rounded-[var(--ui-radius-lg)] border border-[color-mix(in_srgb,var(--ui-border)_86%,transparent)] bg-[var(--ui-tonal-secondary)] px-5 py-4">
-            <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
+          <div
+            class="rounded-[var(--ui-radius-lg)] border border-[color-mix(in_srgb,var(--ui-border)_86%,transparent)] bg-[var(--ui-tonal-secondary)] px-5 py-4"
+          >
+            <p
+              class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]"
+            >
               Key ID
             </p>
             <p class="proof-shell-copy mt-3 break-all text-base leading-7 text-[var(--ui-fg)]">
-              {{ hasIdentity ? (showFullKeyId ? identity?.keyId : shortKeyId) : "No identity loaded" }}
+              {{
+                hasIdentity ? (showFullKeyId ? identity?.keyId : shortKeyId) : "No identity loaded"
+              }}
             </p>
           </div>
 
@@ -294,7 +300,11 @@ const onClear = () => {
         <Card variant="subtle" padding="md" class="space-y-4">
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">Local storage</p>
+              <p
+                class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]"
+              >
+                Local storage
+              </p>
               <p class="mt-2 text-sm text-[var(--ui-fg-muted)]">
                 Signer material is stored locally in this browser.
               </p>
@@ -315,7 +325,11 @@ const onClear = () => {
         <Card v-if="hasIdentity" variant="subtle" padding="md" class="space-y-4">
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">Loaded signer</p>
+              <p
+                class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]"
+              >
+                Loaded signer
+              </p>
               <p class="mt-2 text-sm text-[var(--ui-fg-muted)]">
                 Inspect the key ID or public key only when you need signer details.
               </p>
@@ -334,20 +348,34 @@ const onClear = () => {
 
           <Accordion
             :value="showPublicKey ? 'public-key' : undefined"
-            @update:value="(value) => { showPublicKey = value === 'public-key'; }"
+            @update:value="
+              (value) => {
+                showPublicKey = value === 'public-key';
+              }
+            "
           >
             <AccordionItem value="public-key" title="View public key">
-              <pre class="proof-code-block m-0 whitespace-pre-wrap break-all text-xs leading-relaxed"><code>{{ identity?.publicKey }}</code></pre>
+              <pre
+                class="proof-code-block m-0 whitespace-pre-wrap break-all text-xs leading-relaxed"
+              ><code>{{ identity?.publicKey }}</code></pre>
             </AccordionItem>
           </Accordion>
         </Card>
       </div>
 
       <div class="space-y-6">
-        <Card variant="elevated" padding="md" class="space-y-5 border-[color-mix(in_srgb,var(--ui-border)_84%,transparent)]">
+        <Card
+          variant="elevated"
+          padding="md"
+          class="space-y-5 border-[color-mix(in_srgb,var(--ui-border)_84%,transparent)]"
+        >
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">Signer actions</p>
+              <p
+                class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]"
+              >
+                Signer actions
+              </p>
               <p class="mt-2 text-sm text-[var(--ui-fg-muted)]">
                 Generate a signer, replace the active one, or clear local signer material.
               </p>
@@ -375,9 +403,14 @@ const onClear = () => {
 
         <Card v-if="showMnemonicPanel" variant="panel" padding="md" class="space-y-5">
           <div>
-            <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">Seed phrase setup</p>
+            <p
+              class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]"
+            >
+              Seed phrase setup
+            </p>
             <p class="mt-2 text-sm text-[var(--ui-fg-muted)]">
-              Generate a 12- or 24-word English BIP-39 phrase, store it securely, then create the identity from it.
+              Generate a 12- or 24-word English BIP-39 phrase, store it securely, then create the
+              identity from it.
             </p>
           </div>
 
@@ -402,7 +435,10 @@ const onClear = () => {
             </template>
           </FormField>
 
-          <FormField label="Passphrase" description="Optional BIP-39 passphrase. You must keep it with the phrase for recovery.">
+          <FormField
+            label="Passphrase"
+            description="Optional BIP-39 passphrase. You must keep it with the phrase for recovery."
+          >
             <template #default="{ id, describedBy }">
               <Input
                 :id="id"
@@ -415,9 +451,7 @@ const onClear = () => {
           </FormField>
 
           <div class="flex flex-wrap gap-3">
-            <Button variant="primary" @click="onPrepareMnemonic">
-              Generate seed phrase
-            </Button>
+            <Button variant="primary" @click="onPrepareMnemonic"> Generate seed phrase </Button>
             <Button
               variant="plain-secondary"
               @click="
@@ -431,7 +465,10 @@ const onClear = () => {
           </div>
 
           <template v-if="generatedMnemonic">
-            <FormField label="Generated seed phrase" description="This phrase is shown once. Store it securely before creating the identity.">
+            <FormField
+              label="Generated seed phrase"
+              description="This phrase is shown once. Store it securely before creating the identity."
+            >
               <template #default="{ id, describedBy }">
                 <Textarea
                   :id="id"
@@ -445,7 +482,10 @@ const onClear = () => {
             </FormField>
 
             <Checkbox v-model="mnemonicBackedUp">
-              I have stored this seed phrase{{ mnemonicPassphrase ? " and passphrase" : "" }} securely
+              I have stored this seed phrase{{
+                mnemonicPassphrase ? " and passphrase" : ""
+              }}
+              securely
             </Checkbox>
 
             <Button
@@ -461,13 +501,21 @@ const onClear = () => {
 
         <Card v-if="showImportPanel" variant="panel" padding="md" class="space-y-5">
           <div>
-            <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">Import signer</p>
+            <p
+              class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]"
+            >
+              Import signer
+            </p>
             <p class="mt-2 text-sm text-[var(--ui-fg-muted)]">
-                Import either a v2 ternent identity JSON export or a 12- or 24-word English BIP-39 seed phrase.
+              Import either a v2 ternent identity JSON export or a 12- or 24-word English BIP-39
+              seed phrase.
             </p>
           </div>
 
-          <FormField label="Identity file" description="Only ternent identity v2 JSON exports are accepted here.">
+          <FormField
+            label="Identity file"
+            description="Only ternent identity v2 JSON exports are accepted here."
+          >
             <template #default>
               <FileInput
                 v-model="importFileModel"
@@ -479,7 +527,10 @@ const onClear = () => {
             </template>
           </FormField>
 
-          <FormField label="Identity payload" description="Paste a ternent identity v2 JSON export payload.">
+          <FormField
+            label="Identity payload"
+            description="Paste a ternent identity v2 JSON export payload."
+          >
             <template #default="{ id, describedBy }">
               <Textarea
                 :id="id"
@@ -498,7 +549,10 @@ const onClear = () => {
             </Button>
           </div>
 
-          <FormField label="Seed phrase" description="Paste a 12- or 24-word English BIP-39 phrase.">
+          <FormField
+            label="Seed phrase"
+            description="Paste a 12- or 24-word English BIP-39 phrase."
+          >
             <template #default="{ id, describedBy }">
               <Textarea
                 :id="id"
@@ -511,7 +565,10 @@ const onClear = () => {
             </template>
           </FormField>
 
-          <FormField label="Seed phrase passphrase" description="Optional BIP-39 passphrase used with the phrase.">
+          <FormField
+            label="Seed phrase passphrase"
+            description="Optional BIP-39 passphrase used with the phrase."
+          >
             <template #default="{ id, describedBy }">
               <Input
                 :id="id"
@@ -527,14 +584,17 @@ const onClear = () => {
             <Button variant="secondary" :loading="isImporting" @click="onImportMnemonic">
               {{ isImporting ? "Importing..." : "Import seed phrase" }}
             </Button>
-            <Button variant="plain-secondary" @click="
-              showImportPanel = false;
-              importPayload = '';
-              importMnemonicPhrase = '';
-              importPassphrase = '';
-              importFileName = '';
-              importFile = null;
-            ">
+            <Button
+              variant="plain-secondary"
+              @click="
+                showImportPanel = false;
+                importPayload = '';
+                importMnemonicPhrase = '';
+                importPassphrase = '';
+                importFileName = '';
+                importFile = null;
+              "
+            >
               Cancel
             </Button>
           </div>
@@ -543,9 +603,14 @@ const onClear = () => {
         <Card v-if="hasIdentity" variant="subtle" padding="md" class="space-y-5">
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">Export signer</p>
+              <p
+                class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]"
+              >
+                Export signer
+              </p>
               <p class="mt-2 text-sm text-[var(--ui-fg-muted)]">
-                Export includes private key material. Reveal it only when you need a backup or transfer.
+                Export includes private key material. Reveal it only when you need a backup or
+                transfer.
               </p>
             </div>
             <Badge tone="warning" variant="outline">Sensitive</Badge>
@@ -553,10 +618,17 @@ const onClear = () => {
 
           <Accordion
             :value="showExportPanel ? 'export-payload' : undefined"
-            @update:value="(value) => { showExportPanel = value === 'export-payload'; }"
+            @update:value="
+              (value) => {
+                showExportPanel = value === 'export-payload';
+              }
+            "
           >
             <AccordionItem value="export-payload" title="Reveal export payload">
-              <FormField label="Export payload" description="Back this up securely before moving devices or clearing storage.">
+              <FormField
+                label="Export payload"
+                description="Back this up securely before moving devices or clearing storage."
+              >
                 <template #default="{ id, describedBy }">
                   <Textarea
                     :id="id"
@@ -582,7 +654,8 @@ const onClear = () => {
           class="m-0 rounded-[var(--ui-radius-md)] border border-[var(--ui-border)] bg-[var(--ui-tonal-secondary)] px-4 py-3 text-sm text-[var(--ui-fg)]"
           aria-live="polite"
         >
-          A legacy PEM-based Seal identity was found in browser storage and was cleared. Import a v2 ternent identity JSON export instead.
+          A legacy PEM-based Seal identity was found in browser storage and was cleared. Import a v2
+          ternent identity JSON export instead.
         </p>
         <p
           v-if="notice"

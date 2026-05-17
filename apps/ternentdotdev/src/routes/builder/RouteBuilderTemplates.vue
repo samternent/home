@@ -20,8 +20,7 @@ const templates = [
   {
     id: "project-manager",
     name: "Project Manager",
-    description:
-      "Complete project management with linked teams, projects, and tasks",
+    description: "Complete project management with linked teams, projects, and tasks",
     icon: "🎯",
     category: "productivity",
     features: [
@@ -34,8 +33,7 @@ const templates = [
     template: {
       config: {
         name: "Project Manager",
-        description:
-          "Complete project management with linked teams, projects, and tasks",
+        description: "Complete project management with linked teams, projects, and tasks",
         icon: "🎯",
         category: "productivity",
         color: "primary",
@@ -252,16 +250,10 @@ const templates = [
   {
     id: "task-manager",
     name: "Task Manager",
-    description:
-      "Simple project and task management with boards, lists, and due dates",
+    description: "Simple project and task management with boards, lists, and due dates",
     icon: "📋",
     category: "productivity",
-    features: [
-      "Task tracking",
-      "Due dates",
-      "Priority levels",
-      "Status updates",
-    ],
+    features: ["Task tracking", "Due dates", "Priority levels", "Status updates"],
     template: {
       config: {
         name: "Task Manager",
@@ -314,8 +306,7 @@ const templates = [
   {
     id: "crm",
     name: "Customer CRM",
-    description:
-      "Customer relationship management with contacts, deals, and interactions",
+    description: "Customer relationship management with contacts, deals, and interactions",
     icon: "👥",
     category: "business",
     features: [
@@ -479,8 +470,7 @@ const templates = [
   {
     id: "simple-crm",
     name: "Simple CRM",
-    description:
-      "Basic customer relationship management with contacts and deals",
+    description: "Basic customer relationship management with contacts and deals",
     icon: "👥",
     category: "business",
     features: ["Contact management", "Deal tracking", "Communication history"],
@@ -589,7 +579,7 @@ const filteredTemplates = computed(() => {
       (t) =>
         t.name.toLowerCase().includes(query) ||
         t.description.toLowerCase().includes(query) ||
-        t.features.some((f) => f.toLowerCase().includes(query))
+        t.features.some((f) => f.toLowerCase().includes(query)),
     );
   }
 
@@ -617,27 +607,14 @@ async function useTemplate(template) {
     <!-- Header -->
     <div class="mb-8">
       <h1 class="text-3xl font-bold mb-2">App Templates</h1>
-      <p class="text-base-content/60">
-        Start with pre-built templates for common use cases
-      </p>
+      <p class="text-base-content/60">Start with pre-built templates for common use cases</p>
     </div>
 
     <!-- Filters -->
     <div class="flex flex-col sm:flex-row gap-4 mb-8">
-      <SInput
-        v-model="searchQuery"
-        placeholder="Search templates..."
-        class="flex-1"
-      />
-      <select
-        v-model="selectedCategory"
-        class="select select-bordered w-full sm:w-48"
-      >
-        <option
-          v-for="category in categories"
-          :key="category.value"
-          :value="category.value"
-        >
+      <SInput v-model="searchQuery" placeholder="Search templates..." class="flex-1" />
+      <select v-model="selectedCategory" class="select select-bordered w-full sm:w-48">
+        <option v-for="category in categories" :key="category.value" :value="category.value">
           {{ category.label }}
         </option>
       </select>
@@ -656,10 +633,7 @@ async function useTemplate(template) {
           <div class="flex-1">
             <div class="flex items-center gap-2">
               <h3 class="text-lg font-semibold">{{ template.name }}</h3>
-              <div
-                v-if="template.isAdvanced"
-                class="badge badge-secondary badge-sm"
-              >
+              <div v-if="template.isAdvanced" class="badge badge-secondary badge-sm">
                 🔗 Advanced
               </div>
             </div>
@@ -694,9 +668,7 @@ async function useTemplate(template) {
     <div v-if="filteredTemplates.length === 0" class="text-center py-12">
       <div class="text-6xl mb-4">🔍</div>
       <h2 class="text-2xl font-bold mb-2">No Templates Found</h2>
-      <p class="text-base-content/60">
-        Try adjusting your search or category filter
-      </p>
+      <p class="text-base-content/60">Try adjusting your search or category filter</p>
     </div>
 
     <!-- Create Custom -->

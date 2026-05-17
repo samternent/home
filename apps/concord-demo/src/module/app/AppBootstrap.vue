@@ -21,13 +21,7 @@ onMounted(async () => {
 });
 
 watch(
-  () =>
-    [
-      profile.ready.value,
-      publicKey.value,
-      privateKey.value,
-      props.readOnly,
-    ] as const,
+  () => [profile.ready.value, publicKey.value, privateKey.value, props.readOnly] as const,
   async ([ready, pub, priv, isReadOnly]) => {
     if (isReadOnly) return;
     if (!ready || !pub || !priv) return;
@@ -40,7 +34,7 @@ watch(
     await api.auth(priv, pub);
     await api.replay();
   },
-  { immediate: true }
+  { immediate: true },
 );
 </script>
 

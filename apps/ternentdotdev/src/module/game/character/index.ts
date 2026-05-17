@@ -1,1 +1,1 @@
-export * from './useCharacter';
+export * from "./useCharacter";

@@ -45,18 +45,9 @@ const subTabs = computed(() => [
   },
 ]);
 
-const activeTab = useLocalStorage(
-  "ternentdotdev/RouteLedger/consoleTab",
-  "pending"
-);
-const activeSubTab = useLocalStorage(
-  "ternentdotdev/RouteLedger/consoleSubTab",
-  "commit"
-);
-const activeLastTab = useLocalStorage(
-  "ternentdotdev/RouteLedger/consoleLastTab",
-  "pending"
-);
+const activeTab = useLocalStorage("ternentdotdev/RouteLedger/consoleTab", "pending");
+const activeSubTab = useLocalStorage("ternentdotdev/RouteLedger/consoleSubTab", "commit");
+const activeLastTab = useLocalStorage("ternentdotdev/RouteLedger/consoleLastTab", "pending");
 
 watch(activeTab, () => {
   activeLastTab.value = activeTab.value;
@@ -77,17 +68,7 @@ function formatBytes(bytes, decimals = 2) {
 
   const k = 1024;
   const dm = decimals < 0 ? 0 : decimals;
-  const sizes = [
-    "Bytes",
-    "KiB",
-    "MiB",
-    "GiB",
-    "TiB",
-    "PiB",
-    "EiB",
-    "ZiB",
-    "YiB",
-  ];
+  const sizes = ["Bytes", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"];
 
   const i = Math.floor(Math.log(bytes) / Math.log(k));
 
@@ -147,10 +128,7 @@ function formatBytes(bytes, decimals = 2) {
         <div v-else class="flex flex-col flex-1 bg-base-200 overflow-hidden">
           <!-- Show content for routes that don't need console -->
           <div
-            v-if="
-              $route.path.includes('/audit') ||
-              $route.path.includes('/settings')
-            "
+            v-if="$route.path.includes('/audit') || $route.path.includes('/settings')"
             class="flex-1 flex items-center justify-center text-base-content/50"
           >
             <div class="text-center">

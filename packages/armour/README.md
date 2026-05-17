@@ -35,11 +35,7 @@ await initArmour();
 
 ```ts
 import { createIdentity } from "@ternent/identity";
-import {
-  decryptTextWithIdentity,
-  encryptTextForIdentities,
-  initArmour,
-} from "@ternent/armour";
+import { decryptTextWithIdentity, encryptTextForIdentities, initArmour } from "@ternent/armour";
 
 await initArmour();
 
@@ -59,11 +55,7 @@ const plaintext = await decryptTextWithIdentity({
 
 ```ts
 import { createIdentity } from "@ternent/identity";
-import {
-  decryptWithIdentity,
-  encryptForIdentities,
-  initArmour,
-} from "@ternent/armour";
+import { decryptWithIdentity, encryptForIdentities, initArmour } from "@ternent/armour";
 
 await initArmour();
 
@@ -85,11 +77,7 @@ const plaintext = await decryptWithIdentity({
 ## Passphrase encryption
 
 ```ts
-import {
-  decryptTextWithPassphrase,
-  encryptTextWithPassphrase,
-  initArmour,
-} from "@ternent/armour";
+import { decryptTextWithPassphrase, encryptTextWithPassphrase, initArmour } from "@ternent/armour";
 
 await initArmour();
 

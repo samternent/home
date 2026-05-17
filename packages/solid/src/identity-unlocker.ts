@@ -1,7 +1,4 @@
-import type {
-  SolidIdentityUnlockContext,
-  SolidIdentityUnlocker,
-} from "./types.js";
+import type { SolidIdentityUnlockContext, SolidIdentityUnlocker } from "./types.js";
 import { assertPassphrase } from "./identity-shared.js";
 
 function createMissingUnlockerError(): Error {
@@ -24,9 +21,7 @@ export function createStaticSolidIdentityUnlocker(
   };
 }
 
-export function createPassphraseSolidIdentityUnlocker(
-  passphrase: string,
-): SolidIdentityUnlocker {
+export function createPassphraseSolidIdentityUnlocker(passphrase: string): SolidIdentityUnlocker {
   return createStaticSolidIdentityUnlocker(passphrase, "password-passphrase");
 }
 

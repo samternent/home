@@ -42,17 +42,13 @@ function browseTemplates() {
     </div>
 
     <!-- Apps or Empty State -->
-    <div
-      v-if="appsArray.length === 0"
-      class="flex-1 flex items-center justify-center"
-    >
+    <div v-if="appsArray.length === 0" class="flex-1 flex items-center justify-center">
       <div class="text-center space-y-6 max-w-md">
         <div class="text-6xl">📱</div>
         <div>
           <h2 class="text-2xl font-bold mb-2">No Apps Yet</h2>
           <p class="text-base-content/70 mb-6">
-            Create your first app to start organizing your data with complete
-            privacy.
+            Create your first app to start organizing your data with complete privacy.
           </p>
         </div>
         <div class="space-y-3">
@@ -70,9 +66,7 @@ function browseTemplates() {
 
     <!-- App Grid View -->
     <div v-else class="flex-1 overflow-auto p-4">
-      <div
-        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
-      >
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         <SCard
           v-for="app in appsArray"
           :key="app.id"
@@ -88,9 +82,7 @@ function browseTemplates() {
               </p>
             </div>
           </div>
-          <div
-            class="flex items-center justify-between text-sm text-base-content/70"
-          >
+          <div class="flex items-center justify-between text-sm text-base-content/70">
             <span>{{ app.schemas ? app.schemas.length : 0 }} schemas</span>
             <span>{{ app.views ? app.views.length : 0 }} views</span>
           </div>

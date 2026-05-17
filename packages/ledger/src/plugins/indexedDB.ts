@@ -11,19 +11,14 @@ function openDB(dbName: string, storeName: string) {
     const req = indexedDB.open(dbName, 1);
     req.onupgradeneeded = () => {
       const db = req.result;
-      if (!db.objectStoreNames.contains(storeName))
-        db.createObjectStore(storeName);
+      if (!db.objectStoreNames.contains(storeName)) db.createObjectStore(storeName);
     };
     req.onsuccess = () => resolve(req.result);
     req.onerror = () => reject(req.error);
   });
 }
 
-async function idbGet<T>(
-  dbName: string,
-  storeName: string,
-  key: string
-): Promise<T | null> {
+async function idbGet<T>(dbName: string, storeName: string, key: string): Promise<T | null> {
   const db = await openDB(dbName, storeName);
   return new Promise((resolve, reject) => {
     const tx = db.transaction(storeName, "readonly");
@@ -35,12 +30,7 @@ async function idbGet<T>(
   });
 }
 
-async function idbSet<T>(
-  dbName: string,
-  storeName: string,
-  key: string,
-  value: T
-): Promise<void> {
+async function idbSet<T>(dbName: string, storeName: string, key: string, value: T): Promise<void> {
   const db = await openDB(dbName, storeName);
   return new Promise((resolve, reject) => {
     const tx = db.transaction(storeName, "readwrite");
@@ -52,11 +42,7 @@ async function idbSet<T>(
   });
 }
 
-async function idbDel(
-  dbName: string,
-  storeName: string,
-  key: string
-): Promise<void> {
+async function idbDel(dbName: string, storeName: string, key: string): Promise<void> {
   const db = await openDB(dbName, storeName);
   return new Promise((resolve, reject) => {
     const tx = db.transaction(storeName, "readwrite");

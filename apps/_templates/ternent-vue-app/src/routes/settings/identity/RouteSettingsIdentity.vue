@@ -7,13 +7,22 @@ import IdentityStatusCard from "@/modules/identity/components/IdentityStatusCard
     <IdentityStatusCard />
 
     <nav class="flex flex-wrap gap-2 rounded-lg border border-border bg-surface p-2 text-sm">
-      <RouterLink class="rounded-md px-3 py-2 hover:bg-surface-hover" to="/settings/identity/create">
+      <RouterLink
+        class="rounded-md px-3 py-2 hover:bg-surface-hover"
+        to="/settings/identity/create"
+      >
         Create
       </RouterLink>
-      <RouterLink class="rounded-md px-3 py-2 hover:bg-surface-hover" to="/settings/identity/import">
+      <RouterLink
+        class="rounded-md px-3 py-2 hover:bg-surface-hover"
+        to="/settings/identity/import"
+      >
         Import
       </RouterLink>
-      <RouterLink class="rounded-md px-3 py-2 hover:bg-surface-hover" to="/settings/identity/export">
+      <RouterLink
+        class="rounded-md px-3 py-2 hover:bg-surface-hover"
+        to="/settings/identity/export"
+      >
         Export
       </RouterLink>
     </nav>

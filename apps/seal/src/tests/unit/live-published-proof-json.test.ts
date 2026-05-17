@@ -51,10 +51,7 @@ describe("LivePublishedProofJson", () => {
 
     const text = wrapper.text();
 
-    expect(verifyPublishedArtifacts).toHaveBeenCalledWith(
-      fetch,
-      "https://seal.ternent.dev",
-    );
+    expect(verifyPublishedArtifacts).toHaveBeenCalledWith(fetch, "https://seal.ternent.dev");
     expect(text).toContain("Proof verified");
     expect(text).toContain("dist-manifest.json");
     expect(text).toContain("The proof is self-describing and versioned.");

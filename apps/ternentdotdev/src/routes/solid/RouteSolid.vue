@@ -15,14 +15,16 @@ const { hasSolidSession, providers, oidcIssuer, login } = useSolid();
     <div v-if="!hasSolidSession" class="flex flex-col w-96 items-center gap-6">
       <div class="text-center">
         <h2 class="text-2xl font-bold mb-2">🌐 Connect to Solid Pod</h2>
-        <p class="text-base-content/70">Choose your Solid provider to sync ledgers with your personal data pod</p>
+        <p class="text-base-content/70">
+          Choose your Solid provider to sync ledgers with your personal data pod
+        </p>
       </div>
 
       <div class="w-full">
         <label class="block text-sm font-medium mb-2">Solid Provider</label>
         <select v-model="oidcIssuer" class="select select-bordered w-full">
           <option v-for="provider in providers" :key="provider" :value="provider">
-            {{ provider.replace('https://', '').replace('http://', '') }}
+            {{ provider.replace("https://", "").replace("http://", "") }}
           </option>
         </select>
         <div class="text-xs text-base-content/60 mt-1">
@@ -45,9 +47,9 @@ const { hasSolidSession, providers, oidcIssuer, login } = useSolid();
             d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
           />
         </svg>
-        Connect to {{ oidcIssuer.replace('https://', '').replace('http://', '') }}
+        Connect to {{ oidcIssuer.replace("https://", "").replace("http://", "") }}
       </SButton>
-      
+
       <div class="text-xs text-base-content/60 text-center">
         <div class="mb-2">Don't have a Solid pod? Get one free at:</div>
         <div class="flex flex-wrap gap-2 justify-center">

@@ -5,11 +5,7 @@ import { useUserProfiles } from "./useUserProfiles";
 import { useIdentity } from "../identity/useIdentity";
 import { useEncryption } from "../encryption/useEncryption";
 import { encrypt, decrypt } from "ternent-encrypt";
-import {
-  formatEncryptionFile,
-  stripEncryptionFile,
-  generateId,
-} from "ternent-utils";
+import { formatEncryptionFile, stripEncryptionFile, generateId } from "ternent-utils";
 import IdentityAvatar from "../identity/IdentityAvatar.vue";
 
 const props = defineProps({
@@ -23,8 +19,7 @@ const emit = defineEmits(["update:open", "keyShared"]);
 
 const { profiles, getProfile } = useUserProfiles();
 const { publicKeyPEM, privateKeyPEM } = useIdentity();
-const { publicKey: encryptionPublicKey, privateKey: encryptionPrivateKey } =
-  useEncryption();
+const { publicKey: encryptionPublicKey, privateKey: encryptionPrivateKey } = useEncryption();
 
 // UI State
 const isOpen = shallowRef(false);
@@ -54,7 +49,7 @@ watch(
     if (value) {
       resetForm();
     }
-  }
+  },
 );
 
 watch(isOpen, (value) => {
@@ -67,7 +62,7 @@ const availableUsers = computed(() => {
     (p) =>
       p.identity !== publicKeyPEM.value &&
       p.encryption && // Must have encryption key to receive shared keys
-      !p.isPrivate // Only show public profiles
+      !p.isPrivate, // Only show public profiles
   );
 });
 
@@ -147,7 +142,7 @@ async function shareKeys() {
       createdAt: new Date().toISOString(),
       expiresAt: keySelection.value.expirationDays
         ? new Date(
-            Date.now() + keySelection.value.expirationDays * 24 * 60 * 60 * 1000
+            Date.now() + keySelection.value.expirationDays * 24 * 60 * 60 * 1000,
           ).toISOString()
         : null,
       oneTimeUse: keySelection.value.oneTimeUse,
@@ -160,7 +155,7 @@ async function shareKeys() {
     // Encrypt the key package for the recipient
     const encryptedPackage = await encrypt(
       selectedUser.value.encryption,
-      JSON.stringify(keyPackage)
+      JSON.stringify(keyPackage),
     );
 
     // Create the key share record for the ledger
@@ -246,15 +241,9 @@ const keyTypes = [
     <div class="p-6 space-y-6">
       <!-- Progress Indicator -->
       <div class="steps steps-horizontal w-full mb-6">
-        <div class="step" :class="{ 'step-primary': currentStep >= 1 }">
-          Select User
-        </div>
-        <div class="step" :class="{ 'step-primary': currentStep >= 2 }">
-          Choose Keys
-        </div>
-        <div class="step" :class="{ 'step-primary': currentStep >= 3 }">
-          Confirm
-        </div>
+        <div class="step" :class="{ 'step-primary': currentStep >= 1 }">Select User</div>
+        <div class="step" :class="{ 'step-primary': currentStep >= 2 }">Choose Keys</div>
+        <div class="step" :class="{ 'step-primary': currentStep >= 3 }">Confirm</div>
       </div>
 
       <!-- Alert Messages -->
@@ -301,15 +290,10 @@ const keyTypes = [
           </p>
         </div>
 
-        <div
-          v-if="availableUsers.length === 0"
-          class="text-center py-8 text-base-content/50"
-        >
+        <div v-if="availableUsers.length === 0" class="text-center py-8 text-base-content/50">
           <div class="text-4xl mb-2">👥</div>
           <p class="mb-2">No users available for key sharing</p>
-          <p class="text-xs">
-            Users need encryption keys to receive shared keys
-          </p>
+          <p class="text-xs">Users need encryption keys to receive shared keys</p>
         </div>
 
         <div v-else class="space-y-3 max-h-96 overflow-y-auto">
@@ -323,10 +307,7 @@ const keyTypes = [
               <IdentityAvatar :identity="user.identity" size="md" />
               <div class="flex-1">
                 <h4 class="font-medium">{{ user.name || "Anonymous User" }}</h4>
-                <p
-                  v-if="user.bio"
-                  class="text-sm text-base-content/60 line-clamp-1"
-                >
+                <p v-if="user.bio" class="text-sm text-base-content/60 line-clamp-1">
                   {{ user.bio }}
                 </p>
                 <code class="text-xs bg-base-200 px-2 py-1 rounded"
@@ -387,10 +368,7 @@ const keyTypes = [
                 <div class="flex items-center gap-2">
                   <span>{{ keyType.icon }}</span>
                   <span class="font-medium">{{ keyType.label }}</span>
-                  <span
-                    v-if="keyType.risk === 'high'"
-                    class="badge badge-error badge-sm"
-                  >
+                  <span v-if="keyType.risk === 'high'" class="badge badge-error badge-sm">
                     HIGH RISK
                   </span>
                 </div>
@@ -405,9 +383,7 @@ const keyTypes = [
         <!-- Options -->
         <div class="space-y-4 border-t pt-4">
           <div>
-            <label class="block text-sm font-medium mb-2"
-              >Custom Message (Optional)</label
-            >
+            <label class="block text-sm font-medium mb-2">Custom Message (Optional)</label>
             <textarea
               v-model="keySelection.customMessage"
               class="textarea textarea-bordered w-full"
@@ -418,9 +394,7 @@ const keyTypes = [
 
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium mb-2"
-                >Expiration (Days)</label
-              >
+              <label class="block text-sm font-medium mb-2">Expiration (Days)</label>
               <input
                 v-model.number="keySelection.expirationDays"
                 type="number"
@@ -446,9 +420,7 @@ const keyTypes = [
 
         <!-- Navigation -->
         <div class="flex gap-3 pt-4">
-          <SButton @click="prevStep" class="flex-1" type="secondary">
-            ← Back
-          </SButton>
+          <SButton @click="prevStep" class="flex-1" type="secondary"> ← Back </SButton>
           <SButton
             @click="nextStep"
             :disabled="selectedKeysCount === 0"
@@ -478,18 +450,14 @@ const keyTypes = [
               <div class="font-medium">
                 {{ selectedUser.name || "Anonymous User" }}
               </div>
-              <code class="text-xs"
-                >{{ selectedUser.identity.slice(0, 32) }}...</code
-              >
+              <code class="text-xs">{{ selectedUser.identity.slice(0, 32) }}...</code>
             </div>
           </div>
         </div>
 
         <!-- Keys Summary -->
         <div class="bg-base-100 border border-base-300 rounded-lg p-4">
-          <h4 class="font-medium mb-3">
-            🔑 Keys to Share ({{ selectedKeysCount }})
-          </h4>
+          <h4 class="font-medium mb-3">🔑 Keys to Share ({{ selectedKeysCount }})</h4>
           <div class="space-y-2">
             <div
               v-for="keyType in keyTypes.filter((kt) => keySelection[kt.key])"
@@ -502,10 +470,7 @@ const keyTypes = [
             >
               <span>{{ keyType.icon }}</span>
               <span class="text-sm">{{ keyType.label }}</span>
-              <span
-                v-if="keyType.risk === 'high'"
-                class="badge badge-error badge-sm ml-auto"
-              >
+              <span v-if="keyType.risk === 'high'" class="badge badge-error badge-sm ml-auto">
                 HIGH RISK
               </span>
             </div>
@@ -520,7 +485,7 @@ const keyTypes = [
               <span class="font-medium">Expires:</span>
               {{
                 new Date(
-                  Date.now() + keySelection.expirationDays * 24 * 60 * 60 * 1000
+                  Date.now() + keySelection.expirationDays * 24 * 60 * 60 * 1000,
                 ).toLocaleDateString()
               }}
             </div>
@@ -536,10 +501,7 @@ const keyTypes = [
 
         <!-- High Risk Warning -->
         <div
-          v-if="
-            keySelection.includeIdentityPrivate ||
-            keySelection.includeEncryptionPrivate
-          "
+          v-if="keySelection.includeIdentityPrivate || keySelection.includeEncryptionPrivate"
           class="alert alert-warning"
         >
           <svg
@@ -558,23 +520,16 @@ const keyTypes = [
           <div>
             <div class="font-medium">⚠️ High Risk Operation</div>
             <div class="text-sm">
-              You are sharing private keys that grant significant access. Only
-              share with trusted users!
+              You are sharing private keys that grant significant access. Only share with trusted
+              users!
             </div>
           </div>
         </div>
 
         <!-- Navigation -->
         <div class="flex gap-3 pt-4">
-          <SButton @click="prevStep" class="flex-1" type="secondary">
-            ← Back
-          </SButton>
-          <SButton
-            @click="shareKeys"
-            :disabled="isLoading"
-            class="flex-1"
-            type="primary"
-          >
+          <SButton @click="prevStep" class="flex-1" type="secondary"> ← Back </SButton>
+          <SButton @click="shareKeys" :disabled="isLoading" class="flex-1" type="primary">
             <span v-if="isLoading">Sharing...</span>
             <span v-else>🔒 Share Keys Securely</span>
           </SButton>
@@ -583,9 +538,7 @@ const keyTypes = [
 
       <!-- Close Button -->
       <div class="pt-4 border-t">
-        <SButton @click="isOpen = false" class="w-full" type="ghost">
-          Cancel
-        </SButton>
+        <SButton @click="isOpen = false" class="w-full" type="ghost"> Cancel </SButton>
       </div>
     </div>
   </SDrawerRight>

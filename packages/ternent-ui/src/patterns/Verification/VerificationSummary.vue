@@ -4,15 +4,8 @@ import Button from "../../primitives/Button/Button.vue";
 import Card from "../../primitives/Card/Card.vue";
 import Separator from "../../primitives/Separator/Separator.vue";
 import VerificationBadge from "./VerificationBadge.vue";
-import type {
-  VerificationContext,
-  VerificationStatus,
-} from "./verification.types";
-import {
-  copyToClipboard,
-  getVerificationHeadline,
-  truncateMiddle,
-} from "./verification.utils";
+import type { VerificationContext, VerificationStatus } from "./verification.types";
+import { copyToClipboard, getVerificationHeadline, truncateMiddle } from "./verification.utils";
 
 const props = withDefaults(
   defineProps<{
@@ -31,7 +24,7 @@ const props = withDefaults(
     context: undefined,
     variant: "compact",
     copyable: true,
-  }
+  },
 );
 
 const copiedKey = ref<string | null>(null);
@@ -54,9 +47,7 @@ function copyLabel(field: string) {
 
 const cardPadding = computed(() => (props.variant === "full" ? "md" : "sm"));
 const subjectClass = computed(() =>
-  props.variant === "full"
-    ? "text-2xl leading-tight md:text-[2rem]"
-    : "text-xl leading-tight"
+  props.variant === "full" ? "text-2xl leading-tight md:text-[2rem]" : "text-xl leading-tight",
 );
 const headerTitle = computed(() => getVerificationHeadline(props.status));
 const hashPreview = computed(() => truncateMiddle(props.hash, 16, 12));
@@ -64,12 +55,7 @@ const signerPreview = computed(() => truncateMiddle(props.signer, 14, 12));
 </script>
 
 <template>
-  <Card
-    variant="panel"
-    :padding="cardPadding"
-    class="space-y-4"
-    :data-variant="props.variant"
-  >
+  <Card variant="panel" :padding="cardPadding" class="space-y-4" :data-variant="props.variant">
     <div class="flex flex-wrap items-start justify-between gap-3">
       <div class="space-y-1">
         <p
@@ -121,7 +107,9 @@ const signerPreview = computed(() => truncateMiddle(props.signer, 14, 12));
 
     <div class="grid gap-4 md:grid-cols-2">
       <div class="space-y-2">
-        <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
+        <p
+          class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]"
+        >
           Signed by
         </p>
         <div class="flex flex-wrap items-center gap-2">
@@ -144,7 +132,9 @@ const signerPreview = computed(() => truncateMiddle(props.signer, 14, 12));
       </div>
 
       <div class="space-y-2">
-        <p class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
+        <p
+          class="m-0 text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]"
+        >
           Algorithm
         </p>
         <div class="flex flex-wrap items-center gap-2">
@@ -169,9 +159,7 @@ const signerPreview = computed(() => truncateMiddle(props.signer, 14, 12));
 
     <Separator />
 
-    <div
-      class="flex flex-wrap items-center gap-2 text-xs text-[var(--ui-fg-muted)]"
-    >
+    <div class="flex flex-wrap items-center gap-2 text-xs text-[var(--ui-fg-muted)]">
       <span class="rounded-full border border-[var(--ui-border)] px-2 py-1">
         {{ props.version }}
       </span>

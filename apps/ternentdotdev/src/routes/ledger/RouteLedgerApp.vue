@@ -10,14 +10,8 @@ const route = useRoute();
 
 const appId = computed(() => route.params.appId);
 
-const {
-  getApp,
-  getAppSchemas,
-  addSchemaData,
-  getSchemaData,
-  updateSchemaData,
-  removeSchemaData,
-} = useAppBuilder();
+const { getApp, getAppSchemas, addSchemaData, getSchemaData, updateSchemaData, removeSchemaData } =
+  useAppBuilder();
 const { ledger } = useLedger();
 
 // Get app data
@@ -43,7 +37,7 @@ watch(
       activeSchema.value = newSchemas[0];
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 // Update schema data when active schema changes
@@ -128,21 +122,15 @@ function switchSchema(schema) {
       <p class="text-base-content/60 mb-6">
         The requested app doesn't exist or couldn't be loaded.
       </p>
-      <SButton to="/t/builder/apps" class="btn-primary">
-        View All Apps
-      </SButton>
+      <SButton to="/t/builder/apps" class="btn-primary"> View All Apps </SButton>
     </div>
 
     <!-- No Schemas State -->
     <div v-else-if="schemas.length === 0" class="text-center py-12">
       <div class="text-6xl mb-4">📋</div>
       <h2 class="text-2xl font-bold mb-2">No Data Types Defined</h2>
-      <p class="text-base-content/60 mb-6">
-        Your app doesn't have any data types defined yet.
-      </p>
-      <SButton :to="`/t/builder/app/${appId}/design`" class="btn-primary">
-        Add Data Types
-      </SButton>
+      <p class="text-base-content/60 mb-6">Your app doesn't have any data types defined yet.</p>
+      <SButton :to="`/t/builder/app/${appId}/design`" class="btn-primary"> Add Data Types </SButton>
     </div>
 
     <!-- App Interface -->
@@ -189,11 +177,7 @@ function switchSchema(schema) {
                       {{ item[field.name] ? "✅" : "❌" }}
                     </span>
                     <span v-else-if="field.type === 'date'">
-                      {{
-                        item[field.name]
-                          ? new Date(item[field.name]).toLocaleDateString()
-                          : "-"
-                      }}
+                      {{ item[field.name] ? new Date(item[field.name]).toLocaleDateString() : "-" }}
                     </span>
                     <span v-else>
                       {{ item[field.name] || "-" }}
@@ -210,9 +194,7 @@ function switchSchema(schema) {
           <!-- Empty State -->
           <div v-else class="text-center py-8">
             <div class="text-4xl mb-2">📝</div>
-            <p class="text-base-content/60">
-              No {{ activeSchema.name.toLowerCase() }} yet
-            </p>
+            <p class="text-base-content/60">No {{ activeSchema.name.toLowerCase() }} yet</p>
             <SButton @click="openAddForm" class="btn-primary btn-sm mt-4">
               Add First {{ activeSchema.name.slice(0, -1) }}
             </SButton>
@@ -224,9 +206,7 @@ function switchSchema(schema) {
     <!-- Add Form Modal -->
     <div v-if="showForm" class="modal modal-open">
       <div class="modal-box">
-        <h3 class="font-bold text-lg mb-4">
-          Add {{ activeSchema?.name.slice(0, -1) }}
-        </h3>
+        <h3 class="font-bold text-lg mb-4">Add {{ activeSchema?.name.slice(0, -1) }}</h3>
 
         <div class="space-y-4">
           <div v-for="field in activeSchema?.fields" :key="field.id">
@@ -279,11 +259,7 @@ function switchSchema(schema) {
               class="select select-bordered w-full"
             >
               <option value="">Choose {{ field.name }}</option>
-              <option
-                v-for="option in field.options"
-                :key="option"
-                :value="option"
-              >
+              <option v-for="option in field.options" :key="option" :value="option">
                 {{ option }}
               </option>
             </select>
@@ -291,11 +267,7 @@ function switchSchema(schema) {
             <!-- Boolean -->
             <div v-else-if="field.type === 'boolean'" class="form-control">
               <label class="label cursor-pointer justify-start gap-4">
-                <input
-                  v-model="formData[field.name]"
-                  type="checkbox"
-                  class="checkbox"
-                />
+                <input v-model="formData[field.name]" type="checkbox" class="checkbox" />
                 <span class="label-text">{{ field.name }}</span>
               </label>
             </div>

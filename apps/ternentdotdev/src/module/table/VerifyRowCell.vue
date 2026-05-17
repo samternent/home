@@ -50,7 +50,7 @@ watchEffect(async () => {
       identity: identity.value,
       collection: collection.value,
     },
-    key
+    key,
   );
   ready.value = true;
 });

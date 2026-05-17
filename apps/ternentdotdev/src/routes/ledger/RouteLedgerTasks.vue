@@ -19,7 +19,7 @@ function addTask(columnId, task) {
       completed: false,
       ...task,
     },
-    "tasks"
+    "tasks",
   );
 }
 
@@ -28,7 +28,7 @@ async function addColumn() {
     {
       title: newColumn.value,
     },
-    "columns"
+    "columns",
   );
   newColumn.value = "";
 }
@@ -42,7 +42,7 @@ watch(
     tasks.value = [...getCollection("tasks")?.data];
     columns.value = [...getCollection("columns")?.data];
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 function columnTasks(columnId) {
@@ -61,11 +61,7 @@ const newColumn = shallowRef("");
 
 <template>
   <div class="task-board-container" ref="contentContainer">
-    <SDrawerRight
-      v-if="contentContainer"
-      v-model="isDrawerOpen"
-      :container="contentContainer"
-    >
+    <SDrawerRight v-if="contentContainer" v-model="isDrawerOpen" :container="contentContainer">
       <div class="p-4">
         <h3>Task Details</h3>
         <p>Coming soon...</p>
@@ -127,13 +123,9 @@ const newColumn = shallowRef("");
                 }"
                 >⚡ {{ task.data.priority }}</span
               >
-              <span v-if="task.completed" class="badge badge-success ml-2"
-                >Completed</span
-              >
+              <span v-if="task.completed" class="badge badge-success ml-2">Completed</span>
             </div>
-            <div
-              class="flex flex-wrap items-center gap-3 text-xs text-base-content/60 mb-1"
-            >
+            <div class="flex flex-wrap items-center gap-3 text-xs text-base-content/60 mb-1">
               <span v-if="task.data.assignee" class="badge badge-info"
                 >👤 {{ task.data.assignee }}</span
               >
@@ -156,12 +148,7 @@ const newColumn = shallowRef("");
           placeholder="Column name"
           class="add-column-input"
         />
-        <SButton
-          variant="outline"
-          size="micro"
-          :disabled="!newColumn"
-          @click="addColumn"
-        >
+        <SButton variant="outline" size="micro" :disabled="!newColumn" @click="addColumn">
           Add Column
         </SButton>
       </div>

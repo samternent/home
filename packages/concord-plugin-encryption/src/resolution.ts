@@ -1,15 +1,6 @@
-import {
-  getEffectiveCaps,
-  type PermissionState,
-} from "@ternent/concord-plugin-permissions";
-import {
-  resolveAgeRecipients,
-  type IdentityState,
-} from "@ternent/concord-plugin-identity";
-import {
-  replayPermissions,
-  type ReplayConfig,
-} from "@ternent/concord-plugin-permissions";
+import { getEffectiveCaps, type PermissionState } from "@ternent/concord-plugin-permissions";
+import { resolveAgeRecipients, type IdentityState } from "@ternent/concord-plugin-identity";
+import { replayPermissions, type ReplayConfig } from "@ternent/concord-plugin-permissions";
 import { replayIdentity } from "@ternent/concord-plugin-identity";
 import type { LedgerContainer } from "@ternent/concord-protocol";
 import { replayEncryption } from "./replay";
@@ -51,7 +42,7 @@ export function findWrapsForPrincipal(
   state: EncryptionState,
   principalId: string,
   scope: string,
-  epoch: number
+  epoch: number,
 ): WrapRecord[] {
   return (state.wraps[scope]?.[epoch]?.[principalId] ?? []).slice();
 }
@@ -60,7 +51,7 @@ export function findWrap(
   state: EncryptionState,
   principalId: string,
   scope: string,
-  epoch: number
+  epoch: number,
 ): WrapRecord | undefined {
   const wraps = findWrapsForPrincipal(state, principalId, scope, epoch);
   if (wraps.length === 0) {
@@ -74,7 +65,7 @@ export function explainWhyCannotDecrypt(
   principalId: string,
   scope: string,
   epoch: number,
-  context?: ResolutionContext
+  context?: ResolutionContext,
 ): DecryptDiagnostics {
   const reasons: string[] = [];
   const wraps = findWrapsForPrincipal(state, principalId, scope, epoch);
@@ -91,12 +82,7 @@ export function explainWhyCannotDecrypt(
 
   let hasRead = true;
   if (context?.permissionsState) {
-    const caps = getEffectiveCaps(
-      context.permissionsState,
-      principalId,
-      scope,
-      context.nowIso
-    );
+    const caps = getEffectiveCaps(context.permissionsState, principalId, scope, context.nowIso);
     hasRead = caps.has("read");
     if (!hasRead) {
       reasons.push("missing read capability");
@@ -120,11 +106,9 @@ export function explainDecryptability(
   ledger: LedgerContainer,
   principalId: string,
   rootAdmins?: string[],
-  nowIso?: string
+  nowIso?: string,
 ): DecryptabilityResult[] {
-  const permissionsConfig: ReplayConfig | undefined = rootAdmins
-    ? { rootAdmins }
-    : undefined;
+  const permissionsConfig: ReplayConfig | undefined = rootAdmins ? { rootAdmins } : undefined;
   const encryptionState = replayEncryption(ledger, undefined, {
     permissionsConfig,
   });
@@ -139,10 +123,7 @@ export function explainDecryptability(
 
   for (const scope of scopes) {
     const reasons: DecryptabilityReason[] = [];
-    const hasScopeState = Object.prototype.hasOwnProperty.call(
-      encryptionState.scopes,
-      scope
-    );
+    const hasScopeState = Object.prototype.hasOwnProperty.call(encryptionState.scopes, scope);
 
     if (!hasScopeState) {
       results.push({
@@ -180,12 +161,7 @@ export function explainDecryptability(
       }
     }
 
-    const caps = getEffectiveCaps(
-      permissionsState,
-      principalId,
-      scope,
-      nowIso
-    );
+    const caps = getEffectiveCaps(permissionsState, principalId, scope, nowIso);
     const hasRead = caps.has("read");
     if (!hasRead) {
       reasons.push("NO_PERMISSION");

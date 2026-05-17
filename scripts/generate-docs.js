@@ -58,13 +58,7 @@ const PACKAGE_CONFIGS = {
       "Web Crypto API: Built on standard Web Crypto API for security",
       "TypeScript Support: Full type definitions included",
     ],
-    mainFunctions: [
-      "createIdentity",
-      "signData",
-      "verifySignature",
-      "exportKey",
-      "importKey",
-    ],
+    mainFunctions: ["createIdentity", "signData", "verifySignature", "exportKey", "importKey"],
   },
   utils: {
     type: "typescript",
@@ -100,8 +94,7 @@ const PACKAGE_CONFIGS = {
   },
   blockchain: {
     type: "rust-wasm",
-    description:
-      "Concord protocol core implemented in Rust and compiled to WebAssembly.",
+    description: "Concord protocol core implemented in Rust and compiled to WebAssembly.",
     features: [
       "WebAssembly Performance: Written in Rust and compiled to WASM",
       "Canonical Hashing: SHA-256 over canonical JSON",
@@ -131,8 +124,7 @@ const PACKAGE_CONFIGS = {
   },
   "ternent-ui": {
     type: "typescript",
-    description:
-      "A collection of reusable UI components built with modern web technologies.",
+    description: "A collection of reusable UI components built with modern web technologies.",
     features: [
       "Component Library: Reusable UI components",
       "TypeScript Support: Full type definitions",
@@ -169,9 +161,7 @@ ${params.map((p) => ` * @param ${p.name} - ${p.description}`).join("\n")}
 function generateReadmeTemplate(packageName, config) {
   const { description, features, mainFunctions, type } = config;
 
-  return `# ${
-    packageName.charAt(0).toUpperCase() + packageName.slice(1)
-  } Package
+  return `# ${packageName.charAt(0).toUpperCase() + packageName.slice(1)} Package
 
 ${description}
 
@@ -182,10 +172,7 @@ ${description}
 ## Features
 
 ${features
-  .map(
-    (feature) =>
-      `- ✅ **${feature.split(":")[0]}**: ${feature.split(":")[1] || feature}`,
-  )
+  .map((feature) => `- ✅ **${feature.split(":")[0]}**: ${feature.split(":")[1] || feature}`)
   .join("\n")}
 
 ## Installation
@@ -197,9 +184,7 @@ npm install @your-org/${packageName}
 ## Quick Start
 
 \`\`\`typescript
-import { ${mainFunctions
-    .slice(0, 3)
-    .join(", ")} } from '@your-org/${packageName}';
+import { ${mainFunctions.slice(0, 3).join(", ")} } from '@your-org/${packageName}';
 
 // Example usage
 // TODO: Add specific examples for ${packageName}
@@ -390,9 +375,7 @@ function processTypeScriptPackage(packageDir, packageName) {
   }
 
   const tsFiles = findTSFiles(srcDir);
-  console.log(
-    `📁 Processing ${tsFiles.length} TypeScript files in ${packageName}`,
-  );
+  console.log(`📁 Processing ${tsFiles.length} TypeScript files in ${packageName}`);
 
   tsFiles.forEach((file) => {
     addJSDocToFile(file);
@@ -413,11 +396,7 @@ function main() {
     return fs.statSync(packagePath).isDirectory() && item !== "node_modules";
   });
 
-  console.log(
-    `📦 Found ${packages.length} packages:`,
-    packages.join(", "),
-    "\n",
-  );
+  console.log(`📦 Found ${packages.length} packages:`, packages.join(", "), "\n");
 
   for (const packageName of packages) {
     console.log(`\n📦 Processing package: ${packageName}`);
@@ -431,9 +410,7 @@ function main() {
     if (config && config.type === "typescript") {
       processTypeScriptPackage(packageDir, packageName);
     } else if (config && config.type === "rust-wasm") {
-      console.log(
-        `🦀 Skipping Rust package ${packageName} (use cargo doc for Rust documentation)`,
-      );
+      console.log(`🦀 Skipping Rust package ${packageName} (use cargo doc for Rust documentation)`);
     } else {
       console.log(`⚠️  Unknown package type for ${packageName}`);
     }

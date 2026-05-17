@@ -32,11 +32,7 @@ function editApp(app) {
 }
 
 async function deleteApp(app) {
-  if (
-    confirm(
-      `Are you sure you want to delete "${app.name}"? This cannot be undone.`
-    )
-  ) {
+  if (confirm(`Are you sure you want to delete "${app.name}"? This cannot be undone.`)) {
     await removeApp(app.id);
   }
 }
@@ -84,8 +80,7 @@ async function handleMigrateTasks() {
       <div class="text-6xl mb-6">🚀</div>
       <h2 class="text-2xl font-bold mb-4">No Apps Yet</h2>
       <p class="text-base-content/60 mb-8 max-w-md mx-auto">
-        Create your first custom application to get started. You can also
-        migrate existing tasks.
+        Create your first custom application to get started. You can also migrate existing tasks.
       </p>
       <div class="space-x-4">
         <SButton @click="createNewApp" class="btn-primary btn-lg">
@@ -105,11 +100,7 @@ async function handleMigrateTasks() {
 
     <!-- Apps Grid -->
     <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <SCard
-        v-for="app in apps"
-        :key="app.id"
-        class="hover:shadow-lg transition-shadow group"
-      >
+      <SCard v-for="app in apps" :key="app.id" class="hover:shadow-lg transition-shadow group">
         <div class="space-y-4">
           <!-- App Header -->
           <div class="flex items-start justify-between">
@@ -132,9 +123,7 @@ async function handleMigrateTasks() {
           </div>
 
           <!-- Actions -->
-          <div
-            class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity"
-          >
+          <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
             <SButton @click="viewApp(app)" class="btn-primary btn-sm flex-1">
               <span class="mr-1">🚀</span>
               Open
@@ -159,9 +148,7 @@ async function handleMigrateTasks() {
         <div class="text-center space-y-3">
           <div class="text-4xl">➕</div>
           <h3 class="font-medium">Create New App</h3>
-          <p class="text-sm text-base-content/60">
-            Add another custom application
-          </p>
+          <p class="text-sm text-base-content/60">Add another custom application</p>
         </div>
       </SCard>
     </div>

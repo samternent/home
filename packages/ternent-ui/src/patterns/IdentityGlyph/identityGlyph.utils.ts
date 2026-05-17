@@ -13,9 +13,7 @@ const FALLBACK_CANONICAL_IDENTITY = "fallback:glyph:v1";
 const ED25519_MULTICODEC_PREFIX = new Uint8Array([0xed, 0x01]);
 const ED25519_PUBLIC_KEY_BYTES = 32;
 const BASE58_ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-const BASE58_LOOKUP = new Map(
-  Array.from(BASE58_ALPHABET).map((char, index) => [char, index]),
-);
+const BASE58_LOOKUP = new Map(Array.from(BASE58_ALPHABET).map((char, index) => [char, index]));
 
 type Rgb = {
   r: number;
@@ -78,10 +76,7 @@ function encodeBase64Url(bytes: Uint8Array): string {
     throw new Error("Base64url encode is unavailable in this runtime.");
   }
 
-  return btoa(binary)
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/g, "");
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
 }
 
 function decodeBase58(input: string): Uint8Array {
@@ -201,7 +196,7 @@ function fnv1aHash(input: string): number {
 }
 
 function createPrng(seed: number): () => number {
-  let state = (seed >>> 0) || 0x9e3779b9;
+  let state = seed >>> 0 || 0x9e3779b9;
   return () => {
     state ^= state << 13;
     state ^= state >>> 17;
@@ -250,15 +245,14 @@ function hslToRgb(h: number, s: number, l: number): Rgb {
 }
 
 function rgbToHex(value: Rgb): string {
-  const toHex = (channel: number) => Math.max(0, Math.min(255, channel)).toString(16).padStart(2, "0");
+  const toHex = (channel: number) =>
+    Math.max(0, Math.min(255, channel)).toString(16).padStart(2, "0");
   return `#${toHex(value.r)}${toHex(value.g)}${toHex(value.b)}`;
 }
 
 function channelToLinear(value: number): number {
   const normalized = value / 255;
-  return normalized <= 0.03928
-    ? normalized / 12.92
-    : Math.pow((normalized + 0.055) / 1.055, 2.4);
+  return normalized <= 0.03928 ? normalized / 12.92 : Math.pow((normalized + 0.055) / 1.055, 2.4);
 }
 
 function contrastRatio(first: Rgb, second: Rgb): number {
@@ -276,13 +270,7 @@ function contrastRatio(first: Rgb, second: Rgb): number {
   return (light + 0.05) / (dark + 0.05);
 }
 
-function tuneContrast(
-  background: Rgb,
-  h: number,
-  s: number,
-  l: number,
-  minRatio = 3,
-): Rgb {
+function tuneContrast(background: Rgb, h: number, s: number, l: number, minRatio = 3): Rgb {
   let best = hslToRgb(h, s, l);
   if (contrastRatio(background, best) >= minRatio) {
     return best;
@@ -325,7 +313,13 @@ function createPalette(seed: number): IdentityGlyphPalette {
   const accentHue = (primaryHue + 170 + random() * 25) % 360;
 
   const primary = tuneContrast(background, primaryHue, 68 + random() * 18, 30 + random() * 12, 3.4);
-  const secondary = tuneContrast(background, secondaryHue, 58 + random() * 20, 36 + random() * 14, 2.8);
+  const secondary = tuneContrast(
+    background,
+    secondaryHue,
+    58 + random() * 20,
+    36 + random() * 14,
+    2.8,
+  );
   const accent = tuneContrast(background, accentHue, 76 + random() * 16, 44 + random() * 14, 3.1);
 
   return {
@@ -562,9 +556,7 @@ export function resolveIdentityGlyphSize(size?: number | IdentityGlyphSize): num
   return 32;
 }
 
-export function resolveIdentityGlyphInput(
-  input: IdentityGlyphInput,
-): ResolvedIdentityGlyphInput {
+export function resolveIdentityGlyphInput(input: IdentityGlyphInput): ResolvedIdentityGlyphInput {
   try {
     const canonicalIdentity = resolveCanonicalFromUnknown(input);
     return {

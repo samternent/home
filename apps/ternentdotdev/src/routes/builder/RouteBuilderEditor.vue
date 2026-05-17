@@ -13,14 +13,7 @@ const props = defineProps({
 });
 
 const router = useRouter();
-const {
-  getApp,
-  getAppSchemas,
-  getAppViews,
-  updateApp,
-  createSchema,
-  createView,
-} = useAppBuilder();
+const { getApp, getAppSchemas, getAppViews, updateApp, createSchema, createView } = useAppBuilder();
 
 const app = computed(() => getApp(props.appId));
 const schemas = computed(() => getAppSchemas(props.appId));
@@ -64,7 +57,7 @@ watch(
       };
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 // Available field types
@@ -143,28 +136,19 @@ function openRuntime() {
         <div class="text-4xl">{{ app.icon }}</div>
         <div>
           <h1 v-if="!isEditing" class="text-3xl font-bold">{{ app.name }}</h1>
-          <SInput
-            v-else
-            v-model="appForm.name"
-            size="lg"
-            class="text-3xl font-bold"
-          />
+          <SInput v-else v-model="appForm.name" size="lg" class="text-3xl font-bold" />
           <p class="text-base-content/60">{{ app.description }}</p>
         </div>
       </div>
 
       <div class="flex gap-2">
-        <SButton v-if="!isEditing" variant="outline" @click="isEditing = true">
-          Edit App
-        </SButton>
+        <SButton v-if="!isEditing" variant="outline" @click="isEditing = true"> Edit App </SButton>
         <template v-else>
           <SButton variant="ghost" @click="isEditing = false">Cancel</SButton>
           <SButton @click="saveApp">Save</SButton>
         </template>
 
-        <SButton variant="primary" @click="openRuntime">
-          🚀 Launch App
-        </SButton>
+        <SButton variant="primary" @click="openRuntime"> 🚀 Launch App </SButton>
       </div>
     </div>
 
@@ -251,10 +235,7 @@ function openRuntime() {
 
         <div>
           <label class="label">Model Name</label>
-          <SInput
-            v-model="schemaForm.name"
-            placeholder="e.g. Users, Products, Tasks"
-          />
+          <SInput v-model="schemaForm.name" placeholder="e.g. Users, Products, Tasks" />
         </div>
 
         <div class="space-y-3">
@@ -266,33 +247,20 @@ function openRuntime() {
               <SInput v-model="newField.name" placeholder="Field name" />
             </div>
             <div class="col-span-3">
-              <select
-                v-model="newField.type"
-                class="select select-bordered w-full"
-              >
-                <option
-                  v-for="type in fieldTypes"
-                  :key="type.value"
-                  :value="type.value"
-                >
+              <select v-model="newField.type" class="select select-bordered w-full">
+                <option v-for="type in fieldTypes" :key="type.value" :value="type.value">
                   {{ type.label }}
                 </option>
               </select>
             </div>
             <div class="col-span-2">
               <label class="label cursor-pointer">
-                <input
-                  type="checkbox"
-                  v-model="newField.required"
-                  class="checkbox"
-                />
+                <input type="checkbox" v-model="newField.required" class="checkbox" />
                 <span class="label-text ml-2">Required</span>
               </label>
             </div>
             <div class="col-span-3">
-              <SButton @click="addField" :disabled="!newField.name"
-                >Add Field</SButton
-              >
+              <SButton @click="addField" :disabled="!newField.name">Add Field</SButton>
             </div>
           </div>
 
@@ -305,18 +273,10 @@ function openRuntime() {
             >
               <div>
                 <span class="font-medium">{{ field.name }}</span>
-                <span class="text-sm text-base-content/60 ml-2"
-                  >({{ field.type }})</span
-                >
-                <span
-                  v-if="field.required"
-                  class="badge badge-error badge-xs ml-2"
-                  >Required</span
-                >
+                <span class="text-sm text-base-content/60 ml-2">({{ field.type }})</span>
+                <span v-if="field.required" class="badge badge-error badge-xs ml-2">Required</span>
               </div>
-              <SButton size="sm" variant="ghost" @click="removeField(field.id)"
-                >Remove</SButton
-              >
+              <SButton size="sm" variant="ghost" @click="removeField(field.id)">Remove</SButton>
             </div>
           </div>
         </div>
@@ -337,9 +297,7 @@ function openRuntime() {
           <SCard v-for="schema in schemas" :key="schema.id" class="space-y-3">
             <div class="flex items-center justify-between">
               <h3 class="font-bold text-lg">{{ schema.name }}</h3>
-              <SButton size="sm" @click="createListView(schema)"
-                >Create List View</SButton
-              >
+              <SButton size="sm" @click="createListView(schema)">Create List View</SButton>
             </div>
             <div class="space-y-1">
               <div
@@ -392,9 +350,7 @@ function openRuntime() {
     <div v-if="activeTab === 'permissions'" class="space-y-6">
       <h2 class="text-xl font-bold">Access Control</h2>
       <SCard>
-        <p class="text-center py-8 text-base-content/60">
-          Permission system coming soon...
-        </p>
+        <p class="text-center py-8 text-base-content/60">Permission system coming soon...</p>
       </SCard>
     </div>
   </div>
@@ -403,12 +359,8 @@ function openRuntime() {
     <div class="text-center">
       <div class="text-4xl mb-4">❌</div>
       <h2 class="text-xl font-bold mb-2">App Not Found</h2>
-      <p class="text-base-content/60">
-        The requested app could not be found in your ledger.
-      </p>
-      <RouterLink to="/t/builder" class="btn btn-outline mt-4">
-        Back to Builder
-      </RouterLink>
+      <p class="text-base-content/60">The requested app could not be found in your ledger.</p>
+      <RouterLink to="/t/builder" class="btn btn-outline mt-4"> Back to Builder </RouterLink>
     </div>
   </div>
 </template>

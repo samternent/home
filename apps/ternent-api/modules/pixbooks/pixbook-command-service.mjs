@@ -16,13 +16,7 @@ function deriveCreateBookId(requestHash) {
   return `book_${normalized.slice(0, 24)}`;
 }
 
-function toRequestHash({
-  method,
-  routeTemplate,
-  bookId,
-  signingIdentityId,
-  body,
-}) {
+function toRequestHash({ method, routeTemplate, bookId, signingIdentityId, body }) {
   const canonical = canonicalStringify({
     method: trim(method).toUpperCase(),
     routeTemplate: trim(routeTemplate),
@@ -74,7 +68,7 @@ function normalizeSaveBody(body) {
     throw new HttpError(
       400,
       "PAYLOAD_LEDGER_REQUIRED",
-      "payload must include a pixbook ledger snapshot."
+      "payload must include a pixbook ledger snapshot.",
     );
   }
   return {
@@ -115,15 +109,12 @@ function normalizeErrorPayload(error) {
 }
 
 function throwStoredFailure(row) {
-  const storedEnvelope = row?.responseBody && typeof row.responseBody === "object"
-    ? row.responseBody
-    : null;
-  const storedError = storedEnvelope?.error && typeof storedEnvelope.error === "object"
-    ? storedEnvelope.error
-    : null;
-  const fallbackErrorBody = row?.errorBody && typeof row.errorBody === "object"
-    ? row.errorBody
-    : null;
+  const storedEnvelope =
+    row?.responseBody && typeof row.responseBody === "object" ? row.responseBody : null;
+  const storedError =
+    storedEnvelope?.error && typeof storedEnvelope.error === "object" ? storedEnvelope.error : null;
+  const fallbackErrorBody =
+    row?.errorBody && typeof row.errorBody === "object" ? row.errorBody : null;
   const message =
     String(storedError?.message || "").trim() ||
     String(fallbackErrorBody?.message || "").trim() ||
@@ -132,7 +123,7 @@ function throwStoredFailure(row) {
     Number(row?.httpStatus || 500),
     trim(storedError?.code) || trim(row?.errorCode) || "COMMAND_FAILED",
     message,
-    normalizeDetails(storedError?.details ?? fallbackErrorBody?.details)
+    normalizeDetails(storedError?.details ?? fallbackErrorBody?.details),
   );
 }
 
@@ -141,7 +132,7 @@ function assertIdempotency(row, requestHash) {
   if (trim(row.requestHash) !== trim(requestHash)) {
     throw conflict(
       "IDEMPOTENCY_CONFLICT",
-      "Idempotency key was already used with a different command payload."
+      "Idempotency key was already used with a different command payload.",
     );
   }
   const status = trim(row.status);
@@ -214,129 +205,125 @@ export function createPixbookCommandService({
         throw notFound("BOOK_CREATE_FAILED", "Unable to create pixbook.");
       }
 
-      return receiptRepo.withCommandTransaction(
-        { accountId, bookId },
-        async (tx) => {
-          const idempotency = await receiptRepo.getIdempotencyForUpdate(tx, {
+      return receiptRepo.withCommandTransaction({ accountId, bookId }, async (tx) => {
+        const idempotency = await receiptRepo.getIdempotencyForUpdate(tx, {
+          accountId,
+          routeTemplate: CREATE_ROUTE_TEMPLATE,
+          bookId,
+          idempotencyKey,
+        });
+        const gate = assertIdempotency(idempotency, requestHash);
+        if (gate.mode === "replay_success") {
+          return {
+            httpStatus: gate.httpStatus,
+            data: gate.responseBody,
+          };
+        }
+        if (gate.mode === "replay_failed") {
+          throwStoredFailure(gate.row);
+        }
+        if (gate.mode === "in_progress_active") {
+          return {
+            httpStatus: 202,
+            data: toPendingResponse(idempotencyKey),
+          };
+        }
+        if (gate.mode === "create") {
+          await receiptRepo.createIdempotencyInProgress(tx, {
             accountId,
             routeTemplate: CREATE_ROUTE_TEMPLATE,
             bookId,
             idempotencyKey,
+            requestHash,
+            responseBody: toPendingResponse(idempotencyKey),
           });
-          const gate = assertIdempotency(idempotency, requestHash);
-          if (gate.mode === "replay_success") {
-            return {
-              httpStatus: gate.httpStatus,
-              data: gate.responseBody,
-            };
-          }
-          if (gate.mode === "replay_failed") {
-            throwStoredFailure(gate.row);
-          }
-          if (gate.mode === "in_progress_active") {
-            return {
-              httpStatus: 202,
-              data: toPendingResponse(idempotencyKey),
-            };
-          }
-          if (gate.mode === "create") {
-            await receiptRepo.createIdempotencyInProgress(tx, {
-              accountId,
-              routeTemplate: CREATE_ROUTE_TEMPLATE,
-              bookId,
-              idempotencyKey,
-              requestHash,
-              responseBody: toPendingResponse(idempotencyKey),
-            });
-          }
-          if (gate.mode === "restart_expired") {
-            await receiptRepo.restartIdempotencyInProgress(tx, {
-              accountId,
-              routeTemplate: CREATE_ROUTE_TEMPLATE,
-              bookId,
-              idempotencyKey,
-              requestHash,
-              responseBody: toPendingResponse(idempotencyKey),
-            });
-          }
-
-          try {
-            const signingIdentity = await signingIdentityRepo.resolveForCommand({
-              accountId,
-              requestedSigningIdentityId: input.signingIdentityId,
-              signer: ctx.signer,
-              fallbackVaultKeyName:
-                trim(process.env.PIXBOOK_VAULT_KEY_NAME) || fallbackVaultKeyName,
-            });
-
-            const appended = await receiptWriter.appendPixbookReceipt({
-              tx,
-              accountId,
-              bookId,
-              eventType: "PIXBOOK_CREATED",
-              payload: {
-                managedUserId: normalizedBody.managedUserId,
-                name: normalizedBody.name,
-                collectionId: normalizedBody.collectionId,
-              },
-              idempotencyKey,
-              signingIdentity,
-            });
-
-            const responseData = {
-              eventId: appended.eventId,
-              bookId,
-              streamVersion: appended.streamVersion,
-              hash: appended.hash,
-              createdAt: appended.createdAt,
-            };
-            await receiptRepo.completeIdempotency(tx, {
-              accountId,
-              routeTemplate: CREATE_ROUTE_TEMPLATE,
-              bookId,
-              idempotencyKey,
-              requestHash,
-              httpStatus: 200,
-              responseBody: responseData,
-              eventId: appended.eventId,
-            });
-
-            return {
-              httpStatus: 200,
-              data: responseData,
-            };
-          } catch (error) {
-            const normalized = normalizeErrorPayload(error);
-            await receiptRepo.failIdempotency(tx, {
-              accountId,
-              routeTemplate: CREATE_ROUTE_TEMPLATE,
-              bookId,
-              idempotencyKey,
-              requestHash,
-              httpStatus: normalized.httpStatus,
-              errorCode: normalized.code,
-              errorBody: {
-                message: normalized.message,
-                details: normalized.details,
-              },
-              responseBody: {
-                ok: false,
-                error: {
-                  code: normalized.code,
-                  message: normalized.message,
-                  details: normalizeDetails(normalized.details),
-                },
-              },
-            });
-            throw new HttpError(
-              normalized.httpStatus,
-              normalized.code,
-              normalized.message,
-              normalizeDetails(normalized.details)
-            );
-          }
         }
-      );
+        if (gate.mode === "restart_expired") {
+          await receiptRepo.restartIdempotencyInProgress(tx, {
+            accountId,
+            routeTemplate: CREATE_ROUTE_TEMPLATE,
+            bookId,
+            idempotencyKey,
+            requestHash,
+            responseBody: toPendingResponse(idempotencyKey),
+          });
+        }
+
+        try {
+          const signingIdentity = await signingIdentityRepo.resolveForCommand({
+            accountId,
+            requestedSigningIdentityId: input.signingIdentityId,
+            signer: ctx.signer,
+            fallbackVaultKeyName: trim(process.env.PIXBOOK_VAULT_KEY_NAME) || fallbackVaultKeyName,
+          });
+
+          const appended = await receiptWriter.appendPixbookReceipt({
+            tx,
+            accountId,
+            bookId,
+            eventType: "PIXBOOK_CREATED",
+            payload: {
+              managedUserId: normalizedBody.managedUserId,
+              name: normalizedBody.name,
+              collectionId: normalizedBody.collectionId,
+            },
+            idempotencyKey,
+            signingIdentity,
+          });
+
+          const responseData = {
+            eventId: appended.eventId,
+            bookId,
+            streamVersion: appended.streamVersion,
+            hash: appended.hash,
+            createdAt: appended.createdAt,
+          };
+          await receiptRepo.completeIdempotency(tx, {
+            accountId,
+            routeTemplate: CREATE_ROUTE_TEMPLATE,
+            bookId,
+            idempotencyKey,
+            requestHash,
+            httpStatus: 200,
+            responseBody: responseData,
+            eventId: appended.eventId,
+          });
+
+          return {
+            httpStatus: 200,
+            data: responseData,
+          };
+        } catch (error) {
+          const normalized = normalizeErrorPayload(error);
+          await receiptRepo.failIdempotency(tx, {
+            accountId,
+            routeTemplate: CREATE_ROUTE_TEMPLATE,
+            bookId,
+            idempotencyKey,
+            requestHash,
+            httpStatus: normalized.httpStatus,
+            errorCode: normalized.code,
+            errorBody: {
+              message: normalized.message,
+              details: normalized.details,
+            },
+            responseBody: {
+              ok: false,
+              error: {
+                code: normalized.code,
+                message: normalized.message,
+                details: normalizeDetails(normalized.details),
+              },
+            },
+          });
+          throw new HttpError(
+            normalized.httpStatus,
+            normalized.code,
+            normalized.message,
+            normalizeDetails(normalized.details),
+          );
+        }
+      });
     },
 
     async savePixbook(ctx, input) {
@@ -353,167 +340,157 @@ export function createPixbookCommandService({
         body: normalizedBody,
       });
 
-      return receiptRepo.withCommandTransaction(
-        { accountId, bookId },
-        async (tx) => {
-          const idempotency = await receiptRepo.getIdempotencyForUpdate(tx, {
+      return receiptRepo.withCommandTransaction({ accountId, bookId }, async (tx) => {
+        const idempotency = await receiptRepo.getIdempotencyForUpdate(tx, {
+          accountId,
+          routeTemplate: SAVE_ROUTE_TEMPLATE,
+          bookId,
+          idempotencyKey,
+        });
+        const gate = assertIdempotency(idempotency, requestHash);
+        if (gate.mode === "replay_success") {
+          return {
+            httpStatus: gate.httpStatus,
+            data: gate.responseBody,
+          };
+        }
+        if (gate.mode === "replay_failed") {
+          throwStoredFailure(gate.row);
+        }
+        if (gate.mode === "in_progress_active") {
+          return {
+            httpStatus: 202,
+            data: toPendingResponse(idempotencyKey),
+          };
+        }
+        if (gate.mode === "create") {
+          await receiptRepo.createIdempotencyInProgress(tx, {
             accountId,
             routeTemplate: SAVE_ROUTE_TEMPLATE,
             bookId,
             idempotencyKey,
+            requestHash,
+            responseBody: toPendingResponse(idempotencyKey),
           });
-          const gate = assertIdempotency(idempotency, requestHash);
-          if (gate.mode === "replay_success") {
-            return {
-              httpStatus: gate.httpStatus,
-              data: gate.responseBody,
-            };
-          }
-          if (gate.mode === "replay_failed") {
-            throwStoredFailure(gate.row);
-          }
-          if (gate.mode === "in_progress_active") {
-            return {
-              httpStatus: 202,
-              data: toPendingResponse(idempotencyKey),
-            };
-          }
-          if (gate.mode === "create") {
-            await receiptRepo.createIdempotencyInProgress(tx, {
-              accountId,
-              routeTemplate: SAVE_ROUTE_TEMPLATE,
-              bookId,
-              idempotencyKey,
-              requestHash,
-              responseBody: toPendingResponse(idempotencyKey),
-            });
-          }
-          if (gate.mode === "restart_expired") {
-            await receiptRepo.restartIdempotencyInProgress(tx, {
-              accountId,
-              routeTemplate: SAVE_ROUTE_TEMPLATE,
-              bookId,
-              idempotencyKey,
-              requestHash,
-              responseBody: toPendingResponse(idempotencyKey),
-            });
+        }
+        if (gate.mode === "restart_expired") {
+          await receiptRepo.restartIdempotencyInProgress(tx, {
+            accountId,
+            routeTemplate: SAVE_ROUTE_TEMPLATE,
+            bookId,
+            idempotencyKey,
+            requestHash,
+            responseBody: toPendingResponse(idempotencyKey),
+          });
+        }
+
+        try {
+          const resolved = await pixbookRepo.getBookForAccount(userId, accountId, bookId);
+          if (!resolved?.book?.id) {
+            throw notFound("BOOK_NOT_FOUND", "Pixbook not found.");
           }
 
-          try {
-            const resolved = await pixbookRepo.getBookForAccount(userId, accountId, bookId);
-            if (!resolved?.book?.id) {
-              throw notFound("BOOK_NOT_FOUND", "Pixbook not found.");
-            }
-
-            const currentHead = await receiptRepo.getLedgerHead(tx, { accountId, bookId });
-            if (
-              normalizedBody.expectedLedgerHead !== null &&
-              normalizedBody.expectedLedgerHead !== trim(currentHead.lastHash)
-            ) {
-              throw conflict(
-                "BOOK_SNAPSHOT_CONFLICT",
-                "Pixbook ledger head conflict. Another device saved a different state.",
-                {
-                  expectedLedgerHead: normalizedBody.expectedLedgerHead,
-                  currentLedgerHead: trim(currentHead.lastHash),
-                }
-              );
-            }
-            if (
-              normalizedBody.expectedLedgerHead === null &&
-              normalizedBody.expectedVersion !== null &&
-              normalizedBody.expectedVersion !== Number(currentHead.streamVersion || 0)
-            ) {
-              throw conflict(
-                "BOOK_SNAPSHOT_CONFLICT",
-                "Pixbook has changed since you last synced.",
-                {
-                  expectedVersion: normalizedBody.expectedVersion,
-                  currentVersion: Number(currentHead.streamVersion || 0),
-                }
-              );
-            }
-
-            const signingIdentity = await signingIdentityRepo.resolveForCommand({
-              accountId,
-              requestedSigningIdentityId: input.signingIdentityId,
-              signer: ctx.signer,
-              fallbackVaultKeyName:
-                trim(process.env.PIXBOOK_VAULT_KEY_NAME) || fallbackVaultKeyName,
-            });
-
-            const appended = await receiptWriter.appendPixbookReceipt({
-              tx,
-              accountId,
-              bookId,
-              eventType: "PIXBOOK_SAVE",
-              payload: {
-                snapshot: normalizedBody.snapshot,
-                clientLedgerHead: normalizedBody.clientLedgerHead,
+          const currentHead = await receiptRepo.getLedgerHead(tx, { accountId, bookId });
+          if (
+            normalizedBody.expectedLedgerHead !== null &&
+            normalizedBody.expectedLedgerHead !== trim(currentHead.lastHash)
+          ) {
+            throw conflict(
+              "BOOK_SNAPSHOT_CONFLICT",
+              "Pixbook ledger head conflict. Another device saved a different state.",
+              {
+                expectedLedgerHead: normalizedBody.expectedLedgerHead,
+                currentLedgerHead: trim(currentHead.lastHash),
               },
-              idempotencyKey,
-              signingIdentity,
-              expectedPrevHash:
-                normalizedBody.expectedLedgerHead !== null
-                  ? normalizedBody.expectedLedgerHead
-                  : null,
-            });
-
-            const responseData = {
-              eventId: appended.eventId,
-              bookId,
-              streamVersion: appended.streamVersion,
-              hash: appended.hash,
-              prevHash: appended.prevHash,
-              createdAt: appended.createdAt,
-            };
-            await receiptRepo.completeIdempotency(tx, {
-              accountId,
-              routeTemplate: SAVE_ROUTE_TEMPLATE,
-              bookId,
-              idempotencyKey,
-              requestHash,
-              httpStatus: 200,
-              responseBody: responseData,
-              eventId: appended.eventId,
-            });
-
-            return {
-              httpStatus: 200,
-              data: responseData,
-            };
-          } catch (error) {
-            const normalized = normalizeErrorPayload(error);
-            await receiptRepo.failIdempotency(tx, {
-              accountId,
-              routeTemplate: SAVE_ROUTE_TEMPLATE,
-              bookId,
-              idempotencyKey,
-              requestHash,
-              httpStatus: normalized.httpStatus,
-              errorCode: normalized.code,
-              errorBody: {
-                message: normalized.message,
-                details: normalized.details,
-              },
-              responseBody: {
-                ok: false,
-                error: {
-                  code: normalized.code,
-                  message: normalized.message,
-                  details: normalizeDetails(normalized.details),
-                },
-              },
-            });
-            throw new HttpError(
-              normalized.httpStatus,
-              normalized.code,
-              normalized.message,
-              normalizeDetails(normalized.details)
             );
           }
+          if (
+            normalizedBody.expectedLedgerHead === null &&
+            normalizedBody.expectedVersion !== null &&
+            normalizedBody.expectedVersion !== Number(currentHead.streamVersion || 0)
+          ) {
+            throw conflict("BOOK_SNAPSHOT_CONFLICT", "Pixbook has changed since you last synced.", {
+              expectedVersion: normalizedBody.expectedVersion,
+              currentVersion: Number(currentHead.streamVersion || 0),
+            });
+          }
+
+          const signingIdentity = await signingIdentityRepo.resolveForCommand({
+            accountId,
+            requestedSigningIdentityId: input.signingIdentityId,
+            signer: ctx.signer,
+            fallbackVaultKeyName: trim(process.env.PIXBOOK_VAULT_KEY_NAME) || fallbackVaultKeyName,
+          });
+
+          const appended = await receiptWriter.appendPixbookReceipt({
+            tx,
+            accountId,
+            bookId,
+            eventType: "PIXBOOK_SAVE",
+            payload: {
+              snapshot: normalizedBody.snapshot,
+              clientLedgerHead: normalizedBody.clientLedgerHead,
+            },
+            idempotencyKey,
+            signingIdentity,
+            expectedPrevHash:
+              normalizedBody.expectedLedgerHead !== null ? normalizedBody.expectedLedgerHead : null,
+          });
+
+          const responseData = {
+            eventId: appended.eventId,
+            bookId,
+            streamVersion: appended.streamVersion,
+            hash: appended.hash,
+            prevHash: appended.prevHash,
+            createdAt: appended.createdAt,
+          };
+          await receiptRepo.completeIdempotency(tx, {
+            accountId,
+            routeTemplate: SAVE_ROUTE_TEMPLATE,
+            bookId,
+            idempotencyKey,
+            requestHash,
+            httpStatus: 200,
+            responseBody: responseData,
+            eventId: appended.eventId,
+          });
+
+          return {
+            httpStatus: 200,
+            data: responseData,
+          };
+        } catch (error) {
+          const normalized = normalizeErrorPayload(error);
+          await receiptRepo.failIdempotency(tx, {
+            accountId,
+            routeTemplate: SAVE_ROUTE_TEMPLATE,
+            bookId,
+            idempotencyKey,
+            requestHash,
+            httpStatus: normalized.httpStatus,
+            errorCode: normalized.code,
+            errorBody: {
+              message: normalized.message,
+              details: normalized.details,
+            },
+            responseBody: {
+              ok: false,
+              error: {
+                code: normalized.code,
+                message: normalized.message,
+                details: normalizeDetails(normalized.details),
+              },
+            },
+          });
+          throw new HttpError(
+            normalized.httpStatus,
+            normalized.code,
+            normalized.message,
+            normalizeDetails(normalized.details),
+          );
         }
-      );
+      });
     },
   };
 }

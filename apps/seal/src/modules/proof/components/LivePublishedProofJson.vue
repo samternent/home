@@ -11,8 +11,9 @@ const props = withDefaults(
   },
 );
 
-const { artifactJson, result, status, statusDetail, statusLabel } =
-  usePublishedProofArtifact(() => props.baseUrl);
+const { artifactJson, result, status, statusDetail, statusLabel } = usePublishedProofArtifact(
+  () => props.baseUrl,
+);
 
 const statusTone = computed(() => {
   if (status.value === "loading" || status.value === "unavailable") {
@@ -38,10 +39,7 @@ const statusTone = computed(() => {
         proof.json
       </span>
       <div class="flex items-center gap-3 text-right">
-        <span
-          class="text-[0.72rem] font-semibold uppercase tracking-[0.14em]"
-          :class="statusTone"
-        >
+        <span class="text-[0.72rem] font-semibold uppercase tracking-[0.14em]" :class="statusTone">
           {{ statusLabel }}
         </span>
       </div>

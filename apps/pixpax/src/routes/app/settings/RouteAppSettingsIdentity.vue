@@ -19,7 +19,9 @@ async function createChildOnDevice() {
     <Card variant="showcase" padding="sm" class="space-y-5">
       <div class="flex items-center justify-between gap-3">
         <div>
-          <p class="m-0 text-[11px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">This device</p>
+          <p class="m-0 text-[11px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
+            This device
+          </p>
           <h2 class="m-0 text-xl font-semibold">Ready for sticker collecting</h2>
         </div>
         <Badge :tone="identitySession.hasIdentity.value ? 'success' : 'warning'" variant="soft">
@@ -65,23 +67,31 @@ async function createChildOnDevice() {
       </div>
 
       <p class="m-0 text-sm text-[var(--ui-fg-muted)]">
-        Kids do not need their own account. This device can hold several child profiles, and adults can save or recover them from the family backup page.
+        Kids do not need their own account. This device can hold several child profiles, and adults
+        can save or recover them from the family backup page.
       </p>
     </Card>
 
     <Card variant="subtle" padding="sm" class="space-y-4">
       <div class="space-y-1">
-        <p class="m-0 text-[11px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">Family space</p>
+        <p class="m-0 text-[11px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
+          Family space
+        </p>
         <p class="m-0 text-sm text-[var(--ui-fg-muted)]">
-          {{ family.account.isAuthenticated.value
-            ? `Signed in as ${family.account.user.value?.email || family.account.user.value?.name || family.account.user.value?.id}`
-            : "Sign in on the Family backup page to save children and open them on another device." }}
+          {{
+            family.account.isAuthenticated.value
+              ? `Signed in as ${family.account.user.value?.email || family.account.user.value?.name || family.account.user.value?.id}`
+              : "Sign in on the Family backup page to save children and open them on another device."
+          }}
         </p>
       </div>
 
       <div class="rounded-3xl border border-[var(--ui-border)] bg-[rgba(255,255,255,0.03)] p-4">
         <p class="m-0 text-sm text-[var(--ui-fg-muted)]">
-          Active family: <span class="text-[var(--ui-fg)]">{{ family.familySession.value.workspace?.name || "Not connected" }}</span>
+          Active family:
+          <span class="text-[var(--ui-fg)]">{{
+            family.familySession.value.workspace?.name || "Not connected"
+          }}</span>
         </p>
       </div>
     </Card>

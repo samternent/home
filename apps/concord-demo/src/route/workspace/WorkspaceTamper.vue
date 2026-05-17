@@ -25,13 +25,7 @@ const isApplying = ref(false);
 let suppressLedgerWatch = false;
 let applyTimer: number | undefined;
 
-type JsonValue =
-  | string
-  | number
-  | boolean
-  | null
-  | JsonValue[]
-  | { [key: string]: JsonValue };
+type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
 
 type TreeNode = {
   id: string;
@@ -109,19 +103,13 @@ function truncate(value: string, max = 48) {
   return `${value.slice(0, max - 3)}...`;
 }
 
-function buildTreeNode(
-  label: string,
-  value: JsonValue,
-  path: string
-): TreeNode {
+function buildTreeNode(label: string, value: JsonValue, path: string): TreeNode {
   if (Array.isArray(value)) {
     return {
       id: path,
       label,
       meta: `${value.length} items`,
-      children: value.map((child, index) =>
-        buildTreeNode(`[${index}]`, child, `${path}/${index}`)
-      ),
+      children: value.map((child, index) => buildTreeNode(`[${index}]`, child, `${path}/${index}`)),
     };
   }
 
@@ -131,9 +119,7 @@ function buildTreeNode(
       id: path,
       label,
       meta: `${entries.length} keys`,
-      children: entries.map(([key, child]) =>
-        buildTreeNode(key, child, `${path}/${key}`)
-      ),
+      children: entries.map(([key, child]) => buildTreeNode(key, child, `${path}/${key}`)),
     };
   }
 
@@ -145,11 +131,7 @@ function buildTreeNode(
   };
 }
 
-function updateLedgerValue(
-  root: JsonValue,
-  path: string,
-  nextValue: JsonValue
-): boolean {
+function updateLedgerValue(root: JsonValue, path: string, nextValue: JsonValue): boolean {
   const segments = path.split("/");
   if (segments.length < 2) return false;
 
@@ -204,8 +186,7 @@ onMounted(() => {
   const storedHistory = readHistory();
   const storedIndex = readHistoryIndex();
   history.value = storedHistory;
-  historyIndex.value =
-    storedIndex >= 0 && storedIndex < storedHistory.length ? storedIndex : -1;
+  historyIndex.value = storedIndex >= 0 && storedIndex < storedHistory.length ? storedIndex : -1;
 
   const tamper = readSnapshot(TAMPER_LEDGER_KEY);
   if (tamper) {
@@ -317,7 +298,7 @@ async function revertToCore() {
 
 const canUndo = computed(() => historyIndex.value > 0);
 const canRedo = computed(
-  () => historyIndex.value >= 0 && historyIndex.value < history.value.length - 1
+  () => historyIndex.value >= 0 && historyIndex.value < history.value.length - 1,
 );
 
 const treeState = computed(() => {
@@ -395,7 +376,7 @@ watch(
     setEditorValue(serialized, true, true);
     recordTamperChange(serialized, { apply: false });
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 function undoChange() {
@@ -439,9 +420,7 @@ watch(ledgerText, (next) => {
 
 <template>
   <div class="mx-auto w-full flex flex-col flex-1 h-full">
-    <header
-      class="sticky top-0 bg-[var(--ui-bg)] p-2 flex items-center z-10 justify-between"
-    >
+    <header class="sticky top-0 bg-[var(--ui-bg)] p-2 flex items-center z-10 justify-between">
       <div class="flex flex-wrap items-center gap-2 sticky bottom-0">
         <button
           class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-xs"

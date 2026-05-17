@@ -91,9 +91,7 @@ describe("@ternent/rage", () => {
       data: new TextEncoder().encode("hello"),
     });
 
-    expect(new TextDecoder().decode(ciphertext)).toContain(
-      "-----BEGIN AGE ENCRYPTED FILE-----"
-    );
+    expect(new TextDecoder().decode(ciphertext)).toContain("-----BEGIN AGE ENCRYPTED FILE-----");
   });
 
   it("produces binary output when requested", async () => {
@@ -109,7 +107,7 @@ describe("@ternent/rage", () => {
 
     expect(ciphertext.byteLength).toBeGreaterThan(0);
     expect(new TextDecoder().decode(ciphertext)).not.toContain(
-      "-----BEGIN AGE ENCRYPTED FILE-----"
+      "-----BEGIN AGE ENCRYPTED FILE-----",
     );
   });
 
@@ -121,7 +119,7 @@ describe("@ternent/rage", () => {
       rage.encryptWithRecipients({
         recipients: [],
         data: new TextEncoder().encode("hello"),
-      })
+      }),
     ).rejects.toMatchObject({
       name: "RageValidationError",
       code: "RAGE_EMPTY_RECIPIENTS",
@@ -136,7 +134,7 @@ describe("@ternent/rage", () => {
       rage.encryptWithPassphrase({
         passphrase: "",
         data: new TextEncoder().encode("hello"),
-      })
+      }),
     ).rejects.toMatchObject({
       name: "RageValidationError",
       code: "RAGE_EMPTY_PASSPHRASE",
@@ -152,7 +150,7 @@ describe("@ternent/rage", () => {
       rage.encryptWithRecipients({
         recipients: [alice.publicKey],
         data: new Uint8Array(),
-      })
+      }),
     ).rejects.toMatchObject({
       name: "RageValidationError",
       code: "RAGE_EMPTY_DATA",
@@ -168,7 +166,7 @@ describe("@ternent/rage", () => {
       rage.encryptWithRecipients({
         recipients: [alice.publicKey],
         data: new Uint8Array(rage.MAX_MESSAGE_SIZE + 1),
-      })
+      }),
     ).rejects.toMatchObject({
       name: "RageValidationError",
       code: "RAGE_DATA_TOO_LARGE",
@@ -190,7 +188,7 @@ describe("@ternent/rage", () => {
       rage.decryptWithIdentity({
         identity: bob.privateKey,
         data: ciphertext,
-      })
+      }),
     ).rejects.toMatchObject({
       name: "RageDecryptionError",
       code: "RAGE_DECRYPT_FAILED",
@@ -214,7 +212,7 @@ describe("@ternent/rage", () => {
       rage.decryptWithIdentity({
         identity: alice.privateKey,
         data: corrupted,
-      })
+      }),
     ).rejects.toMatchObject({
       name: "RageDecryptionError",
       code: "RAGE_DECRYPT_FAILED",

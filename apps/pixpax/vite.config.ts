@@ -94,13 +94,19 @@ export default defineConfig({
         find: "@ternent/concord-protocol",
         replacement: resolve(workspaceRoot, "concord-protocol/src/index.ts"),
       },
-      { find: "@ternent/identity", replacement: resolve(workspaceRoot, "identity-v2/src/index.ts") },
+      {
+        find: "@ternent/identity",
+        replacement: resolve(workspaceRoot, "identity-v2/src/index.ts"),
+      },
       { find: "@ternent/ledger", replacement: resolve(workspaceRoot, "ledger-v2/src/index.ts") },
       {
         find: "@ternent/pixpax-concord",
         replacement: resolve(workspaceRoot, "pixpax-concord/src/index.ts"),
       },
-      { find: "@ternent/pixpax-core", replacement: resolve(workspaceRoot, "pixpax-core/src/index.ts") },
+      {
+        find: "@ternent/pixpax-core",
+        replacement: resolve(workspaceRoot, "pixpax-core/src/index.ts"),
+      },
       {
         find: "@ternent/pixpax-issuer",
         replacement: resolve(workspaceRoot, "pixpax-issuer/src/index.ts"),
@@ -149,7 +155,12 @@ export default defineConfig({
     createIndexHtmlTransformPlugin(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "icons/icon-192.png", "icons/icon-512.png", "icons/maskable-512.png"],
+      includeAssets: [
+        "favicon.ico",
+        "icons/icon-192.png",
+        "icons/icon-512.png",
+        "icons/maskable-512.png",
+      ],
       manifest: pwaManifest,
       workbox: {
         cleanupOutdatedCaches: true,
@@ -180,7 +191,8 @@ export default defineConfig({
             },
           },
           {
-            urlPattern: ({ request }) => request.destination === "image" || request.destination === "font",
+            urlPattern: ({ request }) =>
+              request.destination === "image" || request.destination === "font",
             handler: "CacheFirst",
             options: {
               cacheName: "app-media",

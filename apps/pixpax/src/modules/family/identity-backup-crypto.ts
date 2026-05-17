@@ -76,7 +76,10 @@ function normalizePassphrase(value: string) {
 }
 
 function normalizeIdentityKeyForFingerprint(value: string) {
-  return String(value || "").replace(/\r/g, "").replace(/\s+/g, "").trim();
+  return String(value || "")
+    .replace(/\r/g, "")
+    .replace(/\s+/g, "")
+    .trim();
 }
 
 export async function deriveIdentityKeyFingerprint(identityPublicKey: string) {
@@ -88,11 +91,7 @@ export async function deriveIdentityKeyFingerprint(identityPublicKey: string) {
     .join("");
 }
 
-async function deriveAesKey(input: {
-  passphrase: string;
-  saltB64: string;
-  iterations: number;
-}) {
+async function deriveAesKey(input: { passphrase: string; saltB64: string; iterations: number }) {
   const passphrase = normalizePassphrase(input.passphrase);
   assert(passphrase.length > 0, "Passphrase is required.");
   const keyMaterial = await crypto.subtle.importKey(
@@ -154,8 +153,7 @@ export async function encryptIdentityBackupEnvelope(input: {
   assert(identityPublicKey, "identityPublicKey is required.");
 
   const identityKeyFingerprint =
-    trim(input.identityKeyFingerprint) ||
-    (await deriveIdentityKeyFingerprint(identityPublicKey));
+    trim(input.identityKeyFingerprint) || (await deriveIdentityKeyFingerprint(identityPublicKey));
   const createdAt = trim(input.createdAt) || new Date().toISOString();
   const salt = crypto.getRandomValues(new Uint8Array(16));
   const iv = crypto.getRandomValues(new Uint8Array(12));

@@ -25,8 +25,7 @@ type ItemEntry = {
 };
 
 const users = computed<ItemEntry[]>(
-  () =>
-    Object.values(bridge.collections.byKind.value?.users || {}) as ItemEntry[]
+  () => Object.values(bridge.collections.byKind.value?.users || {}) as ItemEntry[],
 );
 </script>
 <template>

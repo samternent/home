@@ -43,9 +43,7 @@ describe("seal artifact", () => {
       artifact,
       identity: bob,
     });
-    expect(new TextDecoder().decode(decrypted)).toBe(
-      "recipient targeted payload"
-    );
+    expect(new TextDecoder().decode(decrypted)).toBe("recipient targeted payload");
   });
 
   it("maps invalid recipients to seal errors", async () => {
@@ -57,7 +55,7 @@ describe("seal artifact", () => {
         subjectPath: "artifact.tar.gz",
         payload: new TextEncoder().encode("secret"),
         recipients: ["bad-recipient"],
-      })
+      }),
     ).rejects.toMatchObject({
       code: "SEAL_INVALID_RECIPIENT",
       message: "Recipient must be a valid age recipient string.",
@@ -79,7 +77,7 @@ describe("seal artifact", () => {
       decryptSealArtifactPayload({
         artifact,
         identity: outsider,
-      })
+      }),
     ).rejects.toMatchObject({
       code: "SEAL_DECRYPTION_FAILED",
       message: "Failed to decrypt payload.",

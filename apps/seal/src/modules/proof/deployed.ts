@@ -28,7 +28,7 @@ async function readBytes(response: Response): Promise<ArrayBuffer> {
 
 export async function verifyPublishedArtifacts(
   fetcher: typeof fetch = fetch,
-  baseUrl = ""
+  baseUrl = "",
 ): Promise<PublishedArtifactsVerification> {
   const proofResponse = await fetcher(`${baseUrl}/proof.json`);
   const manifestResponse = await fetcher(`${baseUrl}/dist-manifest.json`);
@@ -38,9 +38,7 @@ export async function verifyPublishedArtifacts(
     throw new Error(`Failed to fetch /proof.json (${proofResponse.status}).`);
   }
   if (!manifestResponse.ok) {
-    throw new Error(
-      `Failed to fetch /dist-manifest.json (${manifestResponse.status}).`
-    );
+    throw new Error(`Failed to fetch /dist-manifest.json (${manifestResponse.status}).`);
   }
 
   const proofRaw = await readText(proofResponse);
@@ -60,10 +58,7 @@ export async function verifyPublishedArtifacts(
 
   const manifestBytes = await readBytes(manifestResponse);
   const signatureCheck = await verifySealProofSignature(parsedProof.proof);
-  const verification = await verifySealProofAgainstBytes(
-    parsedProof.proof,
-    manifestBytes
-  );
+  const verification = await verifySealProofAgainstBytes(parsedProof.proof, manifestBytes);
 
   const errors = [...signatureCheck.errors];
 

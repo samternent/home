@@ -1,13 +1,7 @@
 <script setup>
 import { computed, shallowRef, watch, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import {
-  SButton,
-  SCard,
-  STabs,
-  SInput,
-  SDrawerRight,
-} from "ternent-ui/components";
+import { SButton, SCard, STabs, SInput, SDrawerRight } from "ternent-ui/components";
 import { useBreadcrumbs } from "@/module/breadcrumbs/useBreadcrumbs";
 import { provideAppBuilder } from "@/module/builder/useAppBuilder";
 
@@ -99,10 +93,9 @@ watch(
   [schemas, currentAppId],
   ([newSchemas]) => {
     activeSchema.value = null;
-    if (Array.isArray(newSchemas) && newSchemas.length > 0)
-      activeSchema.value = newSchemas[0];
+    if (Array.isArray(newSchemas) && newSchemas.length > 0) activeSchema.value = newSchemas[0];
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 function updateCurrentSchemaData() {
@@ -157,10 +150,7 @@ function createNewApp() {
 
 onMounted(() => {
   // If we're at /apps root and have apps, redirect to the first app
-  if (
-    (route.path === "/t/apps" || route.path === "/t/apps/") &&
-    safeApps.value.length > 0
-  ) {
+  if ((route.path === "/t/apps" || route.path === "/t/apps/") && safeApps.value.length > 0) {
     router.replace(`/t/apps/${safeApps.value[0].id}`);
   }
 });
@@ -168,9 +158,7 @@ onMounted(() => {
 
 <template>
   <div class="flex flex-col flex-1 relative max-w-full overflow-auto">
-    <nav
-      class="flex items-center justify-between pt-4 px-6 border-b border-base-300 bg-base-100"
-    >
+    <nav class="flex items-center justify-between pt-4 px-6 border-b border-base-300 bg-base-100">
       <div class="flex items-center gap-4">
         <STabs
           :items="navTabs"
@@ -199,10 +187,7 @@ onMounted(() => {
               </div>
             </div>
             <div class="flex gap-2">
-              <SButton
-                :to="`/t/builder/app/${currentAppId}/design`"
-                class="btn-outline"
-              >
+              <SButton :to="`/t/builder/app/${currentAppId}/design`" class="btn-outline">
                 <span class="mr-2">🎨</span> Configure
               </SButton>
             </div>
@@ -213,10 +198,7 @@ onMounted(() => {
             <p class="text-base-content/60 mb-6">
               Your app doesn't have any data types defined yet.
             </p>
-            <SButton
-              :to="`/t/builder/app/${currentAppId}/design`"
-              class="btn-primary"
-            >
+            <SButton :to="`/t/builder/app/${currentAppId}/design`" class="btn-primary">
               Add Data Types
             </SButton>
           </div>
@@ -245,10 +227,7 @@ onMounted(() => {
                   <table class="table table-zebra w-full">
                     <thead>
                       <tr>
-                        <th
-                          v-for="field in activeSchema.fields"
-                          :key="field.id"
-                        >
+                        <th v-for="field in activeSchema.fields" :key="field.id">
                           {{ field.name }}
                         </th>
                         <th>Created</th>
@@ -256,27 +235,21 @@ onMounted(() => {
                     </thead>
                     <tbody>
                       <tr v-for="item in schemaData" :key="item.id">
-                        <td
-                          v-for="field in activeSchema.fields"
-                          :key="field.id"
-                        >
+                        <td v-for="field in activeSchema.fields" :key="field.id">
                           <span v-if="field.type === 'boolean'">
                             {{ item[field.name] ? "✅" : "❌" }}
                           </span>
                           <span v-else-if="field.type === 'date'">
                             {{
                               item[field.name]
-                                ? new Date(
-                                    item[field.name]
-                                  ).toLocaleDateString()
+                                ? new Date(item[field.name]).toLocaleDateString()
                                 : "-"
                             }}
                           </span>
                           <span v-else-if="field.type === 'select'">
                             {{
-                              field.options?.find(
-                                (opt) => (opt.value || opt) === item[field.name]
-                              )?.label ||
+                              field.options?.find((opt) => (opt.value || opt) === item[field.name])
+                                ?.label ||
                               item[field.name] ||
                               "-"
                             }}
@@ -286,19 +259,14 @@ onMounted(() => {
                               (() => {
                                 if (!item[field.name]) return "-";
                                 const linkedSchema = schemas.find(
-                                  (s) => s.id === field.linkedSchema
+                                  (s) => s.id === field.linkedSchema,
                                 );
-                                const linkedData = getLinkedSchemaData(
-                                  field.linkedSchema
-                                );
+                                const linkedData = getLinkedSchemaData(field.linkedSchema);
                                 const linkedItem = linkedData.find(
-                                  (d) => d.id === item[field.name]
+                                  (d) => d.id === item[field.name],
                                 );
                                 return linkedItem
-                                  ? getLinkedDataDisplayValue(
-                                      linkedItem,
-                                      linkedSchema
-                                    )
+                                  ? getLinkedDataDisplayValue(linkedItem, linkedSchema)
                                   : `Missing (${item[field.name]})`;
                               })()
                             }}
@@ -316,9 +284,7 @@ onMounted(() => {
                 </div>
                 <div v-else class="text-center py-8">
                   <div class="text-4xl mb-2">📝</div>
-                  <p class="text-base-content/60">
-                    No {{ activeSchema.name.toLowerCase() }} yet
-                  </p>
+                  <p class="text-base-content/60">No {{ activeSchema.name.toLowerCase() }} yet</p>
                   <SButton @click="openAddForm" class="btn-primary btn-sm mt-4">
                     Add First {{ activeSchema.name.slice(0, -1) }}
                   </SButton>
@@ -354,11 +320,7 @@ onMounted(() => {
                 </div>
               </div>
 
-              <div
-                v-for="field in activeSchema?.fields"
-                :key="field.id"
-                class="form-control"
-              >
+              <div v-for="field in activeSchema?.fields" :key="field.id" class="form-control">
                 <label class="label">
                   <span class="label-text">
                     {{ field.name }}
@@ -453,7 +415,7 @@ onMounted(() => {
                       {{
                         getLinkedDataDisplayValue(
                           item,
-                          schemas.find((s) => s.id === field.linkedSchema)
+                          schemas.find((s) => s.id === field.linkedSchema),
                         )
                       }}
                     </option>
@@ -462,8 +424,8 @@ onMounted(() => {
                     <span class="label-text-alt text-base-content/60">
                       Links to
                       {{
-                        schemas.find((s) => s.id === field.linkedSchema)
-                          ?.name || "another data type"
+                        schemas.find((s) => s.id === field.linkedSchema)?.name ||
+                        "another data type"
                       }}
                     </span>
                   </div>
@@ -484,9 +446,7 @@ onMounted(() => {
                       d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
                     />
                   </svg>
-                  <span class="text-sm"
-                    >Unsupported field type: {{ field.type }}</span
-                  >
+                  <span class="text-sm">Unsupported field type: {{ field.type }}</span>
                 </div>
               </div>
 
@@ -509,9 +469,7 @@ onMounted(() => {
           <div class="text-center">
             <div class="text-6xl mb-4">📱</div>
             <h2 class="text-2xl font-bold mb-2">No Apps</h2>
-            <p class="text-base-600 mb-6">
-              Create your first app to get started
-            </p>
+            <p class="text-base-600 mb-6">Create your first app to get started</p>
             <SButton variant="primary" @click="createNewApp">
               <span class="mr-2">➕</span> Create Your First App
             </SButton>

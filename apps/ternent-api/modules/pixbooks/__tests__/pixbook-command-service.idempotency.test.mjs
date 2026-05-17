@@ -9,12 +9,7 @@ function trim(value) {
   return String(value || "").trim();
 }
 
-function hashRequest({
-  routeTemplate,
-  bookId,
-  signingIdentityId,
-  body,
-}) {
+function hashRequest({ routeTemplate, bookId, signingIdentityId, body }) {
   const canonical = canonicalStringify({
     method: "POST",
     routeTemplate,
@@ -43,12 +38,7 @@ function makeIdempotencyRepo({ initialRows = [] } = {}) {
     fail: 0,
   };
 
-  function getKey({
-    accountId,
-    routeTemplate,
-    bookId,
-    idempotencyKey,
-  }) {
+  function getKey({ accountId, routeTemplate, bookId, idempotencyKey }) {
     return `${trim(accountId)}|${trim(routeTemplate)}|${trim(bookId)}|${trim(idempotencyKey)}`;
   }
 
@@ -404,7 +394,7 @@ test("failed command replay returns identical failure payload fields", async () 
           {
             expectedPrevHash: "sha256:expected",
             currentPrevHash: "sha256:actual",
-          }
+          },
         );
       },
     },
@@ -420,7 +410,7 @@ test("failed command replay returns identical failure payload fields", async () 
       assert.equal(error.statusCode, 409);
       assert.equal(error.code, "STREAM_HEAD_CONFLICT");
       return true;
-    }
+    },
   );
 
   await assert.rejects(
@@ -433,7 +423,7 @@ test("failed command replay returns identical failure payload fields", async () 
       assert.equal(error.message, firstError.message);
       assert.deepEqual(error.details, firstError.details);
       return true;
-    }
+    },
   );
 
   assert.equal(appendCalls, 1);

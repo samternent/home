@@ -114,7 +114,9 @@ function readStoredIdentityDirectoryFromBrowser(): StoredIdentityDirectory {
   }
 
   try {
-    const normalizedLegacy = normalizeStoredIdentity(JSON.parse(legacyRaw) as StoredIdentity | null);
+    const normalizedLegacy = normalizeStoredIdentity(
+      JSON.parse(legacyRaw) as StoredIdentity | null,
+    );
     const migrated = normalizeStoredIdentityDirectory({
       activeIdentityId: normalizedLegacy?.id || "",
       identities: normalizedLegacy ? [normalizedLegacy] : [],
@@ -164,11 +166,9 @@ function ensureHydrated() {
 export function useIdentitySession(): IdentitySession {
   ensureHydrated();
 
-  const identities = computed(() =>
-    normalizeStoredIdentityDirectory(state.value).identities,
-  );
-  const activeIdentityId = computed(() =>
-    normalizeStoredIdentityDirectory(state.value).activeIdentityId,
+  const identities = computed(() => normalizeStoredIdentityDirectory(state.value).identities);
+  const activeIdentityId = computed(
+    () => normalizeStoredIdentityDirectory(state.value).activeIdentityId,
   );
   const identity = computed(
     () =>
@@ -192,9 +192,7 @@ export function useIdentitySession(): IdentitySession {
     const existing = identities.value.filter((entry) => entry.id !== normalized.id);
     const nextDirectory = normalizeStoredIdentityDirectory({
       activeIdentityId:
-        options.makeActive === false
-          ? activeIdentityId.value || normalized.id
-          : normalized.id,
+        options.makeActive === false ? activeIdentityId.value || normalized.id : normalized.id,
       identities: [...existing, normalized],
     });
     state.value = nextDirectory;
@@ -223,12 +221,14 @@ export function useIdentitySession(): IdentitySession {
       if (entry.id !== resolvedIdentityId) {
         return entry;
       }
-      return normalizeStoredIdentity({
-        ...entry,
-        ...patch,
-        id: entry.id,
-        serializedIdentity: patch.serializedIdentity || entry.serializedIdentity,
-      }) || entry;
+      return (
+        normalizeStoredIdentity({
+          ...entry,
+          ...patch,
+          id: entry.id,
+          serializedIdentity: patch.serializedIdentity || entry.serializedIdentity,
+        }) || entry
+      );
     });
     const nextDirectory = normalizeStoredIdentityDirectory({
       activeIdentityId: activeIdentityId.value,

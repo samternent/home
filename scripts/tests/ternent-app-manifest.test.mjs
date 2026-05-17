@@ -156,10 +156,7 @@ test("builds a deploy workflow for scaffolded apps", () => {
 
   const workflow = createDeployWorkflowSource(manifest);
 
-  assert.equal(
-    getVercelProjectSecretName("receipt-checker"),
-    "VERCEL_RECEIPT_CHECKER_PROJECT_ID",
-  );
+  assert.equal(getVercelProjectSecretName("receipt-checker"), "VERCEL_RECEIPT_CHECKER_PROJECT_ID");
   assert.match(workflow, /name: Release receipt-checker\.ternent\.dev/);
   assert.match(workflow, /tags:\n\s+- "receipt-checker-\*\.\*\.\*"/);
   assert.match(workflow, /apps\/receipt-checker\/\.vercel\/output\/static/);

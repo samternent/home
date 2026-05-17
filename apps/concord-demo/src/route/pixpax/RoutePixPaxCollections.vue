@@ -20,9 +20,7 @@ async function loadCatalog() {
   error.value = "";
   try {
     const response = await listPixpaxCollectionCatalog();
-    collections.value = Array.isArray(response.collections)
-      ? response.collections
-      : [];
+    collections.value = Array.isArray(response.collections) ? response.collections : [];
   } catch (nextError: any) {
     error.value = String(nextError?.message || "Failed to load collection catalog.");
   } finally {
@@ -39,9 +37,7 @@ onMounted(() => {
   <div class="mx-auto flex w-full max-w-4xl flex-col gap-4 p-4">
     <header class="flex flex-col gap-1">
       <h1 class="text-3xl font-semibold tracking-tight text-[var(--ui-fg)]">Collections</h1>
-      <p class="text-sm text-[var(--ui-fg-muted)]">
-        Browse public PixPax collections.
-      </p>
+      <p class="text-sm text-[var(--ui-fg-muted)]">Browse public PixPax collections.</p>
     </header>
 
     <p v-if="loading" class="text-sm text-[var(--ui-fg-muted)]">Loading collections...</p>
@@ -61,9 +57,15 @@ onMounted(() => {
         class="rounded-xl border border-[var(--ui-border)] bg-[var(--ui-bg)]/70 p-4 transition hover:border-[var(--ui-fg)]/30"
       >
         <div class="flex flex-col gap-1">
-          <h2 class="text-lg font-semibold text-[var(--ui-fg)]">{{ row.name || row.collectionId }}</h2>
-          <p class="text-xs text-[var(--ui-fg-muted)]">Issued by {{ row.issuer?.name || "PixPax" }}</p>
-          <p v-if="row.description" class="text-sm text-[var(--ui-fg-muted)]">{{ row.description }}</p>
+          <h2 class="text-lg font-semibold text-[var(--ui-fg)]">
+            {{ row.name || row.collectionId }}
+          </h2>
+          <p class="text-xs text-[var(--ui-fg-muted)]">
+            Issued by {{ row.issuer?.name || "PixPax" }}
+          </p>
+          <p v-if="row.description" class="text-sm text-[var(--ui-fg-muted)]">
+            {{ row.description }}
+          </p>
           <p class="mt-1 text-[10px] uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]">
             {{ row.collectionId }} · {{ row.resolvedVersion }}
           </p>
