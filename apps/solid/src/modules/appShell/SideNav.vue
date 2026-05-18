@@ -3,7 +3,7 @@ import { useLocalStorage, breakpointsTailwind, useBreakpoints } from "@vueuse/co
 import { computed, shallowRef, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useAppApi, type AppLedgerContainer } from "@/app/api";
-import { Button, SplitButton } from "ternent-ui/primitives";
+import { Badge, Button, SplitButton } from "ternent-ui/primitives";
 import { IdentityHandle, SidebarNav } from "ternent-ui/patterns";
 import type { SidebarNavSection } from "ternent-ui/patterns";
 import { buildSidebarNavigationSections } from "./navigation";
@@ -42,6 +42,8 @@ const activeIdentityKey = computed(
   () => appApi.identity.activeIdentity.value?.identityKey ?? "invalid-identity",
 );
 const activeIdentityShortId = computed(() => activeIdentityId.value.slice(0, 12));
+const stagedCount = computed(() => appApi.getState().stagedCount);
+const integrityValid = computed(() => appApi.getState().integrityValid);
 const identityTone = computed<"success" | "warning" | "critical">(() => {
   if (appApi.status.value === "ready" && appApi.identity.activeIdentity.value) {
     return "success";
@@ -52,6 +54,12 @@ const identityTone = computed<"success" | "warning" | "critical">(() => {
   return "warning";
 });
 const identityDotColor = computed(() => `var(--ui-${identityTone.value})`);
+const stagedTone = computed<"warning" | "success">(() =>
+  stagedCount.value > 0 ? "warning" : "success",
+);
+const stagedLabel = computed(() =>
+  stagedCount.value > 0 ? `${stagedCount.value} staged` : "No staged entries",
+);
 
 const releaseHref = computed(() =>
   appVersion.value
@@ -196,12 +204,26 @@ async function relaunchOnboarding(): Promise<void> {
       'absolute z-30 h-full w-64': smallerThanMd && openSideBar,
     }"
   >
-    <SidebarNav title="Concord" :sections="navigationSections" @select="handleNavSelect">
+    <SidebarNav
+      title="Concord"
+      :sections="navigationSections"
+      class="h-full bg-white/95 shadow-[0_8px_28px_rgba(15,23,42,0.08)]"
+      @select="handleNavSelect"
+    >
       <template #header>
         <div class="flex w-full items-center justify-between gap-2">
-          <div class="flex items-center justify-start gap-2 w-full ">
-            <RouterLink to="/" class="m-1.5 group hover:grayscale-0 transition duration-300">
-              <Logo class="size-6 group-hover:-rotate-6 transition-all duration-300" />
+          <div class="flex w-full items-center justify-start gap-2">
+            <RouterLink
+              to="/"
+              class="group inline-flex items-center gap-2 rounded-xl px-1 py-1 transition duration-200 hover:bg-slate-100"
+            >
+              <div class="rounded-lg bg-slate-100 p-1.5 text-slate-900">
+                <Logo class="size-5 transition-all duration-300 group-hover:-rotate-6" />
+              </div>
+              <div class="min-w-0">
+                <p class="m-0 truncate text-sm font-semibold text-slate-900">Concord</p>
+                <p class="m-0 truncate text-xs text-slate-500">Verifiable workspace</p>
+              </div>
             </RouterLink>
           </div>
           <Button
@@ -231,6 +253,41 @@ async function relaunchOnboarding(): Promise<void> {
 
       <template #footer>
         <div class="flex flex-col gap-2">
+          <div class="rounded-xl border border-slate-200 bg-slate-50/80 p-2.5">
+            <p class="m-0 text-[11px] font-medium uppercase tracking-[0.12em] text-slate-500">Identity</p>
+            <div class="mt-2">
+              <IdentityHandle
+                :identity="activeIdentityKey"
+                :label="activeIdentityLabel"
+                :identity-text="activeIdentityShortId"
+                size="sm"
+                data-test="sidebar-active-identity-handle"
+              >
+                <template #status>
+                  <span
+                    class="inline-block h-2 w-2 rounded-full"
+                    :style="{ backgroundColor: identityDotColor }"
+                    data-test="sidebar-active-identity-status"
+                  ></span>
+                </template>
+              </IdentityHandle>
+              <span class="sr-only" data-test="sidebar-active-identity-label">
+                {{ activeIdentityLabel }}
+              </span>
+              <span class="sr-only" data-test="sidebar-active-identity-id">
+                {{ activeIdentityShortId }}
+              </span>
+            </div>
+            <div class="mt-2 flex flex-wrap items-center gap-1.5">
+              <Badge tone="success" variant="soft" size="xs">
+                {{ integrityValid ? "Integrity verified" : "Integrity issue" }}
+              </Badge>
+              <Badge :tone="stagedTone" variant="soft" size="xs">
+                {{ stagedLabel }}
+              </Badge>
+            </div>
+          </div>
+
           <input
             ref="ledgerUploadInputRef"
             type="file"
@@ -246,29 +303,13 @@ async function relaunchOnboarding(): Promise<void> {
             data-test="sidebar-identity-management"
           >
             <template #primary>
-              <div class="min-w-0 flex-1 px-3 py-2">
-                <IdentityHandle
-                  :identity="activeIdentityKey"
-                  :label="activeIdentityLabel"
-                  :identity-text="activeIdentityShortId"
-                  size="sm"
-                  data-test="sidebar-active-identity-handle"
-                >
-                  <template #status>
-                    <span
-                      class="inline-block h-2 w-2 rounded-full"
-                      :style="{ backgroundColor: identityDotColor }"
-                      data-test="sidebar-active-identity-status"
-                    ></span>
-                  </template>
-                </IdentityHandle>
-                <span class="sr-only" data-test="sidebar-active-identity-label">
-                  {{ activeIdentityLabel }}
-                </span>
-                <span class="sr-only" data-test="sidebar-active-identity-id">
-                  {{ activeIdentityShortId }}
-                </span>
-              </div>
+              <button
+                type="button"
+                class="flex-1 px-4 py-2 text-left text-xs font-medium transition-colors hover:bg-[var(--ui-fg)]/5 disabled:cursor-not-allowed disabled:opacity-50"
+                :disabled="identityActionBusy"
+              >
+                Identity actions
+              </button>
             </template>
             <template #menu="{ closeMenu }">
               <button
@@ -299,7 +340,7 @@ async function relaunchOnboarding(): Promise<void> {
                 data-test="sidebar-ledger-create"
                 @click="createLedger"
               >
-                Create Ledger
+                New Ledger
               </button>
             </template>
             <template #menu="{ closeMenu }">
@@ -313,7 +354,7 @@ async function relaunchOnboarding(): Promise<void> {
                   closeMenu();
                 "
               >
-                Import Ledger (JSON)
+                Import Ledger JSON
               </button>
               <button
                 type="button"
@@ -325,7 +366,7 @@ async function relaunchOnboarding(): Promise<void> {
                   closeMenu();
                 "
               >
-                Export Ledger (JSON)
+                Export Ledger JSON
               </button>
             </template>
           </SplitButton>

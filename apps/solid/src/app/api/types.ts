@@ -15,6 +15,16 @@ import type {
   PermissionRevokeInput,
   ProfileRecord,
   ProfileUpsertInput,
+  TaskArchiveInput,
+  TaskAssignInput,
+  TaskBoardColumnRecord,
+  TaskBoardRecord,
+  TaskCreateInput,
+  TaskListCreateInput,
+  TaskListRecord,
+  TaskMoveInput,
+  TaskRecord,
+  TaskRenameInput,
   UserCreateInput,
   UserRecord,
 } from "@/app/plugins";
@@ -71,6 +81,26 @@ export type AppPermissionsApi = {
   byId(permissionId: string): PermissionRecord | null;
 };
 
+export type AppTasksApi = {
+  create(input: Omit<TaskCreateInput, "actorIdentityKey">): Promise<ConcordCommandResult>;
+  rename(input: Omit<TaskRenameInput, "actorIdentityKey">): Promise<ConcordCommandResult>;
+  move(input: Omit<TaskMoveInput, "actorIdentityKey">): Promise<ConcordCommandResult>;
+  assign(input: Omit<TaskAssignInput, "actorIdentityKey">): Promise<ConcordCommandResult>;
+  archive(input: Omit<TaskArchiveInput, "actorIdentityKey">): Promise<ConcordCommandResult>;
+  createPublicList(
+    input: Omit<TaskListCreateInput, "actorIdentityKey">,
+  ): Promise<ConcordCommandResult>;
+  all(): TaskRecord[];
+  byId(taskId: string): TaskRecord | null;
+  byBoard(boardId: string): TaskRecord[];
+  byColumn(boardId: string, columnId: string): TaskRecord[];
+  publicLists(): TaskListRecord[];
+  permissionLists(): PermissionRecord[];
+  boardColumns(boardId?: string): TaskBoardColumnRecord[];
+  boards(): TaskBoardRecord[];
+  defaultBoardId(): string;
+};
+
 export type AppApi = {
   status: Readonly<Ref<AppStatus>>;
   state: Readonly<Ref<Readonly<ConcordState>>>;
@@ -112,6 +142,7 @@ export type AppApi = {
   users: AppUsersApi;
   permissions: AppPermissionsApi;
   profiles: AppProfilesApi;
+  tasks: AppTasksApi;
   load(): Promise<void>;
   command<TInput = unknown>(type: string, input: TInput): Promise<ConcordCommandResult>;
   commit(input?: ConcordCommitInput): Promise<ConcordCommitResult>;

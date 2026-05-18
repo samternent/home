@@ -19,7 +19,7 @@ function createRuntimeRouter() {
     history: createMemoryHistory(),
     routes: [
       {
-        path: "/app/:appId/:surfaceId?",
+        path: "/w/:appId/:surfaceId?",
         component: RouteRuntimeApp,
       },
       {
@@ -35,7 +35,7 @@ function createRuntimeRouter() {
 describe("RouteRuntimeApp", () => {
   it("normalizes app-only route for tasks to default surface", async () => {
     const router = createRuntimeRouter();
-    await router.push("/app/tasks");
+    await router.push("/w/tasks");
     await router.isReady();
 
     const wrapper = mount(RouteRuntimeApp, {
@@ -44,17 +44,17 @@ describe("RouteRuntimeApp", () => {
       },
     });
 
-    const rendered = await waitFor(() => wrapper.find('[data-test="runtime-app-title"]').exists());
+    const rendered = await waitFor(() => wrapper.find('[data-test="runtime-task-list-v1"]').exists());
     expect(rendered).toBe(true);
-    expect(router.currentRoute.value.fullPath).toBe("/app/tasks/list");
-    expect(wrapper.find('[data-test="runtime-surface-tabs-bar"]').exists()).toBe(true);
-    expect(wrapper.get('[data-test="runtime-app-title"]').text()).toContain("Tasks");
-    expect(wrapper.get('[data-test="runtime-app-surface"]').text()).toContain("List");
+    expect(router.currentRoute.value.fullPath).toBe("/w/tasks/list");
+    expect(wrapper.find('[role="tablist"]').exists()).toBe(true);
+    expect(wrapper.text()).toContain("List");
+    expect(wrapper.text()).toContain("Board");
   });
 
   it("renders known app+surface route", async () => {
     const router = createRuntimeRouter();
-    await router.push("/app/tasks/list");
+    await router.push("/w/tasks/list");
     await router.isReady();
 
     const wrapper = mount(RouteRuntimeApp, {
@@ -63,17 +63,15 @@ describe("RouteRuntimeApp", () => {
       },
     });
 
-    const rendered = await waitFor(() =>
-      wrapper.find('[data-test="runtime-app-surface"]').exists(),
-    );
+    const rendered = await waitFor(() => wrapper.find('[data-test="runtime-task-list-v1"]').exists());
     expect(rendered).toBe(true);
-    expect(wrapper.get('[data-test="runtime-app-surface"]').text()).toContain("List");
-    expect(wrapper.text()).toContain("Board");
+    expect(wrapper.find('[data-test="runtime-task-list-create-title"]').exists()).toBe(false);
+    expect(wrapper.find('[data-test="runtime-task-list-open-create"]').exists()).toBe(true);
   });
 
   it("renders unsupported state for unknown app", async () => {
     const router = createRuntimeRouter();
-    await router.push("/app/unknown");
+    await router.push("/w/unknown");
     await router.isReady();
 
     const wrapper = mount(RouteRuntimeApp, {
@@ -93,7 +91,7 @@ describe("RouteRuntimeApp", () => {
 
   it("keeps unsupported state for unknown surface on known app", async () => {
     const router = createRuntimeRouter();
-    await router.push("/app/tasks/unknown");
+    await router.push("/w/tasks/unknown");
     await router.isReady();
 
     const wrapper = mount(RouteRuntimeApp, {
@@ -106,12 +104,12 @@ describe("RouteRuntimeApp", () => {
       wrapper.find('[data-test="runtime-app-unsupported-title"]').exists(),
     );
     expect(rendered).toBe(true);
-    expect(router.currentRoute.value.fullPath).toBe("/app/tasks/unknown");
+    expect(router.currentRoute.value.fullPath).toBe("/w/tasks/unknown");
   });
 
   it("navigates between surfaces from top tabs", async () => {
     const router = createRuntimeRouter();
-    await router.push("/app/tasks/list");
+    await router.push("/w/tasks/list");
     await router.isReady();
 
     const wrapper = mount(RouteRuntimeApp, {
@@ -120,17 +118,18 @@ describe("RouteRuntimeApp", () => {
       },
     });
 
-    const rendered = await waitFor(() =>
-      wrapper.find('[data-test="runtime-surface-tabs-bar"]').exists(),
-    );
+    const rendered = await waitFor(() => wrapper.find('[role="tablist"]').exists());
     expect(rendered).toBe(true);
 
     const boardTab = wrapper.findAll('[role="tab"]').find((tab) => tab.text().trim() === "Board");
     expect(boardTab).toBeTruthy();
     await boardTab!.trigger("click");
 
-    const moved = await waitFor(() => router.currentRoute.value.fullPath === "/app/tasks/board");
+    const moved = await waitFor(() => router.currentRoute.value.fullPath === "/w/tasks/board");
     expect(moved).toBe(true);
-    expect(wrapper.get('[data-test="runtime-app-surface"]').text()).toContain("Board");
+    const boardRendered = await waitFor(() =>
+      wrapper.find('[data-test="runtime-task-board-v1"]').exists(),
+    );
+    expect(boardRendered).toBe(true);
   });
 });

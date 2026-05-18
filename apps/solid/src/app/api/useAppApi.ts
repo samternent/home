@@ -18,13 +18,25 @@ import {
 import {
   createPermissionsPlugin,
   createProfilesPlugin,
+  createTasksPlugin,
   createUsersPlugin,
   type PermissionCreateInput,
   type PermissionGrantInput,
+  type PermissionsState,
   type PermissionRecord,
   type PermissionRevokeInput,
   type ProfileRecord,
   type ProfileUpsertInput,
+  type TaskArchiveInput,
+  type TaskAssignInput,
+  type TaskBoardColumnRecord,
+  type TaskBoardRecord,
+  type TaskCreateInput,
+  type TaskListCreateInput,
+  type TaskListRecord,
+  type TaskMoveInput,
+  type TaskRecord,
+  type TaskRenameInput,
   type UserCreateInput,
   type UserRecord,
 } from "@/app/plugins";
@@ -53,7 +65,7 @@ function toErrorMessage(error: unknown): string {
 }
 
 function createDefaultPlugins(): AppProjectionPlugin[] {
-  return [createUsersPlugin(), createProfilesPlugin(), createPermissionsPlugin()];
+  return [createUsersPlugin(), createProfilesPlugin(), createPermissionsPlugin(), createTasksPlugin()];
 }
 
 function createInitialState(plugins: AppProjectionPlugin[]): ConcordState {
@@ -514,6 +526,106 @@ export function createAppApi(options?: CreateAppApiOptions): AppApi {
           activeIdentity.value?.identityKey ?? null,
           activeIdentity.value?.identityId ?? null,
         );
+      },
+    },
+    tasks: {
+      create(input: Omit<TaskCreateInput, "actorIdentityKey">) {
+        const actor = requireActiveIdentity(activeIdentity.value);
+        return api.command("task.create", {
+          ...input,
+          actorIdentityKey: actor.identityKey,
+        } satisfies TaskCreateInput);
+      },
+      rename(input: Omit<TaskRenameInput, "actorIdentityKey">) {
+        const actor = requireActiveIdentity(activeIdentity.value);
+        return api.command("task.rename", {
+          ...input,
+          actorIdentityKey: actor.identityKey,
+        } satisfies TaskRenameInput);
+      },
+      move(input: Omit<TaskMoveInput, "actorIdentityKey">) {
+        const actor = requireActiveIdentity(activeIdentity.value);
+        return api.command("task.move", {
+          ...input,
+          actorIdentityKey: actor.identityKey,
+        } satisfies TaskMoveInput);
+      },
+      assign(input: Omit<TaskAssignInput, "actorIdentityKey">) {
+        const actor = requireActiveIdentity(activeIdentity.value);
+        return api.command("task.assign", {
+          ...input,
+          actorIdentityKey: actor.identityKey,
+        } satisfies TaskAssignInput);
+      },
+      archive(input: Omit<TaskArchiveInput, "actorIdentityKey">) {
+        const actor = requireActiveIdentity(activeIdentity.value);
+        return api.command("task.archive", {
+          ...input,
+          actorIdentityKey: actor.identityKey,
+        } satisfies TaskArchiveInput);
+      },
+      createPublicList(input: Omit<TaskListCreateInput, "actorIdentityKey">) {
+        const actor = requireActiveIdentity(activeIdentity.value);
+        return api.command("task.list.create", {
+          ...input,
+          actorIdentityKey: actor.identityKey,
+        } satisfies TaskListCreateInput);
+      },
+      all() {
+        return api.select<TaskRecord[]>(
+          "tasks",
+          "all",
+          activeIdentity.value?.identityKey ?? null,
+          activeIdentity.value?.identityId ?? null,
+          api.getPluginState<PermissionsState>("permissions"),
+        );
+      },
+      byId(taskId: string) {
+        return api.select<TaskRecord | null>(
+          "tasks",
+          "byId",
+          taskId,
+          activeIdentity.value?.identityKey ?? null,
+          activeIdentity.value?.identityId ?? null,
+          api.getPluginState<PermissionsState>("permissions"),
+        );
+      },
+      byBoard(boardId: string) {
+        return api.select<TaskRecord[]>(
+          "tasks",
+          "byBoard",
+          boardId,
+          activeIdentity.value?.identityKey ?? null,
+          activeIdentity.value?.identityId ?? null,
+          api.getPluginState<PermissionsState>("permissions"),
+        );
+      },
+      byColumn(boardId: string, columnId: string) {
+        return api.select<TaskRecord[]>(
+          "tasks",
+          "byColumn",
+          boardId,
+          columnId,
+          activeIdentity.value?.identityKey ?? null,
+          activeIdentity.value?.identityId ?? null,
+          api.getPluginState<PermissionsState>("permissions"),
+        );
+      },
+      publicLists() {
+        return api.select<TaskListRecord[]>("tasks", "publicLists");
+      },
+      permissionLists() {
+        return api.permissions.all();
+      },
+      boardColumns(boardId?: string) {
+        const resolvedBoardId = boardId ?? api.select<string>("tasks", "defaultBoardId");
+        return api.select<TaskBoardColumnRecord[]>("tasks", "boardColumns", resolvedBoardId);
+      },
+      boards() {
+        return api.select<TaskBoardRecord[]>("tasks", "boards");
+      },
+      defaultBoardId() {
+        return api.select<string>("tasks", "defaultBoardId");
       },
     },
     load() {

@@ -18,10 +18,9 @@ describe("v2 routes", () => {
     const paths = flattenPaths(routes);
 
     expect(paths).toContain("/");
-    expect(paths).toContain("/launch");
-    expect(paths).toContain("/users");
-    expect(paths).toContain("/permissions/:permissionKey?");
-    expect(paths).toContain("/app/:appId/:surfaceId?");
+    expect(paths).toContain("/s/users");
+    expect(paths).toContain("/s/permissions/:permissionKey?");
+    expect(paths).toContain("/w/:appId/:surfaceId?");
 
     const catchAll = routes.find((route) => route.path.includes(":pathMatch"));
     expect(catchAll?.redirect).toBe("/");

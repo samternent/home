@@ -29,6 +29,7 @@ describe("runtime app registry v0", () => {
     expect(isSupportedRuntimeSurface(app!, "list")).toBe(true);
     expect(isSupportedRuntimeSurface(app!, "board")).toBe(true);
     expect(isSupportedRuntimeSurface(app!, undefined)).toBe(true);
+    expect(resolveRuntimeSurface(app!, "list")?.entryEditor).toBeUndefined();
   });
 
   it("returns null/false for unknown app or surface", () => {
@@ -48,6 +49,7 @@ describe("runtime app registry v0", () => {
         {
           id: "list",
           label: "List",
+          entryEditor: {},
         },
       ],
     };

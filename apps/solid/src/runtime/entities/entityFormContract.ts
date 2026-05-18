@@ -2,7 +2,7 @@ import type { Component } from "vue";
 
 export type EntityFormMode = "create" | "edit";
 
-export type EntityFieldKind = "text" | "textarea" | "checkbox" | "radio";
+export type EntityFieldKind = "text" | "textarea" | "checkbox" | "radio" | "select";
 
 export type EntityFieldOption = {
   value: string;
@@ -24,6 +24,7 @@ export type EntityFieldDefinition = {
   label: string;
   kind: EntityFieldKind;
   required?: boolean;
+  disabled?: boolean;
   placeholder?: string;
   description?: string;
   defaultValue?: unknown;

@@ -1,7 +1,15 @@
+import type { Component } from "vue";
+
+export type RuntimeAppSurfaceEditorConfig = {
+  customFormComponent?: Component;
+  customFormComponentLoader?: () => Promise<any>;
+};
+
 export type RuntimeAppSurfaceDefinition = {
   id: string;
   label: string;
   component?: () => Promise<any>;
+  entryEditor?: RuntimeAppSurfaceEditorConfig;
 };
 
 export type RuntimeAppDefinition = {

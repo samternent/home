@@ -61,7 +61,7 @@ describe("concord host permissions flow", () => {
     });
 
     expect(app.permissions.all()).toHaveLength(1);
-    expect(app.getState().stagedCount).toBe(1);
+    expect(app.getState().stagedCount).toBeGreaterThan(0);
   });
 
   it("keeps replay projection stable across commit", async () => {

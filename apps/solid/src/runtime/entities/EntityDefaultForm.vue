@@ -70,9 +70,10 @@ function cancel(): void {
             :id="slotProps.id"
             :model-value="readStringValue(field.id)"
             :placeholder="field.placeholder"
-            :disabled="props.submitting"
+            :disabled="props.submitting || Boolean(field.disabled)"
             :invalid="slotProps.invalid"
             :aria-describedby="slotProps.describedBy"
+            :data-test="`entity-form-field-${field.id}`"
             @update:model-value="(nextValue) => updateValue(field, nextValue)"
           />
 
@@ -81,18 +82,20 @@ function cancel(): void {
             :id="slotProps.id"
             :model-value="readStringValue(field.id)"
             :placeholder="field.placeholder"
-            :disabled="props.submitting"
+            :disabled="props.submitting || Boolean(field.disabled)"
             :invalid="slotProps.invalid"
             :aria-describedby="slotProps.describedBy"
+            :data-test="`entity-form-field-${field.id}`"
             @update:model-value="(nextValue) => updateValue(field, nextValue)"
           />
 
           <Checkbox
             v-else-if="field.kind === 'checkbox'"
             :model-value="readBooleanValue(field.id)"
-            :disabled="props.submitting"
+            :disabled="props.submitting || Boolean(field.disabled)"
             :invalid="slotProps.invalid"
             :aria-describedby="slotProps.describedBy"
+            :data-test="`entity-form-field-${field.id}`"
             @update:model-value="(nextValue) => updateValue(field, nextValue)"
           >
             {{ field.placeholder || field.label }}
@@ -102,11 +105,35 @@ function cancel(): void {
             v-else-if="field.kind === 'radio'"
             :model-value="readStringValue(field.id)"
             :options="field.options ?? []"
-            :disabled="props.submitting"
+            :disabled="props.submitting || Boolean(field.disabled)"
             :invalid="slotProps.invalid"
             :aria-describedby="slotProps.describedBy"
+            :data-test="`entity-form-field-${field.id}`"
             @update:model-value="(nextValue) => updateValue(field, nextValue)"
           />
+
+          <select
+            v-else-if="field.kind === 'select'"
+            :id="slotProps.id"
+            :value="readStringValue(field.id)"
+            class="w-full rounded-[var(--ui-radius-sm)] border border-[var(--ui-border)] bg-[var(--ui-surface)] px-3 py-2 text-sm"
+            :disabled="props.submitting || Boolean(field.disabled)"
+            :aria-describedby="slotProps.describedBy"
+            :data-test="`entity-form-field-${field.id}`"
+            @change="
+              (event) =>
+                updateValue(field, (event.target as HTMLSelectElement).value)
+            "
+          >
+            <option
+              v-for="option in field.options ?? []"
+              :key="option.value"
+              :value="option.value"
+              :disabled="Boolean(option.disabled)"
+            >
+              {{ option.label }}
+            </option>
+          </select>
         </template>
       </FormField>
 
