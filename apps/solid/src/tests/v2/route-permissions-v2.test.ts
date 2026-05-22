@@ -75,6 +75,16 @@ describe("RoutePermissions", () => {
         router.currentRoute.value.path.startsWith("/s/permissions/"),
     );
     expect(selected).toBe(true);
+    const railClass = wrapper.get('[data-test="permissions-layout-rail"]').attributes("class");
+    expect(railClass).toMatchInlineSnapshot(
+      "\"hidden w-64 shrink-0 overflow-auto border-r border-[var(--ui-border)] bg-[var(--ui-surface)] p-4 lg:block\"",
+    );
+    expect(wrapper.get('[data-test="permissions-layout-scroll"]').classes()).toContain(
+      "overflow-auto",
+    );
+    expect(wrapper.get('[data-test="permissions-layout-table-head"]').classes()).toContain(
+      "sticky",
+    );
 
     const actor = await useAppApi().identity.ensureActiveIdentity();
     const permissionRecord = useAppApi().permissions.all().at(0);

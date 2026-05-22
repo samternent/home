@@ -7,6 +7,7 @@ export { default as IdentityGlyph } from "./IdentityGlyph/IdentityGlyph.vue";
 export { default as IdentityHandle } from "./IdentityGlyph/IdentityHandle.vue";
 export { default as KeyValueList } from "./KeyValueList/KeyValueList.vue";
 export { default as LandingPage } from "./LandingPage/LandingPage.vue";
+export { default as ListWorkspaceLayout } from "./ListWorkspaceLayout/ListWorkspaceLayout.vue";
 export { default as Logo } from "./Logo/Logo.vue";
 export { default as PanelChrome } from "./PanelChrome/PanelChrome.vue";
 export { default as PageSurface } from "./PageSurface/PageSurface.vue";

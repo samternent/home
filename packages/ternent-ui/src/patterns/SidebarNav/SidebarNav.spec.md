@@ -29,4 +29,6 @@ Events:
 - renders grouped nav sections with optional section labels
 - supports Router links (`to`), external links (`href`), and button-like actions
 - applies active-state styling through `item.active`
+- supports optional item count pills via `item.count`
+- supports optional active indicator dot via `item.showActiveDot`
 - keeps footer actions visually separated from route links

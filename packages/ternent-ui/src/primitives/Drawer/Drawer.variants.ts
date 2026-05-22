@@ -1,18 +1,21 @@
 import type { DrawerSide, DrawerSize } from "./Drawer.types";
 
-export const drawerBackdropClass = "fixed inset-0 z-40 bg-[var(--ui-fg)]/40 backdrop-blur-sm";
-export const drawerPositionerBaseClass = "fixed inset-0 z-50 flex";
+export const drawerBackdropClass =
+  "fixed inset-0 z-[90] bg-[color:color-mix(in_srgb,var(--ui-bg)_28%,transparent)] backdrop-blur-[2px]";
+export const drawerPositionerBaseClass = "fixed inset-0 z-[100] flex";
 export const drawerPositionerSideClasses: Record<DrawerSide, string> = {
   left: "justify-start",
   right: "justify-end",
 };
 
 export const drawerContentBaseClass =
-  "flex h-full w-full max-w-full flex-col overflow-hidden border-[var(--ui-border)] bg-[var(--ui-surface)] text-[var(--ui-fg)] shadow-[var(--ui-shadow-md)]";
+  "flex h-full w-full max-w-full flex-col overflow-hidden border-[var(--ui-border)] bg-[var(--ui-surface)] text-[var(--ui-fg)] shadow-[var(--ui-shadow-md)] " +
+  "will-change-transform transition-[transform,opacity] duration-[var(--ui-duration-normal)] ease-[var(--ui-ease-out)] " +
+  "data-[state=open]:opacity-100 data-[state=closed]:opacity-0";
 
 export const drawerContentSideClasses: Record<DrawerSide, string> = {
-  left: "border-r",
-  right: "border-l",
+  left: "border-r data-[state=open]:translate-x-0 data-[state=closed]:-translate-x-6",
+  right: "border-l data-[state=open]:translate-x-0 data-[state=closed]:translate-x-6",
 };
 
 export const drawerContentSizeClasses: Record<DrawerSize, string> = {

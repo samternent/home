@@ -2,11 +2,12 @@
 import { computed, onMounted, ref, watch } from "vue";
 import { useAppApi } from "@/app/api";
 import { shortIdentityKey, toDidKeyFromPublicKey } from "@/app/plugins/identityKey";
-import { Badge, Button, Card, Dialog, FileInput, Input, Textarea } from "ternent-ui/primitives";
+import { Button, Dialog, FileInput, Input, Textarea } from "ternent-ui/primitives";
 import {
   FormField,
   IdentityGlyph,
   IdentityHandle,
+  ListWorkspaceLayout,
   resolveIdentityGlyphInput,
   type IdentityGlyphInput,
 } from "ternent-ui/patterns";
@@ -36,7 +37,6 @@ const profiles = computed(() => appApi.profiles.all());
 const activeIdentity = computed(() => appApi.identity.activeIdentity.value);
 const activeIdentityId = computed(() => activeIdentity.value?.identityId ?? "");
 const activeIdentityKey = computed(() => activeIdentity.value?.identityKey ?? "");
-const stagedCount = computed(() => appApi.getState().stagedCount);
 
 const profilesByKey = computed(
   () => new Map(profiles.value.map((profile) => [profile.identityKey, profile])),
@@ -46,17 +46,6 @@ const usersByKey = computed(() => new Map(users.value.map((user) => [user.identi
 function resolveUserDisplayName(identityKey: string, label: string | null): string {
   const profile = profilesByKey.value.get(identityKey);
   return profile?.displayName ?? label ?? shortIdentityKey(identityKey);
-}
-
-function resolveAddedByLabel(addedBy: string): string {
-  if (addedBy === activeIdentityKey.value || addedBy === activeIdentityId.value) {
-    return "You";
-  }
-  const projected = usersByKey.value.get(addedBy);
-  if (!projected) {
-    return shortIdentityKey(addedBy);
-  }
-  return resolveUserDisplayName(projected.identityKey, projected.label);
 }
 
 const groupCountByIdentity = computed(() => {
@@ -88,13 +77,12 @@ const collaborators = computed(() =>
       ...user,
       displayName: resolveUserDisplayName(user.identityKey, user.label),
       shortIdentity: shortIdentityKey(user.identityKey),
-      relationshipLabel: isActive ? "You" : "Workspace collaborator",
-      addedByLabel: resolveAddedByLabel(user.addedBy),
       groupCount,
       isActive,
     };
   }),
 );
+const filteredCollaborators = computed(() => collaborators.value);
 const showCreateForm = computed(() => createOpen.value || users.value.length === 0);
 const canCollapseCreateForm = computed(() => users.value.length > 0);
 
@@ -241,71 +229,47 @@ onMounted(async () => {
 </script>
 
 <template>
-  <section class="mx-auto h-full min-h-0 w-full p-6" data-test="users-v2">
+  <section class="h-full min-h-0 w-full" data-test="users-v2">
     <p class="sr-only" data-test="users-v2-status">{{ appApi.status.value }}</p>
-
-    <header class="mb-6 space-y-1">
-      <p class="m-0 text-xs uppercase tracking-[0.12em] text-[var(--ui-fg-muted)]">Users</p>
-      <h1 class="m-0 text-2xl font-semibold text-[var(--ui-fg)]">Workspace collaborators</h1>
-      <p class="m-0 text-sm text-[var(--ui-fg-muted)]">
-        Trusted identities available to permissions and encrypted access groups in this workspace.
-      </p>
-    </header>
 
     <p
       v-if="pageError"
-      class="m-0 mb-3 text-sm text-[var(--ui-critical)]"
+      class="m-0 border-b border-[var(--ui-border)] px-6 py-3 text-sm text-[var(--ui-critical)] md:px-8"
       data-test="users-v2-page-error"
     >
       {{ pageError }}
     </p>
 
-    <div class="grid min-h-0 gap-5 xl:grid-cols-[minmax(0,1fr)_300px]">
-      <section
-        class="space-y-4 rounded-[var(--ui-radius-lg)] border border-[var(--ui-border)] bg-[var(--ui-surface)] p-4"
-      >
-        <header class="space-y-3">
-          <div class="flex flex-wrap items-end justify-between gap-3">
-            <div class="space-y-1">
-              <p class="m-0 text-xs uppercase tracking-[0.12em] text-[var(--ui-fg-muted)]">
-                Collaborators
-              </p>
-              <h2 class="m-0 text-2xl font-semibold text-[var(--ui-fg)]">
-                Trusted workspace identities
-              </h2>
-            </div>
-            <div class="flex items-center gap-2">
-              <Badge tone="primary" variant="soft" size="sm">
-                {{ collaborators.length }}
-                {{ collaborators.length === 1 ? "collaborator" : "collaborators" }}
-              </Badge>
-              <Badge tone="secondary" variant="soft" size="sm"> {{ stagedCount }} staged </Badge>
+    <ListWorkspaceLayout :show-rail="false" data-test-prefix="users-layout">
+      <section class="flex min-h-0 flex-1 flex-col">
+        <header class="flex h-20 shrink-0 items-center justify-between border-b border-[var(--ui-border)] bg-[color-mix(in_srgb,var(--ui-surface)_92%,transparent)] px-6 md:px-8">
+          <div>
+            <h2 class="m-0 text-[28px] font-semibold tracking-[-0.035em] text-[var(--ui-fg)]">Users</h2>
+            <div class="mt-1 flex items-center gap-2 text-xs font-semibold text-[var(--ui-fg-muted)]">
+              <span>{{ filteredCollaborators.length }} collaborator{{ filteredCollaborators.length === 1 ? "" : "s" }}</span>
             </div>
           </div>
-          <p class="m-0 max-w-3xl text-sm text-[var(--ui-fg-muted)]">
-            Collaborators are imported from Concord identity files and become available to access
-            groups and encrypted permissions.
-          </p>
+
           <div class="flex items-center gap-2">
+            <Button type="button" size="sm" variant="secondary" @click="createOpen = true">
+              Import
+            </Button>
             <Button
               type="button"
               size="sm"
-              variant="secondary"
+              variant="primary"
               data-test="user-create-toggle"
               :disabled="!canCollapseCreateForm && showCreateForm"
               @click="createOpen = !createOpen"
             >
-              {{ showCreateForm && canCollapseCreateForm ? "Close" : "Add collaborator" }}
+              {{ showCreateForm && canCollapseCreateForm ? "Close" : "Add user" }}
             </Button>
-            <p class="m-0 text-xs text-[var(--ui-fg-muted)]">
-              Manual did:key entry is not supported.
-            </p>
           </div>
         </header>
 
         <form
           v-show="showCreateForm"
-          class="space-y-3 rounded-[var(--ui-radius-md)] border border-[var(--ui-border)] bg-[var(--ui-tonal-tertiary)] p-3"
+          class="space-y-3 border-b border-[var(--ui-border)] bg-[var(--ui-tonal-tertiary)]/55 px-6 py-3 md:px-8"
           data-test="user-create-form"
           @submit.prevent="createUser"
         >
@@ -349,85 +313,80 @@ onMounted(async () => {
         </form>
 
         <div
-          v-if="collaborators.length === 0"
-          class="rounded-[var(--ui-radius-md)] border border-[var(--ui-border)] bg-[var(--ui-tonal-tertiary)]/50 p-5 text-sm text-[var(--ui-fg-muted)]"
-          data-test="users-empty"
+          class="min-h-0 flex-1 overflow-auto bg-[radial-gradient(circle_at_top,color-mix(in_srgb,var(--ui-primary-muted)_42%,transparent),transparent_35%)]"
+          data-test="users-layout-scroll"
         >
-          No collaborators yet. Add your first trusted identity to start sharing workspace access.
-        </div>
-
-        <div v-else data-test="users-list">
-          <ul
-            class="m-0 list-none divide-y divide-[var(--ui-border)] rounded-[var(--ui-radius-md)] border border-[var(--ui-border)] bg-[var(--ui-tonal-tertiary)]/35 p-0"
-          >
-            <li
-              v-for="user in collaborators"
+          <div v-if="filteredCollaborators.length > 0" data-test="users-list">
+            <div
+              class="sticky top-0 grid h-11 grid-cols-[minmax(260px,1fr)_180px_140px] items-center border-b border-[var(--ui-border)] bg-[color-mix(in_srgb,var(--ui-surface)_88%,transparent)] px-6 text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--ui-fg-muted)] backdrop-blur md:px-8"
+              data-test="users-layout-table-head"
+            >
+              <div>User</div>
+              <div>Access</div>
+              <div class="text-right">Action</div>
+            </div>
+            <article
+              v-for="user in filteredCollaborators"
               :key="user.identityKey"
-              class="flex items-center gap-3 px-3 py-2.5 transition-colors hover:bg-[var(--ui-tonal-tertiary)]"
+              class="group grid min-h-[88px] grid-cols-[minmax(260px,1fr)_180px_140px] items-center border-b border-[var(--ui-border)] bg-transparent px-6 transition-colors duration-200 hover:bg-[color-mix(in_srgb,var(--ui-tonal-tertiary)_78%,transparent)] md:px-8"
               :data-test="`user-row-${user.identityKey}`"
             >
-              <IdentityGlyph
-                :identity="user.identityKey"
-                size="xs"
-                :data-test="`user-row-glyph-${user.identityKey}`"
-              />
-              <div class="min-w-0 flex-1">
-                <div class="flex flex-wrap items-center gap-2">
-                  <p class="m-0 truncate text-sm font-medium text-[var(--ui-fg)]">
-                    {{ user.displayName }}
-                  </p>
-                  <Badge v-if="user.isActive" tone="secondary" variant="soft" size="xs">
-                    You
-                  </Badge>
-                  <Badge tone="success" variant="soft" size="xs"> Verified identity </Badge>
+              <div class="flex min-w-0 items-center gap-4">
+                <IdentityGlyph
+                  :identity="user.identityKey"
+                  size="sm"
+                  :data-test="`user-row-glyph-${user.identityKey}`"
+                />
+                <div class="min-w-0">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <span class="truncate text-sm font-semibold tracking-[-0.02em] text-[var(--ui-fg)]">{{ user.displayName }}</span>
+                    <span
+                      v-if="user.isActive"
+                      class="rounded-full border border-[color-mix(in_srgb,var(--ui-primary)_22%,var(--ui-border))] bg-[var(--ui-primary-muted)] px-2 py-0.5 text-[11px] font-bold text-[var(--ui-primary)]"
+                    >
+                      You
+                    </span>
+                    <span class="rounded-full border border-[color-mix(in_srgb,var(--ui-success)_22%,var(--ui-border))] bg-[var(--ui-success-muted)] px-2 py-0.5 text-[11px] font-bold text-[var(--ui-success)]">
+                      Verified
+                    </span>
+                  </div>
+                  <div class="mt-1 truncate text-[13px] font-medium text-[var(--ui-fg-muted)]">
+                    {{ user.displayName }} · {{ user.shortIdentity }}
+                  </div>
                 </div>
-                <p class="m-0 truncate text-xs text-[var(--ui-fg-muted)]">
-                  {{ user.relationshipLabel }} · Added by {{ user.addedByLabel }} ·
-                  {{ user.groupCount }} {{ user.groupCount === 1 ? "group" : "groups" }}
-                </p>
-                <p class="m-0 truncate font-mono text-xs text-[var(--ui-fg-muted)]">
-                  {{ user.shortIdentity }}
-                </p>
               </div>
-              <div class="flex items-center gap-2">
-                <Button
-                  variant="tertiary"
-                  size="xs"
-                  :data-test="`user-edit-open-${user.identityKey}`"
-                  @click="openEditModal(user.identityKey)"
-                >
-                  View identity
-                </Button>
+              <div>
+                <span class="rounded-full border border-[color-mix(in_srgb,var(--ui-primary)_22%,var(--ui-border))] bg-[var(--ui-primary-muted)] px-2.5 py-1 text-xs font-bold text-[var(--ui-primary)]">
+                  {{ user.groupCount > 0 ? `${user.groupCount} group${user.groupCount === 1 ? "" : "s"}` : "No groups" }}
+                </span>
               </div>
-            </li>
-          </ul>
+              <button
+                type="button"
+                class="justify-self-end rounded-xl px-3 py-2 text-xs font-bold tracking-[0.02em] text-[var(--ui-fg-muted)] opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-[var(--ui-surface)] hover:text-[var(--ui-fg)]"
+                :data-test="`user-edit-open-${user.identityKey}`"
+                @click="openEditModal(user.identityKey)"
+              >
+                View
+              </button>
+            </article>
+          </div>
+
+          <p
+            v-else-if="collaborators.length === 0"
+            class="m-0 border-b border-[var(--ui-border)] px-6 py-8 text-sm text-[var(--ui-fg-muted)] md:px-8"
+            data-test="users-empty"
+          >
+            No collaborators yet. Add your first trusted identity to start sharing workspace access.
+          </p>
+          <p
+            v-else
+            class="m-0 border-b border-[var(--ui-border)] px-6 py-8 text-sm text-[var(--ui-fg-muted)] md:px-8"
+          >
+            No collaborators in this view.
+          </p>
         </div>
       </section>
-
-      <aside
-        class="space-y-3 rounded-[var(--ui-radius-lg)] border border-[var(--ui-border)] bg-[var(--ui-surface)] p-3"
-      >
-        <p class="m-0 text-xs uppercase tracking-[0.12em] text-[var(--ui-fg-muted)]">
-          Trust context
-        </p>
-        <Card variant="subtle" padding="md" class="space-y-2">
-          <p class="m-0 text-sm font-medium text-[var(--ui-fg)]">Local-first identity registry</p>
-          <p class="m-0 text-xs text-[var(--ui-fg-muted)]">
-            Collaborators exist in the local ledger projection and are used by access groups and
-            encrypted permissions across the workspace.
-          </p>
-        </Card>
-        <Card variant="subtle" padding="md" class="space-y-2">
-          <p class="m-0 text-sm font-medium text-[var(--ui-fg)]">Active identity</p>
-          <IdentityHandle
-            :identity="activeIdentityKey"
-            :label="activeIdentity?.label ?? 'Identity locked'"
-            :identity-text="shortIdentityKey(activeIdentityKey)"
-            size="sm"
-          />
-        </Card>
-      </aside>
-    </div>
+    </ListWorkspaceLayout>
 
     <Dialog
       v-model:open="editModalOpen"

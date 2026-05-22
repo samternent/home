@@ -116,7 +116,7 @@ function cancel(): void {
             v-else-if="field.kind === 'select'"
             :id="slotProps.id"
             :value="readStringValue(field.id)"
-            class="w-full rounded-[var(--ui-radius-sm)] border border-[var(--ui-border)] bg-[var(--ui-surface)] px-3 py-2 text-sm"
+            class="w-full rounded-[var(--ui-radius-sm)] border border-[var(--ui-border)] bg-[var(--ui-surface)] px-3 py-2 text-sm text-[var(--ui-fg)] shadow-[var(--ui-shadow-sm)] transition-[border-color,box-shadow] duration-[var(--ui-duration-normal)] ease-[var(--ui-ease-out)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ui-ring)]"
             :disabled="props.submitting || Boolean(field.disabled)"
             :aria-describedby="slotProps.describedBy"
             :data-test="`entity-form-field-${field.id}`"

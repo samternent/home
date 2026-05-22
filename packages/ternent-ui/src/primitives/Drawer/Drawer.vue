@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Dialog as ArkDialog } from "@ark-ui/vue/dialog";
-import { computed, useSlots } from "vue";
+import { computed, type CSSProperties, useSlots } from "vue";
 import { drawerProps } from "./Drawer.props";
 import {
   drawerBackdropClass,
@@ -8,7 +8,6 @@ import {
   drawerCloseClass,
   drawerContentBaseClass,
   drawerContentSideClasses,
-  drawerContentSizeClasses,
   drawerDescriptionClass,
   drawerFooterClass,
   drawerHeaderClass,
@@ -24,6 +23,19 @@ const slots = useSlots();
 const hasHeader = computed(() =>
   Boolean(props.title || props.description || slots.header || props.showClose),
 );
+
+const contentStyle = computed<CSSProperties>(() => {
+  const widthBySize: Record<"sm" | "md" | "lg", string> = {
+    sm: "28rem",
+    md: "32rem",
+    lg: "42rem",
+  };
+  const size = props.size in widthBySize ? (props.size as keyof typeof widthBySize) : "md";
+
+  return {
+    width: `min(100vw, ${widthBySize[size]})`,
+  };
+});
 </script>
 
 <template>
@@ -37,52 +49,54 @@ const hasHeader = computed(() =>
     <ArkDialog.Trigger v-if="$slots.trigger" as-child>
       <slot name="trigger" />
     </ArkDialog.Trigger>
-    <ArkDialog.Backdrop :class="drawerBackdropClass" />
-    <ArkDialog.Positioner
-      :class="[drawerPositionerBaseClass, drawerPositionerSideClasses[props.side]]"
-    >
-      <ArkDialog.Content
-        :class="[
-          drawerContentBaseClass,
-          drawerContentSideClasses[props.side],
-          drawerContentSizeClasses[props.size],
-        ]"
+    <Teleport to="body">
+      <ArkDialog.Backdrop :class="drawerBackdropClass" />
+      <ArkDialog.Positioner
+        :class="[drawerPositionerBaseClass, drawerPositionerSideClasses[props.side]]"
       >
-        <div v-if="hasHeader" :class="drawerHeaderClass">
-          <slot name="header">
-            <div class="min-w-0 flex-1">
-              <ArkDialog.Title v-if="props.title" :class="drawerTitleClass">
-                {{ props.title }}
-              </ArkDialog.Title>
-              <ArkDialog.Description v-if="props.description" :class="drawerDescriptionClass">
-                {{ props.description }}
-              </ArkDialog.Description>
-            </div>
-          </slot>
-          <ArkDialog.CloseTrigger
-            v-if="props.showClose"
-            :class="drawerCloseClass"
-            aria-label="Close drawer"
-          >
-            <svg viewBox="0 0 24 24" fill="none" class="size-4" aria-hidden="true">
-              <path
-                d="M6 6l12 12M18 6 6 18"
-                stroke="currentColor"
-                stroke-width="1.75"
-                stroke-linecap="round"
-              />
-            </svg>
-          </ArkDialog.CloseTrigger>
-        </div>
+        <ArkDialog.Content
+          :class="[
+            drawerContentBaseClass,
+            drawerContentSideClasses[props.side],
+          ]"
+          :style="contentStyle"
+        >
+          <div v-if="hasHeader" :class="drawerHeaderClass">
+            <slot name="header">
+              <div class="min-w-0 flex-1">
+                <ArkDialog.Title v-if="props.title" :class="drawerTitleClass">
+                  {{ props.title }}
+                </ArkDialog.Title>
+                <ArkDialog.Description v-if="props.description" :class="drawerDescriptionClass">
+                  {{ props.description }}
+                </ArkDialog.Description>
+              </div>
+            </slot>
+            <ArkDialog.CloseTrigger
+              v-if="props.showClose"
+              :class="drawerCloseClass"
+              aria-label="Close drawer"
+            >
+              <svg viewBox="0 0 24 24" fill="none" class="size-4" aria-hidden="true">
+                <path
+                  d="M6 6l12 12M18 6 6 18"
+                  stroke="currentColor"
+                  stroke-width="1.75"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </ArkDialog.CloseTrigger>
+          </div>
 
-        <div :class="drawerBodyClass">
-          <slot />
-        </div>
+          <div :class="drawerBodyClass">
+            <slot />
+          </div>
 
-        <div v-if="$slots.footer" :class="drawerFooterClass">
-          <slot name="footer" />
-        </div>
-      </ArkDialog.Content>
-    </ArkDialog.Positioner>
+          <div v-if="$slots.footer" :class="drawerFooterClass">
+            <slot name="footer" />
+          </div>
+        </ArkDialog.Content>
+      </ArkDialog.Positioner>
+    </Teleport>
   </ArkDialog.Root>
 </template>

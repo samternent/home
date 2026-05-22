@@ -1,10 +1,12 @@
 export type SidebarNavItem = {
   active?: boolean;
+  count?: number | string;
   dataTest?: string;
   disabled?: boolean;
   href?: string;
   id?: string;
   label: string;
+  showActiveDot?: boolean;
   to?: string;
 };
 

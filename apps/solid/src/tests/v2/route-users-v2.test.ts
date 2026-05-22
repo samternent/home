@@ -52,6 +52,9 @@ describe("RouteUsers", () => {
     const userVisible = await waitFor(() => wrapper.findAll('[data-test^="user-row-"]').length > 0);
     expect(userVisible).toBe(true);
     expect(wrapper.findAll('[data-test^="user-row-glyph-"]').length).toBeGreaterThan(0);
+    expect(wrapper.find('[data-test="users-layout-rail"]').exists()).toBe(false);
+    expect(wrapper.get('[data-test="users-layout-scroll"]').classes()).toContain("overflow-auto");
+    expect(wrapper.get('[data-test="users-layout-table-head"]').classes()).toContain("sticky");
 
     await wrapper.get(`[data-test="user-edit-open-${identity.identityKey}"]`).trigger("click");
     const editModalVisible = await waitFor(() =>

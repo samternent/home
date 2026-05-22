@@ -1,11 +1,11 @@
 import type { BadgeSize, BadgeTone, BadgeVariant } from "./Badge.types";
 
 export const badgeBaseClass =
-  "inline-flex items-center gap-1 rounded-full border font-medium tracking-[0.02em]";
+  "inline-flex items-center gap-1 rounded-full border font-semibold tracking-[0.01em]";
 
 export const badgeSizeClasses: Record<BadgeSize, string> = {
   xs: "px-2 py-0.5 text-[11px]",
-  sm: "px-2.5 py-0.5 text-xs",
+  sm: "px-2.5 py-1 text-xs",
   md: "px-3 py-1 text-sm",
 };
 

@@ -22,18 +22,7 @@ body,
 
 body {
   min-height: 100vh;
-  font-family: "Clash Grotesk", system-ui, sans-serif;
-  background:
-    radial-gradient(
-      circle at top right,
-      color-mix(in srgb, var(--ui-primary) 18%, transparent),
-      transparent 38%
-    ),
-    radial-gradient(
-      circle at bottom left,
-      color-mix(in srgb, var(--ui-accent) 14%, transparent),
-      transparent 44%
-    ),
-    var(--ui-bg);
+  font-family: "Inter", "SF Pro Text", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  background: var(--ui-bg);
   color: var(--ui-fg);
 }

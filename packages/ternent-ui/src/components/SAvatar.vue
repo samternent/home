@@ -42,10 +42,10 @@ const variantClasses = computed(() => ({
 }));
 
 const statusClasses = computed(() => ({
-  online: "bg-green-500",
-  offline: "bg-slate-400",
-  away: "bg-yellow-500",
-  busy: "bg-red-500",
+  online: "bg-[var(--ui-success)]",
+  offline: "bg-[var(--ui-fg-muted)]",
+  away: "bg-[var(--ui-warning)]",
+  busy: "bg-[var(--ui-critical)]",
 }));
 
 const statusSizes = computed(() => ({
@@ -59,14 +59,14 @@ const statusSizes = computed(() => ({
 // Generate a consistent color based on the name
 const avatarColor = computed(() => {
   const colors = [
-    "bg-gradient-to-br from-indigo-500 to-purple-600",
-    "bg-gradient-to-br from-blue-500 to-indigo-600",
-    "bg-gradient-to-br from-green-500 to-emerald-600",
-    "bg-gradient-to-br from-yellow-500 to-orange-600",
-    "bg-gradient-to-br from-red-500 to-pink-600",
-    "bg-gradient-to-br from-purple-500 to-violet-600",
-    "bg-gradient-to-br from-cyan-500 to-blue-600",
-    "bg-gradient-to-br from-emerald-500 to-green-600",
+    "bg-[linear-gradient(135deg,var(--ui-primary),color-mix(in_srgb,var(--ui-primary)_70%,var(--ui-accent)))]",
+    "bg-[linear-gradient(135deg,var(--ui-accent),color-mix(in_srgb,var(--ui-accent)_70%,var(--ui-primary)))]",
+    "bg-[linear-gradient(135deg,var(--ui-success),color-mix(in_srgb,var(--ui-success)_70%,var(--ui-primary)))]",
+    "bg-[linear-gradient(135deg,var(--ui-warning),color-mix(in_srgb,var(--ui-warning)_70%,var(--ui-accent)))]",
+    "bg-[linear-gradient(135deg,var(--ui-critical),color-mix(in_srgb,var(--ui-critical)_70%,var(--ui-primary)))]",
+    "bg-[linear-gradient(135deg,var(--ui-info),color-mix(in_srgb,var(--ui-info)_70%,var(--ui-accent)))]",
+    "bg-[linear-gradient(135deg,var(--ui-secondary),color-mix(in_srgb,var(--ui-secondary)_70%,var(--ui-primary)))]",
+    "bg-[linear-gradient(135deg,var(--ui-primary),color-mix(in_srgb,var(--ui-primary)_70%,var(--ui-success)))]",
   ];
 
   const charCode = props.name.charCodeAt(0) || 0;
@@ -79,8 +79,8 @@ const avatarColor = computed(() => {
       :class="[
         sizeClasses[size],
         variantClasses[variant],
-        url ? 'bg-slate-200 dark:bg-slate-700' : avatarColor,
-        'text-white font-semibold flex items-center justify-center shadow-lg ring-2 ring-white dark:ring-slate-900 transition-all duration-200 hover:scale-105',
+        url ? 'bg-[var(--ui-tonal-secondary)]' : avatarColor,
+        'text-[var(--ui-on-primary)] font-semibold flex items-center justify-center shadow-[var(--ui-shadow-md)] ring-2 ring-[var(--ui-surface)] transition-all duration-200 hover:scale-105',
       ]"
     >
       <img
@@ -98,7 +98,7 @@ const avatarColor = computed(() => {
       :class="[
         statusSizes[size],
         statusClasses[status],
-        'absolute -bottom-0.5 -right-0.5 rounded-full border-2 border-white dark:border-slate-900',
+        'absolute -bottom-0.5 -right-0.5 rounded-full border-2 border-[var(--ui-surface)]',
       ]"
     />
   </div>

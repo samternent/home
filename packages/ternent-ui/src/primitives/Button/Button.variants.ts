@@ -3,8 +3,8 @@ import type { ButtonSize, ButtonVariant } from "./Button.types";
 export const buttonBaseClass =
   "inline-flex items-center justify-center gap-2 border border-transparent " +
   "font-medium select-none whitespace-nowrap align-middle " +
-  "rounded-[var(--ui-radius-md)] " +
-  "transition-[background-color,opacity,border-color,color] " +
+  "rounded-[var(--ui-radius-lg)] " +
+  "transition-[background-color,opacity,border-color,color,box-shadow,transform] " +
   "duration-[var(--ui-duration-normal)] ease-[var(--ui-ease-out)] " +
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ui-ring)]";
 
@@ -17,19 +17,19 @@ export const buttonStateClasses = {
 export const buttonVariantClasses: Record<ButtonVariant, string> = {
   primary:
     "bg-[var(--ui-primary)] text-[var(--ui-on-primary)] " +
-    "hover:bg-[var(--ui-primary-hover)] active:bg-[var(--ui-primary-active)]",
+    "shadow-[var(--ui-shadow-sm)] hover:bg-[var(--ui-primary-hover)] hover:shadow-[var(--ui-shadow-md)] active:bg-[var(--ui-primary-active)]",
 
   accent:
     "bg-[var(--ui-accent)] text-[var(--ui-on-accent)] " +
     "hover:bg-[var(--ui-accent-hover)] active:bg-[var(--ui-accent-active)]",
 
   secondary:
-    "bg-[var(--ui-tonal-secondary)] text-[var(--ui-fg)] " +
-    "hover:bg-[var(--ui-tonal-secondary-hover)]",
+    "border-[var(--ui-border)] bg-[var(--ui-surface)] text-[var(--ui-fg)] shadow-[var(--ui-shadow-sm)] " +
+    "hover:bg-[var(--ui-surface-hover)] hover:border-[color-mix(in_srgb,var(--ui-border)_88%,var(--ui-fg)_12%)]",
 
   tertiary:
-    "bg-[var(--ui-tonal-tertiary)] text-[var(--ui-fg)] " +
-    "hover:bg-[var(--ui-tonal-tertiary-hover)]",
+    "bg-[var(--ui-tonal-secondary)] text-[var(--ui-fg)] " +
+    "hover:bg-[var(--ui-tonal-secondary-hover)]",
 
   critical:
     "bg-[var(--ui-critical)] text-[var(--ui-on-critical)] " +
@@ -41,8 +41,8 @@ export const buttonVariantClasses: Record<ButtonVariant, string> = {
     "hover:shadow-none",
 
   "plain-secondary":
-    "bg-transparent text-[var(--ui-fg)] opacity-80 shadow-none " +
-    "hover:bg-[var(--ui-surface-hover)] hover:opacity-100 hover:shadow-none",
+    "bg-transparent text-[var(--ui-fg-muted)] shadow-none " +
+    "hover:bg-[var(--ui-surface-hover)] hover:text-[var(--ui-fg)] hover:shadow-none",
 
   "critical-secondary":
     "bg-transparent text-[var(--ui-critical)] border-[var(--ui-critical-muted)] shadow-none " +
@@ -53,7 +53,7 @@ export const buttonVariantClasses: Record<ButtonVariant, string> = {
 export const buttonSizeClasses: Record<ButtonSize, string> = {
   micro: "h-7 px-2 text-xs",
   xs: "h-8 px-3 text-xs",
-  sm: "h-9 px-4 text-sm",
+  sm: "h-10 px-4 text-sm",
   md: "h-10 px-4 text-sm",
   lg: "h-11 px-5 text-base",
   xl: "h-12 px-6 text-base",

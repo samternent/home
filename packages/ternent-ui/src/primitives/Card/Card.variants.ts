@@ -5,11 +5,11 @@ export const cardBaseClass =
   "duration-[var(--ui-duration-normal)] ease-[var(--ui-ease-out)]";
 
 export const cardVariantClasses: Record<CardVariant, string> = {
-  default: "border-[var(--ui-border)] bg-[var(--ui-surface)] shadow-none",
-  subtle: "border-[var(--ui-border)] bg-[var(--ui-tonal-tertiary)] shadow-none",
+  default: "border-[var(--ui-border)] bg-[var(--ui-surface)] shadow-[var(--ui-shadow-sm)]",
+  subtle: "border-[var(--ui-border)] bg-[var(--ui-tonal-tertiary)] shadow-[var(--ui-shadow-sm)]",
   outline: "border-[var(--ui-border)] bg-transparent shadow-none",
-  elevated: "border-[var(--ui-border)] bg-[var(--ui-surface)] shadow-none",
-  panel: "border-[var(--ui-border)] bg-[var(--ui-tonal-secondary)] shadow-none",
+  elevated: "border-[var(--ui-border)] bg-[var(--ui-surface)] shadow-[var(--ui-shadow-md)]",
+  panel: "border-[var(--ui-border)] bg-[var(--ui-tonal-secondary)] shadow-[var(--ui-shadow-sm)]",
   showcase:
     "border-[color-mix(in_srgb,var(--ui-border)_74%,var(--ui-primary-muted))] " +
     "bg-[color:color-mix(in_srgb,var(--ui-primary-muted)_48%,var(--ui-tonal-secondary))] shadow-none",

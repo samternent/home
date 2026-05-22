@@ -18,6 +18,20 @@ describe("sidebar navigation v0.2", () => {
     expect(tasksItem?.to).toBe("/w/tasks");
     expect(tasksItem?.dataTest).toBe("nav-app-tasks");
     expect(tasksItem?.active).toBe(true);
+    expect(tasksItem?.showActiveDot).toBe(true);
+  });
+
+  it("applies optional app count metadata", () => {
+    const sections = buildSidebarNavigationSections("/w/tasks/list", undefined, {
+      appCounts: {
+        tasks: 7,
+      },
+    });
+
+    const appsSection = sections.find((section) => section.label === "Workspace");
+    const tasksItem = appsSection?.items.find((item) => item.id === "app-tasks");
+
+    expect(tasksItem?.count).toBe(7);
   });
 
   it("does not mark app link active for unrelated routes", () => {

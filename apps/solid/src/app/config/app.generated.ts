@@ -23,15 +23,15 @@ export const appConfig = {
   appTitle: "Concord OS for Solid",
   defaultHost: "solid.ternent.dev",
   themeName: "concordos",
-  defaultThemeMode: "dark",
+  defaultThemeMode: "light",
 } as const satisfies AppConfig;
 
 export const appSeoConfig = {
   shortName: "Concord OS",
   description:
     "Concord OS for Solid is a platform shell for exploring Pod files, opening replayable ledgers, and launching registry-backed apps.",
-  themeColor: "#7ea7d6",
-  backgroundColor: "#0f141b",
+  themeColor: "#4f46e5",
+  backgroundColor: "#f4f4f5",
   lang: "en",
 } as const satisfies AppSeoConfig;
 

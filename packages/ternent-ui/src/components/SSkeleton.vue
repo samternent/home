@@ -65,7 +65,7 @@ const customStyles = computed(() => {
       v-for="line in lines"
       :key="line"
       :class="[
-        'bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200 dark:from-slate-700 dark:via-slate-600 dark:to-slate-700 bg-[length:200%_100%]',
+        'bg-[linear-gradient(90deg,color-mix(in_srgb,var(--ui-tonal-secondary)_85%,transparent),color-mix(in_srgb,var(--ui-tonal-secondary-hover)_95%,transparent),color-mix(in_srgb,var(--ui-tonal-secondary)_85%,transparent))] bg-[length:200%_100%]',
         variantClasses[variant],
         widthClass,
         heightClass,

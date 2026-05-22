@@ -3,9 +3,8 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useAppApi } from "@/app/api";
 import { shortIdentityKey } from "@/app/plugins/identityKey";
-import { Badge, Button, Card, Input } from "ternent-ui/primitives";
-import { IdentityGlyph, RecordList, SplitView } from "ternent-ui/patterns";
-import type { RecordListItem } from "ternent-ui/patterns";
+import { Button, Input } from "ternent-ui/primitives";
+import { IdentityGlyph, ListWorkspaceLayout } from "ternent-ui/patterns";
 
 const appApi = useAppApi();
 const route = useRoute();
@@ -16,16 +15,24 @@ const createOpen = ref(false);
 const createError = ref<string | null>(null);
 const pageError = ref<string | null>(null);
 const memberActionError = ref<string | null>(null);
+const showGrantPanel = ref(false);
 
 const permissions = computed(() => appApi.permissions.all());
 const users = computed(() => appApi.users.all());
 const profiles = computed(() => appApi.profiles.all());
-const stagedCount = computed(() => appApi.getState().stagedCount);
 const activeIdentityId = computed(() => appApi.identity.activeIdentity.value?.identityId ?? "");
 const activeIdentityKey = computed(() => appApi.identity.activeIdentity.value?.identityKey ?? "");
 const activeIdentityLabel = computed(
   () => appApi.identity.activeIdentity.value?.label ?? "Identity locked",
 );
+
+type PermissionNavItem = {
+  id: string;
+  title: string;
+  memberCount: number;
+  active: boolean;
+  dataTest: string;
+};
 
 const selectedPermissionKey = computed(() => {
   const raw = route.params.permissionKey;
@@ -53,7 +60,7 @@ function basePermissionPathKey(permissionId: string, index: number): string {
 
 const permissionRouteState = computed(() => {
   const keyToId = new Map<string, string>();
-  const navItems: RecordListItem[] = [];
+  const navItems: PermissionNavItem[] = [];
 
   permissions.value.forEach((permission, index) => {
     const baseKey = basePermissionPathKey(permission.id, index);
@@ -70,7 +77,7 @@ const permissionRouteState = computed(() => {
     navItems.push({
       id: key,
       title: permission.title,
-      meta: `${permission.members.length} member${permission.members.length === 1 ? "" : "s"} · ${permission.viewerHasKey ? "key ready" : "no key"}`,
+      memberCount: permission.members.length,
       active: key === selectedPermissionKey.value,
       dataTest: `permission-title-${permission.id}`,
     });
@@ -99,14 +106,6 @@ const selectedPermission = computed(() => {
 });
 const selectedPermissionHasKey = computed(() => Boolean(selectedPermission.value?.viewerHasKey));
 const selectedPermissionGrantCount = computed(() => selectedPermission.value?.grantCount ?? 0);
-const selectedPermissionMetaId = computed(() => {
-  const id = selectedPermission.value?.id ?? "";
-  if (!id) {
-    return "";
-  }
-  const fingerprint = id.slice(-12);
-  return `grp:${fingerprint}`;
-});
 
 const usersById = computed(() => new Map(users.value.map((user) => [user.identityKey, user])));
 const profilesById = computed(
@@ -157,9 +156,15 @@ const assignableUsers = computed(() =>
   users.value.filter((user) => !selectedMemberIds.value.has(user.identityKey)),
 );
 
-const permissionNavItems = computed<RecordListItem[]>(() => permissionRouteState.value.navItems);
+const permissionNavItems = computed<PermissionNavItem[]>(() => permissionRouteState.value.navItems);
+const permissionRailEmptyLabel = computed(() => {
+  if (permissions.value.length === 0) {
+    return "No groups yet. Create one to begin.";
+  }
+  return "No groups available.";
+});
 
-const assignableUserItems = computed<RecordListItem[]>(() =>
+const assignableUserItems = computed(() =>
   assignableUsers.value.map((user) => ({
     id: user.identityKey,
     title:
@@ -194,8 +199,8 @@ async function createPermission() {
   }
 }
 
-function selectPermission(item: RecordListItem): void {
-  void router.push(`/s/permissions/${item.id}`);
+function selectPermission(permissionKey: string): void {
+  void router.push(`/s/permissions/${permissionKey}`);
 }
 
 async function grantProjectedUser(identityKey: string): Promise<void> {
@@ -236,6 +241,9 @@ watch(
   [permissionNavItems, selectedPermissionKey],
   ([nextPermissionItems, nextPermissionKey]) => {
     if (nextPermissionItems.length === 0) {
+      if (permissions.value.length > 0) {
+        return;
+      }
       if (nextPermissionKey) {
         void router.replace("/s/permissions");
       }
@@ -260,6 +268,10 @@ watch(
   },
 );
 
+watch(selectedPermissionId, () => {
+  showGrantPanel.value = false;
+});
+
 onMounted(async () => {
   pageError.value = null;
 
@@ -273,7 +285,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <section class="mx-auto h-full min-h-0 w-full p-6" data-test="permissions-v2">
+  <section class="h-full min-h-0 w-full" data-test="permissions-v2">
     <p class="sr-only" data-test="permissions-v2-status">
       {{ appApi.status.value }}
     </p>
@@ -281,349 +293,294 @@ onMounted(async () => {
       {{ activeIdentityLabel }}
     </p>
 
-    <header class="mb-6 space-y-1">
-      <p class="m-0 text-xs uppercase tracking-[0.12em] text-[var(--ui-fg-muted)]">Permissions</p>
-      <h1 class="m-0 text-2xl font-semibold text-[var(--ui-fg)]">Workspace access groups</h1>
-      <p class="m-0 text-sm text-[var(--ui-fg-muted)]">
-        Manage who has access in each group. Membership updates are staged here and committed from
-        the tray.
-      </p>
-    </header>
-
-    <p
-      v-if="pageError"
-      class="m-0 mb-3 text-sm text-[var(--ui-critical)]"
-      data-test="permissions-v2-page-error"
-    >
-      {{ pageError }}
-    </p>
-
-    <SplitView rail-width="md" rail-aria-label="Permissions navigation" :divider="false">
+    <ListWorkspaceLayout data-test-prefix="permissions-layout">
       <template #rail>
-        <div
-          class="flex h-full min-h-0 flex-col gap-3 rounded-[var(--ui-radius-lg)] border border-[var(--ui-border)] bg-[var(--ui-surface)] p-3"
+        <div class="mb-4 flex items-center justify-between">
+          <p class="m-0 text-xs font-bold uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]">
+            Access groups
+          </p>
+          <Button
+            type="button"
+            variant="tertiary"
+            size="xs"
+            data-test="permission-create-toggle"
+            :disabled="!canCollapseCreateForm && showCreateForm"
+            @click="createOpen = !createOpen"
+          >
+            {{ showCreateForm && canCollapseCreateForm ? "Close" : "+" }}
+          </Button>
+        </div>
+
+        <form
+          v-if="showCreateForm"
+          data-test="permission-create-form"
+          class="mb-3 space-y-2 rounded-xl border border-[var(--ui-border)] bg-[var(--ui-tonal-tertiary)]/55 p-2"
+          @submit.prevent="createPermission"
         >
-          <div class="space-y-2">
-            <div class="flex items-center justify-between gap-2">
-              <p class="m-0 text-xs uppercase tracking-[0.12em] text-[var(--ui-fg-muted)]">
-                Access groups
-              </p>
-              <Button
-                type="button"
-                variant="tertiary"
-                size="xs"
-                data-test="permission-create-toggle"
-                :disabled="!canCollapseCreateForm && showCreateForm"
-                @click="createOpen = !createOpen"
-              >
-                {{ showCreateForm && canCollapseCreateForm ? "Close" : "Create group" }}
-              </Button>
-            </div>
+          <Input
+            v-model="createTitle"
+            data-test="permission-create-title"
+            type="text"
+            aria-label="Access group title"
+            placeholder="Reviewers"
+          />
 
-            <form
-              v-if="showCreateForm"
-              data-test="permission-create-form"
-              class="space-y-2 rounded-[var(--ui-radius-md)] border border-[var(--ui-border)] bg-[var(--ui-tonal-tertiary)] p-2"
-              @submit.prevent="createPermission"
+          <div class="flex items-center justify-between gap-2">
+            <Button
+              type="submit"
+              data-test="permission-create-submit"
+              variant="secondary"
+              size="xs"
+              :disabled="!canCreatePermission"
             >
-              <Input
-                v-model="createTitle"
-                data-test="permission-create-title"
-                type="text"
-                aria-label="Access group title"
-                placeholder="Reviewers"
-              />
-
-              <div class="flex items-center justify-between gap-2">
-                <p class="m-0 text-xs text-[var(--ui-fg-muted)]">
-                  Groups organize collaborators by access.
-                </p>
-                <Button
-                  type="submit"
-                  data-test="permission-create-submit"
-                  variant="secondary"
-                  size="xs"
-                  :disabled="!canCreatePermission"
-                >
-                  Create group
-                </Button>
-              </div>
-
-              <p
-                v-if="createError"
-                class="m-0 text-sm text-[var(--ui-critical)]"
-                data-test="permission-create-error"
-              >
-                {{ createError }}
-              </p>
-            </form>
+              Create group
+            </Button>
           </div>
 
-          <div
-            class="min-h-0 flex-1 rounded-[var(--ui-radius-md)] bg-[var(--ui-tonal-tertiary)]/45 px-1 py-1"
-            data-test="permissions-list"
+          <p
+            v-if="createError"
+            class="m-0 text-sm text-[var(--ui-critical)]"
+            data-test="permission-create-error"
           >
-            <RecordList
-              title="Groups"
-              surface="plain"
-              :items="permissionNavItems"
-              empty-label="No groups yet. Create one to begin."
-              @select="selectPermission"
+            {{ createError }}
+          </p>
+        </form>
+
+        <div class="min-h-0 flex-1 overflow-auto" data-test="permissions-list">
+          <p
+            v-if="permissionNavItems.length === 0"
+            class="m-0 rounded-xl bg-[var(--ui-tonal-tertiary)]/55 px-3 py-3 text-sm text-[var(--ui-fg-muted)]"
+          >
+            {{ permissionRailEmptyLabel }}
+          </p>
+          <div v-else class="space-y-1">
+            <button
+              v-for="item in permissionNavItems"
+              :key="item.id"
+              type="button"
+              class="group relative flex w-full items-center justify-between overflow-hidden rounded-xl px-3 py-2.5 text-left text-sm font-semibold transition"
+              :class="item.active ? 'border border-[var(--ui-border)] bg-[var(--ui-surface)] text-[var(--ui-fg)] shadow-[var(--ui-shadow-sm)]' : 'text-[var(--ui-fg-muted)] hover:bg-[var(--ui-tonal-secondary)] hover:text-[var(--ui-fg)]'"
+              :data-test="item.dataTest"
+              @click="selectPermission(item.id)"
             >
-              <template #item-leading="{ item }">
-                <span
-                  class="inline-block h-1.5 w-1.5 rounded-full"
-                  :class="item.active ? 'bg-[var(--ui-primary)]' : 'bg-[var(--ui-border-strong)]'"
-                ></span>
-              </template>
-            </RecordList>
+              <span class="min-w-0">
+                <span class="block truncate">{{ item.title }}</span>
+              </span>
+              <span class="text-xs text-[var(--ui-fg-muted)]">
+                {{ item.memberCount }}
+              </span>
+            </button>
           </div>
         </div>
       </template>
 
-      <div class="flex h-full min-h-0 flex-col gap-4">
-        <Card
-          v-if="permissions.length === 0"
-          variant="subtle"
-          padding="lg"
-          class="space-y-2"
-          data-test="permissions-empty"
+      <section class="flex min-h-0 flex-1 flex-col">
+        <p
+          v-if="pageError"
+          class="m-0 border-b border-[var(--ui-border)] px-6 py-3 text-sm text-[var(--ui-critical)] md:px-8"
+          data-test="permissions-v2-page-error"
         >
-          <h2 class="m-0 text-lg font-semibold text-[var(--ui-fg)]">No access groups yet</h2>
-          <p class="m-0 text-sm text-[var(--ui-fg-muted)]">
-            Create your first group from the left to start organizing collaborators by role.
-          </p>
-        </Card>
+          {{ pageError }}
+        </p>
 
-        <Card
-          v-else-if="!selectedPermission"
-          variant="subtle"
-          padding="lg"
-          class="space-y-2"
-          data-test="permissions-detail-empty"
+        <section
+          v-if="selectedPermission"
+          class="flex min-h-0 flex-1 flex-col"
+          :data-test="`permission-card-${selectedPermission.id}`"
         >
-          <h2 class="m-0 text-lg font-semibold text-[var(--ui-fg)]">Select an access group</h2>
-          <p class="m-0 text-sm text-[var(--ui-fg-muted)]">
-            Choose a group from the left rail to review membership and stage changes.
-          </p>
-        </Card>
-
-        <template v-else>
-          <section
-            class="flex min-h-0 flex-col gap-5"
-            :data-test="`permission-card-${selectedPermission.id}`"
-          >
-            <Card variant="panel" padding="lg" class="space-y-4">
-              <header class="space-y-3">
-                <div class="flex flex-wrap items-center justify-between gap-2">
-                  <p class="m-0 text-xs uppercase tracking-[0.12em] text-[var(--ui-fg-muted)]">
-                    Access group
-                  </p>
-                  <p class="m-0 font-mono text-xs text-[var(--ui-fg-muted)]">
-                    {{ selectedPermissionMetaId }}
-                  </p>
-                </div>
-
-                <div class="flex flex-wrap items-end justify-between gap-3">
-                  <h2
-                    class="m-0 text-3xl font-semibold leading-tight text-[var(--ui-fg)]"
-                    :data-test="`permission-selected-title-${selectedPermission.id}`"
-                  >
-                    {{ selectedPermission.title }}
-                  </h2>
-                  <div class="flex items-center gap-2">
-                    <Badge tone="primary" variant="soft" size="sm">
-                      {{ members.length }} {{ members.length === 1 ? "member" : "members" }}
-                    </Badge>
-                    <Badge tone="neutral" variant="soft" size="sm">
-                      {{ assignableUserItems.length }} available
-                    </Badge>
-                    <Badge tone="secondary" variant="soft" size="sm">
-                      {{ stagedCount }} staged
-                    </Badge>
-                    <Badge
-                      :tone="selectedPermissionHasKey ? 'success' : 'critical'"
-                      variant="soft"
-                      size="sm"
-                      :data-test="`permission-key-state-${selectedPermission.id}`"
-                    >
-                      {{ selectedPermissionHasKey ? "key ready" : "no key" }}
-                    </Badge>
-                    <Badge tone="neutral" variant="soft" size="sm">
-                      {{ selectedPermissionGrantCount }} grants
-                    </Badge>
-                  </div>
-                </div>
-                <p class="m-0 max-w-3xl text-sm text-[var(--ui-fg-muted)]">
-                  This group controls collaborator access for this workspace. Changes are queued in
-                  the commit tray, then committed into signed ledger history.
-                </p>
-                <p
-                  v-if="!selectedPermissionHasKey"
-                  class="m-0 text-sm text-[var(--ui-critical)]"
-                  :data-test="`permission-no-key-${selectedPermission.id}`"
-                >
-                  This device does not currently hold the group key, so new grants cannot be issued
-                  from here.
-                </p>
-              </header>
-            </Card>
-
-            <div class="grid min-h-0 gap-5 xl:grid-cols-[minmax(0,1fr)_300px]">
-              <section
-                class="min-h-0 space-y-3 rounded-[var(--ui-radius-lg)] border border-[var(--ui-border)] bg-[var(--ui-surface)] p-3"
+          <div class="flex h-20 shrink-0 items-center justify-between border-b border-[var(--ui-border)] bg-[color-mix(in_srgb,var(--ui-surface)_92%,transparent)] px-6 md:px-8">
+            <div>
+              <h2
+                class="m-0 text-[28px] font-semibold tracking-[-0.035em] text-[var(--ui-fg)]"
+                :data-test="`permission-selected-title-${selectedPermission.id}`"
               >
-                <div class="space-y-1">
-                  <p class="m-0 text-xs uppercase tracking-[0.12em] text-[var(--ui-fg-muted)]">
-                    Collaborators
-                  </p>
-                  <p class="m-0 text-sm text-[var(--ui-fg-muted)]">
-                    People currently included in this access group.
-                  </p>
-                </div>
+                {{ selectedPermission.title }}
+              </h2>
+              <div class="mt-1 flex items-center gap-2 text-xs font-semibold text-[var(--ui-fg-muted)]">
+                <span>{{ members.length }} member{{ members.length === 1 ? "" : "s" }}</span>
+                <span class="text-[color-mix(in_srgb,var(--ui-fg-muted)_35%,transparent)]">/</span>
+                <span>Permissions group</span>
+                <span class="text-[color-mix(in_srgb,var(--ui-fg-muted)_35%,transparent)]">/</span>
+                <span>{{ selectedPermissionGrantCount }} grants</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span
+                class="rounded-full border px-2.5 py-1 text-xs font-bold"
+                :class="selectedPermissionHasKey ? 'border-[color-mix(in_srgb,var(--ui-success)_22%,var(--ui-border))] bg-[var(--ui-success-muted)] text-[var(--ui-success)]' : 'border-[color-mix(in_srgb,var(--ui-critical)_22%,var(--ui-border))] bg-[var(--ui-critical-muted)] text-[var(--ui-critical)]'"
+                :data-test="`permission-key-state-${selectedPermission.id}`"
+              >
+                {{ selectedPermissionHasKey ? "key ready" : "no key" }}
+              </span>
+              <Button type="button" variant="secondary" size="sm" @click="showGrantPanel = !showGrantPanel">
+                {{ showGrantPanel ? "Close" : "Add member" }}
+              </Button>
+            </div>
+          </div>
 
-                <div
-                  v-if="members.length"
-                  class="min-h-0"
-                  :data-test="`permission-members-${selectedPermission.id}`"
-                >
-                  <ul
-                    class="m-0 list-none divide-y divide-[var(--ui-border)] rounded-[var(--ui-radius-md)] border border-[var(--ui-border)] bg-[var(--ui-tonal-tertiary)]/35 p-0"
-                  >
-                    <li
-                      v-for="member in members"
-                      :key="member.memberId"
-                      class="flex items-center gap-3 px-3 py-2 transition-colors hover:bg-[var(--ui-tonal-tertiary)]"
-                      :data-test="`permission-member-${selectedPermission.id}-${member.memberId}`"
-                    >
-                      <IdentityGlyph
-                        :identity="member.glyphIdentity"
-                        size="xs"
-                        :data-test="`permission-member-glyph-${selectedPermission.id}-${member.memberId}`"
-                      />
-                      <div class="min-w-0 flex-1">
-                        <p class="m-0 truncate text-sm font-medium text-[var(--ui-fg)]">
-                          {{ member.memberLabel }}
-                        </p>
-                        <p class="m-0 truncate text-xs text-[var(--ui-fg-muted)]">
-                          {{ member.isActiveIdentity ? "You" : "Collaborator" }} ·
-                          {{ shortIdentityKey(member.displayMemberId) }}
-                        </p>
-                      </div>
-                      <Badge
+          <div
+            class="min-h-0 flex-1 overflow-auto bg-[radial-gradient(circle_at_top,color-mix(in_srgb,var(--ui-primary-muted)_42%,transparent),transparent_35%)]"
+            data-test="permissions-layout-scroll"
+          >
+            <div
+              class="sticky top-0 grid h-11 grid-cols-[minmax(260px,1fr)_180px_140px] items-center border-b border-[var(--ui-border)] bg-[color-mix(in_srgb,var(--ui-surface)_88%,transparent)] px-6 text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--ui-fg-muted)] backdrop-blur md:px-8"
+              data-test="permissions-layout-table-head"
+            >
+              <div>Member</div>
+              <div>Role</div>
+              <div class="text-right">Action</div>
+            </div>
+
+            <div v-if="members.length" :data-test="`permission-members-${selectedPermission.id}`">
+              <article
+                v-for="member in members"
+                :key="member.memberId"
+                class="group grid min-h-[88px] grid-cols-[minmax(260px,1fr)_180px_140px] items-center border-b border-[var(--ui-border)] bg-transparent px-6 transition-colors duration-200 hover:bg-[color-mix(in_srgb,var(--ui-tonal-tertiary)_78%,transparent)] md:px-8"
+                :data-test="`permission-member-${selectedPermission.id}-${member.memberId}`"
+              >
+                <div class="flex min-w-0 items-center gap-4">
+                  <IdentityGlyph
+                    :identity="member.glyphIdentity"
+                    size="sm"
+                    :data-test="`permission-member-glyph-${selectedPermission.id}-${member.memberId}`"
+                  />
+                  <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                      <span class="truncate text-sm font-semibold tracking-[-0.02em] text-[var(--ui-fg)]">{{ member.memberLabel }}</span>
+                      <span
                         v-if="member.isActiveIdentity"
-                        tone="secondary"
-                        variant="soft"
-                        size="xs"
+                        class="rounded-full border border-[color-mix(in_srgb,var(--ui-primary)_22%,var(--ui-border))] bg-[var(--ui-primary-muted)] px-2 py-0.5 text-[11px] font-bold text-[var(--ui-primary)]"
                       >
                         You
-                      </Badge>
-                      <Button
-                        type="button"
-                        variant="tertiary"
-                        size="xs"
-                        :data-test="`permission-revoke-${selectedPermission.id}-${member.memberId}`"
-                        @click="revokePermission(member.memberId)"
-                      >
-                        Remove access
-                      </Button>
-                    </li>
-                  </ul>
+                      </span>
+                    </div>
+                    <div class="mt-1 truncate text-[13px] font-medium text-[var(--ui-fg-muted)]">
+                      Collaborator · {{ shortIdentityKey(member.displayMemberId) }}
+                    </div>
+                  </div>
                 </div>
+                <div>
+                  <span class="rounded-full border border-[color-mix(in_srgb,var(--ui-primary)_22%,var(--ui-border))] bg-[var(--ui-primary-muted)] px-2.5 py-1 text-xs font-bold text-[var(--ui-primary)]">admin</span>
+                </div>
+                <button
+                  type="button"
+                  class="justify-self-end rounded-xl px-3 py-2 text-xs font-bold tracking-[0.02em] text-[var(--ui-fg-muted)] opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-[var(--ui-surface)] hover:text-[var(--ui-fg)]"
+                  :data-test="`permission-revoke-${selectedPermission.id}-${member.memberId}`"
+                  @click="revokePermission(member.memberId)"
+                >
+                  Remove
+                </button>
+              </article>
+            </div>
 
-                <Card v-else variant="subtle" padding="md">
-                  <p class="m-0 text-sm text-[var(--ui-fg-muted)]">
-                    No collaborators yet. Add people from workspace users to start sharing access.
-                  </p>
-                </Card>
-              </section>
+            <p
+              v-else
+              class="m-0 border-b border-[var(--ui-border)] px-6 py-8 text-sm text-[var(--ui-fg-muted)] md:px-8"
+            >
+              No collaborators yet. Add people from workspace users to start sharing access.
+            </p>
 
-              <section
-                class="space-y-3 rounded-[var(--ui-radius-lg)] border border-[var(--ui-border)] bg-[var(--ui-surface)] p-3"
+            <div v-if="showGrantPanel" class="border-t border-[var(--ui-border)] bg-[var(--ui-tonal-tertiary)]/45 px-6 py-4 md:px-8">
+              <p
+                v-if="!selectedPermissionHasKey"
+                class="m-0 mb-3 text-sm text-[var(--ui-critical)]"
+                :data-test="`permission-no-key-${selectedPermission.id}`"
               >
-                <div class="space-y-1">
-                  <p class="m-0 text-xs uppercase tracking-[0.12em] text-[var(--ui-fg-muted)]">
-                    Available people
-                  </p>
-                  <p class="m-0 text-sm text-[var(--ui-fg-muted)]">
-                    Add collaborators from existing workspace users.
-                  </p>
-                </div>
+                This device does not currently hold the group key, so new grants cannot be issued from here.
+              </p>
 
-                <div
-                  v-if="users.length === 0"
-                  class="space-y-2 rounded-[var(--ui-radius-md)] bg-[var(--ui-tonal-tertiary)] p-3 text-sm text-[var(--ui-fg-muted)]"
-                  data-test="permissions-users-empty"
-                >
-                  <p class="m-0">
-                    No workspace users yet. Add people first, then grant access here.
-                  </p>
-                  <Button
-                    as="RouterLink"
-                    to="/s/users"
-                    variant="plain-secondary"
-                    size="sm"
-                    data-test="permissions-users-empty-cta"
-                  >
-                    Open users area
-                  </Button>
-                </div>
-
-                <p
-                  v-else-if="assignableUserItems.length === 0"
-                  class="m-0 rounded-[var(--ui-radius-md)] bg-[var(--ui-tonal-tertiary)] p-3 text-sm text-[var(--ui-fg-muted)]"
-                  data-test="permission-assignable-empty"
-                >
-                  Everyone in this workspace already has access through this group.
+              <div
+                v-if="users.length === 0"
+                class="space-y-2 rounded-[var(--ui-radius-md)] bg-[var(--ui-tonal-tertiary)] p-3 text-sm text-[var(--ui-fg-muted)]"
+                data-test="permissions-users-empty"
+              >
+                <p class="m-0">
+                  No workspace users yet. Add people first, then grant access here.
                 </p>
+                <Button
+                  as="RouterLink"
+                  to="/s/users"
+                  variant="plain-secondary"
+                  size="sm"
+                  data-test="permissions-users-empty-cta"
+                >
+                  Open users area
+                </Button>
+              </div>
 
-                <div v-else>
-                  <ul class="m-0 list-none space-y-1 p-0">
-                    <li
-                      v-for="item in assignableUserItems"
-                      :key="item.id"
-                      class="flex items-center gap-3 rounded-[var(--ui-radius-md)] border border-transparent px-2 py-2 transition-colors hover:border-[var(--ui-border)] hover:bg-[var(--ui-tonal-tertiary)]"
-                      :data-test="item.dataTest"
-                    >
-                      <IdentityGlyph
-                        :identity="item.id"
-                        size="xs"
-                        :data-test="`permission-grant-glyph-${selectedPermission.id}-${item.id}`"
-                      />
-                      <div class="min-w-0 flex-1">
-                        <p class="m-0 truncate text-sm font-medium text-[var(--ui-fg)]">
-                          {{ item.title }}
-                        </p>
-                        <p class="m-0 truncate text-xs text-[var(--ui-fg-muted)]">
-                          Workspace user · {{ item.meta }}
-                        </p>
-                      </div>
-                      <Button
-                        type="button"
-                        variant="tertiary"
-                        size="xs"
-                        :data-test="`permission-grant-submit-${selectedPermission.id}-${item.id}`"
-                        :disabled="!selectedPermissionHasKey"
-                        @click="grantProjectedUser(item.id)"
-                      >
-                        Add collaborator
-                      </Button>
-                    </li>
-                  </ul>
-                </div>
-              </section>
+              <p
+                v-else-if="assignableUserItems.length === 0"
+                class="m-0 rounded-[var(--ui-radius-md)] bg-[var(--ui-tonal-tertiary)] p-3 text-sm text-[var(--ui-fg-muted)]"
+                data-test="permission-assignable-empty"
+              >
+                Everyone in this workspace already has access through this group.
+              </p>
+
+              <ul v-else class="m-0 list-none space-y-1 p-0">
+                <li
+                  v-for="item in assignableUserItems"
+                  :key="item.id"
+                  class="flex items-center gap-3 rounded-[var(--ui-radius-md)] border border-transparent px-2 py-2 transition-colors hover:border-[var(--ui-border)] hover:bg-[var(--ui-tonal-tertiary)]"
+                  :data-test="item.dataTest"
+                >
+                  <IdentityGlyph
+                    :identity="item.id"
+                    size="xs"
+                    :data-test="`permission-grant-glyph-${selectedPermission.id}-${item.id}`"
+                  />
+                  <div class="min-w-0 flex-1">
+                    <p class="m-0 truncate text-sm font-medium text-[var(--ui-fg)]">
+                      {{ item.title }}
+                    </p>
+                    <p class="m-0 truncate text-xs text-[var(--ui-fg-muted)]">
+                      Workspace user · {{ item.meta }}
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="tertiary"
+                    size="xs"
+                    :data-test="`permission-grant-submit-${selectedPermission.id}-${item.id}`"
+                    :disabled="!selectedPermissionHasKey"
+                    @click="grantProjectedUser(item.id)"
+                  >
+                    Add collaborator
+                  </Button>
+                </li>
+              </ul>
             </div>
 
             <p
               v-if="memberActionError"
-              class="m-0 text-sm text-[var(--ui-critical)]"
+              class="m-0 border-t border-[var(--ui-border)] px-6 py-3 text-sm text-[var(--ui-critical)] md:px-8"
               :data-test="`permission-grant-error-${selectedPermission.id}`"
             >
               {{ memberActionError }}
             </p>
-          </section>
-        </template>
-      </div>
-    </SplitView>
+          </div>
+        </section>
+
+        <div
+          v-else
+          class="min-h-0 flex-1 overflow-auto bg-[radial-gradient(circle_at_top,color-mix(in_srgb,var(--ui-primary-muted)_42%,transparent),transparent_35%)]"
+          data-test="permissions-layout-scroll"
+        >
+          <p
+            v-if="permissions.length === 0"
+            class="m-0 border-b border-[var(--ui-border)] px-6 py-8 text-sm text-[var(--ui-fg-muted)] md:px-8"
+            data-test="permissions-empty"
+          >
+            No access groups yet. Create one from the left rail.
+          </p>
+          <p
+            v-else
+            class="m-0 border-b border-[var(--ui-border)] px-6 py-8 text-sm text-[var(--ui-fg-muted)] md:px-8"
+            data-test="permissions-detail-empty"
+          >
+            Select an access group from the left rail.
+          </p>
+        </div>
+      </section>
+    </ListWorkspaceLayout>
   </section>
 </template>

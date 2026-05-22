@@ -133,14 +133,14 @@ onBeforeUnmount(() => {
       v-if="open && props.resizable"
       role="separator"
       aria-orientation="horizontal"
-      class="cursor-row-resize px-2 py-1 bg-[var(--ui-border)]"
+      class="cursor-row-resize px-2 py-1"
       @pointerdown="startResize"
     >
       <Separator orientation="horizontal" />
     </div>
 
     <div
-      class="relative z-10 flex items-center justify-between border-y border-[var(--ui-border)] bg-[var(--ui-bg)] px-2 py-1"
+      class="relative z-10 flex items-center justify-between border-t border-[var(--ui-border)] bg-[var(--ui-surface)] px-3 py-1.5"
     >
       <div class="flex min-w-0 flex-1 items-center gap-2">
         <slot name="header">
@@ -156,7 +156,8 @@ onBeforeUnmount(() => {
           aria-label="Toggle panel"
           :aria-pressed="open"
           variant="plain-secondary"
-          size="micro"
+          size="xs"
+          class="h-7 w-7 !px-0"
           @click="toggleOpen"
         >
           <svg

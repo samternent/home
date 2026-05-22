@@ -94,29 +94,22 @@ const surfaceComponent = computed(() => {
 <template>
   <section class="flex h-full min-h-0 w-full flex-col" data-test="runtime-app-v0">
     <template v-if="app && supported">
-      <div class="border-b border-slate-200/80 bg-slate-50/70">
-        <div class="mx-auto w-full max-w-6xl px-4 pb-3 pt-4 md:px-6 md:pt-5">
-          <div class="mb-3 flex items-start justify-between gap-3">
-            <div>
-              <p class="m-0 text-xs uppercase tracking-[0.12em] text-slate-500">Workspace App</p>
-              <h1
-                class="m-0 mt-1 text-lg font-semibold text-slate-950"
-                data-test="runtime-app-title"
-              >
-                {{ app.label }}
-              </h1>
-            </div>
-          </div>
-
-          <div class="rounded-xl border border-slate-200 bg-white px-1.5 pt-1.5 shadow-sm">
-            <Tabs v-model="activeSurfaceTab" :items="surfaceTabs" size="sm" variant="pill" />
-          </div>
+      <div class="sticky top-0 z-20 border-b border-[var(--ui-border)] bg-[var(--ui-surface)]">
+        <div class="flex items-end pt-1">
+          <Tabs
+            v-model="activeSurfaceTab"
+            :items="surfaceTabs"
+            size="md"
+            variant="workspace"
+            class="max-w-sm"
+          />
         </div>
       </div>
 
-      <div class="min-h-0 flex-1 overflow-auto">
+      <div class="min-h-0 flex-1 flex">
         <component :is="surfaceComponent" :surface="surface?.id === 'list' ? surface : undefined" />
       </div>
+      <span class="sr-only" data-test="runtime-app-title">{{ app.label }}</span>
     </template>
 
     <template v-else>

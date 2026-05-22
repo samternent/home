@@ -57,7 +57,7 @@ const variantClasses = computed(() => ({
             <slot name="start">
               <RouterLink
                 to="/"
-                class="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-neutral-100/50 transition-all duration-200 font-semibold text-base group focus:outline-none focus:ring-2 focus:ring-primary/20"
+                class="flex items-center gap-2 rounded-lg px-2 py-1 text-base font-semibold transition-all duration-200 group hover:bg-[var(--ui-tonal-secondary)] focus:outline-none focus:ring-2 focus:ring-primary/20"
               >
                 {{ title }}
                 <span

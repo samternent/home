@@ -3,8 +3,8 @@ import { useLocalStorage, breakpointsTailwind, useBreakpoints } from "@vueuse/co
 import { computed, shallowRef, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useAppApi, type AppLedgerContainer } from "@/app/api";
-import { Badge, Button, SplitButton } from "ternent-ui/primitives";
-import { IdentityHandle, SidebarNav } from "ternent-ui/patterns";
+import { Button, SplitButton } from "ternent-ui/primitives";
+import { IdentityGlyph, SidebarNav } from "ternent-ui/patterns";
 import type { SidebarNavSection } from "ternent-ui/patterns";
 import { buildSidebarNavigationSections } from "./navigation";
 import ThemeModeToggle from "./ThemeModeToggle.vue";
@@ -28,10 +28,6 @@ const appVersion = shallowRef(
   typeof document !== "undefined" ? document.querySelector("html")?.dataset.appVersion : undefined,
 );
 
-const navigationSections = computed<SidebarNavSection[]>(() =>
-  buildSidebarNavigationSections(route.path),
-);
-
 const activeIdentityLabel = computed(
   () => appApi.identity.activeIdentity.value?.label ?? "Identity locked",
 );
@@ -39,26 +35,25 @@ const activeIdentityId = computed(
   () => appApi.identity.activeIdentity.value?.identityId ?? "no-active-identity",
 );
 const activeIdentityKey = computed(
-  () => appApi.identity.activeIdentity.value?.identityKey ?? "invalid-identity",
+  () => appApi.identity.activeIdentity.value?.identityKey ?? activeIdentityId.value,
 );
 const activeIdentityShortId = computed(() => activeIdentityId.value.slice(0, 12));
-const stagedCount = computed(() => appApi.getState().stagedCount);
-const integrityValid = computed(() => appApi.getState().integrityValid);
-const identityTone = computed<"success" | "warning" | "critical">(() => {
-  if (appApi.status.value === "ready" && appApi.identity.activeIdentity.value) {
-    return "success";
+
+const taskCount = computed(() => {
+  try {
+    const boardId = appApi.tasks.defaultBoardId();
+    return appApi.tasks.byBoard(boardId).length;
+  } catch {
+    return 0;
   }
-  if (appApi.status.value === "error") {
-    return "critical";
-  }
-  return "warning";
 });
-const identityDotColor = computed(() => `var(--ui-${identityTone.value})`);
-const stagedTone = computed<"warning" | "success">(() =>
-  stagedCount.value > 0 ? "warning" : "success",
-);
-const stagedLabel = computed(() =>
-  stagedCount.value > 0 ? `${stagedCount.value} staged` : "No staged entries",
+
+const navigationSections = computed<SidebarNavSection[]>(() =>
+  buildSidebarNavigationSections(route.path, undefined, {
+    appCounts: {
+      tasks: taskCount.value,
+    },
+  }),
 );
 
 const releaseHref = computed(() =>
@@ -66,6 +61,7 @@ const releaseHref = computed(() =>
     ? `https://github.com/samternent/home/releases/tag/concord-demo-${appVersion.value}`
     : "https://github.com/samternent/home/releases",
 );
+
 const ledgerUploadInputRef = shallowRef<HTMLInputElement | null>(null);
 const ledgerActionBusy = shallowRef(false);
 const identityActionBusy = shallowRef(false);
@@ -200,32 +196,22 @@ async function relaunchOnboarding(): Promise<void> {
     v-if="showSidebar"
     class="sticky top-0"
     :class="{
-      'w-64': mdAndLarger,
-      'absolute z-30 h-full w-64': smallerThanMd && openSideBar,
+      'w-72': mdAndLarger,
+      'absolute z-30 h-full w-72': smallerThanMd && openSideBar,
     }"
   >
     <SidebarNav
       title="Concord"
       :sections="navigationSections"
-      class="h-full bg-white/95 shadow-[0_8px_28px_rgba(15,23,42,0.08)]"
+      class="h-full bg-[var(--ui-surface)]"
       @select="handleNavSelect"
     >
       <template #header>
-        <div class="flex w-full items-center justify-between gap-2">
-          <div class="flex w-full items-center justify-start gap-2">
-            <RouterLink
-              to="/"
-              class="group inline-flex items-center gap-2 rounded-xl px-1 py-1 transition duration-200 hover:bg-slate-100"
-            >
-              <div class="rounded-lg bg-slate-100 p-1.5 text-slate-900">
-                <Logo class="size-5 transition-all duration-300 group-hover:-rotate-6" />
-              </div>
-              <div class="min-w-0">
-                <p class="m-0 truncate text-sm font-semibold text-slate-900">Concord</p>
-                <p class="m-0 truncate text-xs text-slate-500">Verifiable workspace</p>
-              </div>
-            </RouterLink>
-          </div>
+        <div class="flex p-2 w-full items-center">
+          <RouterLink to="/" class="inline-flex min-w-0 items-center gap-2">
+            <Logo class="size-8 shrink-0" />
+          </RouterLink>
+
           <Button
             v-if="smallerThanMd"
             variant="plain-secondary"
@@ -233,61 +219,15 @@ async function relaunchOnboarding(): Promise<void> {
             aria-label="Close navigation"
             @click="openSideBar = false"
           >
-            <svg
-              class="h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </Button>
         </div>
       </template>
 
       <template #footer>
-        <div class="flex flex-col gap-2">
-          <div class="rounded-xl border border-slate-200 bg-slate-50/80 p-2.5">
-            <p class="m-0 text-[11px] font-medium uppercase tracking-[0.12em] text-slate-500">Identity</p>
-            <div class="mt-2">
-              <IdentityHandle
-                :identity="activeIdentityKey"
-                :label="activeIdentityLabel"
-                :identity-text="activeIdentityShortId"
-                size="sm"
-                data-test="sidebar-active-identity-handle"
-              >
-                <template #status>
-                  <span
-                    class="inline-block h-2 w-2 rounded-full"
-                    :style="{ backgroundColor: identityDotColor }"
-                    data-test="sidebar-active-identity-status"
-                  ></span>
-                </template>
-              </IdentityHandle>
-              <span class="sr-only" data-test="sidebar-active-identity-label">
-                {{ activeIdentityLabel }}
-              </span>
-              <span class="sr-only" data-test="sidebar-active-identity-id">
-                {{ activeIdentityShortId }}
-              </span>
-            </div>
-            <div class="mt-2 flex flex-wrap items-center gap-1.5">
-              <Badge tone="success" variant="soft" size="xs">
-                {{ integrityValid ? "Integrity verified" : "Integrity issue" }}
-              </Badge>
-              <Badge :tone="stagedTone" variant="soft" size="xs">
-                {{ stagedLabel }}
-              </Badge>
-            </div>
-          </div>
-
+        <div class="flex flex-col gap-3">
           <input
             ref="ledgerUploadInputRef"
             type="file"
@@ -300,15 +240,27 @@ async function relaunchOnboarding(): Promise<void> {
           <SplitButton
             :disabled="identityActionBusy"
             menuWidth="w-56"
+            containerClass="rounded-2xl border-[var(--ui-border)] bg-[var(--ui-tonal-tertiary)]"
+            toggleClass="!border-[var(--ui-border)]"
             data-test="sidebar-identity-management"
           >
             <template #primary>
               <button
                 type="button"
-                class="flex-1 px-4 py-2 text-left text-xs font-medium transition-colors hover:bg-[var(--ui-fg)]/5 disabled:cursor-not-allowed disabled:opacity-50"
+                class="flex w-full items-center gap-3  text-left transition-colors hover:bg-[var(--ui-tonal-secondary)] px-3 py-1.5"
                 :disabled="identityActionBusy"
               >
-                Identity actions
+                <div class="flex shrink-0 items-center justify-center border border-[var(--ui-border)] bg-[var(--ui-surface)] rounded overflow-hidden border-2 border-[var(--ui-border)]">
+                  <IdentityGlyph :identity="activeIdentityKey" size="xs" />
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-2">
+                    <p class="m-0 truncate text-sm font-semibold text-[var(--ui-fg)]">
+                      {{ activeIdentityLabel }}
+                    </p>
+                    <span class="h-1.5 w-1.5 rounded-full bg-[var(--ui-success)]" data-test="sidebar-active-identity-status"></span>
+                  </div>
+                </div>
               </button>
             </template>
             <template #menu="{ closeMenu }">
@@ -327,68 +279,76 @@ async function relaunchOnboarding(): Promise<void> {
             </template>
           </SplitButton>
 
-          <SplitButton
-            :disabled="ledgerActionBusy"
-            menuWidth="w-56"
-            data-test="sidebar-ledger-management"
-          >
-            <template #primary>
-              <button
-                type="button"
-                class="flex-1 px-4 py-2 text-left text-xs font-medium transition-colors hover:bg-[var(--ui-fg)]/5 disabled:cursor-not-allowed disabled:opacity-50"
-                :disabled="ledgerActionBusy"
-                data-test="sidebar-ledger-create"
-                @click="createLedger"
-              >
-                New Ledger
-              </button>
-            </template>
-            <template #menu="{ closeMenu }">
-              <button
-                type="button"
-                class="w-full rounded-lg px-3 py-2 text-left text-xs transition-colors hover:bg-[var(--ui-fg)]/5 disabled:cursor-not-allowed disabled:opacity-50"
-                :disabled="ledgerActionBusy"
-                data-test="sidebar-ledger-import"
-                @click="
-                  triggerLedgerImport();
-                  closeMenu();
-                "
-              >
-                Import Ledger JSON
-              </button>
-              <button
-                type="button"
-                class="w-full rounded-lg px-3 py-2 text-left text-xs transition-colors hover:bg-[var(--ui-fg)]/5 disabled:cursor-not-allowed disabled:opacity-50"
-                :disabled="ledgerActionBusy"
-                data-test="sidebar-ledger-export"
-                @click="
-                  exportLedger();
-                  closeMenu();
-                "
-              >
-                Export Ledger JSON
-              </button>
-            </template>
-          </SplitButton>
-
-          <Button
-            as="a"
-            :href="releaseHref"
-            target="_blank"
-            rel="noreferrer noopener"
-            variant="plain-secondary"
-            size="xs"
-            class="w-full justify-start font-mono"
-          >
-            v{{ appVersion ?? "dev" }}
-          </Button>
-
           <div class="flex items-center gap-2">
-            <Button class="flex-1" variant="secondary" size="sm" @click="relaunchOnboarding">
-              Lock
+            <SplitButton
+              :disabled="ledgerActionBusy"
+              class="min-w-0 flex-1"
+              menuWidth="w-56"
+              containerClass="rounded-2xl border-[var(--ui-border)]"
+              toggleClass="!border-[var(--ui-border)]"
+              data-test="sidebar-ledger-management"
+            >
+              <template #primary>
+                <button
+                  type="button"
+                  class="min-w-0 flex-1 truncate px-3 py-2.5 text-left text-xs font-semibold text-[var(--ui-fg)]"
+                  :disabled="ledgerActionBusy"
+                  data-test="sidebar-ledger-create"
+                  @click="createLedger"
+                >
+                  Ledger
+                </button>
+              </template>
+              <template #menu="{ closeMenu }">
+                <button
+                  type="button"
+                  class="w-full rounded-lg px-3 py-2 text-left text-xs transition-colors hover:bg-[var(--ui-fg)]/5 disabled:cursor-not-allowed disabled:opacity-50"
+                  :disabled="ledgerActionBusy"
+                  data-test="sidebar-ledger-import"
+                  @click="
+                    triggerLedgerImport();
+                    closeMenu();
+                  "
+                >
+                  Import Ledger JSON
+                </button>
+                <button
+                  type="button"
+                  class="w-full rounded-lg px-3 py-2 text-left text-xs transition-colors hover:bg-[var(--ui-fg)]/5 disabled:cursor-not-allowed disabled:opacity-50"
+                  :disabled="ledgerActionBusy"
+                  data-test="sidebar-ledger-export"
+                  @click="
+                    exportLedger();
+                    closeMenu();
+                  "
+                >
+                  Export Ledger JSON
+                </button>
+              </template>
+            </SplitButton>
+
+            <Button
+              variant="secondary"
+              size="sm"
+              class="h-10 w-10 shrink-0 !px-0"
+              aria-label="Lock session"
+              @click="relaunchOnboarding"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="10" rx="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
             </Button>
+
             <ThemeModeToggle />
           </div>
+
+          <span class="sr-only" data-test="sidebar-active-identity-label">
+            {{ activeIdentityLabel }}
+          </span>
+          <span class="sr-only" data-test="sidebar-active-identity-id">
+            {{ activeIdentityShortId }}
+          </span>
         </div>
       </template>
     </SidebarNav>
@@ -396,7 +356,7 @@ async function relaunchOnboarding(): Promise<void> {
 
   <div v-if="smallerThanMd && !openSideBar" class="fixed left-0 top-0 z-40 m-2">
     <Button
-      variant="plain-secondary"
+      variant="secondary"
       size="sm"
       aria-label="Open navigation"
       @click="openSideBar = !openSideBar"

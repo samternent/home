@@ -30,9 +30,29 @@ test("shell and permissions happy path", async ({ page }) => {
   await page.locator('[data-test="nav-app-tasks"]').click();
   await expect(page.locator('[data-test="runtime-app-v0"]')).toBeVisible();
   await expect(page.locator('[data-test="runtime-app-title"]')).toContainText("Tasks");
+  await expect(page.locator('[data-test="runtime-task-layout-rail"]')).toHaveAttribute(
+    "class",
+    /w-64/,
+  );
+  await expect(page.locator('[data-test="runtime-task-layout-scroll"]')).toHaveAttribute(
+    "class",
+    /overflow-auto/,
+  );
+  await expect(page.locator('[data-test="runtime-task-layout-table-head"]')).toHaveAttribute(
+    "class",
+    /sticky/,
+  );
 
   await page.locator('[data-test="nav-permissions"]').click();
   await expect(page.locator('[data-test="permissions-v2"]')).toBeVisible();
+  await expect(page.locator('[data-test="permissions-layout-rail"]')).toHaveAttribute(
+    "class",
+    /w-64/,
+  );
+  await expect(page.locator('[data-test="permissions-layout-scroll"]')).toHaveAttribute(
+    "class",
+    /overflow-auto/,
+  );
 
   await page.locator('[data-test="permission-create-title"]').fill("Reviewers");
   await page.locator('[data-test="permission-create-submit"]').click();
@@ -40,6 +60,10 @@ test("shell and permissions happy path", async ({ page }) => {
   await expect(page.locator('[data-test="permissions-empty"]')).toHaveCount(0);
   await expect(page.locator('[data-test^="permission-selected-title-"]')).toContainText(
     "Reviewers",
+  );
+  await expect(page.locator('[data-test="permissions-layout-table-head"]')).toHaveAttribute(
+    "class",
+    /sticky/,
   );
   await expect(page.locator('[data-test="permissions-users-empty"]')).toBeVisible();
   await expect(page.locator('[data-test="console-status-staged"]')).toContainText(

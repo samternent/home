@@ -93,7 +93,13 @@ const ariaLabel = computed(() =>
 </script>
 
 <template>
-  <Button :aria-label="ariaLabel" variant="plain-secondary" size="sm" @click="toggleMode">
+  <Button
+    :aria-label="ariaLabel"
+    variant="secondary"
+    size="sm"
+    class="h-10 w-10 shrink-0 !px-0"
+    @click="toggleMode"
+  >
     <svg
       v-if="currentMode === 'light'"
       xmlns="http://www.w3.org/2000/svg"

@@ -93,7 +93,7 @@ const inputClasses = computed(() => {
   const baseClasses = [
     "w-full transition-all duration-200 ease-out",
     "focus:outline-none focus:ring-2 focus:ring-offset-0",
-    "placeholder-neutral-400 dark:placeholder-neutral-500",
+    "placeholder-[var(--ui-fg-muted)]",
     "disabled:opacity-50 disabled:cursor-not-allowed",
     "border border-transparent bg-transparent",
   ];
@@ -133,8 +133,8 @@ const inputClasses = computed(() => {
     ],
     ghost: [
       "bg-transparent",
-      "border-neutral-200/70 dark:border-neutral-700/80",
-      "hover:border-neutral-300 dark:hover:border-neutral-600",
+      "border-[color-mix(in_srgb,var(--ui-border)_80%,transparent)]",
+      "hover:border-[var(--ui-border)]",
       "focus:border-primary/60 focus:ring-primary/15",
     ],
   };
@@ -148,8 +148,8 @@ const inputClasses = computed(() => {
   // Error state
   if (props.error) {
     classes.push(
-      "!border-red-500 !ring-red-500/20",
-      "focus:!border-red-500 focus:!ring-red-500/20",
+      "!border-[var(--ui-critical)] !ring-[var(--ui-critical-muted)]",
+      "focus:!border-[var(--ui-critical)] focus:!ring-[var(--ui-critical-muted)]",
     );
   }
 
@@ -183,7 +183,7 @@ const inputClasses = computed(() => {
 const labelClasses = computed(() =>
   [
     "ui-label text-xs uppercase tracking-[0.06em] mb-2",
-    props.error ? "text-red-600 dark:text-red-400" : "",
+    props.error ? "text-[var(--ui-critical)]" : "",
   ]
     .filter(Boolean)
     .join(" "),
@@ -257,7 +257,7 @@ const handleKeydown = (event) => {
     <!-- Label -->
     <label v-if="label" :class="labelClasses">
       {{ label }}
-      <span v-if="required" class="text-red-500 ml-1">*</span>
+      <span v-if="required" class="ml-1 text-[var(--ui-critical)]">*</span>
     </label>
 
     <!-- Input wrapper -->
@@ -342,7 +342,7 @@ const handleKeydown = (event) => {
     </div>
 
     <!-- Error message -->
-    <p v-if="error" class="mt-2 text-sm text-red-600 dark:text-red-400">
+    <p v-if="error" class="mt-2 text-sm text-[var(--ui-critical)]">
       {{ error }}
     </p>
 

@@ -15,7 +15,7 @@ Props:
 - `modelValue`
 - `items`: `{ value, label, disabled? }[]`
 - `size`: `sm | md`
-- `variant`: `underline | pill`
+- `variant`: `underline | pill | workspace`
 - `lazyMount`
 
 Slots:

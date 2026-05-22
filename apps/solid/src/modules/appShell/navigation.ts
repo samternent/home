@@ -15,9 +15,14 @@ function isAppRouteActive(path: string, appId: string): boolean {
   return path === `/w/${appId}` || path.startsWith(`/w/${appId}/`);
 }
 
+type SidebarNavigationOptions = {
+  appCounts?: Partial<Record<string, number | string>>;
+};
+
 export function buildSidebarNavigationSections(
   path: string,
   apps: RuntimeAppDefinition[] = listRuntimeApps(),
+  options: SidebarNavigationOptions = {},
 ): SidebarNavSection[] {
   const validApps = listValidRuntimeApps(apps);
 
@@ -27,9 +32,11 @@ export function buildSidebarNavigationSections(
     items: validApps.map((app) => ({
       id: `app-${app.id}`,
       label: app.label,
+      count: options.appCounts?.[app.id],
       to: `/w/${app.id}`,
       dataTest: `nav-app-${app.id}`,
       active: isAppRouteActive(path, app.id),
+      showActiveDot: true,
     })),
   };
 

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
-import { Badge, Button, Card } from "ternent-ui/primitives";
+import { Badge, Button } from "ternent-ui/primitives";
+import { ListWorkspaceLayout } from "ternent-ui/patterns";
 import { useAppApi } from "@/app/api";
 import type { TaskRecord } from "@/app/plugins";
 import type { RuntimeAppSurfaceDefinition } from "@/runtime/apps";
@@ -17,6 +18,7 @@ const taskEntryEditor = createRuntimeTaskEntryEditor();
 
 const loadError = ref<string | null>(null);
 const actionError = ref<string | null>(null);
+const activeFilter = ref<"all" | "private" | "shared" | "unassigned">("all");
 
 const users = computed(() => appApi.users.all());
 const profiles = computed(() => appApi.profiles.all());
@@ -56,22 +58,41 @@ const columnLabelById = computed(
   () => new Map(columns.value.map((column) => [column.id, column.title] as const)),
 );
 
-const visibleTaskCount = computed(() => tasks.value.length);
-const privateTaskCount = computed(() => tasks.value.filter((task) => Boolean(task.permissionId)).length);
-const publicTaskCount = computed(() => tasks.value.filter((task) => !task.permissionId).length);
+const allCount = computed(() => tasks.value.length);
+const privateCount = computed(() => tasks.value.filter((task) => Boolean(task.permissionId)).length);
+const sharedCount = computed(() => tasks.value.filter((task) => !task.permissionId).length);
+const unassignedCount = computed(() =>
+  tasks.value.filter((task) => !task.assigneeIdentityKey).length,
+);
+
+const filteredTasks = computed(() => {
+  if (activeFilter.value === "private") {
+    return tasks.value.filter((task) => Boolean(task.permissionId));
+  }
+
+  if (activeFilter.value === "shared") {
+    return tasks.value.filter((task) => !task.permissionId);
+  }
+
+  if (activeFilter.value === "unassigned") {
+    return tasks.value.filter((task) => !task.assigneeIdentityKey);
+  }
+
+  return tasks.value;
+});
 
 function visibilityLabel(task: TaskRecord): string {
   if (task.permissionId) {
     const permissionTitle = permissionTitleById.value.get(task.permissionId);
-    return permissionTitle ? `Private · ${permissionTitle}` : "Private";
+    return permissionTitle ? permissionTitle : "Private";
   }
 
   if (task.taskListId) {
     const listTitle = publicListTitleById.value.get(task.taskListId);
-    return listTitle ? `List · ${listTitle}` : "List";
+    return listTitle ? listTitle : "List";
   }
 
-  return "Public";
+  return "Shared";
 }
 
 function assigneeLabel(task: TaskRecord): string {
@@ -81,17 +102,37 @@ function assigneeLabel(task: TaskRecord): string {
   return userLabelByIdentityKey.value.get(task.assigneeIdentityKey) ?? task.assigneeIdentityKey;
 }
 
-function assigneeInitials(task: TaskRecord): string {
-  const label = assigneeLabel(task);
-  if (label === "Unassigned") {
-    return "U";
+function rowDotClass(task: TaskRecord): string {
+  if (task.permissionId) {
+    return "bg-[var(--ui-primary)] ring-[color-mix(in_srgb,var(--ui-primary)_16%,transparent)]";
   }
-  const chunks = label
-    .split(/\s+/)
-    .map((part) => part.trim())
-    .filter(Boolean)
-    .slice(0, 2);
-  return (chunks.map((part) => part[0]).join("") || label.slice(0, 1)).toUpperCase();
+  if (task.taskListId) {
+    return "bg-[var(--ui-info)] ring-[color-mix(in_srgb,var(--ui-info)_16%,transparent)]";
+  }
+  return "bg-[var(--ui-success)] ring-[color-mix(in_srgb,var(--ui-success)_16%,transparent)]";
+}
+
+function visibilityPillClass(task: TaskRecord): string {
+  if (task.permissionId) {
+    return "border-[color-mix(in_srgb,var(--ui-primary)_22%,var(--ui-border))] bg-[var(--ui-primary-muted)] text-[var(--ui-primary)]";
+  }
+
+  return "border-[color-mix(in_srgb,var(--ui-success)_22%,var(--ui-border))] bg-[var(--ui-success-muted)] text-[var(--ui-success)]";
+}
+
+function accessTagClass(task: TaskRecord): string {
+  if (task.permissionId) {
+    return "border-[color-mix(in_srgb,var(--ui-primary)_22%,var(--ui-border))] bg-[var(--ui-primary-muted)] text-[var(--ui-primary)]";
+  }
+  return "border-[color-mix(in_srgb,var(--ui-success)_22%,var(--ui-border))] bg-[var(--ui-success-muted)] text-[var(--ui-success)]";
+}
+
+function statusLabel(task: TaskRecord): string {
+  return columnLabelById.value.get(task.columnId) ?? task.columnId;
+}
+
+function selectFilter(nextFilter: "all" | "private" | "shared" | "unassigned"): void {
+  activeFilter.value = nextFilter;
 }
 
 async function ensureLoaded(): Promise<void> {
@@ -140,17 +181,70 @@ function openTaskEditDrawer(task: TaskRecord): void {
 </script>
 
 <template>
-  <section class="mx-auto w-full max-w-6xl p-4 md:p-6" data-test="runtime-task-list-v1">
-    <header class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:p-5">
-      <div class="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h2 class="m-0 text-2xl font-semibold tracking-tight text-slate-950">Tasks</h2>
-          <p class="m-0 mt-1 text-sm text-slate-600">
-            Plan, assign, and verify work across this ledger.
-          </p>
+  <section class="h-full min-h-0 w-full" data-test="runtime-task-list-v1">
+    <ListWorkspaceLayout data-test-prefix="runtime-task-layout">
+      <template #rail>
+        <div class="mb-4 flex items-center justify-between">
+          <h2 class="m-0 text-xs font-bold uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]">Task lists</h2>
+          <button class="rounded-lg px-2 py-1 text-xs font-bold text-[var(--ui-fg-muted)] transition hover:bg-[var(--ui-tonal-secondary)] hover:text-[var(--ui-fg)]">+</button>
         </div>
 
-        <div class="flex flex-wrap items-center gap-2">
+        <div class="space-y-1" data-test="runtime-task-list-filters">
+          <button
+            class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm font-semibold transition"
+            :class="activeFilter === 'all' ? 'border border-[var(--ui-border)] bg-[var(--ui-surface)] text-[var(--ui-fg)] shadow-[var(--ui-shadow-sm)]' : 'text-[var(--ui-fg-muted)] hover:bg-[var(--ui-tonal-secondary)] hover:text-[var(--ui-fg)]'"
+            data-test="runtime-task-filter-all"
+            @click="selectFilter('all')"
+          >
+            <span>All tasks</span>
+            <span class="rounded-full bg-[var(--ui-tonal-secondary)] px-2 py-0.5 text-xs text-[var(--ui-fg-muted)]">{{ allCount }}</span>
+          </button>
+
+          <button
+            class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm font-semibold transition"
+            :class="activeFilter === 'private' ? 'border border-[var(--ui-border)] bg-[var(--ui-surface)] text-[var(--ui-fg)] shadow-[var(--ui-shadow-sm)]' : 'text-[var(--ui-fg-muted)] hover:bg-[var(--ui-tonal-secondary)] hover:text-[var(--ui-fg)]'"
+            data-test="runtime-task-filter-private"
+            @click="selectFilter('private')"
+          >
+            <span>Private</span>
+            <span class="text-xs text-[var(--ui-fg-muted)]">{{ privateCount }}</span>
+          </button>
+
+          <button
+            class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm font-semibold transition"
+            :class="activeFilter === 'shared' ? 'border border-[var(--ui-border)] bg-[var(--ui-surface)] text-[var(--ui-fg)] shadow-[var(--ui-shadow-sm)]' : 'text-[var(--ui-fg-muted)] hover:bg-[var(--ui-tonal-secondary)] hover:text-[var(--ui-fg)]'"
+            data-test="runtime-task-filter-shared"
+            @click="selectFilter('shared')"
+          >
+            <span>Shared</span>
+            <span class="text-xs text-[var(--ui-fg-muted)]">{{ sharedCount }}</span>
+          </button>
+
+          <button
+            class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm font-semibold transition"
+            :class="activeFilter === 'unassigned' ? 'border border-[var(--ui-border)] bg-[var(--ui-surface)] text-[var(--ui-fg)] shadow-[var(--ui-shadow-sm)]' : 'text-[var(--ui-fg-muted)] hover:bg-[var(--ui-tonal-secondary)] hover:text-[var(--ui-fg)]'"
+            data-test="runtime-task-filter-unassigned"
+            @click="selectFilter('unassigned')"
+          >
+            <span>Unassigned</span>
+            <span class="text-xs text-[var(--ui-fg-muted)]">{{ unassignedCount }}</span>
+          </button>
+        </div>
+      </template>
+
+      <div class="flex h-20 shrink-0 items-center justify-between border-b border-[var(--ui-border)] bg-[color-mix(in_srgb,var(--ui-surface)_92%,transparent)] px-6 backdrop-blur md:px-8">
+        <div>
+          <h1 class="m-0 text-[28px] font-semibold tracking-[-0.035em] text-[var(--ui-fg)]">Tasks</h1>
+          <div class="mt-1 flex items-center gap-2 text-xs font-semibold text-[var(--ui-fg-muted)]">
+            <span>{{ filteredTasks.length }} tasks</span>
+            <span class="text-[color-mix(in_srgb,var(--ui-fg-muted)_35%,transparent)]">/</span>
+            <span>{{ privateCount }} private</span>
+            <span class="text-[color-mix(in_srgb,var(--ui-fg-muted)_35%,transparent)]">/</span>
+            <span>{{ sharedCount }} shared</span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
           <Button
             type="button"
             variant="primary"
@@ -158,133 +252,102 @@ function openTaskEditDrawer(task: TaskRecord): void {
             data-test="runtime-task-list-open-create"
             @click="openCreateTaskDrawer"
           >
+            <span class="text-base leading-none">+</span>
             New task
           </Button>
-          <Badge tone="warning" variant="soft" size="xs" data-test="runtime-task-list-staged">
-            {{ stagedCount > 0 ? `${stagedCount} staged` : "Ready" }}
-          </Badge>
-        </div>
-      </div>
-    </header>
-
-    <p
-      v-if="loadError"
-      class="m-0 mb-3 mt-4 text-sm text-[var(--ui-critical)]"
-      data-test="runtime-task-list-load-error"
-    >
-      {{ loadError }}
-    </p>
-
-    <p
-      v-if="actionError"
-      class="m-0 mb-3 mt-4 text-sm text-[var(--ui-critical)]"
-      data-test="runtime-task-list-action-error"
-    >
-      {{ actionError }}
-    </p>
-
-    <div class="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm" data-test="runtime-task-list-items">
-      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 px-4 py-3">
-        <div class="flex flex-wrap items-center gap-2">
-          <Badge tone="neutral" variant="soft" size="xs">{{ visibleTaskCount }} tasks</Badge>
-          <Badge tone="success" variant="soft" size="xs">{{ publicTaskCount }} shared</Badge>
-          <Badge tone="secondary" variant="soft" size="xs">{{ privateTaskCount }} private</Badge>
-        </div>
-        <div class="flex flex-wrap items-center gap-2">
-          <Badge tone="neutral" variant="outline" size="xs">Sort · Latest</Badge>
-          <Badge tone="neutral" variant="outline" size="xs">View · List</Badge>
         </div>
       </div>
 
-      <div class="divide-y divide-slate-200/90">
-        <Card
-          v-for="task in tasks"
-          :key="task.id"
-          variant="default"
-          class="rounded-none border-0 bg-transparent p-0 shadow-none"
+      <p
+        v-if="loadError"
+        class="m-0 border-b border-[var(--ui-border)] px-6 py-3 text-sm text-[var(--ui-critical)] md:px-8"
+        data-test="runtime-task-list-load-error"
+      >
+        {{ loadError }}
+      </p>
+
+      <p
+        v-if="actionError"
+        class="m-0 border-b border-[var(--ui-border)] px-6 py-3 text-sm text-[var(--ui-critical)] md:px-8"
+        data-test="runtime-task-list-action-error"
+      >
+        {{ actionError }}
+      </p>
+
+      <div
+        class="min-h-0 flex-1 overflow-auto bg-[radial-gradient(circle_at_top,color-mix(in_srgb,var(--ui-primary-muted)_42%,transparent),transparent_35%)]"
+        data-test="runtime-task-layout-scroll"
+      >
+        <div
+          class="sticky top-0 grid h-11 grid-cols-[minmax(260px,1.5fr)_minmax(150px,0.7fr)_120px_180px_80px] items-center border-b border-[var(--ui-border)] bg-[color-mix(in_srgb,var(--ui-surface)_88%,transparent)] px-6 text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--ui-fg-muted)] backdrop-blur md:px-8"
+          data-test="runtime-task-layout-table-head"
         >
-          <div class="grid gap-3 px-4 py-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-center md:gap-4">
-            <div class="min-w-0">
-              <div class="flex min-w-0 items-start gap-3">
-                <div
-                  class="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-slate-100 text-xs font-semibold text-slate-700"
-                >
-                  {{ assigneeInitials(task) }}
-                </div>
-                <div class="min-w-0">
-                  <p class="m-0 truncate text-sm font-semibold text-slate-900">
-                    {{ task.title }}
-                  </p>
-                  <p class="m-0 mt-1 truncate text-xs text-slate-600">
-                    Assignee · {{ assigneeLabel(task) }}
-                  </p>
-                  <p class="m-0 mt-0.5 truncate text-xs text-slate-500">
-                    Column · {{ columnLabelById.get(task.columnId) ?? task.columnId }}
-                  </p>
-                </div>
-              </div>
+          <div>Task</div>
+          <div>Assignee</div>
+          <div>Status</div>
+          <div>Access</div>
+          <div class="text-right">Action</div>
+        </div>
 
-              <div class="mt-2.5 flex flex-wrap items-center gap-1.5 pl-11">
-                <Badge tone="neutral" variant="outline" size="xs">{{ task.audienceType }}</Badge>
-                <Badge
-                  v-if="task.permissionId"
-                  tone="secondary"
-                  variant="soft"
-                  size="xs"
-                  class="!border-violet-200 !bg-violet-50 !text-violet-700"
-                >
-                  {{ visibilityLabel(task) }}
-                </Badge>
-                <Badge
-                  v-else-if="task.taskListId"
-                  tone="primary"
-                  variant="soft"
-                  size="xs"
-                >
-                  {{ visibilityLabel(task) }}
-                </Badge>
-                <Badge
-                  v-else
-                  tone="success"
-                  variant="soft"
-                  size="xs"
-                  class="!border-emerald-200 !bg-emerald-50 !text-emerald-700"
-                >
-                  {{ visibilityLabel(task) }}
-                </Badge>
-              </div>
+        <div data-test="runtime-task-list-items">
+          <article
+            v-for="task in filteredTasks"
+            :key="task.id"
+            class="group grid min-h-[88px] grid-cols-[minmax(260px,1.5fr)_minmax(150px,0.7fr)_120px_180px_80px] items-center border-b border-[var(--ui-border)] bg-transparent px-6 transition-colors duration-200 hover:bg-[color-mix(in_srgb,var(--ui-tonal-tertiary)_78%,transparent)] md:px-8"
+          >
+            <div class="flex min-w-0 items-center gap-4">
+              <span class="h-1.5 w-1.5 rounded-full ring-4" :class="rowDotClass(task)"></span>
+              <span class="truncate text-sm font-semibold tracking-[-0.02em] text-[var(--ui-fg)]">{{ task.title }}</span>
+              <span class="rounded-full border px-2.5 py-1 text-[11px] font-bold" :class="visibilityPillClass(task)">
+                {{ task.permissionId ? 'Private' : 'Public' }}
+              </span>
             </div>
 
-            <div class="flex justify-end md:justify-start">
-              <Button
-                type="button"
-                size="xs"
-                variant="plain-secondary"
-                :data-test="`runtime-task-list-open-edit-${task.id}`"
-                @click="openTaskEditDrawer(task)"
+            <div class="truncate text-[13px] font-medium text-[var(--ui-fg-muted)]">{{ assigneeLabel(task) }}</div>
+
+            <div>
+              <span class="rounded-full bg-[var(--ui-tonal-secondary)] px-2 py-1 text-xs font-bold text-[var(--ui-fg-muted)]">
+                {{ statusLabel(task) }}
+              </span>
+            </div>
+
+            <div class="flex min-w-0 items-center gap-1.5">
+              <span class="rounded-full border border-[var(--ui-border)] bg-[var(--ui-surface)] px-2 py-0.5 text-[11px] font-semibold text-[var(--ui-fg-muted)]">
+                {{ task.permissionId ? 'permission' : 'everyone' }}
+              </span>
+              <span
+                class="rounded-full border px-2 py-0.5 text-[11px] font-semibold"
+                :class="accessTagClass(task)"
               >
-                <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                  <path
-                    d="M12.5 3.5a1.414 1.414 0 0 1 2 0l2 2a1.414 1.414 0 0 1 0 2L8 16H4v-4l8.5-8.5Z"
-                    stroke="currentColor"
-                    stroke-width="1.4"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-                Edit
-              </Button>
+                {{ visibilityLabel(task) }}
+              </span>
             </div>
-          </div>
-        </Card>
 
-        <p
-          v-if="tasks.length === 0"
-          class="m-0 rounded-none border-0 p-6 text-sm text-slate-500"
-          data-test="runtime-task-list-empty"
-        >
-          No visible tasks.
-        </p>
+            <button
+              type="button"
+              class="justify-self-end rounded-xl border border-transparent bg-transparent px-3 py-2 text-xs font-bold tracking-[0.02em] text-[var(--ui-fg-muted)] opacity-0 transition-all duration-200 group-hover:opacity-100 hover:border-[var(--ui-border)] hover:bg-[var(--ui-surface)] hover:text-[var(--ui-fg)] hover:shadow-sm"
+              :data-test="`runtime-task-list-open-edit-${task.id}`"
+              @click="openTaskEditDrawer(task)"
+            >
+              Edit
+            </button>
+          </article>
+
+          <p
+            v-if="filteredTasks.length === 0"
+            class="m-0 border-b border-[var(--ui-border)] px-6 py-8 text-sm text-[var(--ui-fg-muted)] md:px-8"
+            data-test="runtime-task-list-empty"
+          >
+            No visible tasks.
+          </p>
+        </div>
       </div>
-    </div>
+
+      <div class="hidden">
+        <Badge tone="warning" variant="soft" size="xs" data-test="runtime-task-list-staged">
+          {{ stagedCount > 0 ? `${stagedCount} staged` : 'no staged entries' }}
+        </Badge>
+      </div>
+    </ListWorkspaceLayout>
   </section>
 </template>

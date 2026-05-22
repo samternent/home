@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, shallowRef } from "vue";
 import { breakpointsTailwind, useBreakpoints } from "@vueuse/core";
-import { Badge, Input } from "ternent-ui/primitives";
+import { Input } from "ternent-ui/primitives";
+import { IdentityGlyph } from "ternent-ui/patterns";
 import { useAppApi } from "@/app/api";
 import { EntityDetailsView } from "@/runtime/entities";
 import SideNav from "./SideNav.vue";
@@ -16,77 +17,64 @@ const smallerThanMd = breakpoints.smaller("md");
 
 const stagedCount = computed(() => appApi.getState().stagedCount);
 const integrityValid = computed(() => appApi.getState().integrityValid);
-
-const statusTone = computed<"success" | "warning" | "critical">(() => {
-  if (appApi.status.value === "ready") {
-    return "success";
-  }
-  if (appApi.status.value === "error") {
-    return "critical";
-  }
-  return "warning";
-});
-
-const integrityTone = computed<"success" | "critical">(() =>
-  integrityValid.value ? "success" : "critical",
-);
-
-const stagedTone = computed<"warning" | "neutral">(() =>
-  stagedCount.value > 0 ? "warning" : "neutral",
-);
-
-const statusDotColor = computed(() => `var(--ui-${statusTone.value})`);
-const integrityDotColor = computed(() => `var(--ui-${integrityTone.value})`);
+const runtimeStatus = computed(() => appApi.status.value);
 const activeIdentityLabel = computed(
   () => appApi.identity.activeIdentity.value?.label ?? "Identity locked",
 );
+const activeIdentityKey = computed(
+  () =>
+    appApi.identity.activeIdentity.value?.identityKey ??
+    appApi.identity.activeIdentity.value?.identityId ??
+    "no-active-identity",
+);
+
+const statusDotColor = computed(() => {
+  if (runtimeStatus.value === "ready") {
+    return "var(--ui-success)";
+  }
+  if (runtimeStatus.value === "error") {
+    return "var(--ui-critical)";
+  }
+  return "var(--ui-warning)";
+});
 </script>
 <template>
-  <div class="flex h-screen max-h-screen w-screen max-w-screen flex-col overflow-hidden bg-slate-100/80">
+  <div class="flex h-screen max-h-screen w-screen max-w-screen flex-col overflow-hidden bg-[var(--ui-bg)] text-[var(--ui-fg)] antialiased">
     <div ref="contentArea" class="relative z-10 flex h-full flex-1 overflow-hidden">
       <SideNav />
 
       <slot name="drawer" />
       <div class="flex h-full w-full flex-1 flex-col overflow-hidden">
-        <header
-          class="sticky top-0 z-20 w-full border-b border-slate-200/80 bg-slate-50/95 backdrop-blur-[12px]"
-        >
-          <div class="mx-auto flex w-full items-center gap-3 px-4 py-3 md:px-6">
-            <div :class="['min-w-0 flex-1', { 'pl-12': smallerThanMd }]">
-              <p class="m-0 text-[11px] font-medium uppercase tracking-[0.14em] text-slate-500">
-                Workspace
-              </p>
-              <p class="m-0 truncate pt-0.5 text-sm font-semibold text-slate-900">
-                Concord Ledger Workspace
-              </p>
-            </div>
+        <header class="flex h-16 items-center justify-between border-b border-[var(--ui-border)] bg-[var(--ui-surface)] px-6 md:px-8">
+          <div :class="['flex-1', { 'pl-12': smallerThanMd }]" />
 
-            <nav class="flex min-w-0 flex-1 items-center justify-end gap-2">
-              <Input
-                placeholder="Search tasks, users, permissions..."
-                size="sm"
-                class="w-64 max-w-full"
-                aria-label="Search workspace"
-              >
-                <template #leading>
-                  <svg class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                    <path
-                      d="m14.5 14.5 3 3M16.5 9a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z"
-                      stroke="currentColor"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                    />
-                  </svg>
-                </template>
-              </Input>
-              <Badge tone="success" variant="soft" size="xs" class="hidden md:inline-flex">
-                {{ activeIdentityLabel }}
-              </Badge>
-            </nav>
+          <!-- <div class="relative w-[380px] max-w-full">
+            <Input
+              placeholder="Search workspace..."
+              size="md"
+              class="!h-10 !rounded-xl !border-[var(--ui-border)] !bg-[var(--ui-tonal-tertiary)] !pl-11 !text-[13px] !font-medium placeholder:!font-medium"
+              aria-label="Search workspace"
+            >
+              <template #leading>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-[var(--ui-fg-muted)]">
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="m21 21-4.3-4.3" />
+                </svg>
+              </template>
+            </Input>
           </div>
+
+          <div class="flex flex-1 justify-end">
+            <div class="flex items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-surface)] px-2.5 py-1.5 shadow-[var(--ui-shadow-sm)]">
+              <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-tonal-tertiary)]">
+                <IdentityGlyph :identity="activeIdentityKey" size="xs" />
+              </div>
+              <div class="pr-1 text-xs font-semibold tracking-[0.01em] text-[var(--ui-fg)]">{{ activeIdentityLabel }}</div>
+            </div>
+          </div> -->
         </header>
 
-        <div class="flex h-full w-full flex-1 overflow-auto bg-slate-100/70">
+        <div class="flex h-full w-full flex-1 overflow-auto bg-[color-mix(in_srgb,var(--ui-bg)_86%,var(--ui-surface)_14%)]">
           <div class="relative flex-1">
             <slot />
           </div>
@@ -100,34 +88,21 @@ const activeIdentityLabel = computed(
 
         <Console :container="contentArea">
           <template #panel-control>
-            <div class="flex flex-wrap items-center gap-2 text-xs">
-              <div
-                class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-2 py-1 text-slate-600"
-              >
-                <span
-                  class="inline-block h-2 w-2 rounded-full"
-                  :style="{ backgroundColor: statusDotColor }"
-                ></span>
-                <span data-test="console-status-runtime">{{ appApi.status.value }}</span>
-              </div>
-
-              <div
-                class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-2 py-1 text-slate-600"
-              >
-                <span
-                  class="inline-block h-2 w-2 rounded-full"
-                  :style="{ backgroundColor: integrityDotColor }"
-                ></span>
-                <span data-test="console-status-integrity">
-                  {{ integrityValid ? "Integrity verified" : "Integrity issue" }}
+            <div class="flex w-full items-center justify-between px-2 text-[11px] font-semibold tracking-[0.01em] text-[var(--ui-fg-muted)] md:px-3">
+              <div class="flex items-center gap-2.5">
+                <span>
+                  <span class="mr-1.5 inline-block h-1.5 w-1.5 rounded-full" :style="{ backgroundColor: statusDotColor }"></span>
+                  <span class="capitalize" data-test="console-status-runtime">{{ runtimeStatus }}</span>
+                </span>
+                <span class="text-[color-mix(in_srgb,var(--ui-fg-muted)_35%,transparent)]">/</span>
+                <span class="capitalize" data-test="console-status-integrity">
+                  {{ integrityValid ? "integrity verified" : "integrity issue" }}
+                </span>
+                <span class="text-[color-mix(in_srgb,var(--ui-fg-muted)_35%,transparent)]">/</span>
+                <span class="capitalize" data-test="console-status-staged">
+                  {{ stagedCount > 0 ? `${stagedCount} staged · needs attention` : "No staged entries" }}
                 </span>
               </div>
-
-              <Badge :tone="stagedTone" variant="soft" size="xs" data-test="console-status-staged">
-                {{
-                  stagedCount > 0 ? `${stagedCount} staged · needs attention` : "No staged entries"
-                }}
-              </Badge>
             </div>
           </template>
           <slot name="console" />
