@@ -315,7 +315,7 @@ describe("concord host tasks flow", () => {
     expect(guestApp.tasks.all()).toHaveLength(0);
   });
 
-  it("does not retro-decrypt historical permission tasks for newly granted members", async () => {
+  it("retro-decrypts historical permission tasks for newly granted members", async () => {
     const sharedStorage = createMemoryStorage();
     const ownerIdentity = await createIdentity("2026-04-20T10:00:00.000Z");
     const guestIdentity = await createIdentity("2026-04-21T10:00:00.000Z");
@@ -374,6 +374,8 @@ describe("concord host tasks flow", () => {
     });
     await guestAfterGrant.load();
 
-    expect(guestAfterGrant.tasks.all()).toHaveLength(0);
+    const historicalTasks = guestAfterGrant.tasks.all();
+    expect(historicalTasks).toHaveLength(1);
+    expect(historicalTasks[0]?.title).toBe("Historical private task");
   });
 });

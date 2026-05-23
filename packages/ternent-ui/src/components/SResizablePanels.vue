@@ -76,7 +76,7 @@ const isResizable = computed(
     </div>
     <div
       ref="sidebarEl"
-      class="flex flex-1 relative border-l border-base-200"
+      class="flex flex-1 relative border-l border-base-200 z-10"
       :style="isResizable ? { minWidth: `${minSidebarWidth}px` } : {}"
     >
       <SResizer

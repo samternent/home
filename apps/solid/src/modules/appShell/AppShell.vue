@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { computed, shallowRef } from "vue";
 import { breakpointsTailwind, useBreakpoints } from "@vueuse/core";
-import { Input } from "ternent-ui/primitives";
-import { IdentityGlyph } from "ternent-ui/patterns";
 import { useAppApi } from "@/app/api";
 import { EntityDetailsView } from "@/runtime/entities";
 import SideNav from "./SideNav.vue";
@@ -88,21 +86,15 @@ const statusDotColor = computed(() => {
 
         <Console :container="contentArea">
           <template #panel-control>
-            <div class="flex w-full items-center justify-between px-2 text-[11px] font-semibold tracking-[0.01em] text-[var(--ui-fg-muted)] md:px-3">
-              <div class="flex items-center gap-2.5">
-                <span>
-                  <span class="mr-1.5 inline-block h-1.5 w-1.5 rounded-full" :style="{ backgroundColor: statusDotColor }"></span>
-                  <span class="capitalize" data-test="console-status-runtime">{{ runtimeStatus }}</span>
-                </span>
-                <span class="text-[color-mix(in_srgb,var(--ui-fg-muted)_35%,transparent)]">/</span>
-                <span class="capitalize" data-test="console-status-integrity">
-                  {{ integrityValid ? "integrity verified" : "integrity issue" }}
-                </span>
-                <span class="text-[color-mix(in_srgb,var(--ui-fg-muted)_35%,transparent)]">/</span>
-                <span class="capitalize" data-test="console-status-staged">
-                  {{ stagedCount > 0 ? `${stagedCount} staged · needs attention` : "No staged entries" }}
-                </span>
-              </div>
+            <div class="flex w-full items-center justify-between text-[10px] tracking-[0.01em] text-[var(--ui-fg-muted)]">
+              <span>
+                <span class="mr-1.5 inline-block h-1.5 w-1.5 rounded-full" :style="{ backgroundColor: statusDotColor }"></span>
+                <span class="capitalize" data-test="console-status-runtime">{{ runtimeStatus }}</span>
+              </span>
+              
+              <span class="capitalize bg-[var(--ui-secondary)]/20 w-5 h-5 flex items-center justify-center rounded-full">
+                {{ stagedCount }}
+              </span>
             </div>
           </template>
           <slot name="console" />

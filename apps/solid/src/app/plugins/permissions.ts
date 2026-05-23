@@ -2,6 +2,7 @@ import type { ConcordReplayPlugin } from "@ternent/concord";
 import type { LedgerAppendInput, LedgerReplayEntry } from "@ternent/ledger";
 import { deriveAgeRecipient, deriveAgeSecretKey } from "@ternent/identity";
 import type { AppProjectionPlugin } from "@/app/runtime";
+import type { AppReplayContext } from "./replayContext";
 import {
   isIdentityKeyFormat,
   identityKeyToPublicKeyBytes,
@@ -876,7 +877,9 @@ function materializeRecordForViewer(
 /**
  * Creates the local permissions replay plugin and selectors for v2.
  */
-export function createPermissionsPlugin(): AppProjectionPlugin<PermissionsState> {
+export function createPermissionsPlugin(options?: {
+  replayContext?: AppReplayContext;
+}): AppProjectionPlugin<PermissionsState> {
   const plugin: ConcordReplayPlugin<PermissionsState> = {
     id: "permissions",
     initialState: initialPermissionsState,
@@ -1097,6 +1100,9 @@ export function createPermissionsPlugin(): AppProjectionPlugin<PermissionsState>
         }
         ctx.setState(applyPermissionRevoke(state, payload));
       }
+    },
+    endReplay(ctx) {
+      options?.replayContext?.setPermissionsState(clonePermissionsState(ctx.getState()));
     },
   };
 

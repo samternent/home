@@ -1,4 +1,5 @@
 import type { ConcordReplayPlugin } from "@ternent/concord";
+import { decryptWithSecretKey, initArmour } from "@ternent/armour";
 import { deriveAgeRecipient } from "@ternent/identity";
 import type { LedgerAppendInput, LedgerReplayEntry } from "@ternent/ledger";
 import type { AppProjectionPlugin } from "@/app/runtime";
@@ -10,6 +11,7 @@ import {
   validateIdentityKey,
 } from "./identityKey";
 import type { PermissionsState } from "./permissions";
+import type { AppReplayContext } from "./replayContext";
 import type { UsersState } from "./users";
 
 export type TaskAudienceType = "everyone" | "user" | "permission";
@@ -245,6 +247,45 @@ function createTaskId(nowIso: string): string {
 function createTaskListId(nowIso: string): string {
   const timestamp = nowIso.replace(/[^0-9]/g, "").slice(0, 14) || "0";
   return `task-list:${timestamp}:${createRandomSuffix()}`;
+}
+
+function base64UrlDecode(value: string): Uint8Array {
+  const normalized = value.replace(/-/g, "+").replace(/_/g, "/");
+  const pad = normalized.length % 4 === 0 ? "" : "=".repeat(4 - (normalized.length % 4));
+  const encoded = `${normalized}${pad}`;
+
+  if (typeof atob === "function") {
+    const binary = atob(encoded);
+    const bytes = new Uint8Array(binary.length);
+    for (let index = 0; index < binary.length; index += 1) {
+      bytes[index] = binary.charCodeAt(index);
+    }
+    return bytes;
+  }
+
+  const bufferCtor = (globalThis as { Buffer?: { from(input: string, encoding: string): Uint8Array } })
+    .Buffer;
+  if (!bufferCtor) {
+    throw new Error("Base64 decoder is unavailable in this runtime.");
+  }
+  return new Uint8Array(bufferCtor.from(encoded, "base64"));
+}
+
+function toEncryptedPayloadBytes(entry: Extract<LedgerReplayEntry, { payload: { type: "encrypted" } }>) {
+  return entry.payload.encoding === "armor"
+    ? new TextEncoder().encode(entry.payload.data)
+    : base64UrlDecode(entry.payload.data);
+}
+
+function isTaskEntryKind(kind: string): boolean {
+  return (
+    kind === "task.create" ||
+    kind === "task.rename" ||
+    kind === "task.move" ||
+    kind === "task.assign" ||
+    kind === "task.archive" ||
+    kind === "task.list.create"
+  );
 }
 
 function resolveRuntimeActorCandidates(identity: { publicKey: string; keyId: string }): Set<string> {
@@ -634,6 +675,11 @@ async function resolvePermissionAudienceRecipients(
     throw new Error("Permission does not exist.");
   }
 
+  if (permission.publicKey) {
+    return [permission.publicKey];
+  }
+
+  // Backward-compat fallback: older groups may not include a key-bearing public key.
   const memberIdentityKeys = permission.members
     .map((member) => member.memberId)
     .filter((identityKey) => hasPermissionGrant(permissionsState, permissionId, identityKey));
@@ -684,7 +730,6 @@ async function resolveAudienceProtection(
 function materializeTaskForViewer(
   task: TaskRecord,
   viewerCandidates: Set<string>,
-  permissionsState: PermissionsState | null,
 ): TaskRecord | null {
   if (task.archivedAt) {
     return null;
@@ -702,21 +747,156 @@ function materializeTaskForViewer(
   }
 
   const permissionId = resolveTaskPermissionId(task);
-  if (!permissionId || !permissionsState) {
+  if (!permissionId) {
     return null;
   }
 
-  const permission = permissionsState.byId[permissionId];
-  if (!permission) {
-    return null;
-  }
-
-  const viewerIsMember = permission.members.some((member) => viewerCandidates.has(member.memberId));
-  if (!viewerIsMember) {
-    return null;
-  }
-
+  // Permission audience visibility follows decryptability: if this runtime could
+  // decrypt and materialize the task payload, show it.
   return cloneTaskRecord(task);
+}
+
+async function applyTaskEntryPayload(
+  state: TasksState,
+  entry: LedgerReplayEntry,
+  payload: unknown,
+): Promise<TasksState> {
+  if (entry.kind === "task.create") {
+    const actorIdentityKey =
+      payload && typeof payload === "object"
+        ? readOptionalText((payload as Record<string, unknown>).createdBy)
+        : null;
+
+    if (!actorIdentityKey) {
+      return state;
+    }
+
+    const authorCandidates = await resolveActorAuthorCandidates(actorIdentityKey);
+    if (!authorCandidates.has(entry.author)) {
+      return state;
+    }
+
+    return applyTaskCreate(state, payload);
+  }
+
+  if (entry.kind === "task.rename") {
+    const actorIdentityKey =
+      payload && typeof payload === "object"
+        ? readOptionalText((payload as Record<string, unknown>).updatedBy)
+        : null;
+
+    if (!actorIdentityKey) {
+      return state;
+    }
+
+    const authorCandidates = await resolveActorAuthorCandidates(actorIdentityKey);
+    if (!authorCandidates.has(entry.author)) {
+      return state;
+    }
+
+    return applyTaskRename(state, payload);
+  }
+
+  if (entry.kind === "task.move") {
+    const actorIdentityKey =
+      payload && typeof payload === "object"
+        ? readOptionalText((payload as Record<string, unknown>).updatedBy)
+        : null;
+
+    if (!actorIdentityKey) {
+      return state;
+    }
+
+    const authorCandidates = await resolveActorAuthorCandidates(actorIdentityKey);
+    if (!authorCandidates.has(entry.author)) {
+      return state;
+    }
+
+    return applyTaskMove(state, payload);
+  }
+
+  if (entry.kind === "task.assign") {
+    const actorIdentityKey =
+      payload && typeof payload === "object"
+        ? readOptionalText((payload as Record<string, unknown>).updatedBy)
+        : null;
+
+    if (!actorIdentityKey) {
+      return state;
+    }
+
+    const authorCandidates = await resolveActorAuthorCandidates(actorIdentityKey);
+    if (!authorCandidates.has(entry.author)) {
+      return state;
+    }
+
+    return applyTaskAssign(state, payload);
+  }
+
+  if (entry.kind === "task.archive") {
+    const actorIdentityKey =
+      payload && typeof payload === "object"
+        ? readOptionalText((payload as Record<string, unknown>).updatedBy)
+        : null;
+
+    if (!actorIdentityKey) {
+      return state;
+    }
+
+    const authorCandidates = await resolveActorAuthorCandidates(actorIdentityKey);
+    if (!authorCandidates.has(entry.author)) {
+      return state;
+    }
+
+    return applyTaskArchive(state, payload);
+  }
+
+  if (entry.kind === "task.list.create") {
+    const actorIdentityKey =
+      payload && typeof payload === "object"
+        ? readOptionalText((payload as Record<string, unknown>).createdBy)
+        : null;
+
+    if (!actorIdentityKey) {
+      return state;
+    }
+
+    const authorCandidates = await resolveActorAuthorCandidates(actorIdentityKey);
+    if (!authorCandidates.has(entry.author)) {
+      return state;
+    }
+
+    return applyTaskListCreate(state, payload);
+  }
+
+  return state;
+}
+
+async function tryDecryptTaskEntryPayload(
+  entry: Extract<LedgerReplayEntry, { payload: { type: "encrypted" } }>,
+  permissionPrivateKeys: string[],
+): Promise<unknown | null> {
+  if (permissionPrivateKeys.length === 0) {
+    return null;
+  }
+
+  const ciphertext = toEncryptedPayloadBytes(entry);
+  await initArmour();
+
+  for (const secretKey of permissionPrivateKeys) {
+    try {
+      const clearBytes = await decryptWithSecretKey({
+        secretKey,
+        data: ciphertext,
+      });
+      const clearText = new TextDecoder().decode(clearBytes);
+      return JSON.parse(clearText);
+    } catch {
+      // Keep searching until a key decrypts this entry.
+    }
+  }
+
+  return null;
 }
 
 function applyTaskRename(state: TasksState, payloadValue: unknown): TasksState {
@@ -895,7 +1075,14 @@ function applyTaskCreate(state: TasksState, payloadValue: unknown): TasksState {
 /**
  * Creates the local tasks replay plugin and selectors for v2.
  */
-export function createTasksPlugin(): AppProjectionPlugin<TasksState> {
+export function createTasksPlugin(options?: {
+  replayContext?: AppReplayContext;
+}): AppProjectionPlugin<TasksState> {
+  let deferredEncryptedTaskEntries: Extract<
+    LedgerReplayEntry,
+    { payload: { type: "encrypted" } }
+  >[] = [];
+
   const plugin: ConcordReplayPlugin<TasksState> = {
     id: "tasks",
     initialState: initialTasksState,
@@ -1191,139 +1378,71 @@ export function createTasksPlugin(): AppProjectionPlugin<TasksState> {
         };
       },
     },
+    beginReplay() {
+      deferredEncryptedTaskEntries = [];
+    },
     async applyEntry(entry, ctx) {
-      const state = cloneTasksState(ctx.getState());
+      if (options?.replayContext?.isSystemPhase()) {
+        return;
+      }
+
+      if (!isTaskEntryKind(entry.kind)) {
+        return;
+      }
+
+      if (entry.payload.type === "encrypted") {
+        deferredEncryptedTaskEntries.push(entry);
+        return;
+      }
+
       const payload = getEntryPayload(entry);
-
-      if (entry.kind === "task.create") {
-        const actorIdentityKey =
-          payload && typeof payload === "object"
-            ? readOptionalText((payload as Record<string, unknown>).createdBy)
-            : null;
-
-        if (!actorIdentityKey) {
-          return;
-        }
-
-        const authorCandidates = await resolveActorAuthorCandidates(actorIdentityKey);
-        if (!authorCandidates.has(entry.author)) {
-          return;
-        }
-
-        ctx.setState(applyTaskCreate(state, payload));
+      if (payload !== null && payload !== undefined) {
+        options?.replayContext?.rememberDecryptedPayload(entry.entryId, payload);
+      }
+      const nextState = await applyTaskEntryPayload(cloneTasksState(ctx.getState()), entry, payload);
+      ctx.setState(nextState);
+    },
+    async endReplay(ctx) {
+      if (options?.replayContext?.isSystemPhase()) {
+        deferredEncryptedTaskEntries = [];
         return;
       }
 
-      if (entry.kind === "task.rename") {
-        const actorIdentityKey =
-          payload && typeof payload === "object"
-            ? readOptionalText((payload as Record<string, unknown>).updatedBy)
-            : null;
-
-        if (!actorIdentityKey) {
-          return;
-        }
-
-        const authorCandidates = await resolveActorAuthorCandidates(actorIdentityKey);
-        if (!authorCandidates.has(entry.author)) {
-          return;
-        }
-
-        ctx.setState(applyTaskRename(state, payload));
+      if (deferredEncryptedTaskEntries.length === 0) {
         return;
       }
 
-      if (entry.kind === "task.move") {
-        const actorIdentityKey =
-          payload && typeof payload === "object"
-            ? readOptionalText((payload as Record<string, unknown>).updatedBy)
-            : null;
+      let state = cloneTasksState(ctx.getState());
+      const permissionPrivateKeys = options?.replayContext?.getPermissionPrivateKeys() ?? [];
 
-        if (!actorIdentityKey) {
-          return;
+      for (const entry of deferredEncryptedTaskEntries) {
+        const cachedPayload = options?.replayContext?.readDecryptedPayload(entry.entryId);
+        const payload =
+          cachedPayload !== undefined
+            ? cachedPayload
+            : await tryDecryptTaskEntryPayload(entry, permissionPrivateKeys);
+        if (payload === null) {
+          continue;
         }
-
-        const authorCandidates = await resolveActorAuthorCandidates(actorIdentityKey);
-        if (!authorCandidates.has(entry.author)) {
-          return;
-        }
-
-        ctx.setState(applyTaskMove(state, payload));
-        return;
+        options?.replayContext?.rememberDecryptedPayload(entry.entryId, payload);
+        state = await applyTaskEntryPayload(state, entry, payload);
       }
 
-      if (entry.kind === "task.assign") {
-        const actorIdentityKey =
-          payload && typeof payload === "object"
-            ? readOptionalText((payload as Record<string, unknown>).updatedBy)
-            : null;
-
-        if (!actorIdentityKey) {
-          return;
-        }
-
-        const authorCandidates = await resolveActorAuthorCandidates(actorIdentityKey);
-        if (!authorCandidates.has(entry.author)) {
-          return;
-        }
-
-        ctx.setState(applyTaskAssign(state, payload));
-        return;
-      }
-
-      if (entry.kind === "task.archive") {
-        const actorIdentityKey =
-          payload && typeof payload === "object"
-            ? readOptionalText((payload as Record<string, unknown>).updatedBy)
-            : null;
-
-        if (!actorIdentityKey) {
-          return;
-        }
-
-        const authorCandidates = await resolveActorAuthorCandidates(actorIdentityKey);
-        if (!authorCandidates.has(entry.author)) {
-          return;
-        }
-
-        ctx.setState(applyTaskArchive(state, payload));
-        return;
-      }
-
-      if (entry.kind === "task.list.create") {
-        const actorIdentityKey =
-          payload && typeof payload === "object"
-            ? readOptionalText((payload as Record<string, unknown>).createdBy)
-            : null;
-
-        if (!actorIdentityKey) {
-          return;
-        }
-
-        const authorCandidates = await resolveActorAuthorCandidates(actorIdentityKey);
-        if (!authorCandidates.has(entry.author)) {
-          return;
-        }
-
-        ctx.setState(applyTaskListCreate(state, payload));
-      }
+      deferredEncryptedTaskEntries = [];
+      ctx.setState(state);
     },
   };
 
   return {
     plugin,
     selectors: {
-      all(state, viewerIdentityKey: unknown, viewerIdentityId: unknown, permissionsState: unknown) {
+      all(state, viewerIdentityKey: unknown, viewerIdentityId: unknown, _permissionsState: unknown) {
         const viewerCandidates = resolveViewerCandidates(viewerIdentityKey, viewerIdentityId);
-        const resolvedPermissions =
-          permissionsState && typeof permissionsState === "object"
-            ? (permissionsState as PermissionsState)
-            : null;
 
         return state.order
           .map((taskId) => state.byId[taskId])
           .filter((record): record is TaskRecord => Boolean(record))
-          .map((record) => materializeTaskForViewer(record, viewerCandidates, resolvedPermissions))
+          .map((record) => materializeTaskForViewer(record, viewerCandidates))
           .filter((record): record is TaskRecord => Boolean(record));
       },
       byId(
@@ -1331,7 +1450,7 @@ export function createTasksPlugin(): AppProjectionPlugin<TasksState> {
         taskId: unknown,
         viewerIdentityKey: unknown,
         viewerIdentityId: unknown,
-        permissionsState: unknown,
+        _permissionsState: unknown,
       ) {
         if (typeof taskId !== "string") {
           return null;
@@ -1343,34 +1462,25 @@ export function createTasksPlugin(): AppProjectionPlugin<TasksState> {
         }
 
         const viewerCandidates = resolveViewerCandidates(viewerIdentityKey, viewerIdentityId);
-        const resolvedPermissions =
-          permissionsState && typeof permissionsState === "object"
-            ? (permissionsState as PermissionsState)
-            : null;
-
-        return materializeTaskForViewer(task, viewerCandidates, resolvedPermissions);
+        return materializeTaskForViewer(task, viewerCandidates);
       },
       byBoard(
         state,
         boardId: unknown,
         viewerIdentityKey: unknown,
         viewerIdentityId: unknown,
-        permissionsState: unknown,
+        _permissionsState: unknown,
       ) {
         if (typeof boardId !== "string") {
           return [];
         }
 
         const viewerCandidates = resolveViewerCandidates(viewerIdentityKey, viewerIdentityId);
-        const resolvedPermissions =
-          permissionsState && typeof permissionsState === "object"
-            ? (permissionsState as PermissionsState)
-            : null;
 
         return state.order
           .map((taskId) => state.byId[taskId])
           .filter((record): record is TaskRecord => Boolean(record) && record.boardId === boardId)
-          .map((record) => materializeTaskForViewer(record, viewerCandidates, resolvedPermissions))
+          .map((record) => materializeTaskForViewer(record, viewerCandidates))
           .filter((record): record is TaskRecord => Boolean(record));
       },
       byColumn(
@@ -1379,17 +1489,13 @@ export function createTasksPlugin(): AppProjectionPlugin<TasksState> {
         columnId: unknown,
         viewerIdentityKey: unknown,
         viewerIdentityId: unknown,
-        permissionsState: unknown,
+        _permissionsState: unknown,
       ) {
         if (typeof boardId !== "string" || typeof columnId !== "string") {
           return [];
         }
 
         const viewerCandidates = resolveViewerCandidates(viewerIdentityKey, viewerIdentityId);
-        const resolvedPermissions =
-          permissionsState && typeof permissionsState === "object"
-            ? (permissionsState as PermissionsState)
-            : null;
 
         return state.order
           .map((taskId) => state.byId[taskId])
@@ -1397,7 +1503,7 @@ export function createTasksPlugin(): AppProjectionPlugin<TasksState> {
             (record): record is TaskRecord =>
               Boolean(record) && record.boardId === boardId && record.columnId === columnId,
           )
-          .map((record) => materializeTaskForViewer(record, viewerCandidates, resolvedPermissions))
+          .map((record) => materializeTaskForViewer(record, viewerCandidates))
           .filter((record): record is TaskRecord => Boolean(record));
       },
       publicLists(state) {

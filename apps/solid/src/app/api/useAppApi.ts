@@ -1,6 +1,6 @@
 import type { LedgerStorageAdapter } from "@ternent/ledger";
 import type { SerializedIdentity } from "@ternent/identity";
-import type { ConcordState } from "@ternent/concord";
+import type { ConcordReplayOptions, ConcordState } from "@ternent/concord";
 import { readonly, ref, shallowRef } from "vue";
 import {
   createIdentityService,
@@ -18,8 +18,10 @@ import {
 import {
   createPermissionsPlugin,
   createProfilesPlugin,
+  createAppReplayContext,
   createTasksPlugin,
   createUsersPlugin,
+  type AppReplayContext,
   type PermissionCreateInput,
   type PermissionGrantInput,
   type PermissionsState,
@@ -64,8 +66,13 @@ function toErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
-function createDefaultPlugins(): AppProjectionPlugin[] {
-  return [createUsersPlugin(), createProfilesPlugin(), createPermissionsPlugin(), createTasksPlugin()];
+function createDefaultPlugins(replayContext: AppReplayContext): AppProjectionPlugin[] {
+  return [
+    createUsersPlugin(),
+    createProfilesPlugin(),
+    createPermissionsPlugin({ replayContext }),
+    createTasksPlugin({ replayContext }),
+  ];
 }
 
 function createInitialState(plugins: AppProjectionPlugin[]): ConcordState {
@@ -172,11 +179,35 @@ async function ensureCreatorUserBootstrap(
   });
 }
 
+async function runPhasedReplay(
+  resolvedRuntime: AppRuntime,
+  replayContext: AppReplayContext,
+  options?: ConcordReplayOptions,
+): Promise<void> {
+  const isPartial = Boolean(options?.fromEntryId || options?.toEntryId);
+  if (isPartial) {
+    replayContext.setPhase("full");
+    await resolvedRuntime.replay(options);
+    return;
+  }
+
+  try {
+    replayContext.setPhase("system");
+    await resolvedRuntime.replay(options);
+  } finally {
+    replayContext.setPhase("full");
+  }
+
+  await resolvedRuntime.replay(options);
+}
+
 /**
  * Creates the Concord-hosted app API used by v2 routes.
  */
 export function createAppApi(options?: CreateAppApiOptions): AppApi {
-  const plugins = options?.plugins ?? createDefaultPlugins();
+  const replayContext = createAppReplayContext();
+  const plugins = options?.plugins ?? createDefaultPlugins(replayContext);
+  const phasedReplayEnabled = !options?.plugins;
   const status = ref<AppStatus>("restoring");
   const state = shallowRef<Readonly<ConcordState>>(createInitialState(plugins));
   const lastError = ref<string | null>(null);
@@ -217,6 +248,7 @@ export function createAppApi(options?: CreateAppApiOptions): AppApi {
     }
 
     bootstrapPromise = null;
+    replayContext.setPhase("full");
     state.value = createInitialState(plugins);
     status.value = "restoring";
     lastError.value = null;
@@ -254,14 +286,22 @@ export function createAppApi(options?: CreateAppApiOptions): AppApi {
         state.value = nextState;
       });
 
-      await runtime.load();
-
-      await ensureCreatorUserBootstrap(runtime, activeIdentity.value);
+      if (phasedReplayEnabled) {
+        replayContext.setPhase("system");
+        await runtime.load();
+        await ensureCreatorUserBootstrap(runtime, activeIdentity.value);
+        replayContext.setPhase("full");
+        await runtime.replay();
+      } else {
+        await runtime.load();
+        await ensureCreatorUserBootstrap(runtime, activeIdentity.value);
+      }
 
       state.value = runtime.getState();
       status.value = "ready";
       lastError.value = null;
     } catch (error) {
+      replayContext.setPhase("full");
       status.value = "error";
       lastError.value = toErrorMessage(error);
       throw error;
@@ -652,6 +692,10 @@ export function createAppApi(options?: CreateAppApiOptions): AppApi {
     replay(optionsValue) {
       return executeMutation(async () => {
         const resolvedRuntime = await ensureRuntime();
+        if (phasedReplayEnabled) {
+          await runPhasedReplay(resolvedRuntime, replayContext, optionsValue);
+          return;
+        }
         await resolvedRuntime.replay(optionsValue);
       });
     },

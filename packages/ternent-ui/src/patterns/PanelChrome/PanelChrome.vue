@@ -140,7 +140,7 @@ onBeforeUnmount(() => {
     </div>
 
     <div
-      class="relative z-10 flex items-center justify-between border-t border-[var(--ui-border)] bg-[var(--ui-surface)] px-3 py-1.5"
+      class="relative z-10 flex items-center justify-between border-t border-[var(--ui-border)] bg-[var(--ui-surface)] px-3 py-1"
     >
       <div class="flex min-w-0 flex-1 items-center gap-2">
         <slot name="header">
@@ -157,7 +157,7 @@ onBeforeUnmount(() => {
           :aria-pressed="open"
           variant="plain-secondary"
           size="xs"
-          class="h-7 w-7 !px-0"
+          class="h-7 w-7 !px-0 ml-1"
           @click="toggleOpen"
         >
           <svg
