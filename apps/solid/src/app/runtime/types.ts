@@ -68,6 +68,7 @@ export type AppRuntime = {
   concord: ConcordApp;
   getActiveStorageRef(): WorkspaceStorageRef;
   setActiveStorageRef(ref: WorkspaceStorageRef): void;
+  configureStorageSync(config: RuntimeStorageSyncOptions, ref?: WorkspaceStorageRef): void;
   getStorageProvider(providerId: string): RuntimeStorageProvider | null;
   getStorageCapabilities(providerId?: string): RuntimeStorageCapabilities | null;
   listStorageProviders(): RuntimeStorageProvider[];

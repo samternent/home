@@ -119,6 +119,42 @@ export function createAppApi(options?: CreateAppApiOptions): AppApi {
     profiles: profilesApi,
     permissions: permissionsApi,
     tasks: tasksApi,
+    storage: {
+      listProviders() {
+        return lifecycle.executeMutation(async () => {
+          const runtime = await lifecycle.ensureRuntime();
+          return runtime.listStorageProviders().map((provider) => ({
+            id: provider.id,
+            label: provider.label,
+            capabilities: { ...provider.capabilities },
+          }));
+        });
+      },
+      getActiveRef() {
+        return lifecycle.executeMutation(async () => {
+          const runtime = await lifecycle.ensureRuntime();
+          return runtime.getActiveStorageRef();
+        });
+      },
+      setActiveRef(ref) {
+        return lifecycle.executeMutation(async () => {
+          const runtime = await lifecycle.ensureRuntime();
+          runtime.setActiveStorageRef(ref);
+        });
+      },
+      configureProvider(inputValue) {
+        return lifecycle.executeMutation(async () => {
+          const runtime = await lifecycle.ensureRuntime();
+          runtime.configureStorageSync(inputValue.sync, inputValue.ref);
+        });
+      },
+      getCapabilities(providerId) {
+        return lifecycle.executeMutation(async () => {
+          const runtime = await lifecycle.ensureRuntime();
+          return runtime.getStorageCapabilities(providerId);
+        });
+      },
+    },
     load() {
       return lifecycle.ensureRuntime().then(() => undefined);
     },

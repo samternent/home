@@ -20,6 +20,7 @@ describe("v2 routes", () => {
     expect(paths).toContain("/");
     expect(paths).toContain("/s/users");
     expect(paths).toContain("/s/permissions/:permissionKey?");
+    expect(paths).toContain("/s/storage");
     expect(paths).toContain("/w/:appId/:surfaceId?");
 
     const catchAll = routes.find((route) => route.path.includes(":pathMatch"));

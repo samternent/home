@@ -309,6 +309,12 @@ export async function createApp(input: CreateAppInput): Promise<AppRuntime> {
       pointer: "local://concord",
     });
 
+  function assertProviderRegistered(providerId: string): void {
+    if (!storageProviders.has(providerId)) {
+      throw new Error(`Storage provider '${providerId}' is not registered.`);
+    }
+  }
+
   async function replayPipeline(options?: {
     replay?: RuntimeReplayOptions;
     mode?: "workspace" | "load";
@@ -645,10 +651,26 @@ export async function createApp(input: CreateAppInput): Promise<AppRuntime> {
       return { ...activeStorageRef, config: activeStorageRef.config ? { ...activeStorageRef.config } : undefined };
     },
     setActiveStorageRef(ref) {
+      assertProviderRegistered(ref.providerId);
       activeStorageRef = {
         ...ref,
         config: ref.config ? { ...ref.config } : undefined,
       };
+    },
+    configureStorageSync(config, ref) {
+      const provider = createStorageProviderFromConfig(config);
+      if (!provider) {
+        throw new Error(`Unsupported storage provider config '${config.providerId}'.`);
+      }
+      storageProviders.register(provider);
+
+      if (ref) {
+        assertProviderRegistered(ref.providerId);
+        activeStorageRef = {
+          ...ref,
+          config: ref.config ? { ...ref.config } : undefined,
+        };
+      }
     },
     getStorageProvider(providerId: string) {
       return storageProviders.get(providerId);

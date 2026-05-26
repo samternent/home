@@ -58,6 +58,13 @@ export function buildSidebarNavigationSections(
         dataTest: "nav-permissions",
         active: path.startsWith("/s/permissions"),
       },
+      {
+        id: "storage",
+        label: "Storage",
+        to: "/s/storage",
+        dataTest: "nav-storage",
+        active: path.startsWith("/s/storage"),
+      },
     ],
   };
 

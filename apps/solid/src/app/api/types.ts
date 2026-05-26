@@ -33,7 +33,10 @@ import type {
   LocalStorageLike,
   RuntimeCommitResult,
   RuntimeReplayOptions,
+  RuntimeStorageCapabilities,
+  RuntimeStorageSyncOptions,
   StoredIdentitySummary,
+  WorkspaceStorageRef,
 } from "@/app/runtime";
 
 export type AppStatus = "restoring" | "ready" | "error";
@@ -101,6 +104,23 @@ export type AppTasksApi = {
   defaultBoardId(): string;
 };
 
+export type AppStorageProviderInfo = {
+  id: string;
+  label: string;
+  capabilities: RuntimeStorageCapabilities;
+};
+
+export type AppStorageApi = {
+  listProviders(): Promise<AppStorageProviderInfo[]>;
+  getActiveRef(): Promise<WorkspaceStorageRef>;
+  setActiveRef(ref: WorkspaceStorageRef): Promise<void>;
+  configureProvider(input: {
+    sync: RuntimeStorageSyncOptions;
+    ref?: WorkspaceStorageRef;
+  }): Promise<void>;
+  getCapabilities(providerId?: string): Promise<RuntimeStorageCapabilities | null>;
+};
+
 export type AppApi = {
   status: Readonly<Ref<AppStatus>>;
   state: Readonly<Ref<Readonly<ConcordState>>>;
@@ -143,6 +163,7 @@ export type AppApi = {
   permissions: AppPermissionsApi;
   profiles: AppProfilesApi;
   tasks: AppTasksApi;
+  storage: AppStorageApi;
   load(): Promise<void>;
   command<TInput = unknown>(type: string, input: TInput): Promise<ConcordCommandResult>;
   commit(input?: ConcordCommitInput): Promise<RuntimeCommitResult>;

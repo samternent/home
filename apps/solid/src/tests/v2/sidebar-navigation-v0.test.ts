@@ -37,9 +37,13 @@ describe("sidebar navigation v0.2", () => {
   it("does not mark app link active for unrelated routes", () => {
     const sections = buildSidebarNavigationSections("/s/permissions");
     const appsSection = sections.find((section) => section.label === "Workspace");
+    const systemSection = sections.find((section) => section.label === "System");
     const tasksItem = appsSection?.items.find((item) => item.id === "app-tasks");
+    const storageItem = systemSection?.items.find((item) => item.id === "storage");
 
     expect(tasksItem?.active).toBe(false);
+    expect(storageItem?.to).toBe("/s/storage");
+    expect(storageItem?.active).toBe(false);
   });
 
   it("filters invalid apps and omits Workspace section when no valid app remains", () => {

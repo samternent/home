@@ -21,6 +21,10 @@ const v2Routes: RouteModule = [
         component: () => import("./RoutePermissions.vue"),
       },
       {
+        path: "s/storage",
+        component: () => import("./RouteStorageProviders.vue"),
+      },
+      {
         path: "s/tamper",
         component: () => import("./RouteTamper.vue"),
       },
