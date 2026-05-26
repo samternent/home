@@ -5,6 +5,8 @@ import type {
   EncryptedIdentityBlobV2,
   IdentityBootstrapMode,
   LocalStorageLike,
+  RuntimeStorageSyncOptions,
+  WorkspaceStorageRef,
 } from "@/app/runtime";
 
 export type CreateAppApiOptions = {
@@ -18,5 +20,7 @@ export type CreateAppApiOptions = {
   concordStorage?: LocalStorageLike;
   concordStorageKey?: string;
   storage?: LedgerStorageAdapter;
+  workspaceStorageRef?: WorkspaceStorageRef;
+  storageSync?: RuntimeStorageSyncOptions | null;
   plugins?: AppProjectionPlugin[];
 };

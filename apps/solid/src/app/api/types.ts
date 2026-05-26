@@ -2,8 +2,6 @@ import type {
   ConcordApp,
   ConcordCommandResult,
   ConcordCommitInput,
-  ConcordCommitResult,
-  ConcordReplayOptions,
   ConcordState,
 } from "@ternent/concord";
 import type { SerializedIdentity } from "@ternent/identity";
@@ -33,6 +31,8 @@ import type {
   IdentityOnboardingDraft,
   IdentityBootstrapMode,
   LocalStorageLike,
+  RuntimeCommitResult,
+  RuntimeReplayOptions,
   StoredIdentitySummary,
 } from "@/app/runtime";
 
@@ -145,9 +145,9 @@ export type AppApi = {
   tasks: AppTasksApi;
   load(): Promise<void>;
   command<TInput = unknown>(type: string, input: TInput): Promise<ConcordCommandResult>;
-  commit(input?: ConcordCommitInput): Promise<ConcordCommitResult>;
+  commit(input?: ConcordCommitInput): Promise<RuntimeCommitResult>;
   discard(): Promise<void>;
-  replay(options?: ConcordReplayOptions): Promise<void>;
+  replay(options?: RuntimeReplayOptions): Promise<void>;
   createLedger(metadata?: Record<string, unknown>): Promise<void>;
   exportLedger(): Promise<AppLedgerContainer>;
   importLedger(container: AppLedgerContainer): Promise<void>;

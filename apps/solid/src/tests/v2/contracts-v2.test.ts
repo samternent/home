@@ -96,6 +96,7 @@ describe("concord host contracts", () => {
 
     await expect(
       app.replay({
+        reason: "manual",
         fromEntryId: "entry-1",
       }),
     ).rejects.toThrow("Partial replay is unsupported in MVP.");

@@ -142,6 +142,11 @@ type TaskCreatePayload = {
   createdBy: string;
   updatedAt: string;
   updatedBy: string;
+  _runtimeConflict?: {
+    aggregateId: string;
+    fields: string[];
+    baseRevision: string;
+  };
 };
 
 type TaskRenamePayload = {
@@ -149,6 +154,11 @@ type TaskRenamePayload = {
   title: string;
   updatedAt: string;
   updatedBy: string;
+  _runtimeConflict?: {
+    aggregateId: string;
+    fields: string[];
+    baseRevision: string;
+  };
 };
 
 type TaskMovePayload = {
@@ -156,6 +166,11 @@ type TaskMovePayload = {
   columnId: string;
   updatedAt: string;
   updatedBy: string;
+  _runtimeConflict?: {
+    aggregateId: string;
+    fields: string[];
+    baseRevision: string;
+  };
 };
 
 type TaskAssignPayload = {
@@ -163,6 +178,11 @@ type TaskAssignPayload = {
   assigneeIdentityKey: string | null;
   updatedAt: string;
   updatedBy: string;
+  _runtimeConflict?: {
+    aggregateId: string;
+    fields: string[];
+    baseRevision: string;
+  };
 };
 
 type TaskArchivePayload = {
@@ -171,6 +191,11 @@ type TaskArchivePayload = {
   archivedBy: string;
   updatedAt: string;
   updatedBy: string;
+  _runtimeConflict?: {
+    aggregateId: string;
+    fields: string[];
+    baseRevision: string;
+  };
 };
 
 type TaskListCreatePayload = {
@@ -1117,6 +1142,11 @@ export function createTasksPlugin(options?: {
             createdBy: input.actorIdentityKey,
             updatedAt: now,
             updatedBy: input.actorIdentityKey,
+            _runtimeConflict: {
+              aggregateId: taskId,
+              fields: ["create"],
+              baseRevision: now,
+            },
           } satisfies TaskCreatePayload,
           protection,
         };
@@ -1154,6 +1184,11 @@ export function createTasksPlugin(options?: {
             title: input.title,
             updatedAt: ctx.now(),
             updatedBy: input.actorIdentityKey,
+            _runtimeConflict: {
+              aggregateId: input.taskId,
+              fields: ["title"],
+              baseRevision: task.updatedAt,
+            },
           } satisfies TaskRenamePayload,
           protection,
         };
@@ -1196,6 +1231,11 @@ export function createTasksPlugin(options?: {
             columnId: input.columnId,
             updatedAt: ctx.now(),
             updatedBy: input.actorIdentityKey,
+            _runtimeConflict: {
+              aggregateId: input.taskId,
+              fields: ["columnId"],
+              baseRevision: task.updatedAt,
+            },
           } satisfies TaskMovePayload,
           protection,
         };
@@ -1251,6 +1291,11 @@ export function createTasksPlugin(options?: {
             assigneeIdentityKey: input.assigneeIdentityKey ?? null,
             updatedAt: ctx.now(),
             updatedBy: input.actorIdentityKey,
+            _runtimeConflict: {
+              aggregateId: input.taskId,
+              fields: ["assigneeIdentityKey"],
+              baseRevision: task.updatedAt,
+            },
           } satisfies TaskAssignPayload,
           protection,
         };
@@ -1291,6 +1336,11 @@ export function createTasksPlugin(options?: {
             archivedBy: input.actorIdentityKey,
             updatedAt: now,
             updatedBy: input.actorIdentityKey,
+            _runtimeConflict: {
+              aggregateId: input.taskId,
+              fields: ["archivedAt"],
+              baseRevision: task.updatedAt,
+            },
           } satisfies TaskArchivePayload,
           protection,
         };

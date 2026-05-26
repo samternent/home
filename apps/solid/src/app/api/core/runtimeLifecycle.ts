@@ -105,6 +105,8 @@ export function createRuntimeLifecycle(context: RuntimeLifecycleContext): Runtim
         storage,
         plugins: context.plugins,
         replayContext: context.replayContext,
+        workspaceStorageRef: context.options?.workspaceStorageRef,
+        storageSync: context.options?.storageSync ?? null,
       });
 
       runtimeSubscription = runtime.subscribe((nextState) => {

@@ -5,3 +5,5 @@ export * from "./identity";
 export * from "./totp";
 export * from "./qr";
 export * from "./privacy";
+export * from "./contracts";
+export * from "./storageProviders";

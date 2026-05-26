@@ -39,6 +39,12 @@ const activeTab = useLocalStorage<"pending" | "history">("consoleActiveTab", "pe
 const commitMessage = useLocalStorage("consoleCommitMessage", "");
 const submitting = ref(false);
 const actionError = ref<string | null>(null);
+const commitSummary = ref<{
+  status: "committed" | "rejected";
+  pulledEntryCount?: number;
+  pushed?: boolean;
+  conflicts?: string[];
+} | null>(null);
 const pendingOpenItem = ref<string | null>(null);
 const historyOpenItem = ref<string | null>(null);
 
@@ -393,11 +399,12 @@ async function commitChanges(): Promise<void> {
   }
 
   actionError.value = null;
+  commitSummary.value = null;
   submitting.value = true;
 
   try {
     const message = commitMessage.value.trim();
-    await appApi.commit(
+    const result = await appApi.commit(
       message
         ? {
             metadata: {
@@ -406,7 +413,23 @@ async function commitChanges(): Promise<void> {
           }
         : undefined,
     );
-    commitMessage.value = "";
+
+    if (result.status === "committed") {
+      commitMessage.value = "";
+      commitSummary.value = {
+        status: "committed",
+        pulledEntryCount: result.pulledEntryCount,
+        pushed: result.pushed,
+      };
+      return;
+    }
+
+    commitSummary.value = {
+      status: "rejected",
+      pulledEntryCount: result.pulledEntryCount ?? 0,
+      conflicts: result.conflicts.map((conflict) => conflict.message),
+    };
+    actionError.value = "Commit blocked by remote conflicts. Review the conflict details below.";
   } catch (error) {
     actionError.value = error instanceof Error ? error.message : String(error);
   } finally {
@@ -420,6 +443,7 @@ async function discardChanges(): Promise<void> {
   }
 
   actionError.value = null;
+  commitSummary.value = null;
   submitting.value = true;
 
   try {
@@ -728,6 +752,32 @@ async function discardChanges(): Promise<void> {
             >
               {{ actionError }}
             </p>
+
+            <div
+              v-if="commitSummary?.status === 'committed'"
+              class="rounded-md border border-[var(--ui-border)] bg-[var(--ui-tonal-secondary)] p-2 text-xs text-[var(--ui-fg-muted)]"
+              data-test="console-commit-summary"
+            >
+              <p class="m-0">Committed successfully.</p>
+              <p class="m-0">Pulled {{ commitSummary.pulledEntryCount ?? 0 }} remote entries.</p>
+              <p class="m-0">
+                {{ commitSummary.pushed ? "Pushed to storage provider." : "No push required for this provider." }}
+              </p>
+            </div>
+
+            <div
+              v-if="commitSummary?.status === 'rejected'"
+              class="rounded-md border border-[var(--ui-critical)]/40 bg-[color-mix(in_srgb,var(--ui-critical)_8%,transparent)] p-2 text-xs text-[var(--ui-critical)]"
+              data-test="console-commit-conflicts"
+            >
+              <p class="m-0 font-semibold">Commit blocked.</p>
+              <p class="m-0">Pulled {{ commitSummary.pulledEntryCount ?? 0 }} remote entries before rejection.</p>
+              <ul class="m-0 mt-1 list-disc pl-4">
+                <li v-for="(conflict, index) in commitSummary.conflicts ?? []" :key="index">
+                  {{ conflict }}
+                </li>
+              </ul>
+            </div>
           </div>
         </aside>
       </section>
@@ -1001,6 +1051,32 @@ async function discardChanges(): Promise<void> {
           >
             {{ actionError }}
           </p>
+
+          <div
+            v-if="commitSummary?.status === 'committed'"
+            class="rounded-md border border-[var(--ui-border)] bg-[var(--ui-tonal-secondary)] p-2 text-xs text-[var(--ui-fg-muted)]"
+            data-test="console-commit-summary"
+          >
+            <p class="m-0">Committed successfully.</p>
+            <p class="m-0">Pulled {{ commitSummary.pulledEntryCount ?? 0 }} remote entries.</p>
+            <p class="m-0">
+              {{ commitSummary.pushed ? "Pushed to storage provider." : "No push required for this provider." }}
+            </p>
+          </div>
+
+          <div
+            v-if="commitSummary?.status === 'rejected'"
+            class="rounded-md border border-[var(--ui-critical)]/40 bg-[color-mix(in_srgb,var(--ui-critical)_8%,transparent)] p-2 text-xs text-[var(--ui-critical)]"
+            data-test="console-commit-conflicts"
+          >
+            <p class="m-0 font-semibold">Commit blocked.</p>
+            <p class="m-0">Pulled {{ commitSummary.pulledEntryCount ?? 0 }} remote entries before rejection.</p>
+            <ul class="m-0 mt-1 list-disc pl-4">
+              <li v-for="(conflict, index) in commitSummary.conflicts ?? []" :key="index">
+                {{ conflict }}
+              </li>
+            </ul>
+          </div>
         </div>
       </aside>
     </div>
