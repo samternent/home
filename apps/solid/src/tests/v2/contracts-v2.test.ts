@@ -80,4 +80,24 @@ describe("concord host contracts", () => {
 
     expect(app.users.all()).toEqual(usersBeforePermissionCommand);
   });
+
+  it("fails explicitly when partial replay is requested", async () => {
+    const storage = createMemoryStorage();
+    const identity = await createIdentity("2026-04-20T10:00:00.000Z");
+
+    const app = createAppApi({
+      identity,
+      storage: createConcordLocalStorageAdapter({
+        storage,
+        storageKey: "test/v2/partial-replay-unsupported",
+      }),
+    });
+    await app.load();
+
+    await expect(
+      app.replay({
+        fromEntryId: "entry-1",
+      }),
+    ).rejects.toThrow("Partial replay is unsupported in MVP.");
+  });
 });

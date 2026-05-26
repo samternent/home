@@ -1,27 +1,45 @@
 import type { PermissionsState } from "./permissions";
 
-export type AppReplayPhase = "system" | "full";
+export type RuntimeReplayPhase = "system" | "workspace";
 
-export type AppReplayContext = {
-  setPhase(phase: AppReplayPhase): void;
+export type RuntimeReplayContext = {
+  beginReplayPipeline(): void;
+  endReplayPipeline(): void;
+  clearDecryptedPayloadCache(): void;
+  setPhase(phase: RuntimeReplayPhase): void;
   isSystemPhase(): boolean;
+  isWorkspacePhase(): boolean;
   rememberDecryptedPayload(entryId: string, payload: unknown): void;
   readDecryptedPayload(entryId: string): unknown | undefined;
   setPermissionsState(state: PermissionsState): void;
+  getPermissionsState(): PermissionsState | null;
   getPermissionPrivateKeys(): string[];
 };
 
-export function createAppReplayContext(): AppReplayContext {
-  let phase: AppReplayPhase = "full";
+export function createRuntimeReplayContext(): RuntimeReplayContext {
+  let phase: RuntimeReplayPhase = "workspace";
   let permissionsState: PermissionsState | null = null;
   const decryptedPayloadByEntryId = new Map<string, unknown>();
 
   return {
+    beginReplayPipeline() {
+      phase = "system";
+      decryptedPayloadByEntryId.clear();
+    },
+    endReplayPipeline() {
+      phase = "workspace";
+    },
+    clearDecryptedPayloadCache() {
+      decryptedPayloadByEntryId.clear();
+    },
     setPhase(nextPhase) {
       phase = nextPhase;
     },
     isSystemPhase() {
       return phase === "system";
+    },
+    isWorkspacePhase() {
+      return phase === "workspace";
     },
     rememberDecryptedPayload(entryId, payload) {
       decryptedPayloadByEntryId.set(entryId, payload);
@@ -31,6 +49,9 @@ export function createAppReplayContext(): AppReplayContext {
     },
     setPermissionsState(state) {
       permissionsState = state;
+    },
+    getPermissionsState() {
+      return permissionsState;
     },
     getPermissionPrivateKeys() {
       if (!permissionsState) {
@@ -42,3 +63,7 @@ export function createAppReplayContext(): AppReplayContext {
     },
   };
 }
+
+export type AppReplayPhase = RuntimeReplayPhase;
+export type AppReplayContext = RuntimeReplayContext;
+export const createAppReplayContext = createRuntimeReplayContext;

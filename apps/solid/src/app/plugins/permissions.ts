@@ -2,18 +2,43 @@ import type { ConcordReplayPlugin } from "@ternent/concord";
 import type { LedgerAppendInput, LedgerReplayEntry } from "@ternent/ledger";
 import { deriveAgeRecipient, deriveAgeSecretKey } from "@ternent/identity";
 import type { AppProjectionPlugin } from "@/app/runtime";
-import type { AppReplayContext } from "./replayContext";
+import type { RuntimeReplayContext } from "./replayContext";
 import {
-  isIdentityKeyFormat,
   identityKeyToPublicKeyBytes,
   toDidKeyFromPublicKey,
-  toLegacyAuthorDidFromIdentityKey,
   validateIdentityKey,
 } from "./identityKey";
 
 export type PermissionMember = {
   memberId: string;
   memberLabel: string | null;
+};
+
+export type PrivacyGroupOpaqueRecord = {
+  id: string;
+  publicKey: string;
+  createdAt: string;
+};
+
+export type PrivacyGroupReadableRecord = PrivacyGroupOpaqueRecord & {
+  title: string;
+  scope: string | null;
+  createdBy: string;
+  members: PermissionMember[];
+  updatedAt: string;
+  grantCount: number;
+  viewerHasKey: true;
+  viewerGrantId: string;
+};
+
+export type PermissionRecord = PrivacyGroupReadableRecord;
+
+type PermissionProjectionRecord = PrivacyGroupOpaqueRecord & {
+  title: string | null;
+  scope: string | null;
+  createdBy: string | null;
+  members: PermissionMember[];
+  updatedAt: string | null;
 };
 
 export type PermissionGrantRecord = {
@@ -27,26 +52,13 @@ export type PermissionGrantRecord = {
   isRoot: boolean;
 };
 
-export type PermissionRecord = {
-  id: string;
-  title: string;
-  scope: string | null;
-  members: PermissionMember[];
-  createdBy: string;
-  publicKey: string;
-  createdAt: string;
-  updatedAt: string;
-  grantCount: number;
-  viewerHasKey: boolean;
-  viewerGrantId: string | null;
-};
-
 export type PermissionsState = {
-  byId: Record<string, PermissionRecord>;
+  byId: Record<string, PermissionProjectionRecord>;
   order: string[];
   grantsById: Record<string, PermissionGrantRecord>;
   grantsByPermissionId: Record<string, string[]>;
   latestGrantIdByPermissionAndIdentity: Record<string, Record<string, string>>;
+  activeMemberIdsByPermissionId: Record<string, Record<string, true>>;
   localGroupPrivateKeysByPermissionId: Record<string, string>;
 };
 
@@ -76,14 +88,18 @@ export type PermissionRevokeInput = {
   actor: PermissionActorInput;
 };
 
-type PermissionCreatePayload = {
+type PermissionCreateEnvelopePayload = {
+  permissionId: string;
+  publicKey: string;
+  createdAt: string;
+};
+
+type PermissionGroupMetadataPayload = {
   permissionId: string;
   title: string;
   scope: string | null;
-  actor: PermissionMember;
   createdBy: string;
-  publicKey: string;
-  createdAt: string;
+  members: PermissionMember[];
   updatedAt: string;
 };
 
@@ -104,7 +120,7 @@ type PermissionGrantKeyPayload = {
   grantId: string;
   permissionId: string;
   recipientIdentityKey: string;
-  wrappedGroupPrivateKey: string;
+  encryptedGroupSecretKey: string;
   issuedAt: string;
 };
 
@@ -133,6 +149,7 @@ function initialPermissionsState(): PermissionsState {
     grantsById: {},
     grantsByPermissionId: {},
     latestGrantIdByPermissionAndIdentity: {},
+    activeMemberIdsByPermissionId: {},
     localGroupPrivateKeysByPermissionId: {},
   };
 }
@@ -167,6 +184,7 @@ function readOptionalText(value: unknown): string | null {
   if (typeof value !== "string") {
     return null;
   }
+
   const normalized = value.trim();
   return normalized || null;
 }
@@ -231,7 +249,7 @@ async function parsePermissionRevokeInput(inputValue: unknown): Promise<Permissi
 
   return {
     permissionId: normalizeRequiredText(input.permissionId, "Permission id"),
-    memberId: normalizeRequiredText(input.memberId, "Member id"),
+    memberId: await validateIdentityKey(normalizeRequiredText(input.memberId, "Member id")),
     actor: {
       ...actor,
       memberId: await validateIdentityKey(actor.memberId),
@@ -251,10 +269,16 @@ function getEntryPayload(entry: LedgerReplayEntry): unknown {
   return null;
 }
 
-function clonePermissionRecord(record: PermissionRecord): PermissionRecord {
+function clonePermissionMember(member: PermissionMember): PermissionMember {
+  return {
+    ...member,
+  };
+}
+
+function clonePermissionRecord(record: PermissionProjectionRecord): PermissionProjectionRecord {
   return {
     ...record,
-    members: record.members.map((member) => ({ ...member })),
+    members: record.members.map(clonePermissionMember),
   };
 }
 
@@ -289,6 +313,12 @@ function clonePermissionsState(state: PermissionsState): PermissionsState {
       Object.entries(state.latestGrantIdByPermissionAndIdentity).map(
         ([permissionId, grantsByIdentity]) => [permissionId, { ...grantsByIdentity }],
       ),
+    ),
+    activeMemberIdsByPermissionId: Object.fromEntries(
+      Object.entries(state.activeMemberIdsByPermissionId).map(([permissionId, members]) => [
+        permissionId,
+        { ...members },
+      ]),
     ),
     localGroupPrivateKeysByPermissionId: {
       ...state.localGroupPrivateKeysByPermissionId,
@@ -333,41 +363,9 @@ function createGrantId(
   return `permission-grant:${timestamp}:${fingerprint}`;
 }
 
-function permissionIncludesMember(
-  record: PermissionRecord | undefined,
-  candidates: Set<string>,
-): boolean {
-  if (!record) {
-    return false;
-  }
-  return record.members.some((member) => candidates.has(member.memberId));
-}
-
-function resolveRuntimeActorCandidates(identity: {
-  publicKey: string;
-  keyId: string;
-}): Set<string> {
+function resolveRuntimeActorCandidates(identity: { publicKey: string; keyId: string }): Set<string> {
   const identityKey = toDidKeyFromPublicKey(identity.publicKey);
   return new Set([identityKey, identity.keyId, `did:key:${identity.keyId}`]);
-}
-
-function normalizeAuthorCandidateFromMemberId(memberId: string): string {
-  return memberId.startsWith("did:key:") ? memberId : `did:key:${memberId}`;
-}
-
-async function resolveActorAuthorCandidates(actorMemberId: string): Promise<Set<string>> {
-  const candidates = new Set<string>([
-    normalizeAuthorCandidateFromMemberId(actorMemberId),
-    actorMemberId,
-  ]);
-  if (isIdentityKeyFormat(actorMemberId)) {
-    try {
-      candidates.add(await toLegacyAuthorDidFromIdentityKey(actorMemberId));
-    } catch {
-      // Ignore malformed identity keys during replay hardening.
-    }
-  }
-  return candidates;
 }
 
 function resolveViewerCandidates(
@@ -389,10 +387,10 @@ function resolveViewerCandidates(
 }
 
 function upsertPermissionMember(
-  record: PermissionRecord,
+  record: PermissionProjectionRecord,
   memberId: string,
   memberLabel: string | null,
-): PermissionRecord {
+): PermissionProjectionRecord {
   const membersWithoutTarget = record.members.filter((member) => member.memberId !== memberId);
 
   return {
@@ -407,12 +405,28 @@ function upsertPermissionMember(
   };
 }
 
+export function hasHistoricalPermissionGrant(
+  state: PermissionsState,
+  permissionId: string,
+  identityKey: string,
+): boolean {
+  return Boolean(state.latestGrantIdByPermissionAndIdentity[permissionId]?.[identityKey]);
+}
+
+export function hasActivePermissionMembership(
+  state: PermissionsState,
+  permissionId: string,
+  identityKey: string,
+): boolean {
+  return Boolean(state.activeMemberIdsByPermissionId[permissionId]?.[identityKey]);
+}
+
 function applyPermissionCreate(state: PermissionsState, payloadValue: unknown): PermissionsState {
   if (!payloadValue || typeof payloadValue !== "object") {
     return state;
   }
 
-  const payload = payloadValue as PermissionCreatePayload;
+  const payload = payloadValue as PermissionCreateEnvelopePayload;
   const payloadRecord = payloadValue as Record<string, unknown>;
   const existing = state.byId[payload.permissionId];
   if (existing) {
@@ -420,25 +434,16 @@ function applyPermissionCreate(state: PermissionsState, payloadValue: unknown): 
   }
 
   const resolvedPublicKey = readOptionalText(payloadRecord.publicKey) ?? "";
-  const resolvedCreatedBy = readOptionalText(payloadRecord.createdBy) ?? payload.actor.memberId;
 
-  const nextRecord: PermissionRecord = {
+  const nextRecord: PermissionProjectionRecord = {
     id: payload.permissionId,
-    title: payload.title,
-    scope: payload.scope,
-    members: [
-      {
-        memberId: payload.actor.memberId,
-        memberLabel: payload.actor.memberLabel,
-      },
-    ],
-    createdBy: resolvedCreatedBy,
     publicKey: resolvedPublicKey,
     createdAt: payload.createdAt,
-    updatedAt: payload.updatedAt,
-    grantCount: 0,
-    viewerHasKey: false,
-    viewerGrantId: null,
+    title: null,
+    scope: null,
+    createdBy: null,
+    members: [],
+    updatedAt: null,
   };
 
   return {
@@ -448,6 +453,33 @@ function applyPermissionCreate(state: PermissionsState, payloadValue: unknown): 
       [payload.permissionId]: nextRecord,
     },
     order: [...state.order, payload.permissionId],
+  };
+}
+
+function applyPermissionMetadata(state: PermissionsState, payloadValue: unknown): PermissionsState {
+  if (!payloadValue || typeof payloadValue !== "object") {
+    return state;
+  }
+
+  const payload = payloadValue as PermissionGroupMetadataPayload;
+  const existing = state.byId[payload.permissionId];
+  if (!existing) {
+    return state;
+  }
+
+  return {
+    ...state,
+    byId: {
+      ...state.byId,
+      [payload.permissionId]: {
+        ...existing,
+        title: payload.title,
+        scope: payload.scope,
+        createdBy: payload.createdBy,
+        members: payload.members.map(clonePermissionMember),
+        updatedAt: payload.updatedAt,
+      },
+    },
   };
 }
 
@@ -565,15 +597,7 @@ function applyPermissionGrant(state: PermissionsState, payloadValue: unknown): P
     return state;
   }
 
-  const nextPermission = upsertPermissionMember(
-    {
-      ...existingPermission,
-      updatedAt: grant.issuedAt,
-      grantCount: existingPermission.grantCount + 1,
-    },
-    grant.recipientIdentityKey,
-    grant.recipientLabel,
-  );
+  const nextPermission = upsertPermissionMember(existingPermission, grant.recipientIdentityKey, grant.recipientLabel);
 
   const nextGrant: PermissionGrantRecord = {
     grantId: grant.grantId,
@@ -590,7 +614,10 @@ function applyPermissionGrant(state: PermissionsState, payloadValue: unknown): P
     ...state,
     byId: {
       ...state.byId,
-      [grant.permissionId]: nextPermission,
+      [grant.permissionId]: {
+        ...nextPermission,
+        updatedAt: grant.issuedAt,
+      },
     },
     grantsById: {
       ...state.grantsById,
@@ -610,6 +637,13 @@ function applyPermissionGrant(state: PermissionsState, payloadValue: unknown): P
         [grant.recipientIdentityKey]: grant.grantId,
       },
     },
+    activeMemberIdsByPermissionId: {
+      ...state.activeMemberIdsByPermissionId,
+      [grant.permissionId]: {
+        ...(state.activeMemberIdsByPermissionId[grant.permissionId] ?? {}),
+        [grant.recipientIdentityKey]: true,
+      },
+    },
   };
 }
 
@@ -623,9 +657,9 @@ function applyPermissionGrantKey(state: PermissionsState, payloadValue: unknown)
   const grantId = readOptionalText(payload.grantId);
   const permissionId = readOptionalText(payload.permissionId);
   const recipientIdentityKey = readOptionalText(payload.recipientIdentityKey);
-  const wrappedGroupPrivateKey = readOptionalText(payload.wrappedGroupPrivateKey);
+  const encryptedGroupSecretKey = readOptionalText(payload.encryptedGroupSecretKey);
 
-  if (!grantId || !permissionId || !recipientIdentityKey || !wrappedGroupPrivateKey) {
+  if (!grantId || !permissionId || !recipientIdentityKey || !encryptedGroupSecretKey) {
     return state;
   }
 
@@ -643,22 +677,11 @@ function applyPermissionGrantKey(state: PermissionsState, payloadValue: unknown)
     return state;
   }
 
-  const grantForViewer =
-    state.latestGrantIdByPermissionAndIdentity[permissionId]?.[recipientIdentityKey] ?? grantId;
-
   return {
     ...state,
-    byId: {
-      ...state.byId,
-      [permissionId]: {
-        ...existingPermission,
-        viewerHasKey: true,
-        viewerGrantId: grantForViewer,
-      },
-    },
     localGroupPrivateKeysByPermissionId: {
       ...state.localGroupPrivateKeysByPermissionId,
-      [permissionId]: wrappedGroupPrivateKey,
+      [permissionId]: encryptedGroupSecretKey,
     },
   };
 }
@@ -675,6 +698,10 @@ function applyPermissionRevoke(state: PermissionsState, payloadValue: unknown): 
   }
 
   const withoutMember = existing.members.filter((member) => member.memberId !== payload.memberId);
+  const members = {
+    ...(state.activeMemberIdsByPermissionId[payload.permissionId] ?? {}),
+  };
+  delete members[payload.memberId];
 
   return {
     ...state,
@@ -685,6 +712,10 @@ function applyPermissionRevoke(state: PermissionsState, payloadValue: unknown): 
         members: withoutMember,
         updatedAt: payload.updatedAt,
       },
+    },
+    activeMemberIdsByPermissionId: {
+      ...state.activeMemberIdsByPermissionId,
+      [payload.permissionId]: members,
     },
   };
 }
@@ -746,14 +777,30 @@ async function createPermissionCreateEntries(input: {
       kind: input.kind,
       payload: {
         permissionId,
-        title: input.title,
-        scope: input.scope,
-        actor: input.actor,
-        createdBy: input.actor.memberId,
         publicKey: groupKeys.publicKey,
         createdAt: input.now,
+      } satisfies PermissionCreateEnvelopePayload,
+    },
+    {
+      kind: "permission.group.meta",
+      payload: {
+        permissionId,
+        title: input.title,
+        scope: input.scope,
+        createdBy: input.actor.memberId,
+        members: [
+          {
+            memberId: input.actor.memberId,
+            memberLabel: input.actor.memberLabel,
+          },
+        ],
         updatedAt: input.now,
-      } satisfies PermissionCreatePayload,
+      } satisfies PermissionGroupMetadataPayload,
+      protection: {
+        type: "recipients",
+        recipients: [actorRecipient],
+        encoding: "armor",
+      },
     },
     {
       kind: "permission.grant",
@@ -762,7 +809,7 @@ async function createPermissionCreateEntries(input: {
         permissionId,
         issuerIdentityKey: input.actor.memberId,
         recipientIdentityKey: input.actor.memberId,
-        recipientLabel: input.actor.memberLabel ?? null,
+        recipientLabel: input.actor.memberLabel,
         issuerGrantId: null,
         isRoot: true,
         actor: input.actor,
@@ -776,7 +823,7 @@ async function createPermissionCreateEntries(input: {
         grantId,
         permissionId,
         recipientIdentityKey: input.actor.memberId,
-        wrappedGroupPrivateKey: groupKeys.privateKey,
+        encryptedGroupSecretKey: groupKeys.privateKey,
         issuedAt: input.now,
       } satisfies PermissionGrantKeyPayload,
       protection: {
@@ -796,6 +843,7 @@ async function createPermissionGrantEntries(input: {
   memberLabel: string | null;
   issuerGrantId: string;
   groupPrivateKey: string;
+  metadataSnapshot: PermissionGroupMetadataPayload;
   kind: "permission.grant" | "permission.grant.issue";
 }): Promise<LedgerAppendInput[]> {
   const grantId = createGrantId(
@@ -804,7 +852,6 @@ async function createPermissionGrantEntries(input: {
     input.actor.memberId,
     input.memberId,
   );
-
   const recipient = await deriveAgeRecipientFromIdentityKey(input.memberId);
 
   return [
@@ -829,9 +876,18 @@ async function createPermissionGrantEntries(input: {
         grantId,
         permissionId: input.permissionId,
         recipientIdentityKey: input.memberId,
-        wrappedGroupPrivateKey: input.groupPrivateKey,
+        encryptedGroupSecretKey: input.groupPrivateKey,
         issuedAt: input.now,
       } satisfies PermissionGrantKeyPayload,
+      protection: {
+        type: "recipients",
+        recipients: [recipient],
+        encoding: "armor",
+      },
+    },
+    {
+      kind: "permission.group.meta",
+      payload: input.metadataSnapshot,
       protection: {
         type: "recipients",
         recipients: [recipient],
@@ -841,36 +897,51 @@ async function createPermissionGrantEntries(input: {
   ];
 }
 
-function materializeRecordForViewer(
+function materializeReadableRecordForViewer(
   state: PermissionsState,
-  record: PermissionRecord,
+  record: PermissionProjectionRecord,
   viewerCandidates: Set<string>,
-): PermissionRecord {
+): PermissionRecord | null {
   if (viewerCandidates.size === 0) {
-    return clonePermissionRecord(record);
+    return null;
+  }
+
+  let viewerIdentityKey: string | null = null;
+  for (const candidate of viewerCandidates) {
+    if (hasActivePermissionMembership(state, record.id, candidate)) {
+      viewerIdentityKey = candidate;
+      break;
+    }
+  }
+
+  if (!viewerIdentityKey) {
+    return null;
   }
 
   const latestByIdentity = state.latestGrantIdByPermissionAndIdentity[record.id] ?? {};
-  let viewerGrantId: string | null = null;
+  const viewerGrantId = latestByIdentity[viewerIdentityKey] ?? null;
+  const viewerHasKey = Boolean(viewerGrantId && state.localGroupPrivateKeysByPermissionId[record.id]);
 
-  for (const candidate of viewerCandidates) {
-    const grantId = latestByIdentity[candidate];
-    if (!grantId) {
-      continue;
-    }
-    viewerGrantId = grantId;
-    break;
+  if (!viewerGrantId || !viewerHasKey) {
+    return null;
   }
 
-  const viewerHasKey = Boolean(
-    viewerGrantId && state.localGroupPrivateKeysByPermissionId[record.id],
-  );
+  if (!record.title || !record.createdBy || !record.updatedAt) {
+    return null;
+  }
 
   return {
-    ...clonePermissionRecord(record),
+    id: record.id,
+    publicKey: record.publicKey,
+    createdAt: record.createdAt,
+    title: record.title,
+    scope: record.scope,
+    createdBy: record.createdBy,
+    members: record.members.map(clonePermissionMember),
+    updatedAt: record.updatedAt,
     grantCount: state.grantsByPermissionId[record.id]?.length ?? 0,
     viewerGrantId,
-    viewerHasKey,
+    viewerHasKey: true,
   };
 }
 
@@ -878,7 +949,7 @@ function materializeRecordForViewer(
  * Creates the local permissions replay plugin and selectors for v2.
  */
 export function createPermissionsPlugin(options?: {
-  replayContext?: AppReplayContext;
+  replayContext?: RuntimeReplayContext;
 }): AppProjectionPlugin<PermissionsState> {
   const plugin: ConcordReplayPlugin<PermissionsState> = {
     id: "permissions",
@@ -927,6 +998,10 @@ export function createPermissionsPlugin(options?: {
           throw new Error("Permission does not exist.");
         }
 
+        if (!hasActivePermissionMembership(permissionsState, input.permissionId, input.actor.memberId)) {
+          throw new Error("Only existing key holders can issue grants.");
+        }
+
         const issuerGrantId =
           permissionsState.latestGrantIdByPermissionAndIdentity[input.permissionId]?.[
             input.actor.memberId
@@ -942,6 +1017,9 @@ export function createPermissionsPlugin(options?: {
         if (!groupPrivateKey) {
           throw new Error("No local permission key is available for delegation.");
         }
+        if (!permission.title || !permission.createdBy || !permission.updatedAt) {
+          throw new Error("Permission metadata is unavailable for grant issuance.");
+        }
 
         return await createPermissionGrantEntries({
           now: ctx.now(),
@@ -951,6 +1029,15 @@ export function createPermissionsPlugin(options?: {
           memberLabel: input.memberLabel ?? null,
           issuerGrantId,
           groupPrivateKey,
+          metadataSnapshot: {
+            permissionId: input.permissionId,
+            title: permission.title,
+            scope: permission.scope,
+            createdBy: permission.createdBy,
+            members: upsertPermissionMember(permission, input.memberId, input.memberLabel ?? null)
+              .members,
+            updatedAt: ctx.now(),
+          },
           kind: "permission.grant",
         });
       },
@@ -967,6 +1054,10 @@ export function createPermissionsPlugin(options?: {
           throw new Error("Permission does not exist.");
         }
 
+        if (!hasActivePermissionMembership(permissionsState, input.permissionId, input.actor.memberId)) {
+          throw new Error("Only existing key holders can issue grants.");
+        }
+
         const issuerGrantId =
           permissionsState.latestGrantIdByPermissionAndIdentity[input.permissionId]?.[
             input.actor.memberId
@@ -982,6 +1073,9 @@ export function createPermissionsPlugin(options?: {
         if (!groupPrivateKey) {
           throw new Error("No local permission key is available for delegation.");
         }
+        if (!permission.title || !permission.createdBy || !permission.updatedAt) {
+          throw new Error("Permission metadata is unavailable for grant issuance.");
+        }
 
         return await createPermissionGrantEntries({
           now: ctx.now(),
@@ -991,6 +1085,15 @@ export function createPermissionsPlugin(options?: {
           memberLabel: input.memberLabel ?? null,
           issuerGrantId,
           groupPrivateKey,
+          metadataSnapshot: {
+            permissionId: input.permissionId,
+            title: permission.title,
+            scope: permission.scope,
+            createdBy: permission.createdBy,
+            members: upsertPermissionMember(permission, input.memberId, input.memberLabel ?? null)
+              .members,
+            updatedAt: ctx.now(),
+          },
           kind: "permission.grant.issue",
         });
       },
@@ -1007,7 +1110,7 @@ export function createPermissionsPlugin(options?: {
           throw new Error("Permission does not exist.");
         }
 
-        if (!permissionIncludesMember(permission, runtimeCandidates)) {
+        if (!hasActivePermissionMembership(permissionsState, input.permissionId, input.actor.memberId)) {
           throw new Error("Only existing group members can remove collaborators.");
         }
 
@@ -1027,41 +1130,19 @@ export function createPermissionsPlugin(options?: {
       const payload = getEntryPayload(entry);
 
       if (entry.kind === "permission.create" || entry.kind === "permission.group.create") {
-        const actorMemberId =
-          payload && typeof payload === "object"
-            ? readOptionalText(
-                (payload as Record<string, unknown>).actor &&
-                  typeof (payload as Record<string, unknown>).actor === "object"
-                  ? ((payload as Record<string, unknown>).actor as Record<string, unknown>).memberId
-                  : null,
-              )
-            : null;
-        if (!actorMemberId) {
-          return;
-        }
-        const authorCandidates = await resolveActorAuthorCandidates(actorMemberId);
-        if (!authorCandidates.has(entry.author)) {
-          return;
-        }
         ctx.setState(applyPermissionCreate(state, payload));
         return;
       }
 
+      if (entry.kind === "permission.group.meta") {
+        if (payload !== null && payload !== undefined) {
+          options?.replayContext?.rememberDecryptedPayload(entry.entryId, payload);
+        }
+        ctx.setState(applyPermissionMetadata(state, payload));
+        return;
+      }
+
       if (entry.kind === "permission.grant" || entry.kind === "permission.grant.issue") {
-        const grantPayload =
-          payload && typeof payload === "object" ? (payload as Record<string, unknown>) : null;
-        const actorValue =
-          grantPayload && typeof grantPayload.actor === "object"
-            ? (grantPayload.actor as Record<string, unknown>).memberId
-            : null;
-        const actorMemberId = readOptionalText(actorValue);
-        if (!actorMemberId) {
-          return;
-        }
-        const authorCandidates = await resolveActorAuthorCandidates(actorMemberId);
-        if (!authorCandidates.has(entry.author)) {
-          return;
-        }
         ctx.setState(applyPermissionGrant(state, payload));
         return;
       }
@@ -1082,20 +1163,11 @@ export function createPermissionsPlugin(options?: {
         if (!actorMemberId) {
           return;
         }
-        const authorCandidates = await resolveActorAuthorCandidates(actorMemberId);
-        if (!authorCandidates.has(entry.author)) {
-          return;
-        }
         const permissionId = readOptionalText(revokePayload?.permissionId ?? null);
         if (!permissionId) {
           return;
         }
-        const permission = state.byId[permissionId];
-        const actorCandidates = new Set<string>([
-          actorMemberId,
-          normalizeAuthorCandidateFromMemberId(actorMemberId),
-        ]);
-        if (!permissionIncludesMember(permission, actorCandidates)) {
+        if (!hasActivePermissionMembership(state, permissionId, actorMemberId)) {
           return;
         }
         ctx.setState(applyPermissionRevoke(state, payload));
@@ -1112,18 +1184,11 @@ export function createPermissionsPlugin(options?: {
       all(state, viewerIdentityKey: unknown, viewerIdentityId: unknown) {
         const viewerCandidates = resolveViewerCandidates(viewerIdentityKey, viewerIdentityId);
 
-        const visibleRecords = state.order
+        return state.order
           .map((permissionId) => state.byId[permissionId])
-          .filter((record): record is PermissionRecord => Boolean(record))
-          .map((record) => materializeRecordForViewer(state, record, viewerCandidates));
-
-        if (viewerCandidates.size === 0) {
-          return visibleRecords;
-        }
-
-        return visibleRecords.filter((record) =>
-          permissionIncludesMember(record, viewerCandidates),
-        );
+          .filter((record): record is PermissionProjectionRecord => Boolean(record))
+          .map((record) => materializeReadableRecordForViewer(state, record, viewerCandidates))
+          .filter((record): record is PermissionRecord => Boolean(record));
       },
       byId(state, permissionId: unknown, viewerIdentityKey: unknown, viewerIdentityId: unknown) {
         if (typeof permissionId !== "string") {
@@ -1134,12 +1199,9 @@ export function createPermissionsPlugin(options?: {
         if (!record) {
           return null;
         }
-        const viewerCandidates = resolveViewerCandidates(viewerIdentityKey, viewerIdentityId);
-        if (viewerCandidates.size > 0 && !permissionIncludesMember(record, viewerCandidates)) {
-          return null;
-        }
 
-        return materializeRecordForViewer(state, record, viewerCandidates);
+        const viewerCandidates = resolveViewerCandidates(viewerIdentityKey, viewerIdentityId);
+        return materializeReadableRecordForViewer(state, record, viewerCandidates);
       },
     },
   };

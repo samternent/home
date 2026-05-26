@@ -4,3 +4,4 @@ export * from "./storage";
 export * from "./identity";
 export * from "./totp";
 export * from "./qr";
+export * from "./privacy";

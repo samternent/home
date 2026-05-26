@@ -412,7 +412,13 @@ onMounted(async () => {
               >
                 {{ selectedPermissionHasKey ? "key ready" : "no key" }}
               </span>
-              <Button type="button" variant="secondary" size="sm" @click="showGrantPanel = !showGrantPanel">
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                :data-test="`permission-grant-toggle-${selectedPermission.id}`"
+                @click="showGrantPanel = !showGrantPanel"
+              >
                 {{ showGrantPanel ? "Close" : "Add member" }}
               </Button>
             </div>

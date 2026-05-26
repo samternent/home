@@ -303,4 +303,31 @@ describe("concord host permissions flow", () => {
     expect(granted).toBeTruthy();
     expect(granted?.viewerHasKey).toBe(true);
   });
+
+  it("stores new privacy group metadata as encrypted ledger payloads", async () => {
+    const { app } = await createTestApp("test/v2/permission-metadata-encrypted");
+
+    await app.permissions.create({
+      title: "Encrypted Metadata Group",
+      scope: "workspace",
+    });
+    await app.commit();
+
+    const ledger = await app.exportLedger();
+    const groupCreateEntry = Object.values(ledger.entries).find(
+      (entry) => entry.kind === "permission.group.create" || entry.kind === "permission.create",
+    );
+    const metadataEntry = Object.values(ledger.entries).find(
+      (entry) => entry.kind === "permission.group.meta",
+    );
+
+    expect(groupCreateEntry).toBeTruthy();
+    expect(metadataEntry).toBeTruthy();
+    expect(metadataEntry?.payload.type).toBe("encrypted");
+
+    if (groupCreateEntry?.payload.type === "plain") {
+      expect((groupCreateEntry.payload.data as Record<string, unknown>).title).toBeUndefined();
+      expect((groupCreateEntry.payload.data as Record<string, unknown>).members).toBeUndefined();
+    }
+  });
 });

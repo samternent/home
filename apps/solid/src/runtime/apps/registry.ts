@@ -12,12 +12,18 @@ export type RuntimeAppSurfaceDefinition = {
   entryEditor?: RuntimeAppSurfaceEditorConfig;
 };
 
+export type RuntimeAppContributionDefinition = {
+  commands?: string[];
+  replayKinds?: string[];
+};
+
 export type RuntimeAppDefinition = {
   id: string;
   label: string;
   description?: string;
   defaultSurfaceId: string;
   surfaces?: RuntimeAppSurfaceDefinition[];
+  contributions?: RuntimeAppContributionDefinition;
 };
 
 const runtimeApps: RuntimeAppDefinition[] = [
@@ -38,6 +44,24 @@ const runtimeApps: RuntimeAppDefinition[] = [
         component: () => import("./tasks/board/RuntimeAppsTaskBoard.vue"),
       },
     ],
+    contributions: {
+      commands: [
+        "task.create",
+        "task.rename",
+        "task.move",
+        "task.assign",
+        "task.archive",
+        "task.list.create",
+      ],
+      replayKinds: [
+        "task.create",
+        "task.rename",
+        "task.move",
+        "task.assign",
+        "task.archive",
+        "task.list.create",
+      ],
+    },
   },
 ];
 

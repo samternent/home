@@ -5,12 +5,9 @@
 @custom-variant dark (&:where([data-theme$="-dark"], [data-theme$="-dark"] *));
 @custom-variant light (&:where([data-theme$="-light"], [data-theme$="-light"] *));
 
-@font-face {
-  font-family: "Clash Grotesk";
-  src: url("/fonts/ClashGrotesk-Variable.woff2") format("woff2");
-  font-style: normal;
-  font-weight: 200 700;
-  font-display: swap;
+:root {
+  --font-sans: "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 }
 
 html,
@@ -22,7 +19,9 @@ body,
 
 body {
   min-height: 100vh;
-  font-family: "Inter", "SF Pro Text", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  font-optical-sizing: auto;
+  font-weight: <weight>;
+  font-style: normal;
   background: var(--ui-bg);
   color: var(--ui-fg);
 }

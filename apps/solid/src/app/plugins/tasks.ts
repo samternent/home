@@ -1,17 +1,19 @@
 import type { ConcordReplayPlugin } from "@ternent/concord";
 import { decryptWithSecretKey, initArmour } from "@ternent/armour";
-import { deriveAgeRecipient } from "@ternent/identity";
-import type { LedgerAppendInput, LedgerReplayEntry } from "@ternent/ledger";
-import type { AppProjectionPlugin } from "@/app/runtime";
+import type { LedgerReplayEntry } from "@ternent/ledger";
 import {
-  identityKeyToPublicKeyBytes,
+  createRuntimePrivacyService,
+  type AppProjectionPlugin,
+  type RuntimePrivacyService,
+} from "@/app/runtime";
+import {
   isIdentityKeyFormat,
   toDidKeyFromPublicKey,
   toLegacyAuthorDidFromIdentityKey,
   validateIdentityKey,
 } from "./identityKey";
 import type { PermissionsState } from "./permissions";
-import type { AppReplayContext } from "./replayContext";
+import type { RuntimeReplayContext } from "./replayContext";
 import type { UsersState } from "./users";
 
 export type TaskAudienceType = "everyone" | "user" | "permission";
@@ -597,36 +599,26 @@ function resolveTaskPermissionId(task: TaskRecord): string | null {
   return task.permissionId ?? task.audienceId;
 }
 
-function hasPermissionGrant(
-  permissionsState: PermissionsState,
-  permissionId: string,
-  identityKey: string,
-): boolean {
-  return Boolean(permissionsState.latestGrantIdByPermissionAndIdentity[permissionId]?.[identityKey]);
-}
-
 function taskMutationsAllowed(
   task: TaskRecord,
   actorIdentityKey: string,
+  privacyService: RuntimePrivacyService,
   permissionsState: PermissionsState,
 ): boolean {
-  if (task.audienceType === "everyone") {
-    return true;
-  }
-
-  if (task.audienceType === "user") {
-    return task.audienceId === actorIdentityKey;
-  }
-
-  const permissionId = resolveTaskPermissionId(task);
-  if (!permissionId) {
-    return false;
-  }
-
-  return hasPermissionGrant(permissionsState, permissionId, actorIdentityKey);
+  return privacyService.canWriteAudience(
+    {
+      audienceType: task.audienceType,
+      audienceId: task.audienceId,
+    },
+    {
+      identityKey: actorIdentityKey,
+    },
+    permissionsState,
+  );
 }
 
 function validateAssigneeAccess(
+  privacyService: RuntimePrivacyService,
   permissionsState: PermissionsState,
   audience: TaskAudiencePayload,
   assigneeIdentityKey: string | null,
@@ -635,96 +627,20 @@ function validateAssigneeAccess(
     return;
   }
 
-  if (audience.audienceType === "user" && audience.audienceId !== assigneeIdentityKey) {
+  if (
+    !privacyService.canWriteAudience(
+      {
+        audienceType: audience.audienceType,
+        audienceId: audience.audienceId,
+      },
+      {
+        identityKey: assigneeIdentityKey,
+      },
+      permissionsState,
+    )
+  ) {
     throw new Error("Assignee does not have audience access.");
   }
-
-  if (audience.audienceType === "permission") {
-    const permissionId = audience.audienceId;
-    if (!permissionId) {
-      throw new Error("Permission audience id is required.");
-    }
-
-    if (!hasPermissionGrant(permissionsState, permissionId, assigneeIdentityKey)) {
-      throw new Error("Assignee does not have audience access.");
-    }
-  }
-}
-
-async function deriveAgeRecipientFromIdentityKey(identityKey: string): Promise<string> {
-  const publicKeyBytes = identityKeyToPublicKeyBytes(identityKey);
-  return await deriveAgeRecipient(publicKeyBytes);
-}
-
-async function resolveIdentityRecipients(identityKeys: string[]): Promise<string[]> {
-  const recipients = new Set<string>();
-
-  for (const identityKey of identityKeys) {
-    recipients.add(await deriveAgeRecipientFromIdentityKey(identityKey));
-  }
-
-  return [...recipients];
-}
-
-async function resolvePermissionAudienceRecipients(
-  permissionId: string,
-  permissionsState: PermissionsState,
-): Promise<string[]> {
-  const permission = permissionsState.byId[permissionId];
-  if (!permission) {
-    throw new Error("Permission does not exist.");
-  }
-
-  if (permission.publicKey) {
-    return [permission.publicKey];
-  }
-
-  // Backward-compat fallback: older groups may not include a key-bearing public key.
-  const memberIdentityKeys = permission.members
-    .map((member) => member.memberId)
-    .filter((identityKey) => hasPermissionGrant(permissionsState, permissionId, identityKey));
-
-  if (memberIdentityKeys.length === 0) {
-    throw new Error("Permission does not have readable members.");
-  }
-
-  return await resolveIdentityRecipients(memberIdentityKeys);
-}
-
-async function resolveAudienceProtection(
-  audienceType: TaskAudienceType,
-  audienceId: string | null,
-  permissionsState: PermissionsState,
-): Promise<LedgerAppendInput["protection"]> {
-  if (audienceType === "everyone") {
-    return {
-      type: "none",
-    };
-  }
-
-  if (audienceType === "user") {
-    if (!audienceId) {
-      throw new Error("User audience id is required.");
-    }
-
-    const recipients = await resolveIdentityRecipients([audienceId]);
-    return {
-      type: "recipients",
-      recipients,
-      encoding: "armor",
-    };
-  }
-
-  if (!audienceId) {
-    throw new Error("Permission audience id is required.");
-  }
-
-  const recipients = await resolvePermissionAudienceRecipients(audienceId, permissionsState);
-  return {
-    type: "recipients",
-    recipients,
-    encoding: "armor",
-  };
 }
 
 function materializeTaskForViewer(
@@ -1076,8 +992,10 @@ function applyTaskCreate(state: TasksState, payloadValue: unknown): TasksState {
  * Creates the local tasks replay plugin and selectors for v2.
  */
 export function createTasksPlugin(options?: {
-  replayContext?: AppReplayContext;
+  replayContext?: RuntimeReplayContext;
+  privacyService?: RuntimePrivacyService;
 }): AppProjectionPlugin<TasksState> {
+  const privacyService = options?.privacyService ?? createRuntimePrivacyService();
   let deferredEncryptedTaskEntries: Extract<
     LedgerReplayEntry,
     { payload: { type: "encrypted" } }
@@ -1120,7 +1038,18 @@ export function createTasksPlugin(options?: {
             throw new Error("Permission does not exist.");
           }
 
-          if (!hasPermissionGrant(permissionsState, input.permissionId, input.actorIdentityKey)) {
+          if (
+            !privacyService.canWriteAudience(
+              {
+                audienceType: "permission",
+                audienceId: input.permissionId,
+              },
+              {
+                identityKey: input.actorIdentityKey,
+              },
+              permissionsState,
+            )
+          ) {
             throw new Error("Actor does not have permission access.");
           }
         }
@@ -1150,7 +1079,12 @@ export function createTasksPlugin(options?: {
           throw new Error("User audience requires audience id.");
         }
 
-        validateAssigneeAccess(permissionsState, audience, input.assigneeIdentityKey ?? null);
+        validateAssigneeAccess(
+          privacyService,
+          permissionsState,
+          audience,
+          input.assigneeIdentityKey ?? null,
+        );
 
         const now = ctx.now();
         const taskId = createTaskId(now);
@@ -1159,9 +1093,11 @@ export function createTasksPlugin(options?: {
           throw new Error("Task already exists.");
         }
 
-        const protection = await resolveAudienceProtection(
-          audience.audienceType,
-          audience.audienceId,
+        const protection = await privacyService.resolveProtection(
+          {
+            audienceType: audience.audienceType,
+            audienceId: audience.audienceId,
+          },
           permissionsState,
         );
 
@@ -1199,13 +1135,15 @@ export function createTasksPlugin(options?: {
           throw new Error("Task does not exist.");
         }
 
-        if (!taskMutationsAllowed(task, input.actorIdentityKey, permissionsState)) {
+        if (!taskMutationsAllowed(task, input.actorIdentityKey, privacyService, permissionsState)) {
           throw new Error("Actor does not have access to mutate this task.");
         }
 
-        const protection = await resolveAudienceProtection(
-          task.audienceType,
-          task.audienceId,
+        const protection = await privacyService.resolveProtection(
+          {
+            audienceType: task.audienceType,
+            audienceId: task.audienceId,
+          },
           permissionsState,
         );
 
@@ -1239,13 +1177,15 @@ export function createTasksPlugin(options?: {
           throw new Error("Board column does not exist.");
         }
 
-        if (!taskMutationsAllowed(task, input.actorIdentityKey, permissionsState)) {
+        if (!taskMutationsAllowed(task, input.actorIdentityKey, privacyService, permissionsState)) {
           throw new Error("Actor does not have access to mutate this task.");
         }
 
-        const protection = await resolveAudienceProtection(
-          task.audienceType,
-          task.audienceId,
+        const protection = await privacyService.resolveProtection(
+          {
+            audienceType: task.audienceType,
+            audienceId: task.audienceId,
+          },
           permissionsState,
         );
 
@@ -1275,7 +1215,7 @@ export function createTasksPlugin(options?: {
           throw new Error("Task does not exist.");
         }
 
-        if (!taskMutationsAllowed(task, input.actorIdentityKey, permissionsState)) {
+        if (!taskMutationsAllowed(task, input.actorIdentityKey, privacyService, permissionsState)) {
           throw new Error("Actor does not have access to mutate this task.");
         }
 
@@ -1284,6 +1224,7 @@ export function createTasksPlugin(options?: {
         }
 
         validateAssigneeAccess(
+          privacyService,
           permissionsState,
           {
             audienceType: task.audienceType,
@@ -1295,9 +1236,11 @@ export function createTasksPlugin(options?: {
           input.assigneeIdentityKey ?? null,
         );
 
-        const protection = await resolveAudienceProtection(
-          task.audienceType,
-          task.audienceId,
+        const protection = await privacyService.resolveProtection(
+          {
+            audienceType: task.audienceType,
+            audienceId: task.audienceId,
+          },
           permissionsState,
         );
 
@@ -1326,15 +1269,17 @@ export function createTasksPlugin(options?: {
           throw new Error("Task does not exist.");
         }
 
-        if (!taskMutationsAllowed(task, input.actorIdentityKey, permissionsState)) {
+        if (!taskMutationsAllowed(task, input.actorIdentityKey, privacyService, permissionsState)) {
           throw new Error("Actor does not have access to mutate this task.");
         }
 
         const now = ctx.now();
 
-        const protection = await resolveAudienceProtection(
-          task.audienceType,
-          task.audienceId,
+        const protection = await privacyService.resolveProtection(
+          {
+            audienceType: task.audienceType,
+            audienceId: task.audienceId,
+          },
           permissionsState,
         );
 
@@ -1413,7 +1358,10 @@ export function createTasksPlugin(options?: {
       }
 
       let state = cloneTasksState(ctx.getState());
-      const permissionPrivateKeys = options?.replayContext?.getPermissionPrivateKeys() ?? [];
+      const permissionsStateFromReplayContext = options?.replayContext?.getPermissionsState();
+      const permissionPrivateKeys = permissionsStateFromReplayContext
+        ? privacyService.getReplayDecryptionKeys(permissionsStateFromReplayContext)
+        : [];
 
       for (const entry of deferredEncryptedTaskEntries) {
         const cachedPayload = options?.replayContext?.readDecryptedPayload(entry.entryId);

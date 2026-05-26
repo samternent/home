@@ -102,23 +102,6 @@ function assigneeLabel(task: TaskRecord): string {
   return userLabelByIdentityKey.value.get(task.assigneeIdentityKey) ?? task.assigneeIdentityKey;
 }
 
-function rowDotClass(task: TaskRecord): string {
-  if (task.permissionId) {
-    return "bg-[var(--ui-primary)] ring-[color-mix(in_srgb,var(--ui-primary)_16%,transparent)]";
-  }
-  if (task.taskListId) {
-    return "bg-[var(--ui-info)] ring-[color-mix(in_srgb,var(--ui-info)_16%,transparent)]";
-  }
-  return "bg-[var(--ui-success)] ring-[color-mix(in_srgb,var(--ui-success)_16%,transparent)]";
-}
-
-function visibilityPillClass(task: TaskRecord): string {
-  if (task.permissionId) {
-    return "border-[color-mix(in_srgb,var(--ui-primary)_22%,var(--ui-border))] bg-[var(--ui-primary-muted)] text-[var(--ui-primary)]";
-  }
-
-  return "border-[color-mix(in_srgb,var(--ui-success)_22%,var(--ui-border))] bg-[var(--ui-success-muted)] text-[var(--ui-success)]";
-}
 
 function accessTagClass(task: TaskRecord): string {
   if (task.permissionId) {
@@ -232,23 +215,13 @@ function openTaskEditDrawer(task: TaskRecord): void {
         </div>
       </template>
 
-      <div class="flex h-20 shrink-0 items-center justify-between border-b border-[var(--ui-border)] bg-[color-mix(in_srgb,var(--ui-surface)_92%,transparent)] px-6 backdrop-blur md:px-8">
-        <div>
-          <h1 class="m-0 text-[28px] font-semibold tracking-[-0.035em] text-[var(--ui-fg)]">Tasks</h1>
-          <div class="mt-1 flex items-center gap-2 text-xs font-semibold text-[var(--ui-fg-muted)]">
-            <span>{{ filteredTasks.length }} tasks</span>
-            <span class="text-[color-mix(in_srgb,var(--ui-fg-muted)_35%,transparent)]">/</span>
-            <span>{{ privateCount }} private</span>
-            <span class="text-[color-mix(in_srgb,var(--ui-fg-muted)_35%,transparent)]">/</span>
-            <span>{{ sharedCount }} shared</span>
-          </div>
-        </div>
-
+      <div class="flex shrink-0 items-center justify-between border-b border-[var(--ui-border)] bg-[color-mix(in_srgb,var(--ui-surface)_92%,transparent)] p-2">
+        <div></div>
         <div class="flex items-center gap-2">
           <Button
             type="button"
             variant="primary"
-            size="sm"
+            size="xs"
             data-test="runtime-task-list-open-create"
             @click="openCreateTaskDrawer"
           >
@@ -284,7 +257,7 @@ function openTaskEditDrawer(task: TaskRecord): void {
         >
           <div>Task</div>
           <div>Assignee</div>
-          <div>Status</div>
+          <div>Column</div>
           <div>Access</div>
           <div class="text-right">Action</div>
         </div>
@@ -293,14 +266,14 @@ function openTaskEditDrawer(task: TaskRecord): void {
           <article
             v-for="task in filteredTasks"
             :key="task.id"
-            class="group grid min-h-[88px] grid-cols-[minmax(260px,1.5fr)_minmax(150px,0.7fr)_120px_180px_80px] items-center border-b border-[var(--ui-border)] bg-transparent px-6 transition-colors duration-200 hover:bg-[color-mix(in_srgb,var(--ui-tonal-tertiary)_78%,transparent)] md:px-8"
+            class="group py-3 grid grid-cols-[minmax(260px,1.5fr)_minmax(150px,0.7fr)_120px_180px_80px] items-center border-b border-[var(--ui-border)] bg-transparent px-6 transition-colors duration-200 hover:bg-[color-mix(in_srgb,var(--ui-tonal-tertiary)_78%,transparent)] md:px-8"
           >
-            <div class="flex min-w-0 items-center gap-4">
-              <span class="h-1.5 w-1.5 rounded-full ring-4" :class="rowDotClass(task)"></span>
-              <span class="truncate text-sm font-semibold tracking-[-0.02em] text-[var(--ui-fg)]">{{ task.title }}</span>
-              <span class="rounded-full border px-2.5 py-1 text-[11px] font-bold" :class="visibilityPillClass(task)">
-                {{ task.permissionId ? 'Private' : 'Public' }}
-              </span>
+          <div class="flex min-w-0 items-center gap-4 justify-between pr-8">
+              <div class="flex items-center gap-4">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :class="['size-6 stroke-[var(--ui-fg-muted)]/40'] "><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+                <span class="truncate text-sm font-semibold tracking-[-0.02em] text-[var(--ui-fg)]">{{ task.title }}</span>
+              </div>
+              <svg v-if="task.permissionId" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             </div>
 
             <div class="truncate text-[13px] font-medium text-[var(--ui-fg-muted)]">{{ assigneeLabel(task) }}</div>

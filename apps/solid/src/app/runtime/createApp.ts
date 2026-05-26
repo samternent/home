@@ -47,6 +47,43 @@ export async function createApp(input: CreateAppInput): Promise<AppRuntime> {
     storage: input.storage,
     plugins: input.plugins.map((plugin) => plugin.plugin),
   });
+  const replayContext = input.replayContext;
+
+  async function replayPipeline(options?: {
+    replay?: Parameters<typeof concord.replay>[0];
+    mode?: "full" | "load";
+  }): Promise<void> {
+    const replayOptions = options?.replay;
+    const isPartial = Boolean(replayOptions?.fromEntryId || replayOptions?.toEntryId);
+    if (isPartial) {
+      throw new Error("Partial replay is unsupported in MVP.");
+    }
+
+    if (!replayContext) {
+      if (options?.mode === "load") {
+        await concord.load();
+      } else {
+        await concord.replay(replayOptions);
+      }
+      return;
+    }
+
+    replayContext.beginReplayPipeline();
+
+    try {
+      replayContext.setPhase("system");
+      if (options?.mode === "load") {
+        await concord.load();
+      } else {
+        await concord.replay(replayOptions);
+      }
+
+      replayContext.setPhase("workspace");
+      await concord.replay(replayOptions);
+    } finally {
+      replayContext.endReplayPipeline();
+    }
+  }
 
   return {
     concord,
@@ -64,6 +101,32 @@ export async function createApp(input: CreateAppInput): Promise<AppRuntime> {
     },
     replay(options) {
       return concord.replay(options);
+    },
+    replayPipeline(options) {
+      return replayPipeline(options);
+    },
+    loadWithReplayPipeline() {
+      return replayPipeline({
+        mode: "load",
+      });
+    },
+    async commandWithReplay(type, payload) {
+      const result = await concord.command(type, payload);
+      await replayPipeline();
+      return result;
+    },
+    async commitWithReplay(inputValue) {
+      const result = await concord.commit(inputValue);
+      await replayPipeline();
+      return result;
+    },
+    async discardWithReplay() {
+      await concord.clearStaged();
+      await replayPipeline();
+    },
+    async importWithReplay(container) {
+      await concord.importLedger(container);
+      await replayPipeline();
     },
     getState() {
       return concord.getState();

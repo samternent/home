@@ -105,6 +105,9 @@ describe("RoutePermissions", () => {
     await appApi.users.create({
       identityKey: memberIdentityKey,
     });
+    await wrapper
+      .get(`[data-test="permission-grant-toggle-${permissionId}"]`)
+      .trigger("click");
 
     const addVisible = await waitFor(() =>
       wrapper.find(`[data-test^="permission-grant-submit-${permissionId}-"]`).exists(),
@@ -161,6 +164,18 @@ describe("RoutePermissions", () => {
 
     await wrapper.get('[data-test="permission-create-title"]').setValue("Auditors");
     await wrapper.get('[data-test="permission-create-form"]').trigger("submit");
+
+    const permissionId = await waitFor(() => {
+      const record = useAppApi().permissions.all().at(0);
+      return typeof record?.id === "string";
+    });
+    expect(permissionId).toBe(true);
+
+    const createdPermissionId = useAppApi().permissions.all().at(0)?.id;
+    expect(createdPermissionId).toBeTruthy();
+    await wrapper
+      .get(`[data-test="permission-grant-toggle-${createdPermissionId}"]`)
+      .trigger("click");
 
     const assignableEmpty = await waitFor(() =>
       wrapper.find('[data-test="permission-assignable-empty"]').exists(),
