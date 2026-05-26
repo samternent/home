@@ -12,10 +12,10 @@ const repoRoot = process.cwd();
 
 function printUsage() {
   console.log(`Usage:
-  pnpm setup:ternent-app-deploy -- --app apps/armour
+  pnpm setup:ternent-app-deploy -- --app apps/ternentdotdev
 
 Options:
-  --app <path>             App directory, e.g. apps/armour
+  --app <path>             App directory, e.g. apps/ternentdotdev
   --project <name>         Override the Vercel project name (defaults to app.id)
   --repo <owner/repo>      Target GitHub repository for secrets
   --scope <scope>          Vercel scope/team slug to use when linking

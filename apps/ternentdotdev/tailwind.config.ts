@@ -1,7 +1,13 @@
+import baseConfig from "ternent-ui/tailwind.config";
+
+const resolvedBaseConfig =
+  (baseConfig as { default?: Record<string, unknown> })?.default ?? baseConfig;
+
 export default {
+  ...resolvedBaseConfig,
   content: [
     "./index.html",
-    "./src/**/*.{js,vue,ts}",
+    "./src/**/*.{ts,vue}",
     "../../packages/ternent-ui/**/*.{vue,ts,css}",
   ],
   theme: {
@@ -9,23 +15,16 @@ export default {
       colors: {
         bg: "var(--ui-bg)",
         fg: "var(--ui-fg)",
-
+        "fg-muted": "var(--ui-fg-muted)",
+        surface: "var(--ui-surface)",
+        border: "var(--ui-border)",
         primary: "var(--ui-primary)",
         "primary-hover": "var(--ui-primary-hover)",
         "on-primary": "var(--ui-on-primary)",
-
-        secondary: "var(--ui-secondary)",
-        "secondary-hover": "var(--ui-secondary-hover)",
-        "on-secondary": "var(--ui-on-secondary)",
-
-        danger: "var(--ui-danger)",
-        "danger-hover": "var(--ui-danger-hover)",
-        "on-danger": "var(--ui-on-danger)",
       },
-      borderRadius: {
-        sm: "var(--ui-radius-sm)",
-        md: "var(--ui-radius-md)",
-        lg: "var(--ui-radius-lg)",
+      fontFamily: {
+        sans: ["\"Clash Grotesk\"", "system-ui", "sans-serif"],
+        mono: ["\"JetBrains Mono\"", "ui-monospace", "monospace"],
       },
     },
   },

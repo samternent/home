@@ -56,10 +56,11 @@ function renderRootCss() {
 function getThemeSelector(themeName, mode) {
   const singletonSelector = singletonThemeSelectors[themeName]?.[mode];
   if (singletonSelector) {
-    return `:root[data-theme="${singletonSelector}"]`;
+    return `:root[data-theme="${singletonSelector}"], [data-theme="${singletonSelector}"]`;
   }
 
-  return `:root[data-theme="${themeName}-${mode}"]`;
+  const selector = `${themeName}-${mode}`;
+  return `:root[data-theme="${selector}"], [data-theme="${selector}"]`;
 }
 
 function renderThemeCss(themeName, variants) {

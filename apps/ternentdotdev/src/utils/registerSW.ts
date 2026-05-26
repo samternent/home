@@ -1,19 +1,20 @@
-export default function registerSW() {
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      // delete all the caches... bugs I think
-      caches.keys().then(function (names) {
-        for (let name of names) caches.delete(name);
-      });
+import { registerSW } from "virtual:pwa-register";
 
-      // unregister old service workers... there maybe be bugs
-      navigator.serviceWorker.getRegistrations().then((registrations) => {
-        registrations.forEach((registration) => {
-          registration.unregister();
-        });
-      });
-
-      navigator.serviceWorker.register("/sw.js");
-    });
+export default function registerServiceWorker() {
+  if (typeof window === "undefined" || !("serviceWorker" in navigator)) {
+    return;
   }
+
+  const updateServiceWorker = registerSW({
+    immediate: true,
+    onNeedRefresh() {
+      void updateServiceWorker(true);
+    },
+    onRegisteredSW(_swUrl, registration) {
+      void registration?.update();
+    },
+    onRegisterError(error) {
+      console.error("service worker registration error", error);
+    },
+  });
 }
