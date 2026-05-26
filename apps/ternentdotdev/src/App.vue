@@ -1,33 +1,43 @@
-<script setup>
-import { useLocalStorage } from "@vueuse/core";
-import { provideBreadcrumbs } from "./module/breadcrumbs/useBreadcrumbs";
-import { provideDrawerRoute } from "./module/drawer-route/useDrawerRoute";
-import { provideAxios } from "./module/api/useAxios";
-
-import { provideAppShell } from "./module/app-shell/useAppShell";
-import { useWhiteLabel } from "./module/brand/useWhiteLabel";
-import Concords from "./module/concords/Concords.vue";
-
-if (!window.location.pathname.startsWith("/solid/redirect")) {
-  window.localStorage.setItem("app/lastPath", window.location.pathname);
-}
-
-provideAxios();
-provideBreadcrumbs();
-provideDrawerRoute();
-provideAppShell();
-
-const whiteLabel = useWhiteLabel();
-const themeName = useLocalStorage("app/theme", whiteLabel.value.themeName);
+<script setup lang="ts">
+import { Logo } from "ternent-ui/patterns";
+import { Button, Separator } from "ternent-ui/primitives";
+import ThemeModeToggle from "@/modules/ui/components/ThemeModeToggle.vue";
 </script>
-
 <template>
-  <!-- <div class="flex flex-col min-h-screen bg-base-100" :data-theme="fullTheme"> -->
-  <div class="flex flex-col min-h-screen bg-base-100" :data-theme="themeName">
-    <Concords>
-      <div class="flex-1 flex w-full items-stretch">
-        <RouterView />
+  <div class="min-h-screen">
+    <div class="sticky top-0 z-50 h-16 w-full border-b border-[var(--ui-border)] bg-[var(--ui-bg)]/90 p-4 backdrop-blur">
+      <div class="mx-auto flex max-w-6xl items-center justify-between">
+        <RouterLink to="/" class="flex items-end gap-3 no-underline">
+          <Logo class="!size-8" />
+        </RouterLink>
+
+        <nav class="flex gap-3 text-sm">
+          <!-- <RouterLink to="/armour">Armour</RouterLink>
+          <RouterLink to="/concord">Concord</RouterLink>
+          <RouterLink to="/ledger">Ledger</RouterLink>
+          <RouterLink to="/seal">Seal</RouterLink> -->
+        </nav>
       </div>
-    </Concords>
+    </div>
+
+    <RouterView />
+
+    <footer class="px-4 py-6 bg-[var(--ui-bg)]/90 backdrop-blur border-t border-[var(--ui-border)]">
+      <div class="flex flex-wrap items-center justify-between gap-3 pt-4 text-sm text-[var(--ui-fg-muted)] mx-auto max-w-6xl">
+        <div class="flex flex-wrap items-center gap-2">
+          <span>ternent.dev</span>
+          <span class="opacity-60">•</span>
+          <span>© 2026</span>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- <Button as="RouterLink" to="/concord" variant="plain-secondary" size="sm">Concord</Button>
+          <Button as="RouterLink" to="/ledger" variant="plain-secondary" size="sm">Ledger</Button>
+          <Button as="RouterLink" to="/seal" variant="plain-secondary" size="sm">Seal</Button>
+          <Button as="RouterLink" to="/armour" variant="plain-secondary" size="sm">Armour</Button> -->
+          <ThemeModeToggle />
+        </div>
+      </div>
+    </footer>
   </div>
 </template>

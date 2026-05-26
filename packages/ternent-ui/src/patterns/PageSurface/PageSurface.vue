@@ -21,7 +21,7 @@
   min-height: 100vh;
   overflow-x: clip;
   overflow-y: visible;
-  /* background: radial-gradient(
+  background: radial-gradient(
       circle at top center,
       color-mix(in srgb, var(--ui-primary-muted) 70%, transparent),
       transparent 42%
@@ -31,7 +31,7 @@
       color-mix(in srgb, var(--ui-tonal-tertiary) 72%, transparent),
       transparent 34%
     ),
-    var(--ui-bg); */
+    var(--ui-bg);
   color: var(--ui-fg);
   isolation: isolate;
 }

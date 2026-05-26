@@ -14,7 +14,6 @@ jobs:
   Deploy-Production:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
       - name: Checkout repo
         uses: actions/checkout@master
         with:
@@ -35,20 +34,14 @@ jobs:
         with:
           version: 8
 
-      - name: Install
-        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
-
-      - name: Build rust libs
-        run: cd packages/concord-protocol-wasm && pnpm build && cd ../..
-
       - name: Install Vercel CLI
         run: pnpm install --global vercel@latest
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build libs
-        run: pnpm build:libs
+      - name: Build dependencies and app
+        run: pnpm --filter ternent-ui --filter ternent-utils --filter @ternent/identity --filter @ternent/seal-cli --filter ternentdotdev build
 
       - name: Link Vercel project
         run: vercel link --yes --cwd ${{ github.workspace }}/apps/ternentdotdev --token=${{ secrets.VERCEL_TOKEN }}
@@ -56,19 +49,13 @@ jobs:
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=production --cwd ${{ github.workspace }}/apps/ternentdotdev --token=${{ secrets.VERCEL_TOKEN }}
 
-      - name: Link Vercel project to root
-        run: cp -r ${{ github.workspace }}/apps/ternentdotdev/.vercel ${{ github.workspace }}/
-
       - name: Build Vercel Environment Information
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Build slides
-        run: pnpm build:slides
+        run: vercel build --prod --cwd ${{ github.workspace }}/apps/ternentdotdev --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Generate sealed site artifacts
         uses: samternent/seal-action@v2
         with:
-          assets-directory: .vercel/output/static
+          assets-directory: apps/ternentdotdev/.vercel/output/static
 
       - name: Deploy Project Artifacts to Vercel
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel deploy --prebuilt --prod --cwd ${{ github.workspace }}/apps/ternentdotdev --token=${{ secrets.VERCEL_TOKEN }}

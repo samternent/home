@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { Button, Card, Separator, Tabs } from "../../primitives";
-import SThemeToggle from "../../components/SThemeToggle.vue";
+import { Button, Card, Tabs } from "../../primitives";
 import FeatureCard from "../FeatureCard/FeatureCard.vue";
-import Logo from "../Logo/Logo.vue";
 import PageSurface from "../PageSurface/PageSurface.vue";
 import PreviewPanel from "../PreviewPanel/PreviewPanel.vue";
 import SectionClarifier from "../SectionClarifier/SectionClarifier.vue";
@@ -90,57 +88,7 @@ function resolveSuiteItemStyle(themeColor: string) {
 
 <template>
   <PageSurface>
-    <header class="sticky top-0 z-30 mx-auto w-full lg:px-8">
-      <div
-        class="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-3 backdrop-blur-lg"
-      >
-        <RouterLink to="/" class="flex items-end gap-3 no-underline">
-          <Logo class="!size-8" />
-          <span
-            v-if="props.appTitle"
-            class="hidden text-sm font-medium tracking-[0.08em] text-[var(--ui-fg-muted)] sm:inline"
-          >
-            {{ props.appTitle }}
-          </span>
-        </RouterLink>
-
-        <nav v-if="showTopNavigation" class="hidden items-center gap-2 md:flex">
-          <Button
-            v-for="link in props.config.navigationLinks"
-            :key="link.label"
-            v-bind="resolveButtonProps(link)"
-            variant="plain-secondary"
-            size="sm"
-          >
-            {{ link.label }}
-          </Button>
-        </nav>
-
-        <div class="flex items-center gap-2">
-          <Button
-            v-bind="resolveButtonProps(props.config.hero.primaryAction)"
-            :variant="resolveActionVariant(props.config.hero.primaryAction)"
-          >
-            {{ props.config.hero.primaryAction.label }}
-          </Button>
-          <Button
-            v-if="props.config.hero.secondaryAction"
-            v-bind="resolveButtonProps(props.config.hero.secondaryAction)"
-            :variant="resolveActionVariant(props.config.hero.secondaryAction)"
-          >
-            {{ props.config.hero.secondaryAction.label }}
-          </Button>
-          <Button
-            v-if="props.config.hero.tertiaryAction"
-            v-bind="resolveButtonProps(props.config.hero.tertiaryAction)"
-            variant="plain-secondary"
-          >
-            {{ props.config.hero.tertiaryAction.label }}
-          </Button>
-        </div>
-      </div>
-      <Separator />
-    </header>
+   
 
     <main
       :class="
@@ -698,50 +646,5 @@ function resolveSuiteItemStyle(themeColor: string) {
       </section>
     </main>
 
-    <footer class="mx-auto max-w-7xl px-6 pb-4 lg:px-8">
-      <Separator />
-      <div
-        class="flex gap-6 py-8 md:flex-row md:items-start md:justify-between"
-      >
-        <div class="flex min-w-0 flex-1 flex-col items-start gap-3">
-          <div
-            class="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-[var(--ui-fg-muted)]"
-          >
-            <Logo class="!size-6" />
-            <a
-              class="text-[var(--ui-fg-muted)] no-underline transition hover:text-[var(--ui-fg)]"
-              :href="props.config.footer.brandHref || '/'"
-            >
-              {{ props.config.footer.brandLabel }}
-            </a>
-            <p class="m-0">{{ props.config.footer.copyright }}</p>
-          </div>
-
-          <div
-            v-if="$slots['footer-meta']"
-            class="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-[var(--ui-fg-muted)]"
-          >
-            <slot name="footer-meta" />
-          </div>
-        </div>
-
-        <nav
-          class="flex flex-row flex-wrap items-center gap-2 md:max-w-[42rem] md:justify-end"
-        >
-          <Button
-            v-for="link in props.config.footer.links"
-            :key="link.label"
-            v-bind="resolveButtonProps(link)"
-            variant="plain-secondary"
-            size="sm"
-          >
-            {{ link.label }}
-          </Button>
-
-          <SThemeToggle size="sm" />
-          <slot name="footer-actions" />
-        </nav>
-      </div>
-    </footer>
   </PageSurface>
 </template>

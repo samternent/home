@@ -16,17 +16,17 @@ import {
 
 const repoRoot = path.resolve(new URL("../..", import.meta.url).pathname);
 
-test("loads the seal manifest into normalized runtime config", () => {
-  const manifest = loadTernentAppManifestForDir(path.join(repoRoot, "apps", "seal"), repoRoot);
+test("loads the ternentdotdev manifest into normalized runtime config", () => {
+  const manifest = loadTernentAppManifestForDir(path.join(repoRoot, "apps", "ternentdotdev"), repoRoot);
 
-  assert.equal(manifest.app.appId, "seal");
-  assert.equal(manifest.app.themeName, "proof");
+  assert.equal(manifest.app.appId, "ternentdotdev");
+  assert.equal(manifest.app.themeName, "aurora");
   assert.equal(manifest.app.defaultThemeMode, "dark");
-  assert.equal(manifest.landing.hero.tertiaryAction.label, "View JavaScript API");
-  assert.equal(manifest.landing.proofModelSection.items.length, 4);
-  assert.equal(manifest.landing.proofJsonSection.title, "The proof format");
-  assert.equal(manifest.landing.developerSection.tabs[0].value, "js");
-  assert.equal(manifest.landing.nonGoalsSection.items.length, 5);
+  assert.equal(manifest.landing.hero.secondaryAction.label, "View template");
+  assert.equal(manifest.landing.featureSection.items.length, 4);
+  assert.equal(manifest.landing.howItWorksSection.title, "Ship a new landing page in one pass");
+  assert.equal(manifest.landing.developerSection.tabs[0].value, "yaml");
+  assert.equal(manifest.landing.clarifierSection.columns.length, 2);
 });
 
 test("rejects a manifest with an unknown ternent-ui theme", () => {
@@ -166,7 +166,7 @@ test("builds a deploy workflow for scaffolded apps", () => {
 });
 
 test("adds scaffolded apps to the publish script once", () => {
-  const source = `const appsToPublish = [\n  "../apps/seal",\n];\n`;
+  const source = `const appsToPublish = [\n  "../apps/ternentdotdev",\n];\n`;
 
   const once = updatePublishScriptSource(source, "armour");
   const twice = updatePublishScriptSource(once, "armour");

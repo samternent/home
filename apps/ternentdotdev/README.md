@@ -1,111 +1,135 @@
-# ternentdotdev
+# ternent-vue-app template
 
-A brief description of what your project does and why it’s useful.
-
-## Table of Contents
-
-- [Installation](#installation)
-- [Usage](#usage)
-- [Features](#features)
-- [Configuration](#configuration)
-- [Examples](#examples)
-- [Contributing](#contributing)
-- [License](#license)
-
-## Installation
-
-### Prerequisites
-
-List any prerequisites, software, or tools that need to be installed before the application or package can be used.
-
-'bash
-
-# Example: Clone the repository
-
-git clone https://github.com/your-username/your-repo-name.git
-'
-
-### Install the dependencies
-
-Provide instructions on how to install dependencies.
-
-'bash
-
-# Example: Using npm or pip
-
-npm install
-'
-
-'bash
-
-# or
-
-pip install -r requirements.txt
-'
-
-## Usage
-
-Describe how to use the application or package. Include code snippets and examples as necessary.
-
-'bash
-
-# Example: Running the application
-
-npm start
-'
-
-'bash
-
-# or
-
-python main.py
-'
+Canonical template for new Ternent Vue apps.
 
 ## Features
 
-Highlight the key features of your project.
+- Feature-driven architecture (`src/modules/*`)
+- Route-folder modules (`src/routes/*`) with CamelCase `Route*.vue`
+- Foundational `ternent-identity`, `ternent-utils`, `ternent-ui` support
+- Identity create/import/export baseline flows
+- Tailwind + custom light/dark theme pair
+- PWA + offline-first defaults
+- Lighthouse CI thresholds (95+ for perf/a11y/best-practices/seo)
 
-- **Feature 1**: Description
-- **Feature 2**: Description
-- **Feature 3**: Description
+## App Manifest
 
-## Configuration
+The template landing page is driven by `app.yaml`.
 
-Explain any configuration options available and how to set them up.
+- Author landing copy, links, snippets, and theme selection in YAML.
+- Run `pnpm sync:ternent-app -- --app apps/<app-name>` to regenerate typed runtime config.
+- The browser consumes generated TS config only; it does not parse YAML at runtime.
 
-'json
-{
-"setting1": "value1",
-"setting2": "value2"
-}
-'
+## Fastest Path
 
-## Examples
+If you want the shortest route to a new branded app:
 
-Provide some examples of how to use your project effectively. This can include code snippets, command-line examples, or screenshots.
+```bash
+pnpm scaffold:ternent-app -- --name ledger-demo --title "Ledger Demo" --host ledger-demo.ternent.dev --theme aurora
+pnpm --filter ledger-demo dev
+```
 
-'python
+That creates `apps/ledger-demo`, writes `apps/ledger-demo/app.yaml`, and generates the runtime config immediately.
+It also scaffolds:
 
-# Example: Python usage
+- `.github/workflows/deploy-ledger-demo.yml`
+- a publish entry in `.ops/publish.mjs`
 
-from yourpackage import yourmodule
+The only manual release setup left is:
 
-result = yourmodule.yourfunction()
-print(result)
-'
+- create the Vercel project
+- add `VERCEL_LEDGER_DEMO_PROJECT_ID` to GitHub Actions secrets
 
-## Contributing
+## Config-First Workflow
 
-Explain how others can contribute to the project. Include details on how to report issues, submit pull requests, or contribute in other ways.
+If you want to author the app from a manifest before scaffolding it, use a manifest outside `apps/` first.
 
-1. Fork the project
-2. Create a new branch ('git checkout -b feature/your-feature')
-3. Commit your changes ('git commit -m 'Add some feature'')
-4. Push to the branch ('git push origin feature/your-feature')
-5. Open a pull request
+1. Create a starter manifest:
 
-## License
+```bash
+pnpm prepare:ternent-app -- --out .ternent-apps/ledger-demo.yaml --name ledger-demo --title "Ledger Demo" --host ledger-demo.ternent.dev --theme aurora
+```
 
-Include the license under which the project is distributed. If you’re using a standard license, you can just link to it.
+2. Edit `.ternent-apps/ledger-demo.yaml` with your copy, links, previews, and theme choice.
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+3. Scaffold the app from that manifest:
+
+```bash
+pnpm scaffold:ternent-app -- --manifest .ternent-apps/ledger-demo.yaml
+```
+
+4. Run the app:
+
+```bash
+pnpm --filter ledger-demo dev
+```
+
+## Updating an Existing App
+
+After scaffolding, the app’s source-of-truth manifest lives inside the app:
+
+- `apps/<app-name>/app.yaml`
+
+When you change that file, regenerate the runtime config with:
+
+```bash
+pnpm sync:ternent-app -- --app apps/ledger-demo
+```
+
+`sync:ternent-app` updates generated app config only. Deployment workflow and publish registration are scaffolded when the app is first created.
+
+## Concrete Example
+
+Minimal config-first session:
+
+```bash
+pnpm prepare:ternent-app -- --out .ternent-apps/receipt-checker.yaml --name receipt-checker --title "Receipt Checker" --host receipt-checker.ternent.dev --theme harbor-rose
+pnpm scaffold:ternent-app -- --manifest .ternent-apps/receipt-checker.yaml
+pnpm --filter receipt-checker dev
+```
+
+## Release Flow
+
+For each scaffolded app the generator wires in the repo-level release hooks:
+
+- `.github/workflows/deploy-<app-name>.yml` deploys the tagged app to Vercel
+- `.ops/publish.mjs` includes the app so changeset releases emit a GitHub release entry
+
+Recommended sequence:
+
+1. Run `pnpm prepare:ternent-app` or `pnpm scaffold:ternent-app`
+2. Edit `apps/<app-name>/app.yaml`
+3. Run `pnpm sync:ternent-app -- --app apps/<app-name>`
+4. Create the Vercel project and add `VERCEL_<APP_NAME>_PROJECT_ID` to repo secrets
+5. Commit the scaffolded app, workflow, and manifest
+6. Add a changeset that bumps the new app package when you want the first production release
+
+## Vercel + GitHub Setup
+
+If you are already logged into both the Vercel CLI and GitHub CLI, you can automate the project/secret wiring with:
+
+```bash
+pnpm setup:ternent-app-deploy -- --app apps/ledger-demo
+```
+
+That script will:
+
+- link or create the Vercel project for the app via `vercel link --project <app-id> --yes`
+- read `.vercel/project.json`
+- set `VERCEL_<APP_NAME>_PROJECT_ID` in GitHub Actions secrets
+- set `VERCEL_ORG_ID` in GitHub Actions secrets
+
+Optional flags:
+
+- `--project <name>` to use a different Vercel project name
+- `--repo <owner/repo>` to target a different GitHub repository
+- `--scope <scope>` to target a specific Vercel team/scope
+- `--skip-org-secret` if `VERCEL_ORG_ID` is already managed elsewhere
+
+## Monthly Template Refresh
+
+1. Update external dependencies to latest stable.
+2. Run `pnpm --filter ternentdotdev test:unit`.
+3. Run `pnpm --filter ternentdotdev build`.
+4. Run `pnpm --filter ternentdotdev lighthouse:ci`.
+5. Update template changelog notes.

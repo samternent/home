@@ -209,7 +209,7 @@ export type LandingPageConfig = {
     secondaryAction?: LandingPageAction;
     tertiaryAction?: LandingPageTertiaryAction;
   };
-  footer: {
+  footer?: {
     brandLabel: string;
     brandHref?: string;
     copyright: string;
