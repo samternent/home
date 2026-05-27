@@ -18,19 +18,28 @@ const switchContext = usePixpaxSwitchContext();
 
     <div class="grid gap-3 md:grid-cols-2">
       <div class="rounded-lg border border-[var(--ui-border)] p-3">
-        <p class="text-[10px] uppercase tracking-[0.2em] text-[var(--ui-fg-muted)]">Current identity</p>
+        <p class="text-[10px] uppercase tracking-[0.2em] text-[var(--ui-fg-muted)]">
+          Current identity
+        </p>
         <div class="mt-2 flex items-center gap-3">
           <IdentityAvatar :identity="context.publicKeyPEM.value" size="sm" />
           <p class="text-sm font-semibold">
-            {{ context.currentIdentityUsername.value ? `@${context.currentIdentityUsername.value}` : "Identity" }}
+            {{
+              context.currentIdentityUsername.value
+                ? `@${context.currentIdentityUsername.value}`
+                : "Identity"
+            }}
           </p>
         </div>
       </div>
       <div class="rounded-lg border border-[var(--ui-border)] p-3">
-        <p class="text-[10px] uppercase tracking-[0.2em] text-[var(--ui-fg-muted)]">Current pixbook</p>
+        <p class="text-[10px] uppercase tracking-[0.2em] text-[var(--ui-fg-muted)]">
+          Current pixbook
+        </p>
         <p class="text-sm font-semibold">{{ context.currentPixbookLabel.value }}</p>
         <p class="text-xs text-[var(--ui-fg-muted)]">
-          One pixbook for this identity in collection <code>{{ context.currentCollectionId.value }}</code>
+          One pixbook for this identity in collection
+          <code>{{ context.currentCollectionId.value }}</code>
         </p>
       </div>
     </div>

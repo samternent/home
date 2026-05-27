@@ -18,9 +18,7 @@ type RedeemBarcodeDetector = {
   detect(source: HTMLVideoElement): Promise<RedeemBarcode[]>;
 };
 
-type RedeemBarcodeDetectorCtor = new (options?: {
-  formats?: string[];
-}) => RedeemBarcodeDetector;
+type RedeemBarcodeDetectorCtor = new (options?: { formats?: string[] }) => RedeemBarcodeDetector;
 
 const router = useRouter();
 const pixbook = usePixbookSession();
@@ -57,14 +55,16 @@ const activeCollection = computed(() => {
   }
   return null;
 });
-const highlightedCardIds = computed(() =>
-  latestClaim.value?.artifact.payload.cards.map((card) => card.cardId) || [],
+const highlightedCardIds = computed(
+  () => latestClaim.value?.artifact.payload.cards.map((card) => card.cardId) || [],
 );
 const hasClaimedBook = computed(() => Boolean(activeCollection.value));
 const redeemButtonLabel = computed(() =>
   hasClaimedBook.value ? "Redeem another card" : "Enter a redeem code",
 );
-const scanButtonLabel = computed(() => (scannerOpen.value ? "Close scanner" : "Scan a PixPax card"));
+const scanButtonLabel = computed(() =>
+  scannerOpen.value ? "Close scanner" : "Scan a PixPax card",
+);
 const redeemIntroLabel = computed(() =>
   hasClaimedBook.value ? "Add to this Pixbook" : "Start with a real card",
 );
@@ -215,8 +215,7 @@ async function openScanner() {
           return;
         }
       } catch (error) {
-        scanError.value =
-          error instanceof Error ? error.message : "Unable to scan this QR code.";
+        scanError.value = error instanceof Error ? error.message : "Unable to scan this QR code.";
       }
       scanAnimationFrame = window.requestAnimationFrame(() => {
         void tick();
@@ -303,7 +302,9 @@ onBeforeUnmount(() => {
           v-if="scannerSupported"
           :size="hasClaimedBook ? 'sm' : 'hero'"
           variant="accent"
-          :class="hasClaimedBook ? '!font-mono !uppercase !tracking-[0.16em]' : '!w-full !font-mono'"
+          :class="
+            hasClaimedBook ? '!font-mono !uppercase !tracking-[0.16em]' : '!w-full !font-mono'
+          "
           @click="scannerOpen ? closeScanner() : openScanner()"
         >
           {{ scanButtonLabel }}
@@ -311,7 +312,9 @@ onBeforeUnmount(() => {
         <Button
           :size="hasClaimedBook ? 'sm' : 'hero'"
           :variant="scannerSupported ? 'secondary' : 'accent'"
-          :class="hasClaimedBook ? '!font-mono !uppercase !tracking-[0.16em]' : '!w-full !font-mono'"
+          :class="
+            hasClaimedBook ? '!font-mono !uppercase !tracking-[0.16em]' : '!w-full !font-mono'
+          "
           @click="redeemExpanded ? redeemComposer.closeComposer() : redeemComposer.openComposer()"
         >
           {{ redeemButtonLabel }}
@@ -327,9 +330,7 @@ onBeforeUnmount(() => {
           class="aspect-square w-full rounded-[1.4rem] bg-black object-cover shadow-[0_18px_40px_rgba(0,0,0,0.28)]"
           muted
         />
-        <p class="m-0 text-xs text-[var(--ui-fg-muted)]">
-          Point the camera at a PixPax redeem QR.
-        </p>
+        <p class="m-0 text-xs text-[var(--ui-fg-muted)]">Point the camera at a PixPax redeem QR.</p>
       </div>
       <p
         v-if="scanError && !redeemExpanded"

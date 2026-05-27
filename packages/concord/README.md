@@ -10,10 +10,7 @@ Concord is replay-first:
 - state, reactivity, databases, and indexes are all projection
 
 ```ts
-import {
-  createConcordApp,
-  type ConcordReplayPlugin,
-} from "@ternent/concord";
+import { createConcordApp, type ConcordReplayPlugin } from "@ternent/concord";
 
 const todoPlugin: ConcordReplayPlugin<{
   items: Record<string, { id: string; title: string; completed: boolean }>;

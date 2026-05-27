@@ -53,12 +53,7 @@ function trim(value) {
 
 function isTruthyEnv(value) {
   const normalized = trim(value).toLowerCase();
-  return (
-    normalized === "1" ||
-    normalized === "true" ||
-    normalized === "yes" ||
-    normalized === "on"
-  );
+  return normalized === "1" || normalized === "true" || normalized === "yes" || normalized === "on";
 }
 
 function identityBackupsEnabled() {
@@ -80,7 +75,7 @@ function hashIdentityPublicKey(value) {
 
 function isUuid(value) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-    trim(value)
+    trim(value),
   );
 }
 
@@ -120,7 +115,9 @@ function validateEncryptedIdentityBackupEnvelope(body = {}) {
     throw new Error(`envelope.format must be ${IDENTITY_BACKUP_FORMAT}.`);
   }
   if (!IDENTITY_BACKUP_VERSIONS.has(metadata.version)) {
-    throw new Error(`envelope.version must be one of ${Array.from(IDENTITY_BACKUP_VERSIONS).join(", ")}.`);
+    throw new Error(
+      `envelope.version must be one of ${Array.from(IDENTITY_BACKUP_VERSIONS).join(", ")}.`,
+    );
   }
   if (!metadata.accountId || !metadata.managedUserId || !metadata.profileId) {
     throw new Error("envelope account/profile identifiers are required.");
@@ -149,9 +146,7 @@ function validateEncryptedIdentityBackupEnvelope(body = {}) {
     throw new Error(`envelope.crypto.kdf.name must be ${IDENTITY_BACKUP_KDF_NAME}.`);
   }
   if (Number(kdf.iterations) !== IDENTITY_BACKUP_KDF_ITERATIONS) {
-    throw new Error(
-      `envelope.crypto.kdf.iterations must be ${IDENTITY_BACKUP_KDF_ITERATIONS}.`
-    );
+    throw new Error(`envelope.crypto.kdf.iterations must be ${IDENTITY_BACKUP_KDF_ITERATIONS}.`);
   }
   if (!trim(kdf.saltB64)) {
     throw new Error("envelope.crypto.kdf.saltB64 is required.");
@@ -180,7 +175,9 @@ function validateEncryptedIdentityBackupEnvelope(body = {}) {
     throw new Error("envelope.crypto.aad is missing required fields.");
   }
   if (!IDENTITY_BACKUP_VERSIONS.has(aadVersion)) {
-    throw new Error(`envelope.crypto.aad.version must be one of ${Array.from(IDENTITY_BACKUP_VERSIONS).join(", ")}.`);
+    throw new Error(
+      `envelope.crypto.aad.version must be one of ${Array.from(IDENTITY_BACKUP_VERSIONS).join(", ")}.`,
+    );
   }
 
   return {
@@ -193,10 +190,7 @@ function validateEncryptedIdentityBackupEnvelope(body = {}) {
 
 function resolveBookId(req) {
   return String(
-    req?.headers?.["x-book-id"] ||
-      req?.query?.bookId ||
-      req?.body?.bookId ||
-      ""
+    req?.headers?.["x-book-id"] || req?.query?.bookId || req?.body?.bookId || "",
   ).trim();
 }
 
@@ -206,29 +200,26 @@ function resolveCollectionId(req) {
       req?.headers?.["x-pixbook-collection-id"] ||
         req?.query?.collectionId ||
         req?.body?.collectionId ||
-        ""
+        "",
     ).trim() || DEFAULT_COLLECTION_ID
   );
 }
 
 function resolveProfileBinding(req) {
   const profileId = String(
-    req?.headers?.["x-pixbook-profile-id"] ||
-      req?.query?.profileId ||
-      req?.body?.profileId ||
-      ""
+    req?.headers?.["x-pixbook-profile-id"] || req?.query?.profileId || req?.body?.profileId || "",
   ).trim();
   const identityPublicKey = String(
     req?.headers?.["x-pixbook-identity-key"] ||
       req?.query?.identityPublicKey ||
       req?.body?.identityPublicKey ||
-      ""
+      "",
   ).trim();
   const profileDisplayName = String(
     req?.headers?.["x-pixbook-profile-name"] ||
       req?.query?.profileDisplayName ||
       req?.body?.profileDisplayName ||
-      ""
+      "",
   ).trim();
   return {
     profileId,
@@ -244,9 +235,7 @@ async function resolveManagedUserForAccount(req, managedUserId) {
   const data = await listManagedUsers(userId, accountId);
   if (!data) return null;
   const targetManagedUserId = trim(managedUserId);
-  const managedUser = (data.users || []).find(
-    (entry) => trim(entry.id) === targetManagedUserId
-  );
+  const managedUser = (data.users || []).find((entry) => trim(entry.id) === targetManagedUserId);
   if (!managedUser) {
     return {
       accountId: trim(data.workspace?.id || data.workspace?.workspaceId || ""),
@@ -312,7 +301,7 @@ export default function accountRoutes(router) {
         return;
       }
       res.status(200).send({ ok: true, workspace });
-    }
+    },
   );
 
   router.patch(
@@ -323,7 +312,7 @@ export default function accountRoutes(router) {
         const workspace = await renameWorkspace(
           sessionUserId(req),
           resolveAccountId(req),
-          req.body?.name
+          req.body?.name,
         );
         if (!workspace) {
           res.status(404).send({ ok: false, error: "Workspace not found." });
@@ -333,39 +322,53 @@ export default function accountRoutes(router) {
       } catch (error) {
         res.status(400).send({ ok: false, error: error?.message || "Unable to update workspace." });
       }
-    }
+    },
   );
 
-  router.get("/v1/account/users", requirePermission("platform.account.manage"), async (req, res) => {
-    const data = await listManagedUsers(sessionUserId(req), resolveAccountId(req));
-    if (!data) {
-      res.status(404).send({ ok: false, error: "Workspace not found." });
-      return;
-    }
-    res.status(200).send({
-      ok: true,
-      accountId: data.workspace.id,
-      workspaceId: data.workspace.id,
-      users: data.users,
-    });
-  });
-
-  router.post("/v1/account/users", requirePermission("platform.account.manage"), async (req, res) => {
-    try {
-      const created = await createManagedUser(sessionUserId(req), resolveAccountId(req), req.body);
-      if (!created) {
+  router.get(
+    "/v1/account/users",
+    requirePermission("platform.account.manage"),
+    async (req, res) => {
+      const data = await listManagedUsers(sessionUserId(req), resolveAccountId(req));
+      if (!data) {
         res.status(404).send({ ok: false, error: "Workspace not found." });
         return;
       }
-      res.status(201).send({
+      res.status(200).send({
         ok: true,
-        id: created.id,
-        user: created,
+        accountId: data.workspace.id,
+        workspaceId: data.workspace.id,
+        users: data.users,
       });
-    } catch (error) {
-      res.status(400).send({ ok: false, error: error?.message || "Unable to create managed user." });
-    }
-  });
+    },
+  );
+
+  router.post(
+    "/v1/account/users",
+    requirePermission("platform.account.manage"),
+    async (req, res) => {
+      try {
+        const created = await createManagedUser(
+          sessionUserId(req),
+          resolveAccountId(req),
+          req.body,
+        );
+        if (!created) {
+          res.status(404).send({ ok: false, error: "Workspace not found." });
+          return;
+        }
+        res.status(201).send({
+          ok: true,
+          id: created.id,
+          user: created,
+        });
+      } catch (error) {
+        res
+          .status(400)
+          .send({ ok: false, error: error?.message || "Unable to create managed user." });
+      }
+    },
+  );
 
   router.patch(
     "/v1/account/users/:userId",
@@ -376,7 +379,7 @@ export default function accountRoutes(router) {
           sessionUserId(req),
           resolveAccountId(req),
           req.params?.userId,
-          req.body
+          req.body,
         );
         if (!updated) {
           res.status(404).send({ ok: false, error: "Managed user not found." });
@@ -384,9 +387,11 @@ export default function accountRoutes(router) {
         }
         res.status(200).send({ ok: true, id: updated.id });
       } catch (error) {
-        res.status(400).send({ ok: false, error: error?.message || "Unable to update managed user." });
+        res
+          .status(400)
+          .send({ ok: false, error: error?.message || "Unable to update managed user." });
       }
-    }
+    },
   );
 
   router.delete(
@@ -397,7 +402,7 @@ export default function accountRoutes(router) {
         const removed = await removeManagedUserIdentity(
           sessionUserId(req),
           resolveAccountId(req),
-          req.params?.userId
+          req.params?.userId,
         );
         if (!removed) {
           res.status(404).send({ ok: false, error: "Managed user not found." });
@@ -415,7 +420,7 @@ export default function accountRoutes(router) {
           error: error?.message || "Unable to remove managed identity.",
         });
       }
-    }
+    },
   );
 
   router.get(
@@ -433,7 +438,7 @@ export default function accountRoutes(router) {
         workspaceId: data.workspace.id,
         identities: data.users,
       });
-    }
+    },
   );
 
   router.post(
@@ -441,7 +446,11 @@ export default function accountRoutes(router) {
     requirePermission("platform.account.manage"),
     async (req, res) => {
       try {
-        const created = await createManagedUser(sessionUserId(req), resolveAccountId(req), req.body);
+        const created = await createManagedUser(
+          sessionUserId(req),
+          resolveAccountId(req),
+          req.body,
+        );
         if (!created) {
           res.status(404).send({ ok: false, error: "Workspace not found." });
           return;
@@ -454,7 +463,7 @@ export default function accountRoutes(router) {
       } catch (error) {
         res.status(400).send({ ok: false, error: error?.message || "Unable to create identity." });
       }
-    }
+    },
   );
 
   router.patch(
@@ -466,7 +475,7 @@ export default function accountRoutes(router) {
           sessionUserId(req),
           resolveAccountId(req),
           req.params?.identityId,
-          req.body
+          req.body,
         );
         if (!updated) {
           res.status(404).send({ ok: false, error: "Identity not found." });
@@ -476,7 +485,7 @@ export default function accountRoutes(router) {
       } catch (error) {
         res.status(400).send({ ok: false, error: error?.message || "Unable to update identity." });
       }
-    }
+    },
   );
 
   router.post(
@@ -508,10 +517,7 @@ export default function accountRoutes(router) {
           return;
         }
 
-        const envelopeBytes = Buffer.byteLength(
-          JSON.stringify(parsed.envelope),
-          "utf8"
-        );
+        const envelopeBytes = Buffer.byteLength(JSON.stringify(parsed.envelope), "utf8");
         if (envelopeBytes > IDENTITY_BACKUP_MAX_ENVELOPE_BYTES) {
           res.status(400).send({
             ok: false,
@@ -543,8 +549,7 @@ export default function accountRoutes(router) {
           res.status(400).send({
             ok: false,
             code: "IDENTITY_BACKUP_MANAGED_USER_MISMATCH",
-            error:
-              "Backup envelope managedUserId does not match the requested identity.",
+            error: "Backup envelope managedUserId does not match the requested identity.",
           });
           return;
         }
@@ -610,7 +615,7 @@ export default function accountRoutes(router) {
           error: error?.message || "Unable to store encrypted identity backup.",
         });
       }
-    }
+    },
   );
 
   router.get(
@@ -650,16 +655,13 @@ export default function accountRoutes(router) {
         return;
       }
 
-      const backups = await identityBackupRepo.listByManagedUser(
-        resolved.accountId,
-        managedUserId
-      );
+      const backups = await identityBackupRepo.listByManagedUser(resolved.accountId, managedUserId);
       res.status(200).send({
         ok: true,
         managedUserId,
         backups,
       });
-    }
+    },
   );
 
   router.get(
@@ -701,7 +703,7 @@ export default function accountRoutes(router) {
 
       const latest = await identityBackupRepo.getLatestByManagedUser(
         resolved.accountId,
-        managedUserId
+        managedUserId,
       );
       if (!latest) {
         res.status(404).send({
@@ -717,7 +719,7 @@ export default function accountRoutes(router) {
         managedUserId,
         backup: latest,
       });
-    }
+    },
   );
 
   router.delete(
@@ -725,10 +727,7 @@ export default function accountRoutes(router) {
     requirePermission("platform.account.manage"),
     async (req, res) => {
       try {
-        const removed = await resetManagedIdentityData(
-          sessionUserId(req),
-          resolveAccountId(req)
-        );
+        const removed = await resetManagedIdentityData(sessionUserId(req), resolveAccountId(req));
         if (!removed) {
           res.status(404).send({ ok: false, error: "Workspace not found." });
           return;
@@ -745,7 +744,7 @@ export default function accountRoutes(router) {
           error: error?.message || "Unable to reset account identities.",
         });
       }
-    }
+    },
   );
 
   router.delete(
@@ -756,7 +755,7 @@ export default function accountRoutes(router) {
         const removed = await removeManagedUserIdentity(
           sessionUserId(req),
           resolveAccountId(req),
-          req.params?.identityId
+          req.params?.identityId,
         );
         if (!removed) {
           res.status(404).send({ ok: false, error: "Identity not found." });
@@ -774,38 +773,46 @@ export default function accountRoutes(router) {
           error: error?.message || "Unable to remove identity.",
         });
       }
-    }
+    },
   );
 
-  router.get("/v1/account/books", requirePermission("platform.account.manage"), async (req, res) => {
-    const data = await listBooks(sessionUserId(req), resolveAccountId(req));
-    if (!data) {
-      res.status(404).send({ ok: false, error: "Workspace not found." });
-      return;
-    }
-    res.status(200).send({
-      ok: true,
-      accountId: data.workspace.id,
-      workspaceId: data.workspace.id,
-      books: data.books,
-    });
-  });
-
-  router.post("/v1/account/books", requirePermission("platform.account.manage"), async (req, res) => {
-    try {
-      const created = await createBook(sessionUserId(req), resolveAccountId(req), req.body);
-      if (!created) {
+  router.get(
+    "/v1/account/books",
+    requirePermission("platform.account.manage"),
+    async (req, res) => {
+      const data = await listBooks(sessionUserId(req), resolveAccountId(req));
+      if (!data) {
         res.status(404).send({ ok: false, error: "Workspace not found." });
         return;
       }
-      res.status(201).send({
+      res.status(200).send({
         ok: true,
-        id: created.id,
+        accountId: data.workspace.id,
+        workspaceId: data.workspace.id,
+        books: data.books,
       });
-    } catch (error) {
-      res.status(400).send({ ok: false, error: error?.message || "Unable to create book." });
-    }
-  });
+    },
+  );
+
+  router.post(
+    "/v1/account/books",
+    requirePermission("platform.account.manage"),
+    async (req, res) => {
+      try {
+        const created = await createBook(sessionUserId(req), resolveAccountId(req), req.body);
+        if (!created) {
+          res.status(404).send({ ok: false, error: "Workspace not found." });
+          return;
+        }
+        res.status(201).send({
+          ok: true,
+          id: created.id,
+        });
+      } catch (error) {
+        res.status(400).send({ ok: false, error: error?.message || "Unable to create book." });
+      }
+    },
+  );
 
   router.patch(
     "/v1/account/books/:bookId",
@@ -816,7 +823,7 @@ export default function accountRoutes(router) {
           sessionUserId(req),
           resolveAccountId(req),
           req.params?.bookId,
-          req.body
+          req.body,
         );
         if (!updated) {
           res.status(404).send({ ok: false, error: "Book not found." });
@@ -826,7 +833,7 @@ export default function accountRoutes(router) {
       } catch (error) {
         res.status(400).send({ ok: false, error: error?.message || "Unable to update book." });
       }
-    }
+    },
   );
 
   router.delete(
@@ -837,7 +844,7 @@ export default function accountRoutes(router) {
         const removed = await removeBook(
           sessionUserId(req),
           resolveAccountId(req),
-          req.params?.bookId
+          req.params?.bookId,
         );
         if (!removed) {
           res.status(404).send({ ok: false, error: "Book not found." });
@@ -855,7 +862,7 @@ export default function accountRoutes(router) {
           error: error?.message || "Unable to remove book.",
         });
       }
-    }
+    },
   );
 
   router.get(
@@ -873,7 +880,7 @@ export default function accountRoutes(router) {
         workspaceId: data.workspace.id,
         pixbooks: data.books,
       });
-    }
+    },
   );
 
   router.post(
@@ -893,7 +900,7 @@ export default function accountRoutes(router) {
       } catch (error) {
         res.status(400).send({ ok: false, error: error?.message || "Unable to create pixbook." });
       }
-    }
+    },
   );
 
   router.patch(
@@ -905,7 +912,7 @@ export default function accountRoutes(router) {
           sessionUserId(req),
           resolveAccountId(req),
           req.params?.pixbookId,
-          req.body
+          req.body,
         );
         if (!updated) {
           res.status(404).send({ ok: false, error: "Pixbook not found." });
@@ -915,7 +922,7 @@ export default function accountRoutes(router) {
       } catch (error) {
         res.status(400).send({ ok: false, error: error?.message || "Unable to update pixbook." });
       }
-    }
+    },
   );
 
   router.delete(
@@ -926,7 +933,7 @@ export default function accountRoutes(router) {
         const removed = await removeBook(
           sessionUserId(req),
           resolveAccountId(req),
-          req.params?.pixbookId
+          req.params?.pixbookId,
         );
         if (!removed) {
           res.status(404).send({ ok: false, error: "Pixbook not found." });
@@ -944,7 +951,7 @@ export default function accountRoutes(router) {
           error: error?.message || "Unable to remove pixbook.",
         });
       }
-    }
+    },
   );
 
   router.get("/v1/account/pixbook", requireSession, async (req, res) => {
@@ -987,24 +994,20 @@ export default function accountRoutes(router) {
             {
               collectionId: requestedCollectionId,
               createIfMissing: false,
-            }
+            },
           );
 
       if (!resolved) {
         res.status(404).send({
           ok: false,
-          error:
-            "No account pixbook exists for this identity. Save identity to account first.",
+          error: "No account pixbook exists for this identity. Save identity to account first.",
           code: "PIXBOOK_NOT_SAVED_TO_ACCOUNT",
         });
         return;
       }
 
       if (profileBinding.isBound) {
-        const expectedUserKey = derivePersonalPixbookUserKey(
-          sessionUserId(req),
-          profileBinding
-        );
+        const expectedUserKey = derivePersonalPixbookUserKey(sessionUserId(req), profileBinding);
         const matchesIdentityBinding =
           String(resolved.managedUser.profileId || "") === profileBinding.profileId &&
           String(resolved.managedUser.identityKeyFingerprint || "") ===
@@ -1079,17 +1082,14 @@ export default function accountRoutes(router) {
       const byBookId = await getBookForWorkspace(
         sessionUserId(req),
         resolveAccountId(req),
-        requestedBookId
+        requestedBookId,
       );
       if (!byBookId) {
         res.status(404).send({ ok: false, error: "Book not found." });
         return;
       }
 
-      const expectedUserKey = derivePersonalPixbookUserKey(
-        sessionUserId(req),
-        profileBinding
-      );
+      const expectedUserKey = derivePersonalPixbookUserKey(sessionUserId(req), profileBinding);
       const matchesIdentityBinding =
         String(byBookId.managedUser.profileId || "") === profileBinding.profileId &&
         String(byBookId.managedUser.identityKeyFingerprint || "") ===
@@ -1098,8 +1098,7 @@ export default function accountRoutes(router) {
         res.status(409).send({
           ok: false,
           code: "PIXBOOK_BOOK_PROFILE_MISMATCH",
-          error:
-            "Selected book belongs to a different profile identity. Load that profile first.",
+          error: "Selected book belongs to a different profile identity. Load that profile first.",
         });
         return;
       }
@@ -1114,34 +1113,33 @@ export default function accountRoutes(router) {
       }
       resolved = byBookId;
     } else {
-        resolved = await ensurePersonalPixbook(
-          sessionUserId(req),
-          resolveAccountId(req),
-          {
-            displayName:
+      resolved = await ensurePersonalPixbook(
+        sessionUserId(req),
+        resolveAccountId(req),
+        {
+          displayName:
             profileBinding.profileDisplayName ||
             req.platformSession?.user?.name ||
             req.platformSession?.user?.email ||
             "My Pixbook",
-            email: req.platformSession?.user?.email || "",
-          },
-          profileBinding,
-          {
-            collectionId: requestedCollectionId,
-            createIfMissing: false,
-          }
-        );
-      }
+          email: req.platformSession?.user?.email || "",
+        },
+        profileBinding,
+        {
+          collectionId: requestedCollectionId,
+          createIfMissing: false,
+        },
+      );
+    }
 
-      if (!resolved) {
-        res.status(404).send({
-          ok: false,
-          error:
-            "No account pixbook exists for this identity. Save identity to account first.",
-          code: "PIXBOOK_NOT_SAVED_TO_ACCOUNT",
-        });
-        return;
-      }
+    if (!resolved) {
+      res.status(404).send({
+        ok: false,
+        error: "No account pixbook exists for this identity. Save identity to account first.",
+        code: "PIXBOOK_NOT_SAVED_TO_ACCOUNT",
+      });
+      return;
+    }
 
     try {
       const saved = await saveLegacyPixbookSnapshot({
@@ -1200,11 +1198,7 @@ export default function accountRoutes(router) {
         });
         return;
       }
-      if (
-        String(error?.message || "").includes(
-          "Pixbook receipt storage is not configured"
-        )
-      ) {
+      if (String(error?.message || "").includes("Pixbook receipt storage is not configured")) {
         res.status(503).send({
           ok: false,
           error: error.message,

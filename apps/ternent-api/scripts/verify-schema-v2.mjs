@@ -157,7 +157,7 @@ async function checkSampleReads(report, sampleSize) {
      FROM accounts
      ORDER BY created_at ASC
      LIMIT $1`,
-    [sampleSize]
+    [sampleSize],
   );
 
   const sample = [];
@@ -168,7 +168,7 @@ async function checkSampleReads(report, sampleSize) {
        WHERE account_id = $1
        ORDER BY created_at ASC
        LIMIT 20`,
-      [account.id]
+      [account.id],
     );
 
     const identityIds = identities.map((row) => String(row.id || "")).filter(Boolean);
@@ -180,7 +180,7 @@ async function checkSampleReads(report, sampleSize) {
              AND identity_id = ANY($2::text[])
            ORDER BY created_at ASC
            LIMIT 50`,
-          [account.id, identityIds]
+          [account.id, identityIds],
         )
       : [];
 
@@ -213,7 +213,7 @@ async function checkSampleReads(report, sampleSize) {
      WHERE COALESCE(old_books.collections, ARRAY[]::text[]) != COALESCE(new_books.collections, ARRAY[]::text[])
      ORDER BY old_i.created_at ASC
      LIMIT $1`,
-    [sampleSize * 5]
+    [sampleSize * 5],
   );
 
   pushCheck(report, {
@@ -235,16 +235,16 @@ async function checkSampleReads(report, sampleSize) {
 
 async function checkReconcile(report) {
   const oldDeletedIdentities = await scalar(
-    `SELECT COUNT(*)::bigint AS count FROM platform_managed_users WHERE status = 'deleted'`
+    `SELECT COUNT(*)::bigint AS count FROM platform_managed_users WHERE status = 'deleted'`,
   );
   const newDeletedIdentities = await scalar(
-    `SELECT COUNT(*)::bigint AS count FROM identities WHERE status = 'deleted'`
+    `SELECT COUNT(*)::bigint AS count FROM identities WHERE status = 'deleted'`,
   );
   const oldDeletedBooks = await scalar(
-    `SELECT COUNT(*)::bigint AS count FROM platform_books WHERE status = 'deleted'`
+    `SELECT COUNT(*)::bigint AS count FROM platform_books WHERE status = 'deleted'`,
   );
   const newDeletedBooks = await scalar(
-    `SELECT COUNT(*)::bigint AS count FROM pixbooks WHERE status = 'deleted'`
+    `SELECT COUNT(*)::bigint AS count FROM pixbooks WHERE status = 'deleted'`,
   );
 
   const forcedDeletedForFingerprintUniqueness = await scalar(
@@ -256,7 +256,7 @@ async function checkReconcile(report) {
          AND status != 'deleted'
        GROUP BY workspace_id, identity_key_fingerprint
        HAVING COUNT(*) > 1
-     ) g`
+     ) g`,
   );
   const expectedDeletedIdentities = oldDeletedIdentities + forcedDeletedForFingerprintUniqueness;
 

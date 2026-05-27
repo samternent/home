@@ -61,7 +61,9 @@ async function main() {
   }
 
   const session = await requestJson(args.api, "/v1/account/session", args.cookie);
-  const accountId = String(session?.workspace?.accountId || session?.workspace?.workspaceId || "").trim();
+  const accountId = String(
+    session?.workspace?.accountId || session?.workspace?.workspaceId || "",
+  ).trim();
   if (!accountId) {
     throw new Error("Unable to resolve accountId from /v1/account/session response.");
   }
@@ -69,13 +71,13 @@ async function main() {
   const users = await requestJson(
     args.api,
     `/v1/account/users?accountId=${encodeURIComponent(accountId)}`,
-    args.cookie
+    args.cookie,
   );
 
   const books = await requestJson(
     args.api,
     `/v1/account/books?accountId=${encodeURIComponent(accountId)}`,
-    args.cookie
+    args.cookie,
   );
 
   let pixbook = null;
@@ -99,8 +101,8 @@ async function main() {
         pixbookResolved: Boolean(pixbook?.book?.id),
       },
       null,
-      2
-    )
+      2,
+    ),
   );
 }
 
@@ -113,8 +115,8 @@ main().catch((error) => {
         details: error?.body || null,
       },
       null,
-      2
-    )
+      2,
+    ),
   );
   process.exitCode = 1;
 });

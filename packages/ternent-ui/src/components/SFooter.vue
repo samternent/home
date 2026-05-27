@@ -13,17 +13,19 @@ defineProps({
 
 const variantClasses = {
   default: "py-8 px-6",
-  minimal: "py-4 px-6", 
+  minimal: "py-4 px-6",
   compact: "py-3 px-4",
 };
 </script>
 <template>
-  <footer 
+  <footer
     class="w-full bg-base-200/30 border-t border-base-200/60 mt-auto"
     :class="variantClasses[variant]"
   >
     <div class="container-modern">
-      <div class="flex flex-col space-y-4 md:flex-row md:space-y-0 md:items-center md:justify-between">
+      <div
+        class="flex flex-col space-y-4 md:flex-row md:space-y-0 md:items-center md:justify-between"
+      >
         <!-- Top/Left content -->
         <div class="flex flex-col items-center md:items-start">
           <slot name="top" />
@@ -41,9 +43,9 @@ const variantClasses = {
             >
               {{ link.title }}
             </a>
-            <RouterLink 
-              v-else 
-              :to="link.to" 
+            <RouterLink
+              v-else
+              :to="link.to"
               class="text-sm text-base-content/70 hover:text-base-content transition-colors duration-200 hover:underline"
             >
               {{ link.title }}

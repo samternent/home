@@ -31,7 +31,7 @@ describe("RouteSuiteLanding", () => {
         stubs: {
           RouterLink: {
             props: ["to"],
-            template: "<a :href=\"to\"><slot /></a>",
+            template: '<a :href="to"><slot /></a>',
           },
           LandingPage: {
             props: ["config", "appTitle"],
@@ -51,7 +51,7 @@ describe("RouteSuiteLanding", () => {
         stubs: {
           RouterLink: {
             props: ["to"],
-            template: "<a :href=\"to\"><slot /></a>",
+            template: '<a :href="to"><slot /></a>',
           },
           LandingPage: {
             props: ["config", "appTitle"],

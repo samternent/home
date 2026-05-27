@@ -1,9 +1,5 @@
 import type { PropType } from "vue";
-import type {
-  FileInputSize,
-  FileInputValue,
-  FileInputVariant,
-} from "./FileInput.types";
+import type { FileInputSize, FileInputValue, FileInputVariant } from "./FileInput.types";
 
 export const fileInputProps = {
   modelValue: {

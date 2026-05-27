@@ -1,8 +1,5 @@
 declare module "@ternent/pixpax-issuer" {
-  import type {
-    PixpaxPackIssuance,
-    PixpaxSignedArtifact,
-  } from "@ternent/pixpax-core";
+  import type { PixpaxPackIssuance, PixpaxSignedArtifact } from "@ternent/pixpax-core";
 
   export function verifyPackIssuanceProof(input: {
     artifact: PixpaxSignedArtifact<PixpaxPackIssuance>;

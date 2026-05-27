@@ -40,10 +40,7 @@ export function useStickerbook() {
   const bridge = useBridge();
   const identity = useIdentity();
   const pixbookReadOnly = useLocalStorage("pixpax/pixbook/readOnly", false);
-  const viewedPixbookProfileJson = useLocalStorage(
-    "pixpax/pixbook/viewProfileJson",
-    ""
-  );
+  const viewedPixbookProfileJson = useLocalStorage("pixpax/pixbook/viewProfileJson", "");
   const viewedPixbookProfile = computed<PublicProfile | null>(() => {
     if (!viewedPixbookProfileJson.value) return null;
     try {
@@ -79,7 +76,7 @@ export function useStickerbook() {
         timestamp: entry.timestamp,
         data: entry.payload || entry.data || {},
       }))
-      .sort((a, b) => String(a.timestamp || "").localeCompare(String(b.timestamp || "")))
+      .sort((a, b) => String(a.timestamp || "").localeCompare(String(b.timestamp || ""))),
   );
 
   const transfers = computed(() =>
@@ -90,7 +87,7 @@ export function useStickerbook() {
         timestamp: entry.timestamp,
         data: entry.payload || entry.data || {},
       }))
-      .sort((a, b) => String(a.timestamp || "").localeCompare(String(b.timestamp || "")))
+      .sort((a, b) => String(a.timestamp || "").localeCompare(String(b.timestamp || ""))),
   );
 
   async function recordPackReceived(payload: PackReceivedPayload) {
@@ -160,7 +157,7 @@ export function useStickerbook() {
       let migrated = 0;
       for (const [stickerId, list] of bySticker.entries()) {
         const ordered = list.sort((a, b) =>
-          String(a.timestamp || "").localeCompare(String(b.timestamp || ""))
+          String(a.timestamp || "").localeCompare(String(b.timestamp || "")),
         );
         let prevHash: string | null = null;
         for (const entry of ordered) {
@@ -186,30 +183,20 @@ export function useStickerbook() {
 }
 
 export function getPeriodId(date: Date) {
-  const pixpaxSeconds = parseInt(
-    import.meta.env.VITE_PIXPAX_PERIOD_SECONDS || "",
-    10
-  );
-  const seconds = parseInt(
-    import.meta.env.VITE_STICKERBOOK_PERIOD_SECONDS || "",
-    10
-  );
+  const pixpaxSeconds = parseInt(import.meta.env.VITE_PIXPAX_PERIOD_SECONDS || "", 10);
+  const seconds = parseInt(import.meta.env.VITE_STICKERBOOK_PERIOD_SECONDS || "", 10);
 
   const effectiveSeconds =
-    Number.isFinite(pixpaxSeconds) && pixpaxSeconds > 0
-      ? pixpaxSeconds
-      : seconds;
+    Number.isFinite(pixpaxSeconds) && pixpaxSeconds > 0 ? pixpaxSeconds : seconds;
 
   if (Number.isFinite(effectiveSeconds) && effectiveSeconds > 0) {
     const bucket = Math.floor(date.getTime() / (effectiveSeconds * 1000));
     return `dev-${bucket}`;
   }
 
-  const isoDate = new Date(
-    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())
-  );
+  const isoDate = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
   isoDate.setUTCDate(isoDate.getUTCDate() + 4 - (isoDate.getUTCDay() || 7));
   const yearStart = new Date(Date.UTC(isoDate.getUTCFullYear(), 0, 1));
-  const week = Math.ceil((((isoDate.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+  const week = Math.ceil(((isoDate.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
   return `${isoDate.getUTCFullYear()}-W${String(week).padStart(2, "0")}`;
 }

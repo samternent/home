@@ -2,8 +2,7 @@
 import IdentityAvatar from "../../module/identity/IdentityAvatar.vue";
 import { useEncryption } from "../../module/encryption/useEncryption";
 
-const { publicKey: encryptionPublicKey, privateKey: encryptionPrivateKey } =
-  useEncryption();
+const { publicKey: encryptionPublicKey, privateKey: encryptionPrivateKey } = useEncryption();
 </script>
 <template>
   <div class="flex flex-col items-center justify-center">

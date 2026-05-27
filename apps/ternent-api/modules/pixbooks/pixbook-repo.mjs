@@ -1,6 +1,4 @@
-import {
-  asAccountAliasPayload,
-} from "../../services/account/account-schema-flags.mjs";
+import { asAccountAliasPayload } from "../../services/account/account-schema-flags.mjs";
 import {
   createBook,
   ensurePersonalPixbook,
@@ -52,26 +50,13 @@ export function createPixbookRepo() {
         return getBookForWorkspace(trim(userId), trim(accountId), trim(bookId));
       }
 
-      return ensurePersonalPixbook(
-        trim(userId),
-        trim(accountId),
-        profileDefaults,
-        profileBinding,
-        {
-          collectionId: normalizeCollectionId(collectionId),
-          createIfMissing: Boolean(createIfMissing),
-        }
-      );
+      return ensurePersonalPixbook(trim(userId), trim(accountId), profileDefaults, profileBinding, {
+        collectionId: normalizeCollectionId(collectionId),
+        createIfMissing: Boolean(createIfMissing),
+      });
     },
 
-    async createBookForManagedUser({
-      id,
-      userId,
-      accountId,
-      managedUserId,
-      name,
-      collectionId,
-    }) {
+    async createBookForManagedUser({ id, userId, accountId, managedUserId, name, collectionId }) {
       const created = await createBook(trim(userId), trim(accountId), {
         id: trim(id) || undefined,
         managedUserId: trim(managedUserId),

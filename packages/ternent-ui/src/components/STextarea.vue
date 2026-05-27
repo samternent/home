@@ -15,7 +15,7 @@ const props = withDefaults(
     rows: 6,
     minHeight: "12rem",
     monospace: false,
-  }
+  },
 );
 
 const model = defineModel<string>({
@@ -47,7 +47,8 @@ const model = defineModel<string>({
   font-size: 0.93rem;
   line-height: 1.45;
   resize: vertical;
-  transition: border-color var(--ui-duration-fast, 120ms) var(--ui-ease-out, ease-out),
+  transition:
+    border-color var(--ui-duration-fast, 120ms) var(--ui-ease-out, ease-out),
     box-shadow var(--ui-duration-fast, 120ms) var(--ui-ease-out, ease-out),
     background-color var(--ui-duration-fast, 120ms) var(--ui-ease-out, ease-out);
 }
@@ -72,7 +73,9 @@ const model = defineModel<string>({
 }
 
 .s-textarea--mono {
-  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-family:
+    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    monospace;
   font-size: 0.78rem;
   line-height: 1.55;
 }

@@ -14,10 +14,7 @@ const frontmatter = computed(() => (route.meta.frontmatter as any) ?? {});
     <article v-if="docComponent">
       <header>
         <h1 style="margin: 0">{{ frontmatter.title ?? "" }}</h1>
-        <p
-          v-if="frontmatter.description"
-          style="margin: 8px 0 0; opacity: 0.75"
-        >
+        <p v-if="frontmatter.description" style="margin: 8px 0 0; opacity: 0.75">
           {{ frontmatter.description }}
         </p>
       </header>

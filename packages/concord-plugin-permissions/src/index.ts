@@ -1,9 +1,5 @@
 export { replayPermissions, PermissionRegistryError } from "./replay";
-export {
-  getEffectiveCaps,
-  can,
-  isAuthorizedGroupChange,
-} from "./auth";
+export { getEffectiveCaps, can, isAuthorizedGroupChange } from "./auth";
 export {
   createEmptyState,
   type PermissionState,

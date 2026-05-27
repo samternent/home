@@ -81,7 +81,7 @@ async function requestJson<T>(path: string, options: RequestOptions = {}) {
       `${response.status} ${response.statusText}: ${text || "request failed"}`,
       response.status,
       parsed,
-      response.headers
+      response.headers,
     );
   }
 
@@ -123,7 +123,7 @@ type EnvelopeRequestResult<T> = {
 
 async function requestEnvelope<T>(
   path: string,
-  options: RequestOptions = {}
+  options: RequestOptions = {},
 ): Promise<EnvelopeRequestResult<T>> {
   const { response, text, parsed } = await requestRaw(path, options);
   if (!response.ok) {
@@ -131,7 +131,7 @@ async function requestEnvelope<T>(
       `${response.status} ${response.statusText}: ${text || "request failed"}`,
       response.status,
       parsed,
-      response.headers
+      response.headers,
     );
   }
 
@@ -141,7 +141,7 @@ async function requestEnvelope<T>(
       `${response.status} ${response.statusText}: invalid API envelope`,
       response.status,
       parsed,
-      response.headers
+      response.headers,
     );
   }
 
@@ -228,7 +228,7 @@ export function getPlatformAuthSession() {
       throw new PixPaxApiError(
         result.error.message || "Platform auth session request failed.",
         Number(result.error.status || 500),
-        result.error
+        result.error,
       );
     }
 
@@ -370,7 +370,7 @@ function withWorkspaceQuery(path: string, workspaceId?: string) {
 function withWorkspaceAndManagedUserQuery(
   path: string,
   managedUserId: string,
-  workspaceId?: string
+  workspaceId?: string,
 ) {
   const query = new URLSearchParams();
   if (workspaceId) query.set("workspaceId", workspaceId);
@@ -388,7 +388,7 @@ export function createIdentityBackup(
     backupNonce: string;
     envelope: EncryptedIdentityBackupEnvelopeV1;
   },
-  workspaceId?: string
+  workspaceId?: string,
 ) {
   return requestJson<CreateIdentityBackupResponse>(
     withWorkspaceQuery("/v1/account/identity-backups", workspaceId),
@@ -399,17 +399,13 @@ export function createIdentityBackup(
         backupNonce: String(input.backupNonce || "").trim(),
         envelope: input.envelope,
       },
-    }
+    },
   );
 }
 
 export function listIdentityBackups(managedUserId: string, workspaceId?: string) {
   return requestJson<ListIdentityBackupsResponse>(
-    withWorkspaceAndManagedUserQuery(
-      "/v1/account/identity-backups",
-      managedUserId,
-      workspaceId
-    )
+    withWorkspaceAndManagedUserQuery("/v1/account/identity-backups", managedUserId, workspaceId),
   );
 }
 
@@ -418,8 +414,8 @@ export function getLatestIdentityBackup(managedUserId: string, workspaceId?: str
     withWorkspaceAndManagedUserQuery(
       "/v1/account/identity-backups/latest",
       managedUserId,
-      workspaceId
-    )
+      workspaceId,
+    ),
   );
 }
 
@@ -431,14 +427,14 @@ export function createAccountManagedUser(
     userKey?: string;
     avatarPublicId?: string;
   },
-  workspaceId?: string
+  workspaceId?: string,
 ) {
   return requestJson<{ ok: boolean; id: string; user?: AccountManagedUser }>(
     withWorkspaceQuery("/v1/account/users", workspaceId),
     {
       method: "POST",
       body: input,
-    }
+    },
   );
 }
 
@@ -451,14 +447,14 @@ export function updateAccountManagedUser(
     profileId?: string;
     identityPublicKey?: string;
   },
-  workspaceId?: string
+  workspaceId?: string,
 ) {
   return requestJson<{ ok: boolean; id: string }>(
     withWorkspaceQuery(`/v1/account/users/${encodeURIComponent(userId)}`, workspaceId),
     {
       method: "PATCH",
       body: input,
-    }
+    },
   );
 }
 
@@ -468,37 +464,37 @@ export function listAccountBooks(workspaceId?: string) {
 
 export function createAccountBook(
   input: { managedUserId: string; name: string; collectionId?: string },
-  workspaceId?: string
+  workspaceId?: string,
 ) {
-  return requestJson<{ ok: boolean; id: string }>(withWorkspaceQuery("/v1/account/books", workspaceId), {
-    method: "POST",
-    body: input,
-  });
+  return requestJson<{ ok: boolean; id: string }>(
+    withWorkspaceQuery("/v1/account/books", workspaceId),
+    {
+      method: "POST",
+      body: input,
+    },
+  );
 }
 
 export function updateAccountBook(
   bookId: string,
   input: { name?: string; status?: string },
-  workspaceId?: string
+  workspaceId?: string,
 ) {
   return requestJson<{ ok: boolean; id: string }>(
     withWorkspaceQuery(`/v1/account/books/${encodeURIComponent(bookId)}`, workspaceId),
     {
       method: "PATCH",
       body: input,
-    }
+    },
   );
 }
 
 export function removeAccountManagedIdentity(userId: string, workspaceId?: string) {
   return requestJson<{ ok: boolean; id: string; removedBookIds: string[] }>(
-    withWorkspaceQuery(
-      `/v1/account/users/${encodeURIComponent(userId)}/identity`,
-      workspaceId
-    ),
+    withWorkspaceQuery(`/v1/account/users/${encodeURIComponent(userId)}/identity`, workspaceId),
     {
       method: "DELETE",
-    }
+    },
   );
 }
 
@@ -507,17 +503,19 @@ export function resetAccountManagedIdentities(workspaceId?: string) {
     withWorkspaceQuery("/v1/account/identities", workspaceId),
     {
       method: "DELETE",
-    }
+    },
   );
 }
 
 export function removeAccountBook(bookId: string, workspaceId?: string) {
-  return requestJson<{ ok: boolean; id: string; managedUserId?: string | null; collectionId?: string | null }>(
-    withWorkspaceQuery(`/v1/account/books/${encodeURIComponent(bookId)}`, workspaceId),
-    {
-      method: "DELETE",
-    }
-  );
+  return requestJson<{
+    ok: boolean;
+    id: string;
+    managedUserId?: string | null;
+    collectionId?: string | null;
+  }>(withWorkspaceQuery(`/v1/account/books/${encodeURIComponent(bookId)}`, workspaceId), {
+    method: "DELETE",
+  });
 }
 
 export function validateAdminSession(token?: string | null) {
@@ -582,7 +580,7 @@ export function getPixbookCloudState(
   workspaceId?: string,
   binding?: PixbookCloudBinding,
   bookId?: string,
-  collectionId?: string
+  collectionId?: string,
 ) {
   const query = new URLSearchParams();
   if (workspaceId) query.set("workspaceId", workspaceId);
@@ -712,7 +710,7 @@ export async function getPixbookV1(accountId: string, bookId: string) {
     `/v1/pixbooks/${encodeURIComponent(String(bookId || "").trim())}`,
     {
       headers: withAccountHeader(accountId),
-    }
+    },
   );
   return result.envelope.data;
 }
@@ -722,7 +720,7 @@ export async function getPixbookSnapshotV1(accountId: string, bookId: string) {
     `/v1/pixbooks/${encodeURIComponent(String(bookId || "").trim())}/snapshot`,
     {
       headers: withAccountHeader(accountId),
-    }
+    },
   );
   return result.envelope.data;
 }
@@ -736,7 +734,8 @@ export async function getPixbookReceiptsV1(input: {
 }) {
   const query = new URLSearchParams();
   if (input.after) query.set("after", String(input.after || "").trim());
-  if (Number.isFinite(input.limit)) query.set("limit", String(Math.max(1, Math.trunc(input.limit || 0))));
+  if (Number.isFinite(input.limit))
+    query.set("limit", String(Math.max(1, Math.trunc(input.limit || 0))));
   if (input.includePayload === false) query.set("includePayload", "false");
   const path = `/v1/pixbooks/${encodeURIComponent(String(input.bookId || "").trim())}/receipts${
     query.toString() ? `?${query.toString()}` : ""
@@ -789,16 +788,18 @@ export type PixbookSaveCommandSuccess = {
   createdAt: string;
 };
 
-function parsePendingData(value: unknown, idempotencyKey: string, headers: Headers): PixbookCommandPendingData {
+function parsePendingData(
+  value: unknown,
+  idempotencyKey: string,
+  headers: Headers,
+): PixbookCommandPendingData {
   const data = value && typeof value === "object" ? (value as Record<string, unknown>) : {};
-  const retryAfter = parsePositiveInt(
-    data.retryAfterSeconds,
-    readRetryAfterSeconds(headers, 2)
-  );
+  const retryAfter = parsePositiveInt(data.retryAfterSeconds, readRetryAfterSeconds(headers, 2));
   return {
     status: "in_progress",
-    idempotencyKey:
-      String(data.idempotencyKey || headers.get("Idempotency-Key") || idempotencyKey || "").trim(),
+    idempotencyKey: String(
+      data.idempotencyKey || headers.get("Idempotency-Key") || idempotencyKey || "",
+    ).trim(),
     retryAfterSeconds: retryAfter,
   };
 }
@@ -815,7 +816,7 @@ async function parsePixbookCommandResult<T>(
     idempotencyKey: string;
     signingIdentityId?: string | null;
     body: Record<string, unknown>;
-  }
+  },
 ) {
   const resolvedIdempotency = String(idempotencyKey || "").trim() || createIdempotencyKey();
   const resolvedSigningIdentityId = String(signingIdentityId || "").trim();
@@ -848,8 +849,9 @@ async function parsePixbookCommandResult<T>(
   return {
     kind: "succeeded",
     status: 200,
-    idempotencyKey:
-      String(result.headers.get("Idempotency-Key") || resolvedIdempotency || "").trim(),
+    idempotencyKey: String(
+      result.headers.get("Idempotency-Key") || resolvedIdempotency || "",
+    ).trim(),
     requestId,
     data: result.envelope.data as T,
   } satisfies PixbookCommandSucceeded<T>;
@@ -863,19 +865,16 @@ export function createPixbookCommandV1(input: {
   signingIdentityId?: string | null;
   idempotencyKey?: string;
 }) {
-  return parsePixbookCommandResult<PixbookCreateCommandSuccess>(
-    "/v1/pixbooks/commands/create",
-    {
-      accountId: input.accountId,
-      idempotencyKey: String(input.idempotencyKey || "").trim() || createIdempotencyKey(),
-      signingIdentityId: input.signingIdentityId,
-      body: {
-        managedUserId: String(input.managedUserId || "").trim(),
-        name: String(input.name || "").trim() || "My Pixbook",
-        collectionId: String(input.collectionId || "").trim() || "primary",
-      },
-    }
-  );
+  return parsePixbookCommandResult<PixbookCreateCommandSuccess>("/v1/pixbooks/commands/create", {
+    accountId: input.accountId,
+    idempotencyKey: String(input.idempotencyKey || "").trim() || createIdempotencyKey(),
+    signingIdentityId: input.signingIdentityId,
+    body: {
+      managedUserId: String(input.managedUserId || "").trim(),
+      name: String(input.name || "").trim() || "My Pixbook",
+      collectionId: String(input.collectionId || "").trim() || "primary",
+    },
+  });
 }
 
 export function savePixbookCommandV1(input: {
@@ -904,7 +903,7 @@ export function savePixbookCommandV1(input: {
             ? null
             : Number(input.expectedVersion),
       },
-    }
+    },
   );
 }
 
@@ -922,7 +921,7 @@ export async function savePixbookCommandUntilDoneV1(
   options: {
     maxAttempts?: number;
     onPending?: (result: PixbookCommandPending) => void;
-  } = {}
+  } = {},
 ) {
   const maxAttempts = parsePositiveInt(options.maxAttempts, 20);
   let idempotencyKey = String(input.idempotencyKey || "").trim() || createIdempotencyKey();
@@ -937,17 +936,13 @@ export async function savePixbookCommandUntilDoneV1(
     await sleep(Math.max(250, result.retryAfterSeconds * 1000));
   }
 
-  throw new PixPaxApiError(
-    "Timed out waiting for pixbook save command to complete.",
-    202,
-    {
-      ok: false,
-      error: {
-        code: "IDEMPOTENCY_PENDING_TIMEOUT",
-        message: "Timed out waiting for command completion.",
-      },
-    }
-  );
+  throw new PixPaxApiError("Timed out waiting for pixbook save command to complete.", 202, {
+    ok: false,
+    error: {
+      code: "IDEMPOTENCY_PENDING_TIMEOUT",
+      message: "Timed out waiting for command completion.",
+    },
+  });
 }
 
 export type PixPaxAnalyticsResponse = {
@@ -987,7 +982,7 @@ export type PixPaxAnalyticsResponse = {
 
 export function getPackAnalytics(
   params: { limit?: number | null; collectionId?: string; version?: string; dropId?: string },
-  token?: string | null
+  token?: string | null,
 ) {
   const query = new URLSearchParams();
   if (params.collectionId) query.set("collectionId", params.collectionId);
@@ -1047,17 +1042,17 @@ export function createCodeToken(
   collectionId: string,
   version: string,
   payload: unknown,
-  token?: string | null
+  token?: string | null,
 ) {
   return requestJson<PixPaxCodeTokenResponse>(
     `/v1/pixpax/collections/${encodeURIComponent(collectionId)}/${encodeURIComponent(
-      version
+      version,
     )}/override-codes`,
     {
       method: "POST",
       token: token || undefined,
       body: payload,
-    }
+    },
   );
 }
 
@@ -1067,7 +1062,7 @@ export function createCodeCardsJson(
   collectionId: string,
   version: string,
   payload: unknown,
-  token?: string | null
+  token?: string | null,
 ) {
   return requestJson<{
     ok: boolean;
@@ -1077,7 +1072,7 @@ export function createCodeCardsJson(
     items: PixPaxCodeCardItem[];
   }>(
     `/v1/pixpax/collections/${encodeURIComponent(collectionId)}/${encodeURIComponent(
-      version
+      version,
     )}/code-cards`,
     {
       method: "POST",
@@ -1086,7 +1081,7 @@ export function createCodeCardsJson(
         ...(payload && typeof payload === "object" ? payload : {}),
         format: "json",
       },
-    }
+    },
   );
 }
 
@@ -1190,7 +1185,7 @@ export type PixPaxRedeemCodeResolveResponse = {
 
 export function resolvePixpaxRedeemCode(codeId: string) {
   return requestJson<PixPaxRedeemCodeResolveResponse>(
-    `/v1/pixpax/redeem-code/${encodeURIComponent(String(codeId || "").trim())}`
+    `/v1/pixpax/redeem-code/${encodeURIComponent(String(codeId || "").trim())}`,
   );
 }
 
@@ -1206,7 +1201,7 @@ export type PixPaxRevokeCodeResponse = {
 export function revokePixpaxCode(
   codeId: string,
   input: { reason?: string } = {},
-  token?: string | null
+  token?: string | null,
 ) {
   return requestJson<PixPaxRevokeCodeResponse>(
     `/v1/pixpax/admin/codes/${encodeURIComponent(String(codeId || "").trim())}/revoke`,
@@ -1216,7 +1211,7 @@ export function revokePixpaxCode(
       body: {
         reason: String(input.reason || "").trim(),
       },
-    }
+    },
   );
 }
 
@@ -1271,20 +1266,20 @@ export function resolvePixpaxCollection(collectionId: string, version?: string) 
   return requestJson<PixPaxCollectionResolveResponse>(
     `/v1/pixpax/collections/${encodeURIComponent(collectionId)}/resolve${
       query.toString() ? `?${query.toString()}` : ""
-    }`
+    }`,
   );
 }
 
 export function getPixpaxCollectionSettings(collectionId: string) {
   return requestJson<PixPaxCollectionSettingsResponse>(
-    `/v1/pixpax/collections/${encodeURIComponent(collectionId)}/settings`
+    `/v1/pixpax/collections/${encodeURIComponent(collectionId)}/settings`,
   );
 }
 
 export function putPixpaxCollectionSettings(
   collectionId: string,
   payload: Record<string, unknown>,
-  token?: string | null
+  token?: string | null,
 ) {
   return requestJson<PixPaxCollectionSettingsResponse>(
     `/v1/pixpax/collections/${encodeURIComponent(collectionId)}/settings`,
@@ -1292,7 +1287,7 @@ export function putPixpaxCollectionSettings(
       method: "PUT",
       token: token || undefined,
       body: payload,
-    }
+    },
   );
 }
 
@@ -1317,8 +1312,8 @@ export function getPixpaxCollectionBundle(collectionId: string, version: string)
     missingCardIds?: string[];
   }>(
     `/v1/pixpax/collections/${encodeURIComponent(collectionId)}/${encodeURIComponent(
-      version
-    )}/bundle`
+      version,
+    )}/bundle`,
   );
 }
 
@@ -1326,17 +1321,17 @@ export function putCollectionJson(
   collectionId: string,
   version: string,
   payload: unknown,
-  token?: string | null
+  token?: string | null,
 ) {
   return requestJson(
     `/v1/pixpax/collections/${encodeURIComponent(collectionId)}/${encodeURIComponent(
-      version
+      version,
     )}/collection`,
     {
       method: "PUT",
       token: token || undefined,
       body: payload,
-    }
+    },
   );
 }
 
@@ -1344,7 +1339,7 @@ export function putIndexJson(
   collectionId: string,
   version: string,
   payload: unknown,
-  token?: string | null
+  token?: string | null,
 ) {
   return requestJson(
     `/v1/pixpax/collections/${encodeURIComponent(collectionId)}/${encodeURIComponent(version)}/index`,
@@ -1352,7 +1347,7 @@ export function putIndexJson(
       method: "PUT",
       token: token || undefined,
       body: payload,
-    }
+    },
   );
 }
 
@@ -1361,17 +1356,17 @@ export function putCardJson(
   version: string,
   cardId: string,
   payload: unknown,
-  token?: string | null
+  token?: string | null,
 ) {
   return requestJson(
     `/v1/pixpax/collections/${encodeURIComponent(collectionId)}/${encodeURIComponent(
-      version
+      version,
     )}/cards/${encodeURIComponent(cardId)}`,
     {
       method: "PUT",
       token: token || undefined,
       body: payload,
-    }
+    },
   );
 }
 
@@ -1422,7 +1417,7 @@ export function previewPixpaxV2DeterministicIssue(
     claimantPublicKey: string;
     count: number;
   },
-  token?: string | null
+  token?: string | null,
 ) {
   return requestJson<PixPaxV2PreviewResponse>("/v1/pixpax/v2/deterministic/preview", {
     method: "POST",
@@ -1439,7 +1434,7 @@ export function issuePixpaxV2DeterministicPack(
     claimantPublicKey: string;
     count: number;
   },
-  token?: string | null
+  token?: string | null,
 ) {
   return requestJson<PixPaxV2IssueResponse>("/v1/pixpax/v2/deterministic/issue", {
     method: "POST",
@@ -1457,7 +1452,7 @@ export function issuePixpaxV2DesignatedPack(
     sourceCodeId: string;
     cardIds: string[];
   },
-  token?: string | null
+  token?: string | null,
 ) {
   return requestJson<PixPaxV2IssueResponse>("/v1/pixpax/v2/designated/issue", {
     method: "POST",
@@ -1466,9 +1461,7 @@ export function issuePixpaxV2DesignatedPack(
   });
 }
 
-export function verifyPixpaxV2Proof(
-  artifact: Record<string, unknown>,
-) {
+export function verifyPixpaxV2Proof(artifact: Record<string, unknown>) {
   return requestJson<{
     ok: boolean;
     verification: {

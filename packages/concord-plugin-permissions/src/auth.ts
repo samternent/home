@@ -19,10 +19,7 @@ function isRootAdmin(state: PermissionState, principalId: string): boolean {
   return state.rootAdmins.includes(principalId);
 }
 
-function collectGroupMemberships(
-  state: PermissionState,
-  principalId: string
-): Set<string> {
+function collectGroupMemberships(state: PermissionState, principalId: string): Set<string> {
   const groups = new Set<string>();
   for (const group of Object.values(state.groups)) {
     if (group.members.includes(principalId)) {
@@ -32,11 +29,7 @@ function collectGroupMemberships(
   return groups;
 }
 
-function targetMatches(
-  target: Target,
-  principalId: string,
-  groupIds: Set<string>
-): boolean {
+function targetMatches(target: Target, principalId: string, groupIds: Set<string>): boolean {
   if (target.type === "principal") {
     return target.id === principalId;
   }
@@ -69,7 +62,7 @@ export function getEffectiveCaps(
   state: PermissionState,
   principalId: string,
   scope: string,
-  nowIso?: string
+  nowIso?: string,
 ): Set<Cap> {
   if (isRootAdmin(state, principalId)) {
     return new Set<Cap>(["admin", "grant", "write", "read"]);
@@ -80,7 +73,7 @@ export function getEffectiveCaps(
   const events: {
     order: number;
     kind: "grant" | "revoke";
-    record: typeof state.grants[number] | typeof state.revokes[number];
+    record: (typeof state.grants)[number] | (typeof state.revokes)[number];
   }[] = [];
 
   for (const grant of state.grants) {
@@ -101,13 +94,13 @@ export function getEffectiveCaps(
       continue;
     }
     if (event.kind === "grant") {
-      const grant = record as typeof state.grants[number];
+      const grant = record as (typeof state.grants)[number];
       if (isGrantExpired(grant.constraints?.expires, nowIso)) {
         continue;
       }
       explicitCaps.add(grant.cap);
     } else {
-      const revoke = record as typeof state.revokes[number];
+      const revoke = record as (typeof state.revokes)[number];
       explicitCaps.delete(revoke.cap);
     }
   }
@@ -120,7 +113,7 @@ export function can(
   principalId: string,
   action: string,
   scope: string,
-  nowIso?: string
+  nowIso?: string,
 ): boolean {
   const required = ACTION_CAPS[action];
   if (!required) {
@@ -133,7 +126,7 @@ export function can(
 export function isAuthorizedGroupChange(
   state: PermissionState,
   author: string,
-  groupId: string
+  groupId: string,
 ): boolean {
   if (isRootAdmin(state, author)) {
     return true;

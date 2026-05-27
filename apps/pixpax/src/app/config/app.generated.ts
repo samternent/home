@@ -19,19 +19,19 @@ export type AppSeoConfig = {
 };
 
 export const appConfig = {
-  "appId": "pixpax",
-  "appTitle": "PixPax",
-  "defaultHost": "beta.pixpax.xyz",
-  "themeName": "pixpax",
-  "defaultThemeMode": "dark"
+  appId: "pixpax",
+  appTitle: "PixPax",
+  defaultHost: "beta.pixpax.xyz",
+  themeName: "pixpax",
+  defaultThemeMode: "dark",
 } as const satisfies AppConfig;
 
 export const appSeoConfig = {
-  "shortName": "PixPax",
-  "description": "Open issued packs, collect cute cards, and build your own Pixbook over time.",
-  "themeColor": "#0e1321",
-  "backgroundColor": "#0b101b",
-  "lang": "en"
+  shortName: "PixPax",
+  description: "Open issued packs, collect cute cards, and build your own Pixbook over time.",
+  themeColor: "#0e1321",
+  backgroundColor: "#0b101b",
+  lang: "en",
 } as const satisfies AppSeoConfig;
 
 export const appThemeName = "pixpax";
@@ -39,287 +39,300 @@ export const appThemeName = "pixpax";
 export const appThemePrefix = appThemeName;
 
 export const landingPageConfig = {
-  "navigationLinks": [
+  navigationLinks: [
     {
-      "href": "#features",
-      "label": "Why PixPax"
+      href: "#features",
+      label: "Why PixPax",
     },
     {
-      "href": "#how-it-works",
-      "label": "How it works"
+      href: "#how-it-works",
+      label: "How it works",
     },
     {
-      "href": "#use-cases",
-      "label": "Collections"
+      href: "#use-cases",
+      label: "Collections",
     },
     {
-      "href": "#developers",
-      "label": "Built on Concord"
-    }
+      href: "#developers",
+      label: "Built on Concord",
+    },
   ],
-  "hero": {
-    "eyebrow": "beta.pixpax.xyz",
-    "title": "Open packs. Collect cards. Build your Pixbook.",
-    "description": "PixPax is a digital collectible game where players open issued packs, reveal what is inside, and build a Pixbook that grows over time.",
-    "primaryAction": {
-      "href": "/app",
-      "label": "Open Pixbook",
-      "variant": "primary"
+  hero: {
+    eyebrow: "beta.pixpax.xyz",
+    title: "Open packs. Collect cards. Build your Pixbook.",
+    description:
+      "PixPax is a digital collectible game where players open issued packs, reveal what is inside, and build a Pixbook that grows over time.",
+    primaryAction: {
+      href: "/app",
+      label: "Open Pixbook",
+      variant: "primary",
     },
-    "secondaryAction": {
-      "href": "/redeem",
-      "label": "Redeem a code",
-      "variant": "secondary"
+    secondaryAction: {
+      href: "/redeem",
+      label: "Redeem a code",
+      variant: "secondary",
     },
-    "preview": {
-      "title": "Pixbook loop",
-      "meta": "redeem -> open -> keep",
-      "statusLabel": "Clear & fair",
-      "statusTone": "success",
-      "rows": [
+    preview: {
+      title: "Pixbook loop",
+      meta: "redeem -> open -> keep",
+      statusLabel: "Clear & fair",
+      statusTone: "success",
+      rows: [
         {
-          "label": "Packs",
-          "value": "Issued ahead of time",
-          "valueTone": "primary"
+          label: "Packs",
+          value: "Issued ahead of time",
+          valueTone: "primary",
         },
         {
-          "label": "Reveal",
-          "value": "Opened in the app",
-          "valueTone": "secondary"
+          label: "Reveal",
+          value: "Opened in the app",
+          valueTone: "secondary",
         },
         {
-          "label": "Result",
-          "value": "Fixed when opened",
-          "valueTone": "accent"
+          label: "Result",
+          value: "Fixed when opened",
+          valueTone: "accent",
         },
         {
-          "label": "Record",
-          "value": "Added to your Pixbook",
-          "valueTone": "success"
-        }
+          label: "Record",
+          value: "Added to your Pixbook",
+          valueTone: "success",
+        },
       ],
-      "footerText": "Packs are issued ahead of time and checked when opened, so what you reveal is clear, fixed, and easy to understand."
-    }
-  },
-  "featureSection": {
-    "eyebrow": "Why PixPax",
-    "title": "Collecting that feels simple, fun, and fair",
-    "description": "PixPax keeps the good part of collecting — opening packs and building sets — without hidden odds, noisy systems, or confusing rules.",
-    "items": [
-      {
-        "title": "Your Pixbook",
-        "description": "Every card you reveal is recorded to your Pixbook so you can track progress and revisit your collection anytime.",
-        "tone": "primary",
-        "icon": "book"
-      },
-      {
-        "title": "Issued packs",
-        "description": "Packs are created ahead of time, so the reveal is fixed and not decided in the moment.",
-        "tone": "info",
-        "icon": "shield"
-      },
-      {
-        "title": "Sets worth finishing",
-        "description": "Each card has its place, making it easy to keep collecting and complete each series over time.",
-        "tone": "accent",
-        "icon": "spark"
-      },
-      {
-        "title": "Easy to start",
-        "description": "Open the app, redeem a code, and start collecting without a long setup flow.",
-        "tone": "success",
-        "icon": "device"
-      }
-    ]
-  },
-  "howItWorksSection": {
-    "eyebrow": "How it works",
-    "title": "A clear collecting loop",
-    "preview": {
-      "title": "Pack flow",
-      "meta": "redeem or scan a code",
-      "rows": [
-        {
-          "label": "1",
-          "value": "Get a pack from a card or code",
-          "valueTone": "primary"
-        },
-        {
-          "label": "2",
-          "value": "Open it in the app",
-          "valueTone": "accent"
-        },
-        {
-          "label": "3",
-          "value": "Keep it in your Pixbook",
-          "valueTone": "success"
-        }
-      ],
-      "footerText": "The app checks the pack when you open it, then records the result to your Pixbook so your collection stays consistent."
+      footerText:
+        "Packs are issued ahead of time and checked when opened, so what you reveal is clear, fixed, and easy to understand.",
     },
-    "steps": [
-      {
-        "title": "Get a pack",
-        "description": "Packs can be shared as QR cards or simple codes you type in."
-      },
-      {
-        "title": "Open and reveal",
-        "description": "The app checks the pack and reveals the cards that were issued with it."
-      },
-      {
-        "title": "Build your Pixbook",
-        "description": "Your Pixbook grows as you open more packs, collect more cards, and fill more gaps."
-      }
-    ]
   },
-  "useCasesSection": {
-    "eyebrow": "Collections",
-    "title": "Made for drops, events, and growing sets",
-    "items": [
+  featureSection: {
+    eyebrow: "Why PixPax",
+    title: "Collecting that feels simple, fun, and fair",
+    description:
+      "PixPax keeps the good part of collecting — opening packs and building sets — without hidden odds, noisy systems, or confusing rules.",
+    items: [
       {
-        "title": "Weekly drops",
-        "description": "New packs can land regularly so there is always another set, card, or gap to chase.",
-        "tone": "primary",
-        "icon": "calendar"
+        title: "Your Pixbook",
+        description:
+          "Every card you reveal is recorded to your Pixbook so you can track progress and revisit your collection anytime.",
+        tone: "primary",
+        icon: "book",
       },
       {
-        "title": "QR cards",
-        "description": "Physical cards can be handed out and scanned to unlock issued packs.",
-        "tone": "secondary",
-        "icon": "qrcode"
+        title: "Issued packs",
+        description:
+          "Packs are created ahead of time, so the reveal is fixed and not decided in the moment.",
+        tone: "info",
+        icon: "shield",
       },
       {
-        "title": "Completing sets",
-        "description": "Clear collection progress makes it easy to see what you have and what is still missing.",
-        "tone": "accent",
-        "icon": "check"
+        title: "Sets worth finishing",
+        description:
+          "Each card has its place, making it easy to keep collecting and complete each series over time.",
+        tone: "accent",
+        icon: "spark",
       },
       {
-        "title": "Event rewards",
-        "description": "Packs can be used for handouts, meetups, club rewards, and special occasions.",
-        "tone": "info",
-        "icon": "gift"
+        title: "Easy to start",
+        description: "Open the app, redeem a code, and start collecting without a long setup flow.",
+        tone: "success",
+        icon: "device",
       },
-      {
-        "title": "Parent-friendly design",
-        "description": "No hidden odds, no gambling-style mechanics, just a clear collecting loop.",
-        "tone": "primary",
-        "icon": "family"
-      },
-      {
-        "title": "Built on Concord",
-        "description": "PixPax uses a system underneath that helps keep collections accurate and trustworthy.",
-        "tone": "success",
-        "icon": "terminal"
-      }
-    ]
-  },
-  "developerSection": {
-    "eyebrow": "Built on Concord",
-    "title": "PixPax is both a product and a reference app",
-    "description": "The player experience stays simple on the surface while the pack and collection logic stays structured behind the scenes.",
-    "surfaces": [
-      "Player app",
-      "Admin/API",
-      "Concord packages"
     ],
-    "tabs": [
-      {
-        "value": "yaml",
-        "label": "Player",
-        "title": "Player app routes",
-        "meta": "Frontend",
-        "code": "/\n/redeem\n/app/pixbook\n/app/collections/:collectionId\n/app/settings/*",
-        "supportingCopy": "The player app is focused on redeeming packs, opening them, and browsing the Pixbook.",
-        "link": {
-          "href": "/app/pixbook",
-          "label": "Open the Pixbook"
-        }
-      },
-      {
-        "value": "sync",
-        "label": "Packages",
-        "title": "PixPax package split",
-        "meta": "Workspace",
-        "code": "packages/pixpax-core\npackages/pixpax-concord\npackages/pixpax-issuer",
-        "supportingCopy": "Pack rules, Concord integration, and issuer logic stay separate so the app layer can stay clean.",
-        "link": {
-          "href": "https://github.com/samternent/home/tree/main/packages/pixpax-core",
-          "label": "View pixpax-core"
-        }
-      },
-      {
-        "value": "scaffold",
-        "label": "Contract",
-        "title": "Claim contract",
-        "meta": "v2",
-        "code": "pre-issued designated pack\n-> first-claim policy confirmation\n-> local pixbook.claim-pack\n-> local pixbook.record-pack-opened",
-        "supportingCopy": "Packs are claimed, checked, and recorded in a way that keeps the player result consistent.",
-        "link": {
-          "href": "/redeem",
-          "label": "Try redeem flow"
-        }
-      }
-    ]
   },
-  "clarifierSection": {
-    "eyebrow": "Definition",
-    "title": "What PixPax is and isn’t",
-    "columns": [
+  howItWorksSection: {
+    eyebrow: "How it works",
+    title: "A clear collecting loop",
+    preview: {
+      title: "Pack flow",
+      meta: "redeem or scan a code",
+      rows: [
+        {
+          label: "1",
+          value: "Get a pack from a card or code",
+          valueTone: "primary",
+        },
+        {
+          label: "2",
+          value: "Open it in the app",
+          valueTone: "accent",
+        },
+        {
+          label: "3",
+          value: "Keep it in your Pixbook",
+          valueTone: "success",
+        },
+      ],
+      footerText:
+        "The app checks the pack when you open it, then records the result to your Pixbook so your collection stays consistent.",
+    },
+    steps: [
       {
-        "title": "PixPax is",
-        "items": [
+        title: "Get a pack",
+        description: "Packs can be shared as QR cards or simple codes you type in.",
+      },
+      {
+        title: "Open and reveal",
+        description: "The app checks the pack and reveals the cards that were issued with it.",
+      },
+      {
+        title: "Build your Pixbook",
+        description:
+          "Your Pixbook grows as you open more packs, collect more cards, and fill more gaps.",
+      },
+    ],
+  },
+  useCasesSection: {
+    eyebrow: "Collections",
+    title: "Made for drops, events, and growing sets",
+    items: [
+      {
+        title: "Weekly drops",
+        description:
+          "New packs can land regularly so there is always another set, card, or gap to chase.",
+        tone: "primary",
+        icon: "calendar",
+      },
+      {
+        title: "QR cards",
+        description: "Physical cards can be handed out and scanned to unlock issued packs.",
+        tone: "secondary",
+        icon: "qrcode",
+      },
+      {
+        title: "Completing sets",
+        description:
+          "Clear collection progress makes it easy to see what you have and what is still missing.",
+        tone: "accent",
+        icon: "check",
+      },
+      {
+        title: "Event rewards",
+        description:
+          "Packs can be used for handouts, meetups, club rewards, and special occasions.",
+        tone: "info",
+        icon: "gift",
+      },
+      {
+        title: "Parent-friendly design",
+        description: "No hidden odds, no gambling-style mechanics, just a clear collecting loop.",
+        tone: "primary",
+        icon: "family",
+      },
+      {
+        title: "Built on Concord",
+        description:
+          "PixPax uses a system underneath that helps keep collections accurate and trustworthy.",
+        tone: "success",
+        icon: "terminal",
+      },
+    ],
+  },
+  developerSection: {
+    eyebrow: "Built on Concord",
+    title: "PixPax is both a product and a reference app",
+    description:
+      "The player experience stays simple on the surface while the pack and collection logic stays structured behind the scenes.",
+    surfaces: ["Player app", "Admin/API", "Concord packages"],
+    tabs: [
+      {
+        value: "yaml",
+        label: "Player",
+        title: "Player app routes",
+        meta: "Frontend",
+        code: "/\n/redeem\n/app/pixbook\n/app/collections/:collectionId\n/app/settings/*",
+        supportingCopy:
+          "The player app is focused on redeeming packs, opening them, and browsing the Pixbook.",
+        link: {
+          href: "/app/pixbook",
+          label: "Open the Pixbook",
+        },
+      },
+      {
+        value: "sync",
+        label: "Packages",
+        title: "PixPax package split",
+        meta: "Workspace",
+        code: "packages/pixpax-core\npackages/pixpax-concord\npackages/pixpax-issuer",
+        supportingCopy:
+          "Pack rules, Concord integration, and issuer logic stay separate so the app layer can stay clean.",
+        link: {
+          href: "https://github.com/samternent/home/tree/main/packages/pixpax-core",
+          label: "View pixpax-core",
+        },
+      },
+      {
+        value: "scaffold",
+        label: "Contract",
+        title: "Claim contract",
+        meta: "v2",
+        code: "pre-issued designated pack\n-> first-claim policy confirmation\n-> local pixbook.claim-pack\n-> local pixbook.record-pack-opened",
+        supportingCopy:
+          "Packs are claimed, checked, and recorded in a way that keeps the player result consistent.",
+        link: {
+          href: "/redeem",
+          label: "Try redeem flow",
+        },
+      },
+    ],
+  },
+  clarifierSection: {
+    eyebrow: "Definition",
+    title: "What PixPax is and isn’t",
+    columns: [
+      {
+        title: "PixPax is",
+        items: [
           "A digital collectible game built around issued packs",
           "A local-first Pixbook that keeps your revealed cards together",
-          "A simple collecting system designed to stay clear and fair"
-        ]
+          "A simple collecting system designed to stay clear and fair",
+        ],
       },
       {
-        "title": "PixPax is not",
-        "items": [
+        title: "PixPax is not",
+        items: [
           "A gambling-style system with hidden odds",
           "An account-required platform",
-          "A crypto or token-based app"
-        ]
-      }
-    ]
+          "A crypto or token-based app",
+        ],
+      },
+    ],
   },
-  "ctaSection": {
-    "eyebrow": "Start collecting",
-    "title": "Open the app or redeem your first pack",
-    "description": "Browse collections, reveal issued packs, and build your Pixbook as it grows over time.",
-    "primaryAction": {
-      "href": "/app",
-      "label": "Open Pixbook",
-      "variant": "primary"
+  ctaSection: {
+    eyebrow: "Start collecting",
+    title: "Open the app or redeem your first pack",
+    description:
+      "Browse collections, reveal issued packs, and build your Pixbook as it grows over time.",
+    primaryAction: {
+      href: "/app",
+      label: "Open Pixbook",
+      variant: "primary",
     },
-    "secondaryAction": {
-      "href": "/redeem",
-      "label": "Redeem a code",
-      "variant": "secondary"
-    }
+    secondaryAction: {
+      href: "/redeem",
+      label: "Redeem a code",
+      variant: "secondary",
+    },
   },
-  "footer": {
-    "brandLabel": "PixPax",
-    "brandHref": "https://ternent.dev",
-    "copyright": "© 2026.",
-    "links": [
+  footer: {
+    brandLabel: "PixPax",
+    brandHref: "https://ternent.dev",
+    copyright: "© 2026.",
+    links: [
       {
-        "href": "/settings",
-        "label": "Settings"
+        href: "/settings",
+        label: "Settings",
       },
       {
-        "href": "/settings/identity",
-        "label": "Identity"
+        href: "/settings/identity",
+        label: "Identity",
       },
       {
-        "href": "https://github.com/samternent/home/tree/main/apps/pixpax",
-        "label": "GitHub"
+        href: "https://github.com/samternent/home/tree/main/apps/pixpax",
+        label: "GitHub",
       },
       {
-        "href": "https://github.com/samternent/home",
-        "label": "Monorepo"
-      }
-    ]
-  }
+        href: "https://github.com/samternent/home",
+        label: "Monorepo",
+      },
+    ],
+  },
 } as const satisfies LandingPageConfig;

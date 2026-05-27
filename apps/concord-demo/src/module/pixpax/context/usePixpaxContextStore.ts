@@ -1,28 +1,12 @@
-import {
-  computed,
-  inject,
-  onMounted,
-  provide,
-  shallowRef,
-  watch,
-  type Ref,
-} from "vue";
+import { computed, inject, onMounted, provide, shallowRef, watch, type Ref } from "vue";
 import { useLocalStorage } from "@vueuse/core";
-import {
-  createIdentity,
-  exportPrivateKeyAsPem,
-  exportPublicKeyAsPem,
-} from "ternent-identity";
+import { createIdentity, exportPrivateKeyAsPem, exportPublicKeyAsPem } from "ternent-identity";
 import { generate as generateEncryptionKeys } from "ternent-encrypt";
 import { hashData, stripIdentityKey } from "ternent-utils";
 import { useEncryption } from "../../encryption/useEncryption";
 import { useIdentity } from "../../identity/useIdentity";
 import { useLedger } from "../../ledger/useLedger";
-import {
-  type PrivateProfile,
-  type PublicProfile,
-  useProfile,
-} from "../../profile/useProfile";
+import { type PrivateProfile, type PublicProfile, useProfile } from "../../profile/useProfile";
 
 const usePixpaxContextStoreSymbol = Symbol("usePixpaxContextStore");
 
@@ -153,21 +137,16 @@ function createPixpaxContextStore() {
   const publicKey = identity.publicKey as Ref<CryptoKey | null>;
   const privateKey = identity.privateKey as Ref<CryptoKey | null>;
   const initIdentity = identity.init as () => Promise<void>;
-  const impersonateIdentity = identity.impersonate as (
-    profile: PrivateProfile
-  ) => Promise<void>;
+  const impersonateIdentity = identity.impersonate as (profile: PrivateProfile) => Promise<void>;
 
   const encryptionPublicKey = encryption.publicKey as Ref<string>;
   const encryptionPrivateKey = encryption.privateKey as Ref<string>;
   const impersonateEncryption = encryption.impersonate as (
-    profile: PrivateProfile
+    profile: PrivateProfile,
   ) => Promise<void>;
 
   const pixbookReadOnly = useLocalStorage("pixpax/pixbook/readOnly", false);
-  const viewedPixbookProfileJson = useLocalStorage(
-    "pixpax/pixbook/viewProfileJson",
-    ""
-  );
+  const viewedPixbookProfileJson = useLocalStorage("pixpax/pixbook/viewProfileJson", "");
   const publicLedgerSnapshot = useLocalStorage("pixpax/pixbook/publicLedger", "");
   const privateLedgerSnapshot = useLocalStorage("pixpax/pixbook/privateLedger", "");
 
@@ -175,10 +154,7 @@ function createPixpaxContextStore() {
   const currentIdentityId = useLocalStorage(CURRENT_IDENTITY_KEY, "");
   const pixbooks = useLocalStorage<PixpaxPixbookRecord[]>(PIXBOOKS_KEY, []);
   const currentPixbookId = useLocalStorage(CURRENT_PIXBOOK_KEY, "");
-  const currentCollectionId = useLocalStorage(
-    CURRENT_COLLECTION_KEY,
-    DEFAULT_COLLECTION_ID
-  );
+  const currentCollectionId = useLocalStorage(CURRENT_COLLECTION_KEY, DEFAULT_COLLECTION_ID);
 
   const creatingPixbook = shallowRef(false);
   const shouldAutoCreatePixbook = shallowRef(true);
@@ -237,14 +213,11 @@ function createPixpaxContextStore() {
 
   const activeIdentity = computed(() => {
     if (!currentIdentityId.value) return null;
-    return (
-      identities.value.find((entry) => entry.id === currentIdentityId.value) ||
-      null
-    );
+    return identities.value.find((entry) => entry.id === currentIdentityId.value) || null;
   });
 
   const currentIdentityFingerprint = computed(
-    () => shortFingerprint(publicKeyPEM.value) || "unknown"
+    () => shortFingerprint(publicKeyPEM.value) || "unknown",
   );
 
   const currentIdentityLabel = computed(() => {
@@ -261,25 +234,21 @@ function createPixpaxContextStore() {
     return usernameFromMetadata(activeIdentity.value?.metadata);
   });
 
-  const activeCollectionId = computed(() =>
-    normalizeCollectionId(currentCollectionId.value)
-  );
+  const activeCollectionId = computed(() => normalizeCollectionId(currentCollectionId.value));
 
   const activeIdentityCollectionPixbooks = computed(() => {
     if (!currentIdentityId.value) return [];
     return pixbooks.value.filter(
       (entry) =>
         entry.identityId === currentIdentityId.value &&
-        normalizeCollectionId(entry.collectionId) === activeCollectionId.value
+        normalizeCollectionId(entry.collectionId) === activeCollectionId.value,
     );
   });
 
   const activeIdentityPixbooks = computed(() => {
     const collectionBooks = activeIdentityCollectionPixbooks.value;
     if (collectionBooks.length === 0) return [];
-    const currentMatch = collectionBooks.find(
-      (entry) => entry.id === currentPixbookId.value
-    );
+    const currentMatch = collectionBooks.find((entry) => entry.id === currentPixbookId.value);
     if (currentMatch) return [currentMatch];
     const defaultMatch = collectionBooks.find((entry) => entry.isDefault);
     return [defaultMatch || collectionBooks[0]];
@@ -288,9 +257,7 @@ function createPixpaxContextStore() {
   const activePixbook = computed(() => {
     if (!currentPixbookId.value) return null;
     return (
-      activeIdentityPixbooks.value.find(
-        (entry) => entry.id === currentPixbookId.value
-      ) || null
+      activeIdentityPixbooks.value.find((entry) => entry.id === currentPixbookId.value) || null
     );
   });
 
@@ -298,9 +265,7 @@ function createPixpaxContextStore() {
     return activePixbook.value?.name || "My Pixbook";
   });
 
-  const disabled = computed(
-    () => !profile.ready.value || !profile.profileId.value
-  );
+  const disabled = computed(() => !profile.ready.value || !profile.profileId.value);
 
   const dirty = computed(() => {
     if (pixbookReadOnly.value) return false;
@@ -369,8 +334,7 @@ function createPixpaxContextStore() {
       }
 
       if (
-        (!String(merged.label || "").trim() ||
-          String(merged.label || "").trim() === "Identity") &&
+        (!String(merged.label || "").trim() || String(merged.label || "").trim() === "Identity") &&
         String(entry.label || "").trim()
       ) {
         merged.label = String(entry.label || "").trim();
@@ -379,7 +343,7 @@ function createPixpaxContextStore() {
 
     updateIdentityRecords([
       ...identities.value.filter(
-        (entry) => entry.id !== merged.id && !obsoleteIds.includes(entry.id)
+        (entry) => entry.id !== merged.id && !obsoleteIds.includes(entry.id),
       ),
       merged,
     ]);
@@ -389,8 +353,8 @@ function createPixpaxContextStore() {
         pixbooks.value.map((entry) =>
           obsoleteIds.includes(String(entry.identityId || "").trim())
             ? { ...entry, identityId: merged.id, updatedAt: nowIso() }
-            : entry
-        )
+            : entry,
+        ),
       );
       if (obsoleteIds.includes(String(currentIdentityId.value || "").trim())) {
         currentIdentityId.value = merged.id;
@@ -417,8 +381,7 @@ function createPixpaxContextStore() {
       throw new Error("Recovered identity payload is missing required key material.");
     }
 
-    const profileId =
-      String(input.profileId || "").trim() || (await deriveProfileId(publicKeyPEM));
+    const profileId = String(input.profileId || "").trim() || (await deriveProfileId(publicKeyPEM));
     const id = toIdentityRecordId(publicKeyPEM, profileId);
     const existing = identities.value.find((entry) => entry.id === id) || null;
     const now = nowIso();
@@ -499,13 +462,13 @@ function createPixpaxContextStore() {
 
   function ensurePixbookRecord(
     identityId: string,
-    options: { forceNew?: boolean; collectionId?: string } = {}
+    options: { forceNew?: boolean; collectionId?: string } = {},
   ) {
     const collectionId = normalizeCollectionId(options.collectionId);
     const existing = pixbooks.value.filter(
       (entry) =>
         entry.identityId === identityId &&
-        normalizeCollectionId(entry.collectionId) === collectionId
+        normalizeCollectionId(entry.collectionId) === collectionId,
     );
     if (existing.length > 0 && !options.forceNew) {
       return existing.find((entry) => entry.isDefault) || existing[0];
@@ -530,7 +493,7 @@ function createPixpaxContextStore() {
         entry.identityId === identityId &&
         normalizeCollectionId(entry.collectionId) === collectionId
           ? { ...entry, isDefault: false }
-          : entry
+          : entry,
       ),
       record,
     ]);
@@ -541,7 +504,7 @@ function createPixpaxContextStore() {
   async function ensureCurrentPixbookRecord() {
     if (!currentIdentityId.value) return null;
     const match = activeIdentityCollectionPixbooks.value.find(
-      (entry) => entry.id === currentPixbookId.value
+      (entry) => entry.id === currentPixbookId.value,
     );
     if (match) return match;
 
@@ -593,7 +556,7 @@ function createPixpaxContextStore() {
             lastPersistHead: String(ledger.value?.head || "").trim(),
             updatedAt: nowIso(),
           };
-        })
+        }),
       );
 
       return true;
@@ -606,7 +569,7 @@ function createPixpaxContextStore() {
   async function applyPrivateProfile(
     privateProfile: PrivateProfile,
     nextLedger: any | null,
-    successMessage?: string
+    successMessage?: string,
   ) {
     pixbookReadOnly.value = false;
     viewedPixbookProfile.value = null;
@@ -617,7 +580,7 @@ function createPixpaxContextStore() {
 
     profile.replaceProfileMeta(copyObject(privateProfile.metadata));
     const canonicalProfileId = await deriveProfileId(
-      String(privateProfile?.identity?.publicKey || "").trim()
+      String(privateProfile?.identity?.publicKey || "").trim(),
     );
     profile.setProfileId(canonicalProfileId);
 
@@ -649,21 +612,14 @@ function createPixpaxContextStore() {
     setStatus("Public pixbook loaded (read-only).");
   }
 
-  async function importPrivatePixbookAsIdentity(
-    privateProfile: PrivateProfile,
-    nextLedger: any
-  ) {
+  async function importPrivatePixbookAsIdentity(privateProfile: PrivateProfile, nextLedger: any) {
     const importedPublicPem = stripIdentityKey(
-      String(privateProfile?.identity?.publicKey || "").trim()
+      String(privateProfile?.identity?.publicKey || "").trim(),
     );
-    const importedPrivatePem = String(
-      privateProfile?.identity?.privateKey?.payload || ""
-    ).trim();
-    const importedEncryptionPublicKey = String(
-      privateProfile?.encryption?.publicKey || ""
-    ).trim();
+    const importedPrivatePem = String(privateProfile?.identity?.privateKey?.payload || "").trim();
+    const importedEncryptionPublicKey = String(privateProfile?.encryption?.publicKey || "").trim();
     const importedEncryptionPrivateKey = String(
-      privateProfile?.encryption?.privateKey?.payload || ""
+      privateProfile?.encryption?.privateKey?.payload || "",
     ).trim();
     if (
       !importedPublicPem ||
@@ -705,7 +661,7 @@ function createPixpaxContextStore() {
       pixbooks.value.find(
         (entry) =>
           entry.identityId === mergedIdentity.id &&
-          normalizeCollectionId(entry.collectionId) === activeCollectionId.value
+          normalizeCollectionId(entry.collectionId) === activeCollectionId.value,
       ) || null;
 
     const importedPixbook: PixpaxPixbookRecord = {
@@ -725,7 +681,7 @@ function createPixpaxContextStore() {
         !(
           entry.identityId === mergedIdentity.id &&
           normalizeCollectionId(entry.collectionId) === activeCollectionId.value
-        )
+        ),
     );
     updatePixbooks([...withoutCurrentCollectionBooks, importedPixbook]);
   }
@@ -784,10 +740,7 @@ function createPixpaxContextStore() {
       throw new Error("Identity not found on this device.");
     }
     const canonicalProfileId = await deriveProfileId(next.publicKeyPEM);
-    const canonicalIdentityId = toIdentityRecordId(
-      next.publicKeyPEM,
-      canonicalProfileId
-    );
+    const canonicalIdentityId = toIdentityRecordId(next.publicKeyPEM, canonicalProfileId);
 
     const privateProfile: PrivateProfile = {
       format: "concord-profile-private",
@@ -822,7 +775,7 @@ function createPixpaxContextStore() {
         (entry) =>
           entry.identityId === canonicalIdentityId &&
           normalizeCollectionId(entry.collectionId) === activeCollectionId.value &&
-          entry.isDefault
+          entry.isDefault,
       ) ||
       ensurePixbookRecord(canonicalIdentityId, {
         collectionId: activeCollectionId.value,
@@ -841,9 +794,7 @@ function createPixpaxContextStore() {
     if (normalizeCollectionId(next.collectionId) !== activeCollectionId.value) {
       throw new Error("Pixbook is not part of the active collection.");
     }
-    const identityOwned = identities.value.some(
-      (entry) => entry.id === next.identityId
-    );
+    const identityOwned = identities.value.some((entry) => entry.id === next.identityId);
     if (!identityOwned) {
       throw new Error("Pixbook identity is not owned on this device.");
     }
@@ -906,7 +857,7 @@ function createPixpaxContextStore() {
     const hasCollectionBook = pixbooks.value.some(
       (entry) =>
         entry.identityId === mergedIdentity.id &&
-        normalizeCollectionId(entry.collectionId) === activeCollectionId.value
+        normalizeCollectionId(entry.collectionId) === activeCollectionId.value,
     );
     if (!hasCollectionBook) {
       const record: PixpaxPixbookRecord = {
@@ -930,7 +881,7 @@ function createPixpaxContextStore() {
 
   function discardIdentityCandidate(candidateId: string) {
     candidateIdentities.value = candidateIdentities.value.filter(
-      (entry) => entry.id !== candidateId
+      (entry) => entry.id !== candidateId,
     );
   }
 
@@ -939,10 +890,8 @@ function createPixpaxContextStore() {
     if (!normalized) return;
     updateIdentityRecords(
       identities.value.map((entry) =>
-        entry.id === identityId
-          ? { ...entry, label: normalized, updatedAt: nowIso() }
-          : entry
-      )
+        entry.id === identityId ? { ...entry, label: normalized, updatedAt: nowIso() } : entry,
+      ),
     );
   }
 
@@ -960,7 +909,7 @@ function createPixpaxContextStore() {
           },
           updatedAt: nowIso(),
         };
-      })
+      }),
     );
 
     if (identityId === currentIdentityId.value) {
@@ -990,9 +939,7 @@ function createPixpaxContextStore() {
     const identityId = currentIdentityId.value;
     if (!identityId) throw new Error("No active identity.");
     if (activeIdentityCollectionPixbooks.value.length > 0) {
-      throw new Error(
-        "Only one pixbook is supported per identity for the active collection."
-      );
+      throw new Error("Only one pixbook is supported per identity for the active collection.");
     }
 
     const normalized = String(name || "").trim() || "My Pixbook";
@@ -1002,7 +949,7 @@ function createPixpaxContextStore() {
       (entry) =>
         entry.identityId === identityId &&
         normalizeCollectionId(entry.collectionId) === activeCollectionId.value &&
-        entry.isDefault
+        entry.isDefault,
     );
 
     const next: PixpaxPixbookRecord = {
@@ -1027,10 +974,8 @@ function createPixpaxContextStore() {
 
     updatePixbooks(
       pixbooks.value.map((entry) =>
-        entry.id === pixbookId
-          ? { ...entry, name: normalized, updatedAt: nowIso() }
-          : entry
-      )
+        entry.id === pixbookId ? { ...entry, name: normalized, updatedAt: nowIso() } : entry,
+      ),
     );
   }
 
@@ -1052,7 +997,7 @@ function createPixpaxContextStore() {
           isDefault: entry.id === pixbookId,
           updatedAt: nowIso(),
         };
-      })
+      }),
     );
   }
 
@@ -1063,12 +1008,11 @@ function createPixpaxContextStore() {
     const identityBooks = pixbooks.value.filter(
       (entry) =>
         entry.identityId === target.identityId &&
-        normalizeCollectionId(entry.collectionId) ===
-          normalizeCollectionId(target.collectionId)
+        normalizeCollectionId(entry.collectionId) === normalizeCollectionId(target.collectionId),
     );
     if (identityBooks.length <= 1) {
       throw new Error(
-        "This identity has one pixbook for the active collection and cannot remove it."
+        "This identity has one pixbook for the active collection and cannot remove it.",
       );
     }
 
@@ -1083,13 +1027,13 @@ function createPixpaxContextStore() {
             entry.identityId === target.identityId &&
             normalizeCollectionId(entry.collectionId) ===
               normalizeCollectionId(target.collectionId) &&
-            entry.isDefault
+            entry.isDefault,
         ) ||
         pixbooks.value.find(
           (entry) =>
             entry.identityId === target.identityId &&
             normalizeCollectionId(entry.collectionId) ===
-              normalizeCollectionId(target.collectionId)
+              normalizeCollectionId(target.collectionId),
         );
       if (fallback) {
         await switchPixbookLocal(fallback.id);
@@ -1162,10 +1106,7 @@ function createPixpaxContextStore() {
     uploadStatus.value = `${kind === "private" ? "Private" : "Public"} pixbook exported.`;
   }
 
-  async function importPixbookFile(
-    file: File,
-    options: { confirm?: boolean } = {}
-  ) {
+  async function importPixbookFile(file: File, options: { confirm?: boolean } = {}) {
     uploadError.value = "";
     uploadStatus.value = "";
 
@@ -1185,7 +1126,7 @@ function createPixpaxContextStore() {
     const shouldConfirm = options.confirm !== false;
     if (shouldConfirm) {
       const confirmed = window.confirm(
-        "Import this pixbook as a new local identity and pixbook for the current collection?"
+        "Import this pixbook as a new local identity and pixbook for the current collection?",
       );
       if (!confirmed) return false;
     }
@@ -1223,7 +1164,7 @@ function createPixpaxContextStore() {
   async function createNewPixbook(confirm = true) {
     if (confirm) {
       const confirmed = window.confirm(
-        "Start a new pixbook? This will replace your current pixbook."
+        "Start a new pixbook? This will replace your current pixbook.",
       );
       if (!confirmed) return;
     }
@@ -1269,7 +1210,7 @@ function createPixpaxContextStore() {
 
   async function eraseLocalPixbook() {
     const confirmed = window.confirm(
-      "Erase this pixbook from this browser? This cannot be undone."
+      "Erase this pixbook from this browser? This cannot be undone.",
     );
     if (!confirmed) return;
 
@@ -1339,7 +1280,7 @@ function createPixpaxContextStore() {
       if (!pubKey || !privKey) return;
       await ensurePixbook();
     },
-    { immediate: true }
+    { immediate: true },
   );
 
   watch(
@@ -1352,7 +1293,7 @@ function createPixpaxContextStore() {
         privateLedgerSnapshot.value = "";
       }
     },
-    { immediate: true }
+    { immediate: true },
   );
 
   watch(
@@ -1361,7 +1302,7 @@ function createPixpaxContextStore() {
       if (!nextPem || !nextProfileId) return;
       await registerCurrentIdentity();
       await ensureCurrentPixbookRecord();
-    }
+    },
   );
 
   watch(
@@ -1371,7 +1312,7 @@ function createPixpaxContextStore() {
       const next = await ensureCurrentPixbookRecord();
       if (!next) return;
       await switchPixbookLocal(next.id);
-    }
+    },
   );
 
   watch(
@@ -1380,7 +1321,7 @@ function createPixpaxContextStore() {
       if (!publicKeyPEM.value || !profile.profileId.value) return;
       await registerCurrentIdentity();
     },
-    { deep: true }
+    { deep: true },
   );
 
   return {
@@ -1473,9 +1414,7 @@ export function providePixpaxContextStore() {
 export function usePixpaxContextStore() {
   const store = inject<PixpaxContextStore>(usePixpaxContextStoreSymbol);
   if (!store) {
-    throw new Error(
-      "usePixpaxContextStore() called without providePixpaxContextStore()."
-    );
+    throw new Error("usePixpaxContextStore() called without providePixpaxContextStore().");
   }
   return store;
 }

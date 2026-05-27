@@ -48,10 +48,7 @@ export type ConcordOsAppHost = {
   activeAppLabel: ComputedRef<string | null>;
   tabs: ComputedRef<ConcordOsWorkspaceTab[]>;
   activeTabId: ComputedRef<string | null>;
-  openChooser(
-    entry: SolidWorkspaceEntry,
-    ledgerSummary?: SolidWorkspaceLedgerSummary | null,
-  ): void;
+  openChooser(entry: SolidWorkspaceEntry, ledgerSummary?: SolidWorkspaceLedgerSummary | null): void;
   closeChooser(): void;
   openChosenApp(router: Router, appId: string, target?: ConcordOsOpenTarget | null): Promise<void>;
   loadHostedApp(input: LoadHostedAppInput): Promise<void>;
@@ -157,7 +154,9 @@ function createHost(): ConcordOsAppHost {
         (candidate) => candidate.appId === definition.id,
       );
       if (!compatibility?.supported) {
-        throw new Error(compatibility?.reason || "This ledger is not supported by the requested app.");
+        throw new Error(
+          compatibility?.reason || "This ledger is not supported by the requested app.",
+        );
       }
 
       const app = await createConcordApp({
@@ -183,9 +182,7 @@ function createHost(): ConcordOsAppHost {
     chooserOpen: computed(() => chooserOpenState.value),
     chooserTarget: computed(() => chooserTargetState.value),
     chooserApps: computed(() =>
-      chooserTargetState.value
-        ? resolveConcordOsLedgerCompatibility(chooserTargetState.value)
-        : [],
+      chooserTargetState.value ? resolveConcordOsLedgerCompatibility(chooserTargetState.value) : [],
     ),
     status: computed(() => statusState.value),
     error: computed(() => errorState.value),

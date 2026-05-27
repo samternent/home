@@ -38,9 +38,7 @@ for (; i < toPublish.length; i++) {
     )
     .toString();
 
-  const changelog = fullChangelog
-    ?.split(`## ${name}@${version}`)[1]
-    ?.split("## ")[1];
+  const changelog = fullChangelog?.split(`## ${name}@${version}`)[1]?.split("## ")[1];
 
   if (changelog) {
     shell.exec(

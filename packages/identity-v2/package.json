@@ -2,6 +2,11 @@
   "name": "@ternent/identity",
   "version": "0.3.1",
   "description": "Seed-based Ed25519 identity primitives with X25519 bridge helpers",
+  "license": "ISC",
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "type": "module",
   "sideEffects": false,
   "main": "dist/index.umd.js",
@@ -14,23 +19,18 @@
       "default": "./dist/index.es.js"
     }
   },
-  "files": [
-    "dist",
-    "README.md"
-  ],
   "scripts": {
     "build": "vite build",
     "test": "vitest run"
-  },
-  "license": "ISC",
-  "devDependencies": {
-    "vite": "^2.9.18",
-    "vite-plugin-dts": "^1.7.3",
-    "vitest": "^1.6.0"
   },
   "dependencies": {
     "@noble/curves": "^2.0.1",
     "@noble/hashes": "^2.0.1",
     "@scure/bip39": "^2.0.1"
+  },
+  "devDependencies": {
+    "vite": "^2.9.18",
+    "vite-plugin-dts": "^1.7.3",
+    "vitest": "^1.6.0"
   }
 }

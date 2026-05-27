@@ -2,11 +2,7 @@
 import { shallowRef, computed } from "vue";
 import { onClickOutside, useLocalStorage } from "@vueuse/core";
 import { SplitButton } from "ternent-ui/primitives";
-import {
-  createIdentity,
-  exportPublicKeyAsPem,
-  exportPrivateKeyAsPem,
-} from "ternent-identity";
+import { createIdentity, exportPublicKeyAsPem, exportPrivateKeyAsPem } from "ternent-identity";
 import { generate as generateEncryptionKeys } from "ternent-encrypt";
 import { stripIdentityKey } from "ternent-utils";
 import { useLedger } from "../ledger/useLedger";
@@ -31,7 +27,7 @@ const props = withDefaults(
     brandTo: "/",
     badgeLabel: "DEMO",
     showBadge: true,
-  }
+  },
 );
 
 type SampleProfilePair = {
@@ -39,31 +35,24 @@ type SampleProfilePair = {
   private?: PrivateProfile;
 };
 
-const profileModules = import.meta.glob(
-  "../../module/profile/samples/concord-profile.*.*.json",
-  {
-    eager: true,
-    import: "default",
-  }
-) as Record<string, any>;
+const profileModules = import.meta.glob("../../module/profile/samples/concord-profile.*.*.json", {
+  eager: true,
+  import: "default",
+}) as Record<string, any>;
 
 const profiles = computed<Record<string, SampleProfilePair>>(() => {
   const profiles: Record<string, SampleProfilePair> = {};
   for (const [path, data] of Object.entries(profileModules)) {
     // example filename:
     // concord-profile.private.3edc6ed685.json
-    const match = path.match(
-      /concord-profile\.(public|private)\.([^.]+)\.json$/
-    );
+    const match = path.match(/concord-profile\.(public|private)\.([^.]+)\.json$/);
 
     if (!match) continue;
 
     const [, visibility, id] = match;
 
     profiles[id] ??= {};
-    profiles[id][visibility as "public" | "private"] = data as
-      | PublicProfile
-      | PrivateProfile;
+    profiles[id][visibility as "public" | "private"] = data as PublicProfile | PrivateProfile;
   }
 
   return profiles;
@@ -85,16 +74,13 @@ const {
 } = useEncryption();
 const profile = useProfile();
 
-const myProfile = useLocalStorage(
-  "concord/profile/me",
-  profile.getPrivateProfileJson()
-);
+const myProfile = useLocalStorage("concord/profile/me", profile.getPrivateProfileJson());
 
 const contentArea = shallowRef<HTMLElement | null>();
 const userMenuRef = shallowRef<HTMLElement | null>();
 
 const genesisId = computed(() =>
-  (Object.keys(ledger.value?.commits || {})[0] || "").substring(0, 7)
+  (Object.keys(ledger.value?.commits || {})[0] || "").substring(0, 7),
 );
 
 const userMenuOpen = shallowRef(false);
@@ -116,20 +102,14 @@ const profileUsername = computed(() => {
   return typeof meta.username === "string" ? meta.username : "";
 });
 
-const disabled = computed(
-  () => !profile.ready.value || !profile.profileId.value
-);
+const disabled = computed(() => !profile.ready.value || !profile.profileId.value);
 
 const username = shallowRef<string>("");
 const uploadInputRef = shallowRef<HTMLInputElement | null>(null);
 const uploadError = shallowRef("");
 const uploadStatus = shallowRef("");
 
-function downloadText(
-  filename: string,
-  content: string,
-  mime = "application/json"
-) {
+function downloadText(filename: string, content: string, mime = "application/json") {
   const blob = new Blob([content], { type: `${mime};charset=utf-8` });
   const url = URL.createObjectURL(blob);
 
@@ -239,9 +219,7 @@ async function generateNewIdentity(e?: Event) {
   }
   const keys = await createIdentity();
   if (!keys) return;
-  publicKeyPEM.value = stripIdentityKey(
-    await exportPublicKeyAsPem(keys.publicKey)
-  );
+  publicKeyPEM.value = stripIdentityKey(await exportPublicKeyAsPem(keys.publicKey));
   publicKey.value = keys.publicKey;
   privateKey.value = keys.privateKey;
   privateKeyPEM.value = await exportPrivateKeyAsPem(keys.privateKey);
@@ -249,7 +227,7 @@ async function generateNewIdentity(e?: Event) {
 
 async function resetIdentityAndProfile() {
   const confirmed = window.confirm(
-    "This will clear the current identity and profile and generate a new one."
+    "This will clear the current identity and profile and generate a new one.",
   );
   if (!confirmed) return;
 
@@ -300,9 +278,7 @@ async function setProfile() {
           >
         </div>
 
-        <nav
-          class="flex items-center flex-1 justify-between text-xs font-mono px-4 py-2"
-        >
+        <nav class="flex items-center flex-1 justify-between text-xs font-mono px-4 py-2">
           <div>@{{ genesisId }}</div>
           <div class="relative" ref="userMenuRef">
             <!-- Compact user avatar button -->
@@ -326,9 +302,7 @@ async function setProfile() {
                   d="M19.5 8.25l-7.5 7.5-7.5-7.5"
                 />
               </svg>
-              <div
-                class="rounded-full overflow-hidden border border-[var(--ui-border)]"
-              >
+              <div class="rounded-full overflow-hidden border border-[var(--ui-border)]">
                 <IdentityAvatar :identity="publicKeyPEM" size="sm" />
               </div>
             </button>
@@ -338,14 +312,8 @@ async function setProfile() {
               class="border border-[var(--ui-border)] absolute p-2 bg-[var(--ui-surface)] rounded mt-2 w-64 right-0 shadow"
             >
               <div class="flex flex-col gap-2 py-2">
-                <IdentityAvatar
-                  :identity="publicKeyPEM"
-                  size="lg"
-                  class="mx-auto my-4"
-                />
-                <span class="p-2 text-center font-thin"
-                  >@{{ profileUsername }}</span
-                >
+                <IdentityAvatar :identity="publicKeyPEM" size="lg" class="mx-auto my-4" />
+                <span class="p-2 text-center font-thin">@{{ profileUsername }}</span>
 
                 <div
                   v-if="!hasProfile"
@@ -355,18 +323,12 @@ async function setProfile() {
                     <div
                       class="flex flex-col items-center gap-2 rounded-lg bg-[var(--ui-bg)] border border-[var(--ui-border)]"
                     >
-                      <IdentityAvatar
-                        :identity="publicKeyPEM"
-                        size="lg"
-                        class="mx-auto my-4"
-                      />
+                      <IdentityAvatar :identity="publicKeyPEM" size="lg" class="mx-auto my-4" />
                     </div>
 
                     <button
                       @click="generateNewIdentity"
-                      @animationend="
-                        (e) => e.currentTarget.classList.remove('spin')
-                      "
+                      @animationend="(e) => e.currentTarget.classList.remove('spin')"
                       class="spin-target size-8 flex items-center justify-center rounded-full border border-[var(--ui-border)] bg-[var(--ui-bg)] p-2 mx-auto"
                     >
                       <svg
@@ -407,11 +369,7 @@ async function setProfile() {
                   class="hidden"
                   @change="handleProfileUpload"
                 />
-                <SplitButton
-                  v-if="hasProfile"
-                  :disabled="disabled"
-                  menuWidth="w-64"
-                >
+                <SplitButton v-if="hasProfile" :disabled="disabled" menuWidth="w-64">
                   <template #primary>
                     <button
                       type="button"

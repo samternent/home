@@ -42,16 +42,10 @@ const items: NavItem[] = [
 ];
 
 const authLabel = computed(() => {
-  if (
-    auth.status.value === "authenticated" &&
-    auth.source.value === "platform-session"
-  ) {
+  if (auth.status.value === "authenticated" && auth.source.value === "platform-session") {
     return "platform session";
   }
-  if (
-    auth.status.value === "authenticated" &&
-    auth.source.value === "bearer-token"
-  ) {
+  if (auth.status.value === "authenticated" && auth.source.value === "bearer-token") {
     return "token session";
   }
   if (auth.status.value === "authenticated") return "authenticated";
@@ -81,18 +75,12 @@ onMounted(() => {
 </script>
 
 <template>
-  <aside
-    class="h-full w-64 shrink-0 border-r border-[var(--ui-border)] bg-[var(--ui-bg)]"
-  >
+  <aside class="h-full w-64 shrink-0 border-r border-[var(--ui-border)] bg-[var(--ui-bg)]">
     <div class="border-b border-[var(--ui-border)] p-3">
-      <div
-        class="text-xs uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]"
-      >
+      <div class="text-xs uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
         PixPax Control
       </div>
-      <div class="mt-2 text-xs text-[var(--ui-fg-muted)]">
-        Status: {{ authLabel }}
-      </div>
+      <div class="mt-2 text-xs text-[var(--ui-fg-muted)]">Status: {{ authLabel }}</div>
       <button
         v-if="auth.source.value === 'bearer-token'"
         type="button"

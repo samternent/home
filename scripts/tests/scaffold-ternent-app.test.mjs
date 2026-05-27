@@ -139,14 +139,8 @@ landing:
       /"\.\.\/\.\.\/packages\/seal-cli\/src\/proof\.ts"/,
     );
     assert.ok(fs.existsSync(workflowPath));
-    assert.match(
-      fs.readFileSync(workflowPath, "utf8"),
-      new RegExp(`apps/${appId}`),
-    );
-    assert.match(
-      fs.readFileSync(publishPath, "utf8"),
-      new RegExp(`\\.\\./apps/${appId}`),
-    );
+    assert.match(fs.readFileSync(workflowPath, "utf8"), new RegExp(`apps/${appId}`));
+    assert.match(fs.readFileSync(publishPath, "utf8"), new RegExp(`\\.\\./apps/${appId}`));
   } finally {
     removeDir(targetDir);
     fs.rmSync(workflowPath, { force: true });
@@ -200,7 +194,10 @@ test("scaffold shorthand writes a manifest and sync updates generated config", (
       path.join(targetDir, "vite.config.ts"),
       fs
         .readFileSync(path.join(targetDir, "vite.config.ts"), "utf8")
-        .replace('"../../packages/seal-cli/src/proof.ts"', '"../../../packages/seal-cli/src/proof.ts"'),
+        .replace(
+          '"../../packages/seal-cli/src/proof.ts"',
+          '"../../../packages/seal-cli/src/proof.ts"',
+        ),
       "utf8",
     );
 
@@ -220,10 +217,7 @@ test("scaffold shorthand writes a manifest and sync updates generated config", (
     );
     assert.equal(fs.readFileSync(customFile, "utf8"), "leave me alone");
     assert.ok(fs.existsSync(workflowPath));
-    assert.match(
-      fs.readFileSync(publishPath, "utf8"),
-      new RegExp(`\\.\\./apps/${appId}`),
-    );
+    assert.match(fs.readFileSync(publishPath, "utf8"), new RegExp(`\\.\\./apps/${appId}`));
   } finally {
     removeDir(targetDir);
     fs.rmSync(workflowPath, { force: true });

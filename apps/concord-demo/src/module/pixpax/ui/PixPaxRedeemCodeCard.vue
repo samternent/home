@@ -44,20 +44,13 @@ function formatDate(
 </script>
 
 <template>
-  <article
-    class="bg-white text-black p-4 break-inside-avoid [page-break-inside:avoid]"
-  >
+  <article class="bg-white text-black p-4 break-inside-avoid [page-break-inside:avoid]">
     <div
       class="border-2 border-dashed border-gray-400 rounded-sm flex flex-col items-center justify-center w-64 mx-auto p-4 relative"
     >
       <PixPaxLogoText class="h-6 fill-black z-1" />
 
-      <img
-        v-if="qrDataUrl"
-        :src="qrDataUrl"
-        alt="Code card QR"
-        class="w-full -my-2"
-      />
+      <img v-if="qrDataUrl" :src="qrDataUrl" alt="Code card QR" class="w-full -my-2" />
       <!-- <CanvasSticker16
           v-if="art && palette"
           :art="art"
@@ -72,9 +65,7 @@ function formatDate(
           {{ item.label }}
         </p>
 
-        <p
-          class="font-thin tracking-loose text-sm bg-gray-100 px-3 py-1 rounded-full z-1"
-        >
+        <p class="font-thin tracking-loose text-sm bg-gray-100 px-3 py-1 rounded-full z-1">
           {{ item.codeId }}
         </p>
         <p class="text-[12px]">Expires {{ formatDate(item.expiresAt) }}</p>

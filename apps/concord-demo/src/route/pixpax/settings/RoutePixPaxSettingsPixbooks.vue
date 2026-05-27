@@ -13,7 +13,7 @@ function renamePixbook(pixbookId: string, currentName: string) {
 
 async function removePixbookFromAccount(pixbookId: string, currentName: string) {
   const confirmed = window.confirm(
-    `Remove '${currentName || "this pixbook"}' from your account? This only removes the cloud/account record.`
+    `Remove '${currentName || "this pixbook"}' from your account? This only removes the cloud/account record.`,
   );
   if (!confirmed) return;
 
@@ -39,10 +39,7 @@ async function removePixbookFromAccount(pixbookId: string, currentName: string) 
       <p class="text-[11px] text-[var(--ui-fg-muted)]">
         Collection: <code>{{ context.currentCollectionId.value }}</code>
       </p>
-      <p
-        v-if="!context.activePixbook.value"
-        class="text-xs text-[var(--ui-fg-muted)]"
-      >
+      <p v-if="!context.activePixbook.value" class="text-xs text-[var(--ui-fg-muted)]">
         No pixbook is available for this identity yet.
       </p>
       <div
@@ -73,7 +70,7 @@ async function removePixbookFromAccount(pixbookId: string, currentName: string) 
             @click="
               removePixbookFromAccount(
                 context.activePixbook.value.id,
-                context.activePixbook.value.name
+                context.activePixbook.value.name,
               )
             "
           >
@@ -83,7 +80,11 @@ async function removePixbookFromAccount(pixbookId: string, currentName: string) 
       </div>
     </section>
 
-    <p v-if="context.errorMessage.value" class="text-xs text-red-600">{{ context.errorMessage.value }}</p>
-    <p v-if="context.statusMessage.value" class="text-xs text-green-600">{{ context.statusMessage.value }}</p>
+    <p v-if="context.errorMessage.value" class="text-xs text-red-600">
+      {{ context.errorMessage.value }}
+    </p>
+    <p v-if="context.statusMessage.value" class="text-xs text-green-600">
+      {{ context.statusMessage.value }}
+    </p>
   </div>
 </template>

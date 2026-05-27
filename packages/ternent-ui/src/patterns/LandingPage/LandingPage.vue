@@ -20,9 +20,7 @@ const props = defineProps<{
   config: LandingPageConfig;
 }>();
 
-const developerTab = ref(
-  props.config.developerSection.tabs[0]?.value ?? "overview",
-);
+const developerTab = ref(props.config.developerSection.tabs[0]?.value ?? "overview");
 
 const hasDocumentationSections =
   Boolean(props.config.proofModelSection) ||
@@ -70,9 +68,7 @@ function previewTabs(preview: LandingPagePreview) {
 }
 
 function previewActiveTab(preview: LandingPagePreview) {
-  return (
-    preview.tabs?.find((tab) => tab.active)?.label ?? preview.tabs?.[0]?.label
-  );
+  return preview.tabs?.find((tab) => tab.active)?.label ?? preview.tabs?.[0]?.label;
 }
 
 function resolveActionVariant(action: LandingPageAction) {
@@ -88,8 +84,6 @@ function resolveSuiteItemStyle(themeColor: string) {
 
 <template>
   <PageSurface>
-   
-
     <main
       :class="
         hasDocumentationSections
@@ -123,9 +117,7 @@ function resolveSuiteItemStyle(themeColor: string) {
               <Button
                 v-if="props.config.hero.secondaryAction"
                 v-bind="resolveButtonProps(props.config.hero.secondaryAction)"
-                :variant="
-                  resolveActionVariant(props.config.hero.secondaryAction)
-                "
+                :variant="resolveActionVariant(props.config.hero.secondaryAction)"
                 size="lg"
               >
                 {{ props.config.hero.secondaryAction.label }}
@@ -176,11 +168,7 @@ function resolveSuiteItemStyle(themeColor: string) {
         </slot>
       </section>
 
-      <section
-        v-if="props.config.proofModelSection"
-        id="proof-model"
-        class="pt-28"
-      >
+      <section v-if="props.config.proofModelSection" id="proof-model" class="pt-28">
         <SectionIntro
           :eyebrow="props.config.proofModelSection.eyebrow"
           :title="props.config.proofModelSection.title"
@@ -193,25 +181,17 @@ function resolveSuiteItemStyle(themeColor: string) {
             :key="item.title"
             class="space-y-3 border-t border-[color-mix(in_srgb,var(--ui-border)_82%,transparent)] pt-5"
           >
-            <h3
-              class="m-0 text-base font-medium tracking-[-0.02em] text-[var(--ui-fg)]"
-            >
+            <h3 class="m-0 text-base font-medium tracking-[-0.02em] text-[var(--ui-fg)]">
               {{ item.title }}
             </h3>
-            <p
-              class="m-0 max-w-2xl text-sm leading-7 text-[var(--ui-fg-muted)]"
-            >
+            <p class="m-0 max-w-2xl text-sm leading-7 text-[var(--ui-fg-muted)]">
               {{ item.description }}
             </p>
           </div>
         </div>
       </section>
 
-      <section
-        v-if="props.config.proofJsonSection"
-        id="proof-json"
-        class="pt-20"
-      >
+      <section v-if="props.config.proofJsonSection" id="proof-json" class="pt-20">
         <SectionIntro
           :eyebrow="props.config.proofJsonSection.eyebrow"
           :title="props.config.proofJsonSection.title"
@@ -254,9 +234,7 @@ function resolveSuiteItemStyle(themeColor: string) {
             :key="surface.title"
             class="space-y-3 px-0 py-6 md:px-6 md:py-8 md:not-first:border-l md:not-first:border-[color-mix(in_srgb,var(--ui-border)_82%,transparent)]"
           >
-            <h3
-              class="m-0 text-lg font-medium tracking-[-0.02em] text-[var(--ui-fg)]"
-            >
+            <h3 class="m-0 text-lg font-medium tracking-[-0.02em] text-[var(--ui-fg)]">
               {{ surface.title }}
             </h3>
             <p class="m-0 text-sm leading-7 text-[var(--ui-fg-muted)]">
@@ -301,9 +279,7 @@ function resolveSuiteItemStyle(themeColor: string) {
               {{ item.title }}
             </div>
             <div class="space-y-3">
-              <h3
-                class="m-0 text-lg font-medium tracking-[-0.02em] text-[var(--ui-fg)]"
-              >
+              <h3 class="m-0 text-lg font-medium tracking-[-0.02em] text-[var(--ui-fg)]">
                 {{ item.title }}
               </h3>
               <p class="m-0 text-sm leading-7 text-[var(--ui-fg-muted)]">
@@ -363,9 +339,7 @@ function resolveSuiteItemStyle(themeColor: string) {
             :rows="props.config.howItWorksSection.preview.rows"
             :code="props.config.howItWorksSection.preview.code"
             :tabs="previewTabs(props.config.howItWorksSection.preview)"
-            :active-tab="
-              previewActiveTab(props.config.howItWorksSection.preview)
-            "
+            :active-tab="previewActiveTab(props.config.howItWorksSection.preview)"
             :footer-text="props.config.howItWorksSection.preview.footerText"
           />
 
@@ -399,9 +373,7 @@ function resolveSuiteItemStyle(themeColor: string) {
           >
             <div class="flex items-start justify-between gap-3">
               <div class="space-y-2">
-                <h3
-                  class="m-0 text-xl font-medium tracking-[-0.02em] text-[var(--ui-fg)]"
-                >
+                <h3 class="m-0 text-xl font-medium tracking-[-0.02em] text-[var(--ui-fg)]">
                   {{ useCase.title }}
                 </h3>
               </div>
@@ -418,11 +390,7 @@ function resolveSuiteItemStyle(themeColor: string) {
         </div>
       </section>
 
-      <section
-        v-if="props.config.staticBuildSection"
-        id="static-build"
-        class="pt-20"
-      >
+      <section v-if="props.config.staticBuildSection" id="static-build" class="pt-20">
         <div class="max-w-4xl">
           <SectionIntro
             :eyebrow="props.config.staticBuildSection.eyebrow"
@@ -525,9 +493,7 @@ function resolveSuiteItemStyle(themeColor: string) {
                   >
                     {{ tab.meta }}
                   </p>
-                  <h3
-                    class="m-0 text-lg font-medium tracking-[-0.02em] text-[var(--ui-fg)]"
-                  >
+                  <h3 class="m-0 text-lg font-medium tracking-[-0.02em] text-[var(--ui-fg)]">
                     {{ tab.title }}
                   </h3>
                 </div>
@@ -549,10 +515,7 @@ function resolveSuiteItemStyle(themeColor: string) {
         </div>
       </section>
 
-      <section
-        v-if="!hasDocumentationSections && props.config.clarifierSection"
-        class="pt-14"
-      >
+      <section v-if="!hasDocumentationSections && props.config.clarifierSection" class="pt-14">
         <SectionClarifier
           :eyebrow="props.config.clarifierSection.eyebrow"
           :title="props.config.clarifierSection.title"
@@ -587,10 +550,7 @@ function resolveSuiteItemStyle(themeColor: string) {
             <ul
               class="m-0 list-outside list-disc space-y-2 pl-5 text-sm leading-7 text-[var(--ui-fg-muted)] marker:text-[var(--ui-fg-muted)]"
             >
-              <li
-                v-for="item in props.config.nonGoalsSection.items"
-                :key="item"
-              >
+              <li v-for="item in props.config.nonGoalsSection.items" :key="item">
                 {{ item }}
               </li>
             </ul>
@@ -608,33 +568,23 @@ function resolveSuiteItemStyle(themeColor: string) {
           >
             <template #actions>
               <Button
-                v-bind="
-                  resolveButtonProps(props.config.ctaSection.primaryAction)
-                "
-                :variant="
-                  resolveActionVariant(props.config.ctaSection.primaryAction)
-                "
+                v-bind="resolveButtonProps(props.config.ctaSection.primaryAction)"
+                :variant="resolveActionVariant(props.config.ctaSection.primaryAction)"
                 size="lg"
               >
                 {{ props.config.ctaSection.primaryAction.label }}
               </Button>
               <Button
                 v-if="props.config.ctaSection.secondaryAction"
-                v-bind="
-                  resolveButtonProps(props.config.ctaSection.secondaryAction)
-                "
-                :variant="
-                  resolveActionVariant(props.config.ctaSection.secondaryAction)
-                "
+                v-bind="resolveButtonProps(props.config.ctaSection.secondaryAction)"
+                :variant="resolveActionVariant(props.config.ctaSection.secondaryAction)"
                 size="lg"
               >
                 {{ props.config.ctaSection.secondaryAction.label }}
               </Button>
               <Button
                 v-if="props.config.ctaSection.tertiaryAction"
-                v-bind="
-                  resolveButtonProps(props.config.ctaSection.tertiaryAction)
-                "
+                v-bind="resolveButtonProps(props.config.ctaSection.tertiaryAction)"
                 variant="plain-secondary"
                 size="lg"
               >
@@ -645,6 +595,5 @@ function resolveSuiteItemStyle(themeColor: string) {
         </Card>
       </section>
     </main>
-
   </PageSurface>
 </template>

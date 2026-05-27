@@ -32,17 +32,9 @@ const sizeClasses = computed(() => ({
 </script>
 
 <template>
-  <nav
-    class="breadcrumb-wrapper"
-    :class="sizeClasses[size]"
-    aria-label="Breadcrumb"
-  >
+  <nav class="breadcrumb-wrapper" :class="sizeClasses[size]" aria-label="Breadcrumb">
     <ol class="breadcrumb-list">
-      <li
-        v-for="(breadcrumb, index) in breadcrumbs"
-        :key="breadcrumb.path"
-        class="breadcrumb-item"
-      >
+      <li v-for="(breadcrumb, index) in breadcrumbs" :key="breadcrumb.path" class="breadcrumb-item">
         <!-- Breadcrumb link -->
         <RouterLink
           :to="breadcrumb.path"
@@ -53,11 +45,7 @@ const sizeClasses = computed(() => ({
           :aria-current="index === breadcrumbs.length - 1 ? 'page' : undefined"
         >
           <!-- Icon if provided -->
-          <span
-            v-if="breadcrumb.icon"
-            class="breadcrumb-icon"
-            v-html="breadcrumb.icon"
-          />
+          <span v-if="breadcrumb.icon" class="breadcrumb-icon" v-html="breadcrumb.icon" />
 
           <span class="breadcrumb-text">{{ breadcrumb.name }}</span>
         </RouterLink>
@@ -72,11 +60,7 @@ const sizeClasses = computed(() => ({
             stroke-width="2"
             class="breadcrumb-separator-icon"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              :d="separatorIcons.chevron"
-            />
+            <path stroke-linecap="round" stroke-linejoin="round" :d="separatorIcons.chevron" />
           </svg>
 
           <svg
@@ -87,23 +71,11 @@ const sizeClasses = computed(() => ({
             stroke-width="2"
             class="breadcrumb-separator-icon"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              :d="separatorIcons.arrow"
-            />
+            <path stroke-linecap="round" stroke-linejoin="round" :d="separatorIcons.arrow" />
           </svg>
 
-          <span
-            v-else-if="separator === 'slash'"
-            class="breadcrumb-separator-text"
-            >/</span
-          >
-          <span
-            v-else-if="separator === 'dot'"
-            class="breadcrumb-separator-text"
-            >•</span
-          >
+          <span v-else-if="separator === 'slash'" class="breadcrumb-separator-text">/</span>
+          <span v-else-if="separator === 'dot'" class="breadcrumb-separator-text">•</span>
         </div>
       </li>
     </ol>

@@ -14,8 +14,8 @@ async function main() {
           mismatches: result.mismatches,
         },
         null,
-        2
-      )
+        2,
+      ),
     );
     process.exitCode = 1;
     return;
@@ -29,8 +29,8 @@ async function main() {
         mismatchCount: 0,
       },
       null,
-      2
-    )
+      2,
+    ),
   );
 }
 

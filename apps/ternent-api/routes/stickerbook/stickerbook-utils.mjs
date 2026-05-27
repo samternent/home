@@ -20,7 +20,9 @@ function clampInt(value) {
 }
 
 export function createNonceHex(length = 16) {
-  return randomBytes(Math.ceil(length / 2)).toString("hex").slice(0, length);
+  return randomBytes(Math.ceil(length / 2))
+    .toString("hex")
+    .slice(0, length);
 }
 
 export function hashCanonical(value) {
@@ -145,9 +147,7 @@ function normalizeCandidates(kitJson) {
         rarity: candidate.rarity ?? null,
       }))
     : [];
-  return candidates.sort((a, b) =>
-    JSON.stringify(a).localeCompare(JSON.stringify(b))
-  );
+  return candidates.sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b)));
 }
 
 function ensureExplicitNull(value) {
@@ -157,7 +157,7 @@ function ensureExplicitNull(value) {
 export function generatePack(params) {
   const count = clampInt(params.count || 0);
   const sharedRng = createSeededRng(
-    `${params.packSeed}:${params.seriesId}:${params.themeId}:${params.algoVersion}`
+    `${params.packSeed}:${params.seriesId}:${params.themeId}:${params.algoVersion}`,
   );
   const kitJson = params.kitJson || {};
   const rarityWeights = kitJson.rarityWeights || DEFAULT_RARITY_WEIGHTS;
@@ -175,26 +175,18 @@ export function generatePack(params) {
 
   for (let index = 0; index < count; index += 1) {
     const perStickerSeed =
-      typeof params.stickerSeedForIndex === "function"
-        ? params.stickerSeedForIndex(index)
-        : null;
+      typeof params.stickerSeedForIndex === "function" ? params.stickerSeedForIndex(index) : null;
     const rng = perStickerSeed
       ? createSeededRng(
-          `${perStickerSeed}:${params.seriesId}:${params.themeId}:${params.algoVersion}`
+          `${perStickerSeed}:${params.seriesId}:${params.themeId}:${params.algoVersion}`,
         )
       : sharedRng;
     const rarity = pickWeighted(
       rng,
-      Object.fromEntries(
-        Object.entries(rarityWeights).sort(([a], [b]) =>
-          a.localeCompare(b)
-        )
-      )
+      Object.fromEntries(Object.entries(rarityWeights).sort(([a], [b]) => a.localeCompare(b))),
     );
     const rules = resolveRarityRules(kitJson, rarity);
-    const rarityCandidates = candidates.filter(
-      (candidate) => candidate.rarity === rarity
-    );
+    const rarityCandidates = candidates.filter((candidate) => candidate.rarity === rarity);
     const candidatePool = rarityCandidates.length ? rarityCandidates : candidates;
     const candidate = candidatePool.length ? pick(rng, candidatePool) : null;
     const identityRoll = rng() <= Number(rules.identityChance || 0);
@@ -204,28 +196,18 @@ export function generatePack(params) {
 
     const entry = {
       index,
-      archetypeId: ensureExplicitNull(
-        candidate?.archetypeId ?? pick(rng, archetypeIds)
-      ),
+      archetypeId: ensureExplicitNull(candidate?.archetypeId ?? pick(rng, archetypeIds)),
       bodyId: ensureExplicitNull(candidate?.bodyId ?? pick(rng, bodyIds)),
       eyesId: ensureExplicitNull(candidate?.eyesId ?? pick(rng, eyesIds)),
       identityId: ensureExplicitNull(
-        candidate?.identityId ??
-          (identityRoll ? pick(rng, identityIds) : null)
+        candidate?.identityId ?? (identityRoll ? pick(rng, identityIds) : null),
       ),
       accessoryId: ensureExplicitNull(
-        candidate?.accessoryId ??
-          (accessoryRoll ? pick(rng, accessoryIds) : null)
+        candidate?.accessoryId ?? (accessoryRoll ? pick(rng, accessoryIds) : null),
       ),
-      frameId: ensureExplicitNull(
-        candidate?.frameId ?? (frameRoll ? pick(rng, frameIds) : null)
-      ),
-      fxId: ensureExplicitNull(
-        candidate?.fxId ?? (fxRoll ? pick(rng, fxIds) : null)
-      ),
-      paletteId: ensureExplicitNull(
-        candidate?.paletteId ?? pick(rng, paletteIds)
-      ),
+      frameId: ensureExplicitNull(candidate?.frameId ?? (frameRoll ? pick(rng, frameIds) : null)),
+      fxId: ensureExplicitNull(candidate?.fxId ?? (fxRoll ? pick(rng, fxIds) : null)),
+      paletteId: ensureExplicitNull(candidate?.paletteId ?? pick(rng, paletteIds)),
       rarity,
     };
 
@@ -239,8 +221,8 @@ export function deriveKitFromCatalogue(catalogue) {
   const entries = Array.isArray(catalogue?.creatures)
     ? catalogue.creatures
     : Array.isArray(catalogue?.stickers)
-    ? catalogue.stickers
-    : [];
+      ? catalogue.stickers
+      : [];
 
   const candidates = entries.map((entry) => ({
     archetypeId: entry?.attributes?.archetypeId ?? null,

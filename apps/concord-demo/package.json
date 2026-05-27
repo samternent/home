@@ -1,7 +1,7 @@
 {
   "name": "concord-demo",
-  "private": true,
   "version": "0.3.81",
+  "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,9 +10,9 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@better-auth/passkey": "^1.4.18",
     "@inrupt/solid-client": "^3.0.0",
     "@inrupt/solid-client-authn-browser": "^3.1.1",
-    "@better-auth/passkey": "^1.4.18",
     "@tailwindcss/typography": "^0.5.14",
     "@tailwindcss/vite": "^4.1.18",
     "@ternent/concord-protocol": "workspace:^",

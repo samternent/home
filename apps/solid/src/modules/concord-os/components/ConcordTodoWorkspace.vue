@@ -49,7 +49,16 @@ function submitCreate() {
               {{ ledgerTitle }}
             </p>
           </div>
-          <Badge :tone="statusLabel === 'Pending' ? 'warning' : statusLabel === 'Committing' ? 'accent' : 'success'" variant="soft">
+          <Badge
+            :tone="
+              statusLabel === 'Pending'
+                ? 'warning'
+                : statusLabel === 'Committing'
+                  ? 'accent'
+                  : 'success'
+            "
+            variant="soft"
+          >
             {{ statusLabel }}
           </Badge>
         </div>
@@ -65,9 +74,7 @@ function submitCreate() {
             placeholder="Capture the next task"
             @keydown.enter.prevent="submitCreate"
           />
-          <Button size="sm" variant="secondary" @click="submitCreate">
-            Add
-          </Button>
+          <Button size="sm" variant="secondary" @click="submitCreate"> Add </Button>
         </div>
 
         <p

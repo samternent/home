@@ -64,9 +64,7 @@ const internalMode = ref(getSystemMode());
 
 function getSystemMode() {
   if (typeof window !== "undefined" && typeof window.matchMedia === "function") {
-    return window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light";
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
   }
 
   return "light";
@@ -181,11 +179,7 @@ onClickOutside(menuRef, () => {
 </script>
 
 <template>
-  <div
-    v-if="props.showDropdown"
-    ref="menuRef"
-    class="relative inline-flex"
-  >
+  <div v-if="props.showDropdown" ref="menuRef" class="relative inline-flex">
     <button
       type="button"
       class="inline-flex items-center gap-2 rounded-full border border-[var(--ui-border)] bg-[var(--ui-surface)] px-3 text-[var(--ui-fg)] transition hover:bg-[var(--ui-surface-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ui-ring)]"

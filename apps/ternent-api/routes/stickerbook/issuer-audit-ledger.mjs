@@ -43,13 +43,13 @@ function parseTrustedIssuerKeysStrict(value) {
     parsed = JSON.parse(value);
   } catch (error) {
     throw new Error(
-      `Invalid LEDGER_TRUSTED_ISSUER_PUBLIC_KEYS_JSON: must be valid JSON (${TRUSTED_KEYS_SCHEMA}).`
+      `Invalid LEDGER_TRUSTED_ISSUER_PUBLIC_KEYS_JSON: must be valid JSON (${TRUSTED_KEYS_SCHEMA}).`,
     );
   }
 
   if (!Array.isArray(parsed)) {
     throw new Error(
-      `Invalid LEDGER_TRUSTED_ISSUER_PUBLIC_KEYS_JSON: expected array (${TRUSTED_KEYS_SCHEMA}).`
+      `Invalid LEDGER_TRUSTED_ISSUER_PUBLIC_KEYS_JSON: expected array (${TRUSTED_KEYS_SCHEMA}).`,
     );
   }
 
@@ -57,7 +57,7 @@ function parseTrustedIssuerKeysStrict(value) {
   for (const [index, entry] of parsed.entries()) {
     if (!entry || typeof entry !== "object") {
       throw new Error(
-        `Invalid trusted issuer key at index ${index}: expected object with keyId and publicKeyPem.`
+        `Invalid trusted issuer key at index ${index}: expected object with keyId and publicKeyPem.`,
       );
     }
 
@@ -66,19 +66,19 @@ function parseTrustedIssuerKeysStrict(value) {
 
     if (!/^[a-f0-9]{64}$/i.test(keyId)) {
       throw new Error(
-        `Invalid trusted issuer key at index ${index}: keyId must be a sha256 hex string.`
+        `Invalid trusted issuer key at index ${index}: keyId must be a sha256 hex string.`,
       );
     }
     if (!publicKeyPem || !publicKeyPem.includes("BEGIN PUBLIC KEY")) {
       throw new Error(
-        `Invalid trusted issuer key at index ${index}: publicKeyPem must be a PEM-encoded public key.`
+        `Invalid trusted issuer key at index ${index}: publicKeyPem must be a PEM-encoded public key.`,
       );
     }
 
     const derived = fingerprintPublicKey(publicKeyPem);
     if (derived !== keyId) {
       throw new Error(
-        `Invalid trusted issuer key at index ${index}: keyId does not match sha256(publicKeyPem).`
+        `Invalid trusted issuer key at index ${index}: keyId does not match sha256(publicKeyPem).`,
       );
     }
 
@@ -112,13 +112,7 @@ async function importVerifyKey(publicKeyPem) {
   const subtle = webcrypto?.subtle || globalThis.crypto?.subtle;
   if (!subtle) throw new Error("WebCrypto subtle is not available.");
   const der = pemBodyToDer(publicKeyPem);
-  return subtle.importKey(
-    "spki",
-    der,
-    { name: "ECDSA", namedCurve: "P-256" },
-    false,
-    ["verify"]
-  );
+  return subtle.importKey("spki", der, { name: "ECDSA", namedCurve: "P-256" }, false, ["verify"]);
 }
 
 async function verifyEntrySignature(entry, publicKeyPem) {
@@ -145,12 +139,7 @@ export function createDefaultCheckpoint(prefix) {
   };
 }
 
-export function segmentEventsToJsonl({
-  createdAt,
-  prevSegmentHash,
-  prevSegmentKey,
-  events,
-}) {
+export function segmentEventsToJsonl({ createdAt, prevSegmentHash, prevSegmentKey, events }) {
   const lines = [];
   const eventCount = Array.isArray(events) ? events.length : 0;
   lines.push(
@@ -164,7 +153,7 @@ export function segmentEventsToJsonl({
       segmentHashInput: SEGMENT_HASH_INPUT,
       compression: "gzip",
       eventCount,
-    })
+    }),
   );
 
   for (const event of events || []) {
@@ -173,7 +162,7 @@ export function segmentEventsToJsonl({
         type: "concord.entry",
         entryId: event.entryId,
         entry: event.entry,
-      })
+      }),
     );
   }
 
@@ -239,9 +228,7 @@ export function mergeTrustedIssuerKeys(params) {
     current[params.currentIssuerKeyId] = ensurePublicPem(params.currentIssuerPublicKeyPem);
   }
 
-  const parsedFromEnv = parseTrustedIssuerKeysStrict(
-    params?.trustedIssuerPublicKeysJson || ""
-  );
+  const parsedFromEnv = parseTrustedIssuerKeysStrict(params?.trustedIssuerPublicKeysJson || "");
 
   return {
     ...parsedFromEnv,
@@ -431,7 +418,7 @@ export class IssuerAuditLedger {
     const segmentHashFromKey = getSegmentHashFromKey(segmentKey);
     if (segmentHashFromKey && segmentHashFromKey !== segmentHash) {
       throw new Error(
-        `Segment key hash mismatch for ${segmentKey}: expected ${segmentHashFromKey}, got ${segmentHash}`
+        `Segment key hash mismatch for ${segmentKey}: expected ${segmentHashFromKey}, got ${segmentHash}`,
       );
     }
     return {
@@ -511,7 +498,7 @@ export class IssuerAuditLedger {
     const target = chain[chain.length - 1];
     const targetParsed = parseSegmentJsonl(target.content);
     const receiptEvent = targetParsed.events.find(
-      (event) => event?.entry?.payload?.packId === packId && event?.entry?.kind === "pack.issued"
+      (event) => event?.entry?.payload?.packId === packId && event?.entry?.kind === "pack.issued",
     );
 
     if (!receiptEvent) {
@@ -528,10 +515,7 @@ export class IssuerAuditLedger {
       };
     }
 
-    const signatureValid = await verifyEntrySignature(
-      receiptEvent.entry,
-      issuerPublicKeyPem
-    );
+    const signatureValid = await verifyEntrySignature(receiptEvent.entry, issuerPublicKeyPem);
 
     if (!signatureValid) {
       return {
@@ -569,15 +553,9 @@ export function createLedgerConfigFromEnv(params) {
   const flushMaxEvents = Number(process.env.LEDGER_FLUSH_MAX_EVENTS || "200");
   const flushIntervalMs = Number(process.env.LEDGER_FLUSH_INTERVAL_MS || "60000");
   const flushSyncOnIssue =
-    String(process.env.LEDGER_FLUSH_SYNC_ON_ISSUE || "false").toLowerCase() ===
-    "true";
+    String(process.env.LEDGER_FLUSH_SYNC_ON_ISSUE || "false").toLowerCase() === "true";
 
-  const ready =
-    !!endpoint &&
-    !!bucket &&
-    !!region &&
-    !!accessKeyId &&
-    !!secretAccessKey;
+  const ready = !!endpoint && !!bucket && !!region && !!accessKeyId && !!secretAccessKey;
 
   return {
     ready,
@@ -587,18 +565,13 @@ export function createLedgerConfigFromEnv(params) {
     region,
     accessKeyId,
     secretAccessKey,
-    flushMaxEvents:
-      Number.isFinite(flushMaxEvents) && flushMaxEvents > 0 ? flushMaxEvents : 200,
+    flushMaxEvents: Number.isFinite(flushMaxEvents) && flushMaxEvents > 0 ? flushMaxEvents : 200,
     flushIntervalMs:
-      Number.isFinite(flushIntervalMs) && flushIntervalMs > 0
-        ? flushIntervalMs
-        : 60000,
+      Number.isFinite(flushIntervalMs) && flushIntervalMs > 0 ? flushIntervalMs : 60000,
     flushSyncOnIssue,
-    trustedIssuerPublicKeysJson:
-      process.env.LEDGER_TRUSTED_ISSUER_PUBLIC_KEYS_JSON || "",
+    trustedIssuerPublicKeysJson: process.env.LEDGER_TRUSTED_ISSUER_PUBLIC_KEYS_JSON || "",
     forcePathStyle:
-      String(process.env.LEDGER_S3_FORCE_PATH_STYLE || "true").toLowerCase() !==
-      "false",
+      String(process.env.LEDGER_S3_FORCE_PATH_STYLE || "true").toLowerCase() !== "false",
     currentIssuerKeyId: params.currentIssuerKeyId,
     currentIssuerPublicKeyPem: params.currentIssuerPublicKeyPem,
   };
@@ -610,9 +583,7 @@ export function validateTrustedIssuerKeysAtStartup() {
 }
 
 export async function createS3Gateway(config) {
-  const { S3Client, GetObjectCommand, PutObjectCommand } = await import(
-    "@aws-sdk/client-s3"
-  );
+  const { S3Client, GetObjectCommand, PutObjectCommand } = await import("@aws-sdk/client-s3");
 
   const client = new S3Client({
     endpoint: config.endpoint,
@@ -645,15 +616,10 @@ export async function createS3Gateway(config) {
   return {
     async getObject({ bucket, key }) {
       try {
-        const response = await client.send(
-          new GetObjectCommand({ Bucket: bucket, Key: key })
-        );
+        const response = await client.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
         return bodyToBuffer(response.Body);
       } catch (error) {
-        if (
-          error?.name === "NoSuchKey" ||
-          error?.$metadata?.httpStatusCode === 404
-        ) {
+        if (error?.name === "NoSuchKey" || error?.$metadata?.httpStatusCode === 404) {
           throw new Error(`NoSuchKey:${key}`);
         }
         throw error;
@@ -668,7 +634,7 @@ export async function createS3Gateway(config) {
           Body: body,
           ContentType: contentType,
           CacheControl: cacheControl,
-        })
+        }),
       );
     },
   };

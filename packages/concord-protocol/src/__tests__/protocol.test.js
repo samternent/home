@@ -16,10 +16,7 @@ import {
 } from "../index";
 import { canonicalStringify } from "../canonical";
 
-const VECTORS_PATH = new URL(
-  "../../../concord-test-vectors/vectors.json",
-  import.meta.url
-);
+const VECTORS_PATH = new URL("../../../concord-test-vectors/vectors.json", import.meta.url);
 
 function loadVectors() {
   return JSON.parse(readFileSync(VECTORS_PATH, "utf8"));
@@ -69,12 +66,8 @@ describe("test vectors (JS)", () => {
   const vectors = loadVectors();
   const entryVectors = vectors.filter((vector) => vector.type === "entry");
   const commitVectors = vectors.filter((vector) => vector.type === "commit");
-  const signatureVectors = vectors.filter(
-    (vector) => vector.type === "entry-signature-exclusion"
-  );
-  const rejectionVectors = vectors.filter(
-    (vector) => vector.type === "reject-entry"
-  );
+  const signatureVectors = vectors.filter((vector) => vector.type === "entry-signature-exclusion");
+  const rejectionVectors = vectors.filter((vector) => vector.type === "reject-entry");
 
   test("entry vectors", async () => {
     for (const vector of entryVectors) {
@@ -118,11 +111,7 @@ describe("test vectors (JS)", () => {
         await appendEntry(ledger, entry);
         throw new Error("Expected appendEntry to throw");
       } catch (error) {
-        assertConcordError(
-          error,
-          vector.expect.errorCode,
-          vector.expect.messageIncludes
-        );
+        assertConcordError(error, vector.expect.errorCode, vector.expect.messageIncludes);
       }
     }
   });
@@ -218,7 +207,7 @@ describe("helper safety", () => {
         ledger,
         entries: [],
         parent: "missing-parent",
-      })
+      }),
     ).rejects.toMatchObject({ code: "MISSING_COMMIT" });
   });
 
@@ -229,7 +218,7 @@ describe("helper safety", () => {
         ledger,
         entries: [],
         parent: "",
-      })
+      }),
     ).rejects.toMatchObject({ code: "INVALID_PARENT" });
   });
 
@@ -239,9 +228,9 @@ describe("helper safety", () => {
       ledger,
       entries: [],
     });
-    await expect(
-      appendCommitStrict(ledger, "not-a-real-id", commit)
-    ).rejects.toMatchObject({ code: "COMMIT_ID_MISMATCH" });
+    await expect(appendCommitStrict(ledger, "not-a-real-id", commit)).rejects.toMatchObject({
+      code: "COMMIT_ID_MISMATCH",
+    });
   });
 
   test("appendEntry rejects toJSON payloads", async () => {
@@ -257,7 +246,7 @@ describe("helper safety", () => {
         timestamp: "2026-01-01T00:00:00Z",
         author: "author-1",
         payload,
-      })
+      }),
     ).rejects.toMatchObject({ code: "INVALID_ENTRY" });
   });
 });
@@ -275,7 +264,7 @@ describe("assertion signing payloads", () => {
     };
 
     expect(getAssertionSigningPayload(assertion)).toBe(
-      "{\"assertedAt\":1717352400000,\"assertedBy\":\"did:example:alice\",\"claim\":\"signed\",\"payload\":{\"a\":1,\"b\":2},\"subject\":{\"id\":\"decision-123\",\"kind\":\"decision\"}}"
+      '{"assertedAt":1717352400000,"assertedBy":"did:example:alice","claim":"signed","payload":{"a":1,"b":2},"subject":{"id":"decision-123","kind":"decision"}}',
     );
   });
 
@@ -290,7 +279,7 @@ describe("assertion signing payloads", () => {
     };
 
     expect(getAssertionSigningPayload(assertion)).toBe(
-      "{\"assertedAt\":1717360000000,\"assertedBy\":\"did:example:sam\",\"claim\":\"found\",\"subject\":{\"id\":\"tag-1\",\"kind\":\"nfc-tag\"}}"
+      '{"assertedAt":1717360000000,"assertedBy":"did:example:sam","claim":"found","subject":{"id":"tag-1","kind":"nfc-tag"}}',
     );
   });
 });

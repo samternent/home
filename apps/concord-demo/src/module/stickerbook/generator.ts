@@ -113,9 +113,7 @@ function normalizeCandidates(kitJson: any) {
         rarity: candidate.rarity ?? null,
       }))
     : [];
-  return candidates.sort((a: any, b: any) =>
-    JSON.stringify(a).localeCompare(JSON.stringify(b))
-  );
+  return candidates.sort((a: any, b: any) => JSON.stringify(a).localeCompare(JSON.stringify(b)));
 }
 
 function ensureExplicitNull<T>(value: T | undefined | null) {
@@ -145,7 +143,7 @@ export function generatePack(params: {
 }): StickerEntry[] {
   const count = clampInt(params.count || 0);
   const rng = createSeededRng(
-    `${params.packSeed}:${params.seriesId}:${params.themeId}:${params.algoVersion}`
+    `${params.packSeed}:${params.seriesId}:${params.themeId}:${params.algoVersion}`,
   );
   const kitJson = params.kitJson || {};
   const rarityWeights = kitJson.rarityWeights || DEFAULT_RARITY_WEIGHTS;
@@ -164,14 +162,10 @@ export function generatePack(params: {
   for (let index = 0; index < count; index += 1) {
     const rarity = pickWeighted(
       rng,
-      Object.fromEntries(
-        Object.entries(rarityWeights).sort(([a], [b]) => a.localeCompare(b))
-      )
+      Object.fromEntries(Object.entries(rarityWeights).sort(([a], [b]) => a.localeCompare(b))),
     ) as StickerEntry["rarity"];
     const rules = resolveRarityRules(kitJson, rarity);
-    const rarityCandidates = candidates.filter(
-      (candidate: any) => candidate.rarity === rarity
-    );
+    const rarityCandidates = candidates.filter((candidate: any) => candidate.rarity === rarity);
     const candidatePool = rarityCandidates.length ? rarityCandidates : candidates;
     const candidate = candidatePool.length ? pick(rng, candidatePool) : null;
     const identityRoll = rng() <= Number(rules.identityChance || 0);
@@ -181,32 +175,22 @@ export function generatePack(params: {
 
     entries.push({
       index,
-      archetypeId: ensureExplicitNull(
-        candidate?.archetypeId ?? pick(rng, archetypeIds)
-      ) as string,
-      bodyId: ensureExplicitNull(
-        candidate?.bodyId ?? pick(rng, bodyIds)
-      ) as string,
-      eyesId: ensureExplicitNull(
-        candidate?.eyesId ?? pick(rng, eyesIds)
-      ) as string,
+      archetypeId: ensureExplicitNull(candidate?.archetypeId ?? pick(rng, archetypeIds)) as string,
+      bodyId: ensureExplicitNull(candidate?.bodyId ?? pick(rng, bodyIds)) as string,
+      eyesId: ensureExplicitNull(candidate?.eyesId ?? pick(rng, eyesIds)) as string,
       identityId: ensureExplicitNull(
-        candidate?.identityId ??
-          (identityRoll ? pick(rng, identityIds) : null)
+        candidate?.identityId ?? (identityRoll ? pick(rng, identityIds) : null),
       ) as string | null,
       accessoryId: ensureExplicitNull(
-        candidate?.accessoryId ??
-          (accessoryRoll ? pick(rng, accessoryIds) : null)
+        candidate?.accessoryId ?? (accessoryRoll ? pick(rng, accessoryIds) : null),
       ) as string | null,
       frameId: ensureExplicitNull(
-        candidate?.frameId ?? (frameRoll ? pick(rng, frameIds) : null)
+        candidate?.frameId ?? (frameRoll ? pick(rng, frameIds) : null),
       ) as string | null,
-      fxId: ensureExplicitNull(
-        candidate?.fxId ?? (fxRoll ? pick(rng, fxIds) : null)
-      ) as string | null,
-      paletteId: ensureExplicitNull(
-        candidate?.paletteId ?? pick(rng, paletteIds)
-      ) as string,
+      fxId: ensureExplicitNull(candidate?.fxId ?? (fxRoll ? pick(rng, fxIds) : null)) as
+        | string
+        | null,
+      paletteId: ensureExplicitNull(candidate?.paletteId ?? pick(rng, paletteIds)) as string,
       rarity,
     });
   }
@@ -218,8 +202,8 @@ export function deriveKitFromCatalogue(catalogue: any) {
   const entries = Array.isArray(catalogue?.creatures)
     ? catalogue.creatures
     : Array.isArray(catalogue?.stickers)
-    ? catalogue.stickers
-    : [];
+      ? catalogue.stickers
+      : [];
 
   const candidates = entries.map((entry: any) => ({
     archetypeId: entry?.attributes?.archetypeId ?? null,

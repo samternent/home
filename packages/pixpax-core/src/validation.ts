@@ -28,10 +28,7 @@ function assertIsoString(value: unknown, label: string): string {
   return normalized;
 }
 
-function assertPackKind(
-  value: unknown,
-  label: string,
-): asserts value is PixpaxPackIssuanceKind {
+function assertPackKind(value: unknown, label: string): asserts value is PixpaxPackIssuanceKind {
   if (value !== "deterministic" && value !== "designated") {
     throw new Error(`${label} must be deterministic or designated.`);
   }
@@ -239,7 +236,9 @@ export async function assertValidRecordTransferCommandInput(
   const offer = input.offerArtifact.payload;
   const acceptance = input.acceptanceArtifact.payload;
 
-  if (trim(input.offerArtifact.proof.signer.publicKey) !== trim(offer.fromClaimant.normalizedValue)) {
+  if (
+    trim(input.offerArtifact.proof.signer.publicKey) !== trim(offer.fromClaimant.normalizedValue)
+  ) {
     throw new Error("offerArtifact signer must match fromClaimant.");
   }
   if (

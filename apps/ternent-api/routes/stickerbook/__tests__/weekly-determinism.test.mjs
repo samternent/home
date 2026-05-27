@@ -8,7 +8,15 @@ import stickerbookRoutes, { shutdownStickerbookLedger, toIsoWeek } from "../inde
 import { hashCanonical } from "../stickerbook-utils.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const pendingPath = join(__dirname, "..", "..", "..", "persisted", "stickerbook", "issuer-pending.json");
+const pendingPath = join(
+  __dirname,
+  "..",
+  "..",
+  "..",
+  "persisted",
+  "stickerbook",
+  "issuer-pending.json",
+);
 
 function createRouterHarness() {
   const routes = new Map();
@@ -108,10 +116,7 @@ test("weekly issuance is deterministic for same user and drop cycle", async () =
     assert.equal(second.pack.packId, first.pack.packId);
     assert.deepEqual(second.entry.payload.itemHashes, first.entry.payload.itemHashes);
     assert.equal(second.entry.payload.packRoot, first.entry.payload.packRoot);
-    assert.equal(
-      second.entry.payload.contentsCommitment,
-      first.entry.payload.contentsCommitment
-    );
+    assert.equal(second.entry.payload.contentsCommitment, first.entry.payload.contentsCommitment);
     assert.equal(second.entry.payload.week, "2026-W06");
     assert.equal(second.entry.payload.dropId, "week-2026-W06");
     assert.equal(second.receipt.skipped, true);

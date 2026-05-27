@@ -140,7 +140,7 @@ export async function deriveCommitId(commit: Commit): Promise<string> {
 export async function createGenesisCommit(
   metadata: CommitMetadata = {},
   timestamp = new Date().toISOString(),
-  entries: string[] = []
+  entries: string[] = [],
 ): Promise<{ commitId: string; commit: Commit }> {
   const commit: Commit = {
     parent: null,
@@ -163,7 +163,7 @@ export async function createGenesisCommit(
 export async function createLedger(
   metadata: CommitMetadata = {},
   timestamp = new Date().toISOString(),
-  entries: Entry[] = []
+  entries: Entry[] = [],
 ): Promise<LedgerContainer> {
   const entriesMap: Record<string, Entry> = {};
   const entryIds: string[] = [];
@@ -171,27 +171,17 @@ export async function createLedger(
   for (const entry of entries) {
     const result = validateEntry(entry);
     if (!result.ok) {
-      throw new ConcordProtocolError(
-        "INVALID_ENTRY",
-        result.errors.join("; ")
-      );
+      throw new ConcordProtocolError("INVALID_ENTRY", result.errors.join("; "));
     }
     const entryId = await deriveEntryId(entry);
     if (entriesMap[entryId]) {
-      throw new ConcordProtocolError(
-        "DUPLICATE_ENTRY",
-        `Entry ${entryId} already exists`
-      );
+      throw new ConcordProtocolError("DUPLICATE_ENTRY", `Entry ${entryId} already exists`);
     }
     entriesMap[entryId] = entry;
     entryIds.push(entryId);
   }
 
-  const { commitId, commit } = await createGenesisCommit(
-    metadata,
-    timestamp,
-    entryIds
-  );
+  const { commitId, commit } = await createGenesisCommit(metadata, timestamp, entryIds);
   return {
     format: LEDGER_FORMAT,
     version: LEDGER_VERSION,
@@ -208,33 +198,24 @@ export function getCommitChain(ledger: LedgerContainer): string[] {
   const chain: string[] = [];
   const visited = new Set<string>();
   if (!ledger.commits[ledger.head]) {
-    throw new ConcordProtocolError(
-      "MISSING_HEAD",
-      `Missing head commit ${ledger.head}`
-    );
+    throw new ConcordProtocolError("MISSING_HEAD", `Missing head commit ${ledger.head}`);
   }
   let current: string | null = ledger.head ?? null;
   while (current !== null) {
     if (visited.has(current)) {
       throw new ConcordProtocolError(
         "COMMIT_CHAIN_CYCLE",
-        `Commit chain cycle detected at ${current}`
+        `Commit chain cycle detected at ${current}`,
       );
     }
     visited.add(current);
     chain.push(current);
     const commit: Commit | undefined = ledger.commits[current];
     if (!commit) {
-      throw new ConcordProtocolError(
-        "MISSING_COMMIT",
-        `Missing commit ${current}`
-      );
+      throw new ConcordProtocolError("MISSING_COMMIT", `Missing commit ${current}`);
     }
     if (commit.parent === "") {
-      throw new ConcordProtocolError(
-        "INVALID_PARENT",
-        "Commit parent must be null or a CommitID"
-      );
+      throw new ConcordProtocolError("INVALID_PARENT", "Commit parent must be null or a CommitID");
     }
     current = commit.parent ?? null;
   }
@@ -262,32 +243,20 @@ export async function createCommit(params: {
     throw new ConcordProtocolError("INVALID_ENTRIES", "Entries must be an array");
   }
   if (params.entries.some((entryId) => typeof entryId !== "string")) {
-    throw new ConcordProtocolError(
-      "INVALID_ENTRIES",
-      "Entries must be an array of strings"
-    );
+    throw new ConcordProtocolError("INVALID_ENTRIES", "Entries must be an array of strings");
   }
   for (const entryId of params.entries) {
     if (!params.ledger.entries[entryId]) {
-      throw new ConcordProtocolError(
-        "MISSING_ENTRY",
-        `Missing entry ${entryId}`
-      );
+      throw new ConcordProtocolError("MISSING_ENTRY", `Missing entry ${entryId}`);
     }
   }
 
   const parent = params.parent ?? params.ledger.head;
   if (parent === "" || parent === null) {
-    throw new ConcordProtocolError(
-      "INVALID_PARENT",
-      "Non-genesis commits must reference a parent"
-    );
+    throw new ConcordProtocolError("INVALID_PARENT", "Non-genesis commits must reference a parent");
   }
   if (!params.ledger.commits[parent]) {
-    throw new ConcordProtocolError(
-      "MISSING_COMMIT",
-      `Missing commit ${parent}`
-    );
+    throw new ConcordProtocolError("MISSING_COMMIT", `Missing commit ${parent}`);
   }
   const commit: Commit = {
     parent,
@@ -303,46 +272,31 @@ export async function createCommit(params: {
 export function appendCommit(
   ledger: LedgerContainer,
   commitId: string,
-  commit: Commit
+  commit: Commit,
 ): LedgerContainer {
   if (isGenesisCommit(commit)) {
     throw new ConcordProtocolError(
       "INVALID_COMMIT",
-      "Genesis commits must be created via createLedger"
+      "Genesis commits must be created via createLedger",
     );
   }
   if (commit.parent === null || commit.parent === "") {
-    throw new ConcordProtocolError(
-      "INVALID_PARENT",
-      "Commit parent must be a non-empty CommitID"
-    );
+    throw new ConcordProtocolError("INVALID_PARENT", "Commit parent must be a non-empty CommitID");
   }
   if (!ledger.commits[commit.parent]) {
-    throw new ConcordProtocolError(
-      "MISSING_COMMIT",
-      `Missing commit ${commit.parent}`
-    );
+    throw new ConcordProtocolError("MISSING_COMMIT", `Missing commit ${commit.parent}`);
   }
   const commitValidation = validateCommit(commit);
   if (!commitValidation.ok) {
-    throw new ConcordProtocolError(
-      "INVALID_COMMIT",
-      commitValidation.errors.join("; ")
-    );
+    throw new ConcordProtocolError("INVALID_COMMIT", commitValidation.errors.join("; "));
   }
   for (const entryId of commit.entries) {
     if (!ledger.entries[entryId]) {
-      throw new ConcordProtocolError(
-        "MISSING_ENTRY",
-        `Missing entry ${entryId}`
-      );
+      throw new ConcordProtocolError("MISSING_ENTRY", `Missing entry ${entryId}`);
     }
   }
   if (ledger.commits[commitId]) {
-    throw new ConcordProtocolError(
-      "DUPLICATE_COMMIT",
-      `Commit ${commitId} already exists`
-    );
+    throw new ConcordProtocolError("DUPLICATE_COMMIT", `Commit ${commitId} already exists`);
   }
   return {
     ...ledger,
@@ -360,14 +314,11 @@ export function appendCommit(
 export async function appendCommitStrict(
   ledger: LedgerContainer,
   commitId: string,
-  commit: Commit
+  commit: Commit,
 ): Promise<LedgerContainer> {
   const derivedId = await deriveCommitId(commit);
   if (derivedId !== commitId) {
-    throw new ConcordProtocolError(
-      "COMMIT_ID_MISMATCH",
-      "CommitID does not match commit content"
-    );
+    throw new ConcordProtocolError("COMMIT_ID_MISMATCH", "CommitID does not match commit content");
   }
   return appendCommit(ledger, commitId, commit);
 }
@@ -377,29 +328,23 @@ export async function appendCommitStrict(
  */
 export async function appendEntry(
   ledger: LedgerContainer,
-  entry: Entry
+  entry: Entry,
 ): Promise<{ ledger: LedgerContainer; entryId: string }> {
   const entryValidation = validateEntry(entry);
   if (!entryValidation.ok) {
-    throw new ConcordProtocolError(
-      "INVALID_ENTRY",
-      entryValidation.errors.join("; ")
-    );
+    throw new ConcordProtocolError("INVALID_ENTRY", entryValidation.errors.join("; "));
   }
   try {
     canonicalStringify(getEntryCore(entry));
   } catch (error) {
     throw new ConcordProtocolError(
       "INVALID_ENTRY_PAYLOAD",
-      error instanceof Error ? error.message : "Entry payload is not valid JSON"
+      error instanceof Error ? error.message : "Entry payload is not valid JSON",
     );
   }
   const entryId = await deriveEntryId(entry);
   if (ledger.entries[entryId]) {
-    throw new ConcordProtocolError(
-      "DUPLICATE_ENTRY",
-      `Entry ${entryId} already exists`
-    );
+    throw new ConcordProtocolError("DUPLICATE_ENTRY", `Entry ${entryId} already exists`);
   }
   return {
     entryId,
@@ -434,10 +379,7 @@ export function getReplayEntries(ledger: LedgerContainer): Entry[] {
   return entryIds.map((entryId) => {
     const entry = ledger.entries[entryId];
     if (!entry) {
-      throw new ConcordProtocolError(
-        "MISSING_ENTRY",
-        `Missing entry ${entryId}`
-      );
+      throw new ConcordProtocolError("MISSING_ENTRY", `Missing entry ${entryId}`);
     }
     return entry;
   });
@@ -471,9 +413,7 @@ export function validateEntry(entry: Entry): { ok: boolean; errors: string[] } {
   try {
     canonicalStringify(getEntryCore(entry));
   } catch (error) {
-    errors.push(
-      error instanceof Error ? error.message : "Entry payload is not valid JSON"
-    );
+    errors.push(error instanceof Error ? error.message : "Entry payload is not valid JSON");
   }
   return { ok: errors.length === 0, errors };
 }
@@ -525,7 +465,7 @@ export function validateCommit(commit: Commit): {
  */
 export function validateLedger(
   ledger: LedgerContainer,
-  options?: { strictSpec?: boolean }
+  options?: { strictSpec?: boolean },
 ): { ok: boolean; errors: string[] } {
   const errors: string[] = [];
   const strictSpec = options?.strictSpec ?? true;
@@ -584,9 +524,7 @@ export function validateLedger(
             } else if (typeof genesis.metadata.spec !== "string") {
               errors.push("Genesis commit metadata.spec must be a string");
             } else if (strictSpec && genesis.metadata.spec !== PROTOCOL_SPEC) {
-              errors.push(
-                `Genesis commit metadata.spec must be "${PROTOCOL_SPEC}"`
-              );
+              errors.push(`Genesis commit metadata.spec must be "${PROTOCOL_SPEC}"`);
             }
           }
         }
@@ -602,16 +540,12 @@ export function validateLedger(
     for (const [commitId, commit] of Object.entries(ledger.commits)) {
       const result = validateCommit(commit);
       if (!result.ok) {
-        errors.push(
-          ...result.errors.map((err) => `Commit ${commitId}: ${err}`)
-        );
+        errors.push(...result.errors.map((err) => `Commit ${commitId}: ${err}`));
       }
       if (Array.isArray(commit.entries)) {
         for (const entryId of commit.entries) {
           if (!ledger.entries[entryId]) {
-            errors.push(
-              `Commit ${commitId} references missing entry ${entryId}`
-            );
+            errors.push(`Commit ${commitId} references missing entry ${entryId}`);
           }
         }
       }
@@ -620,9 +554,7 @@ export function validateLedger(
     for (const [entryId, entry] of Object.entries(ledger.entries)) {
       const result = validateEntry(entry);
       if (!result.ok) {
-        errors.push(
-          ...result.errors.map((err) => `Entry ${entryId}: ${err}`)
-        );
+        errors.push(...result.errors.map((err) => `Entry ${entryId}: ${err}`));
       }
     }
   }

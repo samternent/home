@@ -2,10 +2,7 @@
 import { onMounted, computed, shallowRef, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import type { LedgerContainer } from "@ternent/concord-protocol";
-import {
-  getDefaultSession,
-  handleIncomingRedirect,
-} from "@inrupt/solid-client-authn-browser";
+import { getDefaultSession, handleIncomingRedirect } from "@inrupt/solid-client-authn-browser";
 import {
   getContainedResourceUrlAll,
   getFile,
@@ -53,8 +50,7 @@ onMounted(async () => {
   loading.value = true;
   let loaded = false;
   if (typeof window !== "undefined") {
-    const tamperActive =
-      window.localStorage.getItem(TAMPER_ACTIVE_KEY) === "true";
+    const tamperActive = window.localStorage.getItem(TAMPER_ACTIVE_KEY) === "true";
     const coreSnapshot = window.localStorage.getItem(CORE_LEDGER_KEY);
     if (tamperActive && coreSnapshot) {
       try {
@@ -81,9 +77,7 @@ const solidLoggedIn = computed(() => sessionInfo.value.isLoggedIn === true);
 
 const containerUrl = computed(() => {
   if (!selectedPod.value) return "";
-  return new URL(`concord/ledgers/${privacy.value}/`, selectedPod.value)
-    .toString()
-    .trim();
+  return new URL(`concord/ledgers/${privacy.value}/`, selectedPod.value).toString().trim();
 });
 
 async function createNewLedger() {
@@ -185,9 +179,7 @@ async function refreshSolidLedgers() {
     const dataset = await getSolidDataset(containerUrl.value, {
       fetch: solidSession.fetch,
     });
-    const urls = getContainedResourceUrlAll(dataset).filter(
-      (url) => !url.endsWith("/")
-    );
+    const urls = getContainedResourceUrlAll(dataset).filter((url) => !url.endsWith("/"));
     ledgerFiles.value = urls.map((url) => ({
       url,
       name: url.split("/").pop() || url,
@@ -361,11 +353,7 @@ watch([selectedPod, privacy], async () => {
                 class="mt-1 w-full border border-[var(--ui-border)] rounded-lg px-3 py-2 text-sm"
               >
                 <option value="">Select a ledger</option>
-                <option
-                  v-for="entry in ledgerFiles"
-                  :key="entry.url"
-                  :value="entry.url"
-                >
+                <option v-for="entry in ledgerFiles" :key="entry.url" :value="entry.url">
                   {{ entry.name }}
                 </option>
               </select>

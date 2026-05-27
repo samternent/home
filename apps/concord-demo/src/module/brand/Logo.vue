@@ -26,11 +26,7 @@
         y2="0"
         id="5b78089a15"
       >
-        <stop
-          stop-opacity="1"
-          stop-color="rgb(100%, 34.098816%, 34.098816%)"
-          offset="0"
-        ></stop>
+        <stop stop-opacity="1" stop-color="rgb(100%, 34.098816%, 34.098816%)" offset="0"></stop>
         <stop
           stop-opacity="1"
           stop-color="rgb(99.822998%, 34.091187%, 34.356689%)"
@@ -1327,11 +1323,7 @@
         y2="0"
         id="d2c5cb6700"
       >
-        <stop
-          stop-opacity="1"
-          stop-color="rgb(100%, 34.098816%, 34.098816%)"
-          offset="0"
-        ></stop>
+        <stop stop-opacity="1" stop-color="rgb(100%, 34.098816%, 34.098816%)" offset="0"></stop>
         <stop
           stop-opacity="1"
           stop-color="rgb(99.822998%, 34.091187%, 34.356689%)"
@@ -2634,11 +2626,7 @@
         y2="0"
         id="174130eb48"
       >
-        <stop
-          stop-opacity="1"
-          stop-color="rgb(100%, 34.098816%, 34.098816%)"
-          offset="0"
-        ></stop>
+        <stop stop-opacity="1" stop-color="rgb(100%, 34.098816%, 34.098816%)" offset="0"></stop>
         <stop
           stop-opacity="1"
           stop-color="rgb(99.822998%, 34.091187%, 34.356689%)"

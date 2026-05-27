@@ -1,6 +1,7 @@
 /* This file is generated from src/themes/semanticThemeContract.js. */
 
-:root[data-theme="prism-light"], [data-theme="prism-light"] {
+:root[data-theme="prism-light"],
+[data-theme="prism-light"] {
   color-scheme: light;
   --ui-bg: #f7f9ff;
   --ui-fg: #1b1f34;
@@ -73,7 +74,8 @@
   --ui-logo-cutout: #f7f9ff;
 }
 
-:root[data-theme="prism-dark"], [data-theme="prism-dark"] {
+:root[data-theme="prism-dark"],
+[data-theme="prism-dark"] {
   color-scheme: dark;
   --ui-bg: #0f1222;
   --ui-fg: #e8edff;

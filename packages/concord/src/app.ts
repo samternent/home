@@ -36,10 +36,7 @@ type RebuildStateOptions = {
   verification: LedgerVerificationResult | null;
 };
 
-type ReplayRange = Pick<
-  ConcordReplayMetadata,
-  "fromEntryId" | "toEntryId" | "isPartial"
->;
+type ReplayRange = Pick<ConcordReplayMetadata, "fromEntryId" | "toEntryId" | "isPartial">;
 
 type ReplayDraft = {
   nextState: ConcordState;
@@ -94,23 +91,13 @@ function assertReplayEntries(value: unknown): LedgerReplayEntry[] {
   );
 }
 
-function createInitialReplayState(
-  plugins: ConcordReplayPlugin[],
-): Record<string, unknown> {
-  return Object.fromEntries(
-    plugins.map((plugin) => [plugin.id, plugin.initialState?.()]),
-  );
+function createInitialReplayState(plugins: ConcordReplayPlugin[]): Record<string, unknown> {
+  return Object.fromEntries(plugins.map((plugin) => [plugin.id, plugin.initialState?.()]));
 }
 
-function assertKnownPlugin(
-  pluginsById: Map<string, ConcordReplayPlugin>,
-  pluginId: string,
-): void {
+function assertKnownPlugin(pluginsById: Map<string, ConcordReplayPlugin>, pluginId: string): void {
   if (!pluginsById.has(pluginId)) {
-    throw new ConcordBoundaryError(
-      "UNKNOWN_PLUGIN",
-      `Unknown Concord plugin: ${pluginId}`,
-    );
+    throw new ConcordBoundaryError("UNKNOWN_PLUGIN", `Unknown Concord plugin: ${pluginId}`);
   }
 }
 
@@ -149,15 +136,11 @@ function resolveAuthorFromIdentity(identity: SerializedIdentity): string {
   return `did:key:${identity.keyId}`;
 }
 
-function resolveSignerFromIdentity(
-  identity: SerializedIdentity,
-): LedgerIdentityContext["signer"] {
+function resolveSignerFromIdentity(identity: SerializedIdentity): LedgerIdentityContext["signer"] {
   return { identity };
 }
 
-function resolveDecryptorFromIdentity(
-  identity: SerializedIdentity,
-): LedgerDecryptor | undefined {
+function resolveDecryptorFromIdentity(identity: SerializedIdentity): LedgerDecryptor | undefined {
   return { identity } as LedgerDecryptor;
 }
 
@@ -194,9 +177,7 @@ function createReplayMetadata(range: ReplayRange): ConcordReplayMetadata {
   };
 }
 
-export async function createConcordApp(
-  input: ConcordAppOptions,
-): Promise<ConcordApp> {
+export async function createConcordApp(input: ConcordAppOptions): Promise<ConcordApp> {
   const plugins = [...input.plugins];
   const now = input.now ?? createDefaultNow;
   const policy = {
@@ -237,10 +218,7 @@ export async function createConcordApp(
     (await createLedger<LedgerReplayEntry[]>({
       identity: resolveLedgerIdentity(input.identity),
       initialProjection: [],
-      projector: (entries: LedgerReplayEntry[], entry: LedgerReplayEntry) => [
-        ...entries,
-        entry,
-      ],
+      projector: (entries: LedgerReplayEntry[], entry: LedgerReplayEntry) => [...entries, entry],
       storage: input.storage,
       now,
       protocol: input.protocol,
@@ -275,10 +253,7 @@ export async function createConcordApp(
     }
   }
 
-  function createReplayDraft(
-    options: RebuildStateOptions,
-    range: ReplayRange,
-  ): ReplayDraft {
+  function createReplayDraft(options: RebuildStateOptions, range: ReplayRange): ReplayDraft {
     const nextState: ConcordState = {
       ready: options.ready,
       integrityValid: options.integrityValid,
@@ -301,9 +276,7 @@ export async function createConcordApp(
         setState(next) {
           const prev = nextState.replay[plugin.id];
           nextState.replay[plugin.id] =
-            typeof next === "function"
-              ? (next as (value: unknown) => unknown)(prev)
-              : next;
+            typeof next === "function" ? (next as (value: unknown) => unknown)(prev) : next;
         },
       };
       contexts.set(plugin.id, context);
@@ -401,10 +374,7 @@ export async function createConcordApp(
       return true;
     }
 
-    publishIntegrityFailure(
-      verification,
-      options?.resetReplayOnFailure ?? true,
-    );
+    publishIntegrityFailure(verification, options?.resetReplayOnFailure ?? true);
 
     if (options?.allowInspectionOnly) {
       return false;
@@ -477,10 +447,7 @@ export async function createConcordApp(
 
     const registration = commands.get(type);
     if (!registration) {
-      throw new ConcordBoundaryError(
-        "UNKNOWN_COMMAND",
-        `Unknown Concord command type: ${type}`,
-      );
+      throw new ConcordBoundaryError("UNKNOWN_COMMAND", `Unknown Concord command type: ${type}`);
     }
 
     const appendInputs = normalizeAppendInputs(
@@ -515,9 +482,7 @@ export async function createConcordApp(
     };
   }
 
-  async function commit(
-    input?: ConcordCommitInput,
-  ): Promise<ConcordCommitResult> {
+  async function commit(input?: ConcordCommitInput): Promise<ConcordCommitResult> {
     requireReady();
 
     const result = await ledger.commit(input);
@@ -605,9 +570,7 @@ export async function createConcordApp(
     });
   }
 
-  function subscribe(
-    listener: (value: Readonly<ConcordState>) => void,
-  ): () => void {
+  function subscribe(listener: (value: Readonly<ConcordState>) => void): () => void {
     listeners.add(listener);
     return () => {
       listeners.delete(listener);

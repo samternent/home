@@ -23,7 +23,7 @@ export type ResolvedSealSigner = {
 export const SEAL_SIGNATURE_CONTEXT = "ternent-seal/v2";
 
 export async function createSealIdentity(
-  createdAt = new Date().toISOString()
+  createdAt = new Date().toISOString(),
 ): Promise<SerializedIdentity> {
   return createIdentity(createdAt);
 }
@@ -36,11 +36,13 @@ export async function createSealIdentityFromMnemonic(input: {
   return createIdentityFromMnemonic(input);
 }
 
-export async function createSealMnemonicIdentity(input: {
-  words?: 12 | 24;
-  passphrase?: string;
-  createdAt?: string;
-} = {}): Promise<{ identity: SerializedIdentity; mnemonic: string }> {
+export async function createSealMnemonicIdentity(
+  input: {
+    words?: 12 | 24;
+    passphrase?: string;
+    createdAt?: string;
+  } = {},
+): Promise<{ identity: SerializedIdentity; mnemonic: string }> {
   return createMnemonicIdentity(input);
 }
 
@@ -48,9 +50,7 @@ export function exportIdentityJson(identity: SerializedIdentity): string {
   return serializeIdentity(identity);
 }
 
-export async function resolveSealSigner(
-  input: SealSignerInput
-): Promise<ResolvedSealSigner> {
+export async function resolveSealSigner(input: SealSignerInput): Promise<ResolvedSealSigner> {
   const identity = parseIdentity(input.identity);
   const keyId = await deriveKeyId(identity.publicKey);
   if (keyId !== identity.keyId) {
@@ -64,10 +64,7 @@ export async function resolveSealSigner(
   };
 }
 
-export async function signSealUtf8(
-  identity: SerializedIdentity,
-  value: string
-): Promise<string> {
+export async function signSealUtf8(identity: SerializedIdentity, value: string): Promise<string> {
   return signUtf8(identity, value, {
     context: SEAL_SIGNATURE_CONTEXT,
   });
@@ -76,16 +73,13 @@ export async function signSealUtf8(
 export async function verifySealUtf8(
   signature: string,
   value: string,
-  publicKey: string
+  publicKey: string,
 ): Promise<boolean> {
   return verifyUtf8(publicKey, value, signature, {
     context: SEAL_SIGNATURE_CONTEXT,
   });
 }
 
-export async function verifyPublicKeyKeyId(
-  publicKey: string,
-  keyId: string
-): Promise<boolean> {
+export async function verifyPublicKeyKeyId(publicKey: string, keyId: string): Promise<boolean> {
   return (await deriveKeyId(publicKey)) === keyId;
 }

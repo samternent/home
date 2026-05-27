@@ -9,13 +9,10 @@ import {
 } from "../../module/profile/useProfile";
 import IdentityAvatar from "../../module/identity/IdentityAvatar.vue";
 
-const profileModules = import.meta.glob(
-  "../../module/profile/samples/concord-profile.*.*.json",
-  {
-    eager: true,
-    import: "default",
-  }
-) as Record<string, any>;
+const profileModules = import.meta.glob("../../module/profile/samples/concord-profile.*.*.json", {
+  eager: true,
+  import: "default",
+}) as Record<string, any>;
 
 const { api, bridge } = useLedger();
 const { publicKeyPEM } = useIdentity();
@@ -37,19 +34,16 @@ type SampleProfilePair = {
 };
 
 const users = computed<UserEntry[]>(
-  () =>
-    Object.values(bridge.collections.byKind.value?.users || {}) as UserEntry[]
+  () => Object.values(bridge.collections.byKind.value?.users || {}) as UserEntry[],
 );
 
-const canAddItem = computed(
-  () => bridge.flags.value.hasLedger && bridge.flags.value.authed
-);
+const canAddItem = computed(() => bridge.flags.value.hasLedger && bridge.flags.value.authed);
 
 const isJoined = computed(() =>
   users.value.find(
     ({ data: { publicIdentityKey: pk } }) =>
-      pk.replace(/\s/g, "") === publicKeyPEM.value.replace(/\s/g, "")
-  )
+      pk.replace(/\s/g, "") === publicKeyPEM.value.replace(/\s/g, ""),
+  ),
 );
 
 const profileUsername = computed(() => {
@@ -86,18 +80,14 @@ const profiles = computed<Record<string, SampleProfilePair>>(() => {
   for (const [path, data] of Object.entries(profileModules)) {
     // example filename:
     // concord-profile.private.3edc6ed685.json
-    const match = path.match(
-      /concord-profile\.(public|private)\.([^.]+)\.json$/
-    );
+    const match = path.match(/concord-profile\.(public|private)\.([^.]+)\.json$/);
 
     if (!match) continue;
 
     const [, visibility, id] = match;
 
     profiles[id] ??= {};
-    profiles[id][visibility as "public" | "private"] = data as
-      | PublicProfile
-      | PrivateProfile;
+    profiles[id][visibility as "public" | "private"] = data as PublicProfile | PrivateProfile;
   }
 
   return profiles;
@@ -109,13 +99,11 @@ const availableUsers = computed<PublicProfile[]>(() =>
     if (!publicProfile) return [];
 
     const alreadyJoined = users.value.some(
-      (user) =>
-        publicProfile.profileId.substring(0, 10) ===
-        user.data.id.substring(0, 10)
+      (user) => publicProfile.profileId.substring(0, 10) === user.data.id.substring(0, 10),
     );
 
     return alreadyJoined ? [] : [publicProfile];
-  })
+  }),
 );
 
 const uploadError = shallowRef("");
@@ -202,10 +190,7 @@ async function addUploadedProfile() {
           <tbody class="divide-y divide-[var(--ui-border)]">
             <tr v-for="user in users" :key="user.entryId">
               <td class="p-3">
-                <IdentityAvatar
-                  :identity="user.data.publicIdentityKey"
-                  size="sm"
-                />
+                <IdentityAvatar :identity="user.data.publicIdentityKey" size="sm" />
               </td>
               <td class="p-3 text-sm">
                 {{ user.data.name }}
@@ -232,15 +217,11 @@ async function addUploadedProfile() {
           Join
         </button>
       </div>
-      <div v-else class="text-sm opacity-70">
-        Set a username in the top right.
-      </div>
+      <div v-else class="text-sm opacity-70">Set a username in the top right.</div>
     </div>
     <div v-else-if="canAddItem" class="flex flex-col gap-3">
       <div class="border border-[var(--ui-border)] rounded-2xl p-4">
-        <h2 class="text-sm uppercase tracking-wide opacity-60">
-          Add from profile
-        </h2>
+        <h2 class="text-sm uppercase tracking-wide opacity-60">Add from profile</h2>
         <div class="mt-3 flex flex-col gap-3">
           <input
             type="file"
@@ -248,10 +229,7 @@ async function addUploadedProfile() {
             class="text-sm"
             @change="handleProfileUpload"
           />
-          <div
-            v-if="uploadedFileName"
-            class="flex items-center justify-between gap-2 text-sm"
-          >
+          <div v-if="uploadedFileName" class="flex items-center justify-between gap-2 text-sm">
             <span class="opacity-70">{{ uploadedFileName }}</span>
             <button
               class="border border-[var(--ui-border)] px-4 py-2 rounded-full text-xs"
@@ -270,20 +248,13 @@ async function addUploadedProfile() {
         <div class="border border-[var(--ui-border)] rounded-2xl p-4">
           <h2 class="text-sm uppercase tracking-wide opacity-60">Demo users</h2>
           <ul class="flex flex-wrap gap-2 mt-3">
-            <li
-              v-for="profile in availableUsers"
-              :key="profile.profileId"
-              class="flex"
-            >
+            <li v-for="profile in availableUsers" :key="profile.profileId" class="flex">
               <button
                 class="flex gap-2 items-center py-2 px-4 border border-[var(--ui-border)] rounded-full text-sm"
                 @click="join(profile)"
               >
                 Add {{ profile.metadata.username }}
-                <IdentityAvatar
-                  :identity="profile.identity.publicKey"
-                  size="xs"
-                />
+                <IdentityAvatar :identity="profile.identity.publicKey" size="xs" />
               </button>
             </li>
           </ul>

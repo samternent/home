@@ -6,15 +6,9 @@ export function createPixpaxContentConfigFromEnv() {
   const accessKeyId = process.env.LEDGER_ACCESS_KEY_ID || "";
   const secretAccessKey = process.env.LEDGER_SECRET_ACCESS_KEY || "";
   const forcePathStyle =
-    String(process.env.LEDGER_S3_FORCE_PATH_STYLE || "true").toLowerCase() !==
-    "false";
+    String(process.env.LEDGER_S3_FORCE_PATH_STYLE || "true").toLowerCase() !== "false";
 
-  const ready =
-    !!endpoint &&
-    !!bucket &&
-    !!region &&
-    !!accessKeyId &&
-    !!secretAccessKey;
+  const ready = !!endpoint && !!bucket && !!region && !!accessKeyId && !!secretAccessKey;
 
   return {
     ready,
@@ -29,16 +23,11 @@ export function createPixpaxContentConfigFromEnv() {
 }
 
 export function createCollectionContentGatewayFromS3Client(params) {
-  const {
-    client,
-    GetObjectCommand,
-    PutObjectCommand,
-    DeleteObjectCommand,
-    ListObjectsV2Command,
-  } = params || {};
+  const { client, GetObjectCommand, PutObjectCommand, DeleteObjectCommand, ListObjectsV2Command } =
+    params || {};
   if (!client || !GetObjectCommand || !PutObjectCommand) {
     throw new Error(
-      "createCollectionContentGatewayFromS3Client requires client, GetObjectCommand, and PutObjectCommand."
+      "createCollectionContentGatewayFromS3Client requires client, GetObjectCommand, and PutObjectCommand.",
     );
   }
 
@@ -63,15 +52,10 @@ export function createCollectionContentGatewayFromS3Client(params) {
   return {
     async getObject({ bucket, key }) {
       try {
-        const response = await client.send(
-          new GetObjectCommand({ Bucket: bucket, Key: key })
-        );
+        const response = await client.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
         return bodyToBuffer(response.Body);
       } catch (error) {
-        if (
-          error?.name === "NoSuchKey" ||
-          error?.$metadata?.httpStatusCode === 404
-        ) {
+        if (error?.name === "NoSuchKey" || error?.$metadata?.httpStatusCode === 404) {
           throw new Error(`NoSuchKey:${key}`);
         }
         throw error;
@@ -86,7 +70,7 @@ export function createCollectionContentGatewayFromS3Client(params) {
           Body: body,
           ContentType: contentType,
           CacheControl: cacheControl,
-        })
+        }),
       );
     },
 
@@ -98,7 +82,7 @@ export function createCollectionContentGatewayFromS3Client(params) {
         new DeleteObjectCommand({
           Bucket: bucket,
           Key: key,
-        })
+        }),
       );
     },
 
@@ -112,7 +96,7 @@ export function createCollectionContentGatewayFromS3Client(params) {
           Prefix: prefix,
           MaxKeys: maxKeys,
           ContinuationToken: cursor || undefined,
-        })
+        }),
       );
       const keys = Array.isArray(response?.Contents)
         ? response.Contents.map((entry) => String(entry?.Key || "")).filter(Boolean)
@@ -126,9 +110,13 @@ export function createCollectionContentGatewayFromS3Client(params) {
 }
 
 export async function createCollectionContentGateway(config) {
-  const { S3Client, GetObjectCommand, PutObjectCommand, DeleteObjectCommand, ListObjectsV2Command } = await import(
-    "@aws-sdk/client-s3"
-  );
+  const {
+    S3Client,
+    GetObjectCommand,
+    PutObjectCommand,
+    DeleteObjectCommand,
+    ListObjectsV2Command,
+  } = await import("@aws-sdk/client-s3");
   const client = new S3Client({
     endpoint: config.endpoint,
     region: config.region,
@@ -257,7 +245,7 @@ export class CollectionContentStore {
       this.prefix,
       collectionId,
       version,
-      `claims/${trimSegment(dropId)}/${trimSegment(issuedToHash)}.json`
+      `claims/${trimSegment(dropId)}/${trimSegment(issuedToHash)}.json`,
     );
   }
 
@@ -266,7 +254,7 @@ export class CollectionContentStore {
       this.prefix,
       collectionId,
       version,
-      `override-uses/${trimSegment(codeId)}.json`
+      `override-uses/${trimSegment(codeId)}.json`,
     );
   }
 
@@ -275,14 +263,17 @@ export class CollectionContentStore {
   }
 
   buildGlobalCodesPrefix() {
-    return `${[this.prefix, "__codes"].map((part) => trimSegment(part)).filter(Boolean).join("/")}/`;
+    return `${[this.prefix, "__codes"]
+      .map((part) => trimSegment(part))
+      .filter(Boolean)
+      .join("/")}/`;
   }
 
   buildGlobalCodeSummaryKey(codeId) {
     return buildCollectionScopedObjectKey(
       this.prefix,
       "__code-summaries",
-      `${trimSegment(codeId)}.json`
+      `${trimSegment(codeId)}.json`,
     );
   }
 
@@ -290,12 +281,15 @@ export class CollectionContentStore {
     return buildCollectionScopedObjectKey(
       this.prefix,
       "__swaps",
-      `${trimSegment(transferId)}.json`
+      `${trimSegment(transferId)}.json`,
     );
   }
 
   buildGlobalSwapsPrefix() {
-    return `${[this.prefix, "__swaps"].map((part) => trimSegment(part)).filter(Boolean).join("/")}/`;
+    return `${[this.prefix, "__swaps"]
+      .map((part) => trimSegment(part))
+      .filter(Boolean)
+      .join("/")}/`;
   }
 
   buildGlobalCodeSummariesPrefix() {
@@ -314,12 +308,7 @@ export class CollectionContentStore {
     if (!eventId) throw new Error("event.eventId is required.");
     const iso = dateForPath(event?.occurredAt);
     const day = iso.slice(0, 10);
-    return buildObjectKey(
-      this.prefix,
-      collectionId,
-      version,
-      `events/${day}/${eventId}.json`
-    );
+    return buildObjectKey(this.prefix, collectionId, version, `events/${day}/${eventId}.json`);
   }
 
   async putCollection(collectionId, version, collectionJson) {
@@ -644,7 +633,7 @@ export async function createCollectionContentStoreFromEnv() {
   const config = createPixpaxContentConfigFromEnv();
   if (!config.ready) {
     throw new Error(
-      "Content store configuration is incomplete. Use LEDGER_* connection vars and LEDGER_CONTENT_PREFIX."
+      "Content store configuration is incomplete. Use LEDGER_* connection vars and LEDGER_CONTENT_PREFIX.",
     );
   }
   const gateway = await createCollectionContentGateway(config);

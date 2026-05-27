@@ -1,6 +1,7 @@
 # CHECKLIST — PR / Review Gate
 
 ## Must-pass checks
+
 - [ ] HMAC code signing removed entirely
 - [ ] Token format is v2 ECDSA-only
 - [ ] Issuer registry + endpoints exist
@@ -14,6 +15,7 @@
 - [ ] Docs are linked from repo root README
 
 ## Nice-to-haves (later)
+
 - [ ] CBOR payload encoding
 - [ ] Secure NFC tags
 - [ ] Series progress UI

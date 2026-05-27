@@ -7,7 +7,4 @@ export {
   type IdentityRecord,
   type IdentityState,
 } from "./state";
-export {
-  identityUpsertPayloadSchema,
-  type IdentityUpsertPayload,
-} from "./schemas";
+export { identityUpsertPayloadSchema, type IdentityUpsertPayload } from "./schemas";

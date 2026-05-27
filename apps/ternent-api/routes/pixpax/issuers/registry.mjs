@@ -12,7 +12,9 @@ const ISSUER_FILE = join(ROOT, "issuers.json");
 const RECEIPT_FILE = join(ROOT, "receipt-keys.json");
 
 function deriveKidFromIssuerKeyId(issuerKeyId) {
-  const normalized = String(issuerKeyId || "").trim().toLowerCase();
+  const normalized = String(issuerKeyId || "")
+    .trim()
+    .toLowerCase();
   if (!normalized) return "";
   return `i_${normalized.slice(0, 12)}`;
 }
@@ -45,7 +47,9 @@ export async function loadIssuerRegistry() {
     .map((row) => {
       const issuerKeyId = String(row?.issuerKeyId || "").trim();
       const name = String(row?.name || "").trim() || issuerKeyId;
-      const status = String(row?.status || "active").trim().toLowerCase();
+      const status = String(row?.status || "active")
+        .trim()
+        .toLowerCase();
       const publicKeyPem = ensurePublicPem(row?.publicKeyPem || row?.publicKeyJwk || "");
       const kid = String(row?.kid || "").trim() || deriveKidFromIssuerKeyId(issuerKeyId);
       const derivedKeyId = publicKeyPem ? deriveKeyIdFromPublicKey(publicKeyPem) : "";
@@ -100,7 +104,9 @@ export async function loadReceiptKeyRegistry() {
     .map((row) => {
       const receiptKeyId = String(row?.receiptKeyId || "").trim();
       const name = String(row?.name || "").trim() || receiptKeyId;
-      const status = String(row?.status || "active").trim().toLowerCase();
+      const status = String(row?.status || "active")
+        .trim()
+        .toLowerCase();
       const publicKeyPem = ensurePublicPem(row?.publicKeyPem || "");
       const derivedKeyId = publicKeyPem ? deriveKeyIdFromPublicKey(publicKeyPem) : "";
       if (!receiptKeyId || !publicKeyPem) return null;
@@ -141,7 +147,8 @@ export async function resolveActiveIssuerByKeyId(issuerKeyId) {
   const issuers = await loadIssuerRegistry();
   return (
     issuers.find(
-      (entry) => entry.issuerKeyId === String(issuerKeyId || "").trim() && entry.status === "active"
+      (entry) =>
+        entry.issuerKeyId === String(issuerKeyId || "").trim() && entry.status === "active",
     ) || null
   );
 }
@@ -149,9 +156,8 @@ export async function resolveActiveIssuerByKeyId(issuerKeyId) {
 export async function resolveActiveIssuerByKid(kid) {
   const issuers = await loadIssuerRegistry();
   return (
-    issuers.find(
-      (entry) => entry.kid === String(kid || "").trim() && entry.status === "active"
-    ) || null
+    issuers.find((entry) => entry.kid === String(kid || "").trim() && entry.status === "active") ||
+    null
   );
 }
 
@@ -159,7 +165,8 @@ export async function resolveActiveReceiptKeyById(receiptKeyId) {
   const keys = await loadReceiptKeyRegistry();
   return (
     keys.find(
-      (entry) => entry.receiptKeyId === String(receiptKeyId || "").trim() && entry.status === "active"
+      (entry) =>
+        entry.receiptKeyId === String(receiptKeyId || "").trim() && entry.status === "active",
     ) || null
   );
 }

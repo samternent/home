@@ -13,11 +13,11 @@ function isNoSuchKeyError(error) {
 
 function toIsoWeek(isoDate = new Date()) {
   const date = new Date(
-    Date.UTC(isoDate.getUTCFullYear(), isoDate.getUTCMonth(), isoDate.getUTCDate())
+    Date.UTC(isoDate.getUTCFullYear(), isoDate.getUTCMonth(), isoDate.getUTCDate()),
   );
   date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay() || 7));
   const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
-  const weekNumber = Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+  const weekNumber = Math.ceil(((date - yearStart) / 86400000 + 1) / 7);
   return `${date.getUTCFullYear()}-W${String(weekNumber).padStart(2, "0")}`;
 }
 
@@ -64,7 +64,9 @@ function createCuratedRandomPolicy(params) {
 }
 
 function createWeeklyDeterministicPolicy(params) {
-  const dropId = String(params.requestedDropId || `week-${toIsoWeek(new Date(params.issuedAt))}`).trim();
+  const dropId = String(
+    params.requestedDropId || `week-${toIsoWeek(new Date(params.issuedAt))}`,
+  ).trim();
   const count = params.defaultPackCount;
 
   return {
@@ -84,7 +86,7 @@ function createWeeklyDeterministicPolicy(params) {
           context.collectionId,
           context.version,
           dropId,
-          context.issuedTo
+          context.issuedTo,
         );
         if (existingClaim?.response) {
           return {
@@ -110,7 +112,7 @@ function createWeeklyDeterministicPolicy(params) {
           context.collectionId,
           context.version,
           dropId,
-          context.issuedTo
+          context.issuedTo,
         );
         if (existingClaim?.response) {
           return {
@@ -147,14 +149,14 @@ function createWeeklyDeterministicPolicy(params) {
         {
           createdAt: context.issuedAt,
           response: context.responsePayload,
-        }
+        },
       );
       if (!claimResult.created) {
         const existingClaim = await context.store.getPackClaim(
           context.collectionId,
           context.version,
           dropId,
-          context.issuedTo
+          context.issuedTo,
         );
         if (existingClaim?.response) {
           return {

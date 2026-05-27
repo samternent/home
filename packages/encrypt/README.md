@@ -11,13 +11,13 @@ A TypeScript encryption library built on top of the Rust [age](https://github.co
 - **TypeScript**: Full TypeScript support with type definitions
 - **Browser ready**: Works in modern browsers with WASM support
 
-- ✅ **Age Encryption Standard**:  Modern, secure encryption using the age format
-- ✅ **Dual Encryption Methods**:  Support for both public key and passphrase encryption
-- ✅ **Automatic Detection**:  Automatically chooses encryption method based on key format
-- ✅ **Key Generation**:  Generate X25519 key pairs for public key encryption
-- ✅ **WebAssembly Performance**:  Built on rage-wasm for optimal performance
-- ✅ **TypeScript Support**:  Full TypeScript definitions included
-- ✅ **Armored Output**:  Human-readable armored format for encrypted data
+- ✅ **Age Encryption Standard**: Modern, secure encryption using the age format
+- ✅ **Dual Encryption Methods**: Support for both public key and passphrase encryption
+- ✅ **Automatic Detection**: Automatically chooses encryption method based on key format
+- ✅ **Key Generation**: Generate X25519 key pairs for public key encryption
+- ✅ **WebAssembly Performance**: Built on rage-wasm for optimal performance
+- ✅ **TypeScript Support**: Full TypeScript definitions included
+- ✅ **Armored Output**: Human-readable armored format for encrypted data
 
 ## Installation
 
@@ -28,7 +28,7 @@ npm install @your-org/encrypt
 ## Quick Start
 
 ```typescript
-import { generate, encrypt, decrypt } from '@your-org/encrypt';
+import { generate, encrypt, decrypt } from "@your-org/encrypt";
 
 // Example usage
 // TODO: Add specific examples for encrypt
@@ -39,15 +39,16 @@ import { generate, encrypt, decrypt } from '@your-org/encrypt';
 ### Functions
 
 #### `generate()`
+
 // TODO: Add documentation for generate
 
 #### `encrypt()`
+
 // TODO: Add documentation for encrypt
 
 #### `decrypt()`
+
 // TODO: Add documentation for decrypt
-
-
 
 ## Usage Examples
 
@@ -60,8 +61,6 @@ import { generate, encrypt, decrypt } from '@your-org/encrypt';
 ## Dependencies
 
 See `package.json` for current dependencies.
-
-
 
 ## Contributing
 

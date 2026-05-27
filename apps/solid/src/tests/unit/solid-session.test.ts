@@ -48,9 +48,7 @@ describe("solid session controller", () => {
       redirectUrl: `${window.location.origin}/auth/redirect`,
       clientName: "Concord OS for Solid",
     });
-    expect(localStorage.getItem("solid/solid-issuer")).toBe(
-      "https://solidcommunity.net",
-    );
+    expect(localStorage.getItem("solid/solid-issuer")).toBe("https://solidcommunity.net");
   });
 
   it("clears authenticated state on logout", async () => {
@@ -76,9 +74,7 @@ describe("solid session controller", () => {
     const { getSolidSessionController } = await importController();
     const controller = getSolidSessionController();
 
-    await expect(controller.completeRedirect()).rejects.toThrow(
-      "OIDC redirect failed",
-    );
+    await expect(controller.completeRedirect()).rejects.toThrow("OIDC redirect failed");
     expect(controller.status.value).toBe("error");
     expect(controller.error.value).toContain("OIDC redirect failed");
   });

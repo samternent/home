@@ -20,7 +20,9 @@ const collectionCards = computed(() =>
 onMounted(async () => {
   const catalog = await collections.loadCatalog().catch(() => []);
   await Promise.all(
-    (catalog || []).slice(0, 4).map((entry) => collections.loadBundle(entry.collectionId).catch(() => null)),
+    (catalog || [])
+      .slice(0, 4)
+      .map((entry) => collections.loadBundle(entry.collectionId).catch(() => null)),
   );
 });
 </script>
@@ -29,9 +31,12 @@ onMounted(async () => {
   <section class="space-y-6">
     <div class="space-y-3">
       <p class="m-0 text-xs uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">Collections</p>
-      <h1 class="m-0 font-mono text-[clamp(2.2rem,6vw,4rem)] uppercase tracking-[-0.08em]">Sticker shelves</h1>
+      <h1 class="m-0 font-mono text-[clamp(2.2rem,6vw,4rem)] uppercase tracking-[-0.08em]">
+        Sticker shelves
+      </h1>
       <p class="m-0 max-w-3xl text-sm text-[var(--ui-fg-muted)]">
-        This is the archive shelf for public collections. The beta collecting flow starts from a printed card or redeem link.
+        This is the archive shelf for public collections. The beta collecting flow starts from a
+        printed card or redeem link.
       </p>
       <div class="flex flex-wrap gap-2">
         <Button as="RouterLink" :to="'/app/pixbook'" size="sm" variant="plain-secondary">
@@ -76,7 +81,7 @@ onMounted(async () => {
           </div>
         </div>
 
-          <div class="flex flex-wrap items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2">
           <Button
             as="RouterLink"
             :to="`/app/collections/${row.entry.collectionId}`"

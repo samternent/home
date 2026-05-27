@@ -79,7 +79,9 @@ function deriveFromPrivateKey(privateKeyPemRaw) {
   }
 
   const privateKey = createPrivateKey(privateKeyPem);
-  const publicKeyPem = createPublicKey(privateKey).export({ type: "spki", format: "pem" }).toString();
+  const publicKeyPem = createPublicKey(privateKey)
+    .export({ type: "spki", format: "pem" })
+    .toString();
   const normalizedPublicKeyPem = normalizePem(publicKeyPem);
   const publicKeyBody = stripPublicPem(normalizedPublicKeyPem);
   const issuerKeyId = sha256HexUtf8(normalizedPublicKeyPem.trim());
@@ -117,7 +119,7 @@ function main() {
         "  --env-key <name>            Env key name (default: ISSUER_PRIVATE_KEY_PEM)",
         "  --private-key-pem <pem>     Private key PEM directly",
         "  --help                      Show this help",
-      ].join("\n")
+      ].join("\n"),
     );
     process.exit(0);
   }
@@ -135,7 +137,7 @@ function main() {
         "- ISSUER_PRIVATE_KEY_PEM env var",
         "- --private-key-pem '<pem>'",
         "- --env-file <path> [--env-key ISSUER_PRIVATE_KEY_PEM]",
-      ].join("\n")
+      ].join("\n"),
     );
     process.exit(1);
   }
@@ -162,7 +164,9 @@ function main() {
   console.log("\n# Ready-to-paste .env values");
   console.log(`ISSUER_KEY_ID=${derived.issuerKeyId}`);
   console.log(`ISSUER_PUBLIC_KEY_PEM=\"${escapeForDoubleQuotedEnv(derived.publicKeyPem)}\"`);
-  console.log(`LEDGER_TRUSTED_ISSUER_PUBLIC_KEYS_JSON='${trustedArrayJson.replace(/'/g, "'\\''")}'`);
+  console.log(
+    `LEDGER_TRUSTED_ISSUER_PUBLIC_KEYS_JSON='${trustedArrayJson.replace(/'/g, "'\\''")}'`,
+  );
 }
 
 try {

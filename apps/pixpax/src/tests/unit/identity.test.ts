@@ -1,5 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
-import { useIdentityCreate, useIdentityExport, useIdentityImport, useIdentitySession } from "@/modules/identity";
+import {
+  useIdentityCreate,
+  useIdentityExport,
+  useIdentityImport,
+  useIdentitySession,
+} from "@/modules/identity";
 import { identityDirectoryStorageKey } from "@/modules/identity/useIdentitySession";
 
 function clearAllLocalIdentities() {
@@ -19,10 +24,12 @@ describe("identity flows", () => {
 
     expect(created.id).toMatch(/^identity-/);
     expect(hasIdentity.value).toBe(true);
-    expect(localStorage.getItem(identityDirectoryStorageKey)).toContain(created.serializedIdentity.keyId);
+    expect(localStorage.getItem(identityDirectoryStorageKey)).toContain(
+      created.serializedIdentity.keyId,
+    );
 
     const exporter = useIdentityExport();
-    expect(exporter.exportedPayload.value).toContain("\"format\": \"ternent-identity\"");
+    expect(exporter.exportedPayload.value).toContain('"format": "ternent-identity"');
     expect(exporter.exportedPayload.value).toContain(created.serializedIdentity.keyId);
   });
 
@@ -56,9 +63,7 @@ describe("identity flows", () => {
     const reloaded = await import("@/modules/identity");
     const session = reloaded.useIdentitySession();
 
-    expect(session.identity.value?.serializedIdentity.keyId).toBe(
-      created.serializedIdentity.keyId,
-    );
+    expect(session.identity.value?.serializedIdentity.keyId).toBe(created.serializedIdentity.keyId);
     expect(session.hasIdentity.value).toBe(true);
   });
 });

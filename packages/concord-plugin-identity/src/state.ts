@@ -17,21 +17,18 @@ export function createEmptyState(): IdentityState {
 
 export function getPrincipal(
   state: IdentityState,
-  principalId: string
+  principalId: string,
 ): IdentityRecord | undefined {
   return state.principals[principalId];
 }
 
-export function resolveAgeRecipients(
-  state: IdentityState,
-  principalId: string
-): string[] {
+export function resolveAgeRecipients(state: IdentityState, principalId: string): string[] {
   return state.principals[principalId]?.ageRecipients ?? [];
 }
 
 export function resolveCurrentAgeRecipient(
   state: IdentityState,
-  principalId: string
+  principalId: string,
 ): string | undefined {
   const recipients = resolveAgeRecipients(state, principalId);
   if (recipients.length === 0) {

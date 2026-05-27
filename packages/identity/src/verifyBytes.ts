@@ -3,7 +3,7 @@ import { b64decode } from "ternent-utils";
 export async function verifyBytes(
   signature: string,
   data: Uint8Array | ArrayBuffer,
-  publicKey: CryptoKey
+  publicKey: CryptoKey,
 ): Promise<boolean> {
   const bytes = data instanceof Uint8Array ? data : new Uint8Array(data);
 
@@ -14,6 +14,6 @@ export async function verifyBytes(
     },
     publicKey,
     b64decode(signature),
-    bytes
+    bytes,
   );
 }

@@ -71,13 +71,9 @@ export async function deriveOwnedCardInstancesFromClaims(
   return owned;
 }
 
-function sortTransfers(
-  transfers: Record<string, PixbookTransferRecord>,
-): PixbookTransferRecord[] {
+function sortTransfers(transfers: Record<string, PixbookTransferRecord>): PixbookTransferRecord[] {
   return Object.values(transfers).sort((left, right) => {
-    const timeCompare = String(left.recordedAt || "").localeCompare(
-      String(right.recordedAt || ""),
-    );
+    const timeCompare = String(left.recordedAt || "").localeCompare(String(right.recordedAt || ""));
     if (timeCompare !== 0) return timeCompare;
     return String(left.transferEntryId || "").localeCompare(String(right.transferEntryId || ""));
   });
@@ -113,9 +109,7 @@ export function applyTransfersToOwnedCardInstances(
   return next;
 }
 
-export function deriveDuplicateCounts(
-  owned: Record<string, PixbookOwnedCardInstance>,
-): {
+export function deriveDuplicateCounts(owned: Record<string, PixbookOwnedCardInstance>): {
   duplicateCountsByCardId: Record<string, number>;
   spareCountsByCardId: Record<string, number>;
 } {
@@ -147,8 +141,7 @@ export function deriveCompletion(
 
   for (const instance of Object.values(owned)) {
     const collectionKey = `${instance.collectionId}::${instance.collectionVersion}`;
-    const collectionSet =
-      ownedCardIdsByCollectionKey.get(collectionKey) ?? new Set<string>();
+    const collectionSet = ownedCardIdsByCollectionKey.get(collectionKey) ?? new Set<string>();
     collectionSet.add(instance.cardId);
     ownedCardIdsByCollectionKey.set(collectionKey, collectionSet);
 
@@ -158,8 +151,7 @@ export function deriveCompletion(
     ownedCardIdsBySeriesKey.set(seriesKey, seriesSet);
   }
 
-  const completionByCollectionKey: Record<string, PixbookCollectionCompletion> =
-    {};
+  const completionByCollectionKey: Record<string, PixbookCollectionCompletion> = {};
   const completionBySeriesKey: Record<string, PixbookSeriesCompletion> = {};
 
   for (const catalog of catalogs) {
@@ -221,16 +213,11 @@ export async function createReplayStateFromClaims(input: {
   state.duplicateCountsByCardId = duplicates.duplicateCountsByCardId;
   state.spareCountsByCardId = duplicates.spareCountsByCardId;
 
-  const completion = deriveCompletion(
-    state.ownedCardInstancesById,
-    input.catalogs || [],
-  );
+  const completion = deriveCompletion(state.ownedCardInstancesById, input.catalogs || []);
   state.completionByCollectionKey = completion.completionByCollectionKey;
   state.completionBySeriesKey = completion.completionBySeriesKey;
   state.ledgerHealth.claimedPackCount = Object.keys(state.claimedPacksByEntryId).length;
-  state.ledgerHealth.openedPackCount = Object.keys(
-    state.openedPacksByClaimEntryId,
-  ).length;
+  state.ledgerHealth.openedPackCount = Object.keys(state.openedPacksByClaimEntryId).length;
   const sortedTransfers = sortTransfers(state.transfersByEntryId);
   state.transferHistory = {
     outgoing: sortedTransfers

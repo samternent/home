@@ -29,7 +29,7 @@ const glyphVNode = computed(() => {
             width: 1,
             height: 1,
             fill: `rgb(${color.join(",")})`,
-          })
+          }),
         );
       }
     }
@@ -50,7 +50,7 @@ const glyphVNode = computed(() => {
       "shape-rendering": "crispEdges",
       ...svgAttrs,
     },
-    rects
+    rects,
   );
 });
 </script>

@@ -153,8 +153,8 @@ function buildTreeNodes(
 
   function buildNode(url: string, label: string, scope: SolidWorkspaceScope): TreeNode {
     const browse = browseCache[url];
-    const children = browse?.entries
-      .flatMap((entry) => {
+    const children =
+      browse?.entries.flatMap((entry) => {
         if (entry.kind === "container") {
           return [buildNode(entry.url, entry.name, entry.scope)];
         }
@@ -213,13 +213,9 @@ function createStore(solid: SolidSessionController): ConcordOsCoreStore {
   const currentTargetUrl = computed(
     () => selectedEntry.value?.url ?? currentBrowse.value?.url ?? null,
   );
-  const currentScope = computed<SolidWorkspaceScope>(
-    () => currentBrowse.value?.scope ?? "private",
-  );
+  const currentScope = computed<SolidWorkspaceScope>(() => currentBrowse.value?.scope ?? "private");
   const treeNodes = computed(() => buildTreeNodes(paths.value, browseCache.value));
-  const treeSelection = computed(() =>
-    currentTargetUrl.value ? [currentTargetUrl.value] : [],
-  );
+  const treeSelection = computed(() => (currentTargetUrl.value ? [currentTargetUrl.value] : []));
 
   function sessionFetch() {
     const session = solid.session.value;

@@ -2,6 +2,9 @@
   "name": "ternent-ledger",
   "version": "1.0.31",
   "description": "",
+  "keywords": [],
+  "license": "ISC",
+  "author": "",
   "main": "dist/ledger.umd.js",
   "module": "dist/ledger.es.js",
   "typings": "dist/index.d.ts",
@@ -10,30 +13,27 @@
     "build": "vite build",
     "preview": "vite preview"
   },
+  "dependencies": {
+    "@swc/helpers": "^0.4.36",
+    "@ternent/concord-protocol": "workspace:*",
+    "lokijs": "^1.5.12",
+    "regenerator-runtime": "^0.13.11",
+    "ternent-encrypt": "workspace:*",
+    "ternent-identity": "workspace:*",
+    "ternent-utils": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/lokijs": "^1.5.14",
+    "vite": "^2.9.18"
+  },
+  "browserslist": "last 2 versions",
+  "alias": {
+    "process": false
+  },
   "context": "browser",
   "targets": {
     "default": {
       "context": "browser"
     }
-  },
-  "alias": {
-    "process": false
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "browserslist": "last 2 versions",
-  "dependencies": {
-    "@swc/helpers": "^0.4.36",
-    "ternent-encrypt": "workspace:*",
-    "ternent-identity": "workspace:*",
-    "@ternent/concord-protocol": "workspace:*",
-    "ternent-utils": "workspace:*",
-    "lokijs": "^1.5.12",
-    "regenerator-runtime": "^0.13.11"
-  },
-  "devDependencies": {
-    "@types/lokijs": "^1.5.14",
-    "vite": "^2.9.18"
   }
 }

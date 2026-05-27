@@ -55,9 +55,7 @@ function resolveLinkProps(link: LinkItem) {
 <template>
   <PageSurface>
     <header class="pixpax-header">
-      <div
-        class="mx-auto flex w-full max-w-7xl items-center justify-between gap-6 px-6 py-3"
-      >
+      <div class="mx-auto flex w-full max-w-7xl items-center justify-between gap-6 px-6 py-3">
         <RouterLink to="/" class="flex items-center gap-3 no-underline">
           <span
             class="flex size-10 items-center justify-center rounded-2xl bg-[rgba(255,255,255,0.05)]"
@@ -160,11 +158,7 @@ function resolveLinkProps(link: LinkItem) {
             </div>
 
             <div class="pixpax-concord__details">
-              <p
-                v-for="line in concordSection.supporting"
-                :key="line"
-                class="pixpax-concord__line"
-              >
+              <p v-for="line in concordSection.supporting" :key="line" class="pixpax-concord__line">
                 {{ line }}
               </p>
               <div class="pixpax-concord__actions">
@@ -317,7 +311,8 @@ function resolveLinkProps(link: LinkItem) {
   border-top: 1px solid color-mix(in srgb, var(--ui-primary) 36%, transparent);
   border-bottom: 1px solid color-mix(in srgb, var(--ui-accent) 16%, transparent);
   background: color-mix(in srgb, var(--ui-bg) 55%, transparent);
-  box-shadow: 0 20px 50px rgba(8, 10, 24, 0.14),
+  box-shadow:
+    0 20px 50px rgba(8, 10, 24, 0.14),
     inset 0 24px 48px color-mix(in srgb, var(--ui-bg) 26%, transparent),
     inset 0 -24px 48px color-mix(in srgb, var(--ui-bg) 22%, transparent);
   backdrop-filter: blur(16px) saturate(120%);
@@ -392,7 +387,8 @@ function resolveLinkProps(link: LinkItem) {
   border-color: rgba(255, 255, 255, 0.06);
   border-radius: 1.5rem;
   background: color-mix(in srgb, var(--ui-surface) 52%, transparent);
-  box-shadow: 0 18px 46px rgba(8, 10, 24, 0.18),
+  box-shadow:
+    0 18px 46px rgba(8, 10, 24, 0.18),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(14px) saturate(115%);
 }
@@ -440,7 +436,8 @@ function resolveLinkProps(link: LinkItem) {
   border-color: rgba(255, 255, 255, 0.06);
   border-radius: 1.5rem;
   background: color-mix(in srgb, var(--ui-surface) 55%, transparent);
-  box-shadow: 0 18px 46px rgba(8, 10, 24, 0.18),
+  box-shadow:
+    0 18px 46px rgba(8, 10, 24, 0.18),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(14px) saturate(115%);
 }

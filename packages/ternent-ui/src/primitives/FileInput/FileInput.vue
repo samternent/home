@@ -29,9 +29,7 @@ const props = defineProps(fileInputProps);
 const inputId = useId();
 const isDragOver = ref(false);
 
-const rootClass = computed(() =>
-  twMerge(fileInputRootClass, normalizeClass(attrs.class)),
-);
+const rootClass = computed(() => twMerge(fileInputRootClass, normalizeClass(attrs.class)));
 
 const rootAttrs = computed(() => {
   const { class: _class, ...rest } = attrs;

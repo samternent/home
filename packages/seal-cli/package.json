@@ -2,36 +2,33 @@
   "name": "@ternent/seal-cli",
   "version": "0.3.10",
   "description": "Deterministic artifact signing for Seal",
-  "license": "ISC",
-  "type": "module",
-  "sideEffects": false,
-  "files": [
-    "bin",
-    "dist",
-    "README.md"
+  "keywords": [
+    "cli",
+    "integrity",
+    "manifest",
+    "seal",
+    "signature"
   ],
+  "homepage": "https://github.com/samternent/home/tree/main/packages/seal-cli",
+  "bugs": {
+    "url": "https://github.com/samternent/home/issues"
+  },
+  "license": "ISC",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/samternent/home.git",
     "directory": "packages/seal-cli"
   },
-  "homepage": "https://github.com/samternent/home/tree/main/packages/seal-cli",
-  "bugs": {
-    "url": "https://github.com/samternent/home/issues"
-  },
-  "keywords": [
-    "seal",
-    "integrity",
-    "signature",
-    "manifest",
-    "cli"
-  ],
-  "publishConfig": {
-    "access": "public"
-  },
   "bin": {
     "seal": "bin/seal"
   },
+  "files": [
+    "bin",
+    "dist",
+    "README.md"
+  ],
+  "type": "module",
+  "sideEffects": false,
   "main": "dist/index.js",
   "module": "dist/index.js",
   "exports": {
@@ -41,6 +38,9 @@
     "./manifest": "./dist/manifest.js",
     "./crypto": "./dist/crypto.js",
     "./errors": "./dist/errors.js"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "build:proof": "vite build --mode proof-only",

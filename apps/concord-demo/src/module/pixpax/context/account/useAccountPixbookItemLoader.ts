@@ -1,9 +1,5 @@
 import { shallowRef, type ShallowRef } from "vue";
-import {
-  getPixbookSnapshotV1,
-  type AccountBook,
-  PixPaxApiError,
-} from "../../api/client";
+import { getPixbookSnapshotV1, type AccountBook, PixPaxApiError } from "../../api/client";
 
 type ReadRef<T> = {
   readonly value: T;
@@ -35,9 +31,7 @@ function trim(value: unknown) {
   return String(value || "").trim();
 }
 
-export function createAccountPixbookItemLoader(
-  options: CreateAccountPixbookItemLoaderOptions
-) {
+export function createAccountPixbookItemLoader(options: CreateAccountPixbookItemLoaderOptions) {
   const cloudSnapshotVersion = shallowRef<number | null>(null);
   const cloudSnapshotAt = shallowRef("");
   const cloudWorkspaceId = shallowRef("");
@@ -108,7 +102,7 @@ export function createAccountPixbookItemLoader(
     }
 
     const requestedBookId = trim(
-      options.selectedCloudBookId.value || options.cloudBookId.value || ""
+      options.selectedCloudBookId.value || options.cloudBookId.value || "",
     );
 
     if (!requestedBookId) {
@@ -165,7 +159,7 @@ export function createAccountPixbookItemLoader(
       }
 
       options.cloudSyncError.value = String(
-        (error as Error)?.message || "Failed to load persisted pixbook snapshot."
+        (error as Error)?.message || "Failed to load persisted pixbook snapshot.",
       );
     }
   }

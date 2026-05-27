@@ -78,11 +78,7 @@ function hslToRgb(h: number, s: number, l: number) {
   }
 
   const m = light - c / 2;
-  return [
-    Math.round((r + m) * 255),
-    Math.round((g + m) * 255),
-    Math.round((b + m) * 255),
-  ];
+  return [Math.round((r + m) * 255), Math.round((g + m) * 255), Math.round((b + m) * 255)];
 }
 
 function paletteFromBytes(bytes: Uint8Array) {
@@ -122,7 +118,11 @@ function pickSymmetry(seedByte: number) {
     | "quadrant";
 }
 
-function applySymmetry(grid: number[][], size: number, mode: "none" | "horizontal" | "vertical" | "quadrant") {
+function applySymmetry(
+  grid: number[][],
+  size: number,
+  mode: "none" | "horizontal" | "vertical" | "quadrant",
+) {
   const next = grid.map((row) => row.slice());
   if (mode === "horizontal") {
     for (let y = 0; y < size; y += 1) {

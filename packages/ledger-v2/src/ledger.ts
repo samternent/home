@@ -8,7 +8,7 @@ import {
   validateLedger as protocolValidateLedger,
   type Commit as ProtocolCommit,
   type Entry as ProtocolEntry,
-  type LedgerContainer as ProtocolLedgerContainer
+  type LedgerContainer as ProtocolLedgerContainer,
 } from "@ternent/concord-protocol";
 import type {
   CreateLedgerConfig,
@@ -38,7 +38,7 @@ import type {
   LedgerUnsignedCommitRecord,
   LedgerVerificationResult,
   LedgerVerifyOptions,
-  SealProof
+  SealProof,
 } from "./types.js";
 
 type UnsignedLedgerEntry = Omit<LedgerEntryRecord, "entryId" | "seal">;
@@ -90,9 +90,7 @@ function cloneValue<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
 }
 
-function normalizeMeta(
-  value: Record<string, unknown> | undefined
-): Record<string, unknown> | null {
+function normalizeMeta(value: Record<string, unknown> | undefined): Record<string, unknown> | null {
   return value ?? null;
 }
 
@@ -104,10 +102,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
-function assertRecordOrNull(
-  value: unknown,
-  label: string
-): Record<string, unknown> | null {
+function assertRecordOrNull(value: unknown, label: string): Record<string, unknown> | null {
   if (value === null) return null;
   if (!isRecord(value)) {
     throw new Error(`${label} must be an object or null.`);
@@ -125,8 +120,7 @@ function base64UrlEncode(bytes: Uint8Array): string {
 
 function base64UrlDecode(value: string): Uint8Array {
   const normalized = value.replace(/-/g, "+").replace(/_/g, "/");
-  const pad =
-    normalized.length % 4 === 0 ? "" : "=".repeat(4 - (normalized.length % 4));
+  const pad = normalized.length % 4 === 0 ? "" : "=".repeat(4 - (normalized.length % 4));
   return new Uint8Array(Buffer.from(`${normalized}${pad}`, "base64"));
 }
 
@@ -143,16 +137,16 @@ function createShadowEntryCore(entry: UnsignedLedgerEntry): ProtocolEntry {
     author: entry.author,
     payload: {
       meta: entry.meta,
-      payload: entry.payload
+      payload: entry.payload,
     },
-    signature: null
+    signature: null,
   };
 }
 
 function createShadowEntry(entry: LedgerEntryRecord): ProtocolEntry {
   return {
     ...createShadowEntryCore(entry),
-    signature: JSON.stringify(entry.seal)
+    signature: JSON.stringify(entry.seal),
   };
 }
 
@@ -163,19 +157,17 @@ function buildUnsignedEntrySubject(entry: UnsignedLedgerEntry): Uint8Array {
 function createShadowCommit(commit: LedgerCommitRecord): ProtocolCommit {
   return {
     ...createShadowCommitCore(commit),
-    signature: JSON.stringify(commit.seal)
+    signature: JSON.stringify(commit.seal),
   };
 }
 
-function createShadowCommitCore(
-  commit: UnsignedLedgerCommit | LedgerCommitRecord
-): ProtocolCommit {
+function createShadowCommitCore(commit: UnsignedLedgerCommit | LedgerCommitRecord): ProtocolCommit {
   return {
     parent: commit.parentCommitId,
     timestamp: commit.committedAt,
     metadata: commit.metadata,
     entries: commit.entryIds,
-    signature: null
+    signature: null,
   };
 }
 
@@ -196,7 +188,7 @@ function createShadowContainer(container: LedgerContainer): ProtocolLedgerContai
     version: "1.0",
     commits,
     entries,
-    head: container.head
+    head: container.head,
   };
 }
 
@@ -348,7 +340,7 @@ function createDefaultProtocolContract(): LedgerProtocolContract {
 
       try {
         const shadowValidation = protocolValidateLedger(createShadowContainer(container), {
-          strictSpec: false
+          strictSpec: false,
         });
         return shadowValidation.ok
           ? { ok: true, errors: [] }
@@ -356,10 +348,10 @@ function createDefaultProtocolContract(): LedgerProtocolContract {
       } catch (error) {
         return {
           ok: false,
-          errors: [error instanceof Error ? error.message : "Invalid container."]
+          errors: [error instanceof Error ? error.message : "Invalid container."],
         };
       }
-    }
+    },
   };
 }
 
@@ -373,16 +365,13 @@ function createDefaultSealContract(): LedgerSealContract {
         subject: {
           kind: "artifact",
           path: `ledger-entry:${input.entry.kind}:${input.entry.authoredAt}`,
-          hash: await createSealHash(input.subjectBytes)
-        }
+          hash: await createSealHash(input.subjectBytes),
+        },
       })) as SealProof;
     },
     async verifyEntryProof(input) {
       const { verifySealProofAgainstBytes } = await loadSealRuntime();
-      const result = await verifySealProofAgainstBytes(
-        input.proof as never,
-        input.subjectBytes
-      );
+      const result = await verifySealProofAgainstBytes(input.proof as never, input.subjectBytes);
       return result.valid;
     },
     async createCommitProof(input) {
@@ -393,18 +382,15 @@ function createDefaultSealContract(): LedgerSealContract {
         subject: {
           kind: "artifact",
           path: `ledger-commit:${input.commitId}`,
-          hash: await createSealHash(input.subjectBytes)
-        }
+          hash: await createSealHash(input.subjectBytes),
+        },
       })) as SealProof;
     },
     async verifyCommitProof(input) {
       const { verifySealProofAgainstBytes } = await loadSealRuntime();
-      const result = await verifySealProofAgainstBytes(
-        input.proof as never,
-        input.subjectBytes
-      );
+      const result = await verifySealProofAgainstBytes(input.proof as never, input.subjectBytes);
       return result.valid;
-    }
+    },
   };
 }
 
@@ -417,14 +403,12 @@ function createDefaultArmourContract(): LedgerArmourContract {
       const ciphertext = await encryptForRecipients({
         recipients: input.recipients,
         data: input.data,
-        output: input.encoding
+        output: input.encoding,
       });
       return {
         data:
-          input.encoding === "armor"
-            ? textDecoder.decode(ciphertext)
-            : base64UrlEncode(ciphertext),
-        payloadHash: await createSealHash(ciphertext)
+          input.encoding === "armor" ? textDecoder.decode(ciphertext) : base64UrlEncode(ciphertext),
+        payloadHash: await createSealHash(ciphertext),
       };
     },
     async decrypt(input) {
@@ -432,10 +416,10 @@ function createDefaultArmourContract(): LedgerArmourContract {
       await initArmour();
       const plaintext = await decryptWithIdentity({
         identity: input.decryptor.identity,
-        data: toCiphertextBytes(input.payload)
+        data: toCiphertextBytes(input.payload),
       });
       return JSON.parse(textDecoder.decode(plaintext)) as unknown;
-    }
+    },
   };
 }
 
@@ -448,7 +432,7 @@ function createInitialState<P>(initialProjection: P): LedgerState<P> {
     container: null,
     staged: [],
     projection: createEmptyProjection(initialProjection),
-    verification: null
+    verification: null,
   };
 }
 
@@ -459,7 +443,7 @@ function sortStrings(values: Iterable<string>): string[] {
 function mergeReplayOptions(
   defaults: LedgerReplayPolicy | undefined,
   options: LedgerReplayOptions | undefined,
-  hasDecryptor: boolean
+  hasDecryptor: boolean,
 ): Required<LedgerReplayOptions> {
   const verify = options?.verify ?? defaults?.verify ?? true;
   const decrypt = options?.decrypt ?? defaults?.decrypt ?? true;
@@ -467,7 +451,7 @@ function mergeReplayOptions(
     fromEntryId: options?.fromEntryId ?? "",
     toEntryId: options?.toEntryId ?? "",
     verify,
-    decrypt: decrypt && hasDecryptor
+    decrypt: decrypt && hasDecryptor,
   };
 }
 
@@ -497,7 +481,7 @@ function assertContainerInput(container: LedgerContainer): void {
 
 function getCommittedEntriesInOrder(
   container: LedgerContainer,
-  protocol: LedgerProtocolContract
+  protocol: LedgerProtocolContract,
 ): LedgerEntryRecord[] {
   const ordered: LedgerEntryRecord[] = [];
   for (const commitId of protocol.getCommitChain(container)) {
@@ -516,11 +500,9 @@ function getCommittedEntriesInOrder(
 function getProjectionSlice(
   entries: LedgerEntryRecord[],
   fromEntryId: string,
-  toEntryId: string
+  toEntryId: string,
 ): LedgerEntryRecord[] {
-  const startIndex = fromEntryId
-    ? entries.findIndex((entry) => entry.entryId === fromEntryId)
-    : 0;
+  const startIndex = fromEntryId ? entries.findIndex((entry) => entry.entryId === fromEntryId) : 0;
   const endIndex = toEntryId
     ? entries.findIndex((entry) => entry.entryId === toEntryId)
     : entries.length - 1;
@@ -542,7 +524,7 @@ async function toReplayEntry(
   entry: LedgerEntryRecord,
   decrypt: boolean,
   identity: LedgerIdentityContext,
-  armour: LedgerArmourContract
+  armour: LedgerArmourContract,
 ): Promise<LedgerReplayEntry> {
   if (entry.payload.type === "plain") {
     return {
@@ -553,9 +535,9 @@ async function toReplayEntry(
       meta: entry.meta,
       payload: {
         type: "plain",
-        data: cloneValue(entry.payload.data)
+        data: cloneValue(entry.payload.data),
       },
-      verified: true
+      verified: true,
     };
   }
 
@@ -571,11 +553,11 @@ async function toReplayEntry(
         original: "encrypted",
         data: await armour.decrypt({
           payload: entry.payload,
-          decryptor: identity.decryptor
-        })
+          decryptor: identity.decryptor,
+        }),
       },
       verified: true,
-      decrypted: true
+      decrypted: true,
     };
   }
 
@@ -590,16 +572,16 @@ async function toReplayEntry(
       scheme: entry.payload.scheme,
       mode: entry.payload.mode,
       encoding: entry.payload.encoding,
-      data: entry.payload.data
+      data: entry.payload.data,
     },
     verified: true,
-    decrypted: false
+    decrypted: false,
   };
 }
 
 function createGenesisCommitDraft(
   timestamp: string,
-  metadata: Record<string, unknown> | null
+  metadata: Record<string, unknown> | null,
 ): UnsignedLedgerCommit {
   return {
     parentCommitId: null,
@@ -607,15 +589,13 @@ function createGenesisCommitDraft(
     metadata: {
       genesis: true,
       spec: LEDGER_SPEC,
-      ...(metadata ?? {})
+      ...(metadata ?? {}),
     },
-    entryIds: []
+    entryIds: [],
   };
 }
 
-export async function createLedger<P>(
-  config: CreateLedgerConfig<P>
-): Promise<LedgerInstance<P>> {
+export async function createLedger<P>(config: CreateLedgerConfig<P>): Promise<LedgerInstance<P>> {
   const now = config.now ?? (() => new Date().toISOString());
   const protocol = config.protocol ?? createDefaultProtocolContract();
   const seal = config.seal ?? createDefaultSealContract();
@@ -634,13 +614,13 @@ export async function createLedger<P>(
     if (!config.storage) return;
     const snapshot: LedgerPersistenceSnapshot = {
       container: state.container ? cloneValue(state.container) : null,
-      staged: cloneValue(state.staged)
+      staged: cloneValue(state.staged),
     };
     await config.storage.save(snapshot);
   }
 
   async function buildCommitRecord(
-    unsignedCommit: UnsignedLedgerCommit
+    unsignedCommit: UnsignedLedgerCommit,
   ): Promise<LedgerCommitRecord> {
     const subjectBytes = protocol.getCommitSubjectBytes(unsignedCommit);
     const commitId = await protocol.deriveCommitId(unsignedCommit);
@@ -648,20 +628,20 @@ export async function createLedger<P>(
       commit: unsignedCommit,
       commitId,
       subjectBytes,
-      signer: config.identity.signer
+      signer: config.identity.signer,
     });
 
     return {
       ...unsignedCommit,
       commitId,
-      seal: sealProof
+      seal: sealProof,
     };
   }
 
   async function verifySnapshot(
     container: LedgerContainer | null,
     staged: LedgerEntryRecord[],
-    options?: LedgerVerifyOptions
+    options?: LedgerVerifyOptions,
   ): Promise<LedgerVerificationResult> {
     if (!container) {
       return {
@@ -674,7 +654,7 @@ export async function createLedger<P>(
         payloadHashesValid: true,
         proofsValid: true,
         invalidCommitIds: [],
-        invalidEntryIds: []
+        invalidEntryIds: [],
       };
     }
 
@@ -704,7 +684,7 @@ export async function createLedger<P>(
           parentCommitId: commit.parentCommitId,
           committedAt: commit.committedAt,
           metadata: commit.metadata,
-          entryIds: commit.entryIds
+          entryIds: commit.entryIds,
         });
         if (derivedCommitId !== commitId) {
           invalidCommitIds.add(commitId);
@@ -728,9 +708,9 @@ export async function createLedger<P>(
               parentCommitId: commit.parentCommitId,
               committedAt: commit.committedAt,
               metadata: commit.metadata,
-              entryIds: commit.entryIds
+              entryIds: commit.entryIds,
             }),
-            proof: commit.seal
+            proof: commit.seal,
           });
           if (!proofValid) {
             invalidCommitIds.add(commitId);
@@ -771,9 +751,9 @@ export async function createLedger<P>(
     const entriesToVerify = [
       ...Object.entries(container.entries).map(([recordKey, entry]) => ({
         recordKey,
-        entry
+        entry,
       })),
-      ...staged.map((entry) => ({ recordKey: null, entry }))
+      ...staged.map((entry) => ({ recordKey: null, entry })),
     ];
 
     for (const { recordKey, entry } of entriesToVerify) {
@@ -803,7 +783,7 @@ export async function createLedger<P>(
         authoredAt: entry.authoredAt,
         author: entry.author,
         meta: entry.meta,
-        payload: entry.payload
+        payload: entry.payload,
       });
 
       if (options?.includeProofs !== false) {
@@ -811,7 +791,7 @@ export async function createLedger<P>(
           const proofValid = await seal.verifyEntryProof({
             entry,
             subjectBytes,
-            proof: entry.seal
+            proof: entry.seal,
           });
           if (!proofValid) {
             invalidEntryIds.add(entry.entryId);
@@ -886,28 +866,22 @@ export async function createLedger<P>(
       payloadHashesValid,
       proofsValid,
       invalidCommitIds: sortStrings(invalidCommitIds),
-      invalidEntryIds: sortStrings(invalidEntryIds)
+      invalidEntryIds: sortStrings(invalidEntryIds),
     };
   }
 
-  async function verifyCurrent(
-    options?: LedgerVerifyOptions
-  ): Promise<LedgerVerificationResult> {
+  async function verifyCurrent(options?: LedgerVerifyOptions): Promise<LedgerVerificationResult> {
     return verifySnapshot(state.container, state.staged, options);
   }
 
   async function rebuildProjection(options?: LedgerReplayOptions): Promise<P> {
-    const merged = mergeReplayOptions(
-      replayPolicy,
-      options,
-      !!config.identity.decryptor
-    );
+    const merged = mergeReplayOptions(replayPolicy, options, !!config.identity.decryptor);
 
     if (merged.verify) {
       const verification = await verifyCurrent();
       state.verification = {
         valid: verification.valid,
-        checkedAt: now()
+        checkedAt: now(),
       };
       notify();
       if (!verification.valid) {
@@ -926,17 +900,13 @@ export async function createLedger<P>(
       }
     }
     const orderedEntries = [...orderedCommitted, ...state.staged];
-    const slice = getProjectionSlice(
-      orderedEntries,
-      merged.fromEntryId,
-      merged.toEntryId
-    );
+    const slice = getProjectionSlice(orderedEntries, merged.fromEntryId, merged.toEntryId);
 
     let projection = createEmptyProjection(config.initialProjection);
     for (const entry of slice) {
       projection = config.projector(
         projection,
-        await toReplayEntry(entry, merged.decrypt, config.identity, armour)
+        await toReplayEntry(entry, merged.decrypt, config.identity, armour),
       );
     }
 
@@ -966,12 +936,12 @@ export async function createLedger<P>(
                 ? await config.identity.recipientResolver(input.protection.recipients)
                 : input.protection.recipients,
               data: textEncoder.encode(protocol.canonicalizePayload(payloadValue)),
-              encoding: input.protection.encoding ?? "armor"
-            }))
+              encoding: input.protection.encoding ?? "armor",
+            })),
           }
         : {
             type: "plain",
-            data: cloneValue(payloadValue)
+            data: cloneValue(payloadValue),
           };
 
     const unsignedEntry: UnsignedLedgerEntry = {
@@ -979,23 +949,23 @@ export async function createLedger<P>(
       authoredAt,
       author,
       meta,
-      payload
+      payload,
     };
     const subjectBytes = buildUnsignedEntrySubject(unsignedEntry);
     const sealProof = await seal.createEntryProof({
       entry: unsignedEntry,
       subjectBytes,
-      signer: config.identity.signer
+      signer: config.identity.signer,
     });
     const draft: LedgerEntryRecord = {
       entryId: "",
       ...unsignedEntry,
-      seal: sealProof
+      seal: sealProof,
     };
 
     return {
       ...draft,
-      entryId: await protocol.deriveEntryId(draft)
+      entryId: await protocol.deriveEntryId(draft),
     };
   }
 
@@ -1006,13 +976,11 @@ export async function createLedger<P>(
     return state.container;
   }
 
-  async function stageEntries(
-    inputs: LedgerAppendInput[]
-  ): Promise<LedgerAppendResult[]> {
+  async function stageEntries(inputs: LedgerAppendInput[]): Promise<LedgerAppendResult[]> {
     const container = assertContainerExists();
     const existingIds = new Set<string>([
       ...Object.keys(container.entries),
-      ...state.staged.map((entry) => entry.entryId)
+      ...state.staged.map((entry) => entry.entryId),
     ]);
     const entries: LedgerEntryRecord[] = [];
 
@@ -1029,7 +997,7 @@ export async function createLedger<P>(
     state.staged = [...state.staged, ...entries];
     const results = entries.map((entry, index) => ({
       entry,
-      stagedCount: baseCount + index + 1
+      stagedCount: baseCount + index + 1,
     }));
 
     if (config.autoCommit && entries.length > 0) {
@@ -1044,17 +1012,17 @@ export async function createLedger<P>(
 
   async function create(params?: CreateLedgerParams): Promise<void> {
     const genesis = await buildCommitRecord(
-      createGenesisCommitDraft(now(), normalizeMeta(params?.metadata))
+      createGenesisCommitDraft(now(), normalizeMeta(params?.metadata)),
     );
 
     state.container = {
       format: LEDGER_FORMAT,
       version: LEDGER_VERSION,
       commits: {
-        [genesis.commitId]: genesis
+        [genesis.commitId]: genesis,
       },
       entries: {},
-      head: genesis.commitId
+      head: genesis.commitId,
     };
     state.staged = [];
     state.verification = null;
@@ -1104,9 +1072,7 @@ export async function createLedger<P>(
     return result;
   }
 
-  async function appendMany(
-    inputs: LedgerAppendInput[]
-  ): Promise<LedgerAppendResult[]> {
+  async function appendMany(inputs: LedgerAppendInput[]): Promise<LedgerAppendResult[]> {
     if (inputs.length === 0) {
       return [];
     }
@@ -1129,7 +1095,7 @@ export async function createLedger<P>(
       parentCommitId: container.head,
       committedAt: now(),
       metadata: normalizeMeta(input?.metadata),
-      entryIds: staged.map((entry) => entry.entryId)
+      entryIds: staged.map((entry) => entry.entryId),
     };
     const commitRecord = await buildCommitRecord(unsignedCommit);
 
@@ -1138,10 +1104,10 @@ export async function createLedger<P>(
       version: container.version,
       commits: {
         ...container.commits,
-        [commitRecord.commitId]: commitRecord
+        [commitRecord.commitId]: commitRecord,
       },
       entries,
-      head: commitRecord.commitId
+      head: commitRecord.commitId,
     };
     state.staged = [];
 
@@ -1151,7 +1117,7 @@ export async function createLedger<P>(
     return {
       commit: cloneValue(commitRecord),
       committedEntries: staged,
-      committedEntryIds: staged.map((entry) => entry.entryId)
+      committedEntryIds: staged.map((entry) => entry.entryId),
     };
   }
 
@@ -1163,9 +1129,7 @@ export async function createLedger<P>(
     return rebuildProjection();
   }
 
-  async function verify(
-    options?: LedgerVerifyOptions
-  ): Promise<LedgerVerificationResult> {
+  async function verify(options?: LedgerVerifyOptions): Promise<LedgerVerificationResult> {
     return verifyCurrent(options);
   }
 
@@ -1182,9 +1146,7 @@ export async function createLedger<P>(
     return state;
   }
 
-  function subscribe(
-    listener: (state: Readonly<LedgerState<P>>) => void
-  ): () => void {
+  function subscribe(listener: (state: Readonly<LedgerState<P>>) => void): () => void {
     listeners.add(listener);
     return () => {
       listeners.delete(listener);
@@ -1220,13 +1182,8 @@ export async function createLedger<P>(
     getState,
     subscribe,
     clearStaged,
-    destroy
+    destroy,
   };
 }
 
-export type {
-  CreateLedgerConfig,
-  CreateLedgerParams,
-  LedgerProjector,
-  LedgerStorageAdapter
-};
+export type { CreateLedgerConfig, CreateLedgerParams, LedgerProjector, LedgerStorageAdapter };

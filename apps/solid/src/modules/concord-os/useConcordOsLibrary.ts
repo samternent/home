@@ -1,9 +1,6 @@
 import { computed } from "vue";
 import type { SolidWorkspaceEntry } from "@ternent/solid";
-import {
-  createConcordOsOpenTarget,
-  resolveConcordOsLedgerCompatibility,
-} from "./apps";
+import { createConcordOsOpenTarget, resolveConcordOsLedgerCompatibility } from "./apps";
 import { useConcordOsCore } from "./core";
 
 export type ConcordLibraryItemKind = "ledger" | "space" | "resource";
@@ -106,9 +103,7 @@ function toLibraryItem(entry: SolidWorkspaceEntry): ConcordLibraryItem {
 export function useConcordOsLibrary() {
   const workspace = useConcordOsCore();
 
-  const items = computed(() =>
-    (workspace.currentBrowse.value?.entries ?? []).map(toLibraryItem),
-  );
+  const items = computed(() => (workspace.currentBrowse.value?.entries ?? []).map(toLibraryItem));
   const ledgers = computed(() => items.value.filter((item) => item.kind === "ledger"));
   const spaces = computed(() => items.value.filter((item) => item.kind === "space"));
   const resources = computed(() => items.value.filter((item) => item.kind === "resource"));

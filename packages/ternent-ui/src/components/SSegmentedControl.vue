@@ -17,7 +17,7 @@ const props = withDefaults(
   {
     size: "sm",
     ariaLabel: undefined,
-  }
+  },
 );
 
 const emit = defineEmits<{
@@ -75,7 +75,8 @@ function onSelect(value: string) {
   border-radius: 999px;
   color: var(--ui-fg);
   opacity: 0.7;
-  transition: color var(--ui-duration-fast) var(--ui-ease-out),
+  transition:
+    color var(--ui-duration-fast) var(--ui-ease-out),
     background-color var(--ui-duration-fast) var(--ui-ease-out),
     box-shadow var(--ui-duration-fast) var(--ui-ease-out);
 }

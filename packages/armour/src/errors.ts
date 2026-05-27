@@ -38,17 +38,13 @@ export function toArmourInitError(error: unknown): ArmourInitError {
   if (error instanceof ArmourInitError) {
     return error;
   }
-  return new ArmourInitError(
-    "ARMOUR_INIT_FAILED",
-    "Failed to initialize Armour.",
-    error
-  );
+  return new ArmourInitError("ARMOUR_INIT_FAILED", "Failed to initialize Armour.", error);
 }
 
 export function toArmourIdentityError(
   error: unknown,
   code: "ARMOUR_INVALID_IDENTITY" | "ARMOUR_IDENTITY_DERIVATION_FAILED",
-  fallbackMessage: string
+  fallbackMessage: string,
 ): ArmourIdentityError {
   if (error instanceof ArmourIdentityError) {
     return error;
@@ -66,7 +62,7 @@ export function toArmourEncryptionError(error: unknown): ArmourError {
     return new ArmourInitError(
       "ARMOUR_INIT_FAILED",
       "Armour is not initialized. Call initArmour() before encrypting or decrypting.",
-      error
+      error,
     );
   }
 
@@ -76,31 +72,31 @@ export function toArmourEncryptionError(error: unknown): ArmourError {
         return new ArmourValidationError(
           "ARMOUR_EMPTY_DATA",
           "Data must be a non-empty Uint8Array.",
-          error
+          error,
         );
       case "RAGE_EMPTY_RECIPIENTS":
         return new ArmourValidationError(
           "ARMOUR_EMPTY_RECIPIENTS",
           "At least one recipient is required.",
-          error
+          error,
         );
       case "RAGE_INVALID_RECIPIENT":
         return new ArmourValidationError(
           "ARMOUR_INVALID_RECIPIENT",
           "Recipient must be an age recipient string.",
-          error
+          error,
         );
       case "RAGE_EMPTY_PASSPHRASE":
         return new ArmourValidationError(
           "ARMOUR_EMPTY_PASSPHRASE",
           "Passphrase must not be empty.",
-          error
+          error,
         );
       case "RAGE_DATA_TOO_LARGE":
         return new ArmourValidationError(
           "ARMOUR_DATA_TOO_LARGE",
           "Data exceeds the 64MB maximum message size.",
-          error
+          error,
         );
       default:
         break;
@@ -108,18 +104,10 @@ export function toArmourEncryptionError(error: unknown): ArmourError {
   }
 
   if (error instanceof RageEncryptionError || error instanceof RageError) {
-    return new ArmourEncryptionError(
-      "ARMOUR_ENCRYPT_FAILED",
-      "Failed to encrypt data.",
-      error
-    );
+    return new ArmourEncryptionError("ARMOUR_ENCRYPT_FAILED", "Failed to encrypt data.", error);
   }
 
-  return new ArmourEncryptionError(
-    "ARMOUR_ENCRYPT_FAILED",
-    "Failed to encrypt data.",
-    error
-  );
+  return new ArmourEncryptionError("ARMOUR_ENCRYPT_FAILED", "Failed to encrypt data.", error);
 }
 
 export function toArmourDecryptionError(error: unknown): ArmourError {
@@ -131,7 +119,7 @@ export function toArmourDecryptionError(error: unknown): ArmourError {
     return new ArmourInitError(
       "ARMOUR_INIT_FAILED",
       "Armour is not initialized. Call initArmour() before encrypting or decrypting.",
-      error
+      error,
     );
   }
 
@@ -141,19 +129,19 @@ export function toArmourDecryptionError(error: unknown): ArmourError {
         return new ArmourValidationError(
           "ARMOUR_EMPTY_DATA",
           "Data must be a non-empty Uint8Array.",
-          error
+          error,
         );
       case "RAGE_INVALID_IDENTITY":
         return new ArmourValidationError(
           "ARMOUR_INVALID_SECRET_KEY",
           "Secret key must be an age secret key string.",
-          error
+          error,
         );
       case "RAGE_EMPTY_PASSPHRASE":
         return new ArmourValidationError(
           "ARMOUR_EMPTY_PASSPHRASE",
           "Passphrase must not be empty.",
-          error
+          error,
         );
       default:
         break;
@@ -161,24 +149,16 @@ export function toArmourDecryptionError(error: unknown): ArmourError {
   }
 
   if (error instanceof RageDecryptionError || error instanceof RageError) {
-    return new ArmourDecryptionError(
-      "ARMOUR_DECRYPT_FAILED",
-      "Failed to decrypt data.",
-      error
-    );
+    return new ArmourDecryptionError("ARMOUR_DECRYPT_FAILED", "Failed to decrypt data.", error);
   }
 
-  return new ArmourDecryptionError(
-    "ARMOUR_DECRYPT_FAILED",
-    "Failed to decrypt data.",
-    error
-  );
+  return new ArmourDecryptionError("ARMOUR_DECRYPT_FAILED", "Failed to decrypt data.", error);
 }
 export function invalidUtf8Error(error: unknown): ArmourDecryptionError {
   return new ArmourDecryptionError(
     "ARMOUR_DECRYPT_FAILED",
     "Decrypted data is not valid UTF-8.",
-    error
+    error,
   );
 }
 

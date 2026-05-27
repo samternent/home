@@ -10,12 +10,15 @@ const { mode } = useThemeMode();
   <SCard class="space-y-4 p-5">
     <h2 class="m-0 text-xl">Appearance</h2>
     <p class="text-sm text-fg-muted">
-      Phase 1 keeps settings intentionally light. Theme mode is the only local shell preference exposed today.
+      Phase 1 keeps settings intentionally light. Theme mode is the only local shell preference
+      exposed today.
     </p>
 
     <div class="flex items-center gap-3">
       <ThemeModeToggle />
-      <span class="text-sm text-fg-muted">Current mode: <strong>{{ mode }}</strong></span>
+      <span class="text-sm text-fg-muted"
+        >Current mode: <strong>{{ mode }}</strong></span
+      >
     </div>
   </SCard>
 </template>

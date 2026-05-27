@@ -13,7 +13,9 @@ const lastOnlineLabel = computed(() => {
 <template>
   <div
     class="rounded-md border px-3 py-2 text-sm"
-    :class="isOnline ? 'bg-surface border-border text-fg-muted' : 'bg-danger-muted border-danger text-fg'"
+    :class="
+      isOnline ? 'bg-surface border-border text-fg-muted' : 'bg-danger-muted border-danger text-fg'
+    "
   >
     <span v-if="isOnline">Online and ready for sync.</span>
     <span v-else>Offline mode enabled. Cached data remains available.</span>

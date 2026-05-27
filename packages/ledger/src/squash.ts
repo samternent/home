@@ -1,8 +1,5 @@
 import type { Entry } from "@ternent/concord-protocol";
-import {
-  deriveEntryId,
-  getEntrySigningPayload,
-} from "@ternent/concord-protocol";
+import { deriveEntryId, getEntrySigningPayload } from "@ternent/concord-protocol";
 
 import type { PendingEntry } from "./ledger";
 
@@ -26,7 +23,7 @@ export type SquashByIdAndKindOpts = {
   resolveAuthor: (publicKey: CryptoKey) => Promise<string> | string;
   sign: (
     signingKey: CryptoKey,
-    signingPayload: ReturnType<typeof getEntrySigningPayload>
+    signingPayload: ReturnType<typeof getEntrySigningPayload>,
   ) => Promise<string> | string;
 
   /**
@@ -38,7 +35,7 @@ export type SquashByIdAndKindOpts = {
 
 export async function squashByIdAndKindAndResign(
   pending: PendingEntry[],
-  opts: SquashByIdAndKindOpts
+  opts: SquashByIdAndKindOpts,
 ): Promise<PendingEntry[]> {
   const now = opts.now ?? (() => new Date().toISOString());
   const allow = opts.kinds?.length ? new Set(opts.kinds) : null;
@@ -111,10 +108,7 @@ export async function squashByIdAndKindAndResign(
       signature: null,
     };
 
-    const signature = await opts.sign(
-      opts.signingKey,
-      getEntrySigningPayload(core)
-    );
+    const signature = await opts.sign(opts.signingKey, getEntrySigningPayload(core));
 
     const signed: Entry = { ...core, signature };
     const entryId = await deriveEntryId(signed);
@@ -126,9 +120,7 @@ export async function squashByIdAndKindAndResign(
   rewritten.sort((a, b) => {
     const ap = a.entry.payload as any;
     const bp = b.entry.payload as any;
-    return `${a.entry.kind}::${ap?.id}`.localeCompare(
-      `${b.entry.kind}::${bp?.id}`
-    );
+    return `${a.entry.kind}::${ap?.id}`.localeCompare(`${b.entry.kind}::${bp?.id}`);
   });
 
   return [...passthrough, ...rewritten];

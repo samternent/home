@@ -4,8 +4,7 @@ import workspaceRoutes from "./workspace/routes";
 import pixpaxRoutes, { pixpaxChildren } from "./pixpax/routes";
 
 const pixpaxHosts = new Set(["pixpax.xyz", "www.pixpax.xyz"]);
-const isPixpaxHost =
-  typeof window !== "undefined" && pixpaxHosts.has(window.location.hostname);
+const isPixpaxHost = typeof window !== "undefined" && pixpaxHosts.has(window.location.hostname);
 
 function cloneRouteRecord(record: any): any {
   return {
@@ -16,18 +15,14 @@ function cloneRouteRecord(record: any): any {
   };
 }
 
-const pixpaxHostChildren = pixpaxChildren.map((child) =>
-  cloneRouteRecord(child),
-);
+const pixpaxHostChildren = pixpaxChildren.map((child) => cloneRouteRecord(child));
 
 const pixpaxHostRoutes = [
   {
     path: "/pixpax/:pathMatch(.*)*",
     redirect: (to) => {
       const raw = to.params.pathMatch;
-      const rest = Array.isArray(raw)
-        ? raw.join("/")
-        : String(raw || "").trim();
+      const rest = Array.isArray(raw) ? raw.join("/") : String(raw || "").trim();
       const canonicalPath = rest ? `/${rest}` : "/";
       return {
         path: canonicalPath,

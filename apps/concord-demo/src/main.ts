@@ -31,9 +31,7 @@ if (!themeMode.value && typeof window !== "undefined") {
       (event) => (themeMode.value = media.matches ? "dark" : "light"),
     );
   } else if (typeof media.addListener === "function") {
-    media.addListener(
-      (event) => (themeMode.value = media.matches ? "dark" : "light"),
-    );
+    media.addListener((event) => (themeMode.value = media.matches ? "dark" : "light"));
   }
 }
 
@@ -43,10 +41,7 @@ if (typeof document !== "undefined") {
       "data-theme",
       `${theme.value}-${themeMode.value || "light"}`,
     );
-    document.documentElement.setAttribute(
-      "data-theme-palette",
-      themeMode.value,
-    );
+    document.documentElement.setAttribute("data-theme-palette", themeMode.value);
 
     // document.documentElement.classList.toggle(themeMode.value);
   });

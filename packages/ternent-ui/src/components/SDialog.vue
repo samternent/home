@@ -52,7 +52,7 @@ const sizeClasses = computed(() => {
 });
 
 const hasHeader = computed(
-  () => !!props.title || !!slots.header || !!slots.icon || props.showClose
+  () => !!props.title || !!slots.header || !!slots.icon || props.showClose,
 );
 </script>
 
@@ -65,9 +65,7 @@ const hasHeader = computed(
     unmount-on-exit
   >
     <Dialog.Backdrop class="fixed inset-0 z-40 bg-black/40" />
-    <Dialog.Positioner
-      class="fixed inset-0 z-50 grid place-items-center p-4"
-    >
+    <Dialog.Positioner class="fixed inset-0 z-50 grid place-items-center p-4">
       <Dialog.Content
         class="w-full overflow-hidden rounded-[var(--ui-radius-lg)] border border-[var(--ui-border)] bg-[var(--ui-surface)] shadow-[var(--ui-shadow-md)]"
         :class="[sizeClasses, contentClass]"
@@ -105,11 +103,7 @@ const hasHeader = computed(
                 stroke="currentColor"
                 class="size-4"
               >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M6 18 18 6M6 6l12 12"
-                />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
               </svg>
             </Dialog.CloseTrigger>
           </slot>
@@ -119,10 +113,7 @@ const hasHeader = computed(
           <slot />
         </div>
 
-        <div
-          v-if="$slots.footer"
-          class="border-t border-[var(--ui-border)] px-4 py-3"
-        >
+        <div v-if="$slots.footer" class="border-t border-[var(--ui-border)] px-4 py-3">
           <slot name="footer" />
         </div>
       </Dialog.Content>

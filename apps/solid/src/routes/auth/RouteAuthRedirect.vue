@@ -34,9 +34,7 @@ onMounted(async () => {
           <p class="m-0 text-xs font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
             Solid login
           </p>
-          <h1 class="m-0 text-3xl tracking-tight text-[var(--ui-fg)]">
-            Completing sign-in
-          </h1>
+          <h1 class="m-0 text-3xl tracking-tight text-[var(--ui-fg)]">Completing sign-in</h1>
           <p class="m-0 text-sm text-[var(--ui-fg-muted)]">
             {{ description }}
           </p>

@@ -44,4 +44,3 @@ controller:
   #         servicePort: "9090"
   #   prometheus.io/port: "10254"
   #   prometheus.io/scrape: "true"
-

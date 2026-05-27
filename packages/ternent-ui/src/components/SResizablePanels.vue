@@ -33,10 +33,7 @@ const sidebarWidth = defineModel("sideBarWidth", {
 });
 
 const resizeContainer = shallowRef(null);
-const dragPosition = useLocalStorage(
-  `routes/${props.identifier}/dragPosition`,
-  600
-);
+const dragPosition = useLocalStorage(`routes/${props.identifier}/dragPosition`, 600);
 const isDragging = shallowRef(false);
 const contentEl = shallowRef(null);
 const sidebarEl = shallowRef(null);
@@ -57,7 +54,7 @@ onMounted(() => {
 });
 
 const isResizable = computed(
-  () => containerWidth.value > props.minContentWidth + props.minSidebarWidth
+  () => containerWidth.value > props.minContentWidth + props.minSidebarWidth,
 );
 </script>
 <template>

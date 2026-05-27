@@ -17,17 +17,13 @@ export function getVerificationHeadline(status: VerificationStatus): string {
   return "Unknown proof";
 }
 
-export function getVerificationBadgeTone(
-  status: VerificationStatus
-): BadgeTone {
+export function getVerificationBadgeTone(status: VerificationStatus): BadgeTone {
   if (status === "verified") return "success";
   if (status === "failed") return "critical";
   return "neutral";
 }
 
-export function getVerificationSurfaceLabel(
-  surface?: VerificationSurface
-): string | undefined {
+export function getVerificationSurfaceLabel(surface?: VerificationSurface): string | undefined {
   if (surface === "browser") return "Browser";
   if (surface === "cli") return "CLI";
   if (surface === "ci") return "CI";
@@ -36,7 +32,7 @@ export function getVerificationSurfaceLabel(
 
 export function getVerificationContextSubtext(
   status: VerificationStatus,
-  context?: VerificationContext
+  context?: VerificationContext,
 ): string | undefined {
   if (status === "unknown") return undefined;
 
@@ -53,11 +49,7 @@ export function getVerificationContextSubtext(
   return "Independent verification failed";
 }
 
-export function truncateMiddle(
-  value: string,
-  leading = 12,
-  trailing = 12
-): string {
+export function truncateMiddle(value: string, leading = 12, trailing = 12): string {
   if (value.length <= leading + trailing + 3) {
     return value;
   }
@@ -81,4 +73,3 @@ export async function copyToClipboard(value: string): Promise<boolean> {
     return false;
   }
 }
-

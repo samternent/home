@@ -36,14 +36,10 @@ function buildApiUrl(path: string) {
 }
 
 function toIsoWeek(date = new Date()) {
-  const utc = new Date(
-    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()),
-  );
+  const utc = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
   utc.setUTCDate(utc.getUTCDate() + 4 - (utc.getUTCDay() || 7));
   const yearStart = new Date(Date.UTC(utc.getUTCFullYear(), 0, 1));
-  const weekNumber = Math.ceil(
-    ((utc.getTime() - yearStart.getTime()) / 86400000 + 1) / 7,
-  );
+  const weekNumber = Math.ceil(((utc.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
   return `${utc.getUTCFullYear()}-W${String(weekNumber).padStart(2, "0")}`;
 }
 
@@ -64,10 +60,7 @@ type CollectionRef = {
 type ApiIndex = {
   series?: Array<{ seriesId?: string; name?: string }>;
   cards?: string[];
-  cardMap?: Record<
-    string,
-    { seriesId?: string; slotIndex?: number; role?: string }
-  >;
+  cardMap?: Record<string, { seriesId?: string; slotIndex?: number; role?: string }>;
 };
 
 type ApiCard = {
@@ -151,9 +144,8 @@ type ApiReceiptVerify = {
 const DEFAULT_PALETTE: PackPalette16 = {
   id: "default-palette",
   colors: [
-    0x00000000, 0xff111111, 0xffffffff, 0xffef4444, 0xff22c55e, 0xff3b82f6,
-    0xfff59e0b, 0xffa855f7, 0xff06b6d4, 0xfff97316, 0xff84cc16, 0xffec4899,
-    0xff8b5cf6, 0xfff5d0fe, 0xffbae6fd, 0xfffde68a,
+    0x00000000, 0xff111111, 0xffffffff, 0xffef4444, 0xff22c55e, 0xff3b82f6, 0xfff59e0b, 0xffa855f7,
+    0xff06b6d4, 0xfff97316, 0xff84cc16, 0xffec4899, 0xff8b5cf6, 0xfff5d0fe, 0xffbae6fd, 0xfffde68a,
   ],
 };
 
@@ -230,22 +222,17 @@ const now = ref(Date.now());
 let nowTimer: number | null = null;
 
 const selectedCollection = computed(
-  () =>
-    collections.value.find(
-      (entry) => entry.id === selectedCollectionId.value,
-    ) || null,
+  () => collections.value.find((entry) => entry.id === selectedCollectionId.value) || null,
 );
 const selectedCollectionRef = computed(() => {
-  if (!selectedCollectionId.value || !selectedCollectionVersion.value)
-    return null;
+  if (!selectedCollectionId.value || !selectedCollectionVersion.value) return null;
   return {
     collectionId: selectedCollectionId.value,
     version: selectedCollectionVersion.value,
   };
 });
 const selectedCollectionIssuanceMode = computed(() =>
-  String(selectedCollectionSettings.value?.issuanceMode || "scheduled") ===
-  "codes-only"
+  String(selectedCollectionSettings.value?.issuanceMode || "scheduled") === "codes-only"
     ? "codes-only"
     : "scheduled",
 );
@@ -257,10 +244,8 @@ const openedForCurrentDrop = computed(() => {
     (receivedPacks.value as any[]).find((pack) => {
       const payload = pack?.data?.issuerIssuePayload || {};
       if (String(payload?.packModel || "") !== "album") return false;
-      if (String(payload?.collectionId || "") !== refEntry.collectionId)
-        return false;
-      if (String(payload?.collectionVersion || "") !== refEntry.version)
-        return false;
+      if (String(payload?.collectionId || "") !== refEntry.collectionId) return false;
+      if (String(payload?.collectionVersion || "") !== refEntry.version) return false;
       return String(payload?.dropId || "") === currentDropId.value;
     }) || null
   );
@@ -301,9 +286,7 @@ const selectedSeriesLabel = computed(() =>
 const visibleStickers = computed(() => {
   const stickers = selectedCollection.value?.stickers || [];
   if (selectedSeries.value === "all") return stickers;
-  return stickers.filter(
-    (sticker) => sticker.meta.series === selectedSeries.value,
-  );
+  return stickers.filter((sticker) => sticker.meta.series === selectedSeries.value);
 });
 const seriesGroupsForBook = computed(() => {
   const stickers = selectedCollection.value?.stickers || [];
@@ -315,18 +298,12 @@ const seriesGroupsForBook = computed(() => {
     list.push(sticker);
     bySeries.set(key, list);
   }
-  const sortedSeries = Array.from(bySeries.keys()).sort((a, b) =>
-    a.localeCompare(b),
-  );
+  const sortedSeries = Array.from(bySeries.keys()).sort((a, b) => a.localeCompare(b));
   return sortedSeries.map((series) => {
     const entries = bySeries.get(series) || [];
-    const collected = entries.filter((sticker) =>
-      owned.has(sticker.meta.id),
-    ).length;
+    const collected = entries.filter((sticker) => owned.has(sticker.meta.id)).length;
     const total = entries.length;
-    const progressPercent = total
-      ? Math.min(100, Math.round((collected / total) * 100))
-      : 0;
+    const progressPercent = total ? Math.min(100, Math.round((collected / total) * 100)) : 0;
     return {
       series,
       stickers: entries,
@@ -338,22 +315,17 @@ const seriesGroupsForBook = computed(() => {
   });
 });
 
-const collectionTotalCreatures = computed(
-  () => selectedCollection.value?.stickers.length || 0,
-);
+const collectionTotalCreatures = computed(() => selectedCollection.value?.stickers.length || 0);
 const collectionCollectedCount = computed(() => {
   const owned = new Set(ownedStickerIds.value);
-  return (selectedCollection.value?.stickers || []).filter((sticker) =>
-    owned.has(sticker.meta.id),
-  ).length;
+  return (selectedCollection.value?.stickers || []).filter((sticker) => owned.has(sticker.meta.id))
+    .length;
 });
 const collectionProgressPercent = computed(() => {
   if (!collectionTotalCreatures.value) return 0;
   return Math.min(
     100,
-    Math.round(
-      (collectionCollectedCount.value / collectionTotalCreatures.value) * 100,
-    ),
+    Math.round((collectionCollectedCount.value / collectionTotalCreatures.value) * 100),
   );
 });
 const isCollectionComplete = computed(
@@ -365,20 +337,14 @@ const isCollectionComplete = computed(
 const seriesTotalCreatures = computed(() => visibleStickers.value.length);
 const seriesCollectedCount = computed(() => {
   const owned = new Set(ownedStickerIds.value);
-  return visibleStickers.value.filter((sticker) => owned.has(sticker.meta.id))
-    .length;
+  return visibleStickers.value.filter((sticker) => owned.has(sticker.meta.id)).length;
 });
 const seriesProgressPercent = computed(() => {
   if (!seriesTotalCreatures.value) return 0;
-  return Math.min(
-    100,
-    Math.round((seriesCollectedCount.value / seriesTotalCreatures.value) * 100),
-  );
+  return Math.min(100, Math.round((seriesCollectedCount.value / seriesTotalCreatures.value) * 100));
 });
 const isSeriesComplete = computed(
-  () =>
-    seriesTotalCreatures.value > 0 &&
-    seriesCollectedCount.value >= seriesTotalCreatures.value,
+  () => seriesTotalCreatures.value > 0 && seriesCollectedCount.value >= seriesTotalCreatures.value,
 );
 const duplicateCardGroups = computed(() => {
   const refEntry = selectedCollectionRef.value;
@@ -398,9 +364,7 @@ const duplicateCardGroups = computed(() => {
       counts.set(cardId, existing);
     }
   }
-  const byId = new Map(
-    (selectedCollection.value?.stickers || []).map((s) => [s.meta.id, s]),
-  );
+  const byId = new Map((selectedCollection.value?.stickers || []).map((s) => [s.meta.id, s]));
   const output = [];
   for (const [cardId, data] of counts.entries()) {
     if (data.count <= 1) continue;
@@ -415,9 +379,7 @@ const duplicateCardGroups = computed(() => {
   return output;
 });
 
-function getOwnedCountsForSelectedCollection(
-  options: { excludePackId?: string | null } = {},
-) {
+function getOwnedCountsForSelectedCollection(options: { excludePackId?: string | null } = {}) {
   const refEntry = selectedCollectionRef.value;
   const map = new Map<string, number>();
   if (!refEntry) return map;
@@ -444,9 +406,7 @@ const ownedCountByStickerId = computed(() => {
   return getOwnedCountsForSelectedCollection({ excludePackId: activePackId });
 });
 const revealPlan = computed(() => {
-  const counts = new Map(
-    packOwnedCountSnapshot.value || ownedCountByStickerId.value,
-  );
+  const counts = new Map(packOwnedCountSnapshot.value || ownedCountByStickerId.value);
   const needs: Sticker[] = [];
   const duplicates: Sticker[] = [];
 
@@ -501,21 +461,11 @@ const revealNewGroups = computed(() => {
   }
   return Array.from(byId.values());
 });
-const activePackCard = computed(
-  () => revealNeeds.value[packRevealIndex.value] || null,
-);
-const revealComplete = computed(
-  () => packRevealIndex.value >= revealNeeds.value.length,
-);
-const isPackRevealOpen = computed(
-  () => !revealDismissed.value && packPhase.value !== "idle",
-);
-const isAnyPackOverlayOpen = computed(
-  () => redeemEntryOverlayOpen.value || isPackRevealOpen.value,
-);
-const remainingPackCards = computed(() =>
-  revealNeeds.value.slice(packRevealIndex.value),
-);
+const activePackCard = computed(() => revealNeeds.value[packRevealIndex.value] || null);
+const revealComplete = computed(() => packRevealIndex.value >= revealNeeds.value.length);
+const isPackRevealOpen = computed(() => !revealDismissed.value && packPhase.value !== "idle");
+const isAnyPackOverlayOpen = computed(() => redeemEntryOverlayOpen.value || isPackRevealOpen.value);
+const remainingPackCards = computed(() => revealNeeds.value.slice(packRevealIndex.value));
 const claimedUsedAtLabel = computed(() => {
   const raw = String(packClaimedInfo.value?.usedAt || "").trim();
   if (!raw) return "";
@@ -525,13 +475,8 @@ const claimedUsedAtLabel = computed(() => {
 });
 
 const canOpenPack = computed(() => {
-  if (
-    !selectedCollection.value ||
-    selectedCollection.value.stickers.length === 0
-  )
-    return false;
-  if (packPhase.value === "opening" || packPhase.value === "reveal")
-    return false;
+  if (!selectedCollection.value || selectedCollection.value.stickers.length === 0) return false;
+  if (packPhase.value === "opening" || packPhase.value === "reveal") return false;
   if (packMode.value === "dev-untracked") return true;
   if (selectedCollectionIssuanceMode.value === "codes-only") {
     return Boolean(redeemToken.value.trim());
@@ -539,10 +484,7 @@ const canOpenPack = computed(() => {
   return !openedForCurrentDrop.value || !!redeemToken.value.trim();
 });
 const canUsePackCta = computed(() => {
-  if (
-    selectedCollectionIssuanceMode.value === "codes-only" &&
-    packMode.value !== "dev-untracked"
-  ) {
+  if (selectedCollectionIssuanceMode.value === "codes-only" && packMode.value !== "dev-untracked") {
     return true;
   }
   return canOpenPack.value;
@@ -581,10 +523,7 @@ const nextDropLabel = computed(() => {
   return parts.join(" ");
 });
 const packCtaLabel = computed(() => {
-  if (
-    selectedCollectionIssuanceMode.value === "codes-only" &&
-    packMode.value !== "dev-untracked"
-  ) {
+  if (selectedCollectionIssuanceMode.value === "codes-only" && packMode.value !== "dev-untracked") {
     return "Redeem code";
   }
   if (
@@ -599,10 +538,7 @@ const packCtaLabel = computed(() => {
 });
 
 const packCtaSubtext = computed(() => {
-  if (
-    selectedCollectionIssuanceMode.value === "codes-only" &&
-    packMode.value !== "dev-untracked"
-  ) {
+  if (selectedCollectionIssuanceMode.value === "codes-only" && packMode.value !== "dev-untracked") {
     return "Redeem a code to collect from this series";
   }
   if (packMode.value === "dev-untracked") return "";
@@ -617,14 +553,10 @@ const packCtaSubtext = computed(() => {
   return "";
 });
 
-const packCtaChip = computed(() =>
-  packMode.value === "dev-untracked" ? "Dev: untracked" : "",
-);
+const packCtaChip = computed(() => (packMode.value === "dev-untracked" ? "Dev: untracked" : ""));
 
 function setStatus(message: string, detail?: unknown) {
-  status.value = detail
-    ? `${message}\n${JSON.stringify(detail, null, 2)}`
-    : message;
+  status.value = detail ? `${message}\n${JSON.stringify(detail, null, 2)}` : message;
 }
 
 function resolveIssuedUserKey() {
@@ -651,8 +583,7 @@ function base64UrlDecodeToBytes(input: string) {
   const normalized = String(input || "")
     .replace(/-/g, "+")
     .replace(/_/g, "/");
-  const pad =
-    normalized.length % 4 === 0 ? "" : "=".repeat(4 - (normalized.length % 4));
+  const pad = normalized.length % 4 === 0 ? "" : "=".repeat(4 - (normalized.length % 4));
   const binary = atob(`${normalized}${pad}`);
   const out = new Uint8Array(binary.length);
   for (let i = 0; i < binary.length; i += 1) {
@@ -718,13 +649,9 @@ function toSticker(args: {
   fallbackSeries?: string;
 }): Sticker {
   const cardId = String(args.card.cardId || "").trim();
-  const seriesId = String(
-    args.card.seriesId || args.fallbackSeries || "",
-  ).trim();
+  const seriesId = String(args.card.seriesId || args.fallbackSeries || "").trim();
   const gridB64 = String(args.card.renderPayload?.gridB64 || "").trim();
-  const name = String(
-    args.card.label || cardId || `${args.collection.name} Card`,
-  );
+  const name = String(args.card.label || cardId || `${args.collection.name} Card`);
 
   const meta: StickerMeta = {
     id: cardId,
@@ -772,9 +699,7 @@ function buildCollectionFromPayloads(args: {
   missingCardIds?: string[];
 }): Collection {
   const { refEntry, collectionJson, indexJson, cards } = args;
-  const missingCardIds = Array.isArray(args.missingCardIds)
-    ? args.missingCardIds
-    : [];
+  const missingCardIds = Array.isArray(args.missingCardIds) ? args.missingCardIds : [];
 
   indexByCollection.value[refEntry.collectionId] = indexJson;
 
@@ -830,19 +755,13 @@ function buildCollectionFromPayloads(args: {
   return collection;
 }
 
-async function fetchCollectionLegacy(
-  refEntry: CollectionRef,
-): Promise<Collection> {
+async function fetchCollectionLegacy(refEntry: CollectionRef): Promise<Collection> {
   const encodedCollectionId = encodeURIComponent(refEntry.collectionId);
   const encodedVersion = encodeURIComponent(refEntry.version);
 
   const [collectionJson, indexJson] = await Promise.all([
-    fetchJson<any>(
-      `/v1/pixpax/collections/${encodedCollectionId}/${encodedVersion}/collection`,
-    ),
-    fetchJson<any>(
-      `/v1/pixpax/collections/${encodedCollectionId}/${encodedVersion}/index`,
-    ),
+    fetchJson<any>(`/v1/pixpax/collections/${encodedCollectionId}/${encodedVersion}/collection`),
+    fetchJson<any>(`/v1/pixpax/collections/${encodedCollectionId}/${encodedVersion}/index`),
   ]);
 
   const cardIds = Array.isArray(indexJson?.cards)
@@ -883,9 +802,7 @@ async function fetchCollectionLegacy(
   });
 }
 
-async function fetchCollectionBundle(
-  refEntry: CollectionRef,
-): Promise<Collection> {
+async function fetchCollectionBundle(refEntry: CollectionRef): Promise<Collection> {
   const encodedCollectionId = encodeURIComponent(refEntry.collectionId);
   const encodedVersion = encodeURIComponent(refEntry.version);
   try {
@@ -897,20 +814,15 @@ async function fetchCollectionBundle(
       collectionJson: bundle.collection || {},
       indexJson: bundle.index || {},
       cards: Array.isArray(bundle.cards) ? bundle.cards : [],
-      missingCardIds: Array.isArray(bundle.missingCardIds)
-        ? bundle.missingCardIds
-        : [],
+      missingCardIds: Array.isArray(bundle.missingCardIds) ? bundle.missingCardIds : [],
     });
   } catch (error) {
     const status = (error as { status?: number })?.status;
     if (status === 404) {
-      setStatus(
-        "Bundle endpoint unavailable. Falling back to legacy collection fetch.",
-        {
-          collectionId: refEntry.collectionId,
-          version: refEntry.version,
-        },
-      );
+      setStatus("Bundle endpoint unavailable. Falling back to legacy collection fetch.", {
+        collectionId: refEntry.collectionId,
+        version: refEntry.version,
+      });
       return fetchCollectionLegacy(refEntry);
     }
     throw error;
@@ -933,16 +845,13 @@ function resolveRequestedCollectionId() {
   return pickCollectionRouteTarget({
     forcedCollectionId: props.forcedCollectionId,
     routeCollectionId: String(route.params?.collectionId || "").trim(),
-    houseCollectionId: String(
-      import.meta.env.VITE_PIXPAX_HOUSE_COLLECTION_ID || "",
-    ).trim(),
+    houseCollectionId: String(import.meta.env.VITE_PIXPAX_HOUSE_COLLECTION_ID || "").trim(),
     fallbackCollectionId: "pixel-animals",
   });
 }
 
 function normalizeSettings(input?: Record<string, unknown>) {
-  const source =
-    input && typeof input === "object" && !Array.isArray(input) ? input : {};
+  const source = input && typeof input === "object" && !Array.isArray(input) ? input : {};
   const visibility = String(source.visibility || "")
     .trim()
     .toLowerCase();
@@ -966,15 +875,11 @@ async function loadCollection() {
     const resolveQuery = new URLSearchParams();
     if (requestedVersion) resolveQuery.set("version", requestedVersion);
     const resolve = await fetchJson<ApiCollectionResolve>(
-      `/v1/pixpax/collections/${encodeURIComponent(
-        requestedCollectionId,
-      )}/resolve${
+      `/v1/pixpax/collections/${encodeURIComponent(requestedCollectionId)}/resolve${
         resolveQuery.toString() ? `?${resolveQuery.toString()}` : ""
       }`,
     );
-    const resolvedCollectionId = String(
-      resolve.collectionId || requestedCollectionId,
-    ).trim();
+    const resolvedCollectionId = String(resolve.collectionId || requestedCollectionId).trim();
     const resolvedVersion = String(resolve.resolvedVersion || "").trim();
     if (!resolvedCollectionId || !resolvedVersion) {
       throw new Error("Collection resolve returned an invalid payload.");
@@ -1068,11 +973,8 @@ async function openPack() {
               const collectorPubKey = resolveCollectorPubKeyForRedeem();
               let collectorSig: string | undefined;
               try {
-                const tokenHash = await computeTokenHashHexFromToken(
-                  normalizedRedeemToken,
-                );
-                const identityPrivateKey = identity?.privateKey
-                  ?.value as CryptoKey | null;
+                const tokenHash = await computeTokenHashHexFromToken(normalizedRedeemToken);
+                const identityPrivateKey = identity?.privateKey?.value as CryptoKey | null;
                 const identityPublicKey = String(
                   stripIdentityKey(String(identity?.publicKeyPEM?.value || "")),
                 ).trim();
@@ -1111,33 +1013,28 @@ async function openPack() {
 
     const index = indexByCollection.value[selectedCollection.value.id];
     const existingById = new Map(
-      (selectedCollection.value.stickers || []).map((sticker) => [
-        sticker.meta.id,
-        sticker,
-      ]),
+      (selectedCollection.value.stickers || []).map((sticker) => [sticker.meta.id, sticker]),
     );
-    const nextCards = (Array.isArray(response.cards) ? response.cards : []).map(
-      (card) => {
-        const cardId = String(card.cardId || "").trim();
-        const mapping = index?.cardMap?.[cardId];
-        const sticker = toSticker({
-          collection: selectedCollection.value!,
-          card: {
-            ...card,
-            cardId,
-            seriesId: card.seriesId || mapping?.seriesId,
-            slotIndex: card.slotIndex ?? mapping?.slotIndex,
-            role: card.role || mapping?.role,
-          },
-          fallbackSeries: mapping?.seriesId,
-        });
-        const existing = existingById.get(cardId);
-        if (existing?.meta?.shiny) {
-          sticker.meta.shiny = true;
-        }
-        return sticker;
-      },
-    );
+    const nextCards = (Array.isArray(response.cards) ? response.cards : []).map((card) => {
+      const cardId = String(card.cardId || "").trim();
+      const mapping = index?.cardMap?.[cardId];
+      const sticker = toSticker({
+        collection: selectedCollection.value!,
+        card: {
+          ...card,
+          cardId,
+          seriesId: card.seriesId || mapping?.seriesId,
+          slotIndex: card.slotIndex ?? mapping?.slotIndex,
+          role: card.role || mapping?.role,
+        },
+        fallbackSeries: mapping?.seriesId,
+      });
+      const existing = existingById.get(cardId);
+      if (existing?.meta?.shiny) {
+        sticker.meta.shiny = true;
+      }
+      return sticker;
+    });
 
     packCards.value = nextCards;
     packMeta.value = { packId: response.packId };
@@ -1151,9 +1048,7 @@ async function openPack() {
 
     const responsePayload = response.entry?.payload || {};
     const responseSignature = String(response.entry?.signature || "").trim();
-    const responseIssuerKeyId = String(
-      responsePayload?.issuerKeyId || "",
-    ).trim();
+    const responseIssuerKeyId = String(responsePayload?.issuerKeyId || "").trim();
     const receiptSegmentKey = String(response.receipt?.segmentKey || "").trim();
     let receiptVerified: boolean | null = null;
     let commitRecorded = false;
@@ -1185,9 +1080,7 @@ async function openPack() {
         );
         receiptVerified = !!verify?.ok;
         const issuePayload = verify?.event?.entry?.payload || {};
-        const issueSignature = String(
-          verify?.event?.entry?.signature || "",
-        ).trim();
+        const issueSignature = String(verify?.event?.entry?.signature || "").trim();
         const issuerKeyId = String(issuePayload?.issuerKeyId || "").trim();
         if (receiptVerified && issueSignature && issuerKeyId) {
           await recordPackAndCommit({
@@ -1275,9 +1168,7 @@ async function openPack() {
     }
 
     packPhase.value = "idle";
-    packError.value = String(
-      parsedBody?.error || error?.message || "Pack opening failed.",
-    );
+    packError.value = String(parsedBody?.error || error?.message || "Pack opening failed.");
     setStatus("Failed to open pack.", {
       status: error?.status || null,
       error: packError.value,
@@ -1357,9 +1248,7 @@ const newlyRedeemedCardIdSet = computed(() => {
     );
   }
   if (Array.isArray(raw)) {
-    return new Set(
-      raw.map((entry) => String(entry || "").trim()).filter(Boolean),
-    );
+    return new Set(raw.map((entry) => String(entry || "").trim()).filter(Boolean));
   }
   return new Set<string>();
 });
@@ -1411,11 +1300,7 @@ watch(
 );
 
 watch(
-  () => [
-    route.params?.collectionId,
-    route.query?.version,
-    props.forcedCollectionId,
-  ],
+  () => [route.params?.collectionId, route.query?.version, props.forcedCollectionId],
   () => {
     void loadCollection();
   },
@@ -1454,10 +1339,7 @@ watch(
 </script>
 
 <template>
-  <div
-    ref="routeShellRef"
-    class="route-shell flex flex-1 flex-col max-w-5xl mx-auto w-full"
-  >
+  <div ref="routeShellRef" class="route-shell flex flex-1 flex-col max-w-5xl mx-auto w-full">
     <div class="flex flex-1 flex-col gap-2">
       <section
         class="mx-auto flex w-full max-w-4xl flex-col gap-4 px-4 relative backdrop-blur-xl p-4"
@@ -1489,8 +1371,7 @@ watch(
             :cta-disabled="!canUsePackCta"
             :cta-chip="packCtaChip"
             :primary-action="
-              selectedCollectionIssuanceMode === 'codes-only' &&
-              packMode !== 'dev-untracked'
+              selectedCollectionIssuanceMode === 'codes-only' && packMode !== 'dev-untracked'
                 ? 'redeem-code'
                 : 'open-pack'
             "
@@ -1529,9 +1410,7 @@ watch(
                 :style="{ width: `${collectionProgressPercent}%` }"
               ></div>
             </div>
-            <div
-              class="flex items-center gap-2 text-xs text-[var(--ui-fg-muted)]"
-            >
+            <div class="flex items-center gap-2 text-xs text-[var(--ui-fg-muted)]">
               <span>
                 {{ collectionCollectedCount }} /
                 {{ collectionTotalCreatures }}
@@ -1551,10 +1430,7 @@ watch(
       <div class="flex items-center justify-end px-4 max-w-4xl mx-auto w-full">
         <SSegmentedControl v-model="activeTab" :items="tabItems" />
       </div>
-      <section
-        v-if="activeTab === 'book'"
-        class="mx-auto w-full max-w-4xl pb-8"
-      >
+      <section v-if="activeTab === 'book'" class="mx-auto w-full max-w-4xl pb-8">
         <div class="flex flex-col gap-6" v-if="!isAnyPackOverlayOpen">
           <p v-if="packError" class="text-sm font-semibold text-red-600">
             {{ packError }}
@@ -1562,10 +1438,7 @@ watch(
           <p v-if="loadError" class="text-sm font-semibold text-red-600">
             {{ loadError }}
           </p>
-          <p
-            v-if="loadingCollections"
-            class="text-xs text-[var(--ui-fg-muted)]"
-          >
+          <p v-if="loadingCollections" class="text-xs text-[var(--ui-fg-muted)]">
             Loading collections...
           </p>
           <div
@@ -1580,9 +1453,7 @@ watch(
               :missing="!isOwned(sticker.meta.id)"
               :class="[
                 'w-full max-w-48',
-                isNewlyRedeemed(sticker.meta.id)
-                  ? 'ring-2 ring-emerald-300/70 rounded-2xl'
-                  : '',
+                isNewlyRedeemed(sticker.meta.id) ? 'ring-2 ring-emerald-300/70 rounded-2xl' : '',
               ]"
             />
           </div>
@@ -1593,9 +1464,7 @@ watch(
               class="flex flex-col gap-3"
             >
               <div class="sticky top-20 z-0">
-                <span
-                  class="uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]"
-                >
+                <span class="uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]">
                   {{ group.series }}
                 </span>
                 <div class="series-progress-track">
@@ -1614,9 +1483,7 @@ watch(
                   completed
                 </span>
               </div>
-              <div
-                class="flex gap-6 justify-items-center flex-wrap justify-center"
-              >
+              <div class="flex gap-6 justify-items-center flex-wrap justify-center">
                 <PixPaxStickerCard
                   v-for="sticker in group.stickers"
                   :key="`${group.series}-${sticker.meta.id}`"
@@ -1644,26 +1511,19 @@ watch(
       <section v-else class="mx-auto w-full max-w-4xl">
         <div class="py-4">
           <div class="space-y-1 text-center">
-            <h3 class="text-lg font-semibold text-[var(--ui-fg)]">
-              Swaps pile
-            </h3>
+            <h3 class="text-lg font-semibold text-[var(--ui-fg)]">Swaps pile</h3>
             <p class="text-sm text-[var(--ui-fg-muted)]">
               Duplicates you can trade without affecting collection totals.
             </p>
           </div>
           <div class="flex flex-col items-center gap-2 text-center py-2">
-            <Button size="sm" variant="secondary" disabled>
-              Trading coming soon
-            </Button>
+            <Button size="sm" variant="secondary" disabled> Trading coming soon </Button>
             <p class="text-xs text-[var(--ui-fg-muted)]">
               Trade duplicate cards with friends to complete your Pixbook.
             </p>
           </div>
         </div>
-        <div
-          v-if="!duplicateCardGroups.length"
-          class="text-sm text-[var(--ui-fg-muted)]"
-        >
+        <div v-if="!duplicateCardGroups.length" class="text-sm text-[var(--ui-fg-muted)]">
           No duplicates yet. Open packs in Pixbook to build swap inventory.
         </div>
         <div v-else class="flex gap-6 w-full flex-wrap justify-center py-8">
@@ -1708,25 +1568,13 @@ watch(
                 <span class="redeem-entry-chip">Redeem pack</span>
               </div>
             </div>
-            <p
-              class="text-xs uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]"
-            >
-              Code ready
-            </p>
-            <p class="text-sm text-[var(--ui-fg)]">
-              Tap redeem to open your pack.
-            </p>
+            <p class="text-xs uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]">Code ready</p>
+            <p class="text-sm text-[var(--ui-fg)]">Tap redeem to open your pack.</p>
             <div class="flex flex-wrap items-center justify-center gap-2">
-              <Button
-                size="sm"
-                variant="secondary"
-                @click="dismissRedeemEntryOverlay"
-              >
+              <Button size="sm" variant="secondary" @click="dismissRedeemEntryOverlay">
                 Not now
               </Button>
-              <Button size="sm" @click="redeemFromEntryOverlay">
-                Redeem
-              </Button>
+              <Button size="sm" @click="redeemFromEntryOverlay"> Redeem </Button>
             </div>
           </div>
 
@@ -1735,9 +1583,7 @@ watch(
               v-if="packPhase === 'opening'"
               class="mx-auto flex w-full max-w-md flex-col items-center gap-3 rounded-2xl border border-[var(--ui-border)] p-6 text-center"
             >
-              <p
-                class="text-xs uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]"
-              >
+              <p class="text-xs uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]">
                 Opening pack
               </p>
               <p class="text-sm text-[var(--ui-fg)]">Preparing reveal...</p>
@@ -1746,23 +1592,16 @@ watch(
               v-else-if="packPhase === 'error'"
               class="mx-auto flex w-full max-w-md flex-col items-center gap-3 rounded-2xl border border-[var(--ui-border)] p-6 text-center"
             >
-              <p
-                class="text-xs uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]"
-              >
+              <p class="text-xs uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]">
                 Code already used
               </p>
               <p class="text-sm text-[var(--ui-fg)]">
                 {{ packError || "This code has already been redeemed." }}
               </p>
-              <p
-                v-if="claimedUsedAtLabel"
-                class="text-xs text-[var(--ui-fg-muted)]"
-              >
+              <p v-if="claimedUsedAtLabel" class="text-xs text-[var(--ui-fg-muted)]">
                 Redeemed on {{ claimedUsedAtLabel }}.
               </p>
-              <div
-                class="mt-2 flex flex-wrap items-center justify-center gap-2"
-              >
+              <div class="mt-2 flex flex-wrap items-center justify-center gap-2">
                 <Button size="sm" variant="secondary" @click="closePackReveal">
                   Back to collection
                 </Button>
@@ -1813,22 +1652,15 @@ watch(
                 </div>
               </div>
 
-              <div
-                v-else
-                class="flex flex-col gap-4 items-center overflow-hidden"
-              >
-                <p
-                  class="text-xs uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]"
-                >
+              <div v-else class="flex flex-col gap-4 items-center overflow-hidden">
+                <p class="text-xs uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]">
                   Pack summary
                 </p>
                 <div v-if="revealNewGroups.length" class="space-y-2 w-full">
                   <p class="text-sm font-semibold text-[var(--ui-fg)]">
                     New cards ({{ revealNeeds.length }})
                   </p>
-                  <div
-                    class="flex flex-nowrap gap-2 overflow-x-auto w-full py-4"
-                  >
+                  <div class="flex flex-nowrap gap-2 overflow-x-auto w-full py-4">
                     <div
                       v-for="(group, index) in revealNewGroups"
                       :key="`new-${group.card.meta.id}-${index}`"
@@ -1847,16 +1679,11 @@ watch(
                     </div>
                   </div>
                 </div>
-                <div
-                  v-if="revealDuplicateGroups.length"
-                  class="space-y-2 w-full"
-                >
+                <div v-if="revealDuplicateGroups.length" class="space-y-2 w-full">
                   <p class="text-sm font-semibold text-[var(--ui-fg)]">
                     Owned duplicates ({{ revealDuplicates.length }})
                   </p>
-                  <div
-                    class="flex flex-nowrap gap-2 overflow-x-auto w-full py-4"
-                  >
+                  <div class="flex flex-nowrap gap-2 overflow-x-auto w-full py-4">
                     <div
                       v-for="(group, index) in revealDuplicateGroups"
                       :key="`dup-${group.card.meta.id}-${index}`"
@@ -1882,16 +1709,12 @@ watch(
                   </div>
                 </div>
                 <div
-                  v-if="
-                    !revealNewGroups.length && !revealDuplicateGroups.length
-                  "
+                  v-if="!revealNewGroups.length && !revealDuplicateGroups.length"
                   class="text-sm text-[var(--ui-fg-muted)]"
                 >
                   Pack had no revealable cards.
                 </div>
-                <Button size="xs" variant="secondary" @click="closePackReveal">
-                  Done
-                </Button>
+                <Button size="xs" variant="secondary" @click="closePackReveal"> Done </Button>
               </div>
             </template>
           </template>
@@ -2098,12 +1921,14 @@ watch(
 @keyframes mythicGlow {
   0%,
   100% {
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--ui-accent) 0%, transparent),
+    box-shadow:
+      0 0 0 0 color-mix(in srgb, var(--ui-accent) 0%, transparent),
       0 14px 26px color-mix(in srgb, var(--ui-accent) 24%, transparent);
     opacity: 0.9;
   }
   50% {
-    box-shadow: 0 0 0 5px color-mix(in srgb, var(--ui-accent) 35%, transparent),
+    box-shadow:
+      0 0 0 5px color-mix(in srgb, var(--ui-accent) 35%, transparent),
       0 20px 32px color-mix(in srgb, var(--ui-accent) 42%, transparent);
     opacity: 1;
   }

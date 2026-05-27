@@ -56,11 +56,7 @@ export type ConcordCommandContext = {
   getReplayState<T = unknown>(pluginId: string): T;
 };
 
-export type ConcordReplayPhase =
-  | "reset"
-  | "beginReplay"
-  | "applyEntry"
-  | "endReplay";
+export type ConcordReplayPhase = "reset" | "beginReplay" | "applyEntry" | "endReplay";
 
 export type ConcordReplayMetadata = {
   phase: ConcordReplayPhase;
@@ -82,10 +78,7 @@ export type ConcordReplayContext<TState = unknown> = {
 export type ConcordCommandHandler = (
   ctx: ConcordCommandContext,
   input: unknown,
-) =>
-  | Promise<LedgerAppendInput | LedgerAppendInput[]>
-  | LedgerAppendInput
-  | LedgerAppendInput[];
+) => Promise<LedgerAppendInput | LedgerAppendInput[]> | LedgerAppendInput | LedgerAppendInput[];
 
 export type ConcordReplayPlugin<TState = unknown> = {
   id: string;
@@ -119,10 +112,7 @@ export type CreateConcordAppInput = ConcordAppOptions;
 export type ConcordApp = {
   create(params?: ConcordCreateParams): Promise<void>;
   load(): Promise<void>;
-  command<TInput = unknown>(
-    type: string,
-    input: TInput,
-  ): Promise<ConcordCommandResult>;
+  command<TInput = unknown>(type: string, input: TInput): Promise<ConcordCommandResult>;
   commit(input?: ConcordCommitInput): Promise<ConcordCommitResult>;
   clearStaged(): Promise<void>;
   replay(options?: ConcordReplayOptions): Promise<void>;

@@ -10,7 +10,9 @@ function hexFromBytes(bytes: Uint8Array): string {
 }
 
 function normalizeSha256Hex(hex: string): string {
-  const normalized = String(hex || "").trim().toLowerCase();
+  const normalized = String(hex || "")
+    .trim()
+    .toLowerCase();
   if (!/^[a-f0-9]{64}$/.test(normalized)) {
     throw new Error("Expected 64-char sha256 hex string.");
   }
@@ -52,9 +54,7 @@ function utf8Bytes(input: string): Uint8Array {
 }
 
 function stickerHeaderBytes(art: StickerArt16): Uint8Array {
-  return new TextEncoder().encode(
-    `v=${art.v};w=${art.w};h=${art.h};fmt=${art.fmt};`
-  );
+  return new TextEncoder().encode(`v=${art.v};w=${art.w};h=${art.h};fmt=${art.fmt};`);
 }
 
 export async function hashStickerArt(art: StickerArt16): Promise<string> {
@@ -91,11 +91,9 @@ export async function hashCanonical(value: unknown): Promise<string> {
   return sha256Hex(utf8Bytes(canonicalStringify(value)));
 }
 
-export async function computeMerkleRootFromItemHashes(
-  itemHashes: string[]
-): Promise<string> {
-  const normalizedLeafHashes = (Array.isArray(itemHashes) ? itemHashes : []).map(
-    (value) => normalizeSha256Hex(value)
+export async function computeMerkleRootFromItemHashes(itemHashes: string[]): Promise<string> {
+  const normalizedLeafHashes = (Array.isArray(itemHashes) ? itemHashes : []).map((value) =>
+    normalizeSha256Hex(value),
   );
   if (!normalizedLeafHashes.length) {
     return hashCanonical([]);
@@ -120,8 +118,8 @@ export async function computePackCommitment(params: {
   packRoot?: string;
   count?: number;
 }): Promise<string> {
-  const itemHashes = (Array.isArray(params.itemHashes) ? params.itemHashes : []).map(
-    (value) => normalizeSha256Hex(value)
+  const itemHashes = (Array.isArray(params.itemHashes) ? params.itemHashes : []).map((value) =>
+    normalizeSha256Hex(value),
   );
   const packRoot = params.packRoot
     ? normalizeSha256Hex(params.packRoot)

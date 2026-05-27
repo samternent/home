@@ -43,13 +43,13 @@ describe("seal cli", () => {
     const proofPath = await createTempFile("proof.json", "");
     const writer = createWriter();
 
-    const signExit = await runCli(
-      ["sign", "--input", subjectPath, "--out", proofPath],
-      { env, writer: writer.writer }
-    );
+    const signExit = await runCli(["sign", "--input", subjectPath, "--out", proofPath], {
+      env,
+      writer: writer.writer,
+    });
     const verifyExit = await runCli(
       ["verify", "--proof", proofPath, "--input", subjectPath, "--json"],
-      { env, writer: writer.writer }
+      { env, writer: writer.writer },
     );
 
     expect(signExit).toBe(0);
@@ -66,21 +66,12 @@ describe("seal cli", () => {
     const writer = createWriter();
 
     const signExit = await runCli(
-      [
-        "sign",
-        "--input",
-        subjectPath,
-        "--recipient",
-        recipientValue,
-        "--out",
-        artifactPath,
-      ],
-      { env, writer: writer.writer }
+      ["sign", "--input", subjectPath, "--recipient", recipientValue, "--out", artifactPath],
+      { env, writer: writer.writer },
     );
-    const verifyExit = await runCli(
-      ["verify", "--artifact", artifactPath, "--json"],
-      { writer: writer.writer }
-    );
+    const verifyExit = await runCli(["verify", "--artifact", artifactPath, "--json"], {
+      writer: writer.writer,
+    });
 
     expect(signExit).toBe(0);
     expect(verifyExit).toBe(0);
@@ -92,10 +83,9 @@ describe("seal cli", () => {
     const identityPath = await createTempFile("identity.json", "");
     const writer = createWriter();
 
-    const exitCode = await runCli(
-      ["identity", "create", "--out", identityPath, "--json"],
-      { writer: writer.writer }
-    );
+    const exitCode = await runCli(["identity", "create", "--out", identityPath, "--json"], {
+      writer: writer.writer,
+    });
 
     expect(exitCode).toBe(0);
     expect(writer.read().stdout).toContain('"format": "ternent-identity"');
@@ -119,7 +109,7 @@ describe("seal cli", () => {
         mnemonicPath,
         "--json",
       ],
-      { writer: writer.writer }
+      { writer: writer.writer },
     );
 
     expect(exitCode).toBe(0);
@@ -135,10 +125,9 @@ describe("seal cli", () => {
     const proofPath = await createTempFile("proof.json", "");
 
     await runCli(["sign", "--input", subjectPath, "--out", proofPath], { env });
-    const exitCode = await runCli(
-      ["verify", "--proof", proofPath, "--input", mismatchPath],
-      { env }
-    );
+    const exitCode = await runCli(["verify", "--proof", proofPath, "--input", mismatchPath], {
+      env,
+    });
 
     expect(exitCode).toBe(2);
   });
@@ -148,10 +137,7 @@ describe("seal cli", () => {
     const subjectPath = await createTempFile("sample.txt", "sample file\n");
     const proofPath = await createTempFile("proof.json", "");
 
-    const exitCode = await runCli(
-      ["sign", "--input", subjectPath, "--out", proofPath],
-      { env }
-    );
+    const exitCode = await runCli(["sign", "--input", subjectPath, "--out", proofPath], { env });
 
     expect(exitCode).toBe(0);
     expect(await readFile(proofPath, "utf8")).toContain('"type": "seal-proof"');
@@ -175,10 +161,9 @@ describe("seal cli", () => {
     };
     await writeFile(proofPath, `${JSON.stringify(parsed, null, 2)}\n`, "utf8");
 
-    const exitCode = await runCli(
-      ["verify", "--proof", proofPath, "--input", subjectPath],
-      { env }
-    );
+    const exitCode = await runCli(["verify", "--proof", proofPath, "--input", subjectPath], {
+      env,
+    });
 
     expect(exitCode).toBe(3);
   });
@@ -188,10 +173,9 @@ describe("seal cli", () => {
     const subjectPath = await createTempFile("sample.txt", "sample file\n");
     const proofPath = await createTempFile("proof.json", '{"type":"bad"}');
 
-    const exitCode = await runCli(
-      ["verify", "--proof", proofPath, "--input", subjectPath],
-      { env }
-    );
+    const exitCode = await runCli(["verify", "--proof", proofPath, "--input", subjectPath], {
+      env,
+    });
 
     expect(exitCode).toBe(4);
   });
@@ -214,13 +198,11 @@ describe("seal cli", () => {
 
     const exitCode = await runCli(
       ["sign", "--input", subjectPath, "--recipient", "bad-recipient"],
-      { env, writer: writer.writer }
+      { env, writer: writer.writer },
     );
 
     expect(exitCode).toBe(1);
-    expect(writer.read().stderr).toContain(
-      "Recipient must be a valid age recipient string."
-    );
+    expect(writer.read().stderr).toContain("Recipient must be a valid age recipient string.");
     expect(writer.read().stderr).not.toContain("ARMOUR_");
   });
 });

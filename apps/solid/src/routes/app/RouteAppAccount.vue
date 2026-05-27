@@ -29,9 +29,7 @@ function downloadMnemonic() {
   <div class="grid h-full min-h-0 gap-4 xl:grid-cols-[minmax(0,1fr)_22rem] p-4">
     <section class="space-y-4 overflow-auto">
       <Card variant="subtle" padding="sm" class="space-y-3">
-        <p class="m-0 text-[11px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
-          Session
-        </p>
+        <p class="m-0 text-[11px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">Session</p>
         <div class="space-y-2 text-[11px] text-[var(--ui-fg-muted)]">
           <div>webid: {{ solid.webId.value || "none" }}</div>
           <div>pod: {{ workspace.selectedPod.value || "unselected" }}</div>
@@ -47,18 +45,24 @@ function downloadMnemonic() {
         </p>
         <div class="space-y-2 text-[11px] text-[var(--ui-fg-muted)]">
           <div>app: {{ workspace.paths.value?.appRootUrl || "unavailable" }}</div>
-          <div>system/private: {{ workspace.paths.value?.systemPrivateRootUrl || "unavailable" }}</div>
-          <div>workspace/private: {{ workspace.paths.value?.workspacePrivateRootUrl || "unavailable" }}</div>
-          <div>workspace/shared: {{ workspace.paths.value?.workspaceSharedRootUrl || "unavailable" }}</div>
-          <div>workspace/public: {{ workspace.paths.value?.workspacePublicRootUrl || "unavailable" }}</div>
+          <div>
+            system/private: {{ workspace.paths.value?.systemPrivateRootUrl || "unavailable" }}
+          </div>
+          <div>
+            workspace/private: {{ workspace.paths.value?.workspacePrivateRootUrl || "unavailable" }}
+          </div>
+          <div>
+            workspace/shared: {{ workspace.paths.value?.workspaceSharedRootUrl || "unavailable" }}
+          </div>
+          <div>
+            workspace/public: {{ workspace.paths.value?.workspacePublicRootUrl || "unavailable" }}
+          </div>
         </div>
       </Card>
 
       <Card variant="subtle" padding="sm" class="space-y-3">
         <div class="flex items-center justify-between gap-3">
-          <p class="m-0 text-[11px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
-            Pods
-          </p>
+          <p class="m-0 text-[11px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">Pods</p>
           <Button size="xs" variant="plain-secondary" @click="workspace.refreshPods()">
             Refresh
           </Button>
@@ -111,11 +115,12 @@ function downloadMnemonic() {
           </template>
 
           <div class="space-y-3">
-            <pre class="rounded-xl border border-[var(--ui-border)] px-3 py-3 text-[11px] text-[var(--ui-fg)]">{{ workspace.lastGeneratedMnemonic.value }}</pre>
+            <pre
+              class="rounded-xl border border-[var(--ui-border)] px-3 py-3 text-[11px] text-[var(--ui-fg)]"
+              >{{ workspace.lastGeneratedMnemonic.value }}</pre
+            >
             <div class="flex gap-2">
-              <Button size="xs" variant="secondary" @click="downloadMnemonic">
-                Download
-              </Button>
+              <Button size="xs" variant="secondary" @click="downloadMnemonic"> Download </Button>
             </div>
           </div>
         </Dialog>

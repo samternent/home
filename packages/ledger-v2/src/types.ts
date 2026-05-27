@@ -25,9 +25,7 @@ export type LedgerDecryptor = {
   identity: SerializedIdentity;
 };
 
-export type LedgerRecipientResolver = (
-  recipients: string[],
-) => Promise<string[]> | string[];
+export type LedgerRecipientResolver = (recipients: string[]) => Promise<string[]> | string[];
 
 export type LedgerIdentityContext = {
   signer: SealSigner;
@@ -50,9 +48,7 @@ export type LedgerEncryptedPayloadRecord = {
   payloadHash: `sha256:${string}` | string;
 };
 
-export type LedgerPayloadRecord =
-  | LedgerPlainPayloadRecord
-  | LedgerEncryptedPayloadRecord;
+export type LedgerPayloadRecord = LedgerPlainPayloadRecord | LedgerEncryptedPayloadRecord;
 
 export type LedgerEntryRecord = {
   entryId: string;
@@ -73,10 +69,7 @@ export type LedgerCommitRecord = {
   seal: SealProof;
 };
 
-export type LedgerUnsignedCommitRecord = Omit<
-  LedgerCommitRecord,
-  "commitId" | "seal"
->;
+export type LedgerUnsignedCommitRecord = Omit<LedgerCommitRecord, "commitId" | "seal">;
 
 export type LedgerContainer = {
   format: "concord-ledger";
@@ -215,9 +208,7 @@ export type LedgerReplayPolicy = {
 
 export type LedgerProtocolContract = {
   canonicalizePayload: (value: unknown) => string;
-  getEntrySubjectBytes: (
-    entry: Omit<LedgerEntryRecord, "entryId" | "seal">,
-  ) => Uint8Array;
+  getEntrySubjectBytes: (entry: Omit<LedgerEntryRecord, "entryId" | "seal">) => Uint8Array;
   getCommitSubjectBytes: (commit: LedgerUnsignedCommitRecord) => Uint8Array;
   deriveEntryId: (entry: LedgerEntryRecord) => Promise<string>;
   deriveCommitId: (commit: LedgerUnsignedCommitRecord) => Promise<string>;

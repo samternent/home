@@ -226,9 +226,7 @@ describe("@ternent/pixpax-core", () => {
     expect(Object.keys(state.ownedCardInstancesById)).toHaveLength(3);
     expect(state.duplicateCountsByCardId["card-1"]).toBe(2);
     expect(state.spareCountsByCardId["card-1"]).toBe(1);
-    expect(
-      state.completionByCollectionKey["pixel-animals::v2"].ownedUniqueCards,
-    ).toBe(2);
+    expect(state.completionByCollectionKey["pixel-animals::v2"].ownedUniqueCards).toBe(2);
     expect(state.ledgerHealth.openedPackCount).toBe(1);
   });
 });

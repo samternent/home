@@ -52,9 +52,7 @@ watch(
 );
 
 const normalizedRedeemCode = computed(() => normalizeToken(redeemInput.value));
-const redeemValid = computed(
-  () => normalizedRedeemCode.value.length >= props.redeemMinLength,
-);
+const redeemValid = computed(() => normalizedRedeemCode.value.length >= props.redeemMinLength);
 
 function handleRedeemInput(event: Event) {
   const target = event.target as HTMLInputElement | null;
@@ -93,18 +91,14 @@ async function handlePrimaryAction() {
 </script>
 
 <template>
-  <section
-    class="w-full max-w-[560px] mx-auto rounded-[20px] backdrop-blur-xl px-4 py-4 sm:px-6"
-  >
+  <section class="w-full max-w-[560px] mx-auto rounded-[20px] backdrop-blur-xl px-4 py-4 sm:px-6">
     <div class="flex flex-col gap-3">
       <button
         class="group relative flex w-full flex-col items-center justify-center gap-1 overflow-hidden rounded-full border-2 border-[var(--ui-border)] bg-[var(--ui-accent)] px-6 py-3 text-left text-sm font-semibold text-[var(--ui-fg-on-accent)] shadow-[0_10px_30px_-20px_rgba(0,0,0,0.6)] transition hover:-translate-y-[1px] hover:shadow-[0_16px_36px_-24px_rgba(0,0,0,0.75)] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto packdrop-shimmer"
         :disabled="props.ctaDisabled"
         @click="handlePrimaryAction"
       >
-        <span
-          class="relative z-10 flex items-center gap-2 text-[var(--ui-on-accent)]"
-        >
+        <span class="relative z-10 flex items-center gap-2 text-[var(--ui-on-accent)]">
           {{ props.ctaLabel }}
         </span>
         <span

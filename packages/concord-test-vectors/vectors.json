@@ -28,10 +28,7 @@
         "b": 2
       }
     },
-    "variants": [
-      { "signature": "sig-1" },
-      { "signature": "sig-2" }
-    ],
+    "variants": [{ "signature": "sig-1" }, { "signature": "sig-2" }],
     "expect": {
       "entryId": "6e3ffbf931a8a795b2572649ec861a305538fe6ceb6447e151b3781e249b3007"
     }

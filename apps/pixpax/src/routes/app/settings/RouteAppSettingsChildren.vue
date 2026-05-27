@@ -31,10 +31,13 @@ function saveRename(identityId: string) {
   <div class="space-y-6">
     <Card variant="showcase" padding="sm" class="space-y-4">
       <div class="space-y-1">
-        <p class="m-0 text-[11px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">Children</p>
+        <p class="m-0 text-[11px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
+          Children
+        </p>
         <h2 class="m-0 text-xl font-semibold">Choose who is collecting right now</h2>
         <p class="m-0 text-sm text-[var(--ui-fg-muted)]">
-          Each child keeps their own Pixbook. Switching child switches the stickerbook and claimed packs for this device.
+          Each child keeps their own Pixbook. Switching child switches the stickerbook and claimed
+          packs for this device.
         </p>
       </div>
     </Card>
@@ -66,15 +69,25 @@ function saveRename(identityId: string) {
           <div class="flex flex-wrap gap-2">
             <Button
               size="sm"
-              :variant="identities.identity.value?.id === child.id ? 'secondary' : 'plain-secondary'"
+              :variant="
+                identities.identity.value?.id === child.id ? 'secondary' : 'plain-secondary'
+              "
               @click="identities.setActiveIdentity(child.id)"
             >
               {{ identities.identity.value?.id === child.id ? "Open now" : "Open this child" }}
             </Button>
-            <Button size="sm" variant="plain-secondary" @click="family.saveLocalIdentityToFamily(child.id)">
+            <Button
+              size="sm"
+              variant="plain-secondary"
+              @click="family.saveLocalIdentityToFamily(child.id)"
+            >
               Save to family
             </Button>
-            <Button size="sm" variant="plain-secondary" @click="family.backupLocalIdentityToFamily(child.id)">
+            <Button
+              size="sm"
+              variant="plain-secondary"
+              @click="family.backupLocalIdentityToFamily(child.id)"
+            >
               Back up keys
             </Button>
           </div>
@@ -89,7 +102,11 @@ function saveRename(identityId: string) {
           <Button size="sm" variant="secondary" @click="saveRename(child.id)">Save name</Button>
         </div>
         <div v-else class="flex flex-wrap gap-2">
-          <Button size="sm" variant="plain-secondary" @click="startRename(child.id, child.displayName || '')">
+          <Button
+            size="sm"
+            variant="plain-secondary"
+            @click="startRename(child.id, child.displayName || '')"
+          >
             Rename child
           </Button>
           <Button
@@ -106,7 +123,9 @@ function saveRename(identityId: string) {
 
     <Card variant="subtle" padding="sm" class="space-y-4">
       <div class="space-y-1">
-        <p class="m-0 text-[11px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">Recoverable children</p>
+        <p class="m-0 text-[11px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
+          Recoverable children
+        </p>
         <p class="m-0 text-sm text-[var(--ui-fg-muted)]">
           These children exist in the family space but are not on this device yet.
         </p>
@@ -131,8 +150,12 @@ function saveRename(identityId: string) {
         No extra family children are waiting to be opened here.
       </p>
 
-      <p v-if="family.familyError.value" class="m-0 text-sm text-[var(--ui-danger)]">{{ family.familyError.value }}</p>
-      <p v-else-if="family.familyStatus.value" class="m-0 text-sm text-[var(--ui-fg-muted)]">{{ family.familyStatus.value }}</p>
+      <p v-if="family.familyError.value" class="m-0 text-sm text-[var(--ui-danger)]">
+        {{ family.familyError.value }}
+      </p>
+      <p v-else-if="family.familyStatus.value" class="m-0 text-sm text-[var(--ui-fg-muted)]">
+        {{ family.familyStatus.value }}
+      </p>
     </Card>
   </div>
 </template>

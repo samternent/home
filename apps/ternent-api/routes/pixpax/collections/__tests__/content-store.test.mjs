@@ -141,10 +141,7 @@ test("createCollectionContentGatewayFromS3Client maps not-found errors to NoSuch
     PutObjectCommand,
   });
 
-  await assert.rejects(
-    () => gateway.getObject({ bucket: "b", key: "k" }),
-    /NoSuchKey:k/
-  );
+  await assert.rejects(() => gateway.getObject({ bucket: "b", key: "k" }), /NoSuchKey:k/);
 
   await gateway.putObject({
     bucket: "b",
@@ -210,21 +207,9 @@ test("CollectionContentStore appends events and replays in deterministic order",
     },
   };
 
-  const firstWrite = await store.putEventIfAbsent(
-    "premier-league-2026",
-    "v1",
-    eventA
-  );
-  const duplicateWrite = await store.putEventIfAbsent(
-    "premier-league-2026",
-    "v1",
-    eventA
-  );
-  const secondWrite = await store.putEventIfAbsent(
-    "premier-league-2026",
-    "v1",
-    eventB
-  );
+  const firstWrite = await store.putEventIfAbsent("premier-league-2026", "v1", eventA);
+  const duplicateWrite = await store.putEventIfAbsent("premier-league-2026", "v1", eventA);
+  const secondWrite = await store.putEventIfAbsent("premier-league-2026", "v1", eventB);
 
   assert.equal(firstWrite.created, true);
   assert.equal(duplicateWrite.created, false);
@@ -234,12 +219,12 @@ test("CollectionContentStore appends events and replays in deterministic order",
   assert.equal(listed.events.length, 2);
   assert.deepEqual(
     listed.events.map((event) => event.eventId),
-    ["evt_a", "evt_b"]
+    ["evt_a", "evt_b"],
   );
 
   const replayed = await store.replayEvents("premier-league-2026", "v1");
   assert.deepEqual(
     replayed.map((event) => event.type),
-    ["collection.created", "series.added"]
+    ["collection.created", "series.added"],
   );
 });

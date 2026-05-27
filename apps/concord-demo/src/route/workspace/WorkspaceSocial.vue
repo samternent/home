@@ -1,12 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref, shallowRef, watch } from "vue";
 import { generateId, stripIdentityKey } from "ternent-utils";
-import {
-  SBadge,
-  SDialog,
-  SListButton,
-  SSegmentedControl,
-} from "ternent-ui/components";
+import { SBadge, SDialog, SListButton, SSegmentedControl } from "ternent-ui/components";
 import { Button } from "ternent-ui/primitives";
 
 import { useLedger } from "../../module/ledger/useLedger";
@@ -114,11 +109,9 @@ function formatDate(
   options: Intl.DateTimeFormatOptions = {
     dateStyle: "medium",
     timeStyle: "short",
-  }
+  },
 ) {
-  return iso
-    ? new Intl.DateTimeFormat(undefined, options).format(new Date(iso))
-    : null;
+  return iso ? new Intl.DateTimeFormat(undefined, options).format(new Date(iso)) : null;
 }
 
 const posts = computed<PostEntry[]>(
@@ -128,13 +121,11 @@ const posts = computed<PostEntry[]>(
       .map((entry) => ({
         entryId: entry.entryId,
         data: entry.data as Post,
-      })) as PostEntry[]
+      })) as PostEntry[],
 );
 
 const commentsByPostId = computed(() => {
-  const entries = Object.values(
-    bridge.collections.byKind.value?.comments || {}
-  ) as CommentEntry[];
+  const entries = Object.values(bridge.collections.byKind.value?.comments || {}) as CommentEntry[];
   const map = new Map<string, CommentEntry[]>();
   for (const entry of entries) {
     if (!entry?.data?.postId) continue;
@@ -151,16 +142,16 @@ const commentsByPostId = computed(() => {
 
 const permissions = computed<PermissionGroupEntry[]>(
   () =>
-    Object.values(
-      bridge.collections.byKind.value?.["permission-groups"] || {}
-    ).filter((entry) => entry.data.scope === "social") as PermissionGroupEntry[]
+    Object.values(bridge.collections.byKind.value?.["permission-groups"] || {}).filter(
+      (entry) => entry.data.scope === "social",
+    ) as PermissionGroupEntry[],
 );
 
 const permissionGrants = computed<PermissionGrantEntry[]>(
   () =>
     Object.values(
-      bridge.collections.byKind.value?.["permission-grants"] || {}
-    ) as PermissionGrantEntry[]
+      bridge.collections.byKind.value?.["permission-grants"] || {},
+    ) as PermissionGrantEntry[],
 );
 
 const dmThreads = computed<DmThreadEntry[]>(
@@ -170,12 +161,12 @@ const dmThreads = computed<DmThreadEntry[]>(
       .map((entry) => ({
         entryId: entry.entryId,
         data: entry.data as DmThread,
-      })) as DmThreadEntry[]
+      })) as DmThreadEntry[],
 );
 
 const dmMessagesByThreadId = computed(() => {
   const entries = Object.values(
-    bridge.collections.byKind.value?.["dm-messages"] || {}
+    bridge.collections.byKind.value?.["dm-messages"] || {},
   ) as DmMessageEntry[];
   const map = new Map<string, DmMessageEntry[]>();
   for (const entry of entries) {
@@ -192,9 +183,9 @@ const dmMessagesByThreadId = computed(() => {
 });
 
 const usersByIdentity = computed(() => {
-  const entries = Object.values(
-    bridge.collections.byKind.value?.users || {}
-  ) as { data: { publicIdentityKey?: string; name?: string } }[];
+  const entries = Object.values(bridge.collections.byKind.value?.users || {}) as {
+    data: { publicIdentityKey?: string; name?: string };
+  }[];
   const map = new Map<string, { publicIdentityKey?: string; name?: string }>();
   for (const entry of entries) {
     if (!entry?.data?.publicIdentityKey) continue;
@@ -204,12 +195,10 @@ const usersByIdentity = computed(() => {
 });
 
 const myIdentity = computed(() =>
-  publicKeyPEM?.value ? stripIdentityKey(publicKeyPEM.value) : ""
+  publicKeyPEM?.value ? stripIdentityKey(publicKeyPEM.value) : "",
 );
 
-const canAddItem = computed(
-  () => bridge.flags.value.hasLedger && bridge.flags.value.authed
-);
+const canAddItem = computed(() => bridge.flags.value.hasLedger && bridge.flags.value.authed);
 
 const selectedMode = shallowRef<"feed" | "dms">("feed");
 const selectedFeedScopeId = shallowRef<string>("all");
@@ -248,24 +237,17 @@ const audienceGroups = computed(() =>
     id: group.data.id,
     label: group.data.title,
     count: posts.value.filter(
-      (item) =>
-        item.data.permissionId === group.data.id ||
-        item.data.permission === group.data.id
+      (item) => item.data.permissionId === group.data.id || item.data.permission === group.data.id,
     ).length,
-  }))
+  })),
 );
 
 const selectedAudience = computed(
-  () =>
-    permissions.value.find(
-      (group) => group.data.id === selectedFeedScopeId.value
-    ) ?? null
+  () => permissions.value.find((group) => group.data.id === selectedFeedScopeId.value) ?? null,
 );
 
 const selectedThread = computed(
-  () =>
-    dmThreads.value.find((thread) => thread.data.id === activeThreadId.value) ??
-    null
+  () => dmThreads.value.find((thread) => thread.data.id === activeThreadId.value) ?? null,
 );
 
 const selectedPermissionId = computed(() => {
@@ -278,42 +260,34 @@ const selectedPermissionId = computed(() => {
 const permissionMembers = computed(() => {
   if (!selectedPermissionId.value) return [];
   return permissionGrants.value.filter(
-    (grant) => grant.data.permissionId === selectedPermissionId.value
+    (grant) => grant.data.permissionId === selectedPermissionId.value,
   );
 });
 
 const scopedPosts = computed(() => {
   if (selectedFeedScopeId.value === "public") {
-    return posts.value.filter(
-      (item) => !item.data.permissionId && !item.data.permission
-    );
+    return posts.value.filter((item) => !item.data.permissionId && !item.data.permission);
   }
   if (selectedFeedScopeId.value === "all") return posts.value;
   return posts.value.filter(
     (item) =>
       item.data.permissionId === selectedFeedScopeId.value ||
-      item.data.permission === selectedFeedScopeId.value
+      item.data.permission === selectedFeedScopeId.value,
   );
 });
 
 const filteredPosts = computed(() => {
   if (selectedFeedFilter.value === "public") {
-    return scopedPosts.value.filter(
-      (item) => !item.data.permissionId && !item.data.permission
-    );
+    return scopedPosts.value.filter((item) => !item.data.permissionId && !item.data.permission);
   }
   if (selectedFeedFilter.value === "private") {
-    return scopedPosts.value.filter(
-      (item) => !!item.data.permissionId || !!item.data.permission
-    );
+    return scopedPosts.value.filter((item) => !!item.data.permissionId || !!item.data.permission);
   }
   return scopedPosts.value;
 });
 
 const activePost = computed(
-  () =>
-    filteredPosts.value.find((post) => post.data.id === activePostId.value) ??
-    null
+  () => filteredPosts.value.find((post) => post.data.id === activePostId.value) ?? null,
 );
 
 const activeComments = computed(() => {
@@ -339,14 +313,12 @@ watch(
       activePostId.value = null;
       return;
     }
-    const isActiveStillVisible = nextPosts.some(
-      (item) => item.data.id === activePostId.value
-    );
+    const isActiveStillVisible = nextPosts.some((item) => item.data.id === activePostId.value);
     if (!isActiveStillVisible) {
       activePostId.value = nextPosts[0].data.id;
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 watch(
@@ -356,14 +328,12 @@ watch(
       activeThreadId.value = null;
       return;
     }
-    const isActiveStillVisible = nextThreads.some(
-      (item) => item.data.id === activeThreadId.value
-    );
+    const isActiveStillVisible = nextThreads.some((item) => item.data.id === activeThreadId.value);
     if (!isActiveStillVisible) {
       activeThreadId.value = nextThreads[0].data.id;
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 watch(isAddPostDialogOpen, (nextValue) => {
@@ -412,7 +382,7 @@ function addAudienceMember() {
   if (!newAudienceMember.value) return;
   const next = newAudienceMember.value;
   const exists = newAudienceMembers.value.some(
-    (member) => member?.publicIdentityKey === next?.publicIdentityKey
+    (member) => member?.publicIdentityKey === next?.publicIdentityKey,
   );
   if (!exists) newAudienceMembers.value = [...newAudienceMembers.value, next];
   newAudienceMember.value = null;
@@ -425,11 +395,7 @@ async function createAudience() {
   if (permission?.id && newAudienceMembers.value.length) {
     for (const member of newAudienceMembers.value) {
       if (!member?.publicIdentityKey || !member?.publicEncryptionKey) continue;
-      await addUserPermission(
-        permission.id,
-        member.publicIdentityKey,
-        member.publicEncryptionKey
-      );
+      await addUserPermission(permission.id, member.publicIdentityKey, member.publicEncryptionKey);
     }
   }
   if (permission?.id) {
@@ -445,7 +411,7 @@ async function addUserToPermission(permissionId: string) {
   await addUserPermission(
     permissionId,
     selectedUser.publicIdentityKey,
-    selectedUser.publicEncryptionKey
+    selectedUser.publicEncryptionKey,
   );
   selectedUsersByPermission[permissionId] = null;
 }
@@ -454,10 +420,8 @@ async function addPost() {
   const body = newPostBody.value.trim();
   if (!body) return;
   if (!myIdentity.value) return;
-  if (postVisibility.value === "private" && !selectedPostAudienceId.value)
-    return;
-  const permissionId =
-    postVisibility.value === "private" ? selectedPostAudienceId.value : null;
+  if (postVisibility.value === "private" && !selectedPostAudienceId.value) return;
+  const permissionId = postVisibility.value === "private" ? selectedPostAudienceId.value : null;
   const id = generateId();
   await addItem(
     {
@@ -468,7 +432,7 @@ async function addPost() {
       updatedAt: Date.now(),
     },
     "posts",
-    permissionId
+    permissionId,
   );
   activePostId.value = id;
   isAddPostDialogOpen.value = false;
@@ -480,9 +444,7 @@ async function addComment() {
   if (!body) return;
   if (!myIdentity.value) return;
   const permissionId =
-    activePost.value.data.permissionId ??
-    activePost.value.data.permission ??
-    null;
+    activePost.value.data.permissionId ?? activePost.value.data.permission ?? null;
   await addItem(
     {
       id: generateId(),
@@ -493,7 +455,7 @@ async function addComment() {
       updatedAt: Date.now(),
     },
     "comments",
-    permissionId
+    permissionId,
   );
   newCommentBody.value = "";
 }
@@ -502,7 +464,7 @@ function addNewDmMember() {
   if (!newDmMember.value) return;
   const next = newDmMember.value;
   const exists = newDmMembers.value.some(
-    (member) => member?.publicIdentityKey === next?.publicIdentityKey
+    (member) => member?.publicIdentityKey === next?.publicIdentityKey,
   );
   if (!exists) newDmMembers.value = [...newDmMembers.value, next];
   newDmMember.value = null;
@@ -510,7 +472,7 @@ function addNewDmMember() {
 
 function buildDmTitle() {
   const names = newDmMembers.value.map(
-    (member) => member?.name || member?.publicIdentityKey || "Member"
+    (member) => member?.name || member?.publicIdentityKey || "Member",
   );
   return `DM: ${names.join(", ")}`;
 }
@@ -522,11 +484,7 @@ async function createDmThread() {
   if (!permission?.id) return;
   for (const member of newDmMembers.value) {
     if (!member?.publicIdentityKey || !member?.publicEncryptionKey) continue;
-    await addUserPermission(
-      permission.id,
-      member.publicIdentityKey,
-      member.publicEncryptionKey
-    );
+    await addUserPermission(permission.id, member.publicIdentityKey, member.publicEncryptionKey);
   }
   const threadId = generateId();
   await addItem(
@@ -538,7 +496,7 @@ async function createDmThread() {
       updatedAt: Date.now(),
     },
     "dm-threads",
-    permission.id
+    permission.id,
   );
   activeThreadId.value = threadId;
   selectedMode.value = "dms";
@@ -560,7 +518,7 @@ async function sendDmMessage() {
       updatedAt: Date.now(),
     },
     "dm-messages",
-    selectedThread.value.data.permissionId
+    selectedThread.value.data.permissionId,
   );
   await addItem(
     {
@@ -568,7 +526,7 @@ async function sendDmMessage() {
       updatedAt: Date.now(),
     },
     "dm-threads",
-    selectedThread.value.data.permissionId
+    selectedThread.value.data.permissionId,
   );
   newDmMessage.value = "";
 }
@@ -603,9 +561,7 @@ async function sendDmMessage() {
 
       <div v-if="selectedMode === 'feed'" class="flex flex-col gap-2">
         <div class="flex items-center justify-between text-xs">
-          <span class="uppercase tracking-[0.16em] opacity-60">
-            Audiences
-          </span>
+          <span class="uppercase tracking-[0.16em] opacity-60"> Audiences </span>
           <Button
             type="button"
             size="xs"
@@ -619,11 +575,7 @@ async function sendDmMessage() {
         <SListButton
           :active="selectedFeedScopeId === 'public'"
           variant="primary"
-          :count="
-            posts.filter(
-              (item) => !item.data.permissionId && !item.data.permission
-            ).length
-          "
+          :count="posts.filter((item) => !item.data.permissionId && !item.data.permission).length"
           @click="selectedFeedScopeId = 'public'"
           size="sm"
         >
@@ -659,9 +611,7 @@ async function sendDmMessage() {
       </div>
 
       <div v-else class="flex flex-col gap-2">
-        <div class="text-xs uppercase tracking-[0.16em] opacity-60">
-          Threads
-        </div>
+        <div class="text-xs uppercase tracking-[0.16em] opacity-60">Threads</div>
         <SListButton
           v-for="thread in dmThreads"
           :key="thread.entryId"
@@ -671,16 +621,10 @@ async function sendDmMessage() {
           size="sm"
         >
           <span class="truncate">
-            {{
-              thread.data.keyMissing
-                ? "Insufficient permission"
-                : thread.data.title
-            }}
+            {{ thread.data.keyMissing ? "Insufficient permission" : thread.data.title }}
           </span>
         </SListButton>
-        <div v-if="!dmThreads.length" class="text-xs opacity-60">
-          No DMs yet.
-        </div>
+        <div v-if="!dmThreads.length" class="text-xs opacity-60">No DMs yet.</div>
       </div>
     </aside>
 
@@ -728,11 +672,7 @@ async function sendDmMessage() {
                 stroke="currentColor"
                 class="size-4"
               >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M12 4.5v15m7.5-7.5h-15"
-                />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
               </svg>
             </span>
             New post
@@ -757,11 +697,7 @@ async function sendDmMessage() {
                 stroke="currentColor"
                 class="size-4"
               >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M12 4.5v15m7.5-7.5h-15"
-                />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
               </svg>
             </span>
             New DM
@@ -856,20 +792,13 @@ async function sendDmMessage() {
             class="shrink-0"
             @click="activeThreadId = thread.data.id"
           >
-            {{
-              thread.data.keyMissing
-                ? "Insufficient permission"
-                : thread.data.title
-            }}
+            {{ thread.data.keyMissing ? "Insufficient permission" : thread.data.title }}
           </SListButton>
         </template>
       </div>
 
       <div class="overflow-hidden flex-1">
-        <div
-          v-if="selectedMode === 'feed'"
-          class="flex-1 min-h-0 flex flex-col xl:flex-row gap-3"
-        >
+        <div v-if="selectedMode === 'feed'" class="flex-1 min-h-0 flex flex-col xl:flex-row gap-3">
           <div class="flex-1 overflow-auto min-h-0 flex flex-col gap-3">
             <ul
               class="w-full flex flex-col border-b border-[var(--ui-border)] bg-[color-mix(in srgb, var(--ui-surface) 92%, var(--ui-bg))]"
@@ -919,23 +848,14 @@ async function sendDmMessage() {
 
                   <div class="flex-1 min-w-0">
                     <p class="truncate">
-                      {{
-                        post.data.keyMissing
-                          ? "Insufficient permission"
-                          : post.data.body
-                      }}
+                      {{ post.data.keyMissing ? "Insufficient permission" : post.data.body }}
                     </p>
                     <p v-if="post.data.authorId" class="text-xs text-[var(--ui-fg-muted)]">
-                      {{
-                        usersByIdentity.get(post.data.authorId)?.name ||
-                        post.data.authorId
-                      }}
+                      {{ usersByIdentity.get(post.data.authorId)?.name || post.data.authorId }}
                     </p>
                   </div>
 
-                  <div
-                    class="ml-auto flex items-center gap-2 text-xs text-[var(--ui-fg-muted)]"
-                  >
+                  <div class="ml-auto flex items-center gap-2 text-xs text-[var(--ui-fg-muted)]">
                     <SBadge
                       v-if="post.data.permissionId || post.data.permission"
                       size="xs"
@@ -960,9 +880,7 @@ async function sendDmMessage() {
                       Private
                     </SBadge>
                     <SBadge size="xs" tone="neutral" variant="outline">
-                      {{
-                        formatDate(post.data.createdAt, { dateStyle: "medium" })
-                      }}
+                      {{ formatDate(post.data.createdAt, { dateStyle: "medium" }) }}
                     </SBadge>
                   </div>
                 </div>
@@ -982,9 +900,7 @@ async function sendDmMessage() {
           >
             <div class="flex items-start justify-between gap-3">
               <div class="min-w-0">
-                <p class="text-xs uppercase tracking-[0.16em] opacity-60">
-                  Post detail
-                </p>
+                <p class="text-xs uppercase tracking-[0.16em] opacity-60">Post detail</p>
                 <h3 class="text-base font-semibold truncate">
                   {{ activePost?.data?.keyMissing ? "Locked post" : "Post" }}
                 </h3>
@@ -1034,9 +950,7 @@ async function sendDmMessage() {
                 </p>
                 <div class="flex flex-wrap gap-2 text-xs">
                   <SBadge
-                    v-if="
-                      activePost.data.permissionId || activePost.data.permission
-                    "
+                    v-if="activePost.data.permissionId || activePost.data.permission"
                     size="xs"
                     tone="secondary"
                     variant="outline"
@@ -1055,9 +969,7 @@ async function sendDmMessage() {
 
               <div class="flex items-center justify-between mt-2">
                 <div>
-                  <p class="text-xs uppercase tracking-[0.16em] opacity-60">
-                    Comments
-                  </p>
+                  <p class="text-xs uppercase tracking-[0.16em] opacity-60">Comments</p>
                   <p class="text-xs text-[var(--ui-fg-muted)]">
                     {{ activeComments.length }} entries
                   </p>
@@ -1099,11 +1011,7 @@ async function sendDmMessage() {
                     </span>
                   </div>
                   <p class="mt-2 text-[var(--ui-fg-muted)]">
-                    {{
-                      comment.data.keyMissing
-                        ? "Encrypted comment"
-                        : comment.data.body
-                    }}
+                    {{ comment.data.keyMissing ? "Encrypted comment" : comment.data.body }}
                   </p>
                 </div>
               </div>
@@ -1121,12 +1029,7 @@ async function sendDmMessage() {
                   class="border border-[var(--ui-border)] px-3 py-2 text-xs"
                   placeholder="Write a comment"
                 />
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="primary"
-                  @click="addComment"
-                >
+                <Button type="button" size="sm" variant="primary" @click="addComment">
                   Add comment
                 </Button>
               </div>
@@ -1186,11 +1089,7 @@ async function sendDmMessage() {
                     </span>
                   </div>
                   <p class="mt-2 text-[var(--ui-fg-muted)]">
-                    {{
-                      message.data.keyMissing
-                        ? "Encrypted message"
-                        : message.data.body
-                    }}
+                    {{ message.data.keyMissing ? "Encrypted message" : message.data.body }}
                   </p>
                 </div>
               </div>
@@ -1234,26 +1133,18 @@ async function sendDmMessage() {
           stroke="currentColor"
           class="size-4"
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M12 4.5v15m7.5-7.5h-15"
-          />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
       </template>
       <div class="flex flex-col gap-3">
-        <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-          Post
-        </label>
+        <label class="text-xs uppercase tracking-[0.16em] opacity-60"> Post </label>
         <textarea
           v-model="newPostBody"
           rows="4"
           class="border border-[var(--ui-border)] px-3 py-2"
           placeholder="Share an update"
         />
-        <div class="text-xs uppercase tracking-[0.16em] opacity-60">
-          Visibility
-        </div>
+        <div class="text-xs uppercase tracking-[0.16em] opacity-60">Visibility</div>
         <SSegmentedControl
           v-model="postVisibility"
           :items="[
@@ -1263,37 +1154,24 @@ async function sendDmMessage() {
           size="xs"
         />
         <div v-if="postVisibility === 'private'" class="flex flex-col gap-2">
-          <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-            Audience
-          </label>
+          <label class="text-xs uppercase tracking-[0.16em] opacity-60"> Audience </label>
           <select
             v-model="selectedPostAudienceId"
             class="border border-[var(--ui-border)] px-3 py-2 text-sm"
           >
             <option value="">Select audience</option>
-            <option
-              v-for="group in audienceGroups"
-              :key="group.id"
-              :value="group.id"
-            >
+            <option v-for="group in audienceGroups" :key="group.id" :value="group.id">
               {{ group.label }}
             </option>
           </select>
-          <Button
-            type="button"
-            size="xs"
-            variant="secondary"
-            @click="openCreateAudienceDialog"
-          >
+          <Button type="button" size="xs" variant="secondary" @click="openCreateAudienceDialog">
             Create audience
           </Button>
           <span class="text-xs text-[var(--ui-fg-muted)]">
             Private posts are visible only to audience members.
           </span>
         </div>
-        <Button type="button" size="sm" variant="primary" @click="addPost">
-          Publish post
-        </Button>
+        <Button type="button" size="sm" variant="primary" @click="addPost"> Publish post </Button>
       </div>
     </SDialog>
 
@@ -1307,40 +1185,24 @@ async function sendDmMessage() {
           stroke="currentColor"
           class="size-4"
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M12 4.5v15m7.5-7.5h-15"
-          />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
       </template>
       <div class="flex flex-col gap-3">
-        <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-          Audience name
-        </label>
+        <label class="text-xs uppercase tracking-[0.16em] opacity-60"> Audience name </label>
         <input
           v-model="newAudienceTitle"
           type="text"
           class="border border-[var(--ui-border)] px-3 py-2"
           placeholder="e.g. Care team"
         />
-        <div class="text-xs uppercase tracking-[0.16em] opacity-60">
-          Add members
-        </div>
+        <div class="text-xs uppercase tracking-[0.16em] opacity-60">Add members</div>
         <div class="flex flex-col gap-2">
           <UserPicker v-model="newAudienceMember" />
-          <Button
-            type="button"
-            size="xs"
-            variant="secondary"
-            @click="addAudienceMember"
-          >
+          <Button type="button" size="xs" variant="secondary" @click="addAudienceMember">
             Add member
           </Button>
-          <div
-            v-if="newAudienceMembers.length"
-            class="flex flex-wrap items-center gap-2 text-xs"
-          >
+          <div v-if="newAudienceMembers.length" class="flex flex-wrap items-center gap-2 text-xs">
             <div
               v-for="member in newAudienceMembers"
               :key="member?.publicIdentityKey"
@@ -1361,8 +1223,7 @@ async function sendDmMessage() {
                 class="text-[11px] uppercase tracking-[0.12em]"
                 @click="
                   newAudienceMembers = newAudienceMembers.filter(
-                    (entry) =>
-                      entry?.publicIdentityKey !== member?.publicIdentityKey
+                    (entry) => entry?.publicIdentityKey !== member?.publicIdentityKey,
                   )
                 "
               >
@@ -1371,12 +1232,7 @@ async function sendDmMessage() {
             </div>
           </div>
         </div>
-        <Button
-          type="button"
-          size="sm"
-          variant="primary"
-          @click="createAudience"
-        >
+        <Button type="button" size="sm" variant="primary" @click="createAudience">
           Create audience
         </Button>
       </div>
@@ -1392,31 +1248,17 @@ async function sendDmMessage() {
           stroke="currentColor"
           class="size-4"
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M12 4.5v15m7.5-7.5h-15"
-          />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
       </template>
       <div class="flex flex-col gap-3">
-        <div class="text-xs uppercase tracking-[0.16em] opacity-60">
-          Add participants
-        </div>
+        <div class="text-xs uppercase tracking-[0.16em] opacity-60">Add participants</div>
         <div class="flex flex-col gap-2">
           <UserPicker v-model="newDmMember" />
-          <Button
-            type="button"
-            size="xs"
-            variant="secondary"
-            @click="addNewDmMember"
-          >
+          <Button type="button" size="xs" variant="secondary" @click="addNewDmMember">
             Add member
           </Button>
-          <div
-            v-if="newDmMembers.length"
-            class="flex flex-wrap items-center gap-2 text-xs"
-          >
+          <div v-if="newDmMembers.length" class="flex flex-wrap items-center gap-2 text-xs">
             <div
               v-for="member in newDmMembers"
               :key="member?.publicIdentityKey"
@@ -1437,8 +1279,7 @@ async function sendDmMessage() {
                 class="text-[11px] uppercase tracking-[0.12em]"
                 @click="
                   newDmMembers = newDmMembers.filter(
-                    (entry) =>
-                      entry?.publicIdentityKey !== member?.publicIdentityKey
+                    (entry) => entry?.publicIdentityKey !== member?.publicIdentityKey,
                   )
                 "
               >
@@ -1447,12 +1288,7 @@ async function sendDmMessage() {
             </div>
           </div>
         </div>
-        <Button
-          type="button"
-          size="sm"
-          variant="primary"
-          @click="createDmThread"
-        >
+        <Button type="button" size="sm" variant="primary" @click="createDmThread">
           Create DM
         </Button>
       </div>
@@ -1461,9 +1297,7 @@ async function sendDmMessage() {
     <SDialog
       v-if="selectedPermissionId"
       v-model:open="isMembersDialogOpen"
-      :title="
-        selectedAudience?.data.title || selectedThread?.data.title || 'Members'
-      "
+      :title="selectedAudience?.data.title || selectedThread?.data.title || 'Members'"
     >
       <template #icon>
         <svg
@@ -1482,13 +1316,9 @@ async function sendDmMessage() {
         </svg>
       </template>
       <div class="flex flex-col gap-3">
-        <div class="text-xs uppercase tracking-[0.16em] opacity-60">
-          Add member
-        </div>
+        <div class="text-xs uppercase tracking-[0.16em] opacity-60">Add member</div>
         <div class="flex flex-col gap-2">
-          <UserPicker
-            v-model="selectedUsersByPermission[selectedPermissionId]"
-          />
+          <UserPicker v-model="selectedUsersByPermission[selectedPermissionId]" />
           <Button
             type="button"
             size="xs"
@@ -1498,13 +1328,8 @@ async function sendDmMessage() {
             Add member
           </Button>
         </div>
-        <div class="text-xs uppercase tracking-[0.16em] opacity-60">
-          Members
-        </div>
-        <div
-          v-if="permissionMembers.length"
-          class="flex flex-wrap items-center gap-2 text-xs"
-        >
+        <div class="text-xs uppercase tracking-[0.16em] opacity-60">Members</div>
+        <div v-if="permissionMembers.length" class="flex flex-wrap items-center gap-2 text-xs">
           <div
             v-for="member in permissionMembers"
             :key="member.data.identity"
@@ -1512,16 +1337,12 @@ async function sendDmMessage() {
           >
             <IdentityAvatar
               :identity="
-                usersByIdentity.get(member.data.identity)?.publicIdentityKey ||
-                member.data.identity
+                usersByIdentity.get(member.data.identity)?.publicIdentityKey || member.data.identity
               "
               size="xs"
             />
             <span class="max-w-[12rem] truncate">
-              {{
-                usersByIdentity.get(member.data.identity)?.name ||
-                member.data.identity
-              }}
+              {{ usersByIdentity.get(member.data.identity)?.name || member.data.identity }}
             </span>
           </div>
         </div>

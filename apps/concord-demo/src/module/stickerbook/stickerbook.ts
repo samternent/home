@@ -40,14 +40,9 @@ function normalizePublicKeyPem(value: string) {
   return `-----BEGIN PUBLIC KEY-----\n${normalized.trim()}\n-----END PUBLIC KEY-----`;
 }
 
-export async function verifyIssuerSignature(
-  entry: any,
-  issuerPublicKeyPem: string
-) {
+export async function verifyIssuerSignature(entry: any, issuerPublicKeyPem: string) {
   if (!entry?.signature) return false;
-  const publicKey = await importPublicKeyFromPem(
-    normalizePublicKeyPem(issuerPublicKeyPem)
-  );
+  const publicKey = await importPublicKeyFromPem(normalizePublicKeyPem(issuerPublicKeyPem));
   const payload = getEntrySigningPayload(entry);
   return verify(entry.signature, payload, publicKey);
 }
@@ -142,26 +137,17 @@ export async function verifyPackIssue(params: {
   catalogue: any;
   reveal?: any;
 }) {
-  const commitOk = await verifyIssuerSignature(
-    params.commit,
-    params.issuerPublicKeyPem
-  );
+  const commitOk = await verifyIssuerSignature(params.commit, params.issuerPublicKeyPem);
   if (!commitOk) return { ok: false, reason: "commit-signature" } as const;
 
-  const issueOk = await verifyIssuerSignature(
-    params.issue,
-    params.issuerPublicKeyPem
-  );
+  const issueOk = await verifyIssuerSignature(params.issue, params.issuerPublicKeyPem);
   if (!issueOk) return { ok: false, reason: "issue-signature" } as const;
 
   const payload = params.issue?.payload;
   const revealPayload = params.reveal || null;
 
   if (payload?.type === "pack.issue") {
-    const revealOk = await verifyCommitRevealConsistency(
-      params.commit,
-      params.issue
-    );
+    const revealOk = await verifyCommitRevealConsistency(params.commit, params.issue);
     if (!revealOk) return { ok: false, reason: "commit-reveal" } as const;
   } else if (payload?.type === "pack.issued") {
     if (!revealPayload) {
@@ -184,10 +170,7 @@ export async function verifyPackIssue(params: {
 
   const themeHash = await hashCanonical({
     themeId: params.catalogue?.themeId ?? payload?.themeId,
-    themeVersion:
-      params.catalogue?.themeVersion ??
-      params.catalogue?.version ??
-      "1.0.0",
+    themeVersion: params.catalogue?.themeVersion ?? params.catalogue?.version ?? "1.0.0",
   });
   if (themeHash !== payload?.themeHash) {
     return { ok: false, reason: "theme-hash" } as const;
@@ -219,22 +202,18 @@ export async function verifyPackIssue(params: {
 
   if (Array.isArray(payload.itemHashes)) {
     const recomputedItemHashes = await Promise.all(
-      resolvedEntries.map((entry: any) => hashCanonical(entry))
+      resolvedEntries.map((entry: any) => hashCanonical(entry)),
     );
     if (
       recomputedItemHashes.length !== payload.itemHashes.length ||
-      recomputedItemHashes.some(
-        (itemHash, index) => itemHash !== payload.itemHashes[index]
-      )
+      recomputedItemHashes.some((itemHash, index) => itemHash !== payload.itemHashes[index])
     ) {
       return { ok: false, reason: "item-hashes" } as const;
     }
   }
 
   if (payload.contentsCommitment) {
-    const itemHashes = await Promise.all(
-      resolvedEntries.map((entry: any) => hashCanonical(entry))
-    );
+    const itemHashes = await Promise.all(resolvedEntries.map((entry: any) => hashCanonical(entry)));
     const expectedContentsCommitment = await hashCanonical({
       itemHashes,
       count: payload.count,

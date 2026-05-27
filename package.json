@@ -2,23 +2,10 @@
   "name": "home",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "keywords": [],
-  "author": "hello@ternent.dev",
   "license": "ISC",
-  "engines": {
-    "node": ">=20",
-    "pnpm": "^8.6.0"
-  },
-  "devDependencies": {
-    "@changesets/changelog-github": "^0.4.8",
-    "@changesets/cli": "^2.27.7",
-    "encoding": "0.1.13"
-  },
-  "dependencies": {
-    "shelljs": "^0.8.5",
-    "yaml": "^2.5.0"
-  },
+  "author": "hello@ternent.dev",
+  "main": "index.js",
   "scripts": {
     "prepare:ternent-app": "node scripts/prepare-ternent-app.mjs",
     "scaffold:ternent-app": "node scripts/scaffold-ternent-app.mjs",
@@ -46,10 +33,26 @@
     "pixpax:derive-issuer-key-formats": "pnpm --filter ternent-api pixpax:derive-issuer-key-formats",
     "derive:issuer-public-key": "pnpm run pixpax:derive-issuer-key-formats",
     "docs": "npm run generate-docs && npm run enhance-docs",
-    "dev:docker": "cd .ops && env -u DOCKER_DEFAULT_PLATFORM docker-compose up -d"
+    "dev:docker": "cd .ops && env -u DOCKER_DEFAULT_PLATFORM docker-compose up -d",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check"
   },
+  "dependencies": {
+    "shelljs": "^0.8.5",
+    "yaml": "^2.5.0"
+  },
+  "devDependencies": {
+    "@changesets/changelog-github": "^0.4.8",
+    "@changesets/cli": "^2.27.7",
+    "encoding": "0.1.13",
+    "oxfmt": "^0.50.0"
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": "^8.6.0"
+  },
+  "packageManager": "pnpm@8.15.5+sha1.a58c038faac410c947dbdb93eb30994037d0fce2",
   "pnpm": {
     "patchedDependencies": {}
-  },
-  "packageManager": "pnpm@8.15.5+sha1.a58c038faac410c947dbdb93eb30994037d0fce2"
+  }
 }

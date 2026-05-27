@@ -14,20 +14,13 @@ import {
   revokePixpaxCode,
 } from "../../module/pixpax/api/client";
 import { usePixpaxAuth } from "../../module/pixpax/auth/usePixpaxAuth";
-import type {
-  PackPalette16,
-  StickerArt16,
-} from "../../module/pixpax/sticker-types";
+import type { PackPalette16, StickerArt16 } from "../../module/pixpax/sticker-types";
 
 function toIsoWeek(date = new Date()) {
-  const utc = new Date(
-    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()),
-  );
+  const utc = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
   utc.setUTCDate(utc.getUTCDate() + 4 - (utc.getUTCDay() || 7));
   const yearStart = new Date(Date.UTC(utc.getUTCFullYear(), 0, 1));
-  const weekNumber = Math.ceil(
-    ((utc.getTime() - yearStart.getTime()) / 86400000 + 1) / 7,
-  );
+  const weekNumber = Math.ceil(((utc.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
   return `${utc.getUTCFullYear()}-W${String(weekNumber).padStart(2, "0")}`;
 }
 
@@ -52,9 +45,7 @@ type CollectionCardOption = {
   art: StickerArt16 | null;
 };
 
-type GeneratedSheetItem = Awaited<
-  ReturnType<typeof createCodeCardsJson>
->["items"][number] & {
+type GeneratedSheetItem = Awaited<ReturnType<typeof createCodeCardsJson>>["items"][number] & {
   lineId: number;
 };
 
@@ -79,9 +70,8 @@ type GeneratedSheetArtifact = {
 const DEFAULT_PALETTE: PackPalette16 = {
   id: "pixpax-default",
   colors: [
-    0x00000000, 0xff1f2937, 0xfff9fafb, 0xff9ca3af, 0xff111827, 0xff2563eb,
-    0xff16a34a, 0xfff59e0b, 0xffef4444, 0xff8b5cf6, 0xff06b6d4, 0xfffff0c2,
-    0xff4b5563, 0xffe5e7eb, 0xfff97316, 0xff22c55e,
+    0x00000000, 0xff1f2937, 0xfff9fafb, 0xff9ca3af, 0xff111827, 0xff2563eb, 0xff16a34a, 0xfff59e0b,
+    0xffef4444, 0xff8b5cf6, 0xff06b6d4, 0xfffff0c2, 0xff4b5563, 0xffe5e7eb, 0xfff97316, 0xff22c55e,
   ],
 };
 const MAX_REDEEM_TOKEN_TTL_SECONDS = 10 * 365 * 24 * 60 * 60;
@@ -99,9 +89,7 @@ function isDeprecatedCollectionRef(entry: CollectionRef) {
 }
 
 function parseCollectionRefs(): CollectionRef[] {
-  const raw = String(
-    import.meta.env.VITE_PIXPAX_PUBLIC_COLLECTIONS || "",
-  ).trim();
+  const raw = String(import.meta.env.VITE_PIXPAX_PUBLIC_COLLECTIONS || "").trim();
   if (raw) {
     try {
       const parsed = JSON.parse(raw);
@@ -112,10 +100,7 @@ function parseCollectionRefs(): CollectionRef[] {
             version: String(entry?.version || "").trim(),
           }))
           .filter(
-            (entry) =>
-              entry.collectionId &&
-              entry.version &&
-              !isDeprecatedCollectionRef(entry),
+            (entry) => entry.collectionId && entry.version && !isDeprecatedCollectionRef(entry),
           );
         if (refs.length) return refs;
       }
@@ -182,12 +167,7 @@ function ensureSelectedRef() {
     return;
   }
   const current = String(selectedRef.value || "").trim();
-  if (
-    current &&
-    available.some(
-      (entry) => `${entry.collectionId}::${entry.version}` === current,
-    )
-  ) {
+  if (current && available.some((entry) => `${entry.collectionId}::${entry.version}` === current)) {
     return;
   }
   selectedRef.value = `${available[0].collectionId}::${available[0].version}`;
@@ -197,9 +177,7 @@ async function loadAdminCollectionRefs() {
   refsLoading.value = true;
   refsError.value = "";
   try {
-    const response = await listPixpaxAdminCollections(
-      auth.token.value || undefined,
-    );
+    const response = await listPixpaxAdminCollections(auth.token.value || undefined);
     const nextRefs = Array.isArray(response?.refs)
       ? response.refs
           .map((entry) => ({
@@ -211,8 +189,7 @@ async function loadAdminCollectionRefs() {
     refs.value = nextRefs.length ? nextRefs : parseCollectionRefs();
   } catch (error) {
     refs.value = parseCollectionRefs();
-    refsError.value =
-      "Unable to load all admin collections. Showing fallback list.";
+    refsError.value = "Unable to load all admin collections. Showing fallback list.";
   } finally {
     refsLoading.value = false;
     ensureSelectedRef();
@@ -264,9 +241,7 @@ const mintedCodeCardItem = computed<PixPaxCodeCardItem | null>(() => {
     kind: value.kind,
     cardId: String(value.cardId || "").trim() || undefined,
     count:
-      typeof value.count === "number" && Number.isFinite(value.count)
-        ? value.count
-        : undefined,
+      typeof value.count === "number" && Number.isFinite(value.count) ? value.count : undefined,
     dropId: String(value.dropId || "").trim() || undefined,
   };
 });
@@ -279,9 +254,7 @@ const mintedCodeCardArt = computed<StickerArt16 | null>(() => {
 
 function toStickerArtFromRenderPayload(payload: unknown): StickerArt16 | null {
   if (!payload || typeof payload !== "object") return null;
-  const gridB64 = String(
-    (payload as { gridB64?: unknown }).gridB64 || "",
-  ).trim();
+  const gridB64 = String((payload as { gridB64?: unknown }).gridB64 || "").trim();
   const gridSize = Number((payload as { gridSize?: unknown }).gridSize || 16);
   if (!gridB64 || gridSize !== 16) return null;
   return {
@@ -295,8 +268,7 @@ function toStickerArtFromRenderPayload(payload: unknown): StickerArt16 | null {
 
 function normalizePalette(input: unknown): PackPalette16 {
   if (!input || typeof input !== "object") return DEFAULT_PALETTE;
-  const id =
-    String((input as { id?: unknown }).id || "palette").trim() || "palette";
+  const id = String((input as { id?: unknown }).id || "palette").trim() || "palette";
   const colorsRaw = (input as { colors?: unknown }).colors;
   if (!Array.isArray(colorsRaw) || colorsRaw.length !== 16) {
     return DEFAULT_PALETTE;
@@ -309,16 +281,11 @@ function normalizeCollectionCard(input: unknown): CollectionCardOption | null {
   if (!input || typeof input !== "object") return null;
   const cardId = String((input as { cardId?: unknown }).cardId || "").trim();
   if (!cardId) return null;
-  const label =
-    String((input as { label?: unknown }).label || cardId).trim() || cardId;
-  const seriesId = String(
-    (input as { seriesId?: unknown }).seriesId || "",
-  ).trim();
+  const label = String((input as { label?: unknown }).label || cardId).trim() || cardId;
+  const seriesId = String((input as { seriesId?: unknown }).seriesId || "").trim();
   const slotValue = Number((input as { slotIndex?: unknown }).slotIndex);
   const slotIndex = Number.isFinite(slotValue) ? slotValue : null;
-  const art = toStickerArtFromRenderPayload(
-    (input as { renderPayload?: unknown }).renderPayload,
-  );
+  const art = toStickerArtFromRenderPayload((input as { renderPayload?: unknown }).renderPayload);
   return {
     cardId,
     label,
@@ -335,9 +302,7 @@ function getDefaultCardId() {
 function getCollectionCardById(cardId: string | undefined) {
   const normalized = String(cardId || "").trim();
   if (!normalized) return null;
-  return (
-    collectionCards.value.find((entry) => entry.cardId === normalized) || null
-  );
+  return collectionCards.value.find((entry) => entry.cardId === normalized) || null;
 }
 
 function getSheetItemArt(item: GeneratedSheetItem): StickerArt16 | null {
@@ -484,11 +449,7 @@ function printGeneratedSheet() {
 
 function validateExpiresInSeconds() {
   const expires = Number(expiresInSeconds.value || 0);
-  if (
-    !Number.isInteger(expires) ||
-    expires < 60 ||
-    expires > MAX_REDEEM_TOKEN_TTL_SECONDS
-  ) {
+  if (!Number.isInteger(expires) || expires < 60 || expires > MAX_REDEEM_TOKEN_TTL_SECONDS) {
     return `Expires in seconds must be between 60 and ${MAX_REDEEM_TOKEN_TTL_SECONDS}.`;
   }
   return "";
@@ -519,7 +480,7 @@ async function revokeCodeById() {
     const response = await revokePixpaxCode(
       codeId,
       { reason: String(revokeReason.value || "").trim() },
-      auth.token.value || undefined
+      auth.token.value || undefined,
     );
     revokeStatus.value = response.alreadyRevoked
       ? `Code ${response.codeId} was already revoked.`
@@ -568,8 +529,7 @@ async function mintSingleCodeToken(kind: "pack" | "fixed-card") {
     }
     if (
       kind === "pack" &&
-      (!Number.isInteger(Number(count.value || 0)) ||
-        Number(count.value || 0) < 1)
+      (!Number.isInteger(Number(count.value || 0)) || Number(count.value || 0) < 1)
     ) {
       mintError.value = "Card count must be at least 1.";
       return;
@@ -601,10 +561,7 @@ async function mintSingleCodeToken(kind: "pack" | "fixed-card") {
       payloadDropId ? ` (${payloadDropId})` : ""
     }.`;
   } catch (error: unknown) {
-    if (
-      error instanceof PixPaxApiError &&
-      (error.status === 401 || error.status === 403)
-    ) {
+    if (error instanceof PixPaxApiError && (error.status === 401 || error.status === 403)) {
       auth.logout();
       mintError.value = "Admin session expired. Login again.";
       await router.replace({
@@ -614,9 +571,7 @@ async function mintSingleCodeToken(kind: "pack" | "fixed-card") {
         },
       });
     } else {
-      mintError.value = String(
-        (error as Error)?.message || "Failed to mint code token.",
-      );
+      mintError.value = String((error as Error)?.message || "Failed to mint code token.");
     }
   } finally {
     minting.value = false;
@@ -659,20 +614,12 @@ async function generateCodeCardsJsonArtifact() {
     }
 
     for (const line of lines) {
-      if (
-        !Number.isInteger(line.quantity) ||
-        line.quantity < 1 ||
-        line.quantity > 500
-      ) {
+      if (!Number.isInteger(line.quantity) || line.quantity < 1 || line.quantity > 500) {
         cardError.value = `Line ${line.id}: quantity must be between 1 and 500.`;
         return;
       }
       if (line.kind === "pack") {
-        if (
-          !Number.isInteger(line.count) ||
-          line.count < 1 ||
-          line.count > 50
-        ) {
+        if (!Number.isInteger(line.count) || line.count < 1 || line.count > 50) {
           cardError.value = `Line ${line.id}: pack card count must be between 1 and 50.`;
           return;
         }
@@ -692,9 +639,7 @@ async function generateCodeCardsJsonArtifact() {
           quantity: line.quantity,
           dropId: String(dropId.value || "").trim(),
           expiresInSeconds: Number(expiresInSeconds.value || 0),
-          ...(line.kind === "fixed-card"
-            ? { cardId: line.cardId }
-            : { count: line.count }),
+          ...(line.kind === "fixed-card" ? { cardId: line.cardId } : { count: line.count }),
         },
         auth.token.value || undefined,
       );
@@ -734,10 +679,7 @@ async function generateCodeCardsJsonArtifact() {
     isSheetPrintDialogOpen.value = true;
     cardStatus.value = `Generated ${response.quantity} code cards across ${responses.length} line(s). Preview rendered below.`;
   } catch (error: unknown) {
-    cardError.value = extractError(
-      error,
-      "Failed to generate code cards JSON.",
-    );
+    cardError.value = extractError(error, "Failed to generate code cards JSON.");
   } finally {
     generatingCards.value = false;
   }
@@ -771,14 +713,9 @@ watch(
       <div class="grid gap-3 md:grid-cols-2">
         <label class="field">
           <span>Collection/version</span>
-          <select
-            v-model="selectedRef"
-            :disabled="refsLoading || refs.length === 0"
-          >
+          <select v-model="selectedRef" :disabled="refsLoading || refs.length === 0">
             <option v-if="refsLoading" value="">Loading collections...</option>
-            <option v-else-if="refs.length === 0" value="">
-              No collections found
-            </option>
+            <option v-else-if="refs.length === 0" value="">No collections found</option>
             <option
               v-for="entry in refs"
               :key="`${entry.collectionId}::${entry.version}`"
@@ -804,14 +741,9 @@ watch(
 
         <label class="field">
           <span>Designated card id</span>
-          <select
-            v-model="fixedCardId"
-            :disabled="cardsLoading || !hasCollectionCards"
-          >
+          <select v-model="fixedCardId" :disabled="cardsLoading || !hasCollectionCards">
             <option v-if="cardsLoading" value="">Loading cards...</option>
-            <option v-else-if="!hasCollectionCards" value="">
-              No cards available
-            </option>
+            <option v-else-if="!hasCollectionCards" value="">No cards available</option>
             <option
               v-for="card in collectionCards"
               :key="`single-${card.cardId}`"
@@ -839,20 +771,10 @@ watch(
           :disabled="minting"
           @click="mintSingleCodeToken('pack')"
         >
-          {{
-            quickMinting === "pack" ? "Issuing..." : "Issue 1 random pack code"
-          }}
+          {{ quickMinting === "pack" ? "Issuing..." : "Issue 1 random pack code" }}
         </Button>
-        <Button
-          class="!px-5 !py-2"
-          :disabled="minting"
-          @click="mintSingleCodeToken('fixed-card')"
-        >
-          {{
-            quickMinting === "fixed-card"
-              ? "Issuing..."
-              : "Issue 1 designated card code"
-          }}
+        <Button class="!px-5 !py-2" :disabled="minting" @click="mintSingleCodeToken('fixed-card')">
+          {{ quickMinting === "fixed-card" ? "Issuing..." : "Issue 1 designated card code" }}
         </Button>
       </div>
 
@@ -904,25 +826,22 @@ watch(
           </label>
           <label class="field">
             <span>Reason (optional)</span>
-            <input v-model="revokeReason" type="text" placeholder="lost batch / leak / test cleanup" />
+            <input
+              v-model="revokeReason"
+              type="text"
+              placeholder="lost batch / leak / test cleanup"
+            />
           </label>
         </div>
         <div class="mt-3">
-          <Button
-            class="!px-4 !py-2"
-            :disabled="revokingCode"
-            @click="revokeCodeById"
-          >
+          <Button class="!px-4 !py-2" :disabled="revokingCode" @click="revokeCodeById">
             {{ revokingCode ? "Revoking..." : "Revoke code" }}
           </Button>
         </div>
         <p v-if="revokeError" class="mt-2 text-sm text-red-700">
           {{ revokeError }}
         </p>
-        <p
-          v-else-if="revokeStatus"
-          class="mt-2 text-xs text-[var(--ui-fg-muted)]"
-        >
+        <p v-else-if="revokeStatus" class="mt-2 text-xs text-[var(--ui-fg-muted)]">
           {{ revokeStatus }}
         </p>
       </div>
@@ -974,24 +893,16 @@ watch(
       <div class="mt-6 rounded-lg border border-[var(--ui-border)] p-3">
         <h3 class="text-sm font-semibold">Sheet Builder (Mixed)</h3>
         <p class="mt-1 text-xs text-[var(--ui-fg-muted)]">
-          Build mixed issuance lines, for example 4x packs, 10x card A, 5x card
-          B. Generate one combined response and render all QR/meta items below
-          for print preview.
+          Build mixed issuance lines, for example 4x packs, 10x card A, 5x card B. Generate one
+          combined response and render all QR/meta items below for print preview.
         </p>
 
         <div class="mt-3 grid gap-3 md:grid-cols-2">
           <label class="field">
             <span>Collection/version for sheet</span>
-            <select
-              v-model="selectedRef"
-              :disabled="refsLoading || refs.length === 0"
-            >
-              <option v-if="refsLoading" value="">
-                Loading collections...
-              </option>
-              <option v-else-if="refs.length === 0" value="">
-                No collections found
-              </option>
+            <select v-model="selectedRef" :disabled="refsLoading || refs.length === 0">
+              <option v-if="refsLoading" value="">Loading collections...</option>
+              <option v-else-if="refs.length === 0" value="">No collections found</option>
               <option
                 v-for="entry in refs"
                 :key="`sheet-${entry.collectionId}::${entry.version}`"
@@ -1004,9 +915,7 @@ watch(
         </div>
 
         <div class="mt-3 flex flex-wrap gap-2">
-          <Button class="!px-4 !py-2" @click="addSheetLine('pack')">
-            + Add pack line
-          </Button>
+          <Button class="!px-4 !py-2" @click="addSheetLine('pack')"> + Add pack line </Button>
           <Button class="!px-4 !py-2" @click="addSheetLine('fixed-card')">
             + Add designated-card line
           </Button>
@@ -1016,10 +925,7 @@ watch(
           <div v-for="line in sheetLines" :key="line.id" class="sheet-line">
             <label class="field">
               <span>Kind</span>
-              <select
-                v-model="line.kind"
-                @change="handleSheetLineKindChange(line)"
-              >
+              <select v-model="line.kind" @change="handleSheetLineKindChange(line)">
                 <option value="pack">Pack</option>
                 <option value="fixed-card">Designated card</option>
               </select>
@@ -1027,33 +933,18 @@ watch(
 
             <label class="field">
               <span>Quantity</span>
-              <input
-                v-model.number="line.quantity"
-                type="number"
-                min="1"
-                max="500"
-              />
+              <input v-model.number="line.quantity" type="number" min="1" max="500" />
             </label>
 
             <label v-if="line.kind === 'pack'" class="field">
               <span>Pack card count</span>
-              <input
-                v-model.number="line.count"
-                type="number"
-                min="1"
-                max="50"
-              />
+              <input v-model.number="line.count" type="number" min="1" max="50" />
             </label>
             <label v-else class="field">
               <span>Card id</span>
-              <select
-                v-model="line.cardId"
-                :disabled="cardsLoading || !hasCollectionCards"
-              >
+              <select v-model="line.cardId" :disabled="cardsLoading || !hasCollectionCards">
                 <option v-if="cardsLoading" value="">Loading cards...</option>
-                <option v-else-if="!hasCollectionCards" value="">
-                  No cards available
-                </option>
+                <option v-else-if="!hasCollectionCards" value="">No cards available</option>
                 <option
                   v-for="card in collectionCards"
                   :key="`line-${line.id}-${card.cardId}`"
@@ -1082,20 +973,13 @@ watch(
             :disabled="generatingCards"
             @click="generateCodeCardsJsonArtifact"
           >
-            {{
-              generatingCards
-                ? "Generating preview..."
-                : "Generate code sheet preview"
-            }}
+            {{ generatingCards ? "Generating preview..." : "Generate code sheet preview" }}
           </Button>
         </div>
         <p v-if="cardError" class="mt-2 text-sm text-red-700">
           {{ cardError }}
         </p>
-        <p
-          v-else-if="cardStatus"
-          class="mt-2 text-xs text-[var(--ui-fg-muted)]"
-        >
+        <p v-else-if="cardStatus" class="mt-2 text-xs text-[var(--ui-fg-muted)]">
           {{ cardStatus }}
         </p>
 
@@ -1109,9 +993,7 @@ watch(
             {{ generatedSheet.quantity }} code(s)
           </p>
           <div class="mt-3 flex flex-wrap items-center gap-2">
-            <Button class="!px-4 !py-2" @click="openSheetPrintDialog">
-              Open print dialog
-            </Button>
+            <Button class="!px-4 !py-2" @click="openSheetPrintDialog"> Open print dialog </Button>
           </div>
           <div class="sheet-preview-grid mt-3">
             <PixPaxRedeemCodeCard
@@ -1119,9 +1001,7 @@ watch(
               v-for="(item, idx) in generatedSheet.items"
               :key="`${item.codeId}-${idx}`"
               :item="item"
-              :art="
-                hasSheetItemArt(item) ? getSheetItemArtOrDefault(item) : null
-              "
+              :art="hasSheetItemArt(item) ? getSheetItemArtOrDefault(item) : null"
               :palette="collectionPalette"
             />
           </div>
@@ -1146,12 +1026,8 @@ watch(
             </p>
           </div>
           <div class="sheet-print-actions">
-            <Button class="!px-4 !py-2" @click="printGeneratedSheet">
-              Print
-            </Button>
-            <Button class="!px-4 !py-2" @click="closeSheetPrintDialog">
-              Close
-            </Button>
+            <Button class="!px-4 !py-2" @click="printGeneratedSheet"> Print </Button>
+            <Button class="!px-4 !py-2" @click="closeSheetPrintDialog"> Close </Button>
           </div>
         </header>
         <div class="sheet-print-body">
@@ -1160,9 +1036,7 @@ watch(
               v-for="(item, idx) in generatedSheet.items"
               :key="`print-${item.codeId}-${idx}`"
               :item="item"
-              :art="
-                hasSheetItemArt(item) ? getSheetItemArtOrDefault(item) : null
-              "
+              :art="hasSheetItemArt(item) ? getSheetItemArtOrDefault(item) : null"
               :palette="collectionPalette"
             />
           </div>
@@ -1193,8 +1067,9 @@ watch(
 }
 
 .mono {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-    "Liberation Mono", "Courier New", monospace;
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New",
+    monospace;
   font-size: 12px;
 }
 

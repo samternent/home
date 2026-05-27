@@ -12,5 +12,9 @@ export const DISCOVERY_LEDGER_KINDS = Object.freeze({
 });
 
 export function isPackModel(value) {
-  return PACK_MODEL_VALUES.includes(String(value || "").trim().toLowerCase());
+  return PACK_MODEL_VALUES.includes(
+    String(value || "")
+      .trim()
+      .toLowerCase(),
+  );
 }

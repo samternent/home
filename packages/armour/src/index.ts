@@ -18,10 +18,7 @@ export {
   resolveIdentity,
   secretKeyFromIdentity,
 } from "./identity.js";
-export {
-  decryptWithPassphrase,
-  encryptWithPassphrase,
-} from "./passphrase.js";
+export { decryptWithPassphrase, encryptWithPassphrase } from "./passphrase.js";
 export {
   decryptWithIdentity,
   decryptWithSecretKey,

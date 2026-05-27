@@ -40,61 +40,41 @@ export class EncryptionRegistryError extends Error {
   }
 }
 
-function parsePayload<T>(
-  schema: { safeParse: (value: unknown) => any },
-  payload: unknown
-): T {
+function parsePayload<T>(schema: { safeParse: (value: unknown) => any }, payload: unknown): T {
   const result = schema.safeParse(payload);
   if (!result.success) {
     throw new EncryptionRegistryError(
       "INVALID_PAYLOAD",
-      result.error.issues
-        .map((issue: { message: string }) => issue.message)
-        .join("; ")
+      result.error.issues.map((issue: { message: string }) => issue.message).join("; "),
     );
   }
   return result.data as T;
 }
 
-function ensureAdmin(
-  permissionsState: PermissionState,
-  author: string,
-  scope: string
-) {
+function ensureAdmin(permissionsState: PermissionState, author: string, scope: string) {
   const caps = getEffectiveCaps(permissionsState, author, scope);
   if (!caps.has("admin")) {
     throw new EncryptionRegistryError(
       "UNAUTHORIZED_ROTATE",
-      "enc.epoch.rotate requires admin capability"
+      "enc.epoch.rotate requires admin capability",
     );
   }
 }
 
-function ensureGrantOrAdmin(
-  permissionsState: PermissionState,
-  author: string,
-  scope: string
-) {
+function ensureGrantOrAdmin(permissionsState: PermissionState, author: string, scope: string) {
   const caps = getEffectiveCaps(permissionsState, author, scope);
   if (!caps.has("grant") && !caps.has("admin")) {
     throw new EncryptionRegistryError(
       "UNAUTHORIZED_WRAP",
-      "enc.wrap.publish requires grant or admin capability"
+      "enc.wrap.publish requires grant or admin capability",
     );
   }
 }
 
-function ensureReadable(
-  permissionsState: PermissionState,
-  principalId: string,
-  scope: string
-) {
+function ensureReadable(permissionsState: PermissionState, principalId: string, scope: string) {
   const caps = getEffectiveCaps(permissionsState, principalId, scope);
   if (!caps.has("read")) {
-    throw new EncryptionRegistryError(
-      "INELIGIBLE_TARGET",
-      "wrap target must have read capability"
-    );
+    throw new EncryptionRegistryError("INELIGIBLE_TARGET", "wrap target must have read capability");
   }
 }
 
@@ -103,7 +83,7 @@ function ensureRecipientsMatch(
   scope: string,
   principalId: string,
   toRecipients: string[],
-  state: EncryptionState
+  state: EncryptionState,
 ): EncryptionState {
   const recipients = resolveAgeRecipients(identityState, principalId);
   if (recipients.length === 0) {
@@ -119,7 +99,7 @@ function ensureRecipientsMatch(
     if (!toRecipients.includes(recipient)) {
       throw new EncryptionRegistryError(
         "INVALID_PAYLOAD",
-        "wrap recipients must include all registered age recipients"
+        "wrap recipients must include all registered age recipients",
       );
     }
   }
@@ -130,7 +110,7 @@ function ensureRecipientsMatch(
 function sliceLedgerForEntry(
   ledger: LedgerContainer,
   commitId: string,
-  entryIndex: number
+  entryIndex: number,
 ): LedgerContainer {
   const commit = ledger.commits[commitId];
   if (!commit) {
@@ -154,15 +134,11 @@ function getDependencyStates(
   ledger: LedgerContainer,
   commitId: string,
   entryIndex: number,
-  config?: EncryptionReplayConfig
+  config?: EncryptionReplayConfig,
 ): { permissionsState: PermissionState; identityState: IdentityState } {
   const partialLedger = sliceLedgerForEntry(ledger, commitId, entryIndex);
   return {
-    permissionsState: replayPermissions(
-      partialLedger,
-      commitId,
-      config?.permissionsConfig
-    ),
+    permissionsState: replayPermissions(partialLedger, commitId, config?.permissionsConfig),
     identityState: replayIdentity(partialLedger, commitId),
   };
 }
@@ -172,14 +148,14 @@ function applyEpochRotate(
   entry: Entry,
   payload: EncEpochRotatePayload,
   permissionsState: PermissionState,
-  identityState: IdentityState
+  identityState: IdentityState,
 ): EncryptionState {
   ensureAdmin(permissionsState, entry.author, payload.scope);
   const scopeState = getScopeState(state, payload.scope);
   if (payload.newEpoch !== scopeState.currentEpoch + 1) {
     throw new EncryptionRegistryError(
       "INVALID_EPOCH_TRANSITION",
-      "newEpoch must equal currentEpoch + 1"
+      "newEpoch must equal currentEpoch + 1",
     );
   }
 
@@ -195,10 +171,7 @@ function applyEpochRotate(
 
   for (const wrap of payload.wraps) {
     if (wrap.epoch !== payload.newEpoch) {
-      throw new EncryptionRegistryError(
-        "INVALID_PAYLOAD",
-        "wrap.epoch must equal newEpoch"
-      );
+      throw new EncryptionRegistryError("INVALID_PAYLOAD", "wrap.epoch must equal newEpoch");
     }
     ensureReadable(permissionsState, wrap.principalId, payload.scope);
     nextState = ensureRecipientsMatch(
@@ -206,7 +179,7 @@ function applyEpochRotate(
       payload.scope,
       wrap.principalId,
       wrap.wrap.to,
-      nextState
+      nextState,
     );
     nextState = addWrap(nextState, {
       scope: payload.scope,
@@ -230,7 +203,7 @@ function applyWrapPublish(
   entry: Entry,
   payload: EncWrapPublishPayload,
   permissionsState: PermissionState,
-  identityState: IdentityState
+  identityState: IdentityState,
 ): EncryptionState {
   ensureGrantOrAdmin(permissionsState, entry.author, payload.scope);
   ensureReadable(permissionsState, payload.principalId, payload.scope);
@@ -239,7 +212,7 @@ function applyWrapPublish(
     payload.scope,
     payload.principalId,
     payload.wrap.to,
-    state
+    state,
   );
   nextState = addWrap(nextState, {
     scope: payload.scope,
@@ -259,7 +232,7 @@ function applyWrapPublish(
 export function replayEncryption(
   ledger: LedgerContainer,
   head?: string,
-  config?: EncryptionReplayConfig
+  config?: EncryptionReplayConfig,
 ): EncryptionState {
   const replayLedger = head ? { ...ledger, head } : ledger;
   const chain = getCommitChain(replayLedger);
@@ -268,10 +241,7 @@ export function replayEncryption(
   for (const commitId of chain) {
     const commit = replayLedger.commits[commitId];
     if (!commit) {
-      throw new ConcordProtocolError(
-        "MISSING_COMMIT",
-        `Missing commit ${commitId}`
-      );
+      throw new ConcordProtocolError("MISSING_COMMIT", `Missing commit ${commitId}`);
     }
     if (isGenesisCommit(commit)) {
       continue;
@@ -280,15 +250,9 @@ export function replayEncryption(
       const entryId = commit.entries[index];
       const entry = replayLedger.entries[entryId];
       if (!entry) {
-        throw new ConcordProtocolError(
-          "MISSING_ENTRY",
-          `Missing entry ${entryId}`
-        );
+        throw new ConcordProtocolError("MISSING_ENTRY", `Missing entry ${entryId}`);
       }
-      if (
-        entry.kind !== "enc.epoch.rotate" &&
-        entry.kind !== "enc.wrap.publish"
-      ) {
+      if (entry.kind !== "enc.epoch.rotate" && entry.kind !== "enc.wrap.publish") {
         continue;
       }
 
@@ -296,33 +260,21 @@ export function replayEncryption(
         replayLedger,
         commitId,
         index,
-        config
+        config,
       );
 
       if (entry.kind === "enc.epoch.rotate") {
         const payload = parsePayload<EncEpochRotatePayload>(
           encEpochRotatePayloadSchema,
-          entry.payload
+          entry.payload,
         );
-        state = applyEpochRotate(
-          state,
-          entry,
-          payload,
-          permissionsState,
-          identityState
-        );
+        state = applyEpochRotate(state, entry, payload, permissionsState, identityState);
       } else if (entry.kind === "enc.wrap.publish") {
         const payload = parsePayload<EncWrapPublishPayload>(
           encWrapPublishPayloadSchema,
-          entry.payload
+          entry.payload,
         );
-        state = applyWrapPublish(
-          state,
-          entry,
-          payload,
-          permissionsState,
-          identityState
-        );
+        state = applyWrapPublish(state, entry, payload, permissionsState, identityState);
       }
     }
   }

@@ -43,8 +43,7 @@ export const whyItFeelsGoodSection = {
     },
     {
       title: "Build your Pixbook",
-      description:
-        "Each reveal becomes part of your collection, not just a temporary state.",
+      description: "Each reveal becomes part of your collection, not just a temporary state.",
       iconLabel: "Drop",
       tone: "accent",
     },
@@ -113,9 +112,9 @@ export const heroBundle: PixpaxPublicCollectionBundle = {
     palette: {
       id: "pixpax-hero",
       colors: [
-        0, 4278915104, 4294967295, 4294368184, 4290348380, 4285416486,
-        4294934453, 4286335834, 4292181767, 4292528135, 4284243036, 4286851671,
-        4278583233, 4292131035, 4294931200, 4294901760,
+        0, 4278915104, 4294967295, 4294368184, 4290348380, 4285416486, 4294934453, 4286335834,
+        4292181767, 4292528135, 4284243036, 4286851671, 4278583233, 4292131035, 4294931200,
+        4294901760,
       ],
     },
   },
@@ -155,8 +154,7 @@ export const heroBundle: PixpaxPublicCollectionBundle = {
   ],
 };
 
-export const heroCards =
-  heroBundle.cards as readonly PixpaxPublicCollectionCard[];
+export const heroCards = heroBundle.cards as readonly PixpaxPublicCollectionCard[];
 
 export const footerLinks: readonly HomeLink[] = [
   {

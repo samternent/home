@@ -72,22 +72,15 @@ export function createConcordOsWorkingCopy<TEntity extends { id: string }>(
   }
 
   function getWorkingMap(): Record<string, TEntity> {
-    return Object.fromEntries(
-      itemsState.value.map((item) => [item.id, options.normalize(item)]),
-    );
+    return Object.fromEntries(itemsState.value.map((item) => [item.id, options.normalize(item)]));
   }
 
   function setWorkingMap(map: Record<string, TEntity>) {
     itemsState.value = sortItems(map);
   }
 
-  function applyDirtyOverlay(
-    baseItems: TEntity[],
-    dirty = dirtyItemsState.value,
-  ): TEntity[] {
-    const map = Object.fromEntries(
-      baseItems.map((item) => [item.id, options.normalize(item)]),
-    );
+  function applyDirtyOverlay(baseItems: TEntity[], dirty = dirtyItemsState.value): TEntity[] {
+    const map = Object.fromEntries(baseItems.map((item) => [item.id, options.normalize(item)]));
     for (const [id, next] of Object.entries(dirty)) {
       if (next === null) {
         delete map[id];
@@ -107,11 +100,7 @@ export function createConcordOsWorkingCopy<TEntity extends { id: string }>(
 
     if (!committedItem && normalizedNext === null) {
       delete dirty[id];
-    } else if (
-      committedItem &&
-      normalizedNext &&
-      options.equal(committedItem, normalizedNext)
-    ) {
+    } else if (committedItem && normalizedNext && options.equal(committedItem, normalizedNext)) {
       delete dirty[id];
     } else if (!committedItem && normalizedNext) {
       dirty[id] = normalizedNext;
@@ -201,9 +190,7 @@ export function createConcordOsWorkingCopy<TEntity extends { id: string }>(
       try {
         const pendingCount = pendingTransactionsState.value.length;
         const latestPendingMessage =
-          pendingCount > 0
-            ? pendingTransactionsState.value[pendingCount - 1]?.message
-            : null;
+          pendingCount > 0 ? pendingTransactionsState.value[pendingCount - 1]?.message : null;
         const commitMessage =
           commitMessageState.value.trim() ||
           latestPendingMessage ||

@@ -21,25 +21,19 @@ const utf8Decoder = new TextDecoder("utf-8", { fatal: true });
 
 function validatePassphrase(passphrase: string): void {
   if (typeof passphrase !== "string" || passphrase.length === 0) {
-    throw new RageValidationError(
-      "RAGE_EMPTY_PASSPHRASE",
-      "Passphrase must not be empty."
-    );
+    throw new RageValidationError("RAGE_EMPTY_PASSPHRASE", "Passphrase must not be empty.");
   }
 }
 
 function validateData(data: Uint8Array): void {
   if (!(data instanceof Uint8Array) || data.byteLength === 0) {
-    throw new RageValidationError(
-      "RAGE_EMPTY_DATA",
-      "Data must be a non-empty Uint8Array."
-    );
+    throw new RageValidationError("RAGE_EMPTY_DATA", "Data must be a non-empty Uint8Array.");
   }
 
   if (data.byteLength > MAX_MESSAGE_SIZE) {
     throw new RageValidationError(
       "RAGE_DATA_TOO_LARGE",
-      "Data exceeds the 64MB maximum message size."
+      "Data exceeds the 64MB maximum message size.",
     );
   }
 }
@@ -48,7 +42,7 @@ function normalizeCiphertext(value: unknown, output: RageOutputFormat): Uint8Arr
   if (!(value instanceof Uint8Array)) {
     throw new RageEncryptionError(
       "RAGE_ENCRYPT_FAILED",
-      `Rage WASM returned an invalid ${output} ciphertext payload.`
+      `Rage WASM returned an invalid ${output} ciphertext payload.`,
     );
   }
   return value;
@@ -58,7 +52,7 @@ function normalizePlaintext(value: unknown): Uint8Array {
   if (!(value instanceof Uint8Array)) {
     throw new RageDecryptionError(
       "RAGE_DECRYPT_FAILED",
-      "Rage WASM returned an invalid plaintext payload."
+      "Rage WASM returned an invalid plaintext payload.",
     );
   }
   return value;
@@ -71,13 +65,13 @@ function decodeUtf8(data: Uint8Array): string {
     throw new RageDecryptionError(
       "RAGE_DECRYPT_FAILED",
       "Decrypted data is not valid UTF-8.",
-      error
+      error,
     );
   }
 }
 
 export async function encryptWithPassphrase(
-  input: EncryptWithPassphraseInput
+  input: EncryptWithPassphraseInput,
 ): Promise<Uint8Array> {
   assertRageInitialized();
   validatePassphrase(input.passphrase);
@@ -88,7 +82,7 @@ export async function encryptWithPassphrase(
     const ciphertext = await getWasmBindings().encryptWithPassphrase(
       input.passphrase,
       input.data,
-      output === "armor"
+      output === "armor",
     );
     return normalizeCiphertext(ciphertext, output);
   } catch (error) {
@@ -97,17 +91,14 @@ export async function encryptWithPassphrase(
 }
 
 export async function decryptWithPassphrase(
-  input: DecryptWithPassphraseInput
+  input: DecryptWithPassphraseInput,
 ): Promise<Uint8Array> {
   assertRageInitialized();
   validatePassphrase(input.passphrase);
   validateData(input.data);
 
   try {
-    const plaintext = await getWasmBindings().decryptWithPassphrase(
-      input.passphrase,
-      input.data
-    );
+    const plaintext = await getWasmBindings().decryptWithPassphrase(input.passphrase, input.data);
     return normalizePlaintext(plaintext);
   } catch (error) {
     throw toDecryptionError(error);
@@ -115,7 +106,7 @@ export async function decryptWithPassphrase(
 }
 
 export async function encryptTextWithPassphrase(
-  input: EncryptTextWithPassphraseInput
+  input: EncryptTextWithPassphraseInput,
 ): Promise<string> {
   const ciphertext = await encryptWithPassphrase({
     passphrase: input.passphrase,
@@ -127,10 +118,9 @@ export async function encryptTextWithPassphrase(
 }
 
 export async function decryptTextWithPassphrase(
-  input: DecryptTextWithPassphraseInput
+  input: DecryptTextWithPassphraseInput,
 ): Promise<string> {
-  const ciphertext =
-    typeof input.data === "string" ? utf8Encoder.encode(input.data) : input.data;
+  const ciphertext = typeof input.data === "string" ? utf8Encoder.encode(input.data) : input.data;
   const plaintext = await decryptWithPassphrase({
     passphrase: input.passphrase,
     data: ciphertext,

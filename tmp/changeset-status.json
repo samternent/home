@@ -34,36 +34,28 @@
       "name": "ledger",
       "type": "patch",
       "oldVersion": "0.0.36",
-      "changesets": [
-        "sharp-dingos-smoke"
-      ],
+      "changesets": ["sharp-dingos-smoke"],
       "newVersion": "0.0.37"
     },
     {
       "name": "armour",
       "type": "patch",
       "oldVersion": "0.0.36",
-      "changesets": [
-        "sharp-dingos-smoke"
-      ],
+      "changesets": ["sharp-dingos-smoke"],
       "newVersion": "0.0.37"
     },
     {
       "name": "ternent-api",
       "type": "patch",
       "oldVersion": "0.2.35",
-      "changesets": [
-        "sharp-dingos-smoke"
-      ],
+      "changesets": ["sharp-dingos-smoke"],
       "newVersion": "0.2.36"
     },
     {
       "name": "pixpax",
       "type": "patch",
       "oldVersion": "0.0.16",
-      "changesets": [
-        "tender-fans-compete"
-      ],
+      "changesets": ["tender-fans-compete"],
       "newVersion": "0.0.17"
     }
   ]

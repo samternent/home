@@ -74,10 +74,7 @@ type ConcordApp = {
   create(params?: ConcordCreateParams): Promise<void>;
   load(): Promise<void>;
 
-  command<TInput = unknown>(
-    type: string,
-    input: TInput
-  ): Promise<ConcordCommandResult>;
+  command<TInput = unknown>(type: string, input: TInput): Promise<ConcordCommandResult>;
 
   commit(input?: ConcordCommitInput): Promise<ConcordCommitResult>;
 
@@ -167,7 +164,7 @@ type ConcordReplayPlugin<PState = unknown> = {
   beginReplay?: (ctx: ConcordReplayContext<PState>) => Promise<void> | void;
   applyEntry?: (
     entry: LedgerReplayEntry,
-    ctx: ConcordReplayContext<PState>
+    ctx: ConcordReplayContext<PState>,
   ) => Promise<void> | void;
   endReplay?: (ctx: ConcordReplayContext<PState>) => Promise<void> | void;
   destroy?: () => Promise<void> | void;

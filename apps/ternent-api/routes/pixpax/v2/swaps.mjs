@@ -87,8 +87,7 @@ export function recordMatchesOutbox(record, senderPublicKey, status = "") {
 
 export function sortSwapRecordsDesc(records) {
   return [...records].sort((left, right) => {
-    const rightDate =
-      trim(right?.acceptedAt) || trim(right?.offeredAt) || trim(right?.transferId);
+    const rightDate = trim(right?.acceptedAt) || trim(right?.offeredAt) || trim(right?.transferId);
     const leftDate = trim(left?.acceptedAt) || trim(left?.offeredAt) || trim(left?.transferId);
     if (leftDate !== rightDate) {
       return rightDate.localeCompare(leftDate);

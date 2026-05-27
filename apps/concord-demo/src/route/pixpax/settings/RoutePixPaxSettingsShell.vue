@@ -18,9 +18,7 @@ const links = [
 <template>
   <div class="mx-auto flex w-full max-w-5xl flex-col gap-4 px-4 py-6 md:flex-row">
     <aside class="w-full md:w-64 shrink-0 rounded-xl border border-[var(--ui-border)] p-3 h-fit">
-      <p class="text-[10px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)] mb-2">
-        Settings
-      </p>
+      <p class="text-[10px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)] mb-2">Settings</p>
       <nav class="flex flex-col gap-1 text-xs">
         <RouterLink
           v-for="link in links"

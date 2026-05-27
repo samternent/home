@@ -23,13 +23,13 @@ wasm-bindgen-futures = "0.4"
 
 [dependencies.web-sys]
 version = "0.3.69"
-features = [ "console" ]
+features = ["console"]
 
 [profile.release]
-opt-level = "s"          # Optimize for size
-lto = true               # Enable link-time optimization
-codegen-units = 1        # Use single codegen unit for better optimization
-panic = "abort"          # Abort on panic (smaller code size)
+opt-level = "s" # Optimize for size
+lto = true # Enable link-time optimization
+codegen-units = 1 # Use single codegen unit for better optimization
+panic = "abort" # Abort on panic (smaller code size)
 
 [profile.release.package."*"]
 opt-level = "s"

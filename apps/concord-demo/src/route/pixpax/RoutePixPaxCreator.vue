@@ -47,9 +47,8 @@ type DraftProject = {
 const DEFAULT_PALETTE: PackPalette16 = {
   id: "default-palette",
   colors: [
-    0x00000000, 0xff111111, 0xffffffff, 0xffef4444, 0xff22c55e, 0xff3b82f6,
-    0xfff59e0b, 0xffa855f7, 0xff06b6d4, 0xfff97316, 0xff84cc16, 0xffec4899,
-    0xff8b5cf6, 0xfff5d0fe, 0xffbae6fd, 0xfffde68a,
+    0x00000000, 0xff111111, 0xffffffff, 0xffef4444, 0xff22c55e, 0xff3b82f6, 0xfff59e0b, 0xffa855f7,
+    0xff06b6d4, 0xfff97316, 0xff84cc16, 0xffec4899, 0xff8b5cf6, 0xfff5d0fe, 0xffbae6fd, 0xfffde68a,
   ],
 };
 
@@ -90,10 +89,7 @@ function createDefaultProject(): DraftProject {
   };
 }
 
-const project = useLocalStorage<DraftProject>(
-  "pixpax/creator/project",
-  createDefaultProject(),
-);
+const project = useLocalStorage<DraftProject>("pixpax/creator/project", createDefaultProject());
 const selectedCardId = useLocalStorage("pixpax/creator/selectedCardId", "");
 const router = useRouter();
 const auth = usePixpaxAuth();
@@ -172,9 +168,7 @@ function ensureProjectSettings() {
   }
   const issuerName = String(project.value.issuer.name || "").trim();
   project.value.issuer.name = issuerName || "PixPax";
-  project.value.issuer.avatarUrl = String(
-    project.value.issuer.avatarUrl || "",
-  ).trim();
+  project.value.issuer.avatarUrl = String(project.value.issuer.avatarUrl || "").trim();
 }
 
 watch(
@@ -191,18 +185,14 @@ watch(
 );
 
 const currentCard = computed(() => {
-  const active = project.value.cards.find(
-    (card) => card.cardId === selectedCardId.value,
-  );
+  const active = project.value.cards.find((card) => card.cardId === selectedCardId.value);
   return active || project.value.cards[0] || null;
 });
 
 watch(
   () => project.value.cards.map((card) => card.cardId),
   () => {
-    if (
-      !project.value.cards.find((card) => card.cardId === selectedCardId.value)
-    ) {
+    if (!project.value.cards.find((card) => card.cardId === selectedCardId.value)) {
       selectedCardId.value = project.value.cards[0]?.cardId || "";
     }
   },
@@ -217,9 +207,7 @@ watch(
   { immediate: true },
 );
 
-const shinyCount = computed(
-  () => project.value.cards.filter((card) => card.shiny).length,
-);
+const shinyCount = computed(() => project.value.cards.filter((card) => card.shiny).length);
 const shinyLimit = computed(() => Math.max(0, project.value.series.shinyLimit));
 const shinyLimitReached = computed(
   () => shinyLimit.value > 0 && shinyCount.value >= shinyLimit.value,
@@ -315,8 +303,7 @@ function makeUniqueCardId(base: string) {
   if (!normalized) return "card";
   let candidate = normalized;
   let index = 2;
-  const exists = (id: string) =>
-    project.value.cards.some((card) => card.cardId === id);
+  const exists = (id: string) => project.value.cards.some((card) => card.cardId === id);
   while (exists(candidate)) {
     candidate = `${normalized}-${index}`;
     index += 1;
@@ -368,11 +355,7 @@ function updateCardId() {
     cardIdInput.value = card.cardId;
     return;
   }
-  if (
-    project.value.cards.some(
-      (entry) => entry !== card && entry.cardId === normalized,
-    )
-  ) {
+  if (project.value.cards.some((entry) => entry !== card && entry.cardId === normalized)) {
     cardIdError.value = "Card id already exists.";
     cardIdInput.value = card.cardId;
     return;
@@ -434,8 +417,7 @@ const previewSticker = computed<Sticker>(() => {
 });
 
 function buildCollectionPayload() {
-  const issuerName =
-    String(project.value.issuer?.name || "").trim() || "PixPax";
+  const issuerName = String(project.value.issuer?.name || "").trim() || "PixPax";
   const issuerAvatarUrl = String(project.value.issuer?.avatarUrl || "").trim();
   return {
     collectionId: project.value.collectionId,
@@ -464,10 +446,7 @@ function buildCollectionSettingsPayload() {
 
 function buildIndexPayload() {
   const cards = project.value.cards.map((card) => card.cardId);
-  const cardMap: Record<
-    string,
-    { seriesId: string; slotIndex: number; role: string }
-  > = {};
+  const cardMap: Record<string, { seriesId: string; slotIndex: number; role: string }> = {};
   project.value.cards.forEach((card, index) => {
     cardMap[card.cardId] = {
       seriesId: project.value.series.seriesId,
@@ -508,9 +487,7 @@ function buildUploadBundle() {
   const collection = buildCollectionPayload();
   const settings = buildCollectionSettingsPayload();
   const index = buildIndexPayload();
-  const cards = project.value.cards.map((card, idx) =>
-    buildCardPayload(card, idx),
-  );
+  const cards = project.value.cards.map((card, idx) => buildCardPayload(card, idx));
   return { collection, settings, index, cards };
 }
 
@@ -528,18 +505,14 @@ function downloadJson(filename: string, payload: unknown) {
 
 function exportProject() {
   downloadJson(
-    `${project.value.collectionId || "pixpax"}-${
-      project.value.version
-    }-draft.json`,
+    `${project.value.collectionId || "pixpax"}-${project.value.version}-draft.json`,
     project.value,
   );
 }
 
 function exportUploadBundle() {
   downloadJson(
-    `${project.value.collectionId || "pixpax"}-${
-      project.value.version
-    }-bundle.json`,
+    `${project.value.collectionId || "pixpax"}-${project.value.version}-bundle.json`,
     buildUploadBundle(),
   );
 }
@@ -592,8 +565,7 @@ function validateProject() {
 async function uploadAll() {
   const allowed = await auth.ensurePermission("pixpax.creator.publish");
   if (!allowed) {
-    uploadError.value =
-      "Publishing requires admin permission. Login in Control to continue.";
+    uploadError.value = "Publishing requires admin permission. Login in Control to continue.";
     return;
   }
 
@@ -627,19 +599,12 @@ async function uploadAll() {
     );
 
     uploadStep.value = "Uploading index.json";
-    await putIndexJson(
-      collectionId,
-      version,
-      buildIndexPayload(),
-      auth.token.value || undefined,
-    );
+    await putIndexJson(collectionId, version, buildIndexPayload(), auth.token.value || undefined);
 
     uploadStep.value = "Uploading cards";
     for (let i = 0; i < project.value.cards.length; i += 1) {
       const card = project.value.cards[i];
-      uploadStep.value = `Uploading ${card.cardId} (${i + 1}/${
-        project.value.cards.length
-      })`;
+      uploadStep.value = `Uploading ${card.cardId} (${i + 1}/${project.value.cards.length})`;
       await putCardJson(
         collectionId,
         version,
@@ -649,13 +614,9 @@ async function uploadAll() {
       );
     }
 
-    uploadStatus.value =
-      "Upload complete. Collection is now stored server-side.";
+    uploadStatus.value = "Upload complete. Collection is now stored server-side.";
   } catch (error: unknown) {
-    if (
-      error instanceof PixPaxApiError &&
-      (error.status === 401 || error.status === 403)
-    ) {
+    if (error instanceof PixPaxApiError && (error.status === 401 || error.status === 403)) {
       auth.logout();
       uploadError.value = "Admin session expired. Login in Control and retry.";
     } else {
@@ -729,8 +690,8 @@ onUnmounted(() => {
         <section class="drawer-section">
           <h1 class="text-xl font-semibold">PixPax Studio</h1>
           <p class="mt-2 text-xs text-[var(--ui-fg-muted)]">
-            Create sticker art on the canvas. All settings and publishing
-            actions are in this drawer.
+            Create sticker art on the canvas. All settings and publishing actions are in this
+            drawer.
           </p>
           <p class="mt-2 text-xs text-[var(--ui-fg-muted)]">
             Status: {{ canPublish ? "publish enabled" : "edit/export only" }}
@@ -784,13 +745,7 @@ onUnmounted(() => {
                 :value="hexFromArgb(color)"
                 @input="handlePaletteInput(index, $event)"
               />
-              <input
-                v-else
-                type="text"
-                value="transparent"
-                readonly
-                class="mono"
-              />
+              <input v-else type="text" value="transparent" readonly class="mono" />
               <span class="mono text-[11px]">{{ hexFromArgb(color) }}</span>
             </div>
           </div>
@@ -847,16 +802,10 @@ onUnmounted(() => {
             </label>
             <label class="field">
               <span>Shiny limit</span>
-              <input
-                v-model.number="project.series.shinyLimit"
-                type="number"
-                min="0"
-                max="200"
-              />
+              <input v-model.number="project.series.shinyLimit" type="number" min="0" max="200" />
             </label>
             <p class="text-xs text-[var(--ui-fg-muted)]">
-              Shiny count: {{ shinyCount }} / {{ shinyLimit || "∞" }} (set 0 for
-              unlimited)
+              Shiny count: {{ shinyCount }} / {{ shinyLimit || "∞" }} (set 0 for unlimited)
             </p>
             <details
               class="rounded-lg border border-[var(--ui-border)] p-2"
@@ -880,9 +829,7 @@ onUnmounted(() => {
           <h2 class="section-title">Cards</h2>
           <div class="flex flex-wrap gap-2">
             <Button class="!px-3 !py-2" @click="addCard">Add</Button>
-            <Button class="!px-3 !py-2" @click="duplicateCard"
-              >Duplicate</Button
-            >
+            <Button class="!px-3 !py-2" @click="duplicateCard">Duplicate</Button>
             <Button class="!px-3 !py-2" @click="removeCard">Delete</Button>
           </div>
 
@@ -948,15 +895,9 @@ onUnmounted(() => {
         <section class="drawer-section">
           <h2 class="section-title">Export + Publish</h2>
           <div class="flex flex-wrap gap-2">
-            <Button class="!px-3 !py-2" @click="exportProject">
-              Download draft
-            </Button>
-            <Button class="!px-3 !py-2" @click="exportUploadBundle">
-              Download bundle
-            </Button>
-            <Button class="!px-3 !py-2" @click="triggerImport">
-              Import draft
-            </Button>
+            <Button class="!px-3 !py-2" @click="exportProject"> Download draft </Button>
+            <Button class="!px-3 !py-2" @click="exportUploadBundle"> Download bundle </Button>
+            <Button class="!px-3 !py-2" @click="triggerImport"> Import draft </Button>
             <input
               ref="importInputRef"
               type="file"
@@ -974,9 +915,7 @@ onUnmounted(() => {
             >
               {{ uploading ? "Uploading..." : "Publish collection" }}
             </Button>
-            <Button class="!px-3 !py-2" @click="copyEnvSnippet">
-              Copy env snippet
-            </Button>
+            <Button class="!px-3 !py-2" @click="copyEnvSnippet"> Copy env snippet </Button>
           </div>
 
           <p v-if="uploadStep" class="mt-3 text-xs text-[var(--ui-fg-muted)]">
@@ -989,9 +928,7 @@ onUnmounted(() => {
             {{ uploadStatus }}
           </p>
 
-          <ul
-            class="mt-3 list-disc list-inside text-xs text-[var(--ui-fg-muted)]"
-          >
+          <ul class="mt-3 list-disc list-inside text-xs text-[var(--ui-fg-muted)]">
             <li>Upload collection, index, and cards.</li>
             <li>Add it to `VITE_PIXPAX_PUBLIC_COLLECTIONS` and rebuild.</li>
             <li>Verify rendering in the Collections page.</li>
@@ -1063,8 +1000,9 @@ onUnmounted(() => {
 }
 
 .mono {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-    "Liberation Mono", "Courier New", monospace;
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New",
+    monospace;
 }
 
 .palette-chip {
@@ -1078,20 +1016,23 @@ onUnmounted(() => {
   font-size: 11px;
   font-weight: 600;
   color: var(--ui-fg);
-  transition: transform 120ms ease, box-shadow 120ms ease;
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease;
 }
 
 .palette-chip.transparent {
-  background-image: linear-gradient(
-      45deg,
-      rgba(255, 255, 255, 0.1) 25%,
-      transparent 25%
-    ),
+  background-image:
+    linear-gradient(45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%),
     linear-gradient(-45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%),
     linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.1) 75%),
     linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.1) 75%);
   background-size: 12px 12px;
-  background-position: 0 0, 0 6px, 6px -6px, -6px 0px;
+  background-position:
+    0 0,
+    0 6px,
+    6px -6px,
+    -6px 0px;
 }
 
 .palette-chip.active {

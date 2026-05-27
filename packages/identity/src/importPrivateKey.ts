@@ -10,10 +10,7 @@ interface IPoints {
  * @param TODO - Add parameters
  * @returns TODO - Add return type description
  */
-export function importPrivateKey(
-  points: IPoints,
-  secret: string
-): Promise<CryptoKey> {
+export function importPrivateKey(points: IPoints, secret: string): Promise<CryptoKey> {
   return crypto.subtle.importKey(
     "jwk",
     {
@@ -28,7 +25,7 @@ export function importPrivateKey(
       namedCurve: "P-256",
     },
     true,
-    ["sign"]
+    ["sign"],
   );
 }
 
@@ -51,6 +48,6 @@ export async function importPrivateKeyFromPem(key: string): Promise<CryptoKey> {
     base64ToArrayBuffer(removeLines(b64key)),
     { name: "ECDSA", namedCurve: "P-256" },
     true,
-    ["sign"]
+    ["sign"],
   );
 }

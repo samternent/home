@@ -17,7 +17,10 @@ import {
 const repoRoot = path.resolve(new URL("../..", import.meta.url).pathname);
 
 test("loads the ternentdotdev manifest into normalized runtime config", () => {
-  const manifest = loadTernentAppManifestForDir(path.join(repoRoot, "apps", "ternentdotdev"), repoRoot);
+  const manifest = loadTernentAppManifestForDir(
+    path.join(repoRoot, "apps", "ternentdotdev"),
+    repoRoot,
+  );
 
   assert.equal(manifest.app.appId, "ternentdotdev");
   assert.equal(manifest.app.themeName, "aurora");
@@ -156,10 +159,7 @@ test("builds a deploy workflow for scaffolded apps", () => {
 
   const workflow = createDeployWorkflowSource(manifest);
 
-  assert.equal(
-    getVercelProjectSecretName("receipt-checker"),
-    "VERCEL_RECEIPT_CHECKER_PROJECT_ID",
-  );
+  assert.equal(getVercelProjectSecretName("receipt-checker"), "VERCEL_RECEIPT_CHECKER_PROJECT_ID");
   assert.match(workflow, /name: Release receipt-checker\.ternent\.dev/);
   assert.match(workflow, /tags:\n\s+- "receipt-checker-\*\.\*\.\*"/);
   assert.match(workflow, /apps\/receipt-checker\/\.vercel\/output\/static/);

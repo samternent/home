@@ -8,10 +8,7 @@ import type {
   PixpaxPackCard,
   PixpaxProofSubjectHash,
 } from "./types.js";
-import {
-  PIXPAX_CARD_INSTANCE_VERSION,
-  PIXPAX_PACK_DERIVATION_VERSION,
-} from "./constants.js";
+import { PIXPAX_CARD_INSTANCE_VERSION, PIXPAX_PACK_DERIVATION_VERSION } from "./constants.js";
 
 function trim(value: unknown): string {
   return String(value || "").trim();
@@ -28,9 +25,7 @@ function asProofHash(value: string): PixpaxProofSubjectHash {
   return `sha256:${value}`;
 }
 
-export function normalizeClaimantRef(
-  claimant: PixpaxClaimantRef,
-): PixpaxClaimantRef {
+export function normalizeClaimantRef(claimant: PixpaxClaimantRef): PixpaxClaimantRef {
   return {
     type: "identity-public-key",
     value: assertNonEmpty(trim(claimant?.value), "claimant.value"),
@@ -51,15 +46,10 @@ export async function canonicalizeClaimantIdentity(
   };
 }
 
-export function normalizeCollectionScope(
-  scope: PixpaxCollectionScope,
-): PixpaxCollectionScope {
+export function normalizeCollectionScope(scope: PixpaxCollectionScope): PixpaxCollectionScope {
   return {
     collectionId: assertNonEmpty(trim(scope?.collectionId), "collectionId"),
-    collectionVersion: assertNonEmpty(
-      trim(scope?.collectionVersion),
-      "collectionVersion",
-    ),
+    collectionVersion: assertNonEmpty(trim(scope?.collectionVersion), "collectionVersion"),
   };
 }
 
@@ -123,12 +113,8 @@ export async function createDeterministicIssuanceMaterial(input: {
   };
 }
 
-export async function hashCanonicalValue(
-  value: unknown,
-): Promise<PixpaxProofSubjectHash> {
-  return asProofHash(
-    await hashData(value as string | object | number),
-  );
+export async function hashCanonicalValue(value: unknown): Promise<PixpaxProofSubjectHash> {
+  return asProofHash(await hashData(value as string | object | number));
 }
 
 export async function createPackItemHash(input: {

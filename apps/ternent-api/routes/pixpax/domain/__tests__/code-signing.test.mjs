@@ -1,6 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { createHash, generateKeyPairSync, sign as nodeSign, verify as nodeVerify } from "node:crypto";
+import {
+  createHash,
+  generateKeyPairSync,
+  sign as nodeSign,
+  verify as nodeVerify,
+} from "node:crypto";
 import {
   signTokenV3,
   verifyTokenV3,
@@ -130,13 +135,13 @@ test("canonicalization stability + single-byte mutation for receipt signatures",
   const verifyOk = await verifyReceiptV1(
     signedA.payload,
     signedA.signature,
-    receiptSigner.publicKeyPem
+    receiptSigner.publicKeyPem,
   );
   assert.equal(verifyOk, true);
 
   const signatureRaw = Buffer.from(
     signedA.signature.replace(/-/g, "+").replace(/_/g, "/"),
-    "base64"
+    "base64",
   );
   signatureRaw[5] = signatureRaw[5] ^ 0xff;
   const tamperedSig = signatureRaw
@@ -148,7 +153,7 @@ test("canonicalization stability + single-byte mutation for receipt signatures",
   const verifyTampered = await verifyReceiptV1(
     signedA.payload,
     tamperedSig,
-    receiptSigner.publicKeyPem
+    receiptSigner.publicKeyPem,
   );
   assert.equal(verifyTampered, false);
 });
@@ -158,12 +163,12 @@ test("raw-64 signature handling interoperates with Node verify path", async () =
   const issuerKeyId = deriveKeyIdFromPublicKey(issuer.publicKeyPem);
   const signed = await signTokenV3(
     buildCompactPayload(`i_${issuerKeyId.slice(0, 12)}`),
-    issuer.privateKeyPem
+    issuer.privateKeyPem,
   );
   const { der, subtleOk } = await verifyRaw64WithNode(
     issuer.publicKeyPem,
     signed.payloadBytes,
-    signed.signatureRaw64
+    signed.signatureRaw64,
   );
 
   assert.equal(subtleOk, true);
@@ -180,7 +185,7 @@ test("token exp verification honors configurable leeway", async () => {
       ...buildCompactPayload(kid),
       e: 1000,
     },
-    issuer.privateKeyPem
+    issuer.privateKeyPem,
   );
 
   const withLeeway = await verifyTokenV3(signed.token, {
@@ -211,9 +216,9 @@ test("strict payload field rules reject unknown token and receipt fields", async
           ...buildCompactPayload(kid),
           unknown: "nope",
         },
-        issuer.privateKeyPem
+        issuer.privateKeyPem,
       ),
-    /unsupported field: unknown/
+    /unsupported field: unknown/,
   );
 
   const invalidTokenPayload = {
@@ -259,9 +264,9 @@ test("strict payload field rules reject unknown token and receipt fields", async
           codeId: "abcdabcdabcdabcd",
           unknown: "nope",
         },
-        receiptSigner.privateKeyPem
+        receiptSigner.privateKeyPem,
       ),
-    /unsupported field: unknown/
+    /unsupported field: unknown/,
   );
 });
 
@@ -284,18 +289,18 @@ test("receipt key separation: issuer key must not verify receipt signature", asy
       kind: "pack",
       codeId: "abcdabcdabcdabcd",
     },
-    receiptSigner.privateKeyPem
+    receiptSigner.privateKeyPem,
   );
 
   const okWithReceiptKey = await verifyReceiptV1(
     signedReceipt.payload,
     signedReceipt.signature,
-    receiptSigner.publicKeyPem
+    receiptSigner.publicKeyPem,
   );
   const okWithIssuerKey = await verifyReceiptV1(
     signedReceipt.payload,
     signedReceipt.signature,
-    issuer.publicKeyPem
+    issuer.publicKeyPem,
   );
 
   assert.equal(okWithReceiptKey, true);
@@ -316,7 +321,7 @@ test("collector proof verifier accepts DER and raw-64 signature encodings", asyn
   const rawOk = await verifyP256Sha256Signature(
     signer.publicKeyPem,
     token.payloadBytes,
-    toBase64Url(token.signatureRaw64)
+    toBase64Url(token.signatureRaw64),
   );
   assert.equal(rawOk, true);
 });

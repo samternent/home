@@ -11,7 +11,7 @@ function loginRedirect(fullPath: string) {
 }
 
 export function requirePixPaxPermission(
-  permission: PixPaxPermission
+  permission: PixPaxPermission,
 ): NavigationGuardWithThis<undefined> {
   return async (to) => {
     const auth = usePixpaxAuth();

@@ -69,11 +69,7 @@ withDefaults(
 .ui-section-clarifier__frame {
   border-top: 1px solid color-mix(in srgb, var(--ui-border) 82%, transparent);
   border-bottom: 1px solid color-mix(in srgb, var(--ui-border) 82%, transparent);
-  background-color: color-mix(
-    in srgb,
-    var(--ui-bg) 84%,
-    var(--ui-tonal-secondary) 16%
-  );
+  background-color: color-mix(in srgb, var(--ui-bg) 84%, var(--ui-tonal-secondary) 16%);
 }
 
 .ui-section-clarifier__content {

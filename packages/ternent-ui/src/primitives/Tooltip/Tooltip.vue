@@ -1,11 +1,7 @@
 <script setup lang="ts">
 import { Tooltip as ArkTooltip } from "@ark-ui/vue/tooltip";
 import { tooltipProps } from "./Tooltip.props";
-import {
-  tooltipArrowClass,
-  tooltipContentClass,
-  tooltipPositionerClass,
-} from "./Tooltip.variants";
+import { tooltipArrowClass, tooltipContentClass, tooltipPositionerClass } from "./Tooltip.variants";
 
 const open = defineModel<boolean>("open", { default: false });
 const props = defineProps(tooltipProps);

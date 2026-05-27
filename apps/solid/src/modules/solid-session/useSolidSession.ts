@@ -1,9 +1,4 @@
-import {
-  computed,
-  ref,
-  shallowRef,
-  type ComputedRef,
-} from "vue";
+import { computed, ref, shallowRef, type ComputedRef } from "vue";
 import {
   getDefaultSession,
   handleIncomingRedirect,
@@ -11,12 +6,7 @@ import {
 } from "@inrupt/solid-client-authn-browser";
 import { appConfig } from "@/app/config/app.config";
 
-export type SolidSessionStatus =
-  | "idle"
-  | "restoring"
-  | "ready"
-  | "redirecting"
-  | "error";
+export type SolidSessionStatus = "idle" | "restoring" | "ready" | "redirecting" | "error";
 
 export type SolidSessionController = {
   session: ComputedRef<Session | null>;

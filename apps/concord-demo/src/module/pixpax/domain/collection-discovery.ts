@@ -34,7 +34,7 @@ export function deriveOwnedCollectionIdsFromPacks(packs: any[]) {
 export function deriveOwnedCardIdsForCollectionVersion(
   packs: any[],
   collectionId: string,
-  version: string
+  version: string,
 ) {
   const cardIds = new Set<string>();
   const normalizedCollectionId = String(collectionId || "").trim();

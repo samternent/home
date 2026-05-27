@@ -13,18 +13,15 @@ AI-generated code is welcome, but MUST NOT violate the invariants below.
 ## Core Invariants (Non-Negotiable)
 
 1. **Seal-at-issue**
-
    - A pack’s contents are decided at issue-time (or mint-time), never at open-time.
    - The pack must commit to its contents (item hashes + merkle root + canonical commitment hash) before it can be opened.
 
 2. **Append-only truth**
-
    - Domain state is represented as an append-only event stream.
    - No endpoint/function may “update” or “delete” domain facts. New facts must be appended as events.
    - DB/S3 may be used as caches or content stores but are NOT the source of truth.
 
 3. **Rebuildability**
-
    - It must be possible to reconstruct core state from events + content:
      - what collections/series exist
      - what packs were issued
@@ -33,7 +30,6 @@ AI-generated code is welcome, but MUST NOT violate the invariants below.
    - If a cache is wiped, the system still converges back to correct state after replay.
 
 4. **Series lifecycle**
-
    - Series may be retired (no new packs issued), but a retired series must never be reopened.
    - A series’s card set is frozen once published. Do not add/remove cards from an existing series.
    - New ideas = new series. Corrections = new collection (or new series with new ID; never mutate old).

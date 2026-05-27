@@ -34,10 +34,7 @@ export async function createSolidConcordApp(
   const mnemonicUrl = input.mnemonicUrl ?? discoveredResources?.mnemonicUrl ?? undefined;
   const walletUrl = input.walletUrl ?? discoveredResources?.walletUrl ?? undefined;
   const ledgerUrl =
-    input.ledgerUrl ??
-    discoveredResources?.ledgerUrl ??
-    defaultPaths?.ledgerUrl ??
-    null;
+    input.ledgerUrl ?? discoveredResources?.ledgerUrl ?? defaultPaths?.ledgerUrl ?? null;
 
   if (!ledgerUrl) {
     throw new Error(
@@ -68,11 +65,7 @@ export async function createSolidConcordApp(
     await initArmour();
   }
 
-  const storage = createSolidStorage(
-    input.session,
-    ledgerUrl,
-    input.storageOptions,
-  );
+  const storage = createSolidStorage(input.session, ledgerUrl, input.storageOptions);
 
   const app = await createConcordApp({
     identity,
@@ -130,10 +123,7 @@ export async function createSolidConcordApp(
         : undefined;
   const accessReport =
     resources && profileEnabled
-      ? await enforceSolidConcordAccess(
-          resources,
-          input.profile?.accessValidation ?? "strict",
-        )
+      ? await enforceSolidConcordAccess(resources, input.profile?.accessValidation ?? "strict")
       : undefined;
 
   return {

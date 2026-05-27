@@ -3,6 +3,7 @@
 ## Pixbook receipts-first API (v1)
 
 New pixbook command/query endpoints:
+
 - `GET /v1/pixbooks`
 - `GET /v1/pixbooks/:id`
 - `GET /v1/pixbooks/:id/receipts?after=<eventId>&limit=<n>`
@@ -11,16 +12,19 @@ New pixbook command/query endpoints:
 - `POST /v1/pixbooks/:id/commands/save`
 
 Command headers:
+
 - `Idempotency-Key: <uuid>`
 - `X-Signing-Identity-Id: <id>` (required when account has multiple signing identities)
 
 Vault Transit env contract:
+
 - `VAULT_ADDR`
 - `VAULT_TRANSIT_MOUNT`
 - `VAULT_TOKEN` (or `VAULT_ROLE` with Kubernetes auth/JWT)
 - optional: `VAULT_K8S_JWT_PATH`
 
 Spaces receipt storage env contract:
+
 - `LEDGER_S3_ENDPOINT`
 - `LEDGER_BUCKET` (or `PIXBOOK_LEDGER_BUCKET` / `LEDGER_CONTENT_BUCKET`)
 - `LEDGER_REGION`
@@ -29,6 +33,7 @@ Spaces receipt storage env contract:
 - optional: `PIXBOOK_RECEIPTS_PREFIX` (default `pixpax/pixbooks`)
 
 Legacy compatibility endpoints are retained:
+
 - `GET /v1/account/pixbook`
 - `PUT /v1/account/pixbook/snapshot`
 
@@ -40,6 +45,7 @@ These legacy routes emit `Deprecation`, `Sunset`, and `Link` headers and call th
 issuer ledger in DigitalOcean Spaces (S3-compatible).
 
 Ledger guarantees:
+
 - append-only segments (`.jsonl.gz`) with `prevSegmentHash` + `prevSegmentKey`
 - content-addressed segment key (`seg_<sha256>.jsonl.gz`)
 - fixed minimal checkpoint pointer (`checkpoint.json`)
@@ -49,9 +55,11 @@ Ledger guarantees:
 ### Hash input definition
 
 Segment hash is always:
+
 - `sha256(uncompressed-jsonl-utf8-bytes)`
 
 This hash is used for:
+
 - `seg_<sha256>.jsonl.gz` file key naming
 - `checkpoint.headSegmentHash`
 - `segment.meta.prevSegmentHash` chaining
@@ -72,6 +80,7 @@ This hash is used for:
 - `LEDGER_REGION` (example: `lon1`)
 
 Optional:
+
 - `ISSUER_KEY_ID`
 - `LEDGER_FLUSH_MAX_EVENTS` (default `200`)
 - `LEDGER_FLUSH_INTERVAL_MS` (default `60000`)
@@ -94,6 +103,7 @@ Optional:
 ```
 
 Validation rules:
+
 - value must be valid JSON
 - top-level must be an array
 - each element must include `keyId` and `publicKeyPem`
@@ -104,19 +114,23 @@ Invalid shape fails startup.
 ### Verify a receipt
 
 Endpoint:
+
 - `GET /v1/pixpax/receipt/:packId?segmentKey=<key>`
 
 CLI:
+
 ```bash
 pnpm pixpax:verify -- --packId <pack-id> --segmentKey <segment-key>
 ```
 
 Derive issuer key formats from `ISSUER_PRIVATE_KEY_PEM`:
+
 ```bash
 pnpm pixpax:derive-issuer-key-formats -- --env-file .ops/ternent-api/.env
 ```
 
 Verifier checks:
+
 - segment key hash matches segment content hash
 - checkpoint head consistency
 - parent chain (`prevSegmentHash`/`prevSegmentKey`)
@@ -230,6 +244,7 @@ Required receipt signing env vars:
 Deployment uses explicit `env` + `secretKeyRef` (not `envFrom`).
 
 Secret `ternent-api-ledger` key mapping:
+
 - `ledger-s3-endpoint` -> `LEDGER_S3_ENDPOINT`
 - `ledger-bucket` -> `LEDGER_BUCKET`
 - `ledger-prefix` -> `LEDGER_PREFIX`
@@ -246,11 +261,13 @@ Secret `ternent-api-ledger` key mapping:
 Reference file: `.ops/ternent-api/secret-ledger.example.yaml`.
 
 PixPax content/admin env mapping is configured directly in:
+
 - `.ops/ternent-api/deployment.yaml`
 
 ### Single writer requirement
 
 Issuer ledger is fork-sensitive. Deploy issuer service with exactly one replica:
+
 - `.ops/ternent-api/deployment.yaml` sets `spec.replicas: 1`
 
 ### Graceful shutdown

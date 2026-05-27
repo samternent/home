@@ -21,8 +21,8 @@ const open = defineModel<boolean>("open", { default: false });
 const props = defineProps(drawerProps);
 const slots = useSlots();
 
-const hasHeader = computed(
-  () => Boolean(props.title || props.description || slots.header || props.showClose),
+const hasHeader = computed(() =>
+  Boolean(props.title || props.description || slots.header || props.showClose),
 );
 </script>
 
@@ -54,10 +54,7 @@ const hasHeader = computed(
               <ArkDialog.Title v-if="props.title" :class="drawerTitleClass">
                 {{ props.title }}
               </ArkDialog.Title>
-              <ArkDialog.Description
-                v-if="props.description"
-                :class="drawerDescriptionClass"
-              >
+              <ArkDialog.Description v-if="props.description" :class="drawerDescriptionClass">
                 {{ props.description }}
               </ArkDialog.Description>
             </div>

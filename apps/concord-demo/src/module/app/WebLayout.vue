@@ -12,18 +12,14 @@ import Logo from "../brand/Logo.vue";
         >Concord</RouterLink
       >
     </div>
-    <div
-      class="max-w-[980px] mx-auto px-4 flex items-center w-full justify-between"
-    >
+    <div class="max-w-[980px] mx-auto px-4 flex items-center w-full justify-between">
       <RouterLink
         class="text-[var(--ui-fg)] font-[900] text-xl no-underline tracking-[-0.08em] brand hidden md:block"
         to="/"
         >Concord</RouterLink
       >
 
-      <nav
-        class="flex items-center gap-4 flex-1 justify-between md:justify-end"
-      >
+      <nav class="flex items-center gap-4 flex-1 justify-between md:justify-end">
         <div class="flex items-center gap-4">
           <RouterLink to="/docs">Docs</RouterLink>
           <RouterLink to="/protocol/spec">Protocol Spec</RouterLink>
@@ -50,9 +46,7 @@ import Logo from "../brand/Logo.vue";
           class="text-xs font-mono font-thin -translate-y-1 group-hover:translate-y-0.5 group-hover:translate-x-1.5 transition-all duration-300"
           >sam@ternent.dev</span
         >
-        <Logo
-          class="size-8 group-hover:-rotate-6 transition-all duration-300"
-        />
+        <Logo class="size-8 group-hover:-rotate-6 transition-all duration-300" />
       </a>
     </div>
   </footer>

@@ -8,7 +8,9 @@ function hashCanonical(value) {
 }
 
 function normalizePublicKeyPem(value) {
-  const normalized = String(value || "").replace(/\\n/g, "\n").trim();
+  const normalized = String(value || "")
+    .replace(/\\n/g, "\n")
+    .trim();
   if (!normalized) return "";
   if (normalized.includes("BEGIN PUBLIC KEY")) return normalized;
   return `-----BEGIN PUBLIC KEY-----\n${normalized}\n-----END PUBLIC KEY-----`;
@@ -33,7 +35,7 @@ async function verifyEntrySignature(entry, publicKeyPem) {
     publicPemToDer(publicKeyPem),
     { name: "ECDSA", namedCurve: "P-256" },
     false,
-    ["verify"]
+    ["verify"],
   );
 
   const signingPayload = getEntrySigningPayload(entry);
@@ -41,7 +43,7 @@ async function verifyEntrySignature(entry, publicKeyPem) {
     { name: "ECDSA", hash: "SHA-256" },
     key,
     Buffer.from(signature, "base64"),
-    new TextEncoder().encode(signingPayload)
+    new TextEncoder().encode(signingPayload),
   );
 }
 
@@ -194,7 +196,8 @@ export async function verifyPack(params) {
     }
     const events = await store.replayEvents(sourceCollectionId, sourceVersion);
     const packEvent = events.find(
-      (event) => event?.type === "pack.issued" && String(event?.payload?.packId || "") === requestedPackId
+      (event) =>
+        event?.type === "pack.issued" && String(event?.payload?.packId || "") === requestedPackId,
     );
     if (!packEvent) {
       return fail("pack-not-found", {
@@ -214,18 +217,23 @@ export async function verifyPack(params) {
   const collectionId = String(payload?.collectionId || sourceCollectionId || "").trim();
   const collectionVersion = String(payload?.collectionVersion || sourceVersion || "").trim();
   const dropId = String(payload?.dropId || "").trim();
-  const cardIds = Array.isArray(payload?.cardIds) ? payload.cardIds.map((value) => String(value || "").trim()) : [];
+  const cardIds = Array.isArray(payload?.cardIds)
+    ? payload.cardIds.map((value) => String(value || "").trim())
+    : [];
   const itemHashes = Array.isArray(payload?.itemHashes)
     ? payload.itemHashes.map((value) => String(value || "").trim())
     : [];
   const packRoot = String(payload?.packRoot || "").trim();
   const contentsCommitment = String(payload?.contentsCommitment || "").trim();
   const issuerKeyId = String(payload?.issuerKeyId || normalized.issuerKeyId || "").trim();
-  const issuerSignature = String(payload?.issuerSignature || normalized.issuerSignature || "").trim();
+  const issuerSignature = String(
+    payload?.issuerSignature || normalized.issuerSignature || "",
+  ).trim();
   const issuerAuthor = String(payload?.issuerAuthor || normalized.issuerAuthor || "");
   const issuedAt = String(payload?.issuedAt || normalized.entryTimestamp || "").trim();
   const issuedTo = String(payload?.issuedTo || payload?.userKeyHash || "").trim();
-  const isUntracked = payload?.untracked === true || String(payload?.issuanceMode || "") === "dev-untracked";
+  const isUntracked =
+    payload?.untracked === true || String(payload?.issuanceMode || "") === "dev-untracked";
 
   if (!packId) return fail("missing-pack-id", { payload });
   if (!collectionId || !collectionVersion) {
@@ -251,7 +259,7 @@ export async function verifyPack(params) {
   const listedSeriesIds = new Set(
     (Array.isArray(index?.series) ? index.series : [])
       .map((entry) => String(entry?.seriesId || "").trim())
-      .filter(Boolean)
+      .filter(Boolean),
   );
   const cardMap = index?.cardMap || {};
   for (const cardId of cardIds) {
@@ -294,7 +302,7 @@ export async function verifyPack(params) {
         collectionVersion,
         cardId,
         renderPayload: card?.renderPayload || {},
-      })
+      }),
     );
   }
 

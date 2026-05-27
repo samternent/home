@@ -59,18 +59,15 @@ export default defineConfig({
     alias: {
       "@": resolve(__dirname, "./src"),
       "ternent-ui/styles.css": resolve(__dirname, "../../packages/ternent-ui/dist/ternent-ui.css"),
-      "ternent-ui/themes/concord.css": resolve(__dirname, "../../packages/ternent-ui/src/themes/concord.css"),
+      "ternent-ui/themes/concord.css": resolve(
+        __dirname,
+        "../../packages/ternent-ui/src/themes/concord.css",
+      ),
       "ternent-ui/components": resolve(__dirname, "../../packages/ternent-ui/dist/components.js"),
       "ternent-ui/primitives": resolve(__dirname, "../../packages/ternent-ui/dist/primitives.js"),
       "ternent-ui/patterns": resolve(__dirname, "../../packages/ternent-ui/dist/patterns.js"),
-      "@ternent/concord/browser": resolve(
-        __dirname,
-        "../../packages/concord/src/index.ts",
-      ),
-      "@ternent/seal-cli/proof": resolve(
-        __dirname,
-        "../../packages/seal-cli/src/proof.ts",
-      ),
+      "@ternent/concord/browser": resolve(__dirname, "../../packages/concord/src/index.ts"),
+      "@ternent/seal-cli/proof": resolve(__dirname, "../../packages/seal-cli/src/proof.ts"),
     },
   },
   plugins: [
@@ -79,7 +76,12 @@ export default defineConfig({
     createIndexHtmlTransformPlugin(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "icons/icon-192.png", "icons/icon-512.png", "icons/maskable-512.png"],
+      includeAssets: [
+        "favicon.ico",
+        "icons/icon-192.png",
+        "icons/icon-512.png",
+        "icons/maskable-512.png",
+      ],
       manifest: pwaManifest,
       workbox: {
         cleanupOutdatedCaches: true,
@@ -100,7 +102,8 @@ export default defineConfig({
             },
           },
           {
-            urlPattern: ({ request }) => request.destination === "image" || request.destination === "font",
+            urlPattern: ({ request }) =>
+              request.destination === "image" || request.destination === "font",
             handler: "CacheFirst",
             options: {
               cacheName: "app-media",

@@ -33,9 +33,7 @@ describe("@ternent/identity", () => {
       id: `identity-${identity.keyId.slice(0, 12)}`,
     };
 
-    expect(JSON.parse(serializeIdentity(withUiState as typeof identity))).toEqual(
-      identity
-    );
+    expect(JSON.parse(serializeIdentity(withUiState as typeof identity))).toEqual(identity);
   });
 
   it("derives deterministic public keys and key ids from the seed", async () => {
@@ -86,8 +84,7 @@ describe("@ternent/identity", () => {
       createdAt: "2026-03-16T00:00:00.000Z",
     });
     const noPassphraseIdentity = await createIdentityFromMnemonic({
-      mnemonic:
-        "legal winner thank year wave sausage worth useful legal winner thank yellow",
+      mnemonic: "legal winner thank year wave sausage worth useful legal winner thank yellow",
       createdAt: "2026-03-16T00:00:00.000Z",
     });
 
@@ -130,12 +127,12 @@ describe("@ternent/identity", () => {
     expect(
       await verifyUtf8(identity.publicKey, "hello", signature, {
         context: "one",
-      })
+      }),
     ).toBe(true);
     expect(
       await verifyUtf8(identity.publicKey, "hello", signature, {
         context: "two",
-      })
+      }),
     ).toBe(false);
   });
 
@@ -143,7 +140,7 @@ describe("@ternent/identity", () => {
     const identity = await createIdentity();
 
     expect(await deriveX25519PublicKey(identity)).toBe(
-      await convertEd25519PublicKeyToX25519PublicKey(identity.publicKey)
+      await convertEd25519PublicKeyToX25519PublicKey(identity.publicKey),
     );
   });
 

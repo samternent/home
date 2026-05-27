@@ -15,7 +15,9 @@ const { mode } = useThemeMode();
 
     <div class="flex items-center gap-3">
       <ThemeModeToggle />
-      <span class="text-sm text-fg-muted">Current mode: <strong>{{ mode }}</strong></span>
+      <span class="text-sm text-fg-muted"
+        >Current mode: <strong>{{ mode }}</strong></span
+      >
     </div>
   </SCard>
 </template>

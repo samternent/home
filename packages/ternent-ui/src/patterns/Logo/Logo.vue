@@ -18,9 +18,7 @@ const props = withDefaults(
 const attrs = useAttrs();
 const instanceId = useId().replace(/:/g, "");
 
-const classes = computed(() =>
-  twMerge("block h-auto w-12 shrink-0", normalizeClass(attrs.class)),
-);
+const classes = computed(() => twMerge("block h-auto w-12 shrink-0", normalizeClass(attrs.class)));
 
 const forwardedAttrs = computed(() => {
   const { class: _class, ...rest } = attrs;

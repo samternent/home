@@ -55,7 +55,7 @@ export function createIdentityBackupRepo() {
           AND managed_user_id = $2
         ORDER BY backup_version DESC, created_at DESC
         `,
-        [trim(accountId), trim(managedUserId)]
+        [trim(accountId), trim(managedUserId)],
       );
       return result.rows.map((row) => toMetadata(row));
     },
@@ -77,7 +77,7 @@ export function createIdentityBackupRepo() {
         ORDER BY backup_version DESC, created_at DESC
         LIMIT 1
         `,
-        [trim(accountId), trim(managedUserId)]
+        [trim(accountId), trim(managedUserId)],
       );
       if (result.rowCount === 0) return null;
       return toLatest(result.rows[0]);
@@ -109,14 +109,14 @@ export function createIdentityBackupRepo() {
           LIMIT 1
           FOR UPDATE
           `,
-          [accountId, managedUserId, backupNonce]
+          [accountId, managedUserId, backupNonce],
         );
 
         if (existing.rowCount > 0) {
           const row = existing.rows[0];
           if (!sameEnvelope(row.envelope_json, envelope)) {
             const error = new Error(
-              "Backup nonce was already used with a different encrypted payload."
+              "Backup nonce was already used with a different encrypted payload.",
             );
             error.code = "BACKUP_NONCE_CONFLICT";
             error.statusCode = 409;
@@ -135,7 +135,7 @@ export function createIdentityBackupRepo() {
           WHERE account_id = $1
             AND managed_user_id = $2
           `,
-          [accountId, managedUserId]
+          [accountId, managedUserId],
         );
         const nextVersion = Number(nextVersionResult.rows[0]?.next_version || 1);
 
@@ -169,7 +169,7 @@ export function createIdentityBackupRepo() {
             profileId,
             identityKeyFingerprint,
             JSON.stringify(envelope),
-          ]
+          ],
         );
 
         return {
@@ -180,9 +180,7 @@ export function createIdentityBackupRepo() {
     },
 
     async pruneToLatestN(accountId, managedUserId, keep = 5) {
-      const keepCount = Number.isFinite(Number(keep))
-        ? Math.max(1, Math.trunc(Number(keep)))
-        : 5;
+      const keepCount = Number.isFinite(Number(keep)) ? Math.max(1, Math.trunc(Number(keep))) : 5;
       const result = await dbQuery(
         `
         DELETE FROM identity_key_backups
@@ -197,7 +195,7 @@ export function createIdentityBackupRepo() {
             OFFSET $3
           )
         `,
-        [trim(accountId), trim(managedUserId), keepCount]
+        [trim(accountId), trim(managedUserId), keepCount],
       );
       return result.rowCount;
     },
@@ -209,7 +207,7 @@ export function createIdentityBackupRepo() {
         WHERE account_id = $1
           AND managed_user_id = $2
         `,
-        [trim(accountId), trim(managedUserId)]
+        [trim(accountId), trim(managedUserId)],
       );
       return result.rowCount;
     },
@@ -220,7 +218,7 @@ export function createIdentityBackupRepo() {
         DELETE FROM identity_key_backups
         WHERE account_id = $1
         `,
-        [trim(accountId)]
+        [trim(accountId)],
       );
       return result.rowCount;
     },

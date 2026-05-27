@@ -4,14 +4,8 @@ import { useLocalStorage } from "@vueuse/core";
 import { useLedger } from "../../module/ledger/useLedger";
 import { useIdentity } from "../../module/identity/useIdentity";
 import { useEncryption } from "../../module/encryption/useEncryption";
-import {
-  useProfile,
-  type PrivateProfile,
-} from "../../module/profile/useProfile";
-import {
-  getDefaultSession,
-  handleIncomingRedirect,
-} from "@inrupt/solid-client-authn-browser";
+import { useProfile, type PrivateProfile } from "../../module/profile/useProfile";
+import { getDefaultSession, handleIncomingRedirect } from "@inrupt/solid-client-authn-browser";
 import {
   createContainerAt,
   getContainedResourceUrlAll,
@@ -20,10 +14,7 @@ import {
   getSolidDataset,
   overwriteFile,
 } from "@inrupt/solid-client";
-import {
-  setAgentAccess,
-  setPublicAccess,
-} from "@inrupt/solid-client/universal";
+import { setAgentAccess, setPublicAccess } from "@inrupt/solid-client/universal";
 
 type PrivacyLevel = "private" | "public" | "shared";
 
@@ -35,10 +26,7 @@ const {
 } = useIdentity();
 const { impersonate: impersonateEncryption } = useEncryption();
 const profile = useProfile();
-const myProfile = useLocalStorage(
-  "concord/profile/me",
-  profile.getPrivateProfileJson()
-);
+const myProfile = useLocalStorage("concord/profile/me", profile.getPrivateProfileJson());
 
 const session = getDefaultSession();
 
@@ -77,14 +65,8 @@ const containerUrls = computed(() => {
     private: new URL("concord/ledgers/private/", selectedPod.value).toString(),
     shared: new URL("concord/ledgers/shared/", selectedPod.value).toString(),
     walletRoot: new URL("concord/wallet/", selectedPod.value).toString(),
-    walletPrivate: new URL(
-      "concord/wallet/private/",
-      selectedPod.value
-    ).toString(),
-    walletPublic: new URL(
-      "concord/wallet/public/",
-      selectedPod.value
-    ).toString(),
+    walletPrivate: new URL("concord/wallet/private/", selectedPod.value).toString(),
+    walletPublic: new URL("concord/wallet/public/", selectedPod.value).toString(),
   };
 });
 
@@ -188,27 +170,27 @@ async function ensureSchema() {
     await setPublicAccess(
       containerUrls.value.public,
       { read: true, append: false, write: false, control: false },
-      { fetch: session.fetch }
+      { fetch: session.fetch },
     );
     await setPublicAccess(
       containerUrls.value.private,
       { read: false, append: false, write: false, control: false },
-      { fetch: session.fetch }
+      { fetch: session.fetch },
     );
     await setPublicAccess(
       containerUrls.value.shared,
       { read: false, append: false, write: false, control: false },
-      { fetch: session.fetch }
+      { fetch: session.fetch },
     );
     await setPublicAccess(
       containerUrls.value.walletPublic,
       { read: true, append: false, write: false, control: false },
-      { fetch: session.fetch }
+      { fetch: session.fetch },
     );
     await setPublicAccess(
       containerUrls.value.walletPrivate,
       { read: false, append: false, write: false, control: false },
-      { fetch: session.fetch }
+      { fetch: session.fetch },
     );
     status.value = "Schema ready.";
   } catch (err) {
@@ -227,9 +209,7 @@ async function refreshLedgers() {
     const dataset = await getSolidDataset(currentContainerUrl.value, {
       fetch: session.fetch,
     });
-    const urls = getContainedResourceUrlAll(dataset).filter(
-      (url) => !url.endsWith("/")
-    );
+    const urls = getContainedResourceUrlAll(dataset).filter((url) => !url.endsWith("/"));
     ledgerFiles.value = urls.map((url) => ({
       url,
       name: url.split("/").pop() || url,
@@ -269,9 +249,7 @@ async function saveLedger() {
   busy.value = true;
   try {
     status.value = "Saving ledger to pod...";
-    const fileUrl = new URL(filename.value.trim(), currentContainerUrl.value)
-      .toString()
-      .trim();
+    const fileUrl = new URL(filename.value.trim(), currentContainerUrl.value).toString().trim();
     const blob = new Blob([JSON.stringify(ledger.value, null, 2)], {
       type: "application/json",
     });
@@ -284,13 +262,13 @@ async function saveLedger() {
       await setPublicAccess(
         fileUrl,
         { read: true, append: false, write: false, control: false },
-        { fetch: session.fetch }
+        { fetch: session.fetch },
       );
     } else {
       await setPublicAccess(
         fileUrl,
         { read: false, append: false, write: false, control: false },
-        { fetch: session.fetch }
+        { fetch: session.fetch },
       );
     }
 
@@ -301,7 +279,7 @@ async function saveLedger() {
           fileUrl,
           agent,
           { read: true, append: true, write: true, control: false },
-          { fetch: session.fetch }
+          { fetch: session.fetch },
         );
       }
     }
@@ -351,10 +329,10 @@ async function refreshWallet() {
       }),
     ]);
     const privateUrls = getContainedResourceUrlAll(privateDataset).filter(
-      (url) => !url.endsWith("/")
+      (url) => !url.endsWith("/"),
     );
     const publicUrls = getContainedResourceUrlAll(publicDataset).filter(
-      (url) => !url.endsWith("/")
+      (url) => !url.endsWith("/"),
     );
     walletPrivateFiles.value = privateUrls.map((url) => ({
       url,
@@ -389,39 +367,28 @@ async function saveProfileToWallet() {
     const files = profile.getDownloadFiles({ pretty: true });
     const privateUrl = new URL(
       files.private.filename,
-      containerUrls.value.walletPrivate
+      containerUrls.value.walletPrivate,
     ).toString();
-    const publicUrl = new URL(
-      files.public.filename,
-      containerUrls.value.walletPublic
-    ).toString();
+    const publicUrl = new URL(files.public.filename, containerUrls.value.walletPublic).toString();
 
-    await overwriteFile(
-      privateUrl,
-      new Blob([files.private.json], { type: "application/json" }),
-      {
-        contentType: "application/json",
-        fetch: session.fetch,
-      }
-    );
+    await overwriteFile(privateUrl, new Blob([files.private.json], { type: "application/json" }), {
+      contentType: "application/json",
+      fetch: session.fetch,
+    });
     await setPublicAccess(
       privateUrl,
       { read: false, append: false, write: false, control: false },
-      { fetch: session.fetch }
+      { fetch: session.fetch },
     );
 
-    await overwriteFile(
-      publicUrl,
-      new Blob([files.public.json], { type: "application/json" }),
-      {
-        contentType: "application/json",
-        fetch: session.fetch,
-      }
-    );
+    await overwriteFile(publicUrl, new Blob([files.public.json], { type: "application/json" }), {
+      contentType: "application/json",
+      fetch: session.fetch,
+    });
     await setPublicAccess(
       publicUrl,
       { read: true, append: false, write: false, control: false },
-      { fetch: session.fetch }
+      { fetch: session.fetch },
     );
 
     status.value = "Profile saved to wallet.";
@@ -474,7 +441,7 @@ watch(
     const head = ledger.value?.head?.slice(0, 7) || "latest";
     filename.value = `concord-ledger-${head}.json`;
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 watch([selectedPod, privacy], () => {
@@ -639,11 +606,7 @@ onMounted(async () => {
             class="mt-1 w-full border border-[var(--ui-border)] rounded-lg px-3 py-2 text-sm"
           >
             <option value="">Select a ledger</option>
-            <option
-              v-for="entry in ledgerFiles"
-              :key="entry.url"
-              :value="entry.url"
-            >
+            <option v-for="entry in ledgerFiles" :key="entry.url" :value="entry.url">
               {{ entry.name }}
             </option>
           </select>
@@ -688,11 +651,7 @@ onMounted(async () => {
             class="mt-1 w-full border border-[var(--ui-border)] rounded-lg px-3 py-2 text-sm"
           >
             <option value="">Select a private profile</option>
-            <option
-              v-for="entry in walletPrivateFiles"
-              :key="entry.url"
-              :value="entry.url"
-            >
+            <option v-for="entry in walletPrivateFiles" :key="entry.url" :value="entry.url">
               {{ entry.name }}
             </option>
           </select>

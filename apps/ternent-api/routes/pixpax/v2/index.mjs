@@ -10,10 +10,7 @@ import {
   verifyTransferAcceptanceProof,
   verifyTransferProof,
 } from "@ternent/pixpax-issuer";
-import {
-  isPlatformAuthReady,
-  requestHasCapability,
-} from "../../../services/auth/permissions.mjs";
+import { isPlatformAuthReady, requestHasCapability } from "../../../services/auth/permissions.mjs";
 import { createCollectionContentStoreFromEnv } from "../collections/content-store.mjs";
 import { buildQrSvg } from "../domain/code-token-qr.mjs";
 import { createAlreadyClaimedPayload } from "./public-claim.mjs";
@@ -52,9 +49,7 @@ function getAvailableCollections() {
 }
 
 function assertAvailableCollection(collectionId, version = "") {
-  if (
-    !isV2CollectionAvailable(getAvailableCollections(), collectionId, version)
-  ) {
+  if (!isV2CollectionAvailable(getAvailableCollections(), collectionId, version)) {
     throw new Error("Collection is not available on this PixPax app.");
   }
 }
@@ -164,8 +159,7 @@ async function requireAdminAccess(req, res) {
 function resolveIssuerIdentity() {
   const inline = trim(process.env.SEAL_IDENTITY);
   const fromFilePath = trim(process.env.SEAL_IDENTITY_FILE);
-  const raw =
-    inline || (fromFilePath ? readFileSync(fromFilePath, "utf8") : "");
+  const raw = inline || (fromFilePath ? readFileSync(fromFilePath, "utf8") : "");
   if (!trim(raw)) {
     throw new Error(
       "Seal issuer identity is not configured. Set SEAL_IDENTITY or SEAL_IDENTITY_FILE.",
@@ -194,11 +188,7 @@ async function getSwapRecordOrNull(store, transferId) {
   }
 }
 
-async function loadCollectionCards({
-  collectionId,
-  collectionVersion,
-  selectedCardIds = [],
-}) {
+async function loadCollectionCards({ collectionId, collectionVersion, selectedCardIds = [] }) {
   const store = await getStore();
   const resolvedVersion = await resolvePublicCollectionVersion(
     store,
@@ -217,9 +207,7 @@ async function loadCollectionCards({
     ? selectedCardIds.map((cardId) => trim(cardId)).filter(Boolean)
     : availableCardIds;
 
-  const invalid = targetCardIds.filter(
-    (cardId) => !availableCardIds.includes(cardId),
-  );
+  const invalid = targetCardIds.filter((cardId) => !availableCardIds.includes(cardId));
   if (invalid.length > 0) {
     throw new Error(`Unknown cardIds requested: ${invalid.join(", ")}`);
   }
@@ -232,9 +220,7 @@ async function loadCollectionCards({
         seriesId: trim(card?.seriesId) || null,
         role: trim(card?.role) || null,
         renderPayload:
-          card?.renderPayload && typeof card.renderPayload === "object"
-            ? card.renderPayload
-            : null,
+          card?.renderPayload && typeof card.renderPayload === "object" ? card.renderPayload : null,
       };
     }),
   );
@@ -309,10 +295,7 @@ function matchesClaimant(existingUse, claimantPublicKey) {
   }
 
   const recordedHash = trim(existingUse?.claimantHash);
-  return (
-    Boolean(recordedHash) &&
-    recordedHash === hashClaimantPublicKey(normalizedPublicKey)
-  );
+  return Boolean(recordedHash) && recordedHash === hashClaimantPublicKey(normalizedPublicKey);
 }
 
 function compareVersionsDesc(left, right) {
@@ -322,11 +305,7 @@ function compareVersionsDesc(left, right) {
   });
 }
 
-async function resolveCollectionVersion(
-  store,
-  collectionId,
-  requestedVersion = "",
-) {
+async function resolveCollectionVersion(store, collectionId, requestedVersion = "") {
   const normalizedVersion = trim(requestedVersion);
   if (normalizedVersion) {
     return normalizedVersion;
@@ -351,11 +330,7 @@ async function resolveCollectionVersion(
   return resolved;
 }
 
-async function resolvePublicCollectionVersion(
-  store,
-  collectionId,
-  requestedVersion = "",
-) {
+async function resolvePublicCollectionVersion(store, collectionId, requestedVersion = "") {
   const constrainedVersion = resolveAvailableCollectionVersion(
     getAvailableCollections(),
     collectionId,
@@ -386,8 +361,7 @@ async function loadBundle({ collectionId, collectionVersion = "" }) {
   const settingsFormat = normalizeCollectionFormat(settings?.format);
   const collectionFormat = normalizeCollectionFormat(collection?.format);
   const isSupportedFormat =
-    isPixpaxV2CollectionFormat(settingsFormat) ||
-    isPixpaxV2CollectionFormat(collectionFormat);
+    isPixpaxV2CollectionFormat(settingsFormat) || isPixpaxV2CollectionFormat(collectionFormat);
   if (!isSupportedFormat) {
     throw new Error("Collection is not available on this PixPax app.");
   }
@@ -423,8 +397,7 @@ function resolvePlayerBaseUrl(req) {
   const host = trim(req?.headers?.host);
   if (host && /^(localhost|127\.0\.0\.1|\[::1\])(?::\d+)?$/i.test(host)) {
     const protocol =
-      trim(req?.headers?.["x-forwarded-proto"]) ||
-      (host.includes("localhost") ? "http" : "https");
+      trim(req?.headers?.["x-forwarded-proto"]) || (host.includes("localhost") ? "http" : "https");
     return `${protocol}://${host}`;
   }
 
@@ -432,9 +405,7 @@ function resolvePlayerBaseUrl(req) {
 }
 
 function createRedeemUrl(req, codeId) {
-  return `${resolvePlayerBaseUrl(req)}/redeem?code=${encodeURIComponent(
-    codeId,
-  )}`;
+  return `${resolvePlayerBaseUrl(req)}/redeem?code=${encodeURIComponent(codeId)}`;
 }
 
 async function reserveOpaqueCodeId(store, payloadFactory, attempts = 6) {
@@ -459,8 +430,8 @@ function createAdminCodeSummary(record, claim = null) {
     trim(record?.status) === "revoked"
       ? "revoked"
       : claim || trim(record?.status) === "claimed"
-      ? "claimed"
-      : "unused";
+        ? "claimed"
+        : "unused";
   return {
     codeId,
     status: baseStatus,
@@ -472,8 +443,7 @@ function createAdminCodeSummary(record, claim = null) {
     issuedAt: trim(record?.issuedAt) || null,
     redeemUrl: trim(record?.redeemUrl) || null,
     claimedAt: trim(claim?.claimedAt || record?.claimedAt) || null,
-    claimantPublicKey:
-      trim(claim?.claimantPublicKey || record?.claimantPublicKey) || null,
+    claimantPublicKey: trim(claim?.claimantPublicKey || record?.claimantPublicKey) || null,
     revokedAt: trim(record?.revokedAt) || null,
     revokedReason: trim(record?.revokedReason) || null,
     artifact: null,
@@ -501,9 +471,7 @@ async function backfillAdminCodeSummaries(store, limit = 100) {
     const codeId = trim(record?.codeId);
     const claim =
       collectionId && collectionVersion && codeId
-        ? await store
-            .getOverrideCodeUse(collectionId, collectionVersion, codeId)
-            .catch(() => null)
+        ? await store.getOverrideCodeUse(collectionId, collectionVersion, codeId).catch(() => null)
         : null;
     summaries.push(await writeAdminCodeSummary(store, record, claim));
   }
@@ -511,12 +479,8 @@ async function backfillAdminCodeSummaries(store, limit = 100) {
 }
 
 function codeSummaryMatchesFilters(summary, filters) {
-  if (filters.collectionId && summary.collectionId !== filters.collectionId)
-    return false;
-  if (
-    filters.collectionVersion &&
-    summary.collectionVersion !== filters.collectionVersion
-  )
+  if (filters.collectionId && summary.collectionId !== filters.collectionId) return false;
+  if (filters.collectionVersion && summary.collectionVersion !== filters.collectionVersion)
     return false;
   if (filters.dropId && summary.dropId !== filters.dropId) return false;
   if (filters.status && summary.status !== filters.status) return false;
@@ -610,13 +574,8 @@ export default function pixpaxV2Routes(router, options = {}) {
 
       const record = createSwapRecord(input);
       const store = await getStore();
-      const created = await store.putGlobalSwapRecordIfAbsent(
-        record.transferId,
-        record,
-      );
-      const stored = created.created
-        ? record
-        : await store.getGlobalSwapRecord(record.transferId);
+      const created = await store.putGlobalSwapRecordIfAbsent(record.transferId, record);
+      const stored = created.created ? record : await store.getGlobalSwapRecord(record.transferId);
 
       res.status(created.created ? 200 : 200).send({
         ok: true,
@@ -691,172 +650,151 @@ export default function pixpaxV2Routes(router, options = {}) {
     }
   });
 
-  router.post(
-    "/v1/pixpax/v2/swaps/offers/:transferId/accept",
-    async (req, res) => {
-      const transferId = trim(req?.params?.transferId);
-      const input = parseSwapAcceptBody(req.body);
-      if (!transferId || !input.offerArtifact || !input.acceptanceArtifact) {
-        badRequest(
-          res,
-          "transferId, offerArtifact, and acceptanceArtifact are required.",
-        );
+  router.post("/v1/pixpax/v2/swaps/offers/:transferId/accept", async (req, res) => {
+    const transferId = trim(req?.params?.transferId);
+    const input = parseSwapAcceptBody(req.body);
+    if (!transferId || !input.offerArtifact || !input.acceptanceArtifact) {
+      badRequest(res, "transferId, offerArtifact, and acceptanceArtifact are required.");
+      return;
+    }
+
+    try {
+      await assertValidRecordTransferCommandInput({
+        offerArtifact: input.offerArtifact,
+        acceptanceArtifact: input.acceptanceArtifact,
+      });
+      const offerVerification = await verifyTransferProof({
+        artifact: input.offerArtifact,
+      });
+      if (!offerVerification.ok) {
+        res.status(422).send({
+          ok: false,
+          error: "Transfer offer proof is invalid.",
+          verification: offerVerification,
+        });
+        return;
+      }
+      const acceptanceVerification = await verifyTransferAcceptanceProof({
+        artifact: input.acceptanceArtifact,
+      });
+      if (!acceptanceVerification.ok) {
+        res.status(422).send({
+          ok: false,
+          error: "Transfer acceptance proof is invalid.",
+          verification: acceptanceVerification,
+        });
         return;
       }
 
-      try {
-        await assertValidRecordTransferCommandInput({
-          offerArtifact: input.offerArtifact,
-          acceptanceArtifact: input.acceptanceArtifact,
+      const store = await getStore();
+      const existing = await getSwapRecordOrNull(store, transferId);
+      if (trim(existing?.transferId) !== transferId) {
+        res.status(404).send({
+          ok: false,
+          error: "Swap offer not found.",
         });
-        const offerVerification = await verifyTransferProof({
-          artifact: input.offerArtifact,
+        return;
+      }
+      if (
+        trim(existing?.offerArtifact?.proof?.subject?.hash) !==
+        trim(input.offerArtifact?.proof?.subject?.hash)
+      ) {
+        res.status(409).send({
+          ok: false,
+          error: "Swap offer does not match the stored pending offer.",
         });
-        if (!offerVerification.ok) {
-          res.status(422).send({
-            ok: false,
-            error: "Transfer offer proof is invalid.",
-            verification: offerVerification,
-          });
-          return;
-        }
-        const acceptanceVerification = await verifyTransferAcceptanceProof({
-          artifact: input.acceptanceArtifact,
-        });
-        if (!acceptanceVerification.ok) {
-          res.status(422).send({
-            ok: false,
-            error: "Transfer acceptance proof is invalid.",
-            verification: acceptanceVerification,
-          });
-          return;
-        }
-
-        const store = await getStore();
-        const existing = await getSwapRecordOrNull(store, transferId);
-        if (trim(existing?.transferId) !== transferId) {
-          res.status(404).send({
-            ok: false,
-            error: "Swap offer not found.",
-          });
-          return;
-        }
-        if (
-          trim(existing?.offerArtifact?.proof?.subject?.hash) !==
-          trim(input.offerArtifact?.proof?.subject?.hash)
-        ) {
-          res.status(409).send({
-            ok: false,
-            error: "Swap offer does not match the stored pending offer.",
-          });
-          return;
-        }
-        if (
-          trim(existing?.status) === "accepted" ||
-          trim(existing?.status) === "completed"
-        ) {
-          res.status(200).send({
-            ok: true,
-            offer: existing,
-          });
-          return;
-        }
-
-        const next = applyAcceptedSwapRecord(
-          existing,
-          input.acceptanceArtifact,
-        );
-        await store.putGlobalSwapRecord(transferId, next);
+        return;
+      }
+      if (trim(existing?.status) === "accepted" || trim(existing?.status) === "completed") {
         res.status(200).send({
           ok: true,
-          offer: next,
+          offer: existing,
         });
-      } catch (error) {
-        res.status(422).send({
-          ok: false,
-          error: String(error?.message || error),
-        });
-      }
-    },
-  );
-
-  router.post(
-    "/v1/pixpax/v2/swaps/offers/:transferId/complete",
-    async (req, res) => {
-      const transferId = trim(req?.params?.transferId);
-      const input = parseSwapOfferBody(req.body);
-      if (!transferId || !input.offerArtifact) {
-        badRequest(res, "transferId and offerArtifact are required.");
         return;
       }
 
-      try {
-        const verification = await verifyTransferProof({
-          artifact: input.offerArtifact,
-        });
-        if (!verification.ok) {
-          res.status(422).send({
-            ok: false,
-            error: "Transfer offer proof is invalid.",
-            verification,
-          });
-          return;
-        }
+      const next = applyAcceptedSwapRecord(existing, input.acceptanceArtifact);
+      await store.putGlobalSwapRecord(transferId, next);
+      res.status(200).send({
+        ok: true,
+        offer: next,
+      });
+    } catch (error) {
+      res.status(422).send({
+        ok: false,
+        error: String(error?.message || error),
+      });
+    }
+  });
 
-        const store = await getStore();
-        const existing = await getSwapRecordOrNull(store, transferId);
-        if (trim(existing?.transferId) !== transferId) {
-          res.status(404).send({
-            ok: false,
-            error: "Swap offer not found.",
-          });
-          return;
-        }
-        if (
-          trim(existing?.status) !== "accepted" &&
-          trim(existing?.status) !== "completed"
-        ) {
-          res.status(409).send({
-            ok: false,
-            error: "Swap is not ready to complete.",
-          });
-          return;
-        }
-        if (
-          trim(existing?.offerArtifact?.proof?.subject?.hash) !==
-          trim(input.offerArtifact?.proof?.subject?.hash)
-        ) {
-          res.status(409).send({
-            ok: false,
-            error: "Swap offer does not match the stored pending offer.",
-          });
-          return;
-        }
-        if (trim(existing?.senderCompletedAt)) {
-          res.status(200).send({
-            ok: true,
-            offer: existing,
-          });
-          return;
-        }
+  router.post("/v1/pixpax/v2/swaps/offers/:transferId/complete", async (req, res) => {
+    const transferId = trim(req?.params?.transferId);
+    const input = parseSwapOfferBody(req.body);
+    if (!transferId || !input.offerArtifact) {
+      badRequest(res, "transferId and offerArtifact are required.");
+      return;
+    }
 
-        const next = applyCompletedSwapRecord(
-          existing,
-          new Date().toISOString(),
-        );
-        await store.putGlobalSwapRecord(transferId, next);
-        res.status(200).send({
-          ok: true,
-          offer: next,
-        });
-      } catch (error) {
+    try {
+      const verification = await verifyTransferProof({
+        artifact: input.offerArtifact,
+      });
+      if (!verification.ok) {
         res.status(422).send({
           ok: false,
-          error: String(error?.message || error),
+          error: "Transfer offer proof is invalid.",
+          verification,
         });
+        return;
       }
-    },
-  );
+
+      const store = await getStore();
+      const existing = await getSwapRecordOrNull(store, transferId);
+      if (trim(existing?.transferId) !== transferId) {
+        res.status(404).send({
+          ok: false,
+          error: "Swap offer not found.",
+        });
+        return;
+      }
+      if (trim(existing?.status) !== "accepted" && trim(existing?.status) !== "completed") {
+        res.status(409).send({
+          ok: false,
+          error: "Swap is not ready to complete.",
+        });
+        return;
+      }
+      if (
+        trim(existing?.offerArtifact?.proof?.subject?.hash) !==
+        trim(input.offerArtifact?.proof?.subject?.hash)
+      ) {
+        res.status(409).send({
+          ok: false,
+          error: "Swap offer does not match the stored pending offer.",
+        });
+        return;
+      }
+      if (trim(existing?.senderCompletedAt)) {
+        res.status(200).send({
+          ok: true,
+          offer: existing,
+        });
+        return;
+      }
+
+      const next = applyCompletedSwapRecord(existing, new Date().toISOString());
+      await store.putGlobalSwapRecord(transferId, next);
+      res.status(200).send({
+        ok: true,
+        offer: next,
+      });
+    } catch (error) {
+      res.status(422).send({
+        ok: false,
+        error: String(error?.message || error),
+      });
+    }
+  });
 
   router.post("/v1/pixpax/v2/deterministic/preview", async (req, res) => {
     if (!(await requireAdminAccess(req, res))) return;
@@ -1054,9 +992,7 @@ export default function pixpaxV2Routes(router, options = {}) {
       let listed = await store.listGlobalCodeSummaries({
         limit: Math.max(filters.limit * 3, filters.limit),
       });
-      let sourceSummaries = Array.isArray(listed.summaries)
-        ? listed.summaries
-        : [];
+      let sourceSummaries = Array.isArray(listed.summaries) ? listed.summaries : [];
       if (!sourceSummaries.length) {
         sourceSummaries = await backfillAdminCodeSummaries(
           store,
@@ -1077,79 +1013,62 @@ export default function pixpaxV2Routes(router, options = {}) {
       });
     } catch (error) {
       const message = String(error?.message || error);
-      res
-        .status(
-          message.includes("not available on this PixPax app") ? 404 : 500,
-        )
-        .send({
-          ok: false,
-          error: message,
-        });
+      res.status(message.includes("not available on this PixPax app") ? 404 : 500).send({
+        ok: false,
+        error: message,
+      });
     }
   });
 
-  router.post(
-    "/v1/pixpax/v2/designated/codes/:codeId/revoke",
-    async (req, res) => {
-      if (!(await requireAdminAccess(req, res))) return;
-      const codeId = trim(req?.params?.codeId);
-      if (!codeId) {
-        badRequest(res, "codeId is required.");
+  router.post("/v1/pixpax/v2/designated/codes/:codeId/revoke", async (req, res) => {
+    if (!(await requireAdminAccess(req, res))) return;
+    const codeId = trim(req?.params?.codeId);
+    if (!codeId) {
+      badRequest(res, "codeId is required.");
+      return;
+    }
+
+    try {
+      const store = await getStore();
+      const record = await store.getGlobalCodeRecord(codeId).catch(() => null);
+      if (!record || trim(record?.kind) !== "v2-designated") {
+        res.status(404).send({
+          ok: false,
+          error: "Designated code not found.",
+        });
         return;
       }
 
-      try {
-        const store = await getStore();
-        const record = await store
-          .getGlobalCodeRecord(codeId)
-          .catch(() => null);
-        if (!record || trim(record?.kind) !== "v2-designated") {
-          res.status(404).send({
-            ok: false,
-            error: "Designated code not found.",
-          });
-          return;
-        }
+      const alreadyRevoked = trim(record?.status) === "revoked";
+      const revokedAt = trim(record?.revokedAt) || new Date().toISOString();
+      const revokedReason = trim(req.body?.reason);
+      const existingClaim =
+        trim(record?.collectionId) && trim(record?.version)
+          ? await store
+              .getOverrideCodeUse(trim(record?.collectionId), trim(record?.version), codeId)
+              .catch(() => null)
+          : null;
+      const nextRecord = {
+        ...record,
+        status: "revoked",
+        revokedAt,
+        ...(revokedReason ? { revokedReason } : {}),
+      };
+      await store.putGlobalCodeRecord(codeId, nextRecord);
+      const summary = await writeAdminCodeSummary(store, nextRecord, existingClaim);
 
-        const alreadyRevoked = trim(record?.status) === "revoked";
-        const revokedAt = trim(record?.revokedAt) || new Date().toISOString();
-        const revokedReason = trim(req.body?.reason);
-        const existingClaim =
-          trim(record?.collectionId) && trim(record?.version)
-            ? await store
-                .getOverrideCodeUse(
-                  trim(record?.collectionId),
-                  trim(record?.version),
-                  codeId,
-                )
-                .catch(() => null)
-            : null;
-        const nextRecord = {
-          ...record,
-          status: "revoked",
-          revokedAt,
-          ...(revokedReason ? { revokedReason } : {}),
-        };
-        await store.putGlobalCodeRecord(codeId, nextRecord);
-        const summary = await writeAdminCodeSummary(
-          store,
-          nextRecord,
-          existingClaim,
-        );
-
-        res.status(200).send({
-          ok: true,
-          alreadyRevoked,
-          code: summary,
-        });
-      } catch (error) {
-        res.status(500).send({
-          ok: false,
-          error: String(error?.message || error),
-        });
-      }
-    },
-  );
+      res.status(200).send({
+        ok: true,
+        alreadyRevoked,
+        code: summary,
+      });
+    } catch (error) {
+      res.status(500).send({
+        ok: false,
+        error: String(error?.message || error),
+      });
+    }
+  });
 
   router.get("/v1/pixpax/v2/collections/catalog", async (_req, res) => {
     try {
@@ -1192,39 +1111,36 @@ export default function pixpaxV2Routes(router, options = {}) {
     }
   });
 
-  router.get(
-    "/v1/pixpax/v2/collections/:collectionId/bundle",
-    async (req, res) => {
-      const collectionId = trim(req?.params?.collectionId);
-      const version = trim(req?.query?.version);
-      if (!collectionId) {
-        badRequest(res, "collectionId is required.");
-        return;
-      }
+  router.get("/v1/pixpax/v2/collections/:collectionId/bundle", async (req, res) => {
+    const collectionId = trim(req?.params?.collectionId);
+    const version = trim(req?.query?.version);
+    if (!collectionId) {
+      badRequest(res, "collectionId is required.");
+      return;
+    }
 
-      try {
-        const bundle = await loadBundle({
-          collectionId,
-          collectionVersion: version,
-        });
+    try {
+      const bundle = await loadBundle({
+        collectionId,
+        collectionVersion: version,
+      });
 
-        res.status(200).send({
-          ok: true,
-          collectionId: bundle.collectionId,
-          resolvedVersion: bundle.resolvedVersion,
-          collection: bundle.collection,
-          index: bundle.index,
-          settings: bundle.settings,
-          cards: bundle.cards,
-        });
-      } catch (error) {
-        res.status(404).send({
-          ok: false,
-          error: String(error?.message || error),
-        });
-      }
-    },
-  );
+      res.status(200).send({
+        ok: true,
+        collectionId: bundle.collectionId,
+        resolvedVersion: bundle.resolvedVersion,
+        collection: bundle.collection,
+        index: bundle.index,
+        settings: bundle.settings,
+        cards: bundle.cards,
+      });
+    } catch (error) {
+      res.status(404).send({
+        ok: false,
+        error: String(error?.message || error),
+      });
+    }
+  });
 
   router.post("/v1/pixpax/v2/designated/redeem", async (req, res) => {
     const input = parseDesignatedRedeemBody(req.body);
@@ -1268,14 +1184,10 @@ export default function pixpaxV2Routes(router, options = {}) {
             : {
                 ...codeRecord,
                 status: "claimed",
-                claimedAt:
-                  trim(existingUse?.claimedAt) || new Date().toISOString(),
-                claimantPublicKey:
-                  trim(existingUse?.claimantPublicKey) ||
-                  input.claimantPublicKey,
+                claimedAt: trim(existingUse?.claimedAt) || new Date().toISOString(),
+                claimantPublicKey: trim(existingUse?.claimantPublicKey) || input.claimantPublicKey,
                 claimantHash:
-                  trim(existingUse?.claimantHash) ||
-                  hashClaimantPublicKey(input.claimantPublicKey),
+                  trim(existingUse?.claimantHash) || hashClaimantPublicKey(input.claimantPublicKey),
               };
         if (recoveredRecord !== codeRecord) {
           await store.putGlobalCodeRecord(input.code, recoveredRecord);
@@ -1312,8 +1224,7 @@ export default function pixpaxV2Routes(router, options = {}) {
             sourceCodeId: trim(codeRecord?.sourceCodeId) || null,
             policyConfirmed: true,
             source: "server-designated-claim",
-            claimantPublicKey:
-              trim(existingUse?.claimantPublicKey) || input.claimantPublicKey,
+            claimantPublicKey: trim(existingUse?.claimantPublicKey) || input.claimantPublicKey,
           },
           verification,
         });
@@ -1367,11 +1278,9 @@ export default function pixpaxV2Routes(router, options = {}) {
             ...codeRecord,
             status: "claimed",
             claimedAt: trim(currentUse?.claimedAt) || claimedAt,
-            claimantPublicKey:
-              trim(currentUse?.claimantPublicKey) || input.claimantPublicKey,
+            claimantPublicKey: trim(currentUse?.claimantPublicKey) || input.claimantPublicKey,
             claimantHash:
-              trim(currentUse?.claimantHash) ||
-              hashClaimantPublicKey(input.claimantPublicKey),
+              trim(currentUse?.claimantHash) || hashClaimantPublicKey(input.claimantPublicKey),
           },
           currentUse,
         );
@@ -1386,8 +1295,7 @@ export default function pixpaxV2Routes(router, options = {}) {
             sourceCodeId: trim(codeRecord?.sourceCodeId) || null,
             policyConfirmed: true,
             source: "server-designated-claim",
-            claimantPublicKey:
-              trim(currentUse?.claimantPublicKey) || input.claimantPublicKey,
+            claimantPublicKey: trim(currentUse?.claimantPublicKey) || input.claimantPublicKey,
           },
           verification,
         });
@@ -1427,9 +1335,7 @@ export default function pixpaxV2Routes(router, options = {}) {
 
   router.post("/v1/pixpax/v2/proofs/verify", async (req, res) => {
     const artifact =
-      req.body && typeof req.body === "object" && !Array.isArray(req.body)
-        ? req.body
-        : null;
+      req.body && typeof req.body === "object" && !Array.isArray(req.body) ? req.body : null;
     if (!artifact) {
       badRequest(res, "artifact body is required.");
       return;

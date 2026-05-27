@@ -1,7 +1,9 @@
-# PixPax Drops — AI Execution Pack (ECDSA-only)  
+# PixPax Drops — AI Execution Pack (ECDSA-only)
+
 Date: 2026-02-21
 
 Drop this folder into the repo (recommended path: `docs/pixpax-drops/`) and point your AI agent at:
+
 - `AI.md`
 - `PLAN.md`
 - `SPEC.md`
@@ -14,6 +16,7 @@ This pack is **strict** about constraints: no HMAC legacy, no artificial rarity 
 ## What we are building
 
 ### V2 Signed Codes (ECDSA-only)
+
 We will implement a single, modern code format:
 
 - **Code token**: `base64url(payloadBytes) + "." + base64url(signatureBytes)`
@@ -23,13 +26,17 @@ We will implement a single, modern code format:
 Client can verify **offline authenticity** by fetching issuer public keys once and caching.
 
 ### Fixed-card drops (Dragon Code Book)
+
 A code can commit to a **specific card template** (`cardId`) and will mint exactly that card.
+
 - 1 code = 1 issuance
 - Wave is metadata only (no visual hierarchy by default)
 
 ### Multi-identity accounts (parent manages kids)
+
 Redemption must work without login.
 Account features are for:
+
 - backup/restore
 - switching identities
 - managing multiple identities
@@ -37,7 +44,9 @@ Account features are for:
 ---
 
 ## Repo touchpoints (expected)
+
 Backend:
+
 - `ternent-api/routes/pixpax/collections/index.mjs` (pack issuance + override code endpoints)
 - `ternent-api/routes/pixpax/domain/issuance-policy.mjs` (policy selection)
 - `ternent-api/routes/pixpax/collections/content-store.mjs` (persistence: override codes + uses + claims)
@@ -47,10 +56,12 @@ Backend:
   - `ternent-api/persisted/pixpax/issuers.json` (issuer registry)
 
 Frontend:
+
 - `concord/src/module/pixpax/` (scan/redeem UI + identity)
 - Add scan route/page if not already present.
 
 ---
 
 ## Non‑negotiables (lines)
+
 See `AI.md`.

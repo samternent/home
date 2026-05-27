@@ -3,17 +3,16 @@ import { computed, onBeforeUnmount, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { Badge, Button, Card, Spinner } from "ternent-ui/primitives";
 import ConcordTodoWorkspace from "@/modules/concord-os/components/ConcordTodoWorkspace.vue";
-import {
-  useConcordOsAppHost,
-  useConcordTodoWorkingCopy,
-} from "@/modules/concord-os";
+import { useConcordOsAppHost, useConcordTodoWorkingCopy } from "@/modules/concord-os";
 
 const route = useRoute();
 const router = useRouter();
 const host = useConcordOsAppHost();
 const todoDraft = useConcordTodoWorkingCopy();
 
-const scope = computed(() => String(route.params.scope || "private") as "private" | "shared" | "public");
+const scope = computed(
+  () => String(route.params.scope || "private") as "private" | "shared" | "public",
+);
 const appId = computed(() => String(route.params.appId || ""));
 const encodedPath = computed(() => String(route.params.encodedPath || ""));
 
@@ -97,9 +96,7 @@ const hostStatus = computed(() => {
           <p class="m-0 text-[11px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
             Hosted app
           </p>
-          <p class="m-0 text-sm text-[var(--ui-fg)]">
-            Loading ledger workspace...
-          </p>
+          <p class="m-0 text-sm text-[var(--ui-fg)]">Loading ledger workspace...</p>
         </div>
       </div>
     </template>
@@ -111,9 +108,7 @@ const hostStatus = computed(() => {
             <p class="m-0 text-[11px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
               Hosted app
             </p>
-            <p class="m-0 text-sm text-[var(--ui-fg)]">
-              This ledger could not be opened.
-            </p>
+            <p class="m-0 text-sm text-[var(--ui-fg)]">This ledger could not be opened.</p>
             <p class="m-0 text-[11px] text-[var(--ui-fg-muted)]">
               {{ host.error.value }}
             </p>

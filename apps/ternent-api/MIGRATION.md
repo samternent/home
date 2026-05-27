@@ -1,6 +1,7 @@
 # Accounts V2 Migration Runbook
 
 ## Scope
+
 This migration introduces a new account-scoped schema while keeping legacy `platform_*` tables in place until final cleanup.
 
 Stages implemented:

@@ -24,7 +24,7 @@ export function importPublicKey(points: IPoints): Promise<CryptoKey> {
       namedCurve: "P-256",
     },
     true,
-    ["verify"]
+    ["verify"],
   );
 }
 
@@ -46,6 +46,6 @@ export async function importPublicKeyFromPem(key: string): Promise<CryptoKey> {
     base64ToArrayBuffer(removeLines(b64key)),
     { name: "ECDSA", namedCurve: "P-256" },
     true,
-    ["verify"]
+    ["verify"],
   );
 }

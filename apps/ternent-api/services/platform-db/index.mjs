@@ -15,11 +15,11 @@ function parsePoolConfig() {
   const max = Number.parseInt(String(process.env.DATABASE_POOL_MAX || "10"), 10);
   const idleTimeoutMillis = Number.parseInt(
     String(process.env.DATABASE_IDLE_TIMEOUT_MS || "30000"),
-    10
+    10,
   );
   const connectionTimeoutMillis = Number.parseInt(
     String(process.env.DATABASE_CONNECT_TIMEOUT_MS || "5000"),
-    10
+    10,
   );
 
   return {
@@ -47,7 +47,7 @@ export async function getPlatformDbPool() {
       pg = await import("pg");
     } catch (error) {
       poolInitError = new Error(
-        "pg dependency is missing. Install dependencies for ternent-api before enabling platform auth."
+        "pg dependency is missing. Install dependencies for ternent-api before enabling platform auth.",
       );
       poolInitError.cause = error;
       return null;
@@ -60,9 +60,12 @@ export async function getPlatformDbPool() {
       idleTimeoutMillis: config.idleTimeoutMillis,
       connectionTimeoutMillis: config.connectionTimeoutMillis,
       application_name: "ternent-api",
-      ssl: String(process.env.DATABASE_SSL || "").trim().toLowerCase() === "true"
-        ? { rejectUnauthorized: false }
-        : undefined,
+      ssl:
+        String(process.env.DATABASE_SSL || "")
+          .trim()
+          .toLowerCase() === "true"
+          ? { rejectUnauthorized: false }
+          : undefined,
     });
 
     pool.on("error", (error) => {

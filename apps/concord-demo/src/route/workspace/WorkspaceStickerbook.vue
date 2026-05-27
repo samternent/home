@@ -5,20 +5,11 @@ import { Button } from "ternent-ui/primitives";
 import { SSegmentedControl } from "ternent-ui/components";
 import { stripIdentityKey } from "ternent-utils";
 import Sticker from "../../module/stickerbook/Sticker.vue";
-import {
-  useStickerbook,
-  getPeriodId,
-} from "../../module/stickerbook/useStickerbook";
+import { useStickerbook, getPeriodId } from "../../module/stickerbook/useStickerbook";
 import { verifyPackIssue } from "../../module/stickerbook/stickerbook";
 import { hashCanonical } from "../../module/stickerbook/crypto";
-import {
-  generateProof,
-  deriveStickerId,
-} from "../../module/stickerbook/merkle";
-import {
-  deriveKitFromCatalogue,
-  generatePack,
-} from "../../module/stickerbook/generator";
+import { generateProof, deriveStickerId } from "../../module/stickerbook/merkle";
+import { deriveKitFromCatalogue, generatePack } from "../../module/stickerbook/generator";
 import { resolveOwnership } from "../../module/stickerbook/ownership";
 
 const apiBase = import.meta.env.DEV
@@ -31,8 +22,7 @@ function buildApiUrl(path: string) {
 }
 const issuerPublicKeyPem = import.meta.env.VITE_ISSUER_PUBLIC_KEY_PEM || "";
 
-const { profileId, publicKey, receivedPacks, transfers, recordPackAndCommit } =
-  useStickerbook();
+const { profileId, publicKey, receivedPacks, transfers, recordPackAndCommit } = useStickerbook();
 
 const activeTab = ref<"book" | "swaps">("book");
 const catalogue = ref<any | null>(null);
@@ -44,9 +34,7 @@ const packCards = ref<any[]>([]);
 const packMeta = ref<any | null>(null);
 const packRevealIndex = ref(0);
 const selectedSeriesId = ref("");
-const seriesOptions = ref<
-  { id: string; label: string; styleType: string; enabled: boolean }[]
->([]);
+const seriesOptions = ref<{ id: string; label: string; styleType: string; enabled: boolean }[]>([]);
 const now = ref(Date.now());
 let nowTimer: number | null = null;
 const periodOffset = ref(0);
@@ -56,19 +44,12 @@ const nextDropAt = ref<string | null>(null);
 const apiPeriodSeconds = ref<number | null>(null);
 
 const devPeriodSeconds = computed(() => {
-  const seconds = parseInt(
-    import.meta.env.VITE_STICKERBOOK_PERIOD_SECONDS || "",
-    10,
-  );
+  const seconds = parseInt(import.meta.env.VITE_STICKERBOOK_PERIOD_SECONDS || "", 10);
   return Number.isFinite(seconds) && seconds > 0 ? seconds : null;
 });
 
-const devMode = computed(
-  () => import.meta.env.VITE_STICKERBOOK_DEV_MODE === "true",
-);
-const devPeriodMs = computed(() =>
-  devPeriodSeconds.value ? devPeriodSeconds.value * 1000 : null,
-);
+const devMode = computed(() => import.meta.env.VITE_STICKERBOOK_DEV_MODE === "true");
+const devPeriodMs = computed(() => (devPeriodSeconds.value ? devPeriodSeconds.value * 1000 : null));
 const nextDropAtMs = computed(() => {
   if (!nextDropAt.value) return null;
   const parsed = Date.parse(nextDropAt.value);
@@ -110,15 +91,10 @@ const seriesTitle = computed(() => {
 });
 
 const seriesSubtitle = computed(() => {
-  const catalogueSubtitle =
-    catalogue.value?.subtitle || catalogue.value?.tagline || "";
+  const catalogueSubtitle = catalogue.value?.subtitle || catalogue.value?.tagline || "";
   if (catalogueSubtitle) return catalogueSubtitle;
-  const themeLabel = catalogueThemeId.value
-    ? toTitle(catalogueThemeId.value)
-    : "";
-  const styleLabel = catalogueStyleType.value
-    ? toTitle(catalogueStyleType.value)
-    : "";
+  const themeLabel = catalogueThemeId.value ? toTitle(catalogueThemeId.value) : "";
+  const styleLabel = catalogueStyleType.value ? toTitle(catalogueStyleType.value) : "";
   if (!themeLabel && !styleLabel) return "";
   if (themeLabel && styleLabel) return `${themeLabel} • ${styleLabel}`;
   return themeLabel || styleLabel;
@@ -131,8 +107,7 @@ const progressPercent = computed(() => {
 });
 
 const isSeriesComplete = computed(
-  () =>
-    totalCreatures.value > 0 && collectedCount.value >= totalCreatures.value,
+  () => totalCreatures.value > 0 && collectedCount.value >= totalCreatures.value,
 );
 
 const seriesAccentStyle = computed(() => {
@@ -186,8 +161,7 @@ const currentUserKey = computed(() => {
   return profile ? `profile:${profile}` : "";
 });
 const openedForPeriod = computed(() => {
-  if (!selectedSeriesId.value || !periodId.value || !currentUserKey.value)
-    return null;
+  if (!selectedSeriesId.value || !periodId.value || !currentUserKey.value) return null;
   return (
     receivedPacks.value.find((entry) => {
       const payload = entry.data?.issuerIssuePayload || {};
@@ -256,9 +230,7 @@ const packRevealCards = computed(() => cardsToReveal.value);
 const ownedCountByCatalogueId = computed(() => {
   const map = new Map<string, number>();
   const ownedStatuses = new Set(["owned", "received"]);
-  const activePackId = isPackRevealOpen.value
-    ? packMeta.value?.packId || null
-    : null;
+  const activePackId = isPackRevealOpen.value ? packMeta.value?.packId || null : null;
   for (const record of stickerRecords.value) {
     if (activePackId && record.packId === activePackId) continue;
     const ownership = ownershipByStickerId.value.get(record.stickerId);
@@ -317,22 +289,15 @@ const revealDuplicateGroups = computed(() => {
   }
   return Array.from(byKey.values());
 });
-const activePackCard = computed(
-  () => revealNeeds.value[packRevealIndex.value] || null,
-);
-const remainingPackCards = computed(() =>
-  revealNeeds.value.slice(packRevealIndex.value),
-);
+const activePackCard = computed(() => revealNeeds.value[packRevealIndex.value] || null);
+const remainingPackCards = computed(() => revealNeeds.value.slice(packRevealIndex.value));
 const revealDismissed = ref(false);
-const revealComplete = computed(
-  () => packRevealIndex.value >= revealNeeds.value.length,
-);
+const revealComplete = computed(() => packRevealIndex.value >= revealNeeds.value.length);
 const isPackRevealOpen = computed(
   () =>
     packPhase.value === "done" &&
     !revealDismissed.value &&
-    (packRevealIndex.value < revealNeeds.value.length ||
-      revealDuplicates.value.length > 0),
+    (packRevealIndex.value < revealNeeds.value.length || revealDuplicates.value.length > 0),
 );
 
 function getRevealTag() {
@@ -450,9 +415,7 @@ function buildAttributeKey(entry: any) {
     attrs?.fxId ?? null,
     entry?.paletteId ?? attrs?.paletteId ?? null,
   ]
-    .map((value) =>
-      value === null || value === undefined ? "null" : String(value),
-    )
+    .map((value) => (value === null || value === undefined ? "null" : String(value)))
     .join("|");
 }
 
@@ -493,27 +456,23 @@ watch(
 
     for (const pack of receivedPacks.value) {
       const issuePayload = pack.data?.issuerIssuePayload;
-      if (!issuePayload || issuePayload.seriesId !== selectedSeriesId.value)
-        continue;
+      if (!issuePayload || issuePayload.seriesId !== selectedSeriesId.value) continue;
       const entries = Array.isArray(pack.data?.renderPayload?.kitParts)
         ? pack.data.renderPayload.kitParts
         : issuePayload.packSeed
-        ? generatePack({
-            packSeed: issuePayload.packSeed,
-            seriesId: issuePayload.seriesId,
-            themeId: issuePayload.themeId,
-            count: issuePayload.count,
-            algoVersion: issuePayload.algoVersion,
-            kitJson,
-          })
-        : [];
+          ? generatePack({
+              packSeed: issuePayload.packSeed,
+              seriesId: issuePayload.seriesId,
+              themeId: issuePayload.themeId,
+              count: issuePayload.count,
+              algoVersion: issuePayload.algoVersion,
+              kitJson,
+            })
+          : [];
 
       const resolved = await Promise.all(
         entries.map(async (entry: any) => {
-          const stickerId = await deriveStickerId(
-            issuePayload.packRoot,
-            entry.index,
-          );
+          const stickerId = await deriveStickerId(issuePayload.packRoot, entry.index);
           const key = buildAttributeKey({
             ...entry,
             paletteId: entry.paletteId,
@@ -522,8 +481,7 @@ watch(
           const rarity = catalogueEntry?.rarity ?? entry.rarity;
           return {
             stickerId,
-            packId:
-              issuePayload.packId || pack.data?.packId || issuePayload.packRoot,
+            packId: issuePayload.packId || pack.data?.packId || issuePayload.packRoot,
             index: entry.index,
             rarity,
             entry,
@@ -536,10 +494,7 @@ watch(
 
       for (const record of resolved) {
         nextRecords.push(record);
-        defaultOwners.set(
-          record.stickerId,
-          normalizeKey(pack.author) || publicKey.value,
-        );
+        defaultOwners.set(record.stickerId, normalizeKey(pack.author) || publicKey.value);
       }
     }
 
@@ -592,10 +547,7 @@ async function loadCatalogue() {
   isLoading.value = true;
   loadError.value = "";
   try {
-    const url = new URL(
-      buildApiUrl("/v1/stickerbook/catalogue"),
-      window.location.origin,
-    );
+    const url = new URL(buildApiUrl("/v1/stickerbook/catalogue"), window.location.origin);
     url.searchParams.set("seriesId", selectedSeriesId.value);
     const response = await fetch(url.toString());
     if (!response.ok) {
@@ -611,18 +563,13 @@ async function loadCatalogue() {
 
 async function loadIndex() {
   try {
-    const url = new URL(
-      buildApiUrl("/v1/stickerbook/index"),
-      window.location.origin,
-    );
+    const url = new URL(buildApiUrl("/v1/stickerbook/index"), window.location.origin);
     const response = await fetch(url.toString());
     if (!response.ok) return;
     const index = await response.json();
     if (Array.isArray(index?.series) && index.series.length) {
       seriesOptions.value = index.series;
-      const enabled = index.series.filter(
-        (entry: any) => entry.enabled !== false,
-      );
+      const enabled = index.series.filter((entry: any) => entry.enabled !== false);
       if (!enabled.find((entry: any) => entry.id === selectedSeriesId.value)) {
         selectedSeriesId.value = enabled[0]?.id || "";
       }
@@ -634,9 +581,7 @@ async function loadIndex() {
     }
     const periodSeconds = Number(index?.periodSeconds);
     apiPeriodSeconds.value =
-      Number.isFinite(periodSeconds) && periodSeconds > 0
-        ? periodSeconds
-        : null;
+      Number.isFinite(periodSeconds) && periodSeconds > 0 ? periodSeconds : null;
   } catch {
     // Ignore index load failures and keep local defaults.
   }
@@ -682,9 +627,7 @@ async function openWeeklyPack(options: { force?: boolean } = {}) {
     if (!commitResponse.ok) {
       const errorBody = await commitResponse.text();
       throw new Error(
-        `Failed to commit pack (${commitResponse.status}): ${
-          errorBody || "unknown error"
-        }`,
+        `Failed to commit pack (${commitResponse.status}): ${errorBody || "unknown error"}`,
       );
     }
     const commitData = await commitResponse.json();
@@ -726,10 +669,7 @@ async function openWeeklyPack(options: { force?: boolean } = {}) {
 
     const packEntries = await Promise.all(
       entries.map(async (entry: any) => {
-        const stickerId = await deriveStickerId(
-          issuePayload.packRoot,
-          entry.index,
-        );
+        const stickerId = await deriveStickerId(issuePayload.packRoot, entry.index);
         const proof = await generateProof(entries, entry.index);
         const key = buildAttributeKey({
           ...entry,
@@ -789,9 +729,7 @@ async function openWeeklyPack(options: { force?: boolean } = {}) {
     if (!openedPackIds.value.has(packId)) {
       const renderKitParts = issueData.pack?.entries || [];
       const renderGridB64 =
-        typeof window !== "undefined"
-          ? window.btoa(JSON.stringify(renderKitParts))
-          : "";
+        typeof window !== "undefined" ? window.btoa(JSON.stringify(renderKitParts)) : "";
       const packPayload = {
         type: "pack.received",
         packId,
@@ -819,10 +757,7 @@ async function openWeeklyPack(options: { force?: boolean } = {}) {
 function collectNextPackCard() {
   if (!activePackCard.value) return;
   packRevealIndex.value += 1;
-  if (
-    packRevealIndex.value >= revealNeeds.value.length &&
-    revealDuplicates.value.length === 0
-  ) {
+  if (packRevealIndex.value >= revealNeeds.value.length && revealDuplicates.value.length === 0) {
     revealDismissed.value = true;
   }
 }
@@ -887,14 +822,10 @@ watch(periodId, () => {
     <div class="flex flex-1 flex-col gap-2">
       <section class="mx-auto flex w-full mx-auto max-w-4xl flex-col gap-8">
         <div class="flex flex-col gap-2">
-          <div
-            class="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-center p-4"
-          >
+          <div class="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-center p-4">
             <div class="relative flex flex-col gap-7 w-full max-w-2xl">
               <div class="flex items-center justify-between gap-4">
-                <span
-                  class="text-[10px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]"
-                >
+                <span class="text-[10px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]">
                   Series
                 </span>
                 <div
@@ -908,11 +839,7 @@ watch(periodId, () => {
                       class="rounded-full border border-[var(--ui-border)] bg-[var(--ui-bg)] px-3 py-1 text-xs text-[var(--ui-fg)]"
                       aria-label="Choose series page"
                     >
-                      <option
-                        v-for="item in seriesItems"
-                        :key="item.value"
-                        :value="item.value"
-                      >
+                      <option v-for="item in seriesItems" :key="item.value" :value="item.value">
                         {{ item.label }}
                       </option>
                     </select>
@@ -939,12 +866,8 @@ watch(periodId, () => {
                       :style="{ width: `${progressPercent}%` }"
                     ></div>
                   </div>
-                  <div
-                    class="flex items-center gap-2 text-xs text-[var(--ui-fg-muted)]"
-                  >
-                    <span>
-                      {{ collectedCount }} / {{ totalCreatures }} collected
-                    </span>
+                  <div class="flex items-center gap-2 text-xs text-[var(--ui-fg-muted)]">
+                    <span> {{ collectedCount }} / {{ totalCreatures }} collected </span>
                     <span
                       v-if="isSeriesComplete"
                       class="rounded-full border border-[var(--ui-border)] px-2 py-0.5 text-[10px] uppercase tracking-[0.2em] text-[var(--ui-fg-muted)]"
@@ -964,9 +887,7 @@ watch(periodId, () => {
           </div>
 
           <div class="flex w-full flex-col items-center gap-2 pt-3">
-            <span
-              class="text-[10px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]"
-            >
+            <span class="text-[10px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
               Pack drop
             </span>
             <Button
@@ -983,10 +904,7 @@ watch(periodId, () => {
               Next pack drop in {{ nextDropLabel }}
             </span>
           </div>
-          <p
-            v-if="packError && !pixbookReadOnly"
-            class="text-sm font-semibold text-red-600"
-          >
+          <p v-if="packError && !pixbookReadOnly" class="text-sm font-semibold text-red-600">
             {{ packError }}
           </p>
         </div>
@@ -1001,10 +919,7 @@ watch(periodId, () => {
       </section>
 
       <section v-if="activeTab === 'book'" class="mx-auto w-full max-w-4xl">
-        <div
-          v-if="isLoading"
-          class="text-sm font-semibold text-[var(--ui-fg-muted)]"
-        >
+        <div v-if="isLoading" class="text-sm font-semibold text-[var(--ui-fg-muted)]">
           Loading catalogue...
         </div>
         <div v-else-if="loadError" class="text-sm font-semibold text-red-600">
@@ -1025,9 +940,7 @@ watch(periodId, () => {
               </span>
             </header>
 
-            <div
-              class="flex gap-6 flex-wrap w-full items-center justify-center"
-            >
+            <div class="flex gap-6 flex-wrap w-full items-center justify-center">
               <Sticker
                 v-if="catalogueStyleType === 'pixel'"
                 v-for="creature in entriesByRarity.get(rarity) || []"
@@ -1047,11 +960,7 @@ watch(periodId, () => {
                 class="max-w-64"
               />
               <Sticker
-                v-else-if="
-                  ['8bit-sprites', 'animal-archetype-8bit'].includes(
-                    catalogueThemeId,
-                  )
-                "
+                v-else-if="['8bit-sprites', 'animal-archetype-8bit'].includes(catalogueThemeId)"
                 v-for="sticker in entriesByRarity.get(rarity) || []"
                 :key="sticker.id"
                 :art="{
@@ -1090,24 +999,14 @@ watch(periodId, () => {
               class="flex items-center gap-3 text-xs uppercase tracking-[0.16em] bg-[var(--ui-surface)] rounded-full px-3 py-1 text-[var(--ui-fg-muted)]"
             >
               <span v-if="revealNeeds.length">
-                {{ Math.min(packRevealIndex + 1, revealNeeds.length) }}/{{
-                  revealNeeds.length
-                }}
+                {{ Math.min(packRevealIndex + 1, revealNeeds.length) }}/{{ revealNeeds.length }}
               </span>
               <span v-else>Duplicates</span>
-              <span
-                v-if="activePackCard?.rarity === 'mythic'"
-                class="text-[var(--ui-accent)]"
-              >
+              <span v-if="activePackCard?.rarity === 'mythic'" class="text-[var(--ui-accent)]">
                 Mythic
               </span>
-              <span v-else-if="activePackCard?.rarity">{{
-                activePackCard.rarity
-              }}</span>
-              <span
-                v-if="revealDuplicates.length"
-                class="text-[var(--ui-fg-muted)]"
-              >
+              <span v-else-if="activePackCard?.rarity">{{ activePackCard.rarity }}</span>
+              <span v-if="revealDuplicates.length" class="text-[var(--ui-fg-muted)]">
                 +{{ revealDuplicates.length }} dupes
               </span>
             </div>
@@ -1120,10 +1019,7 @@ watch(periodId, () => {
             </button>
           </div>
 
-          <div
-            class="relative mx-auto h-[340px] w-[260px]"
-            v-if="!revealComplete"
-          >
+          <div class="relative mx-auto h-[340px] w-[260px]" v-if="!revealComplete">
             <div
               v-for="(card, index) in remainingPackCards"
               :key="`${card.stickerId || card.creature?.id}-${index}`"
@@ -1140,8 +1036,7 @@ watch(periodId, () => {
                 class="relative rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-surface)] p-5 shadow-[0_16px_28px_rgba(15,23,42,0.22)]"
                 @click="collectNextPackCard"
                 :class="{
-                  'reveal-mythic':
-                    activePackCard?.rarity === 'mythic' && index === 0,
+                  'reveal-mythic': activePackCard?.rarity === 'mythic' && index === 0,
                 }"
                 :key="packRevealIndex"
               >
@@ -1164,11 +1059,7 @@ watch(periodId, () => {
                   class="w-64"
                 />
                 <Sticker
-                  v-else-if="
-                    ['8bit-sprites', 'animal-archetype-8bit'].includes(
-                      catalogueThemeId,
-                    )
-                  "
+                  v-else-if="['8bit-sprites', 'animal-archetype-8bit'].includes(catalogueThemeId)"
                   :art="{
                     kind: 'kit',
                     data: {
@@ -1202,9 +1093,7 @@ watch(periodId, () => {
             <div class="flex gap-2">
               <div
                 v-for="(group, index) in revealDuplicateGroups"
-                :key="`dup-${
-                  group.card?.stickerId || group.card?.creature?.id
-                }-${index}`"
+                :key="`dup-${group.card?.stickerId || group.card?.creature?.id}-${index}`"
                 class="relative"
               >
                 <span
@@ -1229,11 +1118,7 @@ watch(periodId, () => {
                   class="w-32"
                 />
                 <Sticker
-                  v-else-if="
-                    ['8bit-sprites', 'animal-archetype-8bit'].includes(
-                      catalogueThemeId,
-                    )
-                  "
+                  v-else-if="['8bit-sprites', 'animal-archetype-8bit'].includes(catalogueThemeId)"
                   :art="{
                     kind: 'kit',
                     data: {
@@ -1253,11 +1138,7 @@ watch(periodId, () => {
               </div>
             </div>
             <div class="flex items-center justify-between">
-              <Button
-                size="xs"
-                variant="secondary"
-                @click="collectDuplicateReveal"
-              >
+              <Button size="xs" variant="secondary" @click="collectDuplicateReveal">
                 Collect {{ revealDuplicates.length }} dupes
               </Button>
             </div>
@@ -1276,25 +1157,18 @@ watch(periodId, () => {
           </p>
         </div>
         <div class="flex flex-col items-center gap-2 text-center">
-          <Button size="sm" variant="secondary" disabled>
-            Trading coming soon
-          </Button>
+          <Button size="sm" variant="secondary" disabled> Trading coming soon </Button>
           <p class="text-xs text-[var(--ui-fg-muted)]">
             Trade duplicate cards with friends to complete your Pixbook.
           </p>
         </div>
-        <div
-          v-if="!swapsForSeries.length"
-          class="text-sm font-semibold text-[var(--ui-fg-muted)]"
-        >
+        <div v-if="!swapsForSeries.length" class="text-sm font-semibold text-[var(--ui-fg-muted)]">
           No swaps yet.
         </div>
         <div v-else class="flex flex-wrap gap-4 justify-center">
           <div
             v-for="(swap, index) in swapGroups"
-            :key="`${
-              swap.record?.catalogueId || swap.record?.stickerId
-            }-${index}`"
+            :key="`${swap.record?.catalogueId || swap.record?.stickerId}-${index}`"
             class="relative flex flex-col items-center gap-2 rounded-xl p-3 text-center"
           >
             <span
@@ -1309,9 +1183,7 @@ watch(periodId, () => {
                 :art="{
                   kind: 'grid',
                   data: {
-                    creature:
-                      swap.record.creature ||
-                      catalogueById.get(swap.record.catalogueId),
+                    creature: swap.record.creature || catalogueById.get(swap.record.catalogueId),
                     palettes: catalogue?.palettes || [],
                   },
                 }"
@@ -1321,17 +1193,11 @@ watch(periodId, () => {
                 size="compact"
               />
               <Sticker
-                v-else-if="
-                  ['8bit-sprites', 'animal-archetype-8bit'].includes(
-                    catalogueThemeId,
-                  )
-                "
+                v-else-if="['8bit-sprites', 'animal-archetype-8bit'].includes(catalogueThemeId)"
                 :art="{
                   kind: 'kit',
                   data: {
-                    sticker:
-                      swap.record.creature ||
-                      catalogueById.get(swap.record.catalogueId),
+                    sticker: swap.record.creature || catalogueById.get(swap.record.catalogueId),
                     palettes: catalogue?.palettes || [],
                     kitId:
                       catalogueThemeId === 'animal-archetype-8bit'
@@ -1348,9 +1214,7 @@ watch(periodId, () => {
             <div
               class="flex flex-col gap-1 text-[10px] uppercase tracking-[0.16em] text-[var(--ui-fg-muted)]"
             >
-              <span>{{
-                swap.record?.catalogueId || swap.record?.stickerId
-              }}</span>
+              <span>{{ swap.record?.catalogueId || swap.record?.stickerId }}</span>
               <span>swap</span>
             </div>
           </div>

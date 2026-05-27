@@ -41,9 +41,7 @@ export function createSolidMnemonicStorage(
     contentType: options.contentType,
     coerce(value) {
       if (!isSolidMnemonicSecret(value)) {
-        throw new Error(
-          "Solid mnemonic payload must be a ternent-solid-mnemonic secret object.",
-        );
+        throw new Error("Solid mnemonic payload must be a ternent-solid-mnemonic secret object.");
       }
       return value;
     },
@@ -62,9 +60,7 @@ export function createSolidWalletStorage(
     contentType: options.contentType,
     coerce(value) {
       if (!isSolidWalletBackup(value)) {
-        throw new Error(
-          "Solid wallet payload must be a ternent-solid-wallet backup object.",
-        );
+        throw new Error("Solid wallet payload must be a ternent-solid-wallet backup object.");
       }
       return value;
     },
@@ -258,13 +254,10 @@ export async function provisionSolidIdentity(
           identity,
           createdAt: input.createdAt,
         })
-      : discoveredResources ?? undefined;
+      : (discoveredResources ?? undefined);
   const accessReport =
     resources && profileEnabled
-      ? await enforceSolidConcordAccess(
-          resources,
-          input.profile?.accessValidation ?? "strict",
-        )
+      ? await enforceSolidConcordAccess(resources, input.profile?.accessValidation ?? "strict")
       : undefined;
 
   return {

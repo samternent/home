@@ -26,7 +26,7 @@ export type PermissionRevokeParams = {
 
 export function replayPermissionState(
   ledger: LedgerContainer,
-  rootAdmins?: string[]
+  rootAdmins?: string[],
 ): PermissionState {
   return replayPermissions(ledger, undefined, { rootAdmins });
 }
@@ -36,15 +36,12 @@ export function canPerform(
   principalId: string,
   action: string,
   scope: string,
-  nowIso?: string
+  nowIso?: string,
 ): boolean {
   return can(state, principalId, action, scope, nowIso);
 }
 
-export function createGrantEntry(
-  params: PermissionGrantParams,
-  timestamp: string
-): Entry {
+export function createGrantEntry(params: PermissionGrantParams, timestamp: string): Entry {
   return {
     kind: "perm.grant",
     timestamp,
@@ -59,10 +56,7 @@ export function createGrantEntry(
   };
 }
 
-export function createRevokeEntry(
-  params: PermissionRevokeParams,
-  timestamp: string
-): Entry {
+export function createRevokeEntry(params: PermissionRevokeParams, timestamp: string): Entry {
   return {
     kind: "perm.revoke",
     timestamp,
@@ -77,10 +71,6 @@ export function createRevokeEntry(
   };
 }
 
-export function getCaps(
-  state: PermissionState,
-  principalId: string,
-  scope: string
-): string[] {
+export function getCaps(state: PermissionState, principalId: string, scope: string): string[] {
   return Array.from(getEffectiveCaps(state, principalId, scope));
 }

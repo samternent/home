@@ -40,14 +40,15 @@ async function savePerson() {
           <p class="m-0 break-all text-[11px] text-[var(--ui-fg-muted)]">
             {{ person.webId }}
           </p>
-          <p
-            v-if="person.note"
-            class="m-0 text-[11px] text-[var(--ui-fg-muted)]"
-          >
+          <p v-if="person.note" class="m-0 text-[11px] text-[var(--ui-fg-muted)]">
             {{ person.note }}
           </p>
           <div class="flex flex-wrap gap-2">
-            <Button size="xs" variant="plain-secondary" @click="workspace.deletePerson(person.webId)">
+            <Button
+              size="xs"
+              variant="plain-secondary"
+              @click="workspace.deletePerson(person.webId)"
+            >
               Remove
             </Button>
           </div>
@@ -72,7 +73,11 @@ async function savePerson() {
           <span class="text-[11px] uppercase tracking-[0.2em] text-[var(--ui-fg-muted)]">
             WebID
           </span>
-          <Input v-model="webId" aria-label="Person WebID" placeholder="https://alice.example/profile/card#me" />
+          <Input
+            v-model="webId"
+            aria-label="Person WebID"
+            placeholder="https://alice.example/profile/card#me"
+          />
         </label>
 
         <label class="space-y-1">
@@ -89,9 +94,7 @@ async function savePerson() {
           <Textarea v-model="note" aria-label="Person note" rows="4" />
         </label>
 
-        <Button size="sm" variant="secondary" @click="savePerson">
-          Save person
-        </Button>
+        <Button size="sm" variant="secondary" @click="savePerson"> Save person </Button>
       </Card>
     </aside>
   </div>

@@ -72,7 +72,7 @@ const DEFAULT_COLLECTION_ID = "primary";
 export function createAccountItemActions(options: CreateAccountItemActionsOptions) {
   const suppressedIdentityBindings = useLocalStorage<string[]>(
     "pixpax/pixbook/cloudSuppressedIdentityBindings",
-    []
+    [],
   );
 
   function normalizeCollectionId(value: unknown) {
@@ -122,14 +122,12 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
       ? suppressedIdentityBindings.value
       : [];
     if (!suppressed.includes(bindingKey)) return;
-    suppressedIdentityBindings.value = suppressed.filter(
-      (entry) => entry !== bindingKey
-    );
+    suppressedIdentityBindings.value = suppressed.filter((entry) => entry !== bindingKey);
   }
 
   const persistIdempotencyKeys = useLocalStorage<Record<string, string>>(
     "pixpax/pixbook/persistIdempotencyKeys",
-    {}
+    {},
   );
   let autoBackupTimer: ReturnType<typeof setTimeout> | null = null;
   let pendingPersistHead = "";
@@ -212,8 +210,7 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
       }) ||
       options.cloudBooks.value.find((entry) => {
         return (
-          trim(entry.managedUserId) === targetManagedUserId &&
-          trim(entry.status) !== "deleted"
+          trim(entry.managedUserId) === targetManagedUserId && trim(entry.status) !== "deleted"
         );
       }) ||
       null;
@@ -308,7 +305,7 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
       .join("");
     return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(
       16,
-      20
+      20,
     )}-${hex.slice(20)}`;
   }
 
@@ -324,7 +321,7 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
         (entry) =>
           trim(entry.status) !== "deleted" &&
           trim(entry.profileId) === profileId &&
-          trim(entry.identityPublicKey) === identityPublicKey
+          trim(entry.identityPublicKey) === identityPublicKey,
       ) || null
     );
   }
@@ -337,7 +334,7 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
 
   async function backupLocalIdentityToAccount(
     identityId: string,
-    optionsInput: { silent?: boolean; allowSyncIdentity?: boolean } = {}
+    optionsInput: { silent?: boolean; allowSyncIdentity?: boolean } = {},
   ) {
     const silent = Boolean(optionsInput.silent);
     const allowSyncIdentity = optionsInput.allowSyncIdentity !== false;
@@ -369,7 +366,7 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
     }
 
     const localIdentity = options.context.identities.value.find(
-      (entry) => trim(entry.id) === trim(identityId)
+      (entry) => trim(entry.id) === trim(identityId),
     );
     if (!localIdentity) {
       if (!silent) {
@@ -443,7 +440,7 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
         backupNonce: generateBackupNonce(),
         envelope,
       },
-      workspaceId
+      workspaceId,
     );
 
     if (!silent) {
@@ -486,10 +483,13 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
   function scheduleAutoBackupLocalIdentities(delayMs = 600) {
     clearAutoBackupTimer();
     if (!options.account.isAuthenticated.value || !hasRecoveryPassphrase()) return;
-    autoBackupTimer = setTimeout(() => {
-      autoBackupTimer = null;
-      void backupAllLocalIdentitiesToAccount({ silent: true });
-    }, Math.max(250, Number(delayMs || 0)));
+    autoBackupTimer = setTimeout(
+      () => {
+        autoBackupTimer = null;
+        void backupAllLocalIdentitiesToAccount({ silent: true });
+      },
+      Math.max(250, Number(delayMs || 0)),
+    );
   }
 
   async function syncLocalIdentitiesToCloud(identityIds: string[] = []) {
@@ -537,7 +537,7 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
       }
 
       const requestedIdentityIds = new Set(
-        identityIds.map((entry) => String(entry || "").trim()).filter(Boolean)
+        identityIds.map((entry) => String(entry || "").trim()).filter(Boolean),
       );
       let createdIdentityCount = 0;
       let restoredIdentityCount = 0;
@@ -585,11 +585,7 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
         if (existing) {
           unsuppressIdentityBinding(bindingKey);
         } else if (deleted) {
-          await updateAccountManagedUser(
-            deleted.id,
-            { status: "active" },
-            workspaceId
-          );
+          await updateAccountManagedUser(deleted.id, { status: "active" }, workspaceId);
           managedUserId = String(deleted.id || "").trim();
           existingByBinding.set(bindingKey, {
             ...deleted,
@@ -604,7 +600,7 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
               profileId,
               identityPublicKey,
             },
-            workspaceId
+            workspaceId,
           );
           managedUserId = String(created?.id || "").trim();
           createdIdentityCount += 1;
@@ -615,10 +611,7 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
 
         const localCollectionIds = new Set<string>();
         for (const pixbook of options.context.pixbooks.value) {
-          if (
-            String(pixbook.identityId || "").trim() !==
-            String(identity.id || "").trim()
-          ) {
+          if (String(pixbook.identityId || "").trim() !== String(identity.id || "").trim()) {
             continue;
           }
           localCollectionIds.add(normalizeCollectionId(pixbook.collectionId));
@@ -637,7 +630,7 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
               name: "My Pixbook",
               collectionId,
             },
-            workspaceId
+            workspaceId,
           );
           activeBookByManagedUserCollection.add(bindingCollectionKey);
           createdBookCount += 1;
@@ -665,7 +658,7 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
       ) {
         if (skippedIdentityCount > 0) {
           throw new Error(
-            "Selected identity is missing required profile/key data and could not be saved."
+            "Selected identity is missing required profile/key data and could not be saved.",
           );
         }
         options.identityDirectorySyncStatus.value = "Identity already saved to account.";
@@ -676,7 +669,7 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
       return true;
     } catch (error: unknown) {
       options.identityDirectorySyncError.value = String(
-        (error as Error)?.message || "Identity save failed."
+        (error as Error)?.message || "Identity save failed.",
       );
       options.identityDirectorySyncStatus.value = "";
       return false;
@@ -693,17 +686,16 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
     }
 
     const identity = options.context.identities.value.find(
-      (entry) => String(entry.id || "").trim() === targetId
+      (entry) => String(entry.id || "").trim() === targetId,
     );
     if (!identity) {
-      options.identityDirectorySyncError.value =
-        "Selected identity was not found on this device.";
+      options.identityDirectorySyncError.value = "Selected identity was not found on this device.";
       return false;
     }
 
     const bindingKey = toIdentityBindingKey(
       String(identity.profileId || "").trim(),
-      String(identity.publicKeyPEM || "").trim()
+      String(identity.publicKeyPEM || "").trim(),
     );
     unsuppressIdentityBinding(bindingKey);
 
@@ -779,7 +771,7 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
       return true;
     }
     const remoteSnapshotHead = trim(
-      (options.cloudSnapshotPayload.value as { ledger?: { head?: unknown } } | null)?.ledger?.head
+      (options.cloudSnapshotPayload.value as { ledger?: { head?: unknown } } | null)?.ledger?.head,
     );
     if (localLedgerHead === remoteSnapshotHead) {
       return true;
@@ -813,7 +805,7 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
           onPending: (pending) => {
             options.cloudSyncStatus.value = `Save pending. Retrying in ${pending.retryAfterSeconds}s...`;
           },
-        }
+        },
       );
 
       options.cloudWorkspaceId.value = accountId;
@@ -841,7 +833,7 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
       }
       options.cloudSyncStatus.value = "";
       options.cloudSyncError.value = String(
-        (error as Error)?.message || "Failed to persist pixbook progress."
+        (error as Error)?.message || "Failed to persist pixbook progress.",
       );
       return false;
     } finally {
@@ -893,7 +885,7 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
       return true;
     } catch (error: unknown) {
       options.cloudSyncError.value = String(
-        (error as Error)?.message || "Failed to open persisted pixbook."
+        (error as Error)?.message || "Failed to open persisted pixbook.",
       );
       options.cloudSyncStatus.value = "";
       return false;
@@ -907,16 +899,13 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
       return false;
     }
 
-    const selectedBook = options.cloudBooks.value.find(
-      (entry) => trim(entry.id) === selected
-    );
+    const selectedBook = options.cloudBooks.value.find((entry) => trim(entry.id) === selected);
     if (!selectedBook) {
       options.cloudSyncError.value = "Selected account pixbook was not found.";
       return false;
     }
     if (normalizeCollectionId(selectedBook.collectionId) !== options.activeCollectionId.value) {
-      options.cloudSyncError.value =
-        "Selected account pixbook belongs to another collection.";
+      options.cloudSyncError.value = "Selected account pixbook belongs to another collection.";
       return false;
     }
 
@@ -1018,7 +1007,7 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
         return false;
       }
       options.cloudSyncError.value = String(
-        (error as Error)?.message || "Failed to recover identity from account backup."
+        (error as Error)?.message || "Failed to recover identity from account backup.",
       );
       options.cloudSyncStatus.value = "";
       return false;
@@ -1043,11 +1032,11 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
     try {
       const workspaceId = options.account.workspace.value?.workspaceId || undefined;
       const profileToRemove = options.cloudProfiles.value.find(
-        (entry) => String(entry.id || "").trim() === targetId
+        (entry) => String(entry.id || "").trim() === targetId,
       );
       const bindingKey = toIdentityBindingKey(
         String(profileToRemove?.profileId || "").trim(),
-        String(profileToRemove?.identityPublicKey || "").trim()
+        String(profileToRemove?.identityPublicKey || "").trim(),
       );
       const removed = await removeAccountManagedIdentity(targetId, workspaceId);
 
@@ -1070,7 +1059,7 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
       return true;
     } catch (error: unknown) {
       options.cloudSyncError.value = String(
-        (error as Error)?.message || "Failed to remove identity from account."
+        (error as Error)?.message || "Failed to remove identity from account.",
       );
       options.cloudSyncStatus.value = "";
       return false;
@@ -1105,7 +1094,7 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
       return true;
     } catch (error: unknown) {
       options.cloudSyncError.value = String(
-        (error as Error)?.message || "Failed to reset account identity data."
+        (error as Error)?.message || "Failed to reset account identity data.",
       );
       options.cloudSyncStatus.value = "";
       return false;
@@ -1143,7 +1132,7 @@ export function createAccountItemActions(options: CreateAccountItemActionsOption
       return true;
     } catch (error: unknown) {
       options.cloudSyncError.value = String(
-        (error as Error)?.message || "Failed to remove pixbook from account."
+        (error as Error)?.message || "Failed to remove pixbook from account.",
       );
       options.cloudSyncStatus.value = "";
       return false;

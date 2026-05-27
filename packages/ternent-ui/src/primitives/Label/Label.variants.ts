@@ -1,7 +1,6 @@
 import type { LabelSize } from "./Label.types";
 
-export const labelBaseClass =
-  "inline-flex items-center gap-1 font-medium text-[var(--ui-fg)]";
+export const labelBaseClass = "inline-flex items-center gap-1 font-medium text-[var(--ui-fg)]";
 
 export const labelStateClasses = {
   default: "",

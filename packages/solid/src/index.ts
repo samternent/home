@@ -1,8 +1,5 @@
 export { createSolidIdentityCache } from "./cache.js";
-export {
-  enforceSolidConcordAccess,
-  validateSolidConcordAccess,
-} from "./access.js";
+export { enforceSolidConcordAccess, validateSolidConcordAccess } from "./access.js";
 export {
   createSolidMnemonicIdentity,
   createSolidIdentity,
@@ -32,10 +29,7 @@ export {
   isConcordOsPeopleRegistry,
 } from "./people.js";
 export { createSolidStorage } from "./storage.js";
-export {
-  createEmptyConcordLedger,
-  createSolidWorkspace,
-} from "./workspace.js";
+export { createEmptyConcordLedger, createSolidWorkspace } from "./workspace.js";
 export { createSolidConcordApp } from "./app.js";
 export { createSolidConcordManager } from "./manager.js";
 export {

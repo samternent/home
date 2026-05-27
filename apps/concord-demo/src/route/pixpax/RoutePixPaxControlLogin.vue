@@ -42,22 +42,13 @@ const redirectTo = computed(() => {
 
 function resolvePostLoginPath() {
   const targetName = parseRedirectRouteName();
-  if (
-    targetName === "pixpax-control-analytics" &&
-    !auth.hasPermission("pixpax.analytics.read")
-  ) {
+  if (targetName === "pixpax-control-analytics" && !auth.hasPermission("pixpax.analytics.read")) {
     return router.resolve({ name: "pixpax-control-creator" }).fullPath;
   }
-  if (
-    targetName === "pixpax-control-admin" &&
-    !auth.hasPermission("pixpax.admin.manage")
-  ) {
+  if (targetName === "pixpax-control-admin" && !auth.hasPermission("pixpax.admin.manage")) {
     return router.resolve({ name: "pixpax-control-creator" }).fullPath;
   }
-  if (
-    targetName === "pixpax-control-admin-v2" &&
-    !auth.hasPermission("pixpax.admin.manage")
-  ) {
+  if (targetName === "pixpax-control-admin-v2" && !auth.hasPermission("pixpax.admin.manage")) {
     return router.resolve({ name: "pixpax-control-creator" }).fullPath;
   }
   return router.resolve({ name: targetName }).fullPath || getDefaultRedirectPath();

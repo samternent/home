@@ -15,15 +15,15 @@ export function assertPalette16(palette: PackPalette16): void {
   invariant(!!palette && typeof palette === "object", "palette must be an object.");
   invariant(
     Array.isArray(palette.colors),
-    "palette.colors must be an array of ARGB uint32 values."
+    "palette.colors must be an array of ARGB uint32 values.",
   );
   invariant(
     palette.colors.length === PALETTE_LENGTH,
-    `palette.colors must contain ${PALETTE_LENGTH} entries.`
+    `palette.colors must contain ${PALETTE_LENGTH} entries.`,
   );
   invariant(
-    (palette.colors[0] >>> 0) === TRANSPARENT_ARGB,
-    "palette.colors[0] must be transparent 0x00000000."
+    palette.colors[0] >>> 0 === TRANSPARENT_ARGB,
+    "palette.colors[0] must be transparent 0x00000000.",
   );
   for (let i = 1; i < palette.colors.length; i += 1) {
     const color = palette.colors[i] >>> 0;
@@ -37,7 +37,7 @@ export function assertStickerArt16(art: StickerArt16): void {
   invariant(art.v === 1, "StickerArt16.v must be 1.");
   invariant(
     art.w === STICKER_SIZE && art.h === STICKER_SIZE,
-    "StickerArt16 dimensions must be 16x16."
+    "StickerArt16 dimensions must be 16x16.",
   );
   invariant(art.fmt === "idx4", "StickerArt16.fmt must be 'idx4'.");
   invariant(typeof art.px === "string" && art.px.length > 0, "StickerArt16.px is required.");
@@ -45,13 +45,13 @@ export function assertStickerArt16(art: StickerArt16): void {
   const packed = base64ToBytes(art.px);
   invariant(
     packed.length === STICKER_PACKED_BYTES,
-    `StickerArt16.px must decode to ${STICKER_PACKED_BYTES} bytes.`
+    `StickerArt16.px must decode to ${STICKER_PACKED_BYTES} bytes.`,
   );
 
   const decodedPixels = packed.length * 2;
   invariant(
     decodedPixels === STICKER_PIXEL_COUNT,
-    `StickerArt16 must decode to ${STICKER_PIXEL_COUNT} pixels.`
+    `StickerArt16 must decode to ${STICKER_PIXEL_COUNT} pixels.`,
   );
 
   for (let i = 0; i < packed.length; i += 1) {

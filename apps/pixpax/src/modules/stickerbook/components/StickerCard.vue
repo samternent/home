@@ -54,7 +54,11 @@ const showShimmer = computed(() => !props.missing);
     >
       <div
         class="relative isolate aspect-square w-full overflow-hidden rounded-[0.35rem] [container-type:inline-size]"
-        :class="props.highlighted ? 'ring-1 ring-[color-mix(in_srgb,var(--ui-primary)_35%,transparent)]' : ''"
+        :class="
+          props.highlighted
+            ? 'ring-1 ring-[color-mix(in_srgb,var(--ui-primary)_35%,transparent)]'
+            : ''
+        "
       >
         <div
           v-if="showAtmosphere"

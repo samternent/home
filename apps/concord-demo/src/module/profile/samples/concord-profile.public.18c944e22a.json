@@ -8,9 +8,7 @@
   },
   "encryption": {
     "type": "age",
-    "recipients": [
-      "age1nef5quy79wfypc3asyxl5m475gyjl8jhhhlpg87d85p05fltydwq6kht2f"
-    ]
+    "recipients": ["age1nef5quy79wfypc3asyxl5m475gyjl8jhhhlpg87d85p05fltydwq6kht2f"]
   },
   "metadata": {
     "username": "bob"

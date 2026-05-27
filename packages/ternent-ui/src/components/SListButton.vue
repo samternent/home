@@ -17,7 +17,7 @@ const props = withDefaults(
     size: "md",
     fullWidth: true,
     disabled: false,
-  }
+  },
 );
 
 const sizeClasses = computed(() => {
@@ -60,7 +60,8 @@ const showCount = computed(() => props.count !== null && props.count !== undefin
   border-radius: var(--ui-radius-sm);
   border: 1px solid transparent;
   color: var(--ui-fg);
-  transition: background-color var(--ui-duration-fast) var(--ui-ease-out),
+  transition:
+    background-color var(--ui-duration-fast) var(--ui-ease-out),
     color var(--ui-duration-fast) var(--ui-ease-out),
     box-shadow var(--ui-duration-fast) var(--ui-ease-out);
 }
@@ -108,20 +109,17 @@ const showCount = computed(() => props.count !== null && props.count !== undefin
   color: var(--ui-fg-muted);
 }
 
-.s-list-button[data-active="true"][data-variant="primary"]
-  .s-list-button__count {
+.s-list-button[data-active="true"][data-variant="primary"] .s-list-button__count {
   background: color-mix(in srgb, var(--ui-on-primary) 15%, transparent);
   color: var(--ui-on-primary);
 }
 
-.s-list-button[data-active="true"][data-variant="secondary"]
-  .s-list-button__count {
+.s-list-button[data-active="true"][data-variant="secondary"] .s-list-button__count {
   background: color-mix(in srgb, var(--ui-on-secondary) 15%, transparent);
   color: var(--ui-on-secondary);
 }
 
-.s-list-button[data-active="true"][data-variant="neutral"]
-  .s-list-button__count {
+.s-list-button[data-active="true"][data-variant="neutral"] .s-list-button__count {
   background: color-mix(in srgb, var(--ui-fg) 12%, transparent);
   color: var(--ui-fg);
 }

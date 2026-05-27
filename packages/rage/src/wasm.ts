@@ -10,34 +10,18 @@ import { wasmBase64 } from "./wasm-bytes.js";
 
 export interface RageWasmBindings {
   generateKeyPair(): Promise<unknown>;
-  encryptWithRecipients(
-    recipients: string[],
-    data: Uint8Array,
-    armor: boolean
-  ): Promise<unknown>;
+  encryptWithRecipients(recipients: string[], data: Uint8Array, armor: boolean): Promise<unknown>;
   decryptWithIdentity(identity: string, data: Uint8Array): Promise<unknown>;
-  encryptWithPassphrase(
-    passphrase: string,
-    data: Uint8Array,
-    armor: boolean
-  ): Promise<unknown>;
-  decryptWithPassphrase(
-    passphrase: string,
-    data: Uint8Array
-  ): Promise<unknown>;
+  encryptWithPassphrase(passphrase: string, data: Uint8Array, armor: boolean): Promise<unknown>;
+  decryptWithPassphrase(passphrase: string, data: Uint8Array): Promise<unknown>;
 }
 
 let bindings: RageWasmBindings | null = null;
 
 function decodeBase64(input: string): Uint8Array {
-  const alphabet =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
   const cleanInput = input.replace(/\s+/g, "");
-  const padding = cleanInput.endsWith("==")
-    ? 2
-    : cleanInput.endsWith("=")
-      ? 1
-      : 0;
+  const padding = cleanInput.endsWith("==") ? 2 : cleanInput.endsWith("=") ? 1 : 0;
   const output = new Uint8Array((cleanInput.length * 3) / 4 - padding);
 
   let offset = 0;
@@ -50,10 +34,7 @@ function decodeBase64(input: string): Uint8Array {
     const d = dChar === "=" ? 0 : alphabet.indexOf(dChar);
 
     if (a < 0 || b < 0 || c < 0 || d < 0) {
-      throw new RageInitError(
-        "RAGE_INIT_FAILED",
-        "Rage WASM binary is not valid base64."
-      );
+      throw new RageInitError("RAGE_INIT_FAILED", "Rage WASM binary is not valid base64.");
     }
 
     const chunk = (a << 18) | (b << 12) | (c << 6) | d;
@@ -82,7 +63,7 @@ export async function loadWasmBindings(): Promise<void> {
   if (!wasmBase64) {
     throw new RageInitError(
       "RAGE_INIT_FAILED",
-      "Rage WASM is not embedded. Run the package build first."
+      "Rage WASM is not embedded. Run the package build first.",
     );
   }
 
@@ -97,11 +78,7 @@ export async function loadWasmBindings(): Promise<void> {
     };
   } catch (error) {
     bindings = null;
-    throw new RageInitError(
-      "RAGE_INIT_FAILED",
-      "Failed to initialize Rage WASM.",
-      error
-    );
+    throw new RageInitError("RAGE_INIT_FAILED", "Failed to initialize Rage WASM.", error);
   }
 }
 
@@ -109,7 +86,7 @@ export function getWasmBindings(): RageWasmBindings {
   if (!bindings) {
     throw new RageInitError(
       "RAGE_INIT_FAILED",
-      "Rage WASM is not initialized. Call initRage() before using @ternent/rage."
+      "Rage WASM is not initialized. Call initRage() before using @ternent/rage.",
     );
   }
 

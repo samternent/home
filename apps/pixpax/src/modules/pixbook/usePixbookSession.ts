@@ -10,7 +10,10 @@ import type {
   PixpaxTransferOffer,
 } from "@ternent/pixpax-core";
 import { appConfig } from "@/app/config/app.config";
-import { canonicalizeClaimantIdentity, createInitialPixbookReplayState } from "@ternent/pixpax-core";
+import {
+  canonicalizeClaimantIdentity,
+  createInitialPixbookReplayState,
+} from "@ternent/pixpax-core";
 import { useIdentitySession } from "@/modules/identity";
 
 type LedgerContainer = Awaited<ReturnType<ConcordApp["exportLedger"]>>;
@@ -281,8 +284,7 @@ async function ensurePixbookApp() {
       return app;
     })()
       .catch((error: unknown) => {
-        errorRef.value =
-          error instanceof Error ? error.message : "Failed to initialize Pixbook.";
+        errorRef.value = error instanceof Error ? error.message : "Failed to initialize Pixbook.";
         throw error;
       })
       .finally(() => {
@@ -323,9 +325,7 @@ export function usePixbookSession() {
     const app = await ensurePixbookApp();
     const runtime = await loadPixbookRuntime();
     const artifact = toPlainJson(input.artifact);
-    const verificationState = input.verification
-      ? toPlainJson(input.verification)
-      : null;
+    const verificationState = input.verification ? toPlainJson(input.verification) : null;
     const existingClaimEntryId = findClaimEntryIdByPackId(artifact.payload.packId);
     if (existingClaimEntryId) {
       return existingClaimEntryId;
@@ -341,14 +341,13 @@ export function usePixbookSession() {
     const result = await app.command("pixbook.claim-pack", {
       artifact,
       claimedAt: input.claimedAt,
-      verification:
-        verificationState || {
-          proofValidLocal: true,
-          policyConfirmed: null,
-          verifiedAt: new Date().toISOString(),
-          source: "local-proof",
-          reason: null,
-        },
+      verification: verificationState || {
+        proofValidLocal: true,
+        policyConfirmed: null,
+        verifiedAt: new Date().toISOString(),
+        source: "local-proof",
+        reason: null,
+      },
     });
     await app.commit({
       metadata: {
@@ -403,7 +402,8 @@ export function usePixbookSession() {
       throw new Error("A local identity is required.");
     }
 
-    const cardInstance = replayRef.value.ownedCardInstancesById[String(input.cardInstanceId || "").trim()];
+    const cardInstance =
+      replayRef.value.ownedCardInstancesById[String(input.cardInstanceId || "").trim()];
     if (!cardInstance) {
       throw new Error("Card instance is not owned in this Pixbook.");
     }
@@ -488,7 +488,10 @@ export function usePixbookSession() {
       throw new Error(offerVerification.errors.join(", "));
     }
     const offer = input.offerArtifact.payload;
-    if (String(currentIdentity.publicKey || "").trim() !== String(offer.toClaimant.normalizedValue || "").trim()) {
+    if (
+      String(currentIdentity.publicKey || "").trim() !==
+      String(offer.toClaimant.normalizedValue || "").trim()
+    ) {
       throw new Error("This offer is addressed to a different identity.");
     }
 

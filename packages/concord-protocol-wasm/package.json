@@ -2,15 +2,15 @@
   "name": "concord-protocol-wasm",
   "version": "1.0.0",
   "description": "Concord protocol core implemented in Rust and compiled to WebAssembly.",
-  "main": "index.js",
-  "scripts": {
-    "build": "wasm-pack build --target bundler --scope ternent && node scripts/patch-pkg.js"
-  },
   "keywords": [],
-  "author": "",
   "license": "ISC",
+  "author": "",
+  "main": "index.js",
   "publishConfig": {
     "access": "public"
+  },
+  "scripts": {
+    "build": "wasm-pack build --target bundler --scope ternent && node scripts/patch-pkg.js"
   },
   "devDependencies": {
     "wasm-pack": "^0.12.1"

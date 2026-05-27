@@ -1,4 +1,8 @@
-import { getPlatformAuthNodeHandler, getPlatformAuthRuntime, getPlatformSession } from "../../services/auth/platform-auth.mjs";
+import {
+  getPlatformAuthNodeHandler,
+  getPlatformAuthRuntime,
+  getPlatformSession,
+} from "../../services/auth/platform-auth.mjs";
 
 export default function authRoutes(router) {
   router.get("/v1/auth/health", async (_req, res) => {

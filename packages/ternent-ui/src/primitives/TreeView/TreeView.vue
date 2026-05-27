@@ -48,16 +48,9 @@ const collection = computed<TreeCollection<TreeNode>>(() =>
   }),
 );
 
-const rootNodes = computed(() =>
-  collection.value.getNodeChildren(collection.value.rootNode),
-);
+const rootNodes = computed(() => collection.value.getNodeChildren(collection.value.rootNode));
 
-function collectExpandedValues(
-  nodes: TreeNode[],
-  maxDepth: number,
-  depth = 0,
-  acc: string[] = [],
-) {
+function collectExpandedValues(nodes: TreeNode[], maxDepth: number, depth = 0, acc: string[] = []) {
   if (maxDepth <= 0 || depth >= maxDepth) return acc;
   for (const node of nodes) {
     if (node.children && node.children.length > 0) {

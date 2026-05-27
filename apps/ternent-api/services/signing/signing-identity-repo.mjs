@@ -32,7 +32,7 @@ export function createSigningIdentityRepo() {
           AND status = 'active'
         ORDER BY created_at ASC
         `,
-        [normalizedAccountId]
+        [normalizedAccountId],
       );
       return result.rows.map(mapRow).filter(Boolean);
     },
@@ -50,7 +50,7 @@ export function createSigningIdentityRepo() {
           AND id = $2
         LIMIT 1
         `,
-        [normalizedAccountId, normalizedId]
+        [normalizedAccountId, normalizedId],
       );
       return mapRow(result.rows[0]);
     },
@@ -73,7 +73,7 @@ export function createSigningIdentityRepo() {
         if (!matched) {
           throw notFound(
             "SIGNING_IDENTITY_NOT_FOUND",
-            "Requested signing identity was not found for account."
+            "Requested signing identity was not found for account.",
           );
         }
         return matched;
@@ -85,7 +85,7 @@ export function createSigningIdentityRepo() {
       if (active.length > 1) {
         throw badRequest(
           "SIGNING_IDENTITY_REQUIRED",
-          "X-Signing-Identity-Id is required when account has multiple signing identities."
+          "X-Signing-Identity-Id is required when account has multiple signing identities.",
         );
       }
 
@@ -93,7 +93,7 @@ export function createSigningIdentityRepo() {
       if (!keyName) {
         throw notFound(
           "SIGNING_IDENTITY_NOT_FOUND",
-          "No signing identity is configured for this account."
+          "No signing identity is configured for this account.",
         );
       }
 
@@ -104,13 +104,7 @@ export function createSigningIdentityRepo() {
         INSERT INTO signing_identities (id, account_id, vault_key_name, public_key_pem, public_key_id, status)
         VALUES ($1, $2, $3, $4, $5, 'active')
         `,
-        [
-          newId,
-          normalizedAccountId,
-          metadata.keyName,
-          metadata.publicKeyPem,
-          metadata.publicKeyId,
-        ]
+        [newId, normalizedAccountId, metadata.keyName, metadata.publicKeyPem, metadata.publicKeyId],
       );
       return {
         id: newId,

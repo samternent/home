@@ -46,7 +46,7 @@ async function main(): Promise<void> {
         passphrasePlaintext,
       },
       null,
-      2
+      2,
     );
   } catch (error) {
     const details =

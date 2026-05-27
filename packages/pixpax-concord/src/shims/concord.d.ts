@@ -15,15 +15,9 @@ declare module "@ternent/concord" {
     initialState(): TState;
     commands: Record<
       string,
-      (
-        ctx: ConcordCommandContext,
-        inputValue: any,
-      ) => Promise<{ kind: string; payload: any }>
+      (ctx: ConcordCommandContext, inputValue: any) => Promise<{ kind: string; payload: any }>
     >;
-    applyEntry(
-      entry: LedgerReplayEntry,
-      ctx: ConcordApplyContext<TState>,
-    ): Promise<void> | void;
+    applyEntry(entry: LedgerReplayEntry, ctx: ConcordApplyContext<TState>): Promise<void> | void;
     selectors?: Record<string, (state: TState) => unknown>;
   };
 }

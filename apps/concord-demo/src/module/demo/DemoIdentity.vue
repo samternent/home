@@ -11,9 +11,7 @@ const { publicKeyPEM, privateKeyPEM, createIdentity } = useIdentity();
     <button @click="createIdentity">Generate new identity</button>
 
     <pre>{{ publicKeyPEM }}</pre>
-    <pre class="blur-sm hover:blur-none transition-all duration-300">{{
-      privateKeyPEM
-    }}</pre>
+    <pre class="blur-sm hover:blur-none transition-all duration-300">{{ privateKeyPEM }}</pre>
     <div :key="publicKeyPEM" class="flex items-center gap-4">
       <IdentityAvatar :identity="publicKeyPEM" size="lg" />
       <div class="flex flex-col gap-4 items-center">

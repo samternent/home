@@ -1,9 +1,6 @@
 import { computed, inject, provide, shallowRef } from "vue";
 import { usePixpaxActivityLock } from "./usePixpaxActivityLock";
-import {
-  type PixpaxContextStore,
-  usePixpaxContextStore,
-} from "./usePixpaxContextStore";
+import { type PixpaxContextStore, usePixpaxContextStore } from "./usePixpaxContextStore";
 
 const usePixpaxSwitchContextSymbol = Symbol("usePixpaxSwitchContext");
 
@@ -22,9 +19,7 @@ type CreatePixpaxSwitchContextOptions = {
   refreshCloudForActiveIdentity?: () => Promise<void>;
 };
 
-function createPixpaxSwitchContext(
-  options: CreatePixpaxSwitchContextOptions = {}
-) {
+function createPixpaxSwitchContext(options: CreatePixpaxSwitchContextOptions = {}) {
   const context = options.context ?? usePixpaxContextStore();
   const activity = usePixpaxActivityLock();
 
@@ -44,11 +39,10 @@ function createPixpaxSwitchContext(
 
   async function runSwitch(
     action: () => Promise<void>,
-    successMessage: string
+    successMessage: string,
   ): Promise<SwitchResult> {
     if (activity.isActivityLocked("pack-open")) {
-      const error =
-        "Switching is blocked while a pack-open transaction is in progress.";
+      const error = "Switching is blocked while a pack-open transaction is in progress.";
       switchError.value = error;
       context.setError(error);
       return {
@@ -155,22 +149,16 @@ function createPixpaxSwitchContext(
   };
 }
 
-export function providePixpaxSwitchContext(
-  options: CreatePixpaxSwitchContextOptions = {}
-) {
+export function providePixpaxSwitchContext(options: CreatePixpaxSwitchContextOptions = {}) {
   const switchContext = createPixpaxSwitchContext(options);
   provide(usePixpaxSwitchContextSymbol, switchContext);
   return switchContext;
 }
 
 export function usePixpaxSwitchContext() {
-  const switchContext = inject<PixpaxSwitchContext>(
-    usePixpaxSwitchContextSymbol
-  );
+  const switchContext = inject<PixpaxSwitchContext>(usePixpaxSwitchContextSymbol);
   if (!switchContext) {
-    throw new Error(
-      "usePixpaxSwitchContext() called without providePixpaxSwitchContext()."
-    );
+    throw new Error("usePixpaxSwitchContext() called without providePixpaxSwitchContext().");
   }
   return switchContext;
 }

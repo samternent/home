@@ -1,9 +1,6 @@
 import { computed, inject, onMounted, provide, shallowRef, watch } from "vue";
 import { usePixpaxAccount } from "../auth/usePixpaxAccount";
-import {
-  type PixpaxContextStore,
-  usePixpaxContextStore,
-} from "./usePixpaxContextStore";
+import { type PixpaxContextStore, usePixpaxContextStore } from "./usePixpaxContextStore";
 import { createAccountItemActions } from "./account/useAccountItemActions";
 import { createAccountListLoader } from "./account/useAccountListLoader";
 import { createAccountPixbookItemLoader } from "./account/useAccountPixbookItemLoader";
@@ -35,7 +32,7 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
   const identityDirectorySyncStatus = shallowRef("");
   const recoveryPassphrase = shallowRef("");
   const recoveryPassphraseUnlocked = computed(
-    () => String(recoveryPassphrase.value || "").length > 0
+    () => String(recoveryPassphrase.value || "").length > 0,
   );
 
   const cloudBookId = shallowRef("");
@@ -46,7 +43,7 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
   }
 
   const activeCollectionId = computed(() =>
-    normalizeCollectionId(context.currentCollectionId.value)
+    normalizeCollectionId(context.currentCollectionId.value),
   );
 
   const canUsePasskey = computed(() => {
@@ -62,7 +59,7 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
 
   const canCloudSync = computed(() => {
     const selectedBookId = String(
-      listLoader.selectedCloudBookId.value || cloudBookId.value || ""
+      listLoader.selectedCloudBookId.value || cloudBookId.value || "",
     ).trim();
     return (
       account.isAuthenticated.value &&
@@ -161,12 +158,10 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
 
     const selectedProfileId = String(listLoader.selectedCloudProfileId.value || "").trim();
     const selectedProfileExists = activeBooks.some(
-      (entry) => String(entry.managedUserId || "").trim() === selectedProfileId
+      (entry) => String(entry.managedUserId || "").trim() === selectedProfileId,
     );
     const preferredProfileExists = preferredProfileId
-      ? activeBooks.some(
-          (entry) => String(entry.managedUserId || "").trim() === preferredProfileId
-        )
+      ? activeBooks.some((entry) => String(entry.managedUserId || "").trim() === preferredProfileId)
       : false;
     const resolvedProfileId = preferredProfileExists
       ? preferredProfileId
@@ -176,13 +171,13 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
 
     listLoader.selectedCloudProfileId.value = resolvedProfileId;
     const profileBooks = activeBooks.filter(
-      (entry) => String(entry.managedUserId || "").trim() === resolvedProfileId
+      (entry) => String(entry.managedUserId || "").trim() === resolvedProfileId,
     );
     const selectedBookId = String(
-      listLoader.selectedCloudBookId.value || itemLoader.cloudBookId.value || ""
+      listLoader.selectedCloudBookId.value || itemLoader.cloudBookId.value || "",
     ).trim();
     const selectedBookExists = profileBooks.some(
-      (entry) => String(entry.id || "").trim() === selectedBookId
+      (entry) => String(entry.id || "").trim() === selectedBookId,
     );
     const resolvedBookId = selectedBookExists
       ? selectedBookId
@@ -247,9 +242,7 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
       await account.requestLoginOtp(authEmail.value);
       authMessage.value = "Verification code sent.";
     } catch (error: unknown) {
-      authMessage.value = String(
-        (error as Error)?.message || "Failed to send OTP."
-      );
+      authMessage.value = String((error as Error)?.message || "Failed to send OTP.");
     } finally {
       authBusy.value = false;
     }
@@ -268,9 +261,7 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
       await itemLoader.refreshCloudSnapshot();
       return true;
     } catch (error: unknown) {
-      authMessage.value = String(
-        (error as Error)?.message || "OTP sign-in failed."
-      );
+      authMessage.value = String((error as Error)?.message || "OTP sign-in failed.");
       return false;
     } finally {
       authBusy.value = false;
@@ -286,9 +277,7 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
       await itemLoader.refreshCloudSnapshot();
       return true;
     } catch (error: unknown) {
-      authMessage.value = String(
-        (error as Error)?.message || "Passkey sign-in failed."
-      );
+      authMessage.value = String((error as Error)?.message || "Passkey sign-in failed.");
       return false;
     } finally {
       authBusy.value = false;
@@ -303,9 +292,7 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
       authMessage.value = "Passkey added for this device.";
       return true;
     } catch (error: unknown) {
-      authMessage.value = String(
-        (error as Error)?.message || "Passkey setup failed."
-      );
+      authMessage.value = String((error as Error)?.message || "Passkey setup failed.");
       return false;
     } finally {
       authBusy.value = false;
@@ -323,9 +310,7 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
       authMessage.value = "Signed out.";
       return true;
     } catch (error: unknown) {
-      authMessage.value = String(
-        (error as Error)?.message || "Sign-out failed."
-      );
+      authMessage.value = String((error as Error)?.message || "Sign-out failed.");
       return false;
     } finally {
       authBusy.value = false;
@@ -349,7 +334,7 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
       }
       await refreshCloudForActiveIdentity();
     },
-    { immediate: true }
+    { immediate: true },
   );
 
   watch(
@@ -362,7 +347,7 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
     async ([authenticated]) => {
       if (!authenticated) return;
       await refreshCloudForActiveIdentity();
-    }
+    },
   );
 
   watch(
@@ -376,19 +361,19 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
         (entry) =>
           entry.managedUserId === nextProfileId &&
           String(entry.status || "").trim() !== "deleted" &&
-          String(entry.collectionId || "").trim() === String(activeCollectionId.value || "").trim()
+          String(entry.collectionId || "").trim() === String(activeCollectionId.value || "").trim(),
       );
       if (nextBooks.length === 0) {
         listLoader.selectedCloudBookId.value = "";
         return;
       }
       const stillValid = nextBooks.some(
-        (entry) => entry.id === listLoader.selectedCloudBookId.value
+        (entry) => entry.id === listLoader.selectedCloudBookId.value,
       );
       if (!stillValid) {
         listLoader.selectedCloudBookId.value = nextBooks[0].id;
       }
-    }
+    },
   );
 
   watch(
@@ -399,25 +384,26 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
       if (!account.isAuthenticated.value || !next || next === prev) return;
       itemLoader.cloudBookId.value = next;
       await itemLoader.refreshCloudSnapshot();
-    }
+    },
   );
 
   watch(
-    () => [
-      account.isAuthenticated.value,
-      recoveryPassphraseUnlocked.value,
-      JSON.stringify(
-        context.identities.value.map((entry) => ({
-          id: entry.id,
-          profileId: entry.profileId,
-          updatedAt: entry.updatedAt,
-        }))
-      ),
-    ] as const,
+    () =>
+      [
+        account.isAuthenticated.value,
+        recoveryPassphraseUnlocked.value,
+        JSON.stringify(
+          context.identities.value.map((entry) => ({
+            id: entry.id,
+            profileId: entry.profileId,
+            updatedAt: entry.updatedAt,
+          })),
+        ),
+      ] as const,
     ([authenticated, passphraseUnlocked]) => {
       if (!authenticated || !passphraseUnlocked) return;
       actions.scheduleAutoBackupLocalIdentities();
-    }
+    },
   );
 
   watch(
@@ -436,7 +422,7 @@ function createPixpaxCloudSync(options: CreatePixpaxCloudSyncOptions = {}) {
       const previousPendingCount = Number(previous?.[3] || 0);
       if (localHead === previousHead && previousPendingCount === 0) return;
       await actions.saveCloudSnapshot();
-    }
+    },
   );
 
   return {

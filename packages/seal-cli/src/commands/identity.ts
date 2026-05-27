@@ -1,29 +1,24 @@
-import {
-  createSealIdentity,
-  createSealMnemonicIdentity,
-  exportIdentityJson,
-} from "../crypto";
+import { createSealIdentity, createSealMnemonicIdentity, exportIdentityJson } from "../crypto";
 
-function formatMnemonicBackup(input: {
-  mnemonic: string;
-  passphrase?: string;
-}): string {
+function formatMnemonicBackup(input: { mnemonic: string; passphrase?: string }): string {
   const lines = ["Seal seed phrase backup", "", "Mnemonic:", input.mnemonic];
   if (String(input.passphrase || "").trim()) {
     lines.push("", "Passphrase:", String(input.passphrase));
   }
   lines.push(
     "",
-    "Store this file securely. Anyone with this recovery material can recreate the signer."
+    "Store this file securely. Anyone with this recovery material can recreate the signer.",
   );
   return `${lines.join("\n")}\n`;
 }
 
-export async function createIdentityArtifact(input: {
-  withMnemonic?: boolean;
-  words?: 12 | 24;
-  passphrase?: string;
-} = {}): Promise<{
+export async function createIdentityArtifact(
+  input: {
+    withMnemonic?: boolean;
+    words?: 12 | 24;
+    passphrase?: string;
+  } = {},
+): Promise<{
   identity: import("@ternent/identity").SerializedIdentity;
   content: string;
   mnemonic: string | null;

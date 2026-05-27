@@ -9,12 +9,7 @@ const brandTo = computed(() => router.resolve({ name: "pixpax-main" }).fullPath)
 </script>
 
 <template>
-  <AppLayout
-    brand-label="PixPax"
-    :brand-to="brandTo"
-    badge-label="CONTROL"
-    :show-badge="true"
-  >
+  <AppLayout brand-label="PixPax" :brand-to="brandTo" badge-label="CONTROL" :show-badge="true">
     <template #left-side>
       <PixPaxControlNav />
     </template>

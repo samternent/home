@@ -16,5 +16,5 @@ writeFileSync(
     `export const wasmBase64 = "${wasmBase64}";`,
     "",
   ].join("\n"),
-  "utf8"
+  "utf8",
 );

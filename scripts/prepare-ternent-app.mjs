@@ -2,10 +2,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import {
-  createScaffoldManifest,
-  stringifyManifestYaml,
-} from "./lib/ternent-app-manifest.mjs";
+import { createScaffoldManifest, stringifyManifestYaml } from "./lib/ternent-app-manifest.mjs";
 
 const repoRoot = process.cwd();
 

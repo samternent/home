@@ -20,7 +20,10 @@ function parseArgs(argv) {
       i += 1;
       continue;
     }
-    if ((arg === "--version" || arg === "--collectionVersion" || arg === "--collection-version") && argv[i + 1]) {
+    if (
+      (arg === "--version" || arg === "--collectionVersion" || arg === "--collection-version") &&
+      argv[i + 1]
+    ) {
       args.version = String(argv[i + 1]).trim();
       i += 1;
       continue;
@@ -33,7 +36,7 @@ async function main() {
   const args = parseArgs(process.argv.slice(2));
   if (!args.packId || !args.collectionId || !args.version) {
     console.error(
-      "Usage: pnpm --filter ternent-api pixpax:verify-pack -- --packId <id> --collectionId <id> --version <version>"
+      "Usage: pnpm --filter ternent-api pixpax:verify-pack -- --packId <id> --collectionId <id> --version <version>",
     );
     process.exit(1);
   }
@@ -54,6 +57,8 @@ async function main() {
 }
 
 main().catch((error) => {
-  console.error(JSON.stringify({ ok: false, reason: "internal-error", error: error?.message }, null, 2));
+  console.error(
+    JSON.stringify({ ok: false, reason: "internal-error", error: error?.message }, null, 2),
+  );
   process.exit(3);
 });

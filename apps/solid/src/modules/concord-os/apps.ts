@@ -67,7 +67,8 @@ const hostedApps: ConcordOsHostedAppDefinition[] = [
 
       return {
         supported: true,
-        reason: "Todo can project any Concord ledger and ignores unrelated history it does not understand.",
+        reason:
+          "Todo can project any Concord ledger and ignores unrelated history it does not understand.",
         isDefault: true,
       };
     },
@@ -117,10 +118,7 @@ export function resolveConcordOsLedgerCompatibility(
     .filter((app) => app.supported);
 }
 
-export function buildConcordOsHostedAppRoute(
-  target: ConcordOsOpenTarget,
-  appId: string,
-) {
+export function buildConcordOsHostedAppRoute(target: ConcordOsOpenTarget, appId: string) {
   const relativePath = target.path.replace(/^\/+/, "").replace(/\/+$/, "");
   return {
     name: "app-open",

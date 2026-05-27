@@ -14,82 +14,42 @@
     {
       "id": "sunburst",
       "name": "Sunburst",
-      "colors": [
-        "#F2C94C",
-        "#F2994A",
-        "#EB5757",
-        "#2F80ED"
-      ]
+      "colors": ["#F2C94C", "#F2994A", "#EB5757", "#2F80ED"]
     },
     {
       "id": "pond",
       "name": "Pond",
-      "colors": [
-        "#56CCF2",
-        "#2D9CDB",
-        "#27AE60",
-        "#6FCF97"
-      ]
+      "colors": ["#56CCF2", "#2D9CDB", "#27AE60", "#6FCF97"]
     },
     {
       "id": "nebula",
       "name": "Nebula",
-      "colors": [
-        "#9B51E0",
-        "#BB6BD9",
-        "#2D9CDB",
-        "#56CCF2"
-      ]
+      "colors": ["#9B51E0", "#BB6BD9", "#2D9CDB", "#56CCF2"]
     },
     {
       "id": "ember",
       "name": "Ember",
-      "colors": [
-        "#FF6B6B",
-        "#F06595",
-        "#FFD43B",
-        "#F76707"
-      ]
+      "colors": ["#FF6B6B", "#F06595", "#FFD43B", "#F76707"]
     },
     {
       "id": "orchard",
       "name": "Orchard",
-      "colors": [
-        "#A7F3D0",
-        "#34D399",
-        "#FDE68A",
-        "#FCA5A5"
-      ]
+      "colors": ["#A7F3D0", "#34D399", "#FDE68A", "#FCA5A5"]
     },
     {
       "id": "shadow",
       "name": "Shadow",
-      "colors": [
-        "#111827",
-        "#374151",
-        "#9CA3AF",
-        "#F9FAFB"
-      ]
+      "colors": ["#111827", "#374151", "#9CA3AF", "#F9FAFB"]
     },
     {
       "id": "coral",
       "name": "Coral",
-      "colors": [
-        "#FF9F1C",
-        "#FFBF69",
-        "#CBF3F0",
-        "#2EC4B6"
-      ]
+      "colors": ["#FF9F1C", "#FFBF69", "#CBF3F0", "#2EC4B6"]
     },
     {
       "id": "garden",
       "name": "Garden",
-      "colors": [
-        "#2F855A",
-        "#68D391",
-        "#F6E05E",
-        "#ED8936"
-      ]
+      "colors": ["#2F855A", "#68D391", "#F6E05E", "#ED8936"]
     }
   ],
   "creatures": [

@@ -1,10 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { parseIdentity } from "@ternent/identity";
-import {
-  createSealIdentity,
-  createSealMnemonicIdentity,
-  exportIdentityJson,
-} from "../src";
+import { createSealIdentity, createSealMnemonicIdentity, exportIdentityJson } from "../src";
 
 describe("seal crypto", () => {
   it("creates and serializes a seal identity", async () => {

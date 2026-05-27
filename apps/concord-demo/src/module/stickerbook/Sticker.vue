@@ -47,10 +47,7 @@ const defaultSublabel = computed(() => {
   return props.art.data.sticker?.rarity || "";
 });
 const seed = computed(() => {
-  const base =
-    props.art.kind === "grid"
-      ? props.art.data.creature?.id
-      : props.art.data.sticker?.id;
+  const base = props.art.kind === "grid" ? props.art.data.creature?.id : props.art.data.sticker?.id;
   const normalized = base || defaultLabel.value || defaultSublabel.value || props.rarity;
   return props.packId ? `${props.packId}:${normalized}` : normalized;
 });

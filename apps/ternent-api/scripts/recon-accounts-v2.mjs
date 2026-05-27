@@ -55,7 +55,7 @@ async function tableSchema(tableName) {
     WHERE table_schema = 'public'
       AND table_name = $1
     ORDER BY ordinal_position ASC`,
-    [tableName]
+    [tableName],
   );
 
   return result.rows || [];
@@ -67,7 +67,7 @@ async function listPublicTables() {
      FROM information_schema.tables
      WHERE table_schema = 'public'
        AND table_type = 'BASE TABLE'
-     ORDER BY table_name ASC`
+     ORDER BY table_name ASC`,
   );
   return (result.rows || []).map((row) => String(row.table_name || "")).filter(Boolean);
 }
@@ -87,7 +87,7 @@ async function listConstraints(tableName) {
       AND tc.table_name = $1
     GROUP BY tc.constraint_name, tc.constraint_type
     ORDER BY tc.constraint_type, tc.constraint_name`,
-    [tableName]
+    [tableName],
   );
 
   return result.rows || [];
@@ -113,7 +113,7 @@ async function main() {
       name === "session" ||
       name === "account" ||
       name === "verification" ||
-      name === "passkey"
+      name === "passkey",
   );
 
   const schemas = {};

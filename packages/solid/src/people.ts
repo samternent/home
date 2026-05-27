@@ -22,9 +22,7 @@ function isPerson(value: unknown): value is ConcordOsPerson {
   );
 }
 
-export function isConcordOsPeopleRegistry(
-  value: unknown,
-): value is ConcordOsPeopleRegistry {
+export function isConcordOsPeopleRegistry(value: unknown): value is ConcordOsPeopleRegistry {
   return (
     isRecord(value) &&
     value.format === "ternent-concord-os-people" &&

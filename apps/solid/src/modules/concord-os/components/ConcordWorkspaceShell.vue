@@ -27,7 +27,9 @@ defineEmits<{
 </script>
 
 <template>
-  <div class="flex h-screen max-h-screen w-screen max-w-screen flex-col overflow-hidden bg-[linear-gradient(180deg,color-mix(in_srgb,var(--ui-bg)_94%,black)_0%,color-mix(in_srgb,var(--ui-bg)_96%,black)_100%)]">
+  <div
+    class="flex h-screen max-h-screen w-screen max-w-screen flex-col overflow-hidden bg-[linear-gradient(180deg,color-mix(in_srgb,var(--ui-bg)_94%,black)_0%,color-mix(in_srgb,var(--ui-bg)_96%,black)_100%)]"
+  >
     <header
       class="sticky top-0 z-20 w-full border-b border-[var(--ui-border)] bg-[color-mix(in_srgb,var(--ui-bg)_78%,rgba(4,8,18,0.92))] backdrop-blur-[12px]"
     >
@@ -59,7 +61,6 @@ defineEmits<{
           <slot name="header-actions" />
         </div>
       </div>
-
     </header>
 
     <div class="relative z-10 flex h-full flex-1 overflow-hidden">
@@ -74,16 +75,21 @@ defineEmits<{
               :key="item.to"
               :to="item.to"
               class="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left no-underline transition"
-              :class="currentPath.startsWith(item.to)
-                ? 'bg-[color-mix(in_srgb,var(--ui-primary-muted)_20%,rgba(9,18,36,0.88))] text-[var(--ui-fg)]'
-                : 'text-[var(--ui-fg-muted)] hover:bg-[color-mix(in_srgb,var(--ui-bg-muted)_14%,rgba(8,14,28,0.56))] hover:text-[var(--ui-fg)]'"
+              :class="
+                currentPath.startsWith(item.to)
+                  ? 'bg-[color-mix(in_srgb,var(--ui-primary-muted)_20%,rgba(9,18,36,0.88))] text-[var(--ui-fg)]'
+                  : 'text-[var(--ui-fg-muted)] hover:bg-[color-mix(in_srgb,var(--ui-bg-muted)_14%,rgba(8,14,28,0.56))] hover:text-[var(--ui-fg)]'
+              "
             >
               <span
                 class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[color-mix(in_srgb,var(--ui-border)_70%,transparent)] text-[11px] uppercase tracking-[0.16em]"
               >
                 {{ item.label.slice(0, 2) }}
               </span>
-              <span v-if="!sidebarCollapsed" class="truncate text-[11px] uppercase tracking-[0.14em]">
+              <span
+                v-if="!sidebarCollapsed"
+                class="truncate text-[11px] uppercase tracking-[0.14em]"
+              >
                 {{ item.label }}
               </span>
             </RouterLink>
@@ -102,28 +108,26 @@ defineEmits<{
                 <slot name="context-tabs" />
               </div>
 
-              <div class="flex items-center justify-between gap-3 border-b border-[var(--ui-border)] px-4 py-3">
+              <div
+                class="flex items-center justify-between gap-3 border-b border-[var(--ui-border)] px-4 py-3"
+              >
                 <div class="min-w-0">
-                  <p class="m-0 truncate text-[11px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
+                  <p
+                    class="m-0 truncate text-[11px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]"
+                  >
                     Workspace
                   </p>
-                  <h1 class="m-0 truncate text-sm font-medium tracking-[0.02em] text-[var(--ui-fg)]">
+                  <h1
+                    class="m-0 truncate text-sm font-medium tracking-[0.02em] text-[var(--ui-fg)]"
+                  >
                     {{ sectionLabel }}
                   </h1>
                 </div>
                 <div class="flex items-center gap-2">
-                  <Button
-                    size="xs"
-                    variant="plain-secondary"
-                    @click="$emit('toggle-inspector')"
-                  >
+                  <Button size="xs" variant="plain-secondary" @click="$emit('toggle-inspector')">
                     {{ inspectorOpen ? "Hide inspector" : "Show inspector" }}
                   </Button>
-                  <Button
-                    size="xs"
-                    variant="plain-secondary"
-                    @click="$emit('toggle-console')"
-                  >
+                  <Button size="xs" variant="plain-secondary" @click="$emit('toggle-console')">
                     {{ consoleOpen ? "Hide console" : "Show console" }}
                   </Button>
                 </div>
@@ -165,9 +169,11 @@ defineEmits<{
             </div>
             <div
               class="rounded-2xl border bg-[rgba(0,0,0,0.38)] px-3 py-3 font-mono text-xs transition-colors duration-300"
-              :class="consolePulse
-                ? 'border-[color-mix(in_srgb,var(--ui-primary)_42%,var(--ui-border))]'
-                : 'border-[color-mix(in_srgb,var(--ui-border)_74%,transparent)]'"
+              :class="
+                consolePulse
+                  ? 'border-[color-mix(in_srgb,var(--ui-primary)_42%,var(--ui-border))]'
+                  : 'border-[color-mix(in_srgb,var(--ui-border)_74%,transparent)]'
+              "
             >
               <slot name="console" />
             </div>

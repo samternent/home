@@ -11,23 +11,19 @@ function resolveVaultConfig() {
     token: trim(process.env.VAULT_TOKEN),
     role: trim(process.env.VAULT_ROLE),
     serviceAccountTokenPath: trim(
-      process.env.VAULT_K8S_JWT_PATH ||
-        "/var/run/secrets/kubernetes.io/serviceaccount/token"
+      process.env.VAULT_K8S_JWT_PATH || "/var/run/secrets/kubernetes.io/serviceaccount/token",
     ),
   };
 }
 
 function assertVaultConfig(config) {
   if (!config.addr) {
-    throw serviceUnavailable(
-      "VAULT_UNAVAILABLE",
-      "Vault is not configured (missing VAULT_ADDR)."
-    );
+    throw serviceUnavailable("VAULT_UNAVAILABLE", "Vault is not configured (missing VAULT_ADDR).");
   }
   if (!config.transitMount) {
     throw serviceUnavailable(
       "VAULT_UNAVAILABLE",
-      "Vault is not configured (missing VAULT_TRANSIT_MOUNT)."
+      "Vault is not configured (missing VAULT_TRANSIT_MOUNT).",
     );
   }
 }
@@ -35,8 +31,7 @@ function assertVaultConfig(config) {
 function toFetchErrorMessage(error) {
   if (!error) return "unknown fetch error";
   const top = typeof error?.message === "string" ? trim(error.message) : "";
-  const causeMessage =
-    typeof error?.cause?.message === "string" ? trim(error.cause.message) : "";
+  const causeMessage = typeof error?.cause?.message === "string" ? trim(error.cause.message) : "";
   if (top && causeMessage && causeMessage !== top) {
     return `${top}: ${causeMessage}`;
   }
@@ -50,13 +45,9 @@ function toFetchErrorMessage(error) {
 }
 
 function throwVaultUnreachable(config, path, error) {
-  throw serviceUnavailable(
-    "VAULT_UNAVAILABLE",
-    `Vault is unreachable at ${config.addr}${path}.`,
-    {
-      reason: toFetchErrorMessage(error),
-    }
-  );
+  throw serviceUnavailable("VAULT_UNAVAILABLE", `Vault is unreachable at ${config.addr}${path}.`, {
+    reason: toFetchErrorMessage(error),
+  });
 }
 
 async function readServiceJwt(pathname) {
@@ -76,7 +67,7 @@ async function loginWithKubernetes(config) {
   if (!jwt || !config.role) {
     throw serviceUnavailable(
       "VAULT_UNAVAILABLE",
-      "Vault token is unavailable (set VAULT_TOKEN or configure VAULT_ROLE with service account JWT)."
+      "Vault token is unavailable (set VAULT_TOKEN or configure VAULT_ROLE with service account JWT).",
     );
   }
 
@@ -99,7 +90,7 @@ async function loginWithKubernetes(config) {
     const body = await response.text();
     throw serviceUnavailable(
       "VAULT_AUTH_FAILED",
-      `Vault kubernetes login failed (${response.status}): ${body || "unknown error"}.`
+      `Vault kubernetes login failed (${response.status}): ${body || "unknown error"}.`,
     );
   }
 
@@ -108,7 +99,7 @@ async function loginWithKubernetes(config) {
   if (!token) {
     throw serviceUnavailable(
       "VAULT_AUTH_FAILED",
-      "Vault kubernetes login response did not include a client token."
+      "Vault kubernetes login response did not include a client token.",
     );
   }
   cachedKubernetesToken = token;
@@ -147,7 +138,7 @@ async function callVault(config, method, path, body) {
     const text = await response.text();
     throw serviceUnavailable(
       "VAULT_REQUEST_FAILED",
-      `Vault request failed (${response.status}) at ${path}: ${text || "unknown error"}.`
+      `Vault request failed (${response.status}) at ${path}: ${text || "unknown error"}.`,
     );
   }
 
@@ -165,13 +156,11 @@ export function createVaultTransitClient() {
       if (!normalizedKeyName || !normalizedDigest) {
         throw badRequest(
           "VAULT_SIGN_INVALID_INPUT",
-          "keyName and digestBase64 are required for Vault signing."
+          "keyName and digestBase64 are required for Vault signing.",
         );
       }
 
-      const path = `/v1/${config.transitMount}/sign/${encodeURIComponent(
-        normalizedKeyName
-      )}`;
+      const path = `/v1/${config.transitMount}/sign/${encodeURIComponent(normalizedKeyName)}`;
       const parsed = await callVault(config, "POST", path, {
         input: normalizedDigest,
         hash_algorithm: hashAlgorithm,
@@ -181,10 +170,7 @@ export function createVaultTransitClient() {
       });
       const signature = trim(parsed?.data?.signature);
       if (!signature) {
-        throw serviceUnavailable(
-          "VAULT_SIGN_FAILED",
-          "Vault did not return a signature."
-        );
+        throw serviceUnavailable("VAULT_SIGN_FAILED", "Vault did not return a signature.");
       }
       return { signature };
     },
@@ -195,9 +181,7 @@ export function createVaultTransitClient() {
         throw badRequest("VAULT_KEY_INVALID", "keyName is required.");
       }
 
-      const path = `/v1/${config.transitMount}/keys/${encodeURIComponent(
-        normalizedKeyName
-      )}`;
+      const path = `/v1/${config.transitMount}/keys/${encodeURIComponent(normalizedKeyName)}`;
       const parsed = await callVault(config, "GET", path);
       const keys = parsed?.data?.keys || {};
       const latestVersion = Number(parsed?.data?.latest_version || 0);
@@ -207,7 +191,7 @@ export function createVaultTransitClient() {
       if (!latest?.public_key) {
         throw serviceUnavailable(
           "VAULT_KEY_UNAVAILABLE",
-          "Vault key does not expose a public key."
+          "Vault key does not expose a public key.",
         );
       }
 

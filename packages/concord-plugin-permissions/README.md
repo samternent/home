@@ -11,11 +11,7 @@ pnpm add @ternent/concord-plugin-permissions
 ## Usage
 
 ```ts
-import {
-  replayPermissions,
-  getEffectiveCaps,
-  can,
-} from "@ternent/concord-plugin-permissions";
+import { replayPermissions, getEffectiveCaps, can } from "@ternent/concord-plugin-permissions";
 
 const state = replayPermissions(ledger, undefined, {
   rootAdmins: ["did:root"],

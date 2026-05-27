@@ -8,10 +8,7 @@ export async function generateKeyPair(): Promise<RageKeyPair> {
 
   const result = await getWasmBindings().generateKeyPair();
   if (!Array.isArray(result) || result.length !== 2) {
-    throw new RageInitError(
-      "RAGE_INIT_FAILED",
-      "Rage WASM returned an invalid keypair."
-    );
+    throw new RageInitError("RAGE_INIT_FAILED", "Rage WASM returned an invalid keypair.");
   }
 
   const [privateKey, publicKey] = result;
@@ -21,10 +18,7 @@ export async function generateKeyPair(): Promise<RageKeyPair> {
     typeof publicKey !== "string" ||
     !publicKey.startsWith("age1")
   ) {
-    throw new RageInitError(
-      "RAGE_INIT_FAILED",
-      "Rage WASM returned an invalid keypair."
-    );
+    throw new RageInitError("RAGE_INIT_FAILED", "Rage WASM returned an invalid keypair.");
   }
 
   return {

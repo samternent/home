@@ -14,10 +14,7 @@ import {
 } from "@/modules/api/client";
 import { useIdentitySession } from "@/modules/identity";
 import { usePixbookSession } from "@/modules/pixbook/usePixbookSession";
-import {
-  createSwapRecipientPayload,
-  parseSwapRecipientPayload,
-} from "@/modules/swaps/swap-share";
+import { createSwapRecipientPayload, parseSwapRecipientPayload } from "@/modules/swaps/swap-share";
 import StickerCard from "./StickerCard.vue";
 
 type SwapBarcode = {
@@ -28,9 +25,7 @@ type SwapBarcodeDetector = {
   detect(source: HTMLVideoElement): Promise<SwapBarcode[]>;
 };
 
-type SwapBarcodeDetectorCtor = new (options?: {
-  formats?: string[];
-}) => SwapBarcodeDetector;
+type SwapBarcodeDetectorCtor = new (options?: { formats?: string[] }) => SwapBarcodeDetector;
 
 const props = withDefaults(
   defineProps<{
@@ -200,10 +195,7 @@ const transferCount = computed(() => ({
   incoming: props.replayState.transferHistory.incoming.length,
 }));
 const localTransfersByTransferId = computed(() => {
-  const next = new Map<
-    string,
-    PixbookReplayState["transfersByEntryId"][string]
-  >();
+  const next = new Map<string, PixbookReplayState["transfersByEntryId"][string]>();
   for (const transfer of Object.values(props.replayState.transfersByEntryId)) {
     next.set(transfer.transferId, transfer);
   }
@@ -229,8 +221,7 @@ const scannerSupported = computed(
 function resolveSwapTitle(cardId: string) {
   const card = cardById.value.get(cardId);
   return (
-    String(card?.title || card?.name || card?.label || "").trim() ||
-    String(cardId || "").trim()
+    String(card?.title || card?.name || card?.label || "").trim() || String(cardId || "").trim()
   );
 }
 
@@ -381,8 +372,7 @@ async function openScanner() {
           return;
         }
       } catch (error) {
-        scanError.value =
-          error instanceof Error ? error.message : "Unable to scan this QR code.";
+        scanError.value = error instanceof Error ? error.message : "Unable to scan this QR code.";
       }
       scanAnimationFrame = window.requestAnimationFrame(() => {
         void tick();
@@ -486,8 +476,7 @@ async function completeOutgoingSwap(record: PixpaxSwapOfferRecord) {
     await refreshSwapOffers();
     completeMessage.value = `${resolveSwapTitle(record.cardId)} has now moved out of this Pixbook.`;
   } catch (error) {
-    completeError.value =
-      error instanceof Error ? error.message : "Unable to complete sent swap.";
+    completeError.value = error instanceof Error ? error.message : "Unable to complete sent swap.";
   } finally {
     completeBusy.value = false;
     activeCompleteTransferId.value = "";
@@ -512,8 +501,7 @@ async function refreshSwapOffers() {
     incomingOffers.value = incoming;
     outgoingOffers.value = outgoing;
   } catch (error) {
-    swapRefreshError.value =
-      error instanceof Error ? error.message : "Unable to refresh swaps.";
+    swapRefreshError.value = error instanceof Error ? error.message : "Unable to refresh swaps.";
   } finally {
     swapRefreshBusy.value = false;
   }
@@ -560,7 +548,9 @@ onBeforeUnmount(() => {
           {{ props.bundle.collection?.name || props.bundle.collectionId }}
         </h1>
         <div class="space-y-2">
-          <div class="h-1.5 overflow-hidden rounded-full bg-[rgba(255,255,255,0.12)] ring-1 ring-[rgba(255,255,255,0.14)]">
+          <div
+            class="h-1.5 overflow-hidden rounded-full bg-[rgba(255,255,255,0.12)] ring-1 ring-[rgba(255,255,255,0.14)]"
+          >
             <div
               class="h-full rounded-full bg-[linear-gradient(90deg,color-mix(in_srgb,var(--ui-fg)_92%,transparent),color-mix(in_srgb,var(--ui-primary)_58%,transparent))] transition-[width] duration-500"
               :style="{ width: `${completion.progressPercent}%` }"
@@ -568,7 +558,10 @@ onBeforeUnmount(() => {
           </div>
           <div class="flex flex-wrap items-center gap-3 text-xs text-[var(--ui-fg-muted)]">
             <span>{{ completion.ownedUniqueCards }} / {{ completion.totalCards }} collected</span>
-            <span v-if="completion.complete" class="rounded-full border border-[var(--ui-border)] px-2 py-0.5 uppercase tracking-[0.18em]">
+            <span
+              v-if="completion.complete"
+              class="rounded-full border border-[var(--ui-border)] px-2 py-0.5 uppercase tracking-[0.18em]"
+            >
               Completed
             </span>
           </div>
@@ -578,10 +571,7 @@ onBeforeUnmount(() => {
       <div />
     </header>
 
-    <div
-      class="flex justify-center"
-      :class="props.compactHeader ? '-mt-1 pb-1' : 'pt-1'"
-    >
+    <div class="flex justify-center" :class="props.compactHeader ? '-mt-1 pb-1' : 'pt-1'">
       <div class="w-[10.5rem]" :class="props.compactHeader ? 'opacity-80' : ''">
         <Tabs v-model="activeTab" :items="tabs" variant="pill" size="sm" />
       </div>
@@ -593,10 +583,14 @@ onBeforeUnmount(() => {
         :key="group.seriesId"
         class="series-section space-y-7"
       >
-        <div class="series-header mx-auto flex max-w-5xl flex-col items-center gap-3 py-2 text-center">
+        <div
+          class="series-header mx-auto flex max-w-5xl flex-col items-center gap-3 py-2 text-center"
+        >
           <div class="series-rule" />
           <div>
-            <p class="m-0 text-sm font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
+            <p
+              class="m-0 text-sm font-medium uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]"
+            >
               {{ group.seriesId }}
             </p>
             <p class="m-0 text-[10px] uppercase tracking-[0.22em] text-[var(--ui-fg-muted)]">
@@ -612,7 +606,9 @@ onBeforeUnmount(() => {
             >
               {{ group.completeLabel }}
             </Badge>
-            <div class="h-1 w-28 overflow-hidden rounded-full bg-[rgba(255,255,255,0.12)] ring-1 ring-[rgba(255,255,255,0.14)]">
+            <div
+              class="h-1 w-28 overflow-hidden rounded-full bg-[rgba(255,255,255,0.12)] ring-1 ring-[rgba(255,255,255,0.14)]"
+            >
               <div
                 class="h-full rounded-full bg-[var(--ui-fg)]/85"
                 :style="{ width: `${group.progress.progressPercent}%` }"
@@ -644,7 +640,9 @@ onBeforeUnmount(() => {
               receiver signs acceptance, and both sides keep the finished record.
             </p>
           </div>
-          <div class="flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.18em] text-[var(--ui-fg-muted)]">
+          <div
+            class="flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.18em] text-[var(--ui-fg-muted)]"
+          >
             <span class="rounded-full border border-[var(--ui-border)] px-3 py-1">
               {{ duplicateGroups.length }} spare groups
             </span>
@@ -669,20 +667,13 @@ onBeforeUnmount(() => {
             </p>
           </div>
 
-          <div
-            v-if="swapGroups.length"
-            class="flex flex-wrap justify-center gap-x-6 gap-y-8"
-          >
+          <div v-if="swapGroups.length" class="flex flex-wrap justify-center gap-x-6 gap-y-8">
             <div
               v-for="entry in swapGroups"
               :key="entry.card.cardId"
               class="flex flex-col items-center gap-3"
             >
-              <StickerCard
-                :bundle="props.bundle"
-                :card="entry.card"
-                :quantity="entry.quantity"
-              />
+              <StickerCard :bundle="props.bundle" :card="entry.card" :quantity="entry.quantity" />
               <Button
                 size="sm"
                 :variant="selectedSwapCardId === entry.card.cardId ? 'accent' : 'secondary'"
@@ -740,7 +731,10 @@ onBeforeUnmount(() => {
               </Button>
             </div>
 
-            <div v-if="scannerOpen" class="space-y-3 rounded-[1.4rem] border border-[var(--ui-border)] bg-[var(--ui-bg)]/80 p-3">
+            <div
+              v-if="scannerOpen"
+              class="space-y-3 rounded-[1.4rem] border border-[var(--ui-border)] bg-[var(--ui-bg)]/80 p-3"
+            >
               <video
                 ref="scannerVideo"
                 class="aspect-square w-full rounded-[1rem] bg-black object-cover"
@@ -834,13 +828,17 @@ onBeforeUnmount(() => {
                     <p class="m-0 text-sm font-medium text-[var(--ui-fg)]">
                       {{ resolveSwapTitle(offer.cardId) }}
                     </p>
-                    <p class="m-0 text-xs text-[var(--ui-fg-muted)]">
-                      From another Pixbook
-                    </p>
+                    <p class="m-0 text-xs text-[var(--ui-fg-muted)]">From another Pixbook</p>
                   </div>
                   <Badge
                     variant="soft"
-                    :tone="offer.status === 'accepted' ? 'info' : offer.status === 'completed' ? 'success' : 'neutral'"
+                    :tone="
+                      offer.status === 'accepted'
+                        ? 'info'
+                        : offer.status === 'completed'
+                          ? 'success'
+                          : 'neutral'
+                    "
                     class="!text-[10px] !uppercase !tracking-[0.16em]"
                   >
                     {{ offer.status }}
@@ -851,7 +849,10 @@ onBeforeUnmount(() => {
                   <Button
                     size="sm"
                     variant="secondary"
-                    :disabled="receiveBusy || (offer.status === 'completed' && hasLocalTransfer(offer.transferId))"
+                    :disabled="
+                      receiveBusy ||
+                      (offer.status === 'completed' && hasLocalTransfer(offer.transferId))
+                    "
                     @click="acceptIncomingSwap(offer)"
                   >
                     {{
@@ -870,9 +871,7 @@ onBeforeUnmount(() => {
               </div>
             </div>
 
-            <p v-else class="m-0 text-sm text-[var(--ui-fg-muted)]">
-              No incoming offers yet.
-            </p>
+            <p v-else class="m-0 text-sm text-[var(--ui-fg-muted)]">No incoming offers yet.</p>
           </div>
 
           <p v-if="receiveMessage" class="m-0 text-sm text-[var(--ui-fg-muted)]">
@@ -916,7 +915,13 @@ onBeforeUnmount(() => {
                 </div>
                 <Badge
                   variant="soft"
-                  :tone="offer.status === 'accepted' ? 'info' : offer.status === 'completed' ? 'success' : 'neutral'"
+                  :tone="
+                    offer.status === 'accepted'
+                      ? 'info'
+                      : offer.status === 'completed'
+                        ? 'success'
+                        : 'neutral'
+                  "
                   class="!text-[10px] !uppercase !tracking-[0.16em]"
                 >
                   {{ offer.status }}
@@ -927,7 +932,11 @@ onBeforeUnmount(() => {
                 <Button
                   size="sm"
                   variant="secondary"
-                  :disabled="completeBusy || offer.status === 'offered' || (offer.status === 'completed' && hasLocalTransfer(offer.transferId))"
+                  :disabled="
+                    completeBusy ||
+                    offer.status === 'offered' ||
+                    (offer.status === 'completed' && hasLocalTransfer(offer.transferId))
+                  "
                   @click="completeOutgoingSwap(offer)"
                 >
                   {{

@@ -72,9 +72,7 @@ describe("@ternent/pixpax-issuer", () => {
 
     expect(first.cards).toEqual(second.cards);
     expect(new Set(first.cards.map((card) => card.cardId)).size).toBe(first.cards.length);
-    expect(changed.deterministicMaterialHash).not.toBe(
-      first.deterministicMaterialHash,
-    );
+    expect(changed.deterministicMaterialHash).not.toBe(first.deterministicMaterialHash);
   });
 
   it("creates designated issuance without deterministic material", async () => {
@@ -207,9 +205,7 @@ describe("@ternent/pixpax-issuer", () => {
     const verification = await verifyPackIssuanceProof({ artifact: tampered });
     expect(verification.ok).toBe(false);
     expect(verification.hashMatch).toBe(false);
-    expect(verification.errors).toContain(
-      "Payload hash does not match the signed issuer proof.",
-    );
+    expect(verification.errors).toContain("Payload hash does not match the signed issuer proof.");
   });
 
   it("signs and verifies transfer offer and acceptance proofs", async () => {

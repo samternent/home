@@ -59,11 +59,7 @@ const decrypted = await decryptWithIdentity({
 ## Passphrase example
 
 ```ts
-import {
-  initRage,
-  encryptWithPassphrase,
-  decryptWithPassphrase,
-} from "@ternent/rage";
+import { initRage, encryptWithPassphrase, decryptWithPassphrase } from "@ternent/rage";
 
 await initRage();
 

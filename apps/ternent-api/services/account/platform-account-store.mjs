@@ -1,9 +1,6 @@
 import { createHash } from "node:crypto";
 import { createId, dbQuery, dbTx } from "../platform-db/index.mjs";
-import {
-  readPixbookLedgerState,
-  writePixbookLedgerState,
-} from "./pixbook-ledger-store.mjs";
+import { readPixbookLedgerState, writePixbookLedgerState } from "./pixbook-ledger-store.mjs";
 
 const OWNER_DEFAULT_CAPABILITIES = Object.freeze([
   "platform.account.manage",
@@ -58,8 +55,7 @@ function parseExpectedVersion(value) {
 
 function parseExpectedLedgerHead(input) {
   if (!input || typeof input !== "object") return null;
-  if (!Object.prototype.hasOwnProperty.call(input, "expectedLedgerHead"))
-    return null;
+  if (!Object.prototype.hasOwnProperty.call(input, "expectedLedgerHead")) return null;
   return String(input.expectedLedgerHead || "").trim();
 }
 
@@ -134,7 +130,7 @@ async function readLegacySnapshot(bookId) {
     ORDER BY version DESC
     LIMIT 1
     `,
-    [canonicalBookId]
+    [canonicalBookId],
   );
   if (result.rowCount === 0) return null;
 
@@ -166,10 +162,7 @@ async function hydrateLedgerFromLegacySnapshot(accountId, bookId) {
       updatedAt: legacy.createdAt || new Date().toISOString(),
     });
   } catch (error) {
-    console.error(
-      "[account] failed to hydrate pixbook ledger from legacy snapshot:",
-      error
-    );
+    console.error("[account] failed to hydrate pixbook ledger from legacy snapshot:", error);
   }
 
   return legacy;
@@ -226,9 +219,7 @@ export async function ensureWorkspaceForUser(session, options = {}) {
   const existing = await getPrimaryWorkspaceForUser(userId);
   if (existing) return existing;
 
-  const defaultName = email
-    ? `${email.split("@")[0]}'s workspace`
-    : "My workspace";
+  const defaultName = email ? `${email.split("@")[0]}'s workspace` : "My workspace";
 
   return dbTx(async (client) => {
     const workspaceId = normalizeIdOverride(options?.workspaceId, "ws");
@@ -284,10 +275,7 @@ export async function ensureWorkspaceForUser(session, options = {}) {
   });
 }
 
-export async function resolveWorkspaceForUser(
-  userId,
-  requestedWorkspaceId = "",
-) {
+export async function resolveWorkspaceForUser(userId, requestedWorkspaceId = "") {
   const resolvedUserId = String(userId || "").trim();
   if (!resolvedUserId) return null;
 
@@ -438,7 +426,7 @@ export async function resetManagedIdentityData(userId, workspaceId = "") {
         AND status != 'deleted'
       RETURNING id
       `,
-      [workspace.id]
+      [workspace.id],
     );
 
     const removedUsers = await client.query(
@@ -450,7 +438,7 @@ export async function resetManagedIdentityData(userId, workspaceId = "") {
         AND status != 'deleted'
       RETURNING id
       `,
-      [workspace.id]
+      [workspace.id],
     );
 
     await client.query(
@@ -471,7 +459,7 @@ export async function resetManagedIdentityData(userId, workspaceId = "") {
             .map((row) => String(row.id || "").trim())
             .filter(Boolean),
         }),
-      ]
+      ],
     );
 
     return {
@@ -496,11 +484,7 @@ export async function createManagedUser(userId, workspaceId, input) {
   const avatarPublicId = String(input?.avatarPublicId || "").trim() || null;
   const rawUserKey = String(input?.userKey || "").trim();
   const userKey =
-    rawUserKey ||
-    `concord:${binding.profileId}:${binding.identityKeyFingerprint.slice(
-      0,
-      24,
-    )}`;
+    rawUserKey || `concord:${binding.profileId}:${binding.identityKeyFingerprint.slice(0, 24)}`;
   const toManagedUserResult = (id) => ({
     id: String(id || "").trim(),
     displayName,
@@ -524,7 +508,7 @@ export async function createManagedUser(userId, workspaceId, input) {
       LIMIT 1
       FOR UPDATE
       `,
-      [workspace.id, binding.profileId, binding.identityKeyFingerprint]
+      [workspace.id, binding.profileId, binding.identityKeyFingerprint],
     );
 
     if (byBinding.rowCount > 0) {
@@ -549,7 +533,7 @@ export async function createManagedUser(userId, workspaceId, input) {
           binding.profileId,
           binding.identityPublicKey,
           binding.identityKeyFingerprint,
-        ]
+        ],
       );
       return toManagedUserResult(existingId);
     }
@@ -564,7 +548,7 @@ export async function createManagedUser(userId, workspaceId, input) {
       LIMIT 1
       FOR UPDATE
       `,
-      [workspace.id, userKey]
+      [workspace.id, userKey],
     );
 
     if (byUserKey.rowCount > 0) {
@@ -589,7 +573,7 @@ export async function createManagedUser(userId, workspaceId, input) {
           binding.profileId,
           binding.identityPublicKey,
           binding.identityKeyFingerprint,
-        ]
+        ],
       );
       return toManagedUserResult(existingId);
     }
@@ -622,7 +606,7 @@ export async function createManagedUser(userId, workspaceId, input) {
           binding.profileId,
           binding.identityPublicKey,
           binding.identityKeyFingerprint,
-        ]
+        ],
       );
       return toManagedUserResult(id);
     } catch (error) {
@@ -641,7 +625,7 @@ export async function createManagedUser(userId, workspaceId, input) {
         LIMIT 1
         FOR UPDATE
         `,
-        [workspace.id, binding.profileId, binding.identityKeyFingerprint, userKey]
+        [workspace.id, binding.profileId, binding.identityKeyFingerprint, userKey],
       );
       if (raced.rowCount === 0) throw error;
       const existingId = String(raced.rows[0]?.id || "").trim();
@@ -665,19 +649,14 @@ export async function createManagedUser(userId, workspaceId, input) {
           binding.profileId,
           binding.identityPublicKey,
           binding.identityKeyFingerprint,
-        ]
+        ],
       );
       return toManagedUserResult(existingId);
     }
   });
 }
 
-export async function updateManagedUser(
-  userId,
-  workspaceId,
-  managedUserId,
-  input,
-) {
+export async function updateManagedUser(userId, workspaceId, managedUserId, input) {
   const workspace = await resolveWorkspaceForUser(userId, workspaceId);
   if (!workspace) return null;
   const profileId = String(input?.profileId || "").trim();
@@ -685,13 +664,9 @@ export async function updateManagedUser(
     .replace(/\r/g, "")
     .trim();
   if ((profileId && !identityPublicKey) || (!profileId && identityPublicKey)) {
-    throw new Error(
-      "profileId and identityPublicKey must be provided together.",
-    );
+    throw new Error("profileId and identityPublicKey must be provided together.");
   }
-  const identityKeyFingerprint = identityPublicKey
-    ? hashIdentityPublicKey(identityPublicKey)
-    : "";
+  const identityKeyFingerprint = identityPublicKey ? hashIdentityPublicKey(identityPublicKey) : "";
 
   const result = await dbQuery(
     `
@@ -772,11 +747,7 @@ export async function listBooks(userId, workspaceId = "") {
   };
 }
 
-export async function getBookForWorkspace(
-  userId,
-  workspaceId = "",
-  bookId = "",
-) {
+export async function getBookForWorkspace(userId, workspaceId = "", bookId = "") {
   const workspace = await resolveWorkspaceForUser(userId, workspaceId);
   if (!workspace) return null;
 
@@ -877,9 +848,7 @@ export async function createBook(userId, workspaceId, input) {
     [workspace.id, managedUserId, collectionId],
   );
   if (existing.rowCount > 0) {
-    throw new Error(
-      "A pixbook already exists for this identity in the requested collection.",
-    );
+    throw new Error("A pixbook already exists for this identity in the requested collection.");
   }
 
   const id = normalizeIdOverride(input?.id, "book");
@@ -939,7 +908,7 @@ export async function removeBook(userId, workspaceId, bookId) {
         AND status != 'deleted'
       RETURNING id, managed_user_id, collection_id
       `,
-      [canonicalBookId, workspace.id]
+      [canonicalBookId, workspace.id],
     );
 
     if (removed.rowCount === 0) return null;
@@ -960,7 +929,7 @@ export async function removeBook(userId, workspaceId, bookId) {
           managedUserId: row.managed_user_id || null,
           collectionId: normalizeCollectionId(row.collection_id),
         }),
-      ]
+      ],
     );
 
     return {
@@ -986,12 +955,8 @@ export async function ensurePersonalPixbook(
 
   const normalizedBinding = normalizeIdentityBinding(binding || {});
   const userKey = resolvePersonalUserKey(canonicalUserId, normalizedBinding);
-  const defaultName = String(
-    defaults?.displayName || defaults?.email || "My Pixbook",
-  ).trim();
-  const collectionId = normalizeCollectionId(
-    options?.collectionId || defaults?.collectionId,
-  );
+  const defaultName = String(defaults?.displayName || defaults?.email || "My Pixbook").trim();
+  const collectionId = normalizeCollectionId(options?.collectionId || defaults?.collectionId);
   const allowCreate = options?.createIfMissing !== false;
 
   const loadManagedUser = async () => {
@@ -1072,8 +1037,7 @@ export async function ensurePersonalPixbook(
         user_key: userKey,
         profile_id: normalizedBinding.profileId || null,
         identity_public_key: normalizedBinding.identityPublicKey || null,
-        identity_key_fingerprint:
-          normalizedBinding.identityKeyFingerprint || null,
+        identity_key_fingerprint: normalizedBinding.identityKeyFingerprint || null,
         status: "active",
       };
     } catch (error) {
@@ -1181,11 +1145,7 @@ export async function ensurePersonalPixbook(
   };
 }
 
-export async function removeManagedUserIdentity(
-  userId,
-  workspaceId,
-  managedUserId,
-) {
+export async function removeManagedUserIdentity(userId, workspaceId, managedUserId) {
   const workspace = await resolveWorkspaceForUser(userId, workspaceId);
   if (!workspace) return null;
 
@@ -1275,7 +1235,7 @@ export async function getLatestBookSnapshot(bookId, workspaceIdHint = "") {
       WHERE id = $1
       LIMIT 1
       `,
-      [canonicalBookId]
+      [canonicalBookId],
     );
     workspaceId = String(owner.rows?.[0]?.workspace_id || "").trim();
   }
@@ -1347,10 +1307,7 @@ export async function saveBookSnapshot(userId, workspaceId, bookId, input) {
 
     const currentVersion = Number(ownedBook.rows[0].current_version || 0);
     const latestSnapshot = await getLatestBookSnapshot(canonicalBookId, workspace.id);
-    const effectiveCurrentVersion = Math.max(
-      currentVersion,
-      Number(latestSnapshot?.version || 0)
-    );
+    const effectiveCurrentVersion = Math.max(currentVersion, Number(latestSnapshot?.version || 0));
 
     if (expectedVersion !== null && expectedVersion !== effectiveCurrentVersion) {
       throw new BookSnapshotConflictError(
@@ -1380,8 +1337,7 @@ export async function saveBookSnapshot(userId, workspaceId, bookId, input) {
 
     const nextVersion = effectiveCurrentVersion + 1;
     const writtenAt =
-      String(input?.savedAt || input?.createdAt || "").trim() ||
-      new Date().toISOString();
+      String(input?.savedAt || input?.createdAt || "").trim() || new Date().toISOString();
     const stored = await writePixbookLedgerState({
       accountId: workspace.id,
       bookId: canonicalBookId,

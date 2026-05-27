@@ -73,12 +73,12 @@ async function processFile(rawFile) {
 
 async function uploadFile(e) {
   const files = Array.from(e.target.files || []);
-  
+
   try {
     if (props.multiple) {
       const processedFiles = await Promise.all(files.map(processFile));
       file.value = processedFiles;
-      filename.value = files.map(f => f.name).join(", ");
+      filename.value = files.map((f) => f.name).join(", ");
     } else {
       const processedFile = await processFile(files[0]);
       file.value = processedFile;
@@ -119,7 +119,7 @@ function handleDragLeave() {
         sizeClasses[size],
         isDragOver
           ? 'border-[var(--ui-primary)] bg-[var(--ui-primary-muted)] text-[var(--ui-fg)]'
-          : ''
+          : '',
       ]"
     >
       <input
@@ -132,7 +132,9 @@ function handleDragLeave() {
       />
       <label :for="inputId" class="cursor-pointer block text-center">
         <div class="flex flex-col items-center gap-3">
-          <div class="rounded-[var(--ui-radius-md)] border border-[var(--ui-border)] bg-[var(--ui-surface-hover)] p-3">
+          <div
+            class="rounded-[var(--ui-radius-md)] border border-[var(--ui-border)] bg-[var(--ui-surface-hover)] p-3"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -176,7 +178,7 @@ function handleDragLeave() {
         'inline-flex items-center gap-2 rounded-[var(--ui-radius-md)] border border-[var(--ui-border)]',
         'cursor-pointer bg-[var(--ui-surface)] font-medium text-[var(--ui-fg)]',
         'transition-all duration-200 hover:bg-[var(--ui-surface-hover)] hover:border-[var(--ui-primary)]',
-        sizeClasses[size]
+        sizeClasses[size],
       ]"
     >
       <svg

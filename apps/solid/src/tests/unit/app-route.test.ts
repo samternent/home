@@ -37,11 +37,26 @@ const mockHost = {
   activeAppLabel: ref<string | null>(null),
   activeTarget: ref<{ url: string; title: string } | null>(null),
   error: ref<string | null>(null),
-  tabs: ref([] as Array<{ id: string; label: string; appId: string; appLabel: string; target: { title: string; url: string } }>),
+  tabs: ref(
+    [] as Array<{
+      id: string;
+      label: string;
+      appId: string;
+      appLabel: string;
+      target: { title: string; url: string };
+    }>,
+  ),
   activeTabId: ref<string | null>(null),
 };
 const mockLibrary = {
-  selectedItem: ref(null as null | { kind: string; title: string; modifiedLabel?: string; capabilities?: Array<{ id: string; label: string; description: string; status: string }> }),
+  selectedItem: ref(
+    null as null | {
+      kind: string;
+      title: string;
+      modifiedLabel?: string;
+      capabilities?: Array<{ id: string; label: string; description: string; status: string }>;
+    },
+  ),
 };
 const mockTodoWorkingCopy = {
   items: ref([] as Array<{ completed: boolean }>),
@@ -131,7 +146,7 @@ function createWrapper() {
       stubs: {
         RouterLink: {
           props: ["to"],
-          template: "<a :href=\"to\"><slot /></a>",
+          template: '<a :href="to"><slot /></a>',
         },
         ThemeModeToggle: {
           template: "<span>Theme toggle</span>",
@@ -153,8 +168,7 @@ describe("RouteApp", () => {
     mockState.error.value = null;
     mockWorkspace.status.value = "ready";
     mockWorkspace.currentScope.value = "private";
-    mockWorkspace.currentTargetUrl.value =
-      "https://pod.example/concord/workspace/private/";
+    mockWorkspace.currentTargetUrl.value = "https://pod.example/concord/workspace/private/";
     mockAccount.selectedPod.value = "https://pod.example/";
     mockUi.sidebarCollapsed.value = false;
     mockUi.consoleOpen.value = true;

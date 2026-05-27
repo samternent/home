@@ -1,10 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import {
-  namedSemanticThemes,
-  rootSemanticThemes,
-} from "../src/themes/semanticThemeContract.js";
+import { namedSemanticThemes, rootSemanticThemes } from "../src/themes/semanticThemeContract.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -13,8 +10,7 @@ const rootDir = path.resolve(__dirname, "..");
 const tokensCssPath = path.join(rootDir, "src/design-system/tokens.css");
 const themesDir = path.join(rootDir, "src/themes");
 
-const generatedHeader =
-  "/* This file is generated from src/themes/semanticThemeContract.js. */";
+const generatedHeader = "/* This file is generated from src/themes/semanticThemeContract.js. */";
 
 const singletonThemeSelectors = {
   "neon-noir": {
@@ -72,9 +68,7 @@ function renderThemeCss(themeName, variants) {
 
   for (const mode of ["light", "dark"]) {
     if (!variants[mode]) continue;
-    sections.push(
-      renderRule(getThemeSelector(themeName, mode), variants[mode]),
-    );
+    sections.push(renderRule(getThemeSelector(themeName, mode), variants[mode]));
     sections.push("");
   }
 

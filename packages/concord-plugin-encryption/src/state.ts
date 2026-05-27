@@ -42,17 +42,11 @@ export function createEmptyState(): EncryptionState {
   };
 }
 
-export function getScopeState(
-  state: EncryptionState,
-  scope: string
-): ScopeState {
+export function getScopeState(state: EncryptionState, scope: string): ScopeState {
   return state.scopes[scope] ?? { currentEpoch: 1 };
 }
 
-export function addWrap(
-  state: EncryptionState,
-  record: WrapRecord
-): EncryptionState {
+export function addWrap(state: EncryptionState, record: WrapRecord): EncryptionState {
   const scopeWraps = state.wraps[record.scope] ?? {};
   const epochWraps = scopeWraps[record.epoch] ?? {};
   const principalWraps = epochWraps[record.principalId] ?? [];
@@ -72,10 +66,7 @@ export function addWrap(
   };
 }
 
-export function addWarning(
-  state: EncryptionState,
-  warning: EncryptionWarning
-): EncryptionState {
+export function addWarning(state: EncryptionState, warning: EncryptionWarning): EncryptionState {
   return {
     ...state,
     warnings: [...state.warnings, warning],

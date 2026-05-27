@@ -57,16 +57,10 @@ const charMap: Record<string, number> = {
 };
 
 function decodeLayer(layer: SpriteLayer, size: number) {
-  return layer.data.map((row) =>
-    row.split("").map((char) => charMap[char] || 0)
-  );
+  return layer.data.map((row) => row.split("").map((char) => charMap[char] || 0));
 }
 
-function applyLayer(
-  base: number[][],
-  layer: number[][],
-  size: number
-): number[][] {
+function applyLayer(base: number[][], layer: number[][], size: number): number[][] {
   const next = base.map((row) => row.slice());
   for (let y = 0; y < size; y += 1) {
     for (let x = 0; x < size; x += 1) {
@@ -76,14 +70,10 @@ function applyLayer(
   return next;
 }
 
-const spriteSize = computed(
-  () => props.sticker.attributes.size || activeKit.value.size
-);
+const spriteSize = computed(() => props.sticker.attributes.size || activeKit.value.size);
 
 const palette = computed(() => {
-  const pool = props.palettes?.length
-    ? props.palettes
-    : activeKit.value.palettes;
+  const pool = props.palettes?.length ? props.palettes : activeKit.value.palettes;
   const match = pool.find((entry) => entry.id === props.sticker.paletteId);
   return (
     match || {
@@ -95,9 +85,7 @@ const palette = computed(() => {
 
 const missingPalette = ["#0f172a", "#334155", "#475569", "#94a3b8"];
 
-const fillColors = computed(() =>
-  props.missing ? missingPalette : palette.value.colors
-);
+const fillColors = computed(() => (props.missing ? missingPalette : palette.value.colors));
 
 function findLayer(list: SpriteLayer[], id?: string | null) {
   if (!id) return null;
@@ -105,42 +93,27 @@ function findLayer(list: SpriteLayer[], id?: string | null) {
 }
 
 const bodyLayer = computed(() =>
-  findLayer(
-    activeKit.value.bodies as SpriteLayer[],
-    props.sticker.attributes.bodyId
-  )
+  findLayer(activeKit.value.bodies as SpriteLayer[], props.sticker.attributes.bodyId),
 );
 const eyesLayer = computed(() =>
-  findLayer(
-    activeKit.value.eyes as SpriteLayer[],
-    props.sticker.attributes.eyesId
-  )
+  findLayer(activeKit.value.eyes as SpriteLayer[], props.sticker.attributes.eyesId),
 );
 const accessoryLayer = computed(() =>
-  findLayer(
-    activeKit.value.accessories as SpriteLayer[],
-    props.sticker.attributes.accessoryId
-  )
+  findLayer(activeKit.value.accessories as SpriteLayer[], props.sticker.attributes.accessoryId),
 );
 const frameLayer = computed(() =>
-  findLayer(
-    activeKit.value.frames as SpriteLayer[],
-    props.sticker.attributes.frameId
-  )
+  findLayer(activeKit.value.frames as SpriteLayer[], props.sticker.attributes.frameId),
 );
 const fxLayer = computed(() =>
-  findLayer(activeKit.value.fx as SpriteLayer[], props.sticker.attributes.fxId)
+  findLayer(activeKit.value.fx as SpriteLayer[], props.sticker.attributes.fxId),
 );
 
 const baseGrid = computed(() => {
   const size = spriteSize.value;
   let grid = Array.from({ length: size }, () => new Array(size).fill(0));
-  const layers = [
-    frameLayer.value,
-    bodyLayer.value,
-    eyesLayer.value,
-    accessoryLayer.value,
-  ].filter(Boolean) as SpriteLayer[];
+  const layers = [frameLayer.value, bodyLayer.value, eyesLayer.value, accessoryLayer.value].filter(
+    Boolean,
+  ) as SpriteLayer[];
   for (const layer of layers) {
     grid = applyLayer(grid, decodeLayer(layer, size), size);
   }
@@ -158,34 +131,21 @@ const pixelSize = computed(() => spriteBounds / spriteSize.value);
 const offset = computed(() => (200 - spriteBounds) / 2);
 
 const finishSeed = computed(() =>
-  props.packId ? `${props.packId}:${props.sticker.id}` : props.sticker.id
+  props.packId ? `${props.packId}:${props.sticker.id}` : props.sticker.id,
 );
-const finishAngle = computed(() =>
-  Math.floor(hashToRange(finishSeed.value, 10, 70))
-);
-const shimmerHue = computed(() =>
-  Math.floor(hashToRange(`${finishSeed.value}:hue`, 180, 320))
-);
+const finishAngle = computed(() => Math.floor(hashToRange(finishSeed.value, 10, 70)));
+const shimmerHue = computed(() => Math.floor(hashToRange(`${finishSeed.value}:hue`, 180, 320)));
 const mythicPhaseSeconds = computed(() =>
-  Math.floor(hashToRange(`${finishSeed.value}:phase`, 0, 9))
+  Math.floor(hashToRange(`${finishSeed.value}:phase`, 0, 9)),
 );
 const sparklePositions = computed(() => {
-  const count =
-    props.sticker.rarity === "mythic"
-      ? 12
-      : finishKind.value === "sparkle"
-      ? 6
-      : 4;
+  const count = props.sticker.rarity === "mythic" ? 12 : finishKind.value === "sparkle" ? 6 : 4;
   return buildSparklePositions(`${finishSeed.value}:sparkle`, count);
 });
 
 const finishKind = computed(() => props.finish || "base");
-const showSheen = computed(() =>
-  ["foil", "holo", "prismatic"].includes(finishKind.value)
-);
-const showGlow = computed(() =>
-  ["sparkle", "holo", "prismatic"].includes(finishKind.value)
-);
+const showSheen = computed(() => ["foil", "holo", "prismatic"].includes(finishKind.value));
+const showGlow = computed(() => ["sparkle", "holo", "prismatic"].includes(finishKind.value));
 const showMythicLayer = computed(() => props.sticker.rarity === "mythic");
 
 const gradientId = computed(() => `sprite-finish-${props.sticker.id}`);
@@ -195,16 +155,10 @@ const finishMaskId = computed(() => `sprite-finish-mask-${props.sticker.id}`);
 const shadowId = computed(() => `sprite-shadow-${props.sticker.id}`);
 const glowId = computed(() => `sprite-glow-${props.sticker.id}`);
 
-const outlineStroke = computed(() =>
-  props.missing ? "#334155" : "transparent"
-);
-const backgroundFill = computed(() =>
-  props.missing ? fillColors.value[0] : "transparent"
-);
+const outlineStroke = computed(() => (props.missing ? "#334155" : "transparent"));
+const backgroundFill = computed(() => (props.missing ? fillColors.value[0] : "transparent"));
 const pixelFill = (cell: number) =>
-  cell === 0 && !props.missing
-    ? "transparent"
-    : fillColors.value[cell] || fillColors.value[1];
+  cell === 0 && !props.missing ? "transparent" : fillColors.value[cell] || fillColors.value[1];
 </script>
 
 <template>
@@ -267,20 +221,11 @@ const pixelFill = (cell: number) =>
         />
       </linearGradient>
       <filter :id="shadowId" x="-20%" y="-20%" width="140%" height="140%">
-        <feDropShadow
-          dx="0"
-          dy="6"
-          stdDeviation="6"
-          flood-color="#0f172a"
-          flood-opacity="0.25"
-        />
+        <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#0f172a" flood-opacity="0.25" />
       </filter>
       <filter :id="glowId" x="-40%" y="-40%" width="180%" height="180%">
         <feGaussianBlur stdDeviation="6" result="blur" />
-        <feColorMatrix
-          type="matrix"
-          values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.5 0"
-        />
+        <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.5 0" />
         <feBlend in="SourceGraphic" in2="blur" mode="screen" />
       </filter>
       <mask :id="maskId">
@@ -318,10 +263,7 @@ const pixelFill = (cell: number) =>
         stroke-width="0"
       />
 
-      <g
-        v-if="showGlow || showSheen || showMythicLayer"
-        :mask="`url(#${finishMaskId})`"
-      >
+      <g v-if="showGlow || showSheen || showMythicLayer" :mask="`url(#${finishMaskId})`">
         <g v-if="showGlow" opacity="0.35">
           <rect
             x="18"
@@ -334,20 +276,8 @@ const pixelFill = (cell: number) =>
           />
         </g>
         <g v-if="showSheen" opacity="0.35">
-          <rect
-            x="20"
-            y="20"
-            width="160"
-            height="160"
-            :fill="`url(#${gradientId})`"
-          />
-          <rect
-            x="20"
-            y="20"
-            width="160"
-            height="160"
-            :fill="`url(#${gradientIdAlt})`"
-          />
+          <rect x="20" y="20" width="160" height="160" :fill="`url(#${gradientId})`" />
+          <rect x="20" y="20" width="160" height="160" :fill="`url(#${gradientIdAlt})`" />
         </g>
         <g v-if="showMythicLayer" opacity="0.35">
           <rect
@@ -397,7 +327,11 @@ const pixelFill = (cell: number) =>
         </template>
       </g>
       <g
-        v-if="finishKind === 'sparkle' || finishKind === 'prismatic' || props.sticker.rarity === 'mythic'"
+        v-if="
+          finishKind === 'sparkle' ||
+          finishKind === 'prismatic' ||
+          props.sticker.rarity === 'mythic'
+        "
         opacity="0.7"
       >
         <animateTransform

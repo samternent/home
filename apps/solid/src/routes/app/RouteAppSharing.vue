@@ -85,9 +85,7 @@ async function saveAccess() {
   <div class="grid h-full min-h-0 gap-4 xl:grid-cols-[minmax(0,1fr)_22rem] p-4">
     <section class="space-y-4 overflow-auto">
       <Card variant="subtle" padding="sm" class="space-y-3">
-        <p class="m-0 text-[11px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
-          Target
-        </p>
+        <p class="m-0 text-[11px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">Target</p>
 
         <div class="flex flex-wrap gap-2">
           <Button
@@ -102,16 +100,10 @@ async function saveAccess() {
           </Button>
         </div>
 
-        <p
-          v-if="activeTargetUrl"
-          class="m-0 break-all text-[11px] text-[var(--ui-fg-muted)]"
-        >
+        <p v-if="activeTargetUrl" class="m-0 break-all text-[11px] text-[var(--ui-fg-muted)]">
           {{ activeTargetUrl }}
         </p>
-        <p
-          v-else
-          class="m-0 text-[11px] text-[var(--ui-fg-muted)]"
-        >
+        <p v-else class="m-0 text-[11px] text-[var(--ui-fg-muted)]">
           Select a file or folder in Files to manage its sharing.
         </p>
       </Card>
@@ -132,11 +124,11 @@ async function saveAccess() {
           </Badge>
         </div>
 
-        <div class="flex items-center justify-between gap-3 rounded-xl border border-[var(--ui-border)] px-3 py-2">
+        <div
+          class="flex items-center justify-between gap-3 rounded-xl border border-[var(--ui-border)] px-3 py-2"
+        >
           <div>
-            <p class="m-0 text-sm text-[var(--ui-fg)]">
-              Public read
-            </p>
+            <p class="m-0 text-sm text-[var(--ui-fg)]">Public read</p>
             <p class="m-0 text-[11px] text-[var(--ui-fg-muted)]">
               Best-effort across Solid servers.
             </p>
@@ -154,9 +146,7 @@ async function saveAccess() {
               aria-label="Share with WebID"
               placeholder="https://alice.example/profile/card#me"
             />
-            <Button size="xs" variant="secondary" @click="addAgent(agentInput)">
-              Add
-            </Button>
+            <Button size="xs" variant="secondary" @click="addAgent(agentInput)"> Add </Button>
           </div>
 
           <div class="flex flex-wrap gap-2">
@@ -187,12 +177,7 @@ async function saveAccess() {
           </div>
         </div>
 
-        <Button
-          size="sm"
-          variant="secondary"
-          :disabled="!activeTargetUrl"
-          @click="saveAccess"
-        >
+        <Button size="sm" variant="secondary" :disabled="!activeTargetUrl" @click="saveAccess">
           Save sharing
         </Button>
       </Card>
@@ -204,7 +189,10 @@ async function saveAccess() {
           Current access
         </p>
 
-        <div v-if="workspace.accessSummary.value" class="space-y-2 text-[11px] text-[var(--ui-fg-muted)]">
+        <div
+          v-if="workspace.accessSummary.value"
+          class="space-y-2 text-[11px] text-[var(--ui-fg-muted)]"
+        >
           <div>public: {{ workspace.accessSummary.value.publicRead }}</div>
           <div>grants: {{ workspace.accessSummary.value.grants.length }}</div>
           <div>visibility: {{ workspace.accessSummary.value.visibility }}</div>

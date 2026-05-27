@@ -1,12 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref, shallowRef, watch } from "vue";
 import { generateId, stripIdentityKey } from "ternent-utils";
-import {
-  SBadge,
-  SDialog,
-  SListButton,
-  SSegmentedControl,
-} from "ternent-ui/components";
+import { SBadge, SDialog, SListButton, SSegmentedControl } from "ternent-ui/components";
 import { Button } from "ternent-ui/primitives";
 
 import { useLedger } from "../../module/ledger/useLedger";
@@ -71,11 +66,9 @@ function formatDate(
   options: Intl.DateTimeFormatOptions = {
     dateStyle: "medium",
     timeStyle: "short",
-  }
+  },
 ) {
-  return iso
-    ? new Intl.DateTimeFormat(undefined, options).format(new Date(iso))
-    : "";
+  return iso ? new Intl.DateTimeFormat(undefined, options).format(new Date(iso)) : "";
 }
 
 function parseTags(raw: string) {
@@ -88,7 +81,7 @@ function parseTags(raw: string) {
 
 function stripUndefined<T extends Record<string, any>>(payload: T): T {
   return Object.fromEntries(
-    Object.entries(payload).filter(([, value]) => value !== undefined)
+    Object.entries(payload).filter(([, value]) => value !== undefined),
   ) as T;
 }
 
@@ -102,7 +95,7 @@ const vaults = computed<VaultEntry[]>(
           ...(entry.data as Vault),
           kind: (entry.data as Vault).kind ?? "personal",
         },
-      })) as VaultEntry[]
+      })) as VaultEntry[],
 );
 
 const secrets = computed<SecretEntry[]>(
@@ -112,20 +105,20 @@ const secrets = computed<SecretEntry[]>(
       .map((entry) => ({
         entryId: entry.entryId,
         data: entry.data as Secret,
-      })) as SecretEntry[]
+      })) as SecretEntry[],
 );
 
 const permissionGrants = computed<PermissionGrantEntry[]>(
   () =>
     Object.values(
-      bridge.collections.byKind.value?.["permission-grants"] || {}
-    ) as PermissionGrantEntry[]
+      bridge.collections.byKind.value?.["permission-grants"] || {},
+    ) as PermissionGrantEntry[],
 );
 
 const usersByIdentity = computed(() => {
-  const entries = Object.values(
-    bridge.collections.byKind.value?.users || {}
-  ) as { data: { publicIdentityKey?: string; name?: string } }[];
+  const entries = Object.values(bridge.collections.byKind.value?.users || {}) as {
+    data: { publicIdentityKey?: string; name?: string };
+  }[];
   const map = new Map<string, { publicIdentityKey?: string; name?: string }>();
   for (const entry of entries) {
     if (!entry?.data?.publicIdentityKey) continue;
@@ -134,15 +127,11 @@ const usersByIdentity = computed(() => {
   return map;
 });
 
-const canAddItem = computed(
-  () => bridge.flags.value.hasLedger && bridge.flags.value.authed
-);
+const canAddItem = computed(() => bridge.flags.value.hasLedger && bridge.flags.value.authed);
 
 const activeVaultId = shallowRef<string | null>(null);
 const activeSecretId = shallowRef<string | null>(null);
-const selectedFilter = shallowRef<
-  "all" | "password" | "note" | "token" | "recovery"
->("all");
+const selectedFilter = shallowRef<"all" | "password" | "note" | "token" | "recovery">("all");
 const searchQuery = shallowRef("");
 
 const isCreateVaultDialogOpen = ref(false);
@@ -184,14 +173,10 @@ const filterOptions = [
 ];
 
 const personalVaults = computed(() =>
-  vaults.value.filter((vault) => vault.data.kind === "personal")
+  vaults.value.filter((vault) => vault.data.kind === "personal"),
 );
-const sharedVaults = computed(() =>
-  vaults.value.filter((vault) => vault.data.kind === "shared")
-);
-const shareVaults = computed(() =>
-  vaults.value.filter((vault) => vault.data.kind === "share")
-);
+const sharedVaults = computed(() => vaults.value.filter((vault) => vault.data.kind === "shared"));
+const shareVaults = computed(() => vaults.value.filter((vault) => vault.data.kind === "share"));
 
 const orderedVaults = computed(() => [
   ...personalVaults.value,
@@ -200,20 +185,17 @@ const orderedVaults = computed(() => [
 ]);
 
 const selectedVault = computed(
-  () => vaults.value.find((vault) => vault.data.id === activeVaultId.value) ?? null
+  () => vaults.value.find((vault) => vault.data.id === activeVaultId.value) ?? null,
 );
 
 const selectedVaultPermissionId = computed(
-  () =>
-    selectedVault.value?.data.permissionId ??
-    selectedVault.value?.data.permission ??
-    null
+  () => selectedVault.value?.data.permissionId ?? selectedVault.value?.data.permission ?? null,
 );
 
 const permissionMembers = computed(() => {
   if (!selectedVaultPermissionId.value) return [];
   return permissionGrants.value.filter(
-    (grant) => grant.data.permissionId === selectedVaultPermissionId.value
+    (grant) => grant.data.permissionId === selectedVaultPermissionId.value,
   );
 });
 
@@ -253,28 +235,25 @@ const filteredSecrets = computed(() => {
 });
 
 const activeSecret = computed(
-  () =>
-    filteredSecrets.value.find((secret) => secret.data.id === activeSecretId.value) ??
-    null
+  () => filteredSecrets.value.find((secret) => secret.data.id === activeSecretId.value) ?? null,
 );
 
 const vaultLocked = computed(() => Boolean(selectedVault.value?.data.keyMissing));
-const secretLocked = computed(
-  () => Boolean(activeSecret.value?.data.keyMissing || vaultLocked.value)
+const secretLocked = computed(() =>
+  Boolean(activeSecret.value?.data.keyMissing || vaultLocked.value),
 );
 
-const canEditSecret = computed(
-  () => Boolean(canAddItem.value && selectedVault.value && !vaultLocked.value)
+const canEditSecret = computed(() =>
+  Boolean(canAddItem.value && selectedVault.value && !vaultLocked.value),
 );
 
-const canShareSecret = computed(
-  () =>
-    Boolean(
-      activeSecret.value &&
-        !vaultLocked.value &&
-        !activeSecret.value?.data.keyMissing &&
-        selectedVault.value?.data.kind !== "share"
-    )
+const canShareSecret = computed(() =>
+  Boolean(
+    activeSecret.value &&
+    !vaultLocked.value &&
+    !activeSecret.value?.data.keyMissing &&
+    selectedVault.value?.data.kind !== "share",
+  ),
 );
 
 watch(
@@ -284,14 +263,12 @@ watch(
       activeVaultId.value = null;
       return;
     }
-    const isActiveStillVisible = nextVaults.some(
-      (vault) => vault.data.id === activeVaultId.value
-    );
+    const isActiveStillVisible = nextVaults.some((vault) => vault.data.id === activeVaultId.value);
     if (!isActiveStillVisible) {
       activeVaultId.value = nextVaults[0].data.id;
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 watch(
@@ -302,13 +279,13 @@ watch(
       return;
     }
     const isActiveStillVisible = nextSecrets.some(
-      (secret) => secret.data.id === activeSecretId.value
+      (secret) => secret.data.id === activeSecretId.value,
     );
     if (!isActiveStillVisible) {
       activeSecretId.value = nextSecrets[0].data.id;
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 watch(activeSecretId, () => {
@@ -390,7 +367,7 @@ function addVaultMember() {
   if (!newVaultMember.value) return;
   const next = newVaultMember.value;
   const exists = newVaultMembers.value.some(
-    (member) => member?.publicIdentityKey === next?.publicIdentityKey
+    (member) => member?.publicIdentityKey === next?.publicIdentityKey,
   );
   if (!exists) newVaultMembers.value = [...newVaultMembers.value, next];
   newVaultMember.value = null;
@@ -400,7 +377,7 @@ function addShareMember() {
   if (!newShareMember.value) return;
   const next = newShareMember.value;
   const exists = newShareMembers.value.some(
-    (member) => member?.publicIdentityKey === next?.publicIdentityKey
+    (member) => member?.publicIdentityKey === next?.publicIdentityKey,
   );
   if (!exists) newShareMembers.value = [...newShareMembers.value, next];
   newShareMember.value = null;
@@ -414,11 +391,7 @@ async function createVault() {
   if (newVaultKind.value === "shared" && newVaultMembers.value.length) {
     for (const member of newVaultMembers.value) {
       if (!member?.publicIdentityKey || !member?.publicEncryptionKey) continue;
-      await addUserPermission(
-        permission.id,
-        member.publicIdentityKey,
-        member.publicEncryptionKey
-      );
+      await addUserPermission(permission.id, member.publicIdentityKey, member.publicEncryptionKey);
     }
   }
   const vaultId = generateId();
@@ -433,7 +406,7 @@ async function createVault() {
       updatedAt: Date.now(),
     }),
     "vaults",
-    permission.id
+    permission.id,
   );
   activeVaultId.value = vaultId;
   isCreateVaultDialogOpen.value = false;
@@ -462,7 +435,7 @@ async function createSecret() {
       updatedAt: Date.now(),
     }),
     "vault-secrets",
-    permissionId
+    permissionId,
   );
   activeSecretId.value = secretId;
   isCreateSecretDialogOpen.value = false;
@@ -489,7 +462,7 @@ async function updateSecret() {
       updatedAt: Date.now(),
     }),
     "vault-secrets",
-    permissionId ?? null
+    permissionId ?? null,
   );
   isEditSecretDialogOpen.value = false;
 }
@@ -500,7 +473,7 @@ async function addUserToPermission(permissionId: string) {
   await addUserPermission(
     permissionId,
     selectedUser.publicIdentityKey,
-    selectedUser.publicEncryptionKey
+    selectedUser.publicEncryptionKey,
   );
   selectedUsersByPermission[permissionId] = null;
 }
@@ -513,11 +486,7 @@ async function shareSecret() {
   if (!permission?.id) return;
   for (const member of newShareMembers.value) {
     if (!member?.publicIdentityKey || !member?.publicEncryptionKey) continue;
-    await addUserPermission(
-      permission.id,
-      member.publicIdentityKey,
-      member.publicEncryptionKey
-    );
+    await addUserPermission(permission.id, member.publicIdentityKey, member.publicEncryptionKey);
   }
   const shareVaultId = generateId();
   await addItem(
@@ -531,7 +500,7 @@ async function shareSecret() {
       updatedAt: Date.now(),
     }),
     "vaults",
-    permission.id
+    permission.id,
   );
   await addItem(
     stripUndefined({
@@ -549,26 +518,19 @@ async function shareSecret() {
       updatedAt: Date.now(),
     }),
     "vault-secrets",
-    permission.id
+    permission.id,
   );
   isShareDialogOpen.value = false;
 }
 
 async function rotateVaultKey() {
   if (!selectedVault.value || !selectedVaultPermissionId.value) return;
-  const permission = await createPermission(
-    `${selectedVault.value.data.title} (rotated)`,
-    "vault"
-  );
+  const permission = await createPermission(`${selectedVault.value.data.title} (rotated)`, "vault");
   if (!permission?.id) return;
   for (const member of permissionMembers.value) {
     const user = usersByIdentity.value.get(member.data.identity);
     if (!user?.publicIdentityKey || !user?.publicEncryptionKey) continue;
-    await addUserPermission(
-      permission.id,
-      user.publicIdentityKey,
-      user.publicEncryptionKey
-    );
+    await addUserPermission(permission.id, user.publicIdentityKey, user.publicEncryptionKey);
   }
   await addItem(
     stripUndefined({
@@ -577,7 +539,7 @@ async function rotateVaultKey() {
       updatedAt: Date.now(),
     }),
     "vaults",
-    permission.id
+    permission.id,
   );
   isRotateDialogOpen.value = false;
 }
@@ -626,9 +588,7 @@ const secretTypeLabel = (value?: Secret["type"]) => {
       </div>
 
       <div class="flex flex-col gap-3">
-        <div class="text-xs uppercase tracking-[0.16em] opacity-60">
-          Personal
-        </div>
+        <div class="text-xs uppercase tracking-[0.16em] opacity-60">Personal</div>
         <SListButton
           v-for="vault in personalVaults"
           :key="vault.entryId"
@@ -641,25 +601,16 @@ const secretTypeLabel = (value?: Secret["type"]) => {
             {{ vault.data.keyMissing ? "Insufficient permission" : vault.data.title }}
           </span>
           <template #badge>
-            <SBadge
-              v-if="vault.data.keyMissing"
-              size="xs"
-              tone="critical"
-              variant="outline"
-            >
+            <SBadge v-if="vault.data.keyMissing" size="xs" tone="critical" variant="outline">
               Locked
             </SBadge>
           </template>
         </SListButton>
-        <div v-if="!personalVaults.length" class="text-xs opacity-60">
-          No personal vaults.
-        </div>
+        <div v-if="!personalVaults.length" class="text-xs opacity-60">No personal vaults.</div>
       </div>
 
       <div class="flex flex-col gap-3">
-        <div class="text-xs uppercase tracking-[0.16em] opacity-60">
-          Shared
-        </div>
+        <div class="text-xs uppercase tracking-[0.16em] opacity-60">Shared</div>
         <SListButton
           v-for="vault in sharedVaults"
           :key="vault.entryId"
@@ -672,25 +623,16 @@ const secretTypeLabel = (value?: Secret["type"]) => {
             {{ vault.data.keyMissing ? "Insufficient permission" : vault.data.title }}
           </span>
           <template #badge>
-            <SBadge
-              v-if="vault.data.keyMissing"
-              size="xs"
-              tone="critical"
-              variant="outline"
-            >
+            <SBadge v-if="vault.data.keyMissing" size="xs" tone="critical" variant="outline">
               Locked
             </SBadge>
           </template>
         </SListButton>
-        <div v-if="!sharedVaults.length" class="text-xs opacity-60">
-          No shared vaults.
-        </div>
+        <div v-if="!sharedVaults.length" class="text-xs opacity-60">No shared vaults.</div>
       </div>
 
       <div class="flex flex-col gap-3">
-        <div class="text-xs uppercase tracking-[0.16em] opacity-60">
-          Shared individually
-        </div>
+        <div class="text-xs uppercase tracking-[0.16em] opacity-60">Shared individually</div>
         <SListButton
           v-for="vault in shareVaults"
           :key="vault.entryId"
@@ -703,19 +645,12 @@ const secretTypeLabel = (value?: Secret["type"]) => {
             {{ vault.data.keyMissing ? "Insufficient permission" : vault.data.title }}
           </span>
           <template #badge>
-            <SBadge
-              v-if="vault.data.keyMissing"
-              size="xs"
-              tone="critical"
-              variant="outline"
-            >
+            <SBadge v-if="vault.data.keyMissing" size="xs" tone="critical" variant="outline">
               Locked
             </SBadge>
           </template>
         </SListButton>
-        <div v-if="!shareVaults.length" class="text-xs opacity-60">
-          No share vaults.
-        </div>
+        <div v-if="!shareVaults.length" class="text-xs opacity-60">No share vaults.</div>
       </div>
     </aside>
 
@@ -728,11 +663,7 @@ const secretTypeLabel = (value?: Secret["type"]) => {
             {{ selectedVault?.data.title || "Vault" }}
           </h2>
           <span class="text-xs text-[var(--ui-fg-muted)]">
-            {{
-              selectedVault
-                ? `${vaultSecrets.length} secrets`
-                : "Select a vault"
-            }}
+            {{ selectedVault ? `${vaultSecrets.length} secrets` : "Select a vault" }}
           </span>
         </div>
 
@@ -830,11 +761,13 @@ const secretTypeLabel = (value?: Secret["type"]) => {
                     <p class="truncate">
                       {{
                         secret.data.keyMissing || vaultLocked
-                          ? 'Insufficient permission'
+                          ? "Insufficient permission"
                           : secret.data.label
                       }}
                     </p>
-                    <div class="flex flex-wrap items-center gap-2 text-xs text-[var(--ui-fg-muted)]">
+                    <div
+                      class="flex flex-wrap items-center gap-2 text-xs text-[var(--ui-fg-muted)]"
+                    >
                       <SBadge size="xs" tone="neutral" variant="outline">
                         {{ secretTypeLabel(secret.data.type) }}
                       </SBadge>
@@ -868,16 +801,16 @@ const secretTypeLabel = (value?: Secret["type"]) => {
                     >
                       {{
                         secret.data.keyMissing || vaultLocked
-                          ? 'Locked'
-                          : selectedVault?.data.kind === 'personal'
-                            ? 'Private'
-                            : 'Shared'
+                          ? "Locked"
+                          : selectedVault?.data.kind === "personal"
+                            ? "Private"
+                            : "Shared"
                       }}
                     </SBadge>
                     <SBadge size="xs" tone="neutral" variant="outline">
                       {{
                         formatDate(secret.data.updatedAt, {
-                          dateStyle: 'medium',
+                          dateStyle: "medium",
                         })
                       }}
                     </SBadge>
@@ -899,9 +832,7 @@ const secretTypeLabel = (value?: Secret["type"]) => {
           >
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-xs uppercase tracking-[0.16em] opacity-60">
-                  Secret details
-                </p>
+                <p class="text-xs uppercase tracking-[0.16em] opacity-60">Secret details</p>
                 <h3 class="text-sm font-semibold">
                   {{
                     activeSecret?.data.keyMissing || vaultLocked
@@ -949,23 +880,17 @@ const secretTypeLabel = (value?: Secret["type"]) => {
                   {{ secretTypeLabel(activeSecret.data.type) }}
                 </SBadge>
                 <SBadge size="xs" tone="secondary" variant="outline">
-                  {{
-                    selectedVault?.data.kind === 'personal' ? 'Private' : 'Shared'
-                  }}
+                  {{ selectedVault?.data.kind === "personal" ? "Private" : "Shared" }}
                 </SBadge>
               </div>
 
               <div class="flex flex-col gap-1">
-                <span class="text-xs uppercase tracking-[0.16em] opacity-60">
-                  Label
-                </span>
+                <span class="text-xs uppercase tracking-[0.16em] opacity-60"> Label </span>
                 <span>{{ activeSecret.data.label }}</span>
               </div>
 
               <div v-if="activeSecret.data.url" class="flex flex-col gap-1">
-                <span class="text-xs uppercase tracking-[0.16em] opacity-60">
-                  URL
-                </span>
+                <span class="text-xs uppercase tracking-[0.16em] opacity-60"> URL </span>
                 <a
                   :href="activeSecret.data.url"
                   target="_blank"
@@ -977,9 +902,7 @@ const secretTypeLabel = (value?: Secret["type"]) => {
               </div>
 
               <div v-if="activeSecret.data.username" class="flex flex-col gap-1">
-                <span class="text-xs uppercase tracking-[0.16em] opacity-60">
-                  Username
-                </span>
+                <span class="text-xs uppercase tracking-[0.16em] opacity-60"> Username </span>
                 <span class="break-all">{{ activeSecret.data.username }}</span>
               </div>
 
@@ -1008,27 +931,19 @@ const secretTypeLabel = (value?: Secret["type"]) => {
                   </div>
                 </div>
                 <div class="font-mono tracking-[0.2em]">
-                  {{
-                    isSecretRevealed
-                      ? activeSecret.data.password
-                      : "******"
-                  }}
+                  {{ isSecretRevealed ? activeSecret.data.password : "******" }}
                 </div>
               </div>
 
               <div v-if="activeSecret.data.notes" class="flex flex-col gap-1">
-                <span class="text-xs uppercase tracking-[0.16em] opacity-60">
-                  Notes
-                </span>
+                <span class="text-xs uppercase tracking-[0.16em] opacity-60"> Notes </span>
                 <p class="text-xs leading-relaxed whitespace-pre-wrap">
                   {{ activeSecret.data.notes }}
                 </p>
               </div>
 
               <div v-if="activeSecret.data.tags?.length" class="flex flex-col gap-2">
-                <span class="text-xs uppercase tracking-[0.16em] opacity-60">
-                  Tags
-                </span>
+                <span class="text-xs uppercase tracking-[0.16em] opacity-60"> Tags </span>
                 <div class="flex flex-wrap gap-2">
                   <SBadge
                     v-for="tag in activeSecret.data.tags"
@@ -1047,11 +962,7 @@ const secretTypeLabel = (value?: Secret["type"]) => {
       </div>
     </section>
 
-    <SDialog
-      v-model:open="isCreateVaultDialogOpen"
-      title="Create vault"
-      size="lg"
-    >
+    <SDialog v-model:open="isCreateVaultDialogOpen" title="Create vault" size="lg">
       <template #icon>
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -1061,19 +972,13 @@ const secretTypeLabel = (value?: Secret["type"]) => {
           stroke="currentColor"
           class="size-4"
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M12 4.5v15m7.5-7.5h-15"
-          />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
       </template>
 
       <div class="flex flex-col gap-4">
         <div class="flex flex-col gap-2">
-          <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-            Title
-          </label>
+          <label class="text-xs uppercase tracking-[0.16em] opacity-60"> Title </label>
           <input
             v-model="newVaultTitle"
             type="text"
@@ -1083,9 +988,7 @@ const secretTypeLabel = (value?: Secret["type"]) => {
         </div>
 
         <div class="flex flex-col gap-2">
-          <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-            Description
-          </label>
+          <label class="text-xs uppercase tracking-[0.16em] opacity-60"> Description </label>
           <textarea
             v-model="newVaultDescription"
             rows="3"
@@ -1095,9 +998,7 @@ const secretTypeLabel = (value?: Secret["type"]) => {
         </div>
 
         <div class="flex flex-col gap-2">
-          <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-            Vault type
-          </label>
+          <label class="text-xs uppercase tracking-[0.16em] opacity-60"> Vault type </label>
           <SSegmentedControl
             v-model="newVaultKind"
             :items="[
@@ -1109,14 +1010,10 @@ const secretTypeLabel = (value?: Secret["type"]) => {
         </div>
 
         <div v-if="newVaultKind === 'shared'" class="flex flex-col gap-3">
-          <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-            Members
-          </label>
+          <label class="text-xs uppercase tracking-[0.16em] opacity-60"> Members </label>
           <div class="flex items-center gap-2">
             <UserPicker v-model="newVaultMember" />
-            <Button type="button" size="sm" @click="addVaultMember">
-              Add member
-            </Button>
+            <Button type="button" size="sm" @click="addVaultMember"> Add member </Button>
           </div>
           <div v-if="newVaultMembers.length" class="flex flex-col gap-2">
             <div
@@ -1125,10 +1022,7 @@ const secretTypeLabel = (value?: Secret["type"]) => {
               class="flex items-center justify-between rounded-md border border-[var(--ui-border)] px-3 py-2 text-xs"
             >
               <div class="flex items-center gap-2">
-                <IdentityAvatar
-                  :identity="member.publicIdentityKey"
-                  size="xs"
-                />
+                <IdentityAvatar :identity="member.publicIdentityKey" size="xs" />
                 <span class="truncate">
                   {{ member.name || member.publicIdentityKey }}
                 </span>
@@ -1139,7 +1033,7 @@ const secretTypeLabel = (value?: Secret["type"]) => {
                 variant="plain-secondary"
                 @click="
                   newVaultMembers = newVaultMembers.filter(
-                    (item) => item.publicIdentityKey !== member.publicIdentityKey
+                    (item) => item.publicIdentityKey !== member.publicIdentityKey,
                   )
                 "
               >
@@ -1158,11 +1052,7 @@ const secretTypeLabel = (value?: Secret["type"]) => {
       </div>
     </SDialog>
 
-    <SDialog
-      v-model:open="isCreateSecretDialogOpen"
-      title="Create secret"
-      size="lg"
-    >
+    <SDialog v-model:open="isCreateSecretDialogOpen" title="Create secret" size="lg">
       <template #icon>
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -1172,19 +1062,13 @@ const secretTypeLabel = (value?: Secret["type"]) => {
           stroke="currentColor"
           class="size-4"
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M12 4.5v15m7.5-7.5h-15"
-          />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
       </template>
 
       <div class="flex flex-col gap-4">
         <div class="flex flex-col gap-2">
-          <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-            Label
-          </label>
+          <label class="text-xs uppercase tracking-[0.16em] opacity-60"> Label </label>
           <input
             v-model="newSecretLabel"
             type="text"
@@ -1194,9 +1078,7 @@ const secretTypeLabel = (value?: Secret["type"]) => {
         </div>
 
         <div class="flex flex-col gap-2">
-          <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-            Type
-          </label>
+          <label class="text-xs uppercase tracking-[0.16em] opacity-60"> Type </label>
           <SSegmentedControl
             v-model="newSecretType"
             :items="[
@@ -1211,9 +1093,7 @@ const secretTypeLabel = (value?: Secret["type"]) => {
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="flex flex-col gap-2">
-            <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-              Username
-            </label>
+            <label class="text-xs uppercase tracking-[0.16em] opacity-60"> Username </label>
             <input
               v-model="newSecretUsername"
               type="text"
@@ -1222,9 +1102,7 @@ const secretTypeLabel = (value?: Secret["type"]) => {
             />
           </div>
           <div class="flex flex-col gap-2">
-            <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-              Password / Token
-            </label>
+            <label class="text-xs uppercase tracking-[0.16em] opacity-60"> Password / Token </label>
             <input
               v-model="newSecretPassword"
               type="text"
@@ -1235,9 +1113,7 @@ const secretTypeLabel = (value?: Secret["type"]) => {
         </div>
 
         <div class="flex flex-col gap-2">
-          <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-            URL
-          </label>
+          <label class="text-xs uppercase tracking-[0.16em] opacity-60"> URL </label>
           <input
             v-model="newSecretUrl"
             type="text"
@@ -1247,9 +1123,7 @@ const secretTypeLabel = (value?: Secret["type"]) => {
         </div>
 
         <div class="flex flex-col gap-2">
-          <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-            Notes
-          </label>
+          <label class="text-xs uppercase tracking-[0.16em] opacity-60"> Notes </label>
           <textarea
             v-model="newSecretNotes"
             rows="4"
@@ -1259,9 +1133,7 @@ const secretTypeLabel = (value?: Secret["type"]) => {
         </div>
 
         <div class="flex flex-col gap-2">
-          <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-            Tags
-          </label>
+          <label class="text-xs uppercase tracking-[0.16em] opacity-60"> Tags </label>
           <input
             v-model="newSecretTags"
             type="text"
@@ -1299,19 +1171,13 @@ const secretTypeLabel = (value?: Secret["type"]) => {
             stroke-linejoin="round"
             d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z"
           />
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M19.5 7.125 16.862 4.487"
-          />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 7.125 16.862 4.487" />
         </svg>
       </template>
 
       <div class="flex flex-col gap-4">
         <div class="flex flex-col gap-2">
-          <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-            Label
-          </label>
+          <label class="text-xs uppercase tracking-[0.16em] opacity-60"> Label </label>
           <input
             v-model="newSecretLabel"
             type="text"
@@ -1320,9 +1186,7 @@ const secretTypeLabel = (value?: Secret["type"]) => {
         </div>
 
         <div class="flex flex-col gap-2">
-          <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-            Type
-          </label>
+          <label class="text-xs uppercase tracking-[0.16em] opacity-60"> Type </label>
           <SSegmentedControl
             v-model="newSecretType"
             :items="[
@@ -1337,9 +1201,7 @@ const secretTypeLabel = (value?: Secret["type"]) => {
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="flex flex-col gap-2">
-            <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-              Username
-            </label>
+            <label class="text-xs uppercase tracking-[0.16em] opacity-60"> Username </label>
             <input
               v-model="newSecretUsername"
               type="text"
@@ -1347,9 +1209,7 @@ const secretTypeLabel = (value?: Secret["type"]) => {
             />
           </div>
           <div class="flex flex-col gap-2">
-            <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-              Password / Token
-            </label>
+            <label class="text-xs uppercase tracking-[0.16em] opacity-60"> Password / Token </label>
             <input
               v-model="newSecretPassword"
               type="text"
@@ -1359,9 +1219,7 @@ const secretTypeLabel = (value?: Secret["type"]) => {
         </div>
 
         <div class="flex flex-col gap-2">
-          <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-            URL
-          </label>
+          <label class="text-xs uppercase tracking-[0.16em] opacity-60"> URL </label>
           <input
             v-model="newSecretUrl"
             type="text"
@@ -1370,9 +1228,7 @@ const secretTypeLabel = (value?: Secret["type"]) => {
         </div>
 
         <div class="flex flex-col gap-2">
-          <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-            Notes
-          </label>
+          <label class="text-xs uppercase tracking-[0.16em] opacity-60"> Notes </label>
           <textarea
             v-model="newSecretNotes"
             rows="4"
@@ -1381,9 +1237,7 @@ const secretTypeLabel = (value?: Secret["type"]) => {
         </div>
 
         <div class="flex flex-col gap-2">
-          <label class="text-xs uppercase tracking-[0.16em] opacity-60">
-            Tags
-          </label>
+          <label class="text-xs uppercase tracking-[0.16em] opacity-60"> Tags </label>
           <input
             v-model="newSecretTags"
             type="text"
@@ -1423,19 +1277,12 @@ const secretTypeLabel = (value?: Secret["type"]) => {
       </template>
       <div class="flex flex-col gap-4">
         <div class="flex items-center gap-2">
-          <UserPicker
-            v-model="
-              selectedUsersByPermission[selectedVaultPermissionId || '']
-            "
-          />
+          <UserPicker v-model="selectedUsersByPermission[selectedVaultPermissionId || '']" />
           <Button
             type="button"
             size="sm"
             :disabled="!selectedVaultPermissionId"
-            @click="
-              selectedVaultPermissionId &&
-                addUserToPermission(selectedVaultPermissionId)
-            "
+            @click="selectedVaultPermissionId && addUserToPermission(selectedVaultPermissionId)"
           >
             Add member
           </Button>
@@ -1449,22 +1296,16 @@ const secretTypeLabel = (value?: Secret["type"]) => {
           >
             <IdentityAvatar
               :identity="
-                usersByIdentity.get(member.data.identity)?.publicIdentityKey ||
-                member.data.identity
+                usersByIdentity.get(member.data.identity)?.publicIdentityKey || member.data.identity
               "
               size="xs"
             />
             <span class="truncate">
-              {{
-                usersByIdentity.get(member.data.identity)?.name ||
-                member.data.identity
-              }}
+              {{ usersByIdentity.get(member.data.identity)?.name || member.data.identity }}
             </span>
           </div>
         </div>
-        <div v-else class="text-xs text-[var(--ui-fg-muted)]">
-          No members yet.
-        </div>
+        <div v-else class="text-xs text-[var(--ui-fg-muted)]">No members yet.</div>
       </div>
     </SDialog>
 
@@ -1491,9 +1332,7 @@ const secretTypeLabel = (value?: Secret["type"]) => {
         </p>
         <div class="flex items-center gap-2">
           <UserPicker v-model="newShareMember" />
-          <Button type="button" size="sm" @click="addShareMember">
-            Add member
-          </Button>
+          <Button type="button" size="sm" @click="addShareMember"> Add member </Button>
         </div>
         <div v-if="newShareMembers.length" class="flex flex-col gap-2">
           <div
@@ -1502,10 +1341,7 @@ const secretTypeLabel = (value?: Secret["type"]) => {
             class="flex items-center justify-between rounded-md border border-[var(--ui-border)] px-3 py-2 text-xs"
           >
             <div class="flex items-center gap-2">
-              <IdentityAvatar
-                :identity="member.publicIdentityKey"
-                size="xs"
-              />
+              <IdentityAvatar :identity="member.publicIdentityKey" size="xs" />
               <span class="truncate">
                 {{ member.name || member.publicIdentityKey }}
               </span>
@@ -1516,7 +1352,7 @@ const secretTypeLabel = (value?: Secret["type"]) => {
               variant="plain-secondary"
               @click="
                 newShareMembers = newShareMembers.filter(
-                  (item) => item.publicIdentityKey !== member.publicIdentityKey
+                  (item) => item.publicIdentityKey !== member.publicIdentityKey,
                 )
               "
             >
@@ -1528,11 +1364,7 @@ const secretTypeLabel = (value?: Secret["type"]) => {
           <Button type="button" variant="secondary" @click="isShareDialogOpen = false">
             Cancel
           </Button>
-          <Button
-            type="button"
-            :disabled="!newShareMembers.length"
-            @click="shareSecret"
-          >
+          <Button type="button" :disabled="!newShareMembers.length" @click="shareSecret">
             Share
           </Button>
         </div>
@@ -1558,8 +1390,7 @@ const secretTypeLabel = (value?: Secret["type"]) => {
       </template>
       <div class="flex flex-col gap-4">
         <p class="text-sm">
-          Rotation affects new entries. Old entries remain under the previous
-          key.
+          Rotation affects new entries. Old entries remain under the previous key.
         </p>
         <div class="flex justify-end gap-2">
           <Button type="button" variant="secondary" @click="isRotateDialogOpen = false">

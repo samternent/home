@@ -63,10 +63,7 @@ function getContainerUrls(resourceUrl: string): string[] {
   return urls;
 }
 
-async function refreshEtag(
-  fetchImpl: typeof fetch,
-  resourceUrl: string,
-): Promise<string | null> {
+async function refreshEtag(fetchImpl: typeof fetch, resourceUrl: string): Promise<string | null> {
   const response = await fetchImpl(resourceUrl, {
     method: "HEAD",
   });
@@ -154,9 +151,7 @@ export function createSolidJsonResource<T>(input: {
       });
 
       if (response.status === 409 || response.status === 412) {
-        throw new Error(
-          `Solid resource write conflict at ${resourceUrl}. Reload before retrying.`,
-        );
+        throw new Error(`Solid resource write conflict at ${resourceUrl}. Reload before retrying.`);
       }
 
       if (!response.ok) {

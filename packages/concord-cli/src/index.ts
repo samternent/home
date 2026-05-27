@@ -9,11 +9,7 @@ import {
   type Entry,
   type LedgerContainer,
 } from "@ternent/concord-protocol";
-import {
-  createIdentityUpsertEntry,
-  getIdentity,
-  listIdentities,
-} from "./commands/identity";
+import { createIdentityUpsertEntry, getIdentity, listIdentities } from "./commands/identity";
 import { inspectLedger } from "./commands/inspect";
 import {
   canPerform,
@@ -21,11 +17,7 @@ import {
   createRevokeEntry,
   replayPermissionState,
 } from "./commands/permissions";
-import {
-  checkDecryptable,
-  createRotateEntry,
-  createWrapEntry,
-} from "./commands/encryption";
+import { checkDecryptable, createRotateEntry, createWrapEntry } from "./commands/encryption";
 import { verifyProtocol, verifySemantic } from "./commands/verify";
 import { loadConfig } from "./config";
 
@@ -156,10 +148,7 @@ function parseJsonInput(input: string): unknown {
 function writeLedgerFile(path: string, ledger: LedgerContainer) {
   const resolved = resolve(path);
   const dir = dirname(resolved);
-  const tempPath = join(
-    dir,
-    `.concord-ledger.tmp-${process.pid}-${Date.now()}`
-  );
+  const tempPath = join(dir, `.concord-ledger.tmp-${process.pid}-${Date.now()}`);
   writeFileSync(tempPath, `${JSON.stringify(ledger, null, 2)}\n`, "utf8");
   renameSync(tempPath, resolved);
 }
@@ -238,11 +227,7 @@ function mapExitCode(error: unknown): number {
   return EXIT_SEMANTIC;
 }
 
-function handleError(
-  error: unknown,
-  fallbackMessage: string,
-  json: boolean
-): never {
+function handleError(error: unknown, fallbackMessage: string, json: boolean): never {
   const message = error instanceof Error ? error.message : fallbackMessage;
   const exitCode = mapExitCode(error);
   outputError(message, exitCode, json);
@@ -266,11 +251,7 @@ function outputResult(data: unknown, json: boolean, quiet: boolean) {
 function outputError(message: string, exitCode: number, json: boolean): never {
   if (json) {
     process.stderr.write(
-      `${JSON.stringify(
-        { ok: false, error: message, code: exitCode },
-        null,
-        2
-      )}\n`
+      `${JSON.stringify({ ok: false, error: message, code: exitCode }, null, 2)}\n`,
     );
   } else {
     process.stderr.write(`${message}\n`);
@@ -310,14 +291,9 @@ async function main() {
     const kind = getFlag(parsed.flags, "kind");
     const author = getFlag(parsed.flags, "author");
     const payloadInput = getFlag(parsed.flags, "payload");
-    const timestamp =
-      getFlag(parsed.flags, "timestamp") ?? new Date().toISOString();
+    const timestamp = getFlag(parsed.flags, "timestamp") ?? new Date().toISOString();
     if (!kind || !author || !payloadInput) {
-      outputError(
-        "Missing --kind, --author, or --payload",
-        EXIT_PROTOCOL,
-        json
-      );
+      outputError("Missing --kind, --author, or --payload", EXIT_PROTOCOL, json);
     }
     try {
       const payload = parseJsonInput(payloadInput);
@@ -346,9 +322,7 @@ async function main() {
       outputError("Missing --ledger or --entry", EXIT_PROTOCOL, json);
     }
     try {
-      const entries = entriesInput.map(
-        (value) => parseJsonInput(value) as Entry
-      );
+      const entries = entriesInput.map((value) => parseJsonInput(value) as Entry);
       const metadata = metadataInput
         ? (parseJsonInput(metadataInput) as Record<string, unknown>)
         : undefined;
@@ -367,7 +341,7 @@ async function main() {
           head: result.ledger.head,
         },
         json,
-        quiet
+        quiet,
       );
       return;
     } catch (error) {
@@ -414,11 +388,10 @@ async function main() {
             displayName,
             ageRecipients,
           },
-          new Date().toISOString()
+          new Date().toISOString(),
         );
         const sanitizedEntry = stripUndefinedDeep(entry) as Entry;
-        const shouldWrite =
-          parsed.flags.write === true || parsed.flags.append === true;
+        const shouldWrite = parsed.flags.write === true || parsed.flags.append === true;
         if (shouldWrite) {
           const ledgerPath = getFlag(parsed.flags, "ledger");
           if (!ledgerPath) {
@@ -438,7 +411,7 @@ async function main() {
               head: result.ledger.head,
             },
             json,
-            quiet
+            quiet,
           );
           return;
         }
@@ -492,18 +465,10 @@ async function main() {
     if (subcommand === "grant") {
       const author = getFlag(parsed.flags, "as");
       const scope = getFlag(parsed.flags, "scope");
-      const cap = getFlag(parsed.flags, "cap") as
-        | "read"
-        | "write"
-        | "grant"
-        | "admin";
+      const cap = getFlag(parsed.flags, "cap") as "read" | "write" | "grant" | "admin";
       const to = getFlag(parsed.flags, "to");
       if (!author || !scope || !cap || !to) {
-        outputError(
-          "Missing --as, --scope, --cap, or --to",
-          EXIT_SEMANTIC,
-          json
-        );
+        outputError("Missing --as, --scope, --cap, or --to", EXIT_SEMANTIC, json);
       }
       try {
         const allowed = canPerform(state, author, "perm:grant", scope);
@@ -521,11 +486,10 @@ async function main() {
             },
             expires: getFlag(parsed.flags, "expires"),
           },
-          new Date().toISOString()
+          new Date().toISOString(),
         );
         const sanitizedEntry = stripUndefinedDeep(entry) as Entry;
-        const shouldWrite =
-          parsed.flags.write === true || parsed.flags.append === true;
+        const shouldWrite = parsed.flags.write === true || parsed.flags.append === true;
         if (shouldWrite) {
           const ledgerPath = getFlag(parsed.flags, "ledger");
           if (!ledgerPath) {
@@ -545,7 +509,7 @@ async function main() {
               head: result.ledger.head,
             },
             json,
-            quiet
+            quiet,
           );
           return;
         }
@@ -559,18 +523,10 @@ async function main() {
     if (subcommand === "revoke") {
       const author = getFlag(parsed.flags, "as");
       const scope = getFlag(parsed.flags, "scope");
-      const cap = getFlag(parsed.flags, "cap") as
-        | "read"
-        | "write"
-        | "grant"
-        | "admin";
+      const cap = getFlag(parsed.flags, "cap") as "read" | "write" | "grant" | "admin";
       const from = getFlag(parsed.flags, "from");
       if (!author || !scope || !cap || !from) {
-        outputError(
-          "Missing --as, --scope, --cap, or --from",
-          EXIT_SEMANTIC,
-          json
-        );
+        outputError("Missing --as, --scope, --cap, or --from", EXIT_SEMANTIC, json);
       }
       try {
         const allowed = canPerform(state, author, "perm:admin", scope);
@@ -588,11 +544,10 @@ async function main() {
             },
             reason: getFlag(parsed.flags, "reason"),
           },
-          new Date().toISOString()
+          new Date().toISOString(),
         );
         const sanitizedEntry = stripUndefinedDeep(entry) as Entry;
-        const shouldWrite =
-          parsed.flags.write === true || parsed.flags.append === true;
+        const shouldWrite = parsed.flags.write === true || parsed.flags.append === true;
         if (shouldWrite) {
           const ledgerPath = getFlag(parsed.flags, "ledger");
           if (!ledgerPath) {
@@ -612,7 +567,7 @@ async function main() {
               head: result.ledger.head,
             },
             json,
-            quiet
+            quiet,
           );
           return;
         }
@@ -635,18 +590,12 @@ async function main() {
         outputError("Missing --scope or --as", EXIT_SEMANTIC, json);
       }
       try {
-        const { entry, warnings } = createRotateEntry(
-          ledger,
-          scope,
-          author,
-          rootAdmins
-        );
+        const { entry, warnings } = createRotateEntry(ledger, scope, author, rootAdmins);
         const sanitizedEntry = stripUndefinedDeep(entry) as Entry;
         if (warnings.length > 0 && !json && !quiet) {
           process.stderr.write(`${warnings.join("; ")}\n`);
         }
-        const shouldWrite =
-          parsed.flags.write === true || parsed.flags.append === true;
+        const shouldWrite = parsed.flags.write === true || parsed.flags.append === true;
         if (shouldWrite) {
           const ledgerPath = getFlag(parsed.flags, "ledger");
           if (!ledgerPath) {
@@ -667,7 +616,7 @@ async function main() {
               warnings,
             },
             json,
-            quiet
+            quiet,
           );
           return;
         }
@@ -685,11 +634,7 @@ async function main() {
       const author = getFlag(parsed.flags, "as");
       const overrideRecipients = getFlagList(parsed.flags, "age");
       if (!scope || !author || !principalId || Number.isNaN(epoch)) {
-        outputError(
-          "Missing --scope, --epoch, --to, or --as",
-          EXIT_SEMANTIC,
-          json
-        );
+        outputError("Missing --scope, --epoch, --to, or --as", EXIT_SEMANTIC, json);
       }
       try {
         const { entry, warnings, hasRecipients } = createWrapEntry(
@@ -699,7 +644,7 @@ async function main() {
           principalId,
           author,
           rootAdmins,
-          overrideRecipients
+          overrideRecipients,
         );
         const sanitizedEntry = stripUndefinedDeep(entry) as Entry;
         if (!hasRecipients) {
@@ -708,8 +653,7 @@ async function main() {
         if (warnings.length > 0 && !json && !quiet) {
           process.stderr.write(`${warnings.join("; ")}\n`);
         }
-        const shouldWrite =
-          parsed.flags.write === true || parsed.flags.append === true;
+        const shouldWrite = parsed.flags.write === true || parsed.flags.append === true;
         if (shouldWrite) {
           const ledgerPath = getFlag(parsed.flags, "ledger");
           if (!ledgerPath) {
@@ -730,7 +674,7 @@ async function main() {
               warnings,
             },
             json,
-            quiet
+            quiet,
           );
           return;
         }
@@ -747,18 +691,14 @@ async function main() {
         outputError("Missing --as", EXIT_SEMANTIC, json);
       }
       const nowIso = getFlag(parsed.flags, "now");
-      const mode = (getFlag(parsed.flags, "mode") ??
-        "combined") as "combined" | "crypto" | "policy";
+      const mode = (getFlag(parsed.flags, "mode") ?? "combined") as
+        | "combined"
+        | "crypto"
+        | "policy";
       if (!["combined", "crypto", "policy"].includes(mode)) {
         outputError("Invalid --mode (expected combined|crypto|policy)", EXIT_SEMANTIC, json);
       }
-      const checks = checkDecryptable(
-        ledger,
-        principalId,
-        rootAdmins,
-        nowIso,
-        mode
-      );
+      const checks = checkDecryptable(ledger, principalId, rootAdmins, nowIso, mode);
       const failed = checks.filter((check) => !check.ok);
       if (failed.length > 0) {
         outputResult({ ok: false, results: checks }, json, quiet);

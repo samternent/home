@@ -46,9 +46,7 @@ function Identity() {
 
   async function createNewIdentity() {
     const keys = await createIdentity();
-    publicKeyPEM.value = stripIdentityKey(
-      await exportPublicKeyAsPem(keys.publicKey)
-    );
+    publicKeyPEM.value = stripIdentityKey(await exportPublicKeyAsPem(keys.publicKey));
     publicKey.value = keys.publicKey;
     privateKey.value = keys.privateKey;
     privateKeyPEM.value = await exportPrivateKeyAsPem(keys.privateKey);

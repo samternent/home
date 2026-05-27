@@ -5,9 +5,7 @@ import {
   type SolidSessionController,
 } from "./useSolidSession";
 
-const solidSessionKey: InjectionKey<SolidSessionController> = Symbol(
-  "solid-session",
-);
+const solidSessionKey: InjectionKey<SolidSessionController> = Symbol("solid-session");
 
 export function installSolidSessionProvider(app: App) {
   const session = createSolidSessionController();

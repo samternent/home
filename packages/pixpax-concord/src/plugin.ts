@@ -142,9 +142,7 @@ function appendInvalidEntry(state: PixbookReplayState, entryId: string): Pixbook
   };
 }
 
-function isPlainEntryPayload(
-  entry: LedgerReplayEntry,
-): entry is LedgerReplayEntry & {
+function isPlainEntryPayload(entry: LedgerReplayEntry): entry is LedgerReplayEntry & {
   payload: {
     type: "plain";
     data: Record<string, unknown>;
@@ -174,9 +172,7 @@ export function createPixbookPlugin(
     });
   const verifyTransferAcceptanceProof =
     options.verifyTransferAcceptanceProof ??
-    (async (input: {
-      artifact: PixbookRecordTransferCommandInput["acceptanceArtifact"];
-    }) => {
+    (async (input: { artifact: PixbookRecordTransferCommandInput["acceptanceArtifact"] }) => {
       const verifier = await loadTransferAcceptanceVerifier();
       return await verifier(input);
     });
@@ -187,15 +183,10 @@ export function createPixbookPlugin(
       return createInitialPixbookReplayState();
     },
     commands: {
-      [PIXPAX_COMMAND_CLAIM_PACK]: async (
-        ctx,
-        inputValue: PixbookClaimPackCommandInput,
-      ) => {
+      [PIXPAX_COMMAND_CLAIM_PACK]: async (ctx, inputValue: PixbookClaimPackCommandInput) => {
         const input = await assertValidClaimPackCommandInput(inputValue);
         const current = ctx.getReplayState<PixbookReplayState>("pixbook");
-        const duplicateClaim = Object.values(
-          current?.claimedPacksByEntryId || {},
-        ).some(
+        const duplicateClaim = Object.values(current?.claimedPacksByEntryId || {}).some(
           (claim) => claim.artifact.payload.packId === input.artifact.payload.packId,
         );
         if (duplicateClaim) {
@@ -208,9 +199,7 @@ export function createPixbookPlugin(
             artifact: input.artifact,
           });
           if (!verification.ok) {
-            throw new Error(
-              `Pack issuance proof is invalid: ${verification.errors.join(", ")}`,
-            );
+            throw new Error(`Pack issuance proof is invalid: ${verification.errors.join(", ")}`);
           }
         }
         return {
@@ -218,14 +207,13 @@ export function createPixbookPlugin(
           payload: {
             ...input,
             claimedAt: input.claimedAt || now(),
-            verification:
-              input.verification || {
-                proofValidLocal: true,
-                policyConfirmed: null,
-                verifiedAt: now(),
-                source: "local-proof",
-                reason: null,
-              },
+            verification: input.verification || {
+              proofValidLocal: true,
+              policyConfirmed: null,
+              verifiedAt: now(),
+              source: "local-proof",
+              reason: null,
+            },
           },
         };
       },

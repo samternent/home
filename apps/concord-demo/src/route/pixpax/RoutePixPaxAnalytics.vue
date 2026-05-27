@@ -137,7 +137,11 @@ onMounted(() => {
       <div class="rounded border border-[var(--ui-border)] bg-[var(--ui-bg)]/30 p-3">
         <h2 class="text-sm font-semibold mb-2">Top Drops</h2>
         <ul class="text-xs space-y-1">
-          <li v-for="entry in insights.topDrops" :key="entry.dropId" class="flex justify-between gap-2">
+          <li
+            v-for="entry in insights.topDrops"
+            :key="entry.dropId"
+            class="flex justify-between gap-2"
+          >
             <span class="truncate">{{ entry.dropId }}</span>
             <span>{{ entry.packs }}</span>
           </li>
@@ -147,7 +151,11 @@ onMounted(() => {
       <div class="rounded border border-[var(--ui-border)] bg-[var(--ui-bg)]/30 p-3">
         <h2 class="text-sm font-semibold mb-2">Issuance Modes</h2>
         <ul class="text-xs space-y-1">
-          <li v-for="entry in insights.issuanceModes" :key="entry.mode" class="flex justify-between gap-2">
+          <li
+            v-for="entry in insights.issuanceModes"
+            :key="entry.mode"
+            class="flex justify-between gap-2"
+          >
             <span>{{ entry.mode }}</span>
             <span>{{ entry.packs }}</span>
           </li>
@@ -157,10 +165,20 @@ onMounted(() => {
       <div class="rounded border border-[var(--ui-border)] bg-[var(--ui-bg)]/30 p-3">
         <h2 class="text-sm font-semibold mb-2">Window</h2>
         <div class="text-xs space-y-1">
-          <p><span class="text-[var(--ui-fg-muted)]">First:</span> {{ toLocaleDate(insights.firstIssuedAt) }}</p>
-          <p><span class="text-[var(--ui-fg-muted)]">Last:</span> {{ toLocaleDate(insights.lastIssuedAt) }}</p>
-          <p><span class="text-[var(--ui-fg-muted)]">Returned:</span> {{ data?.packsReturned || 0 }}</p>
-          <p v-if="data?.truncated"><span class="text-[var(--ui-fg-muted)]">Note:</span> list truncated by limit.</p>
+          <p>
+            <span class="text-[var(--ui-fg-muted)]">First:</span>
+            {{ toLocaleDate(insights.firstIssuedAt) }}
+          </p>
+          <p>
+            <span class="text-[var(--ui-fg-muted)]">Last:</span>
+            {{ toLocaleDate(insights.lastIssuedAt) }}
+          </p>
+          <p>
+            <span class="text-[var(--ui-fg-muted)]">Returned:</span> {{ data?.packsReturned || 0 }}
+          </p>
+          <p v-if="data?.truncated">
+            <span class="text-[var(--ui-fg-muted)]">Note:</span> list truncated by limit.
+          </p>
         </div>
       </div>
     </div>
@@ -168,7 +186,9 @@ onMounted(() => {
     <div class="rounded border border-[var(--ui-border)] bg-[var(--ui-bg)]/30 overflow-auto">
       <table class="w-full text-xs min-w-[920px]">
         <thead>
-          <tr class="text-left text-[var(--ui-fg-muted)] uppercase tracking-wide border-b border-[var(--ui-border)]">
+          <tr
+            class="text-left text-[var(--ui-fg-muted)] uppercase tracking-wide border-b border-[var(--ui-border)]"
+          >
             <th class="px-3 py-2">Issued</th>
             <th class="px-3 py-2">Collection</th>
             <th class="px-3 py-2">Version</th>

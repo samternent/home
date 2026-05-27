@@ -18,9 +18,7 @@ function parseThemeMode(value: string | null): "light" | "dark" | null {
 
 function syncRootThemeModeFromDocument() {
   if (typeof document === "undefined") return;
-  rootThemeMode.value = parseThemeMode(
-    document.documentElement.getAttribute("data-theme"),
-  );
+  rootThemeMode.value = parseThemeMode(document.documentElement.getAttribute("data-theme"));
 }
 
 let rootThemeObserver: MutationObserver | null = null;
@@ -50,18 +48,18 @@ onBeforeUnmount(() => {
 });
 
 const suite = computed(() => {
-  const suiteKey = typeof route.meta.suiteKey === "string"
-    ? route.meta.suiteKey
-    : typeof route.params.slug === "string"
-      ? route.params.slug
-      : "";
+  const suiteKey =
+    typeof route.meta.suiteKey === "string"
+      ? route.meta.suiteKey
+      : typeof route.params.slug === "string"
+        ? route.params.slug
+        : "";
   return suitesBySlug[suiteKey];
 });
 
 const suiteTheme = computed(() => {
-  const theme = typeof route.meta.suiteTheme === "string"
-    ? route.meta.suiteTheme
-    : suite.value?.themeName;
+  const theme =
+    typeof route.meta.suiteTheme === "string" ? route.meta.suiteTheme : suite.value?.themeName;
   return theme || "aurora";
 });
 
@@ -101,8 +99,6 @@ watchEffect(() => {
 
 <template>
   <div v-if="suite" class="suite-route" :data-suite="suite.slug">
-
-
     <section class="suite-route__theme-surface" :data-theme="suiteThemeData">
       <LandingPage :app-title="suite.title" :config="suite.landing" />
     </section>

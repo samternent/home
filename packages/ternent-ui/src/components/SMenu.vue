@@ -58,7 +58,7 @@ function closeMenu() {
 
 const sizeClasses = computed(() => ({
   sm: "w-48 text-sm",
-  md: "w-64 text-base", 
+  md: "w-64 text-base",
   lg: "w-80 text-lg",
   xl: "w-96 text-lg",
 }));
@@ -89,13 +89,13 @@ const variantClasses = computed(() => ({
 <template>
   <div class="relative" ref="dropdownRef">
     <slot name="activator" v-bind="{ openMenu, closeMenu, isMenuOpen: showMenu }">
-      <SButton 
-        @click="showMenu = !showMenu" 
+      <SButton
+        @click="showMenu = !showMenu"
         variant="outline"
         class="gap-2 transition-all duration-200"
-        :class="{ 
+        :class="{
           'bg-primary/10 border-primary/30 shadow-md ring-2 ring-primary/20': showMenu,
-          'hover:shadow-sm': !showMenu 
+          'hover:shadow-sm': !showMenu,
         }"
       >
         {{ buttonText }}
@@ -108,15 +108,11 @@ const variantClasses = computed(() => ({
           class="w-4 h-4 transition-transform duration-300 ease-out"
           :class="{ 'rotate-180': showMenu }"
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-          />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
         </svg>
       </SButton>
     </slot>
-    
+
     <Transition
       enter-active-class="transition duration-300 ease-out"
       enter-from-class="transform scale-95 opacity-0 translate-y-2"
@@ -128,11 +124,7 @@ const variantClasses = computed(() => ({
       <div
         v-if="showMenu"
         class="absolute z-50 rounded-2xl overflow-hidden"
-        :class="[
-          sizeClasses[size],
-          positionClasses[position],
-          variantClasses[variant]
-        ]"
+        :class="[sizeClasses[size], positionClasses[position], variantClasses[variant]]"
       >
         <div class="max-h-96 overflow-auto">
           <div class="py-2">
@@ -142,60 +134,61 @@ const variantClasses = computed(() => ({
                   v-if="item.to"
                   :to="item.to"
                   @click="selectItem(item)"
-                  class="flex items-center px-4 py-3 text-sm 
-                         hover:bg-primary/5 hover:text-primary 
-                         transition-all duration-200 
-                         focus:outline-none focus:bg-primary/10
-                         group relative"
+                  class="flex items-center px-4 py-3 text-sm hover:bg-primary/5 hover:text-primary transition-all duration-200 focus:outline-none focus:bg-primary/10 group relative"
                   :class="{
-                    'bg-primary/10 text-primary font-medium border-r-2 border-primary': 
+                    'bg-primary/10 text-primary font-medium border-r-2 border-primary':
                       item.value === modelValue || item.name === modelValue,
-                    'text-neutral-700': 
-                      item.value !== modelValue && item.name !== modelValue,
+                    'text-neutral-700': item.value !== modelValue && item.name !== modelValue,
                   }"
                 >
-                  <span v-if="item.icon" 
-                        class="mr-3 w-4 h-4 flex-shrink-0 transition-transform duration-200 
-                               group-hover:scale-110" 
-                        v-html="item.icon" />
+                  <span
+                    v-if="item.icon"
+                    class="mr-3 w-4 h-4 flex-shrink-0 transition-transform duration-200 group-hover:scale-110"
+                    v-html="item.icon"
+                  />
                   <span class="flex-1 truncate">{{ item.name }}</span>
-                  <span v-if="item.badge" 
-                        class="ml-3 text-xs px-2 py-1 rounded-full 
-                               bg-neutral-100 text-neutral-600">
+                  <span
+                    v-if="item.badge"
+                    class="ml-3 text-xs px-2 py-1 rounded-full bg-neutral-100 text-neutral-600"
+                  >
                     {{ item.badge }}
                   </span>
-                  <svg v-if="item.to" 
-                       class="ml-2 w-3 h-3 opacity-0 group-hover:opacity-100 
-                              transition-all duration-200 transform group-hover:translate-x-1"
-                       fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                          d="M9 5l7 7-7 7"/>
+                  <svg
+                    v-if="item.to"
+                    class="ml-2 w-3 h-3 opacity-0 group-hover:opacity-100 transition-all duration-200 transform group-hover:translate-x-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 5l7 7-7 7"
+                    />
                   </svg>
                 </RouterLink>
-                
+
                 <button
                   v-else
                   @click="selectItem(item)"
-                  class="w-full flex items-center px-4 py-3 text-sm 
-                         hover:bg-primary/5 hover:text-primary 
-                         transition-all duration-200 text-left
-                         focus:outline-none focus:bg-primary/10
-                         group relative"
+                  class="w-full flex items-center px-4 py-3 text-sm hover:bg-primary/5 hover:text-primary transition-all duration-200 text-left focus:outline-none focus:bg-primary/10 group relative"
                   :class="{
-                    'bg-primary/10 text-primary font-medium border-r-2 border-primary': 
+                    'bg-primary/10 text-primary font-medium border-r-2 border-primary':
                       item.value === modelValue || item.name === modelValue,
-                    'text-neutral-700': 
-                      item.value !== modelValue && item.name !== modelValue,
+                    'text-neutral-700': item.value !== modelValue && item.name !== modelValue,
                   }"
                 >
-                  <span v-if="item.icon" 
-                        class="mr-3 w-4 h-4 flex-shrink-0 transition-transform duration-200 
-                               group-hover:scale-110" 
-                        v-html="item.icon" />
+                  <span
+                    v-if="item.icon"
+                    class="mr-3 w-4 h-4 flex-shrink-0 transition-transform duration-200 group-hover:scale-110"
+                    v-html="item.icon"
+                  />
                   <span class="flex-1 truncate">{{ item.name }}</span>
-                  <span v-if="item.badge" 
-                        class="ml-3 text-xs px-2 py-1 rounded-full 
-                               bg-neutral-100 text-neutral-600">
+                  <span
+                    v-if="item.badge"
+                    class="ml-3 text-xs px-2 py-1 rounded-full bg-neutral-100 text-neutral-600"
+                  >
                     {{ item.badge }}
                   </span>
                 </button>

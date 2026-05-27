@@ -15,9 +15,9 @@ h5 {
 }
 /* System Fonts as used by GitHub */
 body {
-  font-family: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono",
-    "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro",
-    "Fira Mono", "Droid Sans Mono", "Courier New", monospace;
+  font-family:
+    ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono",
+    "Ubuntu Monospace", "Source Code Pro", "Fira Mono", "Droid Sans Mono", "Courier New", monospace;
   font-size: calc(15px + 0.390625vw);
   margin: 0;
 }
@@ -58,8 +58,7 @@ h3 {
   padding: 1em;
   background: #262626
     radial-gradient(
-      100vw 100vh at calc(var(--mouse-x, 0) * 100%)
-        calc(var(--mouse-y, 0) * 100%),
+      100vw 100vh at calc(var(--mouse-x, 0) * 100%) calc(var(--mouse-y, 0) * 100%),
       #262626,
       #1a1a1a
     )

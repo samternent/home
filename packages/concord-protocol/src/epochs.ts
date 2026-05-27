@@ -80,10 +80,7 @@ function isEntryAfterCommit(entryTimestamp: string, commitTimestamp: string) {
 }
 
 export function getEpochChain(ledger: {
-  commits: Record<
-    string,
-    { parent: string | null; entries: string[]; timestamp: string }
-  >;
+  commits: Record<string, { parent: string | null; entries: string[]; timestamp: string }>;
   entries: Record<string, EpochEntry>;
   head: string;
 }): EpochChainItem[] {
@@ -104,20 +101,14 @@ export function getEpochChain(ledger: {
 
 export async function getActiveEpoch(
   ledger: {
-    commits: Record<
-      string,
-      { parent: string | null; entries: string[]; timestamp: string }
-    >;
+    commits: Record<string, { parent: string | null; entries: string[]; timestamp: string }>;
     entries: Record<string, EpochEntry>;
     head: string;
   },
   options?: {
     verifyEntrySignature?: (entry: EpochEntry) => Promise<boolean> | boolean;
-  }
-): Promise<
-  | { ok: true; epoch: EpochEntry }
-  | { ok: false; errors: EpochValidationError[] }
-> {
+  },
+): Promise<{ ok: true; epoch: EpochEntry } | { ok: false; errors: EpochValidationError[] }> {
   const validation = await validateLedgerEpochs(ledger, options);
   if (!validation.ok) {
     return { ok: false, errors: validation.errors };
@@ -140,16 +131,13 @@ export async function getActiveEpoch(
 
 export async function validateLedgerEpochs(
   ledger: {
-    commits: Record<
-      string,
-      { parent: string | null; entries: string[]; timestamp: string }
-    >;
+    commits: Record<string, { parent: string | null; entries: string[]; timestamp: string }>;
     entries: Record<string, EpochEntry>;
     head: string;
   },
   options?: {
     verifyEntrySignature?: (entry: EpochEntry) => Promise<boolean> | boolean;
-  }
+  },
 ): Promise<EpochValidationResult> {
   const errors: EpochValidationError[] = [];
   let legacyEpochPlacement = false;
@@ -177,12 +165,10 @@ export async function validateLedgerEpochs(
   });
 
   const genesisCommit = ledger.commits[genesisId];
-  const genesisEpochEntryIds = (genesisCommit.entries || []).filter(
-    (entryId) => {
-      const entry = ledger.entries[entryId];
-      return entry?.kind === "epochs" && entry?.payload?.type === "epoch";
-    }
-  );
+  const genesisEpochEntryIds = (genesisCommit.entries || []).filter((entryId) => {
+    const entry = ledger.entries[entryId];
+    return entry?.kind === "epochs" && entry?.payload?.type === "epoch";
+  });
 
   if (genesisEpochEntryIds.length === 0) {
     errors.push({
@@ -259,9 +245,7 @@ export async function validateLedgerEpochs(
 
       const derivedEpochId: string = await deriveEpochId({
         signerKeyId,
-        encryptionPublicKey: canonicalizeAgeRecipient(
-          payload.encryptionPublicKey || ""
-        ),
+        encryptionPublicKey: canonicalizeAgeRecipient(payload.encryptionPublicKey || ""),
         prevEpochId: payload.prevEpochId ?? null,
         createdAt: payload.createdAt || "",
       });
@@ -330,10 +314,7 @@ export async function validateLedgerEpochs(
 }
 
 export function validateLedgerEncryptionKeyIds(ledger: {
-  commits: Record<
-    string,
-    { parent: string | null; entries: string[]; timestamp: string }
-  >;
+  commits: Record<string, { parent: string | null; entries: string[]; timestamp: string }>;
   entries: Record<string, EpochEntry>;
   head: string;
 }): { ok: boolean; errors: EpochValidationError[] } {
@@ -357,13 +338,9 @@ export function validateLedgerEncryptionKeyIds(ledger: {
       if (!isPayloadObject(entry.payload)) continue;
       const payload = entry.payload;
       const requiresKey =
-        "permissionId" in payload ||
-        "encrypted" in payload ||
-        "secret" in payload;
+        "permissionId" in payload || "encrypted" in payload || "secret" in payload;
       const encryptionKeyId =
-        typeof payload.encryptionKeyId === "string"
-          ? payload.encryptionKeyId
-          : null;
+        typeof payload.encryptionKeyId === "string" ? payload.encryptionKeyId : null;
 
       if (requiresKey && !encryptionKeyId) {
         errors.push({

@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import { parseIdentity, type SerializedIdentity } from "@ternent/identity";
 
 export async function resolveSealIdentityFromEnv(
-  env: Record<string, string | undefined>
+  env: Record<string, string | undefined>,
 ): Promise<SerializedIdentity> {
   const identityJson = String(env.SEAL_IDENTITY || "").trim();
   if (identityJson) {
@@ -14,7 +14,5 @@ export async function resolveSealIdentityFromEnv(
     return parseIdentity(await readFile(identityFile, "utf8"));
   }
 
-  throw new Error(
-    "Missing SEAL_IDENTITY or SEAL_IDENTITY_FILE environment variable."
-  );
+  throw new Error("Missing SEAL_IDENTITY or SEAL_IDENTITY_FILE environment variable.");
 }

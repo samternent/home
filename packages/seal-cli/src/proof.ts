@@ -45,10 +45,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
-function hasOnlyKeys(
-  value: Record<string, unknown>,
-  allowed: string[]
-): boolean {
+function hasOnlyKeys(value: Record<string, unknown>, allowed: string[]): boolean {
   return Object.keys(value).every((key) => allowed.includes(key));
 }
 
@@ -61,7 +58,7 @@ function isIsoDate(value: string): boolean {
 }
 
 export function getSealProofSignableFields(
-  proof: SealProofV1 | SealProofSignableFields
+  proof: SealProofV1 | SealProofSignableFields,
 ): SealProofSignableFields {
   return {
     version: proof.version,
@@ -73,15 +70,11 @@ export function getSealProofSignableFields(
   };
 }
 
-export function getSealProofSigningPayload(
-  proof: SealProofV1 | SealProofSignableFields
-): string {
+export function getSealProofSigningPayload(proof: SealProofV1 | SealProofSignableFields): string {
   return canonicalStringify(getSealProofSignableFields(proof));
 }
 
-export async function createSealHash(
-  bytes: Uint8Array | ArrayBuffer
-): Promise<`sha256:${string}`> {
+export async function createSealHash(bytes: Uint8Array | ArrayBuffer): Promise<`sha256:${string}`> {
   const hash = await hashBytes(bytes);
   return `sha256:${hash}`;
 }
@@ -104,10 +97,7 @@ export async function createSealProof(input: {
     },
   };
 
-  const signature = await signSealUtf8(
-    signer.identity,
-    getSealProofSigningPayload(fields)
-  );
+  const signature = await signSealUtf8(signer.identity, getSealProofSigningPayload(fields));
 
   return {
     ...fields,
@@ -116,7 +106,7 @@ export async function createSealProof(input: {
 }
 
 export async function createSealPublicKeyArtifact(
-  signer: SealSignerInput
+  signer: SealSignerInput,
 ): Promise<SealPublicKeyArtifact> {
   const resolved = await resolveSealSigner(signer);
   return {
@@ -198,10 +188,7 @@ export function validateSealProofShape(value: unknown): {
   if (!isSealHash(value.subject.hash)) {
     errors.push("Proof subject hash must be a sha256 hash.");
   }
-  if (
-    typeof value.signer.publicKey !== "string" ||
-    value.signer.publicKey.length === 0
-  ) {
+  if (typeof value.signer.publicKey !== "string" || value.signer.publicKey.length === 0) {
     errors.push("Proof signer publicKey must be a non-empty base64url string.");
   }
   if (typeof value.signer.keyId !== "string" || value.signer.keyId.length === 0) {
@@ -316,7 +303,7 @@ export async function verifySealProofSignature(proof: SealProofV1): Promise<{
     const valid = await verifySealUtf8(
       proof.signature,
       getSealProofSigningPayload(proof),
-      proof.signer.publicKey
+      proof.signer.publicKey,
     );
     if (!valid) {
       return { ok: false, errors: ["Invalid signature."] };
@@ -332,7 +319,7 @@ export async function verifySealProofSignature(proof: SealProofV1): Promise<{
 
 export async function verifySealProofAgainstBytes(
   proof: SealProofV1,
-  bytes: Uint8Array | ArrayBuffer
+  bytes: Uint8Array | ArrayBuffer,
 ): Promise<{
   valid: boolean;
   hashMatch: boolean;

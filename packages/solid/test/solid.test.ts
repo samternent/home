@@ -70,9 +70,8 @@ const concordMocks = vi.hoisted(() => ({
 }));
 
 vi.mock("@inrupt/solid-client", async () => {
-  const actual = await vi.importActual<typeof import("@inrupt/solid-client")>(
-    "@inrupt/solid-client",
-  );
+  const actual =
+    await vi.importActual<typeof import("@inrupt/solid-client")>("@inrupt/solid-client");
   return {
     ...actual,
     createContainerAt: solidClientMocks.createContainerAt,
@@ -106,8 +105,7 @@ function createSession(
       isLoggedIn: true,
     },
     fetch:
-      overrides.fetchImpl ??
-      ((async () => new Response(null, { status: 404 })) as typeof fetch),
+      overrides.fetchImpl ?? ((async () => new Response(null, { status: 404 })) as typeof fetch),
   };
 }
 
@@ -145,8 +143,7 @@ function createTodoPlugin(): ConcordReplayPlugin<{
 
 function createFetchSequence(
   responses: Array<
-    | Response
-    | ((input: RequestInfo | URL, init?: RequestInit) => Response | Promise<Response>)
+    Response | ((input: RequestInfo | URL, init?: RequestInit) => Response | Promise<Response>)
   >,
 ): typeof fetch {
   let index = 0;
@@ -257,8 +254,7 @@ function createPodFetch(
         etagCounter += 1;
         const next = {
           body: String(init?.body ?? ""),
-          contentType:
-            new Headers(init?.headers).get("Content-Type") ?? "application/octet-stream",
+          contentType: new Headers(init?.headers).get("Content-Type") ?? "application/octet-stream",
           etag: `"etag-${etagCounter}"`,
           publicReadable: existing?.publicReadable ?? defaultPublicReadable(url),
         };
@@ -356,11 +352,7 @@ function createWorkspacePod(podRoot = "https://pod.example/") {
     await writeContainer(normalized);
   }
 
-  async function putFile(
-    url: string,
-    body: string,
-    contentType = "application/octet-stream",
-  ) {
+  async function putFile(url: string, body: string, contentType = "application/octet-stream") {
     const normalized = new URL(url).toString();
     const parent = parentContainer(normalized);
     if (parent) {
@@ -432,7 +424,8 @@ function createWorkspacePod(podRoot = "https://pod.example/") {
     }
 
     if (method === "PUT") {
-      const body = typeof init?.body === "string" ? init.body : await new Response(init?.body).text();
+      const body =
+        typeof init?.body === "string" ? init.body : await new Response(init?.body).text();
       await putFile(
         normalized,
         body,
@@ -675,10 +668,7 @@ describe("@ternent/solid", () => {
       session,
       "https://pod.example/concord/wallet/private/identity.json",
     );
-    const ledgerStorage = createSolidStorage(
-      session,
-      "https://pod.example/apps/todo/ledger.json",
-    );
+    const ledgerStorage = createSolidStorage(session, "https://pod.example/apps/todo/ledger.json");
 
     await expect(walletStorage.load()).resolves.toBeNull();
     await walletStorage.save(walletPayload);
@@ -962,10 +952,9 @@ describe("@ternent/solid", () => {
       "https://pod.example/concord/system/private/people.json",
     );
 
-    const publicIndex = await getSolidDataset(
-      "https://pod.example/settings/publicTypeIndex.ttl",
-      { fetch: fetchImpl },
-    );
+    const publicIndex = await getSolidDataset("https://pod.example/settings/publicTypeIndex.ttl", {
+      fetch: fetchImpl,
+    });
     expect(getRegisteredResourceUrl(publicIndex, SOLID_CONCORD_VERIFICATION_CLASS)).toBe(
       "https://pod.example/concord/public/seal-identity.json",
     );
@@ -1064,13 +1053,10 @@ describe("@ternent/solid", () => {
       },
     });
 
-    const paths = await createSolidConcordPaths(
-      createSession({ webId, fetchImpl }),
-      {
-        appPath: "concord",
-        podRoot,
-      },
-    );
+    const paths = await createSolidConcordPaths(createSession({ webId, fetchImpl }), {
+      appPath: "concord",
+      podRoot,
+    });
 
     expect(paths.appRootUrl).toBe("https://pod.example/concord/");
     expect(paths.systemPrivateRootUrl).toBe("https://pod.example/concord/system/private/");
@@ -1229,17 +1215,10 @@ describe("@ternent/solid", () => {
     });
 
     await workspace.ensure();
-    await workspace.createFolder(
-      workspace.paths.workspacePrivateRootUrl,
-      "docs",
-    );
-    await workspace.createLedger(
-      workspace.paths.workspacePrivateRootUrl,
-      "project-ledger.json",
-      {
-        identity: created.identity,
-      },
-    );
+    await workspace.createFolder(workspace.paths.workspacePrivateRootUrl, "docs");
+    await workspace.createLedger(workspace.paths.workspacePrivateRootUrl, "project-ledger.json", {
+      identity: created.identity,
+    });
     await workspace.uploadFile(
       workspace.paths.workspacePrivateRootUrl,
       "notes.md",
@@ -1256,20 +1235,18 @@ describe("@ternent/solid", () => {
       "project-ledger.json",
     ]);
 
-    const ledgerEntry = privateListing.entries.find((entry) => entry.name === "project-ledger.json");
+    const ledgerEntry = privateListing.entries.find(
+      (entry) => entry.name === "project-ledger.json",
+    );
     expect(ledgerEntry?.isLedger).toBe(true);
 
     const preview = await workspace.read(ledgerEntry!.url);
     expect(preview.mode).toBe("ledger");
     expect(preview.ledger?.commitCount).toBeGreaterThan(0);
 
-    await workspace.createLedger(
-      workspace.paths.workspacePrivateRootUrl,
-      "roadmap",
-      {
-        identity: created.identity,
-      },
-    );
+    await workspace.createLedger(workspace.paths.workspacePrivateRootUrl, "roadmap", {
+      identity: created.identity,
+    });
 
     const plainNamedLedger = await workspace.stat(
       "https://pod.example/concord/workspace/private/roadmap.json",
@@ -1291,9 +1268,7 @@ describe("@ternent/solid", () => {
     );
     expect(renamed?.name).toBe("renamed-ledger.json");
 
-    const notes = await workspace.stat(
-      "https://pod.example/concord/workspace/private/notes.md",
-    );
+    const notes = await workspace.stat("https://pod.example/concord/workspace/private/notes.md");
     expect(notes?.contentType).toContain("markdown");
 
     await workspace.delete("https://pod.example/concord/workspace/private/notes.md");

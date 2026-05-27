@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
 import { RouterLink } from "vue-router";
-import {
-  getPixpaxCollectionBundle,
-  resolvePixpaxCollection,
-} from "../../module/pixpax/api/client";
+import { getPixpaxCollectionBundle, resolvePixpaxCollection } from "../../module/pixpax/api/client";
 import { usePixbook } from "../../module/pixpax/state/usePixbook";
 import {
   deriveOwnedCardIdsForCollectionVersion,
@@ -26,7 +23,7 @@ const error = ref("");
 const rows = ref<OwnedCollectionRow[]>([]);
 
 const ownedCollectionIds = computed(() =>
-  deriveOwnedCollectionIdsFromPacks(receivedPacks.value as any[])
+  deriveOwnedCollectionIdsFromPacks(receivedPacks.value as any[]),
 );
 
 async function loadOwnedCollections() {
@@ -37,17 +34,14 @@ async function loadOwnedCollections() {
     const nextRows: OwnedCollectionRow[] = [];
     for (const collectionId of ownedCollectionIds.value) {
       const resolved = await resolvePixpaxCollection(collectionId);
-      const bundle = await getPixpaxCollectionBundle(
-        collectionId,
-        resolved.resolvedVersion
-      );
+      const bundle = await getPixpaxCollectionBundle(collectionId, resolved.resolvedVersion);
       const cardIds = Array.isArray(bundle?.index?.cards)
         ? bundle.index.cards.map((value) => String(value || "").trim()).filter(Boolean)
         : [];
       const owned = deriveOwnedCardIdsForCollectionVersion(
         receivedPacks.value as any[],
         collectionId,
-        resolved.resolvedVersion
+        resolved.resolvedVersion,
       );
       nextRows.push({
         collectionId,
@@ -75,7 +69,7 @@ watch(
   () => ownedCollectionIds.value.join("|"),
   () => {
     void loadOwnedCollections();
-  }
+  },
 );
 </script>
 
@@ -106,7 +100,9 @@ watch(
       >
         <h2 class="text-lg font-semibold text-[var(--ui-fg)]">{{ row.name }}</h2>
         <p class="text-xs text-[var(--ui-fg-muted)]">Issued by {{ row.issuerName }}</p>
-        <p class="mt-2 text-sm text-[var(--ui-fg-muted)]">{{ row.collected }} / {{ row.total }} collected</p>
+        <p class="mt-2 text-sm text-[var(--ui-fg-muted)]">
+          {{ row.collected }} / {{ row.total }} collected
+        </p>
         <div class="mt-2 h-1.5 w-full rounded-full bg-[var(--ui-fg)]/12">
           <div
             class="h-full rounded-full bg-[var(--ui-fg)]/70"

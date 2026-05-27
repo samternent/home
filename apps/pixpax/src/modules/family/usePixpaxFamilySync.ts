@@ -66,7 +66,10 @@ function extractPixbookSnapshotLedger(payload: unknown) {
   return payload;
 }
 
-function matchManagedUserToIdentity(managedUser: AccountManagedUser, identity: StoredIdentity | null) {
+function matchManagedUserToIdentity(
+  managedUser: AccountManagedUser,
+  identity: StoredIdentity | null,
+) {
   if (!identity) return false;
   const managedUserId = trim(managedUser.id);
   const localManagedUserId = trim(identity.managedUserId);
@@ -133,9 +136,7 @@ export function usePixpaxFamilySync() {
     workspace: account.workspace.value,
     authenticated: account.isAuthenticated.value,
   }));
-  const recoveryPassphraseUnlocked = computed(
-    () => trim(recoveryPassphrase.value).length > 0,
-  );
+  const recoveryPassphraseUnlocked = computed(() => trim(recoveryPassphrase.value).length > 0);
   const isSnapshotDirty = computed(() => {
     if (!localLedgerHead.value) return false;
     if (!snapshotState.value.ledgerHead) return true;
@@ -195,10 +196,7 @@ export function usePixpaxFamilySync() {
     const existing =
       managedUsers.value.find((entry) => matchManagedUserToIdentity(entry, identity)) || null;
     if (existing) {
-      if (
-        trim(existing.displayName) !== trim(identity.displayName) &&
-        trim(identity.displayName)
-      ) {
+      if (trim(existing.displayName) !== trim(identity.displayName) && trim(identity.displayName)) {
         await updateAccountManagedUser(existing.id, {
           displayName: trim(identity.displayName),
           profileId: identity.id,
@@ -224,7 +222,9 @@ export function usePixpaxFamilySync() {
       null;
     identitySession.updateIdentity(identity.id, { managedUserId: trim(created.id) || null });
     await refreshFamilyDirectory();
-    return managedUser || managedUsers.value.find((entry) => trim(entry.id) === trim(created.id)) || null;
+    return (
+      managedUser || managedUsers.value.find((entry) => trim(entry.id) === trim(created.id)) || null
+    );
   }
 
   async function ensureFamilyBook(identity: StoredIdentity, managedUserId: string) {
@@ -273,7 +273,12 @@ export function usePixpaxFamilySync() {
     };
 
     try {
-      const response = await getPixbookCloudState(undefined, binding, activeBook.value?.id, FAMILY_COLLECTION_ID);
+      const response = await getPixbookCloudState(
+        undefined,
+        binding,
+        activeBook.value?.id,
+        FAMILY_COLLECTION_ID,
+      );
       snapshotState.value = {
         bookId: trim(response.book?.id),
         version: Number.isFinite(Number(response.snapshot?.version))
@@ -482,7 +487,8 @@ export function usePixpaxFamilySync() {
 
   async function openFamilyChildOnDevice(managedUserId: string) {
     let localIdentity =
-      localIdentities.value.find((entry) => trim(entry.managedUserId) === trim(managedUserId)) || null;
+      localIdentities.value.find((entry) => trim(entry.managedUserId) === trim(managedUserId)) ||
+      null;
 
     if (!localIdentity) {
       const recovered = await importFamilyIdentityToDevice(managedUserId);

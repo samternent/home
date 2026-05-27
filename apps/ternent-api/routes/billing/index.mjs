@@ -1,7 +1,4 @@
-import {
-  getBillingAmounts,
-  getBillingHistory,
-} from "../../services/digitalocean/index.mjs";
+import { getBillingAmounts, getBillingHistory } from "../../services/digitalocean/index.mjs";
 import { requirePermission } from "../../services/auth/permissions.mjs";
 
 export default function billingRoutes(router) {

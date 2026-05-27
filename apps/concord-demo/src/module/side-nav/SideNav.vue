@@ -1,9 +1,5 @@
 <script setup>
-import {
-  useLocalStorage,
-  breakpointsTailwind,
-  useBreakpoints,
-} from "@vueuse/core";
+import { useLocalStorage, breakpointsTailwind, useBreakpoints } from "@vueuse/core";
 import { computed, watch, shallowRef } from "vue";
 import { useRoute } from "vue-router";
 import { SThemeToggle } from "ternent-ui/components";
@@ -62,9 +58,7 @@ const bottomItems = computed(() => [
     to: "/protocol/spec",
   },
 ]);
-const appVersion = shallowRef(
-  document.querySelector("html").dataset.appVersion
-);
+const appVersion = shallowRef(document.querySelector("html").dataset.appVersion);
 
 const { api, ledger } = useLedger();
 const { privateKey, publicKey } = useIdentity();
@@ -99,7 +93,7 @@ function downloadLedger() {
 
 async function createNewLedger() {
   const confirmed = window.confirm(
-    "Create a new ledger? This will replace the current working copy."
+    "Create a new ledger? This will replace the current working copy.",
   );
   if (!confirmed) return;
   if (privateKey.value && publicKey.value) {
@@ -127,7 +121,7 @@ async function handleLedgerUpload(event) {
   }
 
   const confirmed = window.confirm(
-    "Upload this ledger? This will replace the current working copy."
+    "Upload this ledger? This will replace the current working copy.",
   );
   if (!confirmed) return;
 
@@ -136,7 +130,7 @@ async function handleLedgerUpload(event) {
 
 async function deleteLedger() {
   const confirmed = window.confirm(
-    "Delete the current ledger? This will permanently remove it from local storage."
+    "Delete the current ledger? This will permanently remove it from local storage.",
   );
   if (!confirmed) return;
   await api.destroy();
@@ -162,12 +156,7 @@ async function deleteLedger() {
           @click="openSideBar = false"
           class="btn btn-sm btn-circle btn-ghost hover:bg-base-300"
         >
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
@@ -180,9 +169,7 @@ async function deleteLedger() {
     </div>
 
     <!-- Navigation Items -->
-    <div
-      class="flex-1 flex flex-col justify-between p-2 overflow-hidden font-mono"
-    >
+    <div class="flex-1 flex flex-col justify-between p-2 overflow-hidden font-mono">
       <!-- Top Items -->
       <nav class="space-y-1 text-xs">
         <div v-for="item in topItems" :key="item.to" class="group">
@@ -191,9 +178,7 @@ async function deleteLedger() {
             :to="item.to"
             class="flex items-center px-4 py-1 border-[var(--ui-border)] transition-all duration-200"
             :class="{
-              'font-medium text-[var(--ui-primary)]': $route.path.startsWith(
-                item.to
-              ),
+              'font-medium text-[var(--ui-primary)]': $route.path.startsWith(item.to),
             }"
           >
             <div class="flex-1 min-w-0">{{ item.name }}</div>
@@ -206,9 +191,7 @@ async function deleteLedger() {
             :to="item.to"
             class="flex items-center px-4 py-1 border-[var(--ui-border)] transition-all duration-200"
             :class="{
-              'font-medium text-[var(--ui-primary)]': $route.path.startsWith(
-                item.to
-              ),
+              'font-medium text-[var(--ui-primary)]': $route.path.startsWith(item.to),
             }"
           >
             <div class="flex-1 min-w-0">{{ item.name }}</div>
@@ -284,12 +267,7 @@ async function deleteLedger() {
           </a>
         </div>
         <div class="flex items-center justify-between py-2 font-sans text-xs">
-          <SThemeToggle
-            v-model="theme"
-            show-dropdown
-            size="xs"
-            class="w-full"
-          />
+          <SThemeToggle v-model="theme" show-dropdown size="xs" class="w-full" />
           <SThemeToggle v-model="themeMode" size="sm" class="w-20" />
         </div>
       </nav>

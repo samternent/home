@@ -1,4 +1,10 @@
-export { RageDecryptionError, RageEncryptionError, RageError, RageInitError, RageValidationError } from "./errors.js";
+export {
+  RageDecryptionError,
+  RageEncryptionError,
+  RageError,
+  RageInitError,
+  RageValidationError,
+} from "./errors.js";
 export { initRage } from "./init.js";
 export { generateKeyPair } from "./keygen.js";
 export { MAX_MESSAGE_SIZE } from "./limits.js";

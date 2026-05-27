@@ -34,9 +34,7 @@ const breadcrumbSegments = computed(() => {
     public: paths.workspacePublicRootUrl,
   } as const;
   const scopeRoot = rootMap[browse.scope];
-  const relative = browse.url.startsWith(scopeRoot)
-    ? browse.url.slice(scopeRoot.length)
-    : "";
+  const relative = browse.url.startsWith(scopeRoot) ? browse.url.slice(scopeRoot.length) : "";
   const segments = relative
     .split("/")
     .filter(Boolean)
@@ -95,16 +93,16 @@ async function openWith(item = library.selectedItem.value) {
 
   const capabilities = item.capabilities || [];
   const summary =
-    workspace.preview.value?.entry.url === item.entry.url
-      ? workspace.preview.value.ledger
-      : null;
+    workspace.preview.value?.entry.url === item.entry.url ? workspace.preview.value.ledger : null;
 
   if (capabilities.length <= 1) {
     const appId = item.primaryCapability?.appId || capabilities[0]?.appId;
     if (!appId) {
       return;
     }
-    await router.push(buildConcordOsHostedAppRoute(createConcordOsOpenTarget(item.entry, summary), appId));
+    await router.push(
+      buildConcordOsHostedAppRoute(createConcordOsOpenTarget(item.entry, summary), appId),
+    );
     return;
   }
 
@@ -132,16 +130,17 @@ function isChooserOpen(url: string) {
 
 <template>
   <div class="flex h-full min-h-0 overflow-hidden">
-    <aside v-if="showStructure" class="hidden w-[18rem] shrink-0 border-r border-[var(--ui-border)] xl:flex">
+    <aside
+      v-if="showStructure"
+      class="hidden w-[18rem] shrink-0 border-r border-[var(--ui-border)] xl:flex"
+    >
       <div class="flex min-h-0 flex-1 flex-col p-4">
         <div class="mb-4 flex items-center justify-between gap-3">
           <div>
             <p class="m-0 text-[11px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
               Workspace
             </p>
-            <p class="m-0 text-[11px] text-[var(--ui-fg-muted)]">
-              Structure and scope
-            </p>
+            <p class="m-0 text-[11px] text-[var(--ui-fg-muted)]">Structure and scope</p>
           </div>
           <Badge tone="neutral" variant="soft">
             {{ workspace.currentScope.value }}
@@ -217,10 +216,14 @@ function isChooserOpen(url: string) {
               <button
                 type="button"
                 class="flex w-full items-center justify-between gap-3 rounded-xl border border-[var(--ui-border)] px-3 py-3 text-left transition hover:bg-[color-mix(in_srgb,var(--ui-bg-muted)_12%,transparent)]"
-                @click="openRecent(workbench.currentWork.value.url, workbench.currentWork.value.appId)"
+                @click="
+                  openRecent(workbench.currentWork.value.url, workbench.currentWork.value.appId)
+                "
               >
                 <div class="min-w-0">
-                  <p class="m-0 truncate text-sm text-[var(--ui-fg)]">{{ workbench.currentWork.value.title }}</p>
+                  <p class="m-0 truncate text-sm text-[var(--ui-fg)]">
+                    {{ workbench.currentWork.value.title }}
+                  </p>
                   <p class="m-0 truncate text-[11px] text-[var(--ui-fg-muted)]">
                     {{ workbench.currentWork.value.appLabel || workbench.currentWork.value.scope }}
                   </p>
@@ -240,7 +243,9 @@ function isChooserOpen(url: string) {
               >
                 <div class="min-w-0">
                   <p class="m-0 truncate text-sm text-[var(--ui-fg)]">{{ item.title }}</p>
-                  <p class="m-0 truncate text-[11px] text-[var(--ui-fg-muted)]">{{ item.appLabel || item.scope }}</p>
+                  <p class="m-0 truncate text-[11px] text-[var(--ui-fg-muted)]">
+                    {{ item.appLabel || item.scope }}
+                  </p>
                 </div>
               </button>
             </div>
@@ -250,9 +255,7 @@ function isChooserOpen(url: string) {
           </Card>
 
           <Card variant="subtle" padding="sm" class="space-y-3">
-            <p class="m-0 text-[11px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
-              New
-            </p>
+            <p class="m-0 text-[11px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">New</p>
             <label class="space-y-1">
               <span class="text-[11px] uppercase tracking-[0.2em] text-[var(--ui-fg-muted)]">
                 Space
@@ -272,7 +275,12 @@ function isChooserOpen(url: string) {
             </label>
             <div class="flex gap-2">
               <Button size="xs" variant="secondary" @click="createFolder">Create space</Button>
-              <Button size="xs" variant="secondary" :disabled="!workspace.identityReady.value" @click="createLedger">
+              <Button
+                size="xs"
+                variant="secondary"
+                :disabled="!workspace.identityReady.value"
+                @click="createLedger"
+              >
                 Create ledger
               </Button>
             </div>
@@ -282,146 +290,163 @@ function isChooserOpen(url: string) {
 
       <div class="min-h-0 flex-1 overflow-auto p-5">
         <div class="space-y-5">
-            <Card variant="subtle" padding="sm" class="space-y-3">
-              <div class="flex items-center justify-between gap-3">
-                <div>
-                  <p class="m-0 text-[11px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
-                    Ledgers
-                  </p>
-                  <p class="m-0 text-[11px] text-[var(--ui-fg-muted)]">
-                    Portable Concord histories ready for compatible apps
-                  </p>
-                </div>
-                <Badge tone="neutral" variant="soft">
-                  {{ library.ledgers.value.length }}
-                </Badge>
-              </div>
-
-              <div v-if="library.ledgers.value.length" class="overflow-hidden rounded-[1rem] border border-[color-mix(in_srgb,var(--ui-border)_76%,transparent)]">
-                <div
-                  v-for="item in library.ledgers.value"
-                  :key="item.entry.url"
-                  class="flex items-center gap-4 border-b border-[color-mix(in_srgb,var(--ui-border)_60%,transparent)] px-4 py-3 last:border-b-0"
-                  :class="workspace.selectedEntry.value?.url === item.entry.url
-                    ? 'bg-[color-mix(in_srgb,var(--ui-primary-muted)_10%,transparent)]'
-                    : 'bg-transparent'"
-                >
-                  <button
-                    type="button"
-                    class="min-w-0 flex-1 text-left"
-                    @click="workspace.selectEntry(item.entry)"
-                    @dblclick="openWith(item)"
-                  >
-                    <div class="flex items-center gap-3">
-                      <p class="m-0 truncate text-sm font-medium text-[var(--ui-fg)]">{{ item.title }}</p>
-                      <Badge tone="neutral" variant="soft">
-                        {{ item.entry.scope }}
-                      </Badge>
-                    </div>
-                    <div class="mt-1 flex items-center gap-3 text-[11px] text-[var(--ui-fg-muted)]">
-                      <span>{{ item.modifiedLabel }}</span>
-                      <span>{{ item.capabilities.length }} capability{{ item.capabilities.length === 1 ? "" : "ies" }}</span>
-                    </div>
-                  </button>
-
-                  <div class="shrink-0">
-                    <Button
-                      v-if="item.capabilities.length <= 1"
-                      size="xs"
-                      variant="secondary"
-                      @click.stop="openWith(item)"
-                    >
-                      {{ item.primaryCapability?.actionLabel || "Open" }}
-                    </Button>
-
-                    <Popover
-                      v-else
-                      :open="isChooserOpen(item.entry.url)"
-                      placement="left-start"
-                      title="Open ledger"
-                      description="Choose a capability for this ledger."
-                      show-arrow
-                      show-close
-                      @update:open="(next) => { if (!next) appHost.closeChooser(); }"
-                    >
-                      <template #trigger>
-                        <Button size="xs" variant="secondary" @click.stop="openWith(item)">
-                          Open with...
-                        </Button>
-                      </template>
-
-                      <div class="space-y-2">
-                        <button
-                          v-for="app in appHost.chooserApps.value"
-                          :key="app.appId"
-                          type="button"
-                          class="flex w-full items-start justify-between gap-3 rounded-xl border border-[color-mix(in_srgb,var(--ui-border)_76%,transparent)] px-3 py-3 text-left transition hover:bg-[color-mix(in_srgb,var(--ui-bg-muted)_14%,transparent)]"
-                          @click="appHost.openChosenApp(router, app.appId)"
-                        >
-                          <div class="min-w-0">
-                            <p class="m-0 text-sm text-[var(--ui-fg)]">{{ app.label }}</p>
-                            <p class="m-0 text-[11px] text-[var(--ui-fg-muted)]">{{ app.description }}</p>
-                          </div>
-                          <span class="text-[11px] text-[var(--ui-fg-muted)]">{{ app.openLabel }}</span>
-                        </button>
-
-                        <Button size="xs" variant="plain-secondary" disabled>
-                          + Install app
-                        </Button>
-                      </div>
-                    </Popover>
-                  </div>
-                </div>
-              </div>
-
-              <div
-                v-else
-                class="rounded-[1.25rem] border border-dashed border-[var(--ui-border)] px-4 py-5"
-              >
-                <p class="m-0 text-sm text-[var(--ui-fg)]">
-                  {{ workbench.libraryEmptyLabel.value }}
+          <Card variant="subtle" padding="sm" class="space-y-3">
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <p class="m-0 text-[11px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
+                  Ledgers
+                </p>
+                <p class="m-0 text-[11px] text-[var(--ui-fg-muted)]">
+                  Portable Concord histories ready for compatible apps
                 </p>
               </div>
-            </Card>
+              <Badge tone="neutral" variant="soft">
+                {{ library.ledgers.value.length }}
+              </Badge>
+            </div>
 
-            <Card v-if="library.spaces.value.length" variant="subtle" padding="sm" class="space-y-3">
-              <div class="flex items-center justify-between gap-3">
-                <div>
-                  <p class="m-0 text-[11px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
-                    Spaces
-                  </p>
-                  <p class="m-0 text-[11px] text-[var(--ui-fg-muted)]">
-                    Organise durable work without exposing raw storage
-                  </p>
-                </div>
-                <Badge tone="neutral" variant="soft">
-                  {{ library.spaces.value.length }}
-                </Badge>
-              </div>
-
-              <div v-if="library.spaces.value.length" class="overflow-hidden rounded-[1rem] border border-[color-mix(in_srgb,var(--ui-border)_76%,transparent)]">
+            <div
+              v-if="library.ledgers.value.length"
+              class="overflow-hidden rounded-[1rem] border border-[color-mix(in_srgb,var(--ui-border)_76%,transparent)]"
+            >
+              <div
+                v-for="item in library.ledgers.value"
+                :key="item.entry.url"
+                class="flex items-center gap-4 border-b border-[color-mix(in_srgb,var(--ui-border)_60%,transparent)] px-4 py-3 last:border-b-0"
+                :class="
+                  workspace.selectedEntry.value?.url === item.entry.url
+                    ? 'bg-[color-mix(in_srgb,var(--ui-primary-muted)_10%,transparent)]'
+                    : 'bg-transparent'
+                "
+              >
                 <button
-                  v-for="item in library.spaces.value"
-                  :key="item.entry.url"
                   type="button"
-                  class="flex w-full items-center justify-between gap-3 border-b border-[color-mix(in_srgb,var(--ui-border)_60%,transparent)] px-4 py-3 text-left transition last:border-b-0 hover:bg-[color-mix(in_srgb,var(--ui-bg-muted)_16%,transparent)]"
-                  @click="workspace.openEntry(item.entry)"
+                  class="min-w-0 flex-1 text-left"
+                  @click="workspace.selectEntry(item.entry)"
+                  @dblclick="openWith(item)"
                 >
-                  <div class="min-w-0">
-                    <p class="m-0 truncate text-sm text-[var(--ui-fg)]">
+                  <div class="flex items-center gap-3">
+                    <p class="m-0 truncate text-sm font-medium text-[var(--ui-fg)]">
                       {{ item.title }}
                     </p>
-                    <p class="m-0 truncate text-[11px] text-[var(--ui-fg-muted)]">
-                      {{ item.summary }}
-                    </p>
+                    <Badge tone="neutral" variant="soft">
+                      {{ item.entry.scope }}
+                    </Badge>
                   </div>
-                  <Badge tone="neutral" variant="soft">
-                    space
-                  </Badge>
+                  <div class="mt-1 flex items-center gap-3 text-[11px] text-[var(--ui-fg-muted)]">
+                    <span>{{ item.modifiedLabel }}</span>
+                    <span
+                      >{{ item.capabilities.length }} capability{{
+                        item.capabilities.length === 1 ? "" : "ies"
+                      }}</span
+                    >
+                  </div>
                 </button>
-              </div>
 
-            </Card>
+                <div class="shrink-0">
+                  <Button
+                    v-if="item.capabilities.length <= 1"
+                    size="xs"
+                    variant="secondary"
+                    @click.stop="openWith(item)"
+                  >
+                    {{ item.primaryCapability?.actionLabel || "Open" }}
+                  </Button>
+
+                  <Popover
+                    v-else
+                    :open="isChooserOpen(item.entry.url)"
+                    placement="left-start"
+                    title="Open ledger"
+                    description="Choose a capability for this ledger."
+                    show-arrow
+                    show-close
+                    @update:open="
+                      (next) => {
+                        if (!next) appHost.closeChooser();
+                      }
+                    "
+                  >
+                    <template #trigger>
+                      <Button size="xs" variant="secondary" @click.stop="openWith(item)">
+                        Open with...
+                      </Button>
+                    </template>
+
+                    <div class="space-y-2">
+                      <button
+                        v-for="app in appHost.chooserApps.value"
+                        :key="app.appId"
+                        type="button"
+                        class="flex w-full items-start justify-between gap-3 rounded-xl border border-[color-mix(in_srgb,var(--ui-border)_76%,transparent)] px-3 py-3 text-left transition hover:bg-[color-mix(in_srgb,var(--ui-bg-muted)_14%,transparent)]"
+                        @click="appHost.openChosenApp(router, app.appId)"
+                      >
+                        <div class="min-w-0">
+                          <p class="m-0 text-sm text-[var(--ui-fg)]">{{ app.label }}</p>
+                          <p class="m-0 text-[11px] text-[var(--ui-fg-muted)]">
+                            {{ app.description }}
+                          </p>
+                        </div>
+                        <span class="text-[11px] text-[var(--ui-fg-muted)]">{{
+                          app.openLabel
+                        }}</span>
+                      </button>
+
+                      <Button size="xs" variant="plain-secondary" disabled> + Install app </Button>
+                    </div>
+                  </Popover>
+                </div>
+              </div>
+            </div>
+
+            <div
+              v-else
+              class="rounded-[1.25rem] border border-dashed border-[var(--ui-border)] px-4 py-5"
+            >
+              <p class="m-0 text-sm text-[var(--ui-fg)]">
+                {{ workbench.libraryEmptyLabel.value }}
+              </p>
+            </div>
+          </Card>
+
+          <Card v-if="library.spaces.value.length" variant="subtle" padding="sm" class="space-y-3">
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <p class="m-0 text-[11px] uppercase tracking-[0.24em] text-[var(--ui-fg-muted)]">
+                  Spaces
+                </p>
+                <p class="m-0 text-[11px] text-[var(--ui-fg-muted)]">
+                  Organise durable work without exposing raw storage
+                </p>
+              </div>
+              <Badge tone="neutral" variant="soft">
+                {{ library.spaces.value.length }}
+              </Badge>
+            </div>
+
+            <div
+              v-if="library.spaces.value.length"
+              class="overflow-hidden rounded-[1rem] border border-[color-mix(in_srgb,var(--ui-border)_76%,transparent)]"
+            >
+              <button
+                v-for="item in library.spaces.value"
+                :key="item.entry.url"
+                type="button"
+                class="flex w-full items-center justify-between gap-3 border-b border-[color-mix(in_srgb,var(--ui-border)_60%,transparent)] px-4 py-3 text-left transition last:border-b-0 hover:bg-[color-mix(in_srgb,var(--ui-bg-muted)_16%,transparent)]"
+                @click="workspace.openEntry(item.entry)"
+              >
+                <div class="min-w-0">
+                  <p class="m-0 truncate text-sm text-[var(--ui-fg)]">
+                    {{ item.title }}
+                  </p>
+                  <p class="m-0 truncate text-[11px] text-[var(--ui-fg-muted)]">
+                    {{ item.summary }}
+                  </p>
+                </div>
+                <Badge tone="neutral" variant="soft"> space </Badge>
+              </button>
+            </div>
+          </Card>
         </div>
       </div>
     </section>

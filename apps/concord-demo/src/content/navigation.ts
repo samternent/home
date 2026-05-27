@@ -33,11 +33,7 @@ const modules = import.meta.glob<{
 const NAV_CONFIG = {
   groupOrder: ["overview"] as string[],
   pageOrderByGroup: {
-    overview: [
-      "/overview/what-is-concord",
-      "/overview/getting-started",
-      "/overview/format",
-    ],
+    overview: ["/overview/what-is-concord", "/overview/getting-started", "/overview/format"],
     about: ["/about"],
   } as Record<string, string[]>,
   pageExclude: [] as string[],
@@ -78,10 +74,7 @@ export function getAllDocPages(): DocPage[] {
     const route = normaliseRoute(fm.route ?? routeFromFilePath(file));
 
     const inferredTitle =
-      fm.title ??
-      titleCaseFromSlug(
-        route === "/" ? "Concord" : route.split("/").pop() || "Doc"
-      );
+      fm.title ?? titleCaseFromSlug(route === "/" ? "Concord" : route.split("/").pop() || "Doc");
 
     pages.push({
       route,
@@ -133,8 +126,7 @@ export function buildSidebarNav(): NavGroup[] {
     return r;
   };
 
-  const sectionFromRoute = (route: string) =>
-    route.split("/").filter(Boolean)[0] || "misc";
+  const sectionFromRoute = (route: string) => route.split("/").filter(Boolean)[0] || "misc";
 
   const titleCaseFromSlug = (slug: string) =>
     slug.replace(/[-_]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
@@ -146,12 +138,12 @@ export function buildSidebarNav(): NavGroup[] {
   }));
 
   const normalisedPageExcludes = new Set(
-    NAV_CONFIG.pageExclude.map((route) => normaliseRoute(route))
+    NAV_CONFIG.pageExclude.map((route) => normaliseRoute(route)),
   );
 
   // Exclude home from sidebar by default
   const docsOnly = normalisedPages.filter(
-    (p) => p.route !== "/" && p.nav && !normalisedPageExcludes.has(p.route)
+    (p) => p.route !== "/" && p.nav && !normalisedPageExcludes.has(p.route),
   );
 
   // Group by first path segment: /ledger/* -> "ledger"
@@ -174,9 +166,7 @@ export function buildSidebarNav(): NavGroup[] {
 
     // Children: everything in section except its section root
     const preferredOrder = (route: string) => {
-      const orderList = (NAV_CONFIG.pageOrderByGroup[section] ?? []).map(
-        normaliseRoute
-      );
+      const orderList = (NAV_CONFIG.pageOrderByGroup[section] ?? []).map(normaliseRoute);
       const index = orderList.indexOf(route);
       return index === -1 ? Number.MAX_SAFE_INTEGER : index;
     };
@@ -187,14 +177,12 @@ export function buildSidebarNav(): NavGroup[] {
         (a, b) =>
           preferredOrder(a.route) - preferredOrder(b.route) ||
           a.order - b.order ||
-          a.title.localeCompare(b.title)
+          a.title.localeCompare(b.title),
       );
 
     const groupOrder = NAV_CONFIG.groupOrder.indexOf(section);
     const groupOrderKey =
-      groupOrder === -1
-        ? NAV_CONFIG.groupOrder.length + (sectionIndex?.order ?? 999)
-        : groupOrder;
+      groupOrder === -1 ? NAV_CONFIG.groupOrder.length + (sectionIndex?.order ?? 999) : groupOrder;
 
     groups.push({
       title: sectionIndex?.title ?? titleCaseFromSlug(section),

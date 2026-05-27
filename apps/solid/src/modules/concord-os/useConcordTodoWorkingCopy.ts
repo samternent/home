@@ -5,11 +5,7 @@ import {
   createConcordOsWorkingCopy,
   type ConcordOsWorkingCopyChange,
 } from "./useConcordOsWorkingCopy";
-import {
-  listConcordTodoItems,
-  type ConcordTodoItem,
-  type ConcordTodoReplayState,
-} from "./todo";
+import { listConcordTodoItems, type ConcordTodoItem, type ConcordTodoReplayState } from "./todo";
 
 type TodoCommandApp = ConcordApp & {
   command(type: "todo.put-item", input: { item: ConcordTodoItem }): Promise<unknown>;
@@ -112,14 +108,11 @@ function createTodoWorkingCopy(): ConcordTodoWorkingCopy {
       return true;
     },
     toggleTodo(item) {
-      draft.stagePut(
-        `${item.completed ? "Reopen" : "Complete"} todo ${item.title}`,
-        {
-          ...normalizeTodoItem(item),
-          completed: !item.completed,
-          updatedAt: new Date().toISOString(),
-        },
-      );
+      draft.stagePut(`${item.completed ? "Reopen" : "Complete"} todo ${item.title}`, {
+        ...normalizeTodoItem(item),
+        completed: !item.completed,
+        updatedAt: new Date().toISOString(),
+      });
     },
     deleteTodo(itemId: string) {
       const current = draft.items.value.find((item) => item.id === itemId);

@@ -38,13 +38,13 @@ const variantClasses = computed(() => ({
 }));
 </script>
 <template>
-  <header 
+  <header
     class="w-full z-40 transition-all duration-300 ease-out"
     :class="[
       variantClasses[variant],
       {
         'sticky top-0': sticky,
-      }
+      },
     ]"
   >
     <div class="w-full px-3 lg:px-4">
@@ -52,19 +52,17 @@ const variantClasses = computed(() => ({
         <!-- Left section -->
         <div class="flex items-center flex-1">
           <slot name="nav" v-if="smallerThanMd" />
-          
+
           <div class="flex items-center">
             <slot name="start">
               <RouterLink
                 to="/"
-                class="flex items-center gap-2 px-2 py-1 rounded-lg 
-                       hover:bg-neutral-100/50 
-                       transition-all duration-200 font-semibold text-base group 
-                       focus:outline-none focus:ring-2 focus:ring-primary/20"
+                class="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-neutral-100/50 transition-all duration-200 font-semibold text-base group focus:outline-none focus:ring-2 focus:ring-primary/20"
               >
                 {{ title }}
-                <span class="text-primary transition-transform duration-200 group-hover:scale-110 
-                           group-hover:rotate-12">
+                <span
+                  class="text-primary transition-transform duration-200 group-hover:scale-110 group-hover:rotate-12"
+                >
                   .
                 </span>
               </RouterLink>

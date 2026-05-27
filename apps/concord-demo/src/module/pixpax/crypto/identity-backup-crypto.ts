@@ -74,7 +74,10 @@ function normalizePassphrase(value: string) {
 }
 
 function normalizeIdentityKeyForFingerprint(value: string) {
-  return String(value || "").replace(/\r/g, "").replace(/\s+/g, "").trim();
+  return String(value || "")
+    .replace(/\r/g, "")
+    .replace(/\s+/g, "")
+    .trim();
 }
 
 export async function deriveIdentityKeyFingerprint(identityPublicKey: string) {
@@ -86,11 +89,7 @@ export async function deriveIdentityKeyFingerprint(identityPublicKey: string) {
     .join("");
 }
 
-async function deriveAesKey(input: {
-  passphrase: string;
-  saltB64: string;
-  iterations: number;
-}) {
+async function deriveAesKey(input: { passphrase: string; saltB64: string; iterations: number }) {
   const passphrase = normalizePassphrase(input.passphrase);
   assert(passphrase.length > 0, "Passphrase is required.");
   const keyMaterial = await crypto.subtle.importKey(
@@ -98,7 +97,7 @@ async function deriveAesKey(input: {
     toUtf8Bytes(passphrase),
     "PBKDF2",
     false,
-    ["deriveKey"]
+    ["deriveKey"],
   );
   return crypto.subtle.deriveKey(
     {
@@ -110,7 +109,7 @@ async function deriveAesKey(input: {
     keyMaterial,
     { name: "AES-GCM", length: 256 },
     false,
-    ["encrypt", "decrypt"]
+    ["encrypt", "decrypt"],
   );
 }
 
@@ -142,8 +141,7 @@ export async function encryptIdentityBackupEnvelope(input: {
   assert(identityPublicKey, "identityPublicKey is required.");
 
   const identityKeyFingerprint =
-    trim(input.identityKeyFingerprint) ||
-    (await deriveIdentityKeyFingerprint(identityPublicKey));
+    trim(input.identityKeyFingerprint) || (await deriveIdentityKeyFingerprint(identityPublicKey));
   const createdAt = trim(input.createdAt) || new Date().toISOString();
   const salt = crypto.getRandomValues(new Uint8Array(16));
   const iv = crypto.getRandomValues(new Uint8Array(12));
@@ -186,7 +184,7 @@ export async function encryptIdentityBackupEnvelope(input: {
       additionalData: toCanonicalBytes(aad),
     },
     key,
-    toCanonicalBytes(clearPayload)
+    toCanonicalBytes(clearPayload),
   );
 
   return {
@@ -223,13 +221,13 @@ async function validateIdentityKeyPair(publicKeyPEM: string, privateKeyPEM: stri
   const signature = await crypto.subtle.sign(
     { name: "ECDSA", hash: "SHA-256" },
     privateKey,
-    payload
+    payload,
   );
   const valid = await crypto.subtle.verify(
     { name: "ECDSA", hash: "SHA-256" },
     publicKey,
     signature,
-    payload
+    payload,
   );
   assert(valid, "Recovered identity keypair validation failed.");
 }
@@ -261,7 +259,7 @@ export async function decryptIdentityBackupEnvelope(input: {
       additionalData: toCanonicalBytes(cryptoMeta?.aad || {}),
     },
     key,
-    fromBase64(trim(envelope.ciphertextB64))
+    fromBase64(trim(envelope.ciphertextB64)),
   );
 
   const parsed = JSON.parse(fromUtf8Bytes(new Uint8Array(plaintext))) as IdentitySecretPayloadV1;
@@ -270,11 +268,11 @@ export async function decryptIdentityBackupEnvelope(input: {
   assert(trim(parsed?.profileId) === trim(envelope.profileId), "Recovered profile mismatch.");
   assert(
     trim(parsed?.identity?.publicKeyPEM) === trim(envelope.identityPublicKey),
-    "Recovered identity public key mismatch."
+    "Recovered identity public key mismatch.",
   );
   await validateIdentityKeyPair(
     trim(parsed.identity.publicKeyPEM),
-    trim(parsed.identity.privateKeyPEM)
+    trim(parsed.identity.privateKeyPEM),
   );
   return parsed;
 }

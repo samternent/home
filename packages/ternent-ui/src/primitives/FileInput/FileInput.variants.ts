@@ -32,8 +32,7 @@ export const fileInputDropzoneBaseClass =
   "duration-[var(--ui-duration-normal)] ease-[var(--ui-ease-out)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ui-ring)] focus-visible:border-[var(--ui-primary)]";
 
 export const fileInputDropzoneStateClasses = {
-  default:
-    "hover:border-[var(--ui-primary-muted)] hover:bg-[var(--ui-tonal-secondary)]",
+  default: "hover:border-[var(--ui-primary-muted)] hover:bg-[var(--ui-tonal-secondary)]",
   drag: "border-[var(--ui-primary)] bg-[var(--ui-primary-muted)]",
   invalid:
     "border-[var(--ui-critical)] focus-visible:border-[var(--ui-critical)] focus-visible:ring-[var(--ui-critical-muted)]",

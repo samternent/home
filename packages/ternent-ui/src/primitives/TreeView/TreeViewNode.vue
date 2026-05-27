@@ -35,14 +35,10 @@ const rowToneClass = computed(() =>
     : "border border-transparent",
 );
 const labelToneClass = computed(() =>
-  props.node.tone === "critical"
-    ? "text-[var(--ui-text)]"
-    : "text-[var(--ui-text)]",
+  props.node.tone === "critical" ? "text-[var(--ui-text)]" : "text-[var(--ui-text)]",
 );
 const valueToneClass = computed(() =>
-  props.node.tone === "critical"
-    ? "text-[var(--ui-text-muted)]"
-    : "text-[var(--ui-text-muted)]",
+  props.node.tone === "critical" ? "text-[var(--ui-text-muted)]" : "text-[var(--ui-text-muted)]",
 );
 const textStyle = computed(() =>
   props.node.tone === "critical" ? { color: "var(--ui-critical)" } : undefined,
@@ -51,9 +47,7 @@ const textStyle = computed(() =>
 const isEditingValue = ref(false);
 const draftValue = ref("");
 
-const hasRawValue = computed(() =>
-  Object.prototype.hasOwnProperty.call(props.node, "rawValue"),
-);
+const hasRawValue = computed(() => Object.prototype.hasOwnProperty.call(props.node, "rawValue"));
 
 function formatRawValue(value: unknown) {
   if (typeof value === "string") return value;
@@ -120,12 +114,7 @@ function cancelValueEdit() {
               {{ node.label }}
             </TreeView.BranchText>
           </TreeView.BranchTrigger>
-          <Badge
-            v-if="node.badge"
-            tone="critical"
-            variant="soft"
-            size="xs"
-          >
+          <Badge v-if="node.badge" tone="critical" variant="soft" size="xs">
             {{ node.badge }}
           </Badge>
           <input
@@ -175,12 +164,7 @@ function cancelValueEdit() {
         >
           {{ node.label }}
         </TreeView.ItemText>
-        <Badge
-          v-if="node.badge"
-          tone="critical"
-          variant="soft"
-          size="xs"
-        >
+        <Badge v-if="node.badge" tone="critical" variant="soft" size="xs">
           {{ node.badge }}
         </Badge>
         <input

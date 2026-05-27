@@ -32,7 +32,7 @@ export function createReceiptWriter({ signer, receiptRepo, receiptStore }) {
           {
             expectedPrevHash: trim(expectedPrevHash),
             currentPrevHash: prevHash,
-          }
+          },
         );
       }
 
@@ -68,7 +68,7 @@ export function createReceiptWriter({ signer, receiptRepo, receiptStore }) {
       if (!signer.validateSignatureFormat(signed.signature)) {
         throw serviceUnavailable(
           "SIGNATURE_INVALID",
-          "Vault signer returned an invalid signature."
+          "Vault signer returned an invalid signature.",
         );
       }
 

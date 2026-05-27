@@ -26,10 +26,12 @@ kubectl -n backend scale statefulset/ternent-postgres --replicas=0
 3. Snapshot/retain current PVC for forensic rollback.
 
 4. Create restore job:
+
 - Use `wal-g backup-fetch` into a new PVC.
 - Recover WAL to target timestamp when needed (PITR).
 
 5. Bring restored Postgres online:
+
 - Attach restored PVC to temporary restore StatefulSet.
 - Validate readiness and SQL smoke checks.
 
@@ -48,12 +50,13 @@ kubectl -n backend scale deploy/ternent-api --replicas=1
 ```
 
 9. Verify:
+
 - `/v1/auth/health`
 - `/v1/account/session`
 - PixPax control/authenticated routes
 
 10. Document incident:
+
 - root cause
 - restore point timestamp
 - measured RPO/RTO
-

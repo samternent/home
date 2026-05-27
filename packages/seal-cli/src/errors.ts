@@ -1,7 +1,4 @@
-import {
-  ArmourError,
-  ArmourValidationError,
-} from "@ternent/armour";
+import { ArmourError, ArmourValidationError } from "@ternent/armour";
 
 export const EXIT_SUCCESS = 0;
 export const EXIT_FAILURE = 1;
@@ -50,12 +47,9 @@ export function getExitCode(error: unknown): number {
 }
 
 export function unsupportedEncryptionModeError(
-  message = "Seal does not support this encryption mode."
+  message = "Seal does not support this encryption mode.",
 ): SealArtifactError {
-  return new SealArtifactError(
-    "SEAL_UNSUPPORTED_ENCRYPTION_MODE",
-    message
-  );
+  return new SealArtifactError("SEAL_UNSUPPORTED_ENCRYPTION_MODE", message);
 }
 
 export function toSealEncryptionError(error: unknown): SealArtifactError {
@@ -65,29 +59,20 @@ export function toSealEncryptionError(error: unknown): SealArtifactError {
 
   if (
     error instanceof ArmourValidationError &&
-    (error.code === "ARMOUR_EMPTY_RECIPIENTS" ||
-      error.code === "ARMOUR_INVALID_RECIPIENT")
+    (error.code === "ARMOUR_EMPTY_RECIPIENTS" || error.code === "ARMOUR_INVALID_RECIPIENT")
   ) {
     return new SealArtifactError(
       "SEAL_INVALID_RECIPIENT",
       "Recipient must be a valid age recipient string.",
-      error
+      error,
     );
   }
 
   if (error instanceof ArmourError) {
-    return new SealArtifactError(
-      "SEAL_ENCRYPTION_FAILED",
-      "Failed to encrypt payload.",
-      error
-    );
+    return new SealArtifactError("SEAL_ENCRYPTION_FAILED", "Failed to encrypt payload.", error);
   }
 
-  return new SealArtifactError(
-    "SEAL_ENCRYPTION_FAILED",
-    "Failed to encrypt payload.",
-    error
-  );
+  return new SealArtifactError("SEAL_ENCRYPTION_FAILED", "Failed to encrypt payload.", error);
 }
 
 export function toSealDecryptionError(error: unknown): SealArtifactError {
@@ -96,16 +81,8 @@ export function toSealDecryptionError(error: unknown): SealArtifactError {
   }
 
   if (error instanceof ArmourError) {
-    return new SealArtifactError(
-      "SEAL_DECRYPTION_FAILED",
-      "Failed to decrypt payload.",
-      error
-    );
+    return new SealArtifactError("SEAL_DECRYPTION_FAILED", "Failed to decrypt payload.", error);
   }
 
-  return new SealArtifactError(
-    "SEAL_DECRYPTION_FAILED",
-    "Failed to decrypt payload.",
-    error
-  );
+  return new SealArtifactError("SEAL_DECRYPTION_FAILED", "Failed to decrypt payload.", error);
 }

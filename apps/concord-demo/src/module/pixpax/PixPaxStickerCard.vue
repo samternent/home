@@ -53,12 +53,8 @@ const finishClass = computed(() => {
 
 const displayLabel = computed(() => props.sticker.meta.name);
 const displayStatus = computed(() => (props.missing ? "unowned" : "owned"));
-const showAtmosphere = computed(
-  () => props.animated && props.animatedBackground && !props.missing,
-);
-const showSparkles = computed(
-  () => props.animated && props.sparkles && !props.missing,
-);
+const showAtmosphere = computed(() => props.animated && props.animatedBackground && !props.missing);
+const showSparkles = computed(() => props.animated && props.sparkles && !props.missing);
 const rendererInput = computed(() => toPixPaxArtInput(props.sticker));
 const finishOverlayClass = computed(() => {
   if (finishClass.value === "finish-holo") {
@@ -110,10 +106,7 @@ const finishOverlayClass = computed(() => {
       />
       <div
         v-if="finishClass"
-        :class="[
-          'pointer-events-none absolute inset-0 z-[4]',
-          finishOverlayClass,
-        ]"
+        :class="['pointer-events-none absolute inset-0 z-[4]', finishOverlayClass]"
         aria-hidden="true"
       />
     </div>

@@ -6,10 +6,7 @@ import type {
   PixpaxDropScope,
   PixpaxPackCard,
 } from "./types.js";
-import {
-  createDeterministicIssuanceMaterial,
-  normalizeCardCatalogEntry,
-} from "./canonical.js";
+import { createDeterministicIssuanceMaterial, normalizeCardCatalogEntry } from "./canonical.js";
 
 function scoreHexToIndex(scoreHex: string, poolSize: number): number {
   const seed = scoreHex.slice(0, 12);

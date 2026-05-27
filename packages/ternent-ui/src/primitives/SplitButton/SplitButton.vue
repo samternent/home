@@ -36,9 +36,7 @@ const props = defineProps({
 const wrapperRef = shallowRef<HTMLElement | null>(null);
 const isOpen = shallowRef(false);
 
-const alignClass = computed(() =>
-  props.menuAlign === "left" ? "left-0" : "right-0"
-);
+const alignClass = computed(() => (props.menuAlign === "left" ? "left-0" : "right-0"));
 
 function toggleMenu() {
   if (props.disabled) return;
