@@ -1,5 +1,11 @@
 # **APP_ID**
 
+## 0.0.20
+
+### Patch Changes
+
+- [`5f5d22965a625073ea281b9d4e326f8db7b95fe2`](https://github.com/samternent/home/commit/5f5d22965a625073ea281b9d4e326f8db7b95fe2) Thanks [@samternent](https://github.com/samternent)! - Landing page
+
 ## 0.0.19
 
 ### Patch Changes
