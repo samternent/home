@@ -1,0 +1,5 @@
+---
+"ternentdotdev": patch
+---
+
+Landing page
