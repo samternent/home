@@ -1,7 +1,7 @@
 {
   "name": "concord-demo",
-  "version": "0.3.80",
   "private": true,
+  "version": "0.3.81",
   "type": "module",
   "scripts": {
     "dev": "vite",

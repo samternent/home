@@ -1,7 +1,12 @@
 {
   "name": "__APP_ID__",
+<<<<<<< HEAD
   "version": "0.0.18",
   "private": true,
+=======
+  "private": true,
+  "version": "0.0.19",
+>>>>>>> main
   "type": "module",
   "scripts": {
     "dev": "vite --host",
