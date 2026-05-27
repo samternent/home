@@ -1,0 +1,87 @@
+import { ref } from "vue";
+import {
+  importPrivateKeyFromPem,
+  importPublicKeyFromPem,
+  derivePublicFromPrivatePEM,
+} from "ternent-identity";
+import { hashData, stripIdentityKey } from "ternent-utils";
+import { useIdentitySession, type StoredIdentity } from "./useIdentitySession";
+
+type ImportPayload = {
+  privateKeyPem: string;
+  publicKeyPem?: string;
+  id?: string;
+  createdAt?: string;
+};
+
+function parsePayload(raw: string): ImportPayload {
+  const trimmed = raw.trim();
+  if (!trimmed) {
+    throw new Error("Identity import payload is empty");
+  }
+
+  if (trimmed.startsWith("{")) {
+    const parsed = JSON.parse(trimmed) as ImportPayload;
+    if (!parsed.privateKeyPem) {
+      throw new Error("Missing privateKeyPem in identity payload");
+    }
+    return parsed;
+  }
+
+  if (trimmed.includes("BEGIN PRIVATE KEY")) {
+    return { privateKeyPem: trimmed };
+  }
+
+  throw new Error("Unsupported identity payload format. Use JSON or PEM private key text.");
+}
+
+export function useIdentityImport() {
+  const { setIdentity } = useIdentitySession();
+
+  const isImporting = ref(false);
+  const error = ref<string | null>(null);
+
+  const importIdentity = async (rawPayload: string): Promise<StoredIdentity> => {
+    isImporting.value = true;
+    error.value = null;
+
+    try {
+      const payload = parsePayload(rawPayload);
+
+      // Validate private key before accepting it.
+      await importPrivateKeyFromPem(payload.privateKeyPem);
+
+      const publicKeyPem = payload.publicKeyPem
+        ? payload.publicKeyPem
+        : await derivePublicFromPrivatePEM(payload.privateKeyPem);
+
+      // Validate public key shape.
+      await importPublicKeyFromPem(publicKeyPem);
+
+      const fingerprint = await hashData(stripIdentityKey(publicKeyPem));
+
+      const identity: StoredIdentity = {
+        id: payload.id || `identity-${fingerprint.slice(0, 12)}`,
+        createdAt: payload.createdAt || new Date().toISOString(),
+        publicKeyPem,
+        privateKeyPem: payload.privateKeyPem,
+        fingerprint,
+      };
+
+      setIdentity(identity);
+      return identity;
+    } catch (caught) {
+      const message = caught instanceof Error ? caught.message : "Failed to import identity";
+      error.value = message;
+      throw new Error(message);
+    } finally {
+      isImporting.value = false;
+    }
+  };
+
+  return {
+    isImporting,
+    error,
+    importIdentity,
+  };
+}
