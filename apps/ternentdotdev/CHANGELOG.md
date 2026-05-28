@@ -1,5 +1,11 @@
 # **APP_ID**
 
+## 0.0.22
+
+### Patch Changes
+
+- [`9eeca61eac420ec9c46e282dfd14ab0630e057c5`](https://github.com/samternent/home/commit/9eeca61eac420ec9c46e282dfd14ab0630e057c5) Thanks [@samternent](https://github.com/samternent)! - pnpm v
+
 ## 0.0.21
 
 ### Patch Changes
