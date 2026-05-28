@@ -17,7 +17,10 @@ import {
 const repoRoot = path.resolve(new URL("../..", import.meta.url).pathname);
 
 test("loads the ternentdotdev manifest into normalized runtime config", () => {
-  const manifest = loadTernentAppManifestForDir(path.join(repoRoot, "apps", "ternentdotdev"), repoRoot);
+  const manifest = loadTernentAppManifestForDir(
+    path.join(repoRoot, "apps", "ternentdotdev"),
+    repoRoot,
+  );
 
   assert.equal(manifest.app.appId, "ternentdotdev");
   assert.equal(manifest.app.themeName, "aurora");

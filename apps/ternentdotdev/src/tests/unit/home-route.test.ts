@@ -9,7 +9,7 @@ describe("RouteHome", () => {
         stubs: {
           RouterLink: {
             props: ["to"],
-            template: "<a :href=\"to\"><slot /></a>",
+            template: '<a :href="to"><slot /></a>',
           },
           Button: {
             props: ["as", "to", "href", "size", "variant"],

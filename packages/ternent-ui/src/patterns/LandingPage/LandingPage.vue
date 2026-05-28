@@ -84,8 +84,6 @@ function resolveSuiteItemStyle(themeColor: string) {
 
 <template>
   <PageSurface>
-   
-
     <main
       :class="
         hasDocumentationSections
@@ -597,6 +595,5 @@ function resolveSuiteItemStyle(themeColor: string) {
         </Card>
       </section>
     </main>
-
   </PageSurface>
 </template>

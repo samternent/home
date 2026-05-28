@@ -1,6 +1,7 @@
 /* This file is generated from src/themes/semanticThemeContract.js. */
 
-:root[data-theme="pixpax-light"], [data-theme="pixpax-light"] {
+:root[data-theme="pixpax-light"],
+[data-theme="pixpax-light"] {
   color-scheme: light;
   --ui-bg: #f8f6ff;
   --ui-fg: #241b2f;
@@ -73,7 +74,8 @@
   --ui-logo-cutout: #f8f6ff;
 }
 
-:root[data-theme="pixpax-dark"], [data-theme="pixpax-dark"] {
+:root[data-theme="pixpax-dark"],
+[data-theme="pixpax-dark"] {
   color-scheme: dark;
   --ui-bg: #120f1f;
   --ui-fg: #f6f2ff;

@@ -5,11 +5,7 @@ const resolvedBaseConfig =
 
 export default {
   ...resolvedBaseConfig,
-  content: [
-    "./index.html",
-    "./src/**/*.{ts,vue}",
-    "../../packages/ternent-ui/**/*.{vue,ts,css}",
-  ],
+  content: ["./index.html", "./src/**/*.{ts,vue}", "../../packages/ternent-ui/**/*.{vue,ts,css}"],
   theme: {
     extend: {
       colors: {
@@ -23,8 +19,8 @@ export default {
         "on-primary": "var(--ui-on-primary)",
       },
       fontFamily: {
-        sans: ["\"Clash Grotesk\"", "system-ui", "sans-serif"],
-        mono: ["\"JetBrains Mono\"", "ui-monospace", "monospace"],
+        sans: ['"Clash Grotesk"', "system-ui", "sans-serif"],
+        mono: ['"JetBrains Mono"', "ui-monospace", "monospace"],
       },
     },
   },

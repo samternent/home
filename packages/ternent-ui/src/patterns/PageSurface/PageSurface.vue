@@ -15,7 +15,8 @@
   min-height: 100vh;
   overflow-x: clip;
   overflow-y: visible;
-  background: radial-gradient(
+  background:
+    radial-gradient(
       circle at top center,
       color-mix(in srgb, var(--ui-primary-muted) 70%, transparent),
       transparent 42%
