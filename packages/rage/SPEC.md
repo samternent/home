@@ -4,6 +4,9 @@
 
 `@ternent/rage` is an async-first WebAssembly wrapper around `age`/`rage`.
 
+In browser main-thread environments it should isolate the WASM engine behind an
+internal worker boundary while preserving the same public API.
+
 It operates only on:
 
 - age recipient strings

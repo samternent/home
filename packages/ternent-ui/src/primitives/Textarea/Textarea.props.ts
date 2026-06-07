@@ -11,7 +11,7 @@ export const textareaProps = {
     default: "md",
   },
   rows: {
-    type: Number,
+    type: [Number, String] as PropType<number | string>,
     default: 4,
   },
   disabled: {

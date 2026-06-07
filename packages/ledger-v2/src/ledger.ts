@@ -61,6 +61,8 @@ let sealRuntimePromise: Promise<{
   verifySealProofAgainstBytes: typeof import("@ternent/seal-cli").verifySealProofAgainstBytes;
 }> | null = null;
 
+const REPLAY_YIELD_INTERVAL = 25;
+
 async function loadArmourRuntime() {
   if (!armourRuntimePromise) {
     armourRuntimePromise = import("@ternent/armour").then((module) => ({
@@ -81,6 +83,19 @@ async function loadSealRuntime() {
     }));
   }
   return await sealRuntimePromise;
+}
+
+async function yieldToHost() {
+  if (typeof requestAnimationFrame === "function") {
+    await new Promise<void>((resolve) => {
+      requestAnimationFrame(() => resolve());
+    });
+    return;
+  }
+
+  await new Promise<void>((resolve) => {
+    globalThis.setTimeout(resolve, 0);
+  });
 }
 
 function cloneValue<T>(value: T): T {
@@ -542,23 +557,28 @@ async function toReplayEntry(
   }
 
   if (decrypt && identity.decryptor) {
-    return {
-      entryId: entry.entryId,
-      kind: entry.kind,
-      author: entry.author,
-      authoredAt: entry.authoredAt,
-      meta: entry.meta,
-      payload: {
-        type: "decrypted",
-        original: "encrypted",
-        data: await armour.decrypt({
-          payload: entry.payload,
-          decryptor: identity.decryptor,
-        }),
-      },
-      verified: true,
-      decrypted: true,
-    };
+    try {
+      return {
+        entryId: entry.entryId,
+        kind: entry.kind,
+        author: entry.author,
+        authoredAt: entry.authoredAt,
+        meta: entry.meta,
+        payload: {
+          type: "decrypted",
+          original: "encrypted",
+          data: await armour.decrypt({
+            payload: entry.payload,
+            decryptor: identity.decryptor,
+          }),
+        },
+        verified: true,
+        decrypted: true,
+      };
+    } catch {
+      // Keep replay moving when the current identity cannot decrypt this entry.
+      // The encrypted payload remains verifiable and can be ignored by higher layers.
+    }
   }
 
   return {
@@ -603,11 +623,73 @@ export async function createLedger<P>(config: CreateLedgerConfig<P>): Promise<Le
   const replayPolicy = config.replayPolicy;
   const state = createInitialState(config.initialProjection);
   const listeners = new Set<(state: Readonly<LedgerState<P>>) => void>();
+  let committedEntriesCache: {
+    headCommitId: string | null;
+    entries: LedgerEntryRecord[];
+  } | null = null;
+  let committedVerificationCache = new Map<string, LedgerVerificationResult>();
 
   function notify() {
     for (const listener of listeners) {
       listener(state);
     }
+  }
+
+  function invalidateCommittedCaches() {
+    committedEntriesCache = null;
+    committedVerificationCache.clear();
+  }
+
+  function getCommittedHeadCommitId(
+    container: LedgerContainer | null = state.container,
+  ): string | null {
+    return container?.head ?? null;
+  }
+
+  function getVerificationCacheKey(
+    headCommitId: string | null,
+    options?: LedgerVerifyOptions,
+  ): string {
+    return `${headCommitId ?? "none"}::proofs:${
+      options?.includeProofs !== false ? "1" : "0"
+    }::hashes:${options?.includePayloadHashes !== false ? "1" : "0"}`;
+  }
+
+  async function getCommittedEntriesInOrderCached(): Promise<LedgerEntryRecord[]> {
+    const headCommitId = getCommittedHeadCommitId();
+    if (!state.container || !headCommitId) {
+      committedEntriesCache = {
+        headCommitId: null,
+        entries: [],
+      };
+      return [];
+    }
+
+    if (committedEntriesCache?.headCommitId === headCommitId) {
+      return committedEntriesCache.entries;
+    }
+
+    const entries = getCommittedEntriesInOrder(state.container, protocol);
+    committedEntriesCache = {
+      headCommitId,
+      entries,
+    };
+    return entries;
+  }
+
+  async function verifyCommittedSnapshotCached(
+    options?: LedgerVerifyOptions,
+  ): Promise<LedgerVerificationResult> {
+    const headCommitId = getCommittedHeadCommitId();
+    const cacheKey = getVerificationCacheKey(headCommitId, options);
+    const cached = committedVerificationCache.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
+    const verification = await verifySnapshot(state.container, [], options);
+    committedVerificationCache.set(cacheKey, verification);
+    return verification;
   }
 
   async function persist() {
@@ -871,6 +953,10 @@ export async function createLedger<P>(config: CreateLedgerConfig<P>): Promise<Le
   }
 
   async function verifyCurrent(options?: LedgerVerifyOptions): Promise<LedgerVerificationResult> {
+    if (state.staged.length === 0) {
+      return await verifyCommittedSnapshotCached(options);
+    }
+
     return verifySnapshot(state.container, state.staged, options);
   }
 
@@ -892,7 +978,7 @@ export async function createLedger<P>(config: CreateLedgerConfig<P>): Promise<Le
     let orderedCommitted: LedgerEntryRecord[] = [];
     if (state.container) {
       try {
-        orderedCommitted = getCommittedEntriesInOrder(state.container, protocol);
+        orderedCommitted = await getCommittedEntriesInOrderCached();
       } catch (error) {
         if (merged.verify) {
           throw error;
@@ -903,11 +989,16 @@ export async function createLedger<P>(config: CreateLedgerConfig<P>): Promise<Le
     const slice = getProjectionSlice(orderedEntries, merged.fromEntryId, merged.toEntryId);
 
     let projection = createEmptyProjection(config.initialProjection);
-    for (const entry of slice) {
+    for (let index = 0; index < slice.length; index += 1) {
+      const entry = slice[index]!;
       projection = config.projector(
         projection,
         await toReplayEntry(entry, merged.decrypt, config.identity, armour),
       );
+
+      if ((index + 1) % REPLAY_YIELD_INTERVAL === 0) {
+        await yieldToHost();
+      }
     }
 
     state.projection = projection;
@@ -1006,6 +1097,7 @@ export async function createLedger<P>(config: CreateLedgerConfig<P>): Promise<Le
     }
 
     await rebuildProjection();
+    await persist();
 
     return results;
   }
@@ -1026,6 +1118,7 @@ export async function createLedger<P>(config: CreateLedgerConfig<P>): Promise<Le
     };
     state.staged = [];
     state.verification = null;
+    invalidateCommittedCaches();
 
     await rebuildProjection();
     await persist();
@@ -1036,6 +1129,7 @@ export async function createLedger<P>(config: CreateLedgerConfig<P>): Promise<Le
     state.container = cloneValue(container);
     state.staged = [];
     state.verification = null;
+    invalidateCommittedCaches();
     await rebuildProjection();
     await persist();
   }
@@ -1063,6 +1157,7 @@ export async function createLedger<P>(config: CreateLedgerConfig<P>): Promise<Le
     state.container = snapshot.container ? cloneValue(snapshot.container) : null;
     state.staged = cloneValue(snapshot.staged);
     state.verification = null;
+    invalidateCommittedCaches();
     await rebuildProjection();
     return true;
   }
@@ -1110,6 +1205,7 @@ export async function createLedger<P>(config: CreateLedgerConfig<P>): Promise<Le
       head: commitRecord.commitId,
     };
     state.staged = [];
+    invalidateCommittedCaches();
 
     await rebuildProjection();
     await persist();
@@ -1164,6 +1260,7 @@ export async function createLedger<P>(config: CreateLedgerConfig<P>): Promise<Le
     state.staged = [];
     state.projection = createEmptyProjection(config.initialProjection);
     state.verification = null;
+    invalidateCommittedCaches();
     notify();
   }
 

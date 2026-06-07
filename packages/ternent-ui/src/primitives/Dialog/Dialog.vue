@@ -37,7 +37,9 @@ const hasHeader = computed(() =>
     </ArkDialog.Trigger>
     <ArkDialog.Backdrop :class="dialogBackdropClass" />
     <ArkDialog.Positioner :class="dialogPositionerClass">
-      <ArkDialog.Content :class="[dialogContentBaseClass, dialogContentSizeClasses[props.size]]">
+      <ArkDialog.Content
+        :class="[dialogContentBaseClass, dialogContentSizeClasses[props.size], props.contentClass]"
+      >
         <div v-if="hasHeader" :class="dialogHeaderClass">
           <slot name="header">
             <div class="min-w-0 flex-1">

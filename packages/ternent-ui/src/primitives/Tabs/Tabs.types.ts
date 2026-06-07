@@ -1,5 +1,5 @@
 export const tabsSizeValues = ["sm", "md"] as const;
-export const tabsVariantValues = ["underline", "pill"] as const;
+export const tabsVariantValues = ["underline", "pill", "workspace"] as const;
 
 export type TabsSize = (typeof tabsSizeValues)[number];
 export type TabsVariant = (typeof tabsVariantValues)[number];

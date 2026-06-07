@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Tabs as ArkTabs } from "@ark-ui/vue/tabs";
-import { computed } from "vue";
+import { computed, useSlots } from "vue";
 import { tabsProps } from "./Tabs.props";
 import {
   tabsContentClass,
@@ -17,11 +17,16 @@ const emit = defineEmits<{
 }>();
 
 const props = defineProps(tabsProps);
+const slots = useSlots();
 
 const model = computed({
   get: () => props.modelValue ?? props.items[0]?.value,
   set: (value: string) => emit("update:modelValue", value),
 });
+
+const contentItems = computed(() =>
+  props.items.filter((item) => Boolean(slots[`panel-${item.value}`])),
+);
 </script>
 
 <template>
@@ -48,7 +53,7 @@ const model = computed({
     </ArkTabs.List>
 
     <ArkTabs.Content
-      v-for="item in props.items"
+      v-for="item in contentItems"
       :key="`panel-${item.value}`"
       :value="item.value"
       :class="tabsContentClass"

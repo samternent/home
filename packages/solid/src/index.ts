@@ -1,15 +1,30 @@
 export { createSolidIdentityCache } from "./cache.js";
-export { enforceSolidConcordAccess, validateSolidConcordAccess } from "./access.js";
 export {
+  enforceSolidPrivateResourceTarget,
+  enforceSolidPrivateResourceWrite,
+  enforceSolidConcordAccess,
+  validateSolidPrivateResourceTarget,
+  validateSolidPrivateResourceWrite,
+  validateSolidConcordAccess,
+} from "./access.js";
+export {
+  createDefaultSolidIdentityUnlocker,
+  createSolidEncryptedIdentityBlob,
   createSolidMnemonicIdentity,
   createSolidIdentity,
   createSolidMnemonicSecret,
+  createPassphraseSolidIdentityUnlocker,
+  createStaticSolidIdentityUnlocker,
   createSolidWalletBackup,
   getSolidWebId,
+  isSolidEncryptedIdentityBlob,
   isSolidMnemonicSecret,
   isSolidWalletBackup,
+  resolveSolidIdentityUnlocker,
+  restoreSolidIdentityFromEncryptedBlob,
   restoreSolidIdentityFromMnemonicSecret,
   restoreSolidIdentityFromBackup,
+  serializeSolidEncryptedIdentityBlob,
   serializeSolidMnemonicSecret,
   serializeSolidWalletBackup,
 } from "./identity.js";
@@ -17,6 +32,7 @@ export {
   bootstrapSolidConcordProfile,
   createSolidConcordPaths,
   discoverSolidConcordResources,
+  SOLID_CONCORD_IDENTITY_CLASS,
   SOLID_CONCORD_LEDGER_CLASS,
   SOLID_CONCORD_MNEMONIC_CLASS,
   SOLID_CONCORD_PEOPLE_CLASS,
@@ -34,6 +50,7 @@ export { createSolidConcordApp } from "./app.js";
 export { createSolidConcordManager } from "./manager.js";
 export {
   createDefaultSolidIdentityCache,
+  createSolidEncryptedIdentityStorage,
   createSolidMnemonicStorage,
   createSolidWalletStorage,
   provisionSolidIdentity,
@@ -47,6 +64,7 @@ export type {
   CreateSolidConcordAppOptions,
   CreateSolidConcordAppResult,
   CreateConcordOsPeopleStorageOptions,
+  CreateSolidEncryptedIdentityStorageOptions,
   CreateSolidIdentityCacheOptions,
   CreateSolidIdentityFromMnemonicOptions,
   CreateSolidMnemonicSecretOptions,
@@ -67,8 +85,11 @@ export type {
   SolidConcordResources,
   SolidConcordManager,
   SolidConcordManagerState,
+  SolidEncryptedIdentityBlob,
   SolidIdentityCacheLike,
   SolidIdentityCacheStorageLike,
+  SolidIdentityUnlockContext,
+  SolidIdentityUnlocker,
   SolidMnemonicSecret,
   SolidProfileOptions,
   SolidSessionLike,

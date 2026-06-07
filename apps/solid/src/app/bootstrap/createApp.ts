@@ -1,8 +1,8 @@
 import type { App } from "vue";
-import { provideTheme } from "@/app/providers/provideTheme";
-import { provideSolidSession } from "@/app/providers/provideSolidSession";
 
-export function installAppProviders(app: App) {
-  provideSolidSession(app);
-  provideTheme();
+/**
+ * Installs app providers for the lean v2 runtime.
+ */
+export function installAppProviders(_app: App) {
+  // Intentionally empty for the Concord-first v2 host.
 }

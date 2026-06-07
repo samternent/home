@@ -8,6 +8,28 @@ import {
 } from "@ternent/rage";
 
 const output = document.querySelector<HTMLPreElement>("#output");
+const NativeWorker = globalThis.Worker;
+let workerCreations = 0;
+let workerMessages = 0;
+
+if (NativeWorker) {
+  class CountingWorker extends NativeWorker {
+    constructor(url: string | URL, options?: WorkerOptions) {
+      workerCreations += 1;
+      super(url, options);
+    }
+
+    override postMessage(
+      message: unknown,
+      transferOrOptions?: StructuredSerializeOptions | Transferable[],
+    ): void {
+      workerMessages += 1;
+      super.postMessage(message, transferOrOptions);
+    }
+  }
+
+  globalThis.Worker = CountingWorker;
+}
 
 async function main(): Promise<void> {
   if (!output) {
@@ -44,6 +66,8 @@ async function main(): Promise<void> {
         status: "ok",
         recipientPlaintext,
         passphrasePlaintext,
+        workerCreations,
+        workerMessages,
       },
       null,
       2,

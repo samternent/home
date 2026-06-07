@@ -30,6 +30,11 @@ const classes = computed(() =>
   ),
 );
 
+const normalizedRows = computed(() => {
+  const rows = Number(props.rows);
+  return Number.isFinite(rows) && rows > 0 ? rows : 4;
+});
+
 const textareaAttrs = computed(() => {
   const {
     class: _class,
@@ -60,7 +65,7 @@ function handleBlur(event: FocusEvent) {
 <template>
   <textarea
     :value="props.modelValue"
-    :rows="props.rows"
+    :rows="normalizedRows"
     :class="classes"
     :disabled="props.disabled"
     :readonly="props.readonly"

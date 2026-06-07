@@ -43,6 +43,7 @@ const SOLID_INSTANCE_CONTAINER = "http://www.w3.org/ns/solid/terms#instanceConta
 
 export const SOLID_CONCORD_MNEMONIC_CLASS = "urn:ternent:solid:concord:MnemonicSecret";
 export const SOLID_CONCORD_WALLET_CLASS = "urn:ternent:solid:concord:WalletBackup";
+export const SOLID_CONCORD_IDENTITY_CLASS = "urn:ternent:solid:concord:EncryptedIdentity";
 export const SOLID_CONCORD_LEDGER_CLASS = "urn:ternent:solid:concord:Ledger";
 export const SOLID_CONCORD_PEOPLE_CLASS = "urn:ternent:solid:concord:PeopleRegistry";
 export const SOLID_CONCORD_VERIFICATION_CLASS = "urn:ternent:solid:concord:SealVerification";
@@ -363,6 +364,9 @@ export async function createSolidConcordPaths(
     privateTypeIndexUrl: normalizeUrl(
       options.privateTypeIndexUrl ?? new URL("privateTypeIndex.ttl", settingsRootUrl).toString(),
     ),
+    identityUrl: normalizeUrl(
+      options.identityUrl ?? new URL("identity.enc.json", systemPrivateRootUrl).toString(),
+    ),
     mnemonicUrl: new URL("mnemonic.json", systemPrivateRootUrl).toString(),
     walletUrl: new URL("wallet.json", systemPrivateRootUrl).toString(),
     ledgerUrl: new URL("ledger.json", systemPrivateRootUrl).toString(),
@@ -429,6 +433,10 @@ export async function discoverSolidConcordResources(
     privateTypeIndexUrl: privateTypeIndexUrl
       ? normalizeUrl(privateTypeIndexUrl)
       : (defaults?.privateTypeIndexUrl ?? null),
+    identityUrl:
+      getRegisteredInstanceUrl(privateIndex, SOLID_CONCORD_IDENTITY_CLASS) ??
+      defaults?.identityUrl ??
+      null,
     mnemonicUrl:
       getRegisteredInstanceUrl(privateIndex, SOLID_CONCORD_MNEMONIC_CLASS) ??
       defaults?.mnemonicUrl ??
@@ -526,10 +534,22 @@ export async function bootstrapSolidConcordProfile(
   await ensureTypeIndexDocument(desiredPublicTypeIndexUrl, true, fetchImpl);
   await ensureTypeIndexDocument(desiredPrivateTypeIndexUrl, false, fetchImpl);
 
-  const mnemonicUrl = input.mnemonicUrl ?? paths.mnemonicUrl;
-  const walletUrl = input.walletUrl ?? paths.walletUrl;
-  const ledgerUrl = input.ledgerUrl ?? paths.ledgerUrl;
-  const peopleUrl = input.peopleUrl ?? paths.peopleUrl;
+  const identityUrl = input.identityUrl === undefined ? paths.identityUrl : input.identityUrl;
+  const mnemonicUrl = input.mnemonicUrl === undefined ? paths.mnemonicUrl : input.mnemonicUrl;
+  const walletUrl = input.walletUrl === undefined ? paths.walletUrl : input.walletUrl;
+  const ledgerUrl = input.ledgerUrl === undefined ? paths.ledgerUrl : input.ledgerUrl;
+  const peopleUrl = input.peopleUrl === undefined ? paths.peopleUrl : input.peopleUrl;
+
+  if (identityUrl) {
+    await upsertTypeRegistration({
+      indexUrl: desiredPrivateTypeIndexUrl,
+      fetchImpl,
+      registrationId: "ternent-solid-encrypted-identity",
+      classUrl: SOLID_CONCORD_IDENTITY_CLASS,
+      instanceUrl: identityUrl,
+      listed: false,
+    });
+  }
 
   if (mnemonicUrl) {
     await upsertTypeRegistration({

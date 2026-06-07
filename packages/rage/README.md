@@ -2,6 +2,9 @@
 
 `@ternent/rage` is an async-first WebAssembly wrapper around `age`/`rage`.
 
+In browser main-thread usage it runs the WASM engine inside an internal module worker,
+so consumers keep the same API surface without wiring their own worker transport.
+
 It provides low-level encryption primitives for:
 
 - X25519 key generation

@@ -30,3 +30,7 @@ docker-compose.override.yaml
 
 
 k8s-*-kubeconfig.yaml
+
+# Solid app generated artifacts
+apps/solid/.vite-ssg-temp/
+apps/solid/test-results/

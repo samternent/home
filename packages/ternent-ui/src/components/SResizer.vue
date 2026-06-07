@@ -129,10 +129,10 @@ watch(isDragging, (value) => {
         'h-0.5': size === 'default' && direction === 'horizontal',
         'group-hover:w-1 cursor-ew-resize h-full': direction === 'vertical',
         'group-hover:h-1 cursor-ns-resize w-full': direction === 'horizontal',
-        'group-hover:bg-blue-400': type === 'primary',
-        'bg-blue-200': type === 'primary' && isDragging,
-        'bg-green-200': type === 'secondary' && isDragging,
-        'bg-indigo-200': type === 'accent' && isDragging,
+        'group-hover:bg-[var(--ui-primary)]': type === 'primary',
+        'bg-[var(--ui-primary-muted)]': type === 'primary' && isDragging,
+        'bg-[var(--ui-success-muted)]': type === 'secondary' && isDragging,
+        'bg-[var(--ui-accent-muted)]': type === 'accent' && isDragging,
       }"
       class="z-50 opacity-100 transition-all group-hover:opacity-50 duration-300"
     />

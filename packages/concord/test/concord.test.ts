@@ -1,3 +1,5 @@
+import { dirname, resolve } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { describe, expect, it } from "vitest";
 import { recipientFromIdentity } from "@ternent/armour";
 import { createIdentity } from "@ternent/identity";
@@ -14,6 +16,9 @@ import {
   type ConcordReplayMetadata,
   type ConcordReplayPlugin,
 } from "../src/index.ts";
+
+const testDir = dirname(fileURLToPath(import.meta.url));
+const packageDir = resolve(testDir, "..");
 
 function createSequenceNow(values: string[]): () => string {
   let index = 0;
@@ -638,6 +643,101 @@ describe("@ternent/concord", () => {
     });
   });
 
+  it("restores staged entries across destroy and reload", async () => {
+    const identity = await createIdentity("2026-03-18T12:24:10.000Z");
+    const storage = createMemoryStorage();
+    const first = await createConcordApp({
+      identity,
+      storage,
+      plugins: [createTodoPlugin()],
+    });
+
+    await first.load();
+    await first.command("todo.create-item", {
+      id: "todo-staged",
+      title: "Still staged after reload",
+    });
+
+    expect(first.getState().stagedCount).toBe(1);
+    expect(storage.snapshot?.staged).toHaveLength(1);
+
+    await first.destroy();
+
+    const second = await createConcordApp({
+      identity,
+      storage,
+      plugins: [createTodoPlugin()],
+    });
+
+    await second.load();
+
+    expect(second.getState().stagedCount).toBe(1);
+    expect(
+      second.getReplayState<{
+        items: Record<string, { id: string; title: string; completed: boolean }>;
+      }>("todo").items,
+    ).toEqual({
+      "todo-staged": {
+        id: "todo-staged",
+        title: "Still staged after reload",
+        completed: false,
+      },
+    });
+    expect(Object.keys((await second.exportLedger()).entries)).toHaveLength(0);
+  });
+
+  it("supports read-only load, verify, and replay without an identity", async () => {
+    const identity = await createIdentity("2026-03-18T12:24:30.000Z");
+    const sourceStorage = createMemoryStorage();
+    const source = await createConcordApp({
+      identity,
+      storage: sourceStorage,
+      plugins: [createTodoPlugin()],
+    });
+
+    await source.load();
+    await source.command("todo.create-item", {
+      id: "todo-readonly",
+      title: "Readable without signer",
+    });
+    await source.commit({
+      metadata: {
+        message: "Persist read-only sample",
+      },
+    });
+
+    const targetStorage = createMemoryStorage();
+    targetStorage.snapshot = structuredClone(sourceStorage.snapshot);
+
+    const target = await createConcordApp({
+      storage: targetStorage,
+      plugins: [createTodoPlugin()],
+    });
+
+    await target.load();
+
+    expect(
+      target.getReplayState<{
+        items: Record<string, { id: string; title: string; completed: boolean }>;
+      }>("todo").items["todo-readonly"]?.title,
+    ).toBe("Readable without signer");
+    expect(target.getState().ready).toBe(true);
+    expect(target.getState().integrityValid).toBe(true);
+
+    const verification = await target.verify();
+    expect(verification.committedHistoryValid).toBe(true);
+
+    await expect(
+      target.command("todo.create-item", {
+        id: "todo-fail",
+        title: "No signer",
+      }),
+    ).rejects.toMatchObject({
+      name: "ConcordBoundaryError",
+      code: "READ_ONLY_RUNTIME",
+    });
+  });
+
   it("fails fast when internal ledger requirements are missing", async () => {
     await expect(
       createConcordApp({
@@ -849,5 +949,30 @@ describe("@ternent/concord", () => {
       toEntryId: secondEntryId,
       isPartial: true,
     });
+  });
+
+  it("imports from built ESM output without manual path hacks", async () => {
+    const entryUrl = pathToFileURL(resolve(packageDir, "dist/index.js")).href;
+    const concord = await import(entryUrl);
+    const identity = await createIdentity("2026-03-18T12:40:00.000Z");
+    const recipient = await recipientFromIdentity(identity);
+    const app = await concord.createConcordApp({
+      identity,
+      storage: createMemoryStorage(),
+      plugins: [createSecretPlugin()],
+    });
+
+    await app.load();
+    await app.command("secret.write", {
+      text: "built concord",
+      recipients: [recipient],
+    });
+    await app.commit({
+      metadata: {
+        message: "Built package commit",
+      },
+    });
+
+    expect(app.getReplayState<{ values: string[] }>("secret").values).toEqual(["built concord"]);
   });
 });

@@ -23,10 +23,10 @@ const sizeClasses = computed(() => ({
 }));
 
 const colorClasses = computed(() => ({
-  primary: "text-indigo-600",
-  secondary: "text-slate-600",
-  slate: "text-slate-400",
-  white: "text-white",
+  primary: "text-[var(--ui-primary)]",
+  secondary: "text-[var(--ui-fg)]",
+  slate: "text-[var(--ui-fg-muted)]",
+  white: "text-[var(--ui-on-primary)]",
 }));
 </script>
 <template>

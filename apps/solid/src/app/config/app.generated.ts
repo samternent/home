@@ -22,20 +22,20 @@ export const appConfig = {
   appId: "solid",
   appTitle: "Concord OS for Solid",
   defaultHost: "solid.ternent.dev",
-  themeName: "concord",
-  defaultThemeMode: "dark",
+  themeName: "concordos",
+  defaultThemeMode: "light",
 } as const satisfies AppConfig;
 
 export const appSeoConfig = {
   shortName: "Concord OS",
   description:
     "Concord OS for Solid is a platform shell for exploring Pod files, opening replayable ledgers, and launching registry-backed apps.",
-  themeColor: "#7ea7d6",
-  backgroundColor: "#0f141b",
+  themeColor: "#4f46e5",
+  backgroundColor: "#f4f4f5",
   lang: "en",
 } as const satisfies AppSeoConfig;
 
-export const appThemeName = "concord";
+export const appThemeName = "concordos";
 
 export const appThemePrefix = appThemeName;
 
@@ -219,7 +219,7 @@ export const landingPageConfig = {
       {
         title: "Plugin-hosted vertical tools",
         description:
-          "Add focused apps for tasks, notes, cases, or operations without replacing the shell that owns persistence and navigation.",
+          "Add focused apps for notes, cases, or operations without replacing the shell that owns persistence and navigation.",
         tone: "info",
         icon: "terminal",
       },
@@ -251,7 +251,7 @@ export const landingPageConfig = {
         label: "Shell",
         title: "Create a Solid-backed Concord app",
         meta: "TypeScript",
-        code: 'import { createSolidConcordApp } from "@ternent/solid"\nimport { taskPlugin } from "@ternent/concord-plugin-task"\n\nconst { app } = await createSolidConcordApp({\n  session: solidSession,\n  plugins: [taskPlugin()],\n  profile: {\n    enabled: true,\n    discover: true,\n  },\n})\n\nawait app.load()',
+        code: 'import { createSolidConcordApp } from "@ternent/solid"\nimport { businessProjectionPlugin } from "@acme/concord-plugin-business"\n\nconst { app } = await createSolidConcordApp({\n  session: solidSession,\n  plugins: [businessProjectionPlugin()],\n  profile: {\n    enabled: true,\n    discover: true,\n  },\n})\n\nawait app.load()',
         supportingCopy:
           "The shell can authenticate with Solid, resolve app resources, and then hand compatible ledgers to focused domain plugins.",
         link: {

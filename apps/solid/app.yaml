@@ -2,13 +2,13 @@ app:
   id: solid
   title: Concord OS for Solid
   host: solid.ternent.dev
-  themeName: concord
-  defaultThemeMode: dark
+  themeName: concordos
+  defaultThemeMode: light
 seo:
   shortName: Concord OS
   description: Concord OS for Solid is a platform shell for exploring Pod files, opening replayable ledgers, and launching registry-backed apps.
-  themeColor: "#7ea7d6"
-  backgroundColor: "#0f141b"
+  themeColor: "#4f46e5"
+  backgroundColor: "#f4f4f5"
   lang: en
 landing:
   navigationLinks:

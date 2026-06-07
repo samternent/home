@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            boxShadow: {
+              soft: '0 1px 2px rgba(0,0,0,0.04), 0 12px 32px rgba(0,0,0,0.03)',
+            },
+          },
+        },
+      };
+    </script>
+    <title>Concord Tasks Mockup</title>
+  </head>
+  <body class="h-screen overflow-hidden bg-zinc-100 text-zinc-950 antialiased">
+    <div class="flex h-screen">
+      <aside class="flex w-72 shrink-0 flex-col border-r border-zinc-200 bg-white text-zinc-950">
+        <div class="flex h-16 items-center gap-3 border-b border-zinc-200 px-5">
+          <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-violet-400 to-indigo-500 text-white shadow-lg shadow-indigo-950/40">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="5" y="5" width="14" height="14" rx="3" />
+              <path d="M9 12h6" />
+              <path d="M9 9h.01" />
+            </svg>
+          </div>
+          <div>
+            <div class="text-[15px] font-semibold tracking-[-0.025em] text-zinc-950">Concord</div>
+          </div>
+        </div>
+
+        <nav class="flex-1 space-y-7 px-3 py-5">
+          <section>
+            <div class="mb-2 px-3 text-[11px] font-bold uppercase tracking-[0.16em] text-zinc-400">Workspace</div>
+            <a class="flex items-center justify-between rounded-xl bg-zinc-100 px-3 py-2.5 text-sm font-semibold text-zinc-950" href="#">
+              <span class="flex items-center gap-2">
+                <span class="h-1.5 w-1.5 rounded-full bg-indigo-500"></span>
+                Tasks
+              </span>
+              <span class="rounded-full bg-white px-2 py-0.5 text-xs text-zinc-500 shadow-sm">4</span>
+            </a>
+          </section>
+
+          <section>
+            <div class="mb-2 px-3 text-[11px] font-bold uppercase tracking-[0.16em] text-zinc-400">System</div>
+            <div class="space-y-1">
+              <a class="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950" href="#">Users</a>
+              <a class="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950" href="#">Permissions</a>
+            </div>
+          </section>
+        </nav>
+
+        <div class="border-t border-zinc-200 p-3">
+          <button class="flex w-full items-center gap-3 rounded-2xl border border-zinc-200 bg-zinc-50 p-3 text-left transition hover:bg-zinc-100">
+            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-lg shadow-sm">🇬🇧</div>
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-2">
+                <div class="truncate text-sm font-semibold text-zinc-950">User bf17902a</div>
+                <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+              </div>
+              
+            </div>
+            <span class="text-zinc-400">⌄</span>
+          </button>
+
+          <div class="mt-3 flex items-center gap-2">
+            <div class="flex min-w-0 flex-1 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+              <button class="min-w-0 flex-1 px-3 py-2.5 text-left text-xs font-semibold text-zinc-700 transition hover:bg-zinc-50">
+                Ledger
+              </button>
+              <button class="flex w-10 shrink-0 items-center justify-center border-l border-zinc-200 text-zinc-500 transition hover:bg-zinc-50 hover:text-zinc-950" aria-label="Ledger actions">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
+              </button>
+            </div>
+
+            <button class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-zinc-200 bg-white text-zinc-500 shadow-sm transition hover:bg-zinc-50 hover:text-zinc-950" aria-label="Lock session">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="10" rx="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+            </button>
+
+            <button class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-zinc-200 bg-white text-zinc-500 shadow-sm transition hover:bg-zinc-50 hover:text-zinc-950" aria-label="Toggle theme">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 3v2" />
+                <path d="M12 19v2" />
+                <path d="M4.22 4.22l1.42 1.42" />
+                <path d="M18.36 18.36l1.42 1.42" />
+                <path d="M3 12h2" />
+                <path d="M19 12h2" />
+                <path d="M4.22 19.78l1.42-1.42" />
+                <path d="M18.36 5.64l1.42-1.42" />
+                <circle cx="12" cy="12" r="4" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <main class="flex min-w-0 flex-1 flex-col bg-zinc-100/80">
+        <header class="flex h-16 items-center justify-between border-b border-zinc-200 bg-white px-8">
+          <div></div>
+
+          <div class="relative w-[380px]">
+            <svg class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.3-4.3" />
+            </svg>
+            <input class="h-10 w-full rounded-xl border border-zinc-200 bg-zinc-50 pl-10 pr-4 text-[13px] font-medium outline-none transition placeholder:text-zinc-400 focus:border-indigo-300 focus:bg-white focus:ring-4 focus:ring-indigo-100" placeholder="Search workspace..." />
+          </div>
+
+          <div class="flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-2.5 py-1.5 shadow-sm">
+            <div class="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-100 text-xs">🇬🇧</div>
+            <div class="pr-1 text-xs font-semibold text-zinc-700">bf17902a</div>
+          </div>
+        </header>
+
+        <div class="flex min-h-0 flex-1 flex-col">
+          <div class="sticky top-0 z-20 border-b border-zinc-200 bg-white">
+            <div class="flex h-16 items-end px-8">
+              <div class="flex h-full items-center gap-8">
+                <button class="relative flex h-full items-center text-sm font-semibold tracking-[-0.01em] text-zinc-950 after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:rounded-full after:bg-zinc-950">List</button>
+                <button class="flex h-full items-center text-sm font-semibold tracking-[-0.01em] text-zinc-500 transition hover:text-zinc-950">Board</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex min-h-0 flex-1">
+            <aside class="hidden w-64 shrink-0 border-r border-zinc-200/80 bg-white p-4 lg:block">
+              <div class="mb-4 flex items-center justify-between">
+                <h2 class="text-xs font-bold uppercase tracking-[0.16em] text-zinc-400">Task lists</h2>
+                <button class="rounded-lg px-2 py-1 text-xs font-bold text-zinc-500 hover:bg-zinc-100 hover:text-zinc-950">+</button>
+              </div>
+
+              <div class="space-y-1">
+                <button class="flex w-full items-center justify-between rounded-xl border border-zinc-200 bg-white px-3 py-2.5 text-left text-sm font-semibold text-zinc-950 shadow-sm">
+                  <span>All tasks</span>
+                  <span class="rounded-full bg-zinc-100 px-2 py-0.5 text-xs text-zinc-500">4</span>
+                </button>
+                <button class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm font-semibold text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950">
+                  <span>Private</span>
+                  <span class="text-xs text-zinc-400">3</span>
+                </button>
+                <button class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm font-semibold text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950">
+                  <span>Shared</span>
+                  <span class="text-xs text-zinc-400">1</span>
+                </button>
+                <button class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm font-semibold text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950">
+                  <span>Unassigned</span>
+                  <span class="text-xs text-zinc-400">3</span>
+                </button>
+              </div>
+            </aside>
+
+            <section class="flex min-w-0 flex-1 flex-col bg-white/80 backdrop-blur">
+              <div class="flex h-20 shrink-0 items-center justify-between border-b border-zinc-200/80 bg-white/70 px-8 backdrop-blur">
+                <div>
+                  <h1 class="text-[28px] font-semibold tracking-[-0.035em] text-zinc-950">Tasks</h1>
+                  <div class="mt-1 flex items-center gap-2 text-xs font-semibold text-zinc-500">
+                    <span>4 tasks</span>
+                    <span class="text-zinc-300">/</span>
+                    <span>3 private</span>
+                    <span class="text-zinc-300">/</span>
+                    <span>1 shared</span>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <button class="group relative overflow-hidden rounded-2xl border border-zinc-200/80 bg-white px-4 py-2.5 text-xs font-bold tracking-[0.02em] text-zinc-700 shadow-sm transition-all duration-200 hover:-translate-y-px hover:border-zinc-300 hover:shadow-md">
+                    <span class="relative z-10">Latest</span>
+                    <div class="absolute inset-0 bg-gradient-to-b from-white to-zinc-50 opacity-0 transition-opacity duration-200 group-hover:opacity-100"></div>
+                  </button>
+                  <button class="group relative overflow-hidden rounded-2xl bg-zinc-950 px-5 py-3 text-sm font-semibold tracking-[-0.02em] text-white shadow-xl shadow-zinc-950/15 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl">
+                    <div class="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+                    <span class="relative z-10 flex items-center gap-2">
+                      <span class="text-base leading-none">+</span>
+                      New task
+                    </span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="min-h-0 flex-1 overflow-auto bg-[radial-gradient(circle_at_top,rgba\(99,102,241,0.05\),transparent_35%)]">
+                <div class="grid h-11 grid-cols-[minmax(260px,1.5fr)_minmax(150px,0.7fr)_120px_180px_80px] items-center border-b border-zinc-200/80 bg-white/80 px-8 text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-400 backdrop-blur">
+                  <div>Task</div>
+                  <div>Assignee</div>
+                  <div>Status</div>
+                  <div>Access</div>
+                  <div class="text-right">Action</div>
+                </div>
+
+                <div>
+                  <article class="group grid min-h-[88px] grid-cols-[minmax(260px,1.5fr)_minmax(150px,0.7fr)_120px_180px_80px] items-center border-b border-zinc-200/80 bg-transparent px-8 transition-colors duration-200 hover:bg-zinc-50/60">
+                    <div class="flex min-w-0 items-center gap-4">
+                      <span class="h-1.5 w-1.5 rounded-full bg-indigo-500 ring-4 ring-indigo-500/10"></span>
+                      <span class="truncate text-sm font-semibold tracking-[-0.02em] text-zinc-950">private task</span>
+                      <span class="rounded-full border border-indigo-100 bg-indigo-50/80 px-2.5 py-1 text-[11px] font-bold text-indigo-700">Private</span>
+                    </div>
+                    <div class="truncate text-[13px] font-medium text-zinc-500">Unassigned</div>
+                    <div><span class="rounded-full bg-zinc-100 px-2 py-1 text-xs font-bold text-zinc-600">Todo</span></div>
+                    <div class="flex min-w-0 items-center gap-1.5">
+                      <span class="rounded-full border border-zinc-200 bg-white px-2 py-0.5 text-[11px] font-semibold text-zinc-500">permission</span>
+                      <span class="rounded-full border border-indigo-100 bg-indigo-50 px-2 py-0.5 text-[11px] font-semibold text-indigo-600">admin</span>
+                    </div>
+                    <button class="justify-self-end rounded-xl px-3 py-2 text-xs font-bold tracking-[0.02em] text-zinc-400 opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-white hover:text-zinc-950">Edit</button>
+                  </article>
+
+                  <article class="group grid min-h-[88px] grid-cols-[minmax(260px,1.5fr)_minmax(150px,0.7fr)_120px_180px_80px] items-center border-b border-zinc-200/80 bg-transparent px-8 transition-colors duration-200 hover:bg-zinc-50/60">
+                    <div class="flex min-w-0 items-center gap-4">
+                      <span class="h-1.5 w-1.5 rounded-full bg-sky-500 ring-4 ring-sky-500/10"></span>
+                      <span class="truncate text-sm font-semibold tracking-[-0.02em] text-zinc-950">private task</span>
+                      <span class="rounded-full border border-indigo-100 bg-indigo-50/80 px-2.5 py-1 text-[11px] font-bold text-indigo-700">Private</span>
+                    </div>
+                    <div class="truncate text-[13px] font-medium text-zinc-500">didkey:z6MkrSyhuu9R</div>
+                    <div><span class="rounded-full bg-zinc-100 px-2 py-1 text-xs font-bold text-zinc-600">Todo</span></div>
+                    <div class="flex min-w-0 items-center gap-1.5">
+                      <span class="rounded-full border border-zinc-200 bg-white px-2 py-0.5 text-[11px] font-semibold text-zinc-500">permission</span>
+                      <span class="rounded-full border border-indigo-100 bg-indigo-50 px-2 py-0.5 text-[11px] font-semibold text-indigo-600">admin</span>
+                    </div>
+                    <button class="justify-self-end rounded-xl border border-transparent bg-white/0 px-3 py-2 text-xs font-bold tracking-[0.02em] text-zinc-400 opacity-0 transition-all duration-200 group-hover:opacity-100 hover:border-zinc-200 hover:bg-white hover:text-zinc-950 hover:shadow-sm">Edit</button>
+                  </article>
+
+                  <article class="group grid min-h-[88px] grid-cols-[minmax(260px,1.5fr)_minmax(150px,0.7fr)_120px_180px_80px] items-center border-b border-zinc-200/80 bg-transparent px-8 transition-colors duration-200 hover:bg-zinc-50/60">
+                    <div class="flex min-w-0 items-center gap-4">
+                      <span class="h-1.5 w-1.5 rounded-full bg-indigo-500 ring-4 ring-indigo-500/10"></span>
+                      <span class="truncate text-sm font-semibold tracking-[-0.02em] text-zinc-950">another private task</span>
+                      <span class="rounded-full border border-indigo-100 bg-indigo-50/80 px-2.5 py-1 text-[11px] font-bold text-indigo-700">Private</span>
+                    </div>
+                    <div class="truncate text-[13px] font-medium text-zinc-500">Unassigned</div>
+                    <div><span class="rounded-full bg-zinc-100 px-2 py-1 text-xs font-bold text-zinc-600">Todo</span></div>
+                    <div class="flex min-w-0 items-center gap-1.5">
+                      <span class="rounded-full border border-zinc-200 bg-white px-2 py-0.5 text-[11px] font-semibold text-zinc-500">permission</span>
+                      <span class="rounded-full border border-indigo-100 bg-indigo-50 px-2 py-0.5 text-[11px] font-semibold text-indigo-600">admin</span>
+                    </div>
+                    <button class="justify-self-end rounded-xl border border-transparent bg-white/0 px-3 py-2 text-xs font-bold tracking-[0.02em] text-zinc-400 opacity-0 transition-all duration-200 group-hover:opacity-100 hover:border-zinc-200 hover:bg-white hover:text-zinc-950 hover:shadow-sm">Edit</button>
+                  </article>
+
+                  <article class="group grid min-h-[88px] grid-cols-[minmax(260px,1.5fr)_minmax(150px,0.7fr)_120px_180px_80px] items-center border-b border-zinc-200/80 bg-transparent px-8 transition-colors duration-200 hover:bg-zinc-50/60">
+                    <div class="flex min-w-0 items-center gap-4">
+                      <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 ring-4 ring-emerald-500/10"></span>
+                      <span class="truncate text-sm font-semibold tracking-[-0.02em] text-zinc-950">A public task</span>
+                      <span class="rounded-full border border-emerald-100 bg-emerald-50/80 px-2.5 py-1 text-[11px] font-bold text-emerald-700">Public</span>
+                    </div>
+                    <div class="truncate text-[13px] font-medium text-zinc-500">Unassigned</div>
+                    <div><span class="rounded-full bg-zinc-100 px-2 py-1 text-xs font-bold text-zinc-600">Todo</span></div>
+                    <div class="flex min-w-0 items-center gap-1.5">
+                      <span class="rounded-full border border-zinc-200 bg-white px-2 py-0.5 text-[11px] font-semibold text-zinc-500">everyone</span>
+                      <span class="rounded-full border border-emerald-100 bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-600">shared</span>
+                    </div>
+                    <button class="justify-self-end rounded-xl border border-transparent bg-white/0 px-3 py-2 text-xs font-bold tracking-[0.02em] text-zinc-400 opacity-0 transition-all duration-200 group-hover:opacity-100 hover:border-zinc-200 hover:bg-white hover:text-zinc-950 hover:shadow-sm">Edit</button>
+                  </article>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <footer class="flex h-9 items-center justify-between border-t border-zinc-200 bg-white px-5 text-xs font-semibold text-zinc-500">
+          <div class="flex items-center gap-2">
+            <span><span class="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-emerald-500"></span>ready</span>
+            <span class="text-zinc-300">/</span>
+            <span>integrity verified</span>
+            <span class="text-zinc-300">/</span>
+            <span>no staged entries</span>
+          </div>
+          <button class="rounded-lg px-2 py-1 text-zinc-400 hover:bg-zinc-100">⌃</button>
+        </footer>
+      </main>
+    </div>
+  </body>
+</html>

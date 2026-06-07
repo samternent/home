@@ -18,10 +18,6 @@ export default {
         "primary-hover": "var(--ui-primary-hover)",
         "on-primary": "var(--ui-on-primary)",
       },
-      fontFamily: {
-        sans: ['"Clash Grotesk"', "system-ui", "sans-serif"],
-        mono: ['"JetBrains Mono"', "ui-monospace", "monospace"],
-      },
     },
   },
 };

@@ -24,10 +24,10 @@ const props = defineProps({
 defineEmits(["click", "dismiss"]);
 
 const typeClasses = computed(() => ({
-  info: "bg-blue-50 border-blue-200 text-blue-900",
-  success: "bg-green-50 border-green-200 text-green-900",
-  warning: "bg-yellow-50 border-yellow-200 text-yellow-900",
-  error: "bg-red-50 border-red-200 text-red-900",
+  info: "bg-[var(--ui-info-muted)] border-[color-mix(in_srgb,var(--ui-info)_26%,var(--ui-border))] text-[var(--ui-info)]",
+  success: "bg-[var(--ui-success-muted)] border-[color-mix(in_srgb,var(--ui-success)_26%,var(--ui-border))] text-[var(--ui-success)]",
+  warning: "bg-[var(--ui-warning-muted)] border-[color-mix(in_srgb,var(--ui-warning)_26%,var(--ui-border))] text-[var(--ui-warning)]",
+  error: "bg-[var(--ui-critical-muted)] border-[color-mix(in_srgb,var(--ui-critical)_26%,var(--ui-border))] text-[var(--ui-critical)]",
 }));
 
 const iconPaths = computed(() => ({
@@ -39,10 +39,10 @@ const iconPaths = computed(() => ({
 }));
 
 const buttonColorClasses = computed(() => ({
-  info: "border-blue-300 hover:bg-blue-100",
-  success: "border-green-300 hover:bg-green-100",
-  warning: "border-yellow-300 hover:bg-yellow-100",
-  error: "border-red-300 hover:bg-red-100",
+  info: "border-[color-mix(in_srgb,var(--ui-info)_30%,var(--ui-border))] hover:bg-[var(--ui-info-muted)]",
+  success: "border-[color-mix(in_srgb,var(--ui-success)_30%,var(--ui-border))] hover:bg-[var(--ui-success-muted)]",
+  warning: "border-[color-mix(in_srgb,var(--ui-warning)_30%,var(--ui-border))] hover:bg-[var(--ui-warning-muted)]",
+  error: "border-[color-mix(in_srgb,var(--ui-critical)_30%,var(--ui-border))] hover:bg-[var(--ui-critical-muted)]",
 }));
 </script>
 <template>

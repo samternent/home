@@ -16,6 +16,7 @@ import {
 } from "@inrupt/solid-client";
 import {
   SOLID_CONCORD_LEDGER_CLASS,
+  SOLID_CONCORD_IDENTITY_CLASS,
   SOLID_CONCORD_MNEMONIC_CLASS,
   SOLID_CONCORD_PEOPLE_CLASS,
   SOLID_CONCORD_VERIFICATION_CLASS,
@@ -24,15 +25,16 @@ import {
   createSolidConcordApp,
   createSolidConcordManager,
   createSolidConcordPaths,
+  createSolidEncryptedIdentityBlob,
   createSolidIdentityCache,
   createSolidIdentity,
   createSolidMnemonicSecret,
-  createSolidMnemonicStorage,
   createSolidMnemonicIdentity,
   createSolidStorage,
   createSolidWorkspace,
   createSolidWalletBackup,
   createSolidWalletStorage,
+  createStaticSolidIdentityUnlocker,
   discoverSolidConcordResources,
   validateSolidConcordAccess,
   provisionSolidIdentity,
@@ -170,6 +172,10 @@ function createMemoryStorage() {
       values.delete(key);
     },
   };
+}
+
+function createTestUnlocker(seed = "default") {
+  return createStaticSolidIdentityUnlocker(`test-passphrase:${seed}`);
 }
 
 const RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
@@ -683,31 +689,36 @@ describe("@ternent/solid", () => {
     expect(solidClientMocks.createContainerAt).toHaveBeenCalled();
   });
 
-  it("provisions mnemonic secret, wallet backup, and local cache together", async () => {
+  it("provisions encrypted identity persistence, wallet backup, and encrypted local cache together", async () => {
     const cacheStorage = createMemoryStorage();
     const fetchImpl = vi.fn(
       createFetchSequence([
-        new Response(null, { status: 201, headers: { ETag: '"secret-1"' } }),
+        new Response(null, { status: 201, headers: { ETag: '"identity-1"' } }),
         new Response(null, { status: 201, headers: { ETag: '"wallet-1"' } }),
       ]),
     );
     const session = createSession({ fetchImpl });
+    const unlocker = createTestUnlocker("provision");
     const cache = createSolidIdentityCache({
       session,
       storage: cacheStorage,
+      unlocker,
     });
 
     const provisioned = await provisionSolidIdentity({
       session,
       words: 12,
-      mnemonicUrl: "https://pod.example/concord/secrets/mnemonic.json",
+      identityUrl: "https://pod.example/concord/system/private/identity.enc.json",
       walletUrl: "https://pod.example/concord/wallet/private/identity.json",
+      walletPassphrase: "wallet-passphrase-1",
+      unlocker,
       cache,
     });
 
     expect(provisioned.mnemonic.split(" ")).toHaveLength(12);
     expect(provisioned.mnemonicSecret.keyId).toBe(provisioned.identity.keyId);
-    expect(provisioned.walletBackup.keyId).toBe(provisioned.identity.keyId);
+    expect(provisioned.encryptedIdentity.keyId).toBe(provisioned.identity.keyId);
+    expect(provisioned.walletBackup?.keyId).toBe(provisioned.identity.keyId);
     await expect(cache.load()).resolves.toMatchObject({
       keyId: provisioned.identity.keyId,
     });
@@ -763,17 +774,77 @@ describe("@ternent/solid", () => {
     expect(result.identity.keyId).toBe(created.identity.keyId);
   });
 
-  it("loads identity from local cache before consulting Solid resources", async () => {
+  it("loads encrypted identity blobs from Solid storage with a passphrase unlocker", async () => {
     const created = await createSolidMnemonicIdentity({
       words: 12,
       createdAt: "2026-03-22T00:00:00.000Z",
     });
+    const unlocker = createTestUnlocker("encrypted-solid-load");
+    const blob = await createSolidEncryptedIdentityBlob({
+      identity: created.identity,
+      unlocker,
+      webId: "https://alice.example/profile/card#me",
+      storage: "solid-resource",
+      resourceUrl: "https://pod.example/concord/system/private/identity.enc.json",
+      createdAt: "2026-03-22T00:00:00.000Z",
+    });
+
+    const fetchImpl = vi.fn(
+      createFetchSequence([
+        () =>
+          new Response(JSON.stringify(blob), {
+            status: 200,
+            headers: { ETag: '"identity-2"' },
+          }),
+      ]),
+    );
+
+    const mockApp = {
+      load: vi.fn(async () => undefined),
+      getState: vi.fn(() => ({
+        ready: true,
+        integrityValid: true,
+        stagedCount: 0,
+        replay: {},
+        verification: null,
+      })),
+      subscribe: vi.fn(() => () => undefined),
+      command: vi.fn(),
+      commit: vi.fn(),
+      replay: vi.fn(),
+      verify: vi.fn(),
+      destroy: vi.fn(),
+    };
+    concordMocks.createConcordApp.mockResolvedValue(mockApp);
+
+    const result = await createSolidConcordApp({
+      session: createSession({ fetchImpl }),
+      ledgerUrl: "https://pod.example/apps/todo/ledger.json",
+      plugins: [createTodoPlugin()],
+      encryptedIdentityUrl: "https://pod.example/concord/system/private/identity.enc.json",
+      unlocker,
+    });
+
+    expect(result.identity.keyId).toBe(created.identity.keyId);
+  });
+
+  it("uses explicit identity input before cache values", async () => {
+    const cached = await createSolidMnemonicIdentity({
+      words: 12,
+      createdAt: "2026-03-22T00:00:00.000Z",
+    });
+    const explicit = await createSolidMnemonicIdentity({
+      words: 12,
+      createdAt: "2026-03-22T00:10:00.000Z",
+    });
     const cacheStorage = createMemoryStorage();
+    const unlocker = createTestUnlocker("cache");
     const cache = createSolidIdentityCache({
       webId: "https://alice.example/profile/card#me",
       storage: cacheStorage,
+      unlocker,
     });
-    await cache.save(created.identity);
+    await cache.save(cached.identity);
 
     const mockApp = {
       load: vi.fn(async () => undefined),
@@ -800,48 +871,18 @@ describe("@ternent/solid", () => {
       ledgerUrl: "https://pod.example/apps/todo/ledger.json",
       plugins: [createTodoPlugin()],
       cache,
-      mnemonicUrl: "https://pod.example/concord/secrets/mnemonic.json",
+      identity: explicit.identity,
     });
 
-    expect(result.identity.keyId).toBe(created.identity.keyId);
-    expect(fetchImpl).not.toHaveBeenCalledWith(
-      "https://pod.example/concord/secrets/mnemonic.json",
-      expect.anything(),
-    );
+    expect(result.identity.keyId).toBe(explicit.identity.keyId);
   });
 
-  it("loads mnemonic secrets from Solid storage and derives the identity", async () => {
+  it("derives identity from explicit mnemonic input", async () => {
     const created = await createSolidMnemonicIdentity({
       words: 12,
       createdAt: "2026-03-22T00:00:00.000Z",
     });
-    const secret = await createSolidMnemonicSecret({
-      mnemonic: created.mnemonic,
-      identity: created.identity,
-      webId: "https://alice.example/profile/card#me",
-    });
-    const fetchImpl = vi.fn(
-      createFetchSequence([
-        () =>
-          new Response(JSON.stringify(secret), {
-            status: 200,
-            headers: { ETag: '"secret-2"' },
-          }),
-        () =>
-          new Response(JSON.stringify(secret), {
-            status: 200,
-            headers: { ETag: '"secret-3"' },
-          }),
-      ]),
-    );
-
-    const session = createSession({ fetchImpl });
-    const storage = createSolidMnemonicStorage(
-      session,
-      "https://pod.example/concord/secrets/mnemonic.json",
-    );
-    const loaded = await storage.load();
-    expect(loaded?.keyId).toBe(created.identity.keyId);
+    const session = createSession();
 
     const mockApp = {
       load: vi.fn(async () => undefined),
@@ -865,7 +906,9 @@ describe("@ternent/solid", () => {
       session,
       ledgerUrl: "https://pod.example/apps/todo/ledger.json",
       plugins: [createTodoPlugin()],
-      mnemonicUrl: "https://pod.example/concord/secrets/mnemonic.json",
+      mnemonic: created.mnemonic,
+      mnemonicPassphrase: undefined,
+      createdAt: created.identity.createdAt,
     });
 
     expect(result.identity.keyId).toBe(created.identity.keyId);
@@ -884,15 +927,21 @@ describe("@ternent/solid", () => {
     });
     vi.stubGlobal("fetch", publicFetch);
     const session = createSession({ webId, fetchImpl });
+    const unlocker = createTestUnlocker("profile-bootstrap");
 
     const provisioned = await provisionSolidIdentity({
       session,
       words: 12,
+      unlocker,
       profile: {
         enabled: true,
         bootstrap: true,
       },
     });
+
+    expect(provisioned.resources?.identityUrl).toBe(
+      "https://pod.example/concord/system/private/identity.enc.json",
+    );
 
     expect(provisioned.resources?.mnemonicUrl).toBe(
       "https://pod.example/concord/system/private/mnemonic.json",
@@ -939,12 +988,11 @@ describe("@ternent/solid", () => {
       "https://pod.example/settings/privateTypeIndex.ttl",
       { fetch: fetchImpl },
     );
-    expect(getRegisteredResourceUrl(privateIndex, SOLID_CONCORD_MNEMONIC_CLASS)).toBe(
-      "https://pod.example/concord/system/private/mnemonic.json",
+    expect(getRegisteredResourceUrl(privateIndex, SOLID_CONCORD_IDENTITY_CLASS)).toBe(
+      "https://pod.example/concord/system/private/identity.enc.json",
     );
-    expect(getRegisteredResourceUrl(privateIndex, SOLID_CONCORD_WALLET_CLASS)).toBe(
-      "https://pod.example/concord/system/private/wallet.json",
-    );
+    expect(getRegisteredResourceUrl(privateIndex, SOLID_CONCORD_MNEMONIC_CLASS)).toBe(null);
+    expect(getRegisteredResourceUrl(privateIndex, SOLID_CONCORD_WALLET_CLASS)).toBe(null);
     expect(getRegisteredResourceUrl(privateIndex, SOLID_CONCORD_LEDGER_CLASS)).toBe(
       "https://pod.example/concord/system/private/ledger.json",
     );
@@ -986,9 +1034,11 @@ describe("@ternent/solid", () => {
     });
     vi.stubGlobal("fetch", publicFetch);
     const session = createSession({ webId, fetchImpl });
+    const unlocker = createTestUnlocker("profile-discovery");
     const provisioned = await provisionSolidIdentity({
       session,
       words: 12,
+      unlocker,
       profile: {
         enabled: true,
         bootstrap: true,
@@ -998,6 +1048,9 @@ describe("@ternent/solid", () => {
     const discovery = await discoverSolidConcordResources(session, {
       appPath: "concord",
     });
+    expect(discovery.identityUrl).toBe(
+      "https://pod.example/concord/system/private/identity.enc.json",
+    );
     expect(discovery.mnemonicUrl).toBe("https://pod.example/concord/system/private/mnemonic.json");
     expect(discovery.ledgerUrl).toBe("https://pod.example/concord/system/private/ledger.json");
     expect(discovery.peopleUrl).toBe("https://pod.example/concord/system/private/people.json");
@@ -1028,6 +1081,7 @@ describe("@ternent/solid", () => {
     const result = await createSolidConcordApp({
       session,
       plugins: [createTodoPlugin()],
+      unlocker,
       profile: {
         enabled: true,
         discover: true,
@@ -1063,6 +1117,7 @@ describe("@ternent/solid", () => {
     expect(paths.workspacePrivateRootUrl).toBe("https://pod.example/concord/workspace/private/");
     expect(paths.workspaceSharedRootUrl).toBe("https://pod.example/concord/workspace/shared/");
     expect(paths.workspacePublicRootUrl).toBe("https://pod.example/concord/workspace/public/");
+    expect(paths.identityUrl).toBe("https://pod.example/concord/system/private/identity.enc.json");
     expect(paths.peopleUrl).toBe("https://pod.example/concord/system/private/people.json");
   });
 
@@ -1411,6 +1466,7 @@ describe("@ternent/solid", () => {
       preferencesUrl: "https://pod.example/settings/preferences.ttl",
       publicTypeIndexUrl: "https://pod.example/settings/publicTypeIndex.ttl",
       privateTypeIndexUrl: "https://pod.example/settings/privateTypeIndex.ttl",
+      identityUrl: "https://pod.example/concord/system/private/identity.enc.json",
       mnemonicUrl: "https://pod.example/concord/system/private/mnemonic.json",
       walletUrl: "https://pod.example/concord/system/private/wallet.json",
       ledgerUrl: "https://pod.example/concord/system/private/ledger.json",

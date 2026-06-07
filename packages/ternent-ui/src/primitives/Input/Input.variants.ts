@@ -3,17 +3,18 @@ import type { InputSize } from "./Input.types";
 export const inputWrapperClass = "relative w-full";
 
 export const inputBaseClass =
-  "flex w-full appearance-none items-center border bg-[var(--ui-surface)] " +
+  "flex w-full appearance-none items-center border bg-[var(--ui-tonal-tertiary)] " +
   "text-[var(--ui-fg)] placeholder:text-[var(--ui-fg-muted)] " +
   "transition-[box-shadow,border-color,background-color,color] " +
   "duration-[var(--ui-duration-normal)] ease-[var(--ui-ease-out)] " +
-  "rounded-[var(--ui-radius-md)] border-[var(--ui-border)] " +
+  "rounded-[var(--ui-radius-lg)] border-[var(--ui-border)] " +
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ui-ring)] focus-visible:border-[var(--ui-primary)] " +
   "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 " +
   "read-only:cursor-default read-only:bg-[var(--ui-tonal-tertiary)]";
 
 export const inputStateClasses = {
-  default: "hover:border-[var(--ui-primary-muted)]",
+  default:
+    "hover:border-[color-mix(in_srgb,var(--ui-border)_86%,var(--ui-fg)_14%)] focus-visible:bg-[var(--ui-surface)]",
   invalid:
     "border-[var(--ui-critical)] text-[var(--ui-fg)] " +
     "focus-visible:border-[var(--ui-critical)] focus-visible:ring-[var(--ui-critical-muted)]",
@@ -26,8 +27,8 @@ export const inputSizeClasses: Record<InputSize, string> = {
 };
 
 export const inputPaddingWithLeading: Record<InputSize, string> = {
-  sm: "pl-9",
-  md: "pl-10",
+  sm: "pl-10",
+  md: "pl-11",
   lg: "pl-11",
 };
 
@@ -42,8 +43,8 @@ export const inputAdornmentBaseClass =
 
 export const inputAdornmentPositionClasses = {
   leading: {
-    sm: "left-3 size-4",
-    md: "left-3 size-4",
+    sm: "left-3.5 size-4",
+    md: "left-3.5 size-4",
     lg: "left-4 size-5",
   },
   trailing: {

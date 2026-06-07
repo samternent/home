@@ -138,7 +138,7 @@ const variantClasses = computed(() => ({
                   :class="{
                     'bg-primary/10 text-primary font-medium border-r-2 border-primary':
                       item.value === modelValue || item.name === modelValue,
-                    'text-neutral-700': item.value !== modelValue && item.name !== modelValue,
+                    'text-[var(--ui-fg)]': item.value !== modelValue && item.name !== modelValue,
                   }"
                 >
                   <span
@@ -149,7 +149,7 @@ const variantClasses = computed(() => ({
                   <span class="flex-1 truncate">{{ item.name }}</span>
                   <span
                     v-if="item.badge"
-                    class="ml-3 text-xs px-2 py-1 rounded-full bg-neutral-100 text-neutral-600"
+                    class="ml-3 rounded-full bg-[var(--ui-tonal-secondary)] px-2 py-1 text-xs text-[var(--ui-fg-muted)]"
                   >
                     {{ item.badge }}
                   </span>
@@ -176,7 +176,7 @@ const variantClasses = computed(() => ({
                   :class="{
                     'bg-primary/10 text-primary font-medium border-r-2 border-primary':
                       item.value === modelValue || item.name === modelValue,
-                    'text-neutral-700': item.value !== modelValue && item.name !== modelValue,
+                    'text-[var(--ui-fg)]': item.value !== modelValue && item.name !== modelValue,
                   }"
                 >
                   <span
@@ -187,7 +187,7 @@ const variantClasses = computed(() => ({
                   <span class="flex-1 truncate">{{ item.name }}</span>
                   <span
                     v-if="item.badge"
-                    class="ml-3 text-xs px-2 py-1 rounded-full bg-neutral-100 text-neutral-600"
+                    class="ml-3 rounded-full bg-[var(--ui-tonal-secondary)] px-2 py-1 text-xs text-[var(--ui-fg-muted)]"
                   >
                     {{ item.badge }}
                   </span>

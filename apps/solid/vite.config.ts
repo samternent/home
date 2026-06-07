@@ -67,6 +67,8 @@ export default defineConfig({
       "ternent-ui/primitives": resolve(__dirname, "../../packages/ternent-ui/dist/primitives.js"),
       "ternent-ui/patterns": resolve(__dirname, "../../packages/ternent-ui/dist/patterns.js"),
       "@ternent/concord/browser": resolve(__dirname, "../../packages/concord/src/index.ts"),
+      "@ternent/rage": resolve(__dirname, "../../packages/rage/src/index.ts"),
+      "@ternent/armour": resolve(__dirname, "../../packages/armour/src/index.ts"),
       "@ternent/seal-cli/proof": resolve(__dirname, "../../packages/seal-cli/src/proof.ts"),
     },
   },
@@ -126,10 +128,9 @@ export default defineConfig({
   ],
   test: {
     environment: "jsdom",
-    setupFiles: ["./src/tests/unit/setup.ts"],
+    setupFiles: ["./src/tests/setup.ts"],
     globals: true,
-    include: ["src/tests/unit/**/*.test.ts"],
-    exclude: ["src/tests/e2e/**"],
+    include: ["src/tests/v2/**/*.test.ts"],
     coverage: {
       provider: "v8",
       reporter: ["text", "html"],

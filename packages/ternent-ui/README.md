@@ -13,6 +13,11 @@ This pack is designed to be copied directly into the `ternent-ui` package root.
 - templates for component specs and PR review
 - a concrete phased roadmap
 
+## Legacy export note
+
+`ternent-ui/components` remains available for compatibility only. New UI should use
+`ternent-ui/primitives` and `ternent-ui/patterns`.
+
 ## Assumptions this pack makes
 
 - `src/components/S*` is legacy and should be frozen except for urgent maintenance

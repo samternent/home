@@ -1,46 +1,39 @@
 import type { RouteModule } from "@/routes/types";
 
-const appRoutes: RouteModule = [
+/**
+ * Minimal v2 route tree used as the active app surface.
+ */
+const v2Routes: RouteModule = [
   {
-    path: "/app",
-    name: "app",
+    path: "/",
     component: () => import("./RouteApp.vue"),
     children: [
       {
         path: "",
-        redirect: "/app/library",
+        component: () => import("./RouteHome.vue"),
       },
       {
-        path: "files",
-        redirect: "/app/library",
+        path: "s/users",
+        component: () => import("./RouteUsers.vue"),
       },
       {
-        path: "library",
-        name: "app-library",
-        component: () => import("./RouteAppFiles.vue"),
+        path: "s/permissions/:permissionKey?",
+        component: () => import("./RoutePermissions.vue"),
       },
       {
-        path: "open/:scope/:appId/:encodedPath(.*)",
-        name: "app-open",
-        component: () => import("./RouteAppOpen.vue"),
+        path: "s/storage",
+        component: () => import("./RouteStorageProviders.vue"),
       },
       {
-        path: "sharing",
-        name: "app-sharing",
-        component: () => import("./RouteAppSharing.vue"),
+        path: "s/tamper",
+        component: () => import("./RouteTamper.vue"),
       },
       {
-        path: "people",
-        name: "app-people",
-        component: () => import("./RouteAppPeople.vue"),
-      },
-      {
-        path: "account",
-        name: "app-account",
-        component: () => import("./RouteAppAccount.vue"),
+        path: "w/:appId/:surfaceId?",
+        component: () => import("./RouteRuntimeApp.vue"),
       },
     ],
   },
 ];
 
-export default appRoutes;
+export default v2Routes;

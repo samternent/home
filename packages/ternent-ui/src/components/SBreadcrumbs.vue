@@ -114,12 +114,13 @@ const sizeClasses = computed(() => ({
 }
 
 .breadcrumb-link:hover:not(.breadcrumb-active) {
-  background: rgba(99, 102, 241, 0.1);
+  background: color-mix(in srgb, var(--ui-primary) 10%, transparent);
 }
 
 .breadcrumb-active {
   pointer-events: none;
   font-weight: 600;
+  color: var(--ui-primary);
 }
 
 .breadcrumb-icon {
@@ -146,13 +147,13 @@ const sizeClasses = computed(() => ({
 .breadcrumb-separator-icon {
   width: 0.75rem;
   height: 0.75rem;
-  stroke: rgb(107, 114, 128);
+  stroke: var(--ui-fg-muted);
 }
 
 .breadcrumb-separator-text {
   font-size: 0.75rem;
   font-weight: 400;
-  color: rgb(107, 114, 128);
+  color: var(--ui-fg-muted);
 }
 
 /* Size variants */
@@ -201,24 +202,11 @@ const sizeClasses = computed(() => ({
   max-width: 10rem;
 }
 
-/* Dark theme support */
-@media (prefers-color-scheme: dark) {
-  .breadcrumb-link:hover:not(.breadcrumb-active) {
-    background: rgba(99, 102, 241, 0.1);
-    color: rgb(129, 140, 248);
-  }
+.breadcrumb-link:hover:not(.breadcrumb-active) {
+  color: var(--ui-primary);
+}
 
-  .breadcrumb-active {
-    background: rgba(99, 102, 241, 0.15);
-    color: rgb(129, 140, 248);
-  }
-
-  .breadcrumb-separator-icon {
-    stroke: rgb(156, 163, 175);
-  }
-
-  .breadcrumb-separator-text {
-    color: rgb(156, 163, 175);
-  }
+.breadcrumb-active {
+  background: color-mix(in srgb, var(--ui-primary) 14%, transparent);
 }
 </style>

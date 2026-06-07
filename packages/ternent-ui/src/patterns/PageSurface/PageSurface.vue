@@ -36,7 +36,7 @@
   z-index: 1;
   background: color-mix(in srgb, var(--ui-bg) 35%, transparent);
   box-shadow:
-    0 20px 50px rgba(8, 10, 24, 0.14),
+    0 20px 50px color-mix(in srgb, var(--ui-fg) 14%, transparent),
     inset 0 24px 48px color-mix(in srgb, var(--ui-bg) 26%, transparent),
     inset 0 -24px 48px color-mix(in srgb, var(--ui-bg) 22%, transparent);
   backdrop-filter: blur(16px) saturate(120%);

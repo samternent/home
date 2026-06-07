@@ -1,0 +1,180 @@
+import type {
+  ConcordApp,
+  ConcordCommandResult,
+  ConcordCommitInput,
+  ConcordState,
+} from "@ternent/concord";
+import type { SerializedIdentity } from "@ternent/identity";
+import type { Ref } from "vue";
+import type {
+  PermissionCreateInput,
+  PermissionGrantInput,
+  PermissionRecord,
+  PermissionRevokeInput,
+  ProfileRecord,
+  ProfileUpsertInput,
+  TaskArchiveInput,
+  TaskAssignInput,
+  TaskBoardColumnRecord,
+  TaskBoardRecord,
+  TaskCreateInput,
+  TaskListCreateInput,
+  TaskListRecord,
+  TaskMoveInput,
+  TaskRecord,
+  TaskRenameInput,
+  UserCreateInput,
+  UserRecord,
+} from "@/app/plugins";
+import type {
+  EncryptedIdentityBlobV2,
+  IdentityOnboardingDraft,
+  IdentityBootstrapMode,
+  LocalStorageLike,
+  RuntimeCommitResult,
+  RuntimeReplayOptions,
+  RuntimeStorageCapabilities,
+  RuntimeStorageSyncOptions,
+  StoredIdentitySummary,
+  WorkspaceStorageRef,
+} from "@/app/runtime";
+
+export type AppStatus = "restoring" | "ready" | "error";
+export type AppLedgerContainer = Awaited<ReturnType<ConcordApp["exportLedger"]>>;
+
+export type AppIdentity = {
+  identityId: string;
+  identityKey: string;
+  label: string;
+};
+
+export type AppIdentityBootstrapOptions = {
+  identity?: SerializedIdentity;
+  encryptedIdentity?: EncryptedIdentityBlobV2 | string;
+  identityBootstrapMode?: IdentityBootstrapMode;
+  identityStorage?: LocalStorageLike;
+  identityStorageKey?: string;
+  devSessionUnlockBypass?: boolean;
+  rpName?: string;
+};
+
+export type AppUsersApi = {
+  create(input: Omit<UserCreateInput, "actorIdentityKey">): Promise<ConcordCommandResult>;
+  all(): UserRecord[];
+  byIdentityKey(identityKey: string): UserRecord | null;
+};
+
+export type AppProfilesApi = {
+  upsert(input: Omit<ProfileUpsertInput, "actorIdentityKey">): Promise<ConcordCommandResult>;
+  all(): ProfileRecord[];
+  byIdentityKey(identityKey: string): ProfileRecord | null;
+};
+
+export type AppPermissionsApi = {
+  create(input: Omit<PermissionCreateInput, "actor">): Promise<ConcordCommandResult>;
+  createGroup(input: Omit<PermissionCreateInput, "actor">): Promise<ConcordCommandResult>;
+  grant(input: Omit<PermissionGrantInput, "actor">): Promise<ConcordCommandResult>;
+  issueGrant(input: Omit<PermissionGrantInput, "actor">): Promise<ConcordCommandResult>;
+  grantFromUser(input: {
+    permissionId: string;
+    identityKey: string;
+  }): Promise<ConcordCommandResult>;
+  revoke(input: Omit<PermissionRevokeInput, "actor">): Promise<ConcordCommandResult>;
+  all(): PermissionRecord[];
+  byId(permissionId: string): PermissionRecord | null;
+};
+
+export type AppTasksApi = {
+  create(input: Omit<TaskCreateInput, "actorIdentityKey">): Promise<ConcordCommandResult>;
+  rename(input: Omit<TaskRenameInput, "actorIdentityKey">): Promise<ConcordCommandResult>;
+  move(input: Omit<TaskMoveInput, "actorIdentityKey">): Promise<ConcordCommandResult>;
+  assign(input: Omit<TaskAssignInput, "actorIdentityKey">): Promise<ConcordCommandResult>;
+  archive(input: Omit<TaskArchiveInput, "actorIdentityKey">): Promise<ConcordCommandResult>;
+  createPublicList(
+    input: Omit<TaskListCreateInput, "actorIdentityKey">,
+  ): Promise<ConcordCommandResult>;
+  all(): TaskRecord[];
+  byId(taskId: string): TaskRecord | null;
+  byBoard(boardId: string): TaskRecord[];
+  byColumn(boardId: string, columnId: string): TaskRecord[];
+  publicLists(): TaskListRecord[];
+  permissionLists(): PermissionRecord[];
+  boardColumns(boardId?: string): TaskBoardColumnRecord[];
+  boards(): TaskBoardRecord[];
+  defaultBoardId(): string;
+};
+
+export type AppStorageProviderInfo = {
+  id: string;
+  label: string;
+  capabilities: RuntimeStorageCapabilities;
+};
+
+export type AppStorageApi = {
+  listProviders(): Promise<AppStorageProviderInfo[]>;
+  getActiveRef(): Promise<WorkspaceStorageRef>;
+  setActiveRef(ref: WorkspaceStorageRef): Promise<void>;
+  configureProvider(input: {
+    sync: RuntimeStorageSyncOptions;
+    ref?: WorkspaceStorageRef;
+  }): Promise<void>;
+  getCapabilities(providerId?: string): Promise<RuntimeStorageCapabilities | null>;
+};
+
+export type AppApi = {
+  status: Readonly<Ref<AppStatus>>;
+  state: Readonly<Ref<Readonly<ConcordState>>>;
+  lastError: Readonly<Ref<string | null>>;
+  identity: {
+    status: Readonly<Ref<AppStatus>>;
+    activeIdentity: Readonly<Ref<AppIdentity | null>>;
+    getActiveIdentity(): AppIdentity | null;
+    ensureActiveIdentity(): Promise<AppIdentity>;
+    ensureUnlocked(mode?: IdentityBootstrapMode): Promise<AppIdentity>;
+    lock(): Promise<void>;
+    createOnboardingDraft(input?: {
+      words?: 12 | 24;
+      totpIssuer?: string;
+      totpAccountName?: string;
+    }): Promise<IdentityOnboardingDraft>;
+    completeOnboarding(input: {
+      draft: IdentityOnboardingDraft;
+      password: string;
+      confirmPassword: string;
+      mnemonicConfirmed: boolean;
+      mfaEnabled: boolean;
+      totpCode?: string;
+    }): Promise<AppIdentity>;
+    recoverFromMnemonic(input: {
+      mnemonic: string;
+      password: string;
+      confirmPassword: string;
+      mfaEnabled: boolean;
+      totpSecretBase32?: string;
+      totpCode?: string;
+      totpIssuer?: string;
+      totpAccountName?: string;
+      createdAt?: string;
+    }): Promise<AppIdentity>;
+    unlockWithPassword(input: { password: string; totpCode?: string }): Promise<AppIdentity>;
+    getStoredIdentitySummary(): StoredIdentitySummary | null;
+  };
+  users: AppUsersApi;
+  permissions: AppPermissionsApi;
+  profiles: AppProfilesApi;
+  tasks: AppTasksApi;
+  storage: AppStorageApi;
+  load(): Promise<void>;
+  command<TInput = unknown>(type: string, input: TInput): Promise<ConcordCommandResult>;
+  commit(input?: ConcordCommitInput): Promise<RuntimeCommitResult>;
+  discard(): Promise<void>;
+  replay(options?: RuntimeReplayOptions): Promise<void>;
+  createLedger(metadata?: Record<string, unknown>): Promise<void>;
+  exportLedger(): Promise<AppLedgerContainer>;
+  importLedger(container: AppLedgerContainer): Promise<void>;
+  getState(): Readonly<ConcordState>;
+  getPluginState<TState = unknown>(pluginId: string): TState;
+  select<TValue = unknown>(pluginId: string, selectorId: string, ...args: unknown[]): TValue;
+  subscribe(listener: (state: Readonly<ConcordState>) => void): () => void;
+  destroy(): Promise<void>;
+};
