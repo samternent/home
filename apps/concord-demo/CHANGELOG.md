@@ -1,5 +1,12 @@
 # concord-demo
 
+## 0.3.82
+
+### Patch Changes
+
+- Updated dependencies []:
+  - ternent-ui@0.4.16
+
 ## 0.3.81
 
 ### Patch Changes

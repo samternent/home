@@ -1,5 +1,12 @@
 # **APP_ID**
 
+## 0.0.23
+
+### Patch Changes
+
+- Updated dependencies []:
+  - ternent-ui@0.4.16
+
 ## 0.0.22
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # ternent-ui
 
+## 0.4.16
+
+### Patch Changes
+
+- Updated dependencies [[`6e7195933f5c850cf846ccfba3292c0fe3d9c738`](https://github.com/samternent/home/commit/6e7195933f5c850cf846ccfba3292c0fe3d9c738)]:
+  - @ternent/identity@0.4.0
+
 ## 0.4.15
 
 ### Patch Changes
