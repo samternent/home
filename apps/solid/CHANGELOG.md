@@ -1,5 +1,17 @@
 # **APP_ID**
 
+## 0.0.20
+
+### Patch Changes
+
+- Updated dependencies [[`6e7195933f5c850cf846ccfba3292c0fe3d9c738`](https://github.com/samternent/home/commit/6e7195933f5c850cf846ccfba3292c0fe3d9c738)]:
+  - @ternent/identity@0.4.0
+  - @ternent/seal-cli@0.4.0
+  - @ternent/concord@0.3.0
+  - @ternent/armour@0.2.0
+  - @ternent/solid@0.2.0
+  - ternent-ui@0.4.16
+
 ## 0.0.19
 
 ### Patch Changes

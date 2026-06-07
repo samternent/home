@@ -1,6 +1,6 @@
 {
   "name": "@ternent/solid",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Solid session integrations for Concord identity, storage, and lifecycle management",
   "license": "ISC",
   "files": [
