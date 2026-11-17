@@ -1,5 +1,11 @@
 # **APP_ID**
 
+## 0.0.24
+
+### Patch Changes
+
+- [`d79309fa00648109a2ca17ef2315484135657be4`](https://github.com/samternent/home/commit/d79309fa00648109a2ca17ef2315484135657be4) Thanks [@samternent](https://github.com/samternent)! - Add GoatCounter pageview tracking.
+
 ## 0.0.23
 
 ### Patch Changes
